@@ -1,1 +1,0 @@
-DROP FUNCTION IF EXISTS public.hoan_thanh_cong_viec_bao_tri(uuid, uuid);

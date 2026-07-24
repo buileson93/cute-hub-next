@@ -2078,7 +2078,7 @@ END $$;
 CREATE FUNCTION public.f_unaccent(text) RETURNS text
     LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
     SET search_path TO 'public', 'pg_catalog'
-    AS $_$ SELECT public.unaccent('public.unaccent', $1) $_$;
+    AS $_$ SELECT extensions.unaccent('public.unaccent', $1) $_$;
 
 
 SET default_table_access_method = heap;
@@ -12891,7 +12891,7 @@ CREATE INDEX form_submission_don_vi_idx ON public.form_submission USING btree (d
 -- Name: form_submission_search_trgm_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX form_submission_search_trgm_idx ON public.form_submission USING gin (search_text public.gin_trgm_ops);
+CREATE INDEX form_submission_search_trgm_idx ON public.form_submission USING gin (search_text extensions.gin_trgm_ops);
 
 
 --
@@ -12926,7 +12926,7 @@ CREATE INDEX form_template_active_idx ON public.form_template USING btree (activ
 -- Name: giay_phep_search_trgm_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX giay_phep_search_trgm_idx ON public.giay_phep USING gin (search_text public.gin_trgm_ops);
+CREATE INDEX giay_phep_search_trgm_idx ON public.giay_phep USING gin (search_text extensions.gin_trgm_ops);
 
 
 --
@@ -14298,14 +14298,14 @@ CREATE INDEX search_index_loai_idx ON public.search_index USING btree (loai);
 -- Name: search_index_ma_trgm; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX search_index_ma_trgm ON public.search_index USING gin (public.f_unaccent(COALESCE(ma, ''::text)) public.gin_trgm_ops);
+CREATE INDEX search_index_ma_trgm ON public.search_index USING gin (public.f_unaccent(COALESCE(ma, ''::text)) extensions.gin_trgm_ops);
 
 
 --
 -- Name: search_index_tieude_trgm; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX search_index_tieude_trgm ON public.search_index USING gin (public.f_unaccent(tieu_de) public.gin_trgm_ops);
+CREATE INDEX search_index_tieude_trgm ON public.search_index USING gin (public.f_unaccent(tieu_de) extensions.gin_trgm_ops);
 
 
 --
@@ -14347,7 +14347,7 @@ CREATE INDEX su_co_van_de_id_idx ON public.su_co USING btree (van_de_id);
 -- Name: thiet_bi_search_trgm_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX thiet_bi_search_trgm_idx ON public.thiet_bi USING gin (search_text public.gin_trgm_ops);
+CREATE INDEX thiet_bi_search_trgm_idx ON public.thiet_bi USING gin (search_text extensions.gin_trgm_ops);
 
 
 --
