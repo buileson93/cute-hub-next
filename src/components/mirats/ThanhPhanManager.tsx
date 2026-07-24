@@ -549,32 +549,8 @@ function AssignDialog({
   const thayMut = useThayTheThietBi(heThongId);
   const [chon, setChon] = useState("");
   const [ghiChu, setGhiChu] = useState("");
-  const [addOpen, setAddOpen] = useState(false);
-
-  // Tạo nhanh 1 tài sản mới (DB tự sinh `ma_thiet_bi` bằng trigger) rồi chọn vào picker.
-  const themThietBiMut = useMutation({
-    mutationFn: async (p: { ten: string; serial?: string; loaiId?: string }) => {
-      const { data, error } = await supabase.from("thiet_bi").insert({
-        ten_thiet_bi: p.ten.trim(),
-        ma_serial: p.serial?.trim() || null,
-        loai_thiet_bi_id: p.loaiId || viTri.loai_thiet_bi_yeu_cau || null,
-      } as never).select("id, ma_thiet_bi").single();
-      if (error) {
-        const trung = nhanDienLoiTrungThietBi(error);
-        if (trung) throw new Error(trung.message);
-        throw error;
-      }
-      return data as unknown as { id: string; ma_thiet_bi: string };
-    },
-    onSuccess: (row) => {
-      qc.invalidateQueries({ queryKey: ["thiet-bi-ranh"] });
-      qc.invalidateQueries({ queryKey: ["thiet-bi-chon"] });
-      setChon(row.id);
-      setAddOpen(false);
-      toast.success(`Đã tạo tài sản mới ${row.ma_thiet_bi}`);
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Không tạo được tài sản"),
-  });
+  // Không cho tạo tài sản trực tiếp trong cây hệ thống — tài sản chỉ được khai
+  // ở trang Tài sản (thiết bị), sau đó gắn vào thành phần hệ thống ở đây.
 
   // Xếp hạng: đúng loại yêu cầu lên đầu, nhưng vẫn cho chọn MỌI tài sản rảnh.
   const eligible = useMemo(
@@ -631,13 +607,7 @@ function AssignDialog({
         </DialogHeader>
         <div className="grid gap-3">
           <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <Label>Tài sản {isReplace ? "mới" : ""} ({options.length} đủ điều kiện)</Label>
-              <Button type="button" size="sm" variant="ghost" className="h-7 gap-1 text-xs"
-                onClick={() => setAddOpen((o) => !o)}>
-                <Plus className="h-3.5 w-3.5" /> {addOpen ? "Đóng" : "Thêm tài sản mới"}
-              </Button>
-            </div>
+            <Label>Tài sản {isReplace ? "mới" : ""} ({options.length} đủ điều kiện)</Label>
             {isLoading ? (
               <p className="text-sm text-muted-foreground">Đang tải danh sách tài sản rảnh…</p>
             ) : (
@@ -647,13 +617,9 @@ function AssignDialog({
                 emptyText="Không có tài sản rảnh đúng loại"
               />
             )}
-            {addOpen && (
-              <QuickAddThietBi
-                onCancel={() => setAddOpen(false)}
-                onSubmit={(v) => themThietBiMut.mutate(v)}
-                pending={themThietBiMut.isPending}
-              />
-            )}
+            <p className="text-xs text-muted-foreground">
+              Tài sản chỉ được khai ở trang <span className="font-medium">Tài sản</span>. Ở đây chỉ chọn tài sản đã có để gắn vào thành phần hệ thống.
+            </p>
           </div>
           <div className="space-y-1">
             <Label>Ghi chú (tuỳ chọn)</Label>
@@ -668,42 +634,6 @@ function AssignDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-// ---- Mini form: tạo nhanh 1 tài sản mới rồi lắp ngay vào vị trí ----------
-function QuickAddThietBi({
-  onSubmit, onCancel, pending,
-}: {
-  onSubmit: (v: { ten: string; serial?: string }) => void;
-  onCancel: () => void;
-  pending: boolean;
-}) {
-  const [ten, setTen] = useState("");
-  const [serial, setSerial] = useState("");
-  return (
-    <div className="mt-2 rounded-md border bg-muted/30 p-2">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="space-y-1">
-          <Label className="text-xs">Tên tài sản</Label>
-          <Input value={ten} onChange={(e) => setTen(e.target.value)} placeholder="Ví dụ: Máy tính trạm bờ #3" />
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs">Serial (tuỳ chọn)</Label>
-          <Input value={serial} onChange={(e) => setSerial(e.target.value)} placeholder="SN…" className="font-mono" />
-        </div>
-      </div>
-      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>Mã sẽ được sinh tự động dạng <span className="font-mono">TB_XXXXXXXX</span>.</span>
-        <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={onCancel} disabled={pending}>Huỷ</Button>
-          <Button size="sm" onClick={() => {
-            if (!ten.trim()) { toast.error("Nhập tên tài sản"); return; }
-            onSubmit({ ten, serial });
-          }} disabled={pending}>Tạo & chọn</Button>
-        </div>
-      </div>
-    </div>
   );
 }
 
