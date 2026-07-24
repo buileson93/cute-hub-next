@@ -16,14 +16,20 @@ export default defineConfig({
   vite: {
     plugins: [mcpPlugin()],
     resolve: {
-      alias: {
+      alias: [
         // Neither package is used by this project. The real @react-email/code-block
         // pulls prismjs which references `Element` at module top-level and crashes
         // under Node SSR. Stub both so barrel imports from @react-email/components
-        // stay safe.
-        "@react-email/code-block": new URL("./src/shims/react-email-code-block-empty.js", import.meta.url).pathname,
-        prismjs: new URL("./src/shims/prismjs-empty.js", import.meta.url).pathname,
-      },
+        // stay safe. Regex catches subpath imports like `prismjs/prism.js` too.
+        {
+          find: /^@react-email\/code-block(\/.*)?$/,
+          replacement: new URL("./src/shims/react-email-code-block-empty.js", import.meta.url).pathname,
+        },
+        {
+          find: /^prismjs(\/.*)?$/,
+          replacement: new URL("./src/shims/prismjs-empty.js", import.meta.url).pathname,
+        },
+      ],
     },
     ssr: {
       noExternal: ["prismjs", "@react-email/code-block", "@react-email/components"],
