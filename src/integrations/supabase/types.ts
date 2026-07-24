@@ -7487,7 +7487,6 @@ export type Database = {
       }
     }
     Functions: {
-      __bootstrap_exec_sql: { Args: { sql: string }; Returns: undefined }
       _admin_check_ident: { Args: { _ident: string }; Returns: undefined }
       _admin_check_table: { Args: { _table: string }; Returns: undefined }
       _admin_check_type: { Args: { _type: string }; Returns: undefined }
