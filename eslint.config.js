@@ -20,6 +20,9 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // Hàng rào Task 8: buộc khai báo đủ dependency cho hook để tránh
+      // stale-closure/rerender sai khi nâng cấp nguồn dữ liệu.
+      "react-hooks/exhaustive-deps": "error",
       "no-restricted-imports": [
         "error",
         {
@@ -34,6 +37,16 @@ export default tseslint.config(
       ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      // GĐ 7: cảnh báo select("*") — thường là tải toàn bộ cột, dễ nặng.
+      // Cho phép các trường hợp cần thiết bằng eslint-disable-next-line.
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: "CallExpression[callee.property.name='select'][arguments.0.value='*']",
+          message:
+            "Tránh select('*') cho bảng lớn — hãy liệt kê cột cụ thể để giảm payload và cho phép index-only scan.",
+        },
+      ],
     },
   },
   eslintPluginPrettier,

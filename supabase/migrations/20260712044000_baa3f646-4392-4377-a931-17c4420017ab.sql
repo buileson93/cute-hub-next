@@ -1,0 +1,1 @@
+ALTER TABLE public.dm_phan_loai ADD CONSTRAINT dm_phan_loai_ma_key UNIQUE (ma);

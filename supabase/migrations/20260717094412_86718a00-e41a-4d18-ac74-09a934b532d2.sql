@@ -1,0 +1,1 @@
+ALTER VIEW public.v_he_thong_ky_thuat_summary SET (security_invoker = true);

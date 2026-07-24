@@ -1,0 +1,1 @@
+ALTER VIEW public.v_tuoi_tho SET (security_invoker = true);

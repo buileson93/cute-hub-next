@@ -1,0 +1,5 @@
+id,ma,ten,mo_ta,mau_sac,kieu_net,thu_tu,active,created_at,updated_at,co_huong,lan_truyen_tac_dong,merged_into,deactivated_at
+b813a2f3-c6e7-43dd-b21e-cee8bf9f9b68,DAU_NOI_VAT_LY,Đấu nối vật lý,Kết nối cáp/đường truyền vật lý giữa hai hệ thống,#6b7280,solid,1,t,2026-07-14 04:22:26.507252+00,2026-07-14 05:01:00.592559+00,f,t,,
+3fbe85a2-5c9f-4747-b954-ca77ca94d9e4,LUONG_TIN_HIEU,Luồng tín hiệu,Luồng dữ liệu/tín hiệu logic giữa hai hệ thống,#2563eb,solid,2,t,2026-07-14 04:22:26.507252+00,2026-07-14 05:01:00.592559+00,f,t,,
+4c0f8e23-a2ad-4537-86ff-3603be6826db,PHU_THUOC_DICH_VU,Phụ thuộc dịch vụ,Hệ thống nguồn phụ thuộc dịch vụ của hệ thống đích,#d97706,dashed,3,t,2026-07-14 04:22:26.507252+00,2026-07-14 05:01:00.592559+00,t,t,,
+a3ba66e1-0794-40b9-80fd-7d03e2964d45,DU_PHONG,Dự phòng,Liên kết đóng vai trò dự phòng,#16a34a,dotted,4,t,2026-07-14 04:22:26.507252+00,2026-07-14 05:01:00.592559+00,f,f,,

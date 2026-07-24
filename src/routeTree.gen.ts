@@ -9,51 +9,2454 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PendingRouteImport } from './routes/pending'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as QIndexRouteImport } from './routes/q.index'
+import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as VerifyIdRouteImport } from './routes/verify.$id'
+import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSchemaRouteImport } from './routes/admin.schema'
+import { Route as AdminBackupRouteImport } from './routes/admin.backup'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AppVatTuRouteImport } from './routes/_app.vat-tu'
+import { Route as AppVanDeRouteImport } from './routes/_app.van-de'
+import { Route as AppTuoiThoRouteImport } from './routes/_app.tuoi-tho'
+import { Route as AppTuanThuRouteImport } from './routes/_app.tuan-thu'
+import { Route as AppTopologyRouteImport } from './routes/_app.topology'
+import { Route as AppTongQuanRouteImport } from './routes/_app.tong-quan'
+import { Route as AppTicketsRouteImport } from './routes/_app.tickets'
+import { Route as AppThongBaoRouteImport } from './routes/_app.thong-bao'
+import { Route as AppThietBiRouteImport } from './routes/_app.thiet-bi'
+import { Route as AppSuCoRouteImport } from './routes/_app.su-co'
+import { Route as AppSapHetHanRouteImport } from './routes/_app.sap-het-han'
+import { Route as AppPhanQuyenRouteImport } from './routes/_app.phan-quyen'
+import { Route as AppNhapLieuRouteImport } from './routes/_app.nhap-lieu'
+import { Route as AppNhanRouteImport } from './routes/_app.nhan'
+import { Route as AppMessagesRouteImport } from './routes/_app.messages'
+import { Route as AppKiemKeRouteImport } from './routes/_app.kiem-ke'
+import { Route as AppKiemDinhRouteImport } from './routes/_app.kiem-dinh'
+import { Route as AppHongHocRouteImport } from './routes/_app.hong-hoc'
+import { Route as AppGiayPhepRouteImport } from './routes/_app.giay-phep'
+import { Route as AppFormsRouteImport } from './routes/_app.forms'
+import { Route as AppChoDuyetRouteImport } from './routes/_app.cho-duyet'
+import { Route as AppBaoTriRouteImport } from './routes/_app.bao-tri'
+import { Route as AppBanGiaoRouteImport } from './routes/_app.ban-giao'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AppThietBiIndexRouteImport } from './routes/_app.thiet-bi.index'
+import { Route as AppSuCoIndexRouteImport } from './routes/_app.su-co.index'
+import { Route as AppSoDoIndexRouteImport } from './routes/_app.so-do.index'
+import { Route as AppMessagesIndexRouteImport } from './routes/_app.messages.index'
+import { Route as AppFormsIndexRouteImport } from './routes/_app.forms.index'
+import { Route as AppDuAnIndexRouteImport } from './routes/_app.du-an.index'
+import { Route as AppBaoTriIndexRouteImport } from './routes/_app.bao-tri.index'
+import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
+import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
+import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
+import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
+import { Route as AppThietBiMaThietBiRouteImport } from './routes/_app.thiet-bi.$maThietBi'
+import { Route as AppSuCoMoiRouteImport } from './routes/_app.su-co.moi'
+import { Route as AppSuCoMaSuCoRouteImport } from './routes/_app.su-co.$maSuCo'
+import { Route as AppSoDoIdRouteImport } from './routes/_app.so-do.$id'
+import { Route as AppQuanTriNguoiDungRouteImport } from './routes/_app.quan-tri.nguoi-dung'
+import { Route as AppMessagesConvIdRouteImport } from './routes/_app.messages.$convId'
+import { Route as AppHongHocMoiRouteImport } from './routes/_app.hong-hoc.moi'
+import { Route as AppHongHocMaHongHocRouteImport } from './routes/_app.hong-hoc.$maHongHoc'
+import { Route as AppHeThongThungRacRouteImport } from './routes/_app.he-thong.thung-rac'
+import { Route as AppHeThongThanhPhanRouteImport } from './routes/_app.he-thong.thanh-phan'
+import { Route as AppHeThongLienKetRouteImport } from './routes/_app.he-thong.lien-ket'
+import { Route as AppHeThongCayRouteImport } from './routes/_app.he-thong.cay'
+import { Route as AppHeThongIdRouteImport } from './routes/_app.he-thong.$id'
+import { Route as AppDuAnIdRouteImport } from './routes/_app.du-an.$id'
+import { Route as AppDanhMucViTriRouteImport } from './routes/_app.danh-muc.vi-tri'
+import { Route as AppDanhMucThietBiRouteImport } from './routes/_app.danh-muc.thiet-bi'
+import { Route as AppDanhMucNhaSanXuatRouteImport } from './routes/_app.danh-muc.nha-san-xuat'
+import { Route as AppDanhMucNhaCungCapRouteImport } from './routes/_app.danh-muc.nha-cung-cap'
+import { Route as AppDanhMucModelRouteImport } from './routes/_app.danh-muc.model'
+import { Route as AppDanhMucLoaiThietBiRouteImport } from './routes/_app.danh-muc.loai-thiet-bi'
+import { Route as AppDanhMucHeThongRouteImport } from './routes/_app.danh-muc.he-thong'
+import { Route as AppDanhMucDonViRouteImport } from './routes/_app.danh-muc.don-vi'
+import { Route as AppDanhMucDacTinhRouteImport } from './routes/_app.danh-muc.dac-tinh'
+import { Route as AppCaiDatTaiKhoanRouteImport } from './routes/_app.cai-dat.tai-khoan'
+import { Route as AppBaoTriPmRouteImport } from './routes/_app.bao-tri.pm'
+import { Route as AppBaoTriMoiRouteImport } from './routes/_app.bao-tri.moi'
+import { Route as AppBaoTriCongViecRouteImport } from './routes/_app.bao-tri.cong-viec'
+import { Route as AppBaoTriMaBaoTriRouteImport } from './routes/_app.bao-tri.$maBaoTri'
+import { Route as AppBaoCaoDoTinCayRouteImport } from './routes/_app.bao-cao.do-tin-cay'
+import { Route as AppBanGiaoMoiRouteImport } from './routes/_app.ban-giao.moi'
+import { Route as AppAdminThuongHieuRouteImport } from './routes/_app.admin.thuong-hieu'
+import { Route as AppAdminReviewRouteImport } from './routes/_app.admin.review'
+import { Route as AppAdminPermissionsRouteImport } from './routes/_app.admin.permissions'
+import { Route as AppAdminNhapLieuRouteImport } from './routes/_app.admin.nhap-lieu'
+import { Route as AppAdminKiemTraSoLieuRouteImport } from './routes/_app.admin.kiem-tra-so-lieu'
+import { Route as AppAdminKiemTraLayoutRouteImport } from './routes/_app.admin.kiem-tra-layout'
+import { Route as AppAdminFormsRouteImport } from './routes/_app.admin.forms'
+import { Route as AppAdminBaoTriChinhSachRouteImport } from './routes/_app.admin.bao-tri-chinh-sach'
+import { Route as AppAdminAiRouteImport } from './routes/_app.admin.ai'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AppAdminFormsIndexRouteImport } from './routes/_app.admin.forms.index'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicHooksTelegramAlertsRouteImport } from './routes/api/public/hooks/telegram-alerts'
+import { Route as ApiPublicHooksScanCanhBaoRouteImport } from './routes/api/public/hooks/scan-canh-bao'
+import { Route as ApiPublicHooksReliabilityReportRouteImport } from './routes/api/public/hooks/reliability-report'
+import { Route as ApiPublicHooksPmGenerateRouteImport } from './routes/api/public/hooks/pm-generate'
+import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
+import { Route as ApiPublicHooksCanhBaoHetHanRouteImport } from './routes/api/public/hooks/canh-bao-het-han'
+import { Route as ApiPublicHooksBootstrapAdminRouteImport } from './routes/api/public/hooks/bootstrap-admin'
+import { Route as AppFormsSubmissionsIdRouteImport } from './routes/_app.forms.submissions.$id'
+import { Route as AppFormsNewCodeRouteImport } from './routes/_app.forms.new.$code'
+import { Route as AppAdminFormsIdRouteImport } from './routes/_app.admin.forms.$id'
+import { Route as AppAdminFormsIdHistoryRouteImport } from './routes/_app.admin.forms.$id.history'
 
-const IndexRoute = IndexRouteImport.update({
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QIndexRoute = QIndexRouteImport.update({
+  id: '/q/',
+  path: '/q/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const VerifyIdRoute = VerifyIdRouteImport.update({
+  id: '/verify/$id',
+  path: '/verify/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const QMaThietBiRoute = QMaThietBiRouteImport.update({
+  id: '/q/$maThietBi',
+  path: '/q/$maThietBi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBackupRunRoute = ApiBackupRunRouteImport.update({
+  id: '/api/backup-run',
+  path: '/api/backup-run',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSchemaRoute = AdminSchemaRouteImport.update({
+  id: '/schema',
+  path: '/schema',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBackupRoute = AdminBackupRouteImport.update({
+  id: '/backup',
+  path: '/backup',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AppVatTuRoute = AppVatTuRouteImport.update({
+  id: '/vat-tu',
+  path: '/vat-tu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVanDeRoute = AppVanDeRouteImport.update({
+  id: '/van-de',
+  path: '/van-de',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTuoiThoRoute = AppTuoiThoRouteImport.update({
+  id: '/tuoi-tho',
+  path: '/tuoi-tho',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTuanThuRoute = AppTuanThuRouteImport.update({
+  id: '/tuan-thu',
+  path: '/tuan-thu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTopologyRoute = AppTopologyRouteImport.update({
+  id: '/topology',
+  path: '/topology',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTongQuanRoute = AppTongQuanRouteImport.update({
+  id: '/tong-quan',
+  path: '/tong-quan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTicketsRoute = AppTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppThongBaoRoute = AppThongBaoRouteImport.update({
+  id: '/thong-bao',
+  path: '/thong-bao',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppThietBiRoute = AppThietBiRouteImport.update({
+  id: '/thiet-bi',
+  path: '/thiet-bi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSuCoRoute = AppSuCoRouteImport.update({
+  id: '/su-co',
+  path: '/su-co',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSapHetHanRoute = AppSapHetHanRouteImport.update({
+  id: '/sap-het-han',
+  path: '/sap-het-han',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPhanQuyenRoute = AppPhanQuyenRouteImport.update({
+  id: '/phan-quyen',
+  path: '/phan-quyen',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNhapLieuRoute = AppNhapLieuRouteImport.update({
+  id: '/nhap-lieu',
+  path: '/nhap-lieu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNhanRoute = AppNhanRouteImport.update({
+  id: '/nhan',
+  path: '/nhan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMessagesRoute = AppMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKiemKeRoute = AppKiemKeRouteImport.update({
+  id: '/kiem-ke',
+  path: '/kiem-ke',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKiemDinhRoute = AppKiemDinhRouteImport.update({
+  id: '/kiem-dinh',
+  path: '/kiem-dinh',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHongHocRoute = AppHongHocRouteImport.update({
+  id: '/hong-hoc',
+  path: '/hong-hoc',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGiayPhepRoute = AppGiayPhepRouteImport.update({
+  id: '/giay-phep',
+  path: '/giay-phep',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFormsRoute = AppFormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChoDuyetRoute = AppChoDuyetRouteImport.update({
+  id: '/cho-duyet',
+  path: '/cho-duyet',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBaoTriRoute = AppBaoTriRouteImport.update({
+  id: '/bao-tri',
+  path: '/bao-tri',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBanGiaoRoute = AppBanGiaoRouteImport.update({
+  id: '/ban-giao',
+  path: '/ban-giao',
+  getParentRoute: () => AppRoute,
+} as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppThietBiIndexRoute = AppThietBiIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppThietBiRoute,
+} as any)
+const AppSuCoIndexRoute = AppSuCoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppSuCoRoute,
+} as any)
+const AppSoDoIndexRoute = AppSoDoIndexRouteImport.update({
+  id: '/so-do/',
+  path: '/so-do/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMessagesIndexRoute = AppMessagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppMessagesRoute,
+} as any)
+const AppFormsIndexRoute = AppFormsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppFormsRoute,
+} as any)
+const AppDuAnIndexRoute = AppDuAnIndexRouteImport.update({
+  id: '/du-an/',
+  path: '/du-an/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBaoTriIndexRoute = AppBaoTriIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
+const QrThietBiIdRoute = QrThietBiIdRouteImport.update({
+  id: '/qr/thiet-bi/$id',
+  path: '/qr/thiet-bi/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicQaResetTestPasswordsRoute =
+  ApiPublicQaResetTestPasswordsRouteImport.update({
+    id: '/api/public/qa-reset-test-passwords',
+    path: '/api/public/qa-reset-test-passwords',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminAuditLapThaoRoute = AdminAuditLapThaoRouteImport.update({
+  id: '/lap-thao',
+  path: '/lap-thao',
+  getParentRoute: () => AdminAuditRoute,
+} as any)
+const AppTicketsIdRoute = AppTicketsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppTicketsRoute,
+} as any)
+const AppThietBiMaThietBiRoute = AppThietBiMaThietBiRouteImport.update({
+  id: '/$maThietBi',
+  path: '/$maThietBi',
+  getParentRoute: () => AppThietBiRoute,
+} as any)
+const AppSuCoMoiRoute = AppSuCoMoiRouteImport.update({
+  id: '/moi',
+  path: '/moi',
+  getParentRoute: () => AppSuCoRoute,
+} as any)
+const AppSuCoMaSuCoRoute = AppSuCoMaSuCoRouteImport.update({
+  id: '/$maSuCo',
+  path: '/$maSuCo',
+  getParentRoute: () => AppSuCoRoute,
+} as any)
+const AppSoDoIdRoute = AppSoDoIdRouteImport.update({
+  id: '/so-do/$id',
+  path: '/so-do/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuanTriNguoiDungRoute = AppQuanTriNguoiDungRouteImport.update({
+  id: '/quan-tri/nguoi-dung',
+  path: '/quan-tri/nguoi-dung',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMessagesConvIdRoute = AppMessagesConvIdRouteImport.update({
+  id: '/$convId',
+  path: '/$convId',
+  getParentRoute: () => AppMessagesRoute,
+} as any)
+const AppHongHocMoiRoute = AppHongHocMoiRouteImport.update({
+  id: '/moi',
+  path: '/moi',
+  getParentRoute: () => AppHongHocRoute,
+} as any)
+const AppHongHocMaHongHocRoute = AppHongHocMaHongHocRouteImport.update({
+  id: '/$maHongHoc',
+  path: '/$maHongHoc',
+  getParentRoute: () => AppHongHocRoute,
+} as any)
+const AppHeThongThungRacRoute = AppHeThongThungRacRouteImport.update({
+  id: '/he-thong/thung-rac',
+  path: '/he-thong/thung-rac',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHeThongThanhPhanRoute = AppHeThongThanhPhanRouteImport.update({
+  id: '/he-thong/thanh-phan',
+  path: '/he-thong/thanh-phan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHeThongLienKetRoute = AppHeThongLienKetRouteImport.update({
+  id: '/he-thong/lien-ket',
+  path: '/he-thong/lien-ket',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHeThongCayRoute = AppHeThongCayRouteImport.update({
+  id: '/he-thong/cay',
+  path: '/he-thong/cay',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHeThongIdRoute = AppHeThongIdRouteImport.update({
+  id: '/he-thong/$id',
+  path: '/he-thong/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDuAnIdRoute = AppDuAnIdRouteImport.update({
+  id: '/du-an/$id',
+  path: '/du-an/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucViTriRoute = AppDanhMucViTriRouteImport.update({
+  id: '/danh-muc/vi-tri',
+  path: '/danh-muc/vi-tri',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucThietBiRoute = AppDanhMucThietBiRouteImport.update({
+  id: '/danh-muc/thiet-bi',
+  path: '/danh-muc/thiet-bi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucNhaSanXuatRoute = AppDanhMucNhaSanXuatRouteImport.update({
+  id: '/danh-muc/nha-san-xuat',
+  path: '/danh-muc/nha-san-xuat',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucNhaCungCapRoute = AppDanhMucNhaCungCapRouteImport.update({
+  id: '/danh-muc/nha-cung-cap',
+  path: '/danh-muc/nha-cung-cap',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucModelRoute = AppDanhMucModelRouteImport.update({
+  id: '/danh-muc/model',
+  path: '/danh-muc/model',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucLoaiThietBiRoute = AppDanhMucLoaiThietBiRouteImport.update({
+  id: '/danh-muc/loai-thiet-bi',
+  path: '/danh-muc/loai-thiet-bi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucHeThongRoute = AppDanhMucHeThongRouteImport.update({
+  id: '/danh-muc/he-thong',
+  path: '/danh-muc/he-thong',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucDonViRoute = AppDanhMucDonViRouteImport.update({
+  id: '/danh-muc/don-vi',
+  path: '/danh-muc/don-vi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDanhMucDacTinhRoute = AppDanhMucDacTinhRouteImport.update({
+  id: '/danh-muc/dac-tinh',
+  path: '/danh-muc/dac-tinh',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCaiDatTaiKhoanRoute = AppCaiDatTaiKhoanRouteImport.update({
+  id: '/cai-dat/tai-khoan',
+  path: '/cai-dat/tai-khoan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBaoTriPmRoute = AppBaoTriPmRouteImport.update({
+  id: '/pm',
+  path: '/pm',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
+const AppBaoTriMoiRoute = AppBaoTriMoiRouteImport.update({
+  id: '/moi',
+  path: '/moi',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
+const AppBaoTriCongViecRoute = AppBaoTriCongViecRouteImport.update({
+  id: '/cong-viec',
+  path: '/cong-viec',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
+const AppBaoTriMaBaoTriRoute = AppBaoTriMaBaoTriRouteImport.update({
+  id: '/$maBaoTri',
+  path: '/$maBaoTri',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
+const AppBaoCaoDoTinCayRoute = AppBaoCaoDoTinCayRouteImport.update({
+  id: '/bao-cao/do-tin-cay',
+  path: '/bao-cao/do-tin-cay',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBanGiaoMoiRoute = AppBanGiaoMoiRouteImport.update({
+  id: '/moi',
+  path: '/moi',
+  getParentRoute: () => AppBanGiaoRoute,
+} as any)
+const AppAdminThuongHieuRoute = AppAdminThuongHieuRouteImport.update({
+  id: '/admin/thuong-hieu',
+  path: '/admin/thuong-hieu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminReviewRoute = AppAdminReviewRouteImport.update({
+  id: '/admin/review',
+  path: '/admin/review',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminPermissionsRoute = AppAdminPermissionsRouteImport.update({
+  id: '/admin/permissions',
+  path: '/admin/permissions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminNhapLieuRoute = AppAdminNhapLieuRouteImport.update({
+  id: '/admin/nhap-lieu',
+  path: '/admin/nhap-lieu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminKiemTraSoLieuRoute = AppAdminKiemTraSoLieuRouteImport.update({
+  id: '/admin/kiem-tra-so-lieu',
+  path: '/admin/kiem-tra-so-lieu',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminKiemTraLayoutRoute = AppAdminKiemTraLayoutRouteImport.update({
+  id: '/admin/kiem-tra-layout',
+  path: '/admin/kiem-tra-layout',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminFormsRoute = AppAdminFormsRouteImport.update({
+  id: '/admin/forms',
+  path: '/admin/forms',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminBaoTriChinhSachRoute = AppAdminBaoTriChinhSachRouteImport.update({
+  id: '/admin/bao-tri-chinh-sach',
+  path: '/admin/bao-tri-chinh-sach',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminAiRoute = AppAdminAiRouteImport.update({
+  id: '/admin/ai',
+  path: '/admin/ai',
+  getParentRoute: () => AppRoute,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppAdminFormsIndexRoute = AppAdminFormsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppAdminFormsRoute,
+} as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksTelegramAlertsRoute =
+  ApiPublicHooksTelegramAlertsRouteImport.update({
+    id: '/api/public/hooks/telegram-alerts',
+    path: '/api/public/hooks/telegram-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksScanCanhBaoRoute =
+  ApiPublicHooksScanCanhBaoRouteImport.update({
+    id: '/api/public/hooks/scan-canh-bao',
+    path: '/api/public/hooks/scan-canh-bao',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksReliabilityReportRoute =
+  ApiPublicHooksReliabilityReportRouteImport.update({
+    id: '/api/public/hooks/reliability-report',
+    path: '/api/public/hooks/reliability-report',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksPmGenerateRoute =
+  ApiPublicHooksPmGenerateRouteImport.update({
+    id: '/api/public/hooks/pm-generate',
+    path: '/api/public/hooks/pm-generate',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksDailyBackupRoute =
+  ApiPublicHooksDailyBackupRouteImport.update({
+    id: '/api/public/hooks/daily-backup',
+    path: '/api/public/hooks/daily-backup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksCanhBaoHetHanRoute =
+  ApiPublicHooksCanhBaoHetHanRouteImport.update({
+    id: '/api/public/hooks/canh-bao-het-han',
+    path: '/api/public/hooks/canh-bao-het-han',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksBootstrapAdminRoute =
+  ApiPublicHooksBootstrapAdminRouteImport.update({
+    id: '/api/public/hooks/bootstrap-admin',
+    path: '/api/public/hooks/bootstrap-admin',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppFormsSubmissionsIdRoute = AppFormsSubmissionsIdRouteImport.update({
+  id: '/submissions/$id',
+  path: '/submissions/$id',
+  getParentRoute: () => AppFormsRoute,
+} as any)
+const AppFormsNewCodeRoute = AppFormsNewCodeRouteImport.update({
+  id: '/new/$code',
+  path: '/new/$code',
+  getParentRoute: () => AppFormsRoute,
+} as any)
+const AppAdminFormsIdRoute = AppAdminFormsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppAdminFormsRoute,
+} as any)
+const AppAdminFormsIdHistoryRoute = AppAdminFormsIdHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppAdminFormsIdRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/mcp': typeof McpRoute
+  '/pending': typeof PendingRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/ban-giao': typeof AppBanGiaoRouteWithChildren
+  '/bao-tri': typeof AppBaoTriRouteWithChildren
+  '/cho-duyet': typeof AppChoDuyetRoute
+  '/forms': typeof AppFormsRouteWithChildren
+  '/giay-phep': typeof AppGiayPhepRoute
+  '/hong-hoc': typeof AppHongHocRouteWithChildren
+  '/kiem-dinh': typeof AppKiemDinhRoute
+  '/kiem-ke': typeof AppKiemKeRoute
+  '/messages': typeof AppMessagesRouteWithChildren
+  '/nhan': typeof AppNhanRoute
+  '/nhap-lieu': typeof AppNhapLieuRoute
+  '/phan-quyen': typeof AppPhanQuyenRoute
+  '/sap-het-han': typeof AppSapHetHanRoute
+  '/su-co': typeof AppSuCoRouteWithChildren
+  '/thiet-bi': typeof AppThietBiRouteWithChildren
+  '/thong-bao': typeof AppThongBaoRoute
+  '/tickets': typeof AppTicketsRouteWithChildren
+  '/tong-quan': typeof AppTongQuanRoute
+  '/topology': typeof AppTopologyRoute
+  '/tuan-thu': typeof AppTuanThuRoute
+  '/tuoi-tho': typeof AppTuoiThoRoute
+  '/van-de': typeof AppVanDeRoute
+  '/vat-tu': typeof AppVatTuRoute
+  '/admin/audit': typeof AdminAuditRouteWithChildren
+  '/admin/backup': typeof AdminBackupRoute
+  '/admin/schema': typeof AdminSchemaRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/api/backup-run': typeof ApiBackupRunRoute
+  '/api/chat': typeof ApiChatRoute
+  '/q/$maThietBi': typeof QMaThietBiRoute
+  '/verify/$id': typeof VerifyIdRoute
+  '/q/': typeof QIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/ai': typeof AppAdminAiRoute
+  '/admin/bao-tri-chinh-sach': typeof AppAdminBaoTriChinhSachRoute
+  '/admin/forms': typeof AppAdminFormsRouteWithChildren
+  '/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
+  '/admin/kiem-tra-so-lieu': typeof AppAdminKiemTraSoLieuRoute
+  '/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
+  '/admin/permissions': typeof AppAdminPermissionsRoute
+  '/admin/review': typeof AppAdminReviewRoute
+  '/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
+  '/ban-giao/moi': typeof AppBanGiaoMoiRoute
+  '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
+  '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
+  '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/bao-tri/moi': typeof AppBaoTriMoiRoute
+  '/bao-tri/pm': typeof AppBaoTriPmRoute
+  '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
+  '/danh-muc/dac-tinh': typeof AppDanhMucDacTinhRoute
+  '/danh-muc/don-vi': typeof AppDanhMucDonViRoute
+  '/danh-muc/he-thong': typeof AppDanhMucHeThongRoute
+  '/danh-muc/loai-thiet-bi': typeof AppDanhMucLoaiThietBiRoute
+  '/danh-muc/model': typeof AppDanhMucModelRoute
+  '/danh-muc/nha-cung-cap': typeof AppDanhMucNhaCungCapRoute
+  '/danh-muc/nha-san-xuat': typeof AppDanhMucNhaSanXuatRoute
+  '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
+  '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
+  '/du-an/$id': typeof AppDuAnIdRoute
+  '/he-thong/$id': typeof AppHeThongIdRoute
+  '/he-thong/cay': typeof AppHeThongCayRoute
+  '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
+  '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
+  '/he-thong/thung-rac': typeof AppHeThongThungRacRoute
+  '/hong-hoc/$maHongHoc': typeof AppHongHocMaHongHocRoute
+  '/hong-hoc/moi': typeof AppHongHocMoiRoute
+  '/messages/$convId': typeof AppMessagesConvIdRoute
+  '/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
+  '/so-do/$id': typeof AppSoDoIdRoute
+  '/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
+  '/su-co/moi': typeof AppSuCoMoiRoute
+  '/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
+  '/tickets/$id': typeof AppTicketsIdRoute
+  '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
+  '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
+  '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
+  '/bao-tri/': typeof AppBaoTriIndexRoute
+  '/du-an/': typeof AppDuAnIndexRoute
+  '/forms/': typeof AppFormsIndexRoute
+  '/messages/': typeof AppMessagesIndexRoute
+  '/so-do/': typeof AppSoDoIndexRoute
+  '/su-co/': typeof AppSuCoIndexRoute
+  '/thiet-bi/': typeof AppThietBiIndexRoute
+  '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/forms/new/$code': typeof AppFormsNewCodeRoute
+  '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
+  '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
+  '/api/public/hooks/pm-generate': typeof ApiPublicHooksPmGenerateRoute
+  '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
+  '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
+  '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/admin/forms/': typeof AppAdminFormsIndexRoute
+  '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/mcp': typeof McpRoute
+  '/pending': typeof PendingRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/ban-giao': typeof AppBanGiaoRouteWithChildren
+  '/cho-duyet': typeof AppChoDuyetRoute
+  '/giay-phep': typeof AppGiayPhepRoute
+  '/hong-hoc': typeof AppHongHocRouteWithChildren
+  '/kiem-dinh': typeof AppKiemDinhRoute
+  '/kiem-ke': typeof AppKiemKeRoute
+  '/nhan': typeof AppNhanRoute
+  '/nhap-lieu': typeof AppNhapLieuRoute
+  '/phan-quyen': typeof AppPhanQuyenRoute
+  '/sap-het-han': typeof AppSapHetHanRoute
+  '/thong-bao': typeof AppThongBaoRoute
+  '/tickets': typeof AppTicketsRouteWithChildren
+  '/tong-quan': typeof AppTongQuanRoute
+  '/topology': typeof AppTopologyRoute
+  '/tuan-thu': typeof AppTuanThuRoute
+  '/tuoi-tho': typeof AppTuoiThoRoute
+  '/van-de': typeof AppVanDeRoute
+  '/vat-tu': typeof AppVatTuRoute
+  '/admin/audit': typeof AdminAuditRouteWithChildren
+  '/admin/backup': typeof AdminBackupRoute
+  '/admin/schema': typeof AdminSchemaRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/api/backup-run': typeof ApiBackupRunRoute
+  '/api/chat': typeof ApiChatRoute
+  '/q/$maThietBi': typeof QMaThietBiRoute
+  '/verify/$id': typeof VerifyIdRoute
+  '/': typeof AppIndexRoute
+  '/q': typeof QIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/ai': typeof AppAdminAiRoute
+  '/admin/bao-tri-chinh-sach': typeof AppAdminBaoTriChinhSachRoute
+  '/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
+  '/admin/kiem-tra-so-lieu': typeof AppAdminKiemTraSoLieuRoute
+  '/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
+  '/admin/permissions': typeof AppAdminPermissionsRoute
+  '/admin/review': typeof AppAdminReviewRoute
+  '/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
+  '/ban-giao/moi': typeof AppBanGiaoMoiRoute
+  '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
+  '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
+  '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/bao-tri/moi': typeof AppBaoTriMoiRoute
+  '/bao-tri/pm': typeof AppBaoTriPmRoute
+  '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
+  '/danh-muc/dac-tinh': typeof AppDanhMucDacTinhRoute
+  '/danh-muc/don-vi': typeof AppDanhMucDonViRoute
+  '/danh-muc/he-thong': typeof AppDanhMucHeThongRoute
+  '/danh-muc/loai-thiet-bi': typeof AppDanhMucLoaiThietBiRoute
+  '/danh-muc/model': typeof AppDanhMucModelRoute
+  '/danh-muc/nha-cung-cap': typeof AppDanhMucNhaCungCapRoute
+  '/danh-muc/nha-san-xuat': typeof AppDanhMucNhaSanXuatRoute
+  '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
+  '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
+  '/du-an/$id': typeof AppDuAnIdRoute
+  '/he-thong/$id': typeof AppHeThongIdRoute
+  '/he-thong/cay': typeof AppHeThongCayRoute
+  '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
+  '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
+  '/he-thong/thung-rac': typeof AppHeThongThungRacRoute
+  '/hong-hoc/$maHongHoc': typeof AppHongHocMaHongHocRoute
+  '/hong-hoc/moi': typeof AppHongHocMoiRoute
+  '/messages/$convId': typeof AppMessagesConvIdRoute
+  '/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
+  '/so-do/$id': typeof AppSoDoIdRoute
+  '/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
+  '/su-co/moi': typeof AppSuCoMoiRoute
+  '/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
+  '/tickets/$id': typeof AppTicketsIdRoute
+  '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
+  '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
+  '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
+  '/bao-tri': typeof AppBaoTriIndexRoute
+  '/du-an': typeof AppDuAnIndexRoute
+  '/forms': typeof AppFormsIndexRoute
+  '/messages': typeof AppMessagesIndexRoute
+  '/so-do': typeof AppSoDoIndexRoute
+  '/su-co': typeof AppSuCoIndexRoute
+  '/thiet-bi': typeof AppThietBiIndexRoute
+  '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/forms/new/$code': typeof AppFormsNewCodeRoute
+  '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
+  '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
+  '/api/public/hooks/pm-generate': typeof ApiPublicHooksPmGenerateRoute
+  '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
+  '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
+  '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/admin/forms': typeof AppAdminFormsIndexRoute
+  '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/mcp': typeof McpRoute
+  '/pending': typeof PendingRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_app/ban-giao': typeof AppBanGiaoRouteWithChildren
+  '/_app/bao-tri': typeof AppBaoTriRouteWithChildren
+  '/_app/cho-duyet': typeof AppChoDuyetRoute
+  '/_app/forms': typeof AppFormsRouteWithChildren
+  '/_app/giay-phep': typeof AppGiayPhepRoute
+  '/_app/hong-hoc': typeof AppHongHocRouteWithChildren
+  '/_app/kiem-dinh': typeof AppKiemDinhRoute
+  '/_app/kiem-ke': typeof AppKiemKeRoute
+  '/_app/messages': typeof AppMessagesRouteWithChildren
+  '/_app/nhan': typeof AppNhanRoute
+  '/_app/nhap-lieu': typeof AppNhapLieuRoute
+  '/_app/phan-quyen': typeof AppPhanQuyenRoute
+  '/_app/sap-het-han': typeof AppSapHetHanRoute
+  '/_app/su-co': typeof AppSuCoRouteWithChildren
+  '/_app/thiet-bi': typeof AppThietBiRouteWithChildren
+  '/_app/thong-bao': typeof AppThongBaoRoute
+  '/_app/tickets': typeof AppTicketsRouteWithChildren
+  '/_app/tong-quan': typeof AppTongQuanRoute
+  '/_app/topology': typeof AppTopologyRoute
+  '/_app/tuan-thu': typeof AppTuanThuRoute
+  '/_app/tuoi-tho': typeof AppTuoiThoRoute
+  '/_app/van-de': typeof AppVanDeRoute
+  '/_app/vat-tu': typeof AppVatTuRoute
+  '/admin/audit': typeof AdminAuditRouteWithChildren
+  '/admin/backup': typeof AdminBackupRoute
+  '/admin/schema': typeof AdminSchemaRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/api/backup-run': typeof ApiBackupRunRoute
+  '/api/chat': typeof ApiChatRoute
+  '/q/$maThietBi': typeof QMaThietBiRoute
+  '/verify/$id': typeof VerifyIdRoute
+  '/_app/': typeof AppIndexRoute
+  '/q/': typeof QIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_app/admin/ai': typeof AppAdminAiRoute
+  '/_app/admin/bao-tri-chinh-sach': typeof AppAdminBaoTriChinhSachRoute
+  '/_app/admin/forms': typeof AppAdminFormsRouteWithChildren
+  '/_app/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
+  '/_app/admin/kiem-tra-so-lieu': typeof AppAdminKiemTraSoLieuRoute
+  '/_app/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
+  '/_app/admin/permissions': typeof AppAdminPermissionsRoute
+  '/_app/admin/review': typeof AppAdminReviewRoute
+  '/_app/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
+  '/_app/ban-giao/moi': typeof AppBanGiaoMoiRoute
+  '/_app/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
+  '/_app/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
+  '/_app/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/_app/bao-tri/moi': typeof AppBaoTriMoiRoute
+  '/_app/bao-tri/pm': typeof AppBaoTriPmRoute
+  '/_app/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
+  '/_app/danh-muc/dac-tinh': typeof AppDanhMucDacTinhRoute
+  '/_app/danh-muc/don-vi': typeof AppDanhMucDonViRoute
+  '/_app/danh-muc/he-thong': typeof AppDanhMucHeThongRoute
+  '/_app/danh-muc/loai-thiet-bi': typeof AppDanhMucLoaiThietBiRoute
+  '/_app/danh-muc/model': typeof AppDanhMucModelRoute
+  '/_app/danh-muc/nha-cung-cap': typeof AppDanhMucNhaCungCapRoute
+  '/_app/danh-muc/nha-san-xuat': typeof AppDanhMucNhaSanXuatRoute
+  '/_app/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
+  '/_app/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
+  '/_app/du-an/$id': typeof AppDuAnIdRoute
+  '/_app/he-thong/$id': typeof AppHeThongIdRoute
+  '/_app/he-thong/cay': typeof AppHeThongCayRoute
+  '/_app/he-thong/lien-ket': typeof AppHeThongLienKetRoute
+  '/_app/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
+  '/_app/he-thong/thung-rac': typeof AppHeThongThungRacRoute
+  '/_app/hong-hoc/$maHongHoc': typeof AppHongHocMaHongHocRoute
+  '/_app/hong-hoc/moi': typeof AppHongHocMoiRoute
+  '/_app/messages/$convId': typeof AppMessagesConvIdRoute
+  '/_app/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
+  '/_app/so-do/$id': typeof AppSoDoIdRoute
+  '/_app/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
+  '/_app/su-co/moi': typeof AppSuCoMoiRoute
+  '/_app/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
+  '/_app/tickets/$id': typeof AppTicketsIdRoute
+  '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
+  '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
+  '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
+  '/_app/bao-tri/': typeof AppBaoTriIndexRoute
+  '/_app/du-an/': typeof AppDuAnIndexRoute
+  '/_app/forms/': typeof AppFormsIndexRoute
+  '/_app/messages/': typeof AppMessagesIndexRoute
+  '/_app/so-do/': typeof AppSoDoIndexRoute
+  '/_app/su-co/': typeof AppSuCoIndexRoute
+  '/_app/thiet-bi/': typeof AppThietBiIndexRoute
+  '/_app/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/_app/forms/new/$code': typeof AppFormsNewCodeRoute
+  '/_app/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
+  '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
+  '/api/public/hooks/pm-generate': typeof ApiPublicHooksPmGenerateRoute
+  '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
+  '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
+  '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/_app/admin/forms/': typeof AppAdminFormsIndexRoute
+  '/_app/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/forgot-password'
+    | '/mcp'
+    | '/pending'
+    | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
+    | '/ban-giao'
+    | '/bao-tri'
+    | '/cho-duyet'
+    | '/forms'
+    | '/giay-phep'
+    | '/hong-hoc'
+    | '/kiem-dinh'
+    | '/kiem-ke'
+    | '/messages'
+    | '/nhan'
+    | '/nhap-lieu'
+    | '/phan-quyen'
+    | '/sap-het-han'
+    | '/su-co'
+    | '/thiet-bi'
+    | '/thong-bao'
+    | '/tickets'
+    | '/tong-quan'
+    | '/topology'
+    | '/tuan-thu'
+    | '/tuoi-tho'
+    | '/van-de'
+    | '/vat-tu'
+    | '/admin/audit'
+    | '/admin/backup'
+    | '/admin/schema'
+    | '/admin/users'
+    | '/api/backup-run'
+    | '/api/chat'
+    | '/q/$maThietBi'
+    | '/verify/$id'
+    | '/q/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
+    | '/admin/ai'
+    | '/admin/bao-tri-chinh-sach'
+    | '/admin/forms'
+    | '/admin/kiem-tra-layout'
+    | '/admin/kiem-tra-so-lieu'
+    | '/admin/nhap-lieu'
+    | '/admin/permissions'
+    | '/admin/review'
+    | '/admin/thuong-hieu'
+    | '/ban-giao/moi'
+    | '/bao-cao/do-tin-cay'
+    | '/bao-tri/$maBaoTri'
+    | '/bao-tri/cong-viec'
+    | '/bao-tri/moi'
+    | '/bao-tri/pm'
+    | '/cai-dat/tai-khoan'
+    | '/danh-muc/dac-tinh'
+    | '/danh-muc/don-vi'
+    | '/danh-muc/he-thong'
+    | '/danh-muc/loai-thiet-bi'
+    | '/danh-muc/model'
+    | '/danh-muc/nha-cung-cap'
+    | '/danh-muc/nha-san-xuat'
+    | '/danh-muc/thiet-bi'
+    | '/danh-muc/vi-tri'
+    | '/du-an/$id'
+    | '/he-thong/$id'
+    | '/he-thong/cay'
+    | '/he-thong/lien-ket'
+    | '/he-thong/thanh-phan'
+    | '/he-thong/thung-rac'
+    | '/hong-hoc/$maHongHoc'
+    | '/hong-hoc/moi'
+    | '/messages/$convId'
+    | '/quan-tri/nguoi-dung'
+    | '/so-do/$id'
+    | '/su-co/$maSuCo'
+    | '/su-co/moi'
+    | '/thiet-bi/$maThietBi'
+    | '/tickets/$id'
+    | '/admin/audit/lap-thao'
+    | '/api/public/qa-reset-test-passwords'
+    | '/qr/thiet-bi/$id'
+    | '/bao-tri/'
+    | '/du-an/'
+    | '/forms/'
+    | '/messages/'
+    | '/so-do/'
+    | '/su-co/'
+    | '/thiet-bi/'
+    | '/admin/forms/$id'
+    | '/forms/new/$code'
+    | '/forms/submissions/$id'
+    | '/api/public/hooks/bootstrap-admin'
+    | '/api/public/hooks/canh-bao-het-han'
+    | '/api/public/hooks/daily-backup'
+    | '/api/public/hooks/pm-generate'
+    | '/api/public/hooks/reliability-report'
+    | '/api/public/hooks/scan-canh-bao'
+    | '/api/public/hooks/telegram-alerts'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
+    | '/lovable/email/transactional/preview'
+    | '/admin/forms/'
+    | '/admin/forms/$id/history'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/admin'
+    | '/auth'
+    | '/forgot-password'
+    | '/mcp'
+    | '/pending'
+    | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
+    | '/ban-giao'
+    | '/cho-duyet'
+    | '/giay-phep'
+    | '/hong-hoc'
+    | '/kiem-dinh'
+    | '/kiem-ke'
+    | '/nhan'
+    | '/nhap-lieu'
+    | '/phan-quyen'
+    | '/sap-het-han'
+    | '/thong-bao'
+    | '/tickets'
+    | '/tong-quan'
+    | '/topology'
+    | '/tuan-thu'
+    | '/tuoi-tho'
+    | '/van-de'
+    | '/vat-tu'
+    | '/admin/audit'
+    | '/admin/backup'
+    | '/admin/schema'
+    | '/admin/users'
+    | '/api/backup-run'
+    | '/api/chat'
+    | '/q/$maThietBi'
+    | '/verify/$id'
+    | '/'
+    | '/q'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
+    | '/admin/ai'
+    | '/admin/bao-tri-chinh-sach'
+    | '/admin/kiem-tra-layout'
+    | '/admin/kiem-tra-so-lieu'
+    | '/admin/nhap-lieu'
+    | '/admin/permissions'
+    | '/admin/review'
+    | '/admin/thuong-hieu'
+    | '/ban-giao/moi'
+    | '/bao-cao/do-tin-cay'
+    | '/bao-tri/$maBaoTri'
+    | '/bao-tri/cong-viec'
+    | '/bao-tri/moi'
+    | '/bao-tri/pm'
+    | '/cai-dat/tai-khoan'
+    | '/danh-muc/dac-tinh'
+    | '/danh-muc/don-vi'
+    | '/danh-muc/he-thong'
+    | '/danh-muc/loai-thiet-bi'
+    | '/danh-muc/model'
+    | '/danh-muc/nha-cung-cap'
+    | '/danh-muc/nha-san-xuat'
+    | '/danh-muc/thiet-bi'
+    | '/danh-muc/vi-tri'
+    | '/du-an/$id'
+    | '/he-thong/$id'
+    | '/he-thong/cay'
+    | '/he-thong/lien-ket'
+    | '/he-thong/thanh-phan'
+    | '/he-thong/thung-rac'
+    | '/hong-hoc/$maHongHoc'
+    | '/hong-hoc/moi'
+    | '/messages/$convId'
+    | '/quan-tri/nguoi-dung'
+    | '/so-do/$id'
+    | '/su-co/$maSuCo'
+    | '/su-co/moi'
+    | '/thiet-bi/$maThietBi'
+    | '/tickets/$id'
+    | '/admin/audit/lap-thao'
+    | '/api/public/qa-reset-test-passwords'
+    | '/qr/thiet-bi/$id'
+    | '/bao-tri'
+    | '/du-an'
+    | '/forms'
+    | '/messages'
+    | '/so-do'
+    | '/su-co'
+    | '/thiet-bi'
+    | '/admin/forms/$id'
+    | '/forms/new/$code'
+    | '/forms/submissions/$id'
+    | '/api/public/hooks/bootstrap-admin'
+    | '/api/public/hooks/canh-bao-het-han'
+    | '/api/public/hooks/daily-backup'
+    | '/api/public/hooks/pm-generate'
+    | '/api/public/hooks/reliability-report'
+    | '/api/public/hooks/scan-canh-bao'
+    | '/api/public/hooks/telegram-alerts'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
+    | '/lovable/email/transactional/preview'
+    | '/admin/forms'
+    | '/admin/forms/$id/history'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/admin'
+    | '/auth'
+    | '/forgot-password'
+    | '/mcp'
+    | '/pending'
+    | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
+    | '/_app/ban-giao'
+    | '/_app/bao-tri'
+    | '/_app/cho-duyet'
+    | '/_app/forms'
+    | '/_app/giay-phep'
+    | '/_app/hong-hoc'
+    | '/_app/kiem-dinh'
+    | '/_app/kiem-ke'
+    | '/_app/messages'
+    | '/_app/nhan'
+    | '/_app/nhap-lieu'
+    | '/_app/phan-quyen'
+    | '/_app/sap-het-han'
+    | '/_app/su-co'
+    | '/_app/thiet-bi'
+    | '/_app/thong-bao'
+    | '/_app/tickets'
+    | '/_app/tong-quan'
+    | '/_app/topology'
+    | '/_app/tuan-thu'
+    | '/_app/tuoi-tho'
+    | '/_app/van-de'
+    | '/_app/vat-tu'
+    | '/admin/audit'
+    | '/admin/backup'
+    | '/admin/schema'
+    | '/admin/users'
+    | '/api/backup-run'
+    | '/api/chat'
+    | '/q/$maThietBi'
+    | '/verify/$id'
+    | '/_app/'
+    | '/q/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
+    | '/_app/admin/ai'
+    | '/_app/admin/bao-tri-chinh-sach'
+    | '/_app/admin/forms'
+    | '/_app/admin/kiem-tra-layout'
+    | '/_app/admin/kiem-tra-so-lieu'
+    | '/_app/admin/nhap-lieu'
+    | '/_app/admin/permissions'
+    | '/_app/admin/review'
+    | '/_app/admin/thuong-hieu'
+    | '/_app/ban-giao/moi'
+    | '/_app/bao-cao/do-tin-cay'
+    | '/_app/bao-tri/$maBaoTri'
+    | '/_app/bao-tri/cong-viec'
+    | '/_app/bao-tri/moi'
+    | '/_app/bao-tri/pm'
+    | '/_app/cai-dat/tai-khoan'
+    | '/_app/danh-muc/dac-tinh'
+    | '/_app/danh-muc/don-vi'
+    | '/_app/danh-muc/he-thong'
+    | '/_app/danh-muc/loai-thiet-bi'
+    | '/_app/danh-muc/model'
+    | '/_app/danh-muc/nha-cung-cap'
+    | '/_app/danh-muc/nha-san-xuat'
+    | '/_app/danh-muc/thiet-bi'
+    | '/_app/danh-muc/vi-tri'
+    | '/_app/du-an/$id'
+    | '/_app/he-thong/$id'
+    | '/_app/he-thong/cay'
+    | '/_app/he-thong/lien-ket'
+    | '/_app/he-thong/thanh-phan'
+    | '/_app/he-thong/thung-rac'
+    | '/_app/hong-hoc/$maHongHoc'
+    | '/_app/hong-hoc/moi'
+    | '/_app/messages/$convId'
+    | '/_app/quan-tri/nguoi-dung'
+    | '/_app/so-do/$id'
+    | '/_app/su-co/$maSuCo'
+    | '/_app/su-co/moi'
+    | '/_app/thiet-bi/$maThietBi'
+    | '/_app/tickets/$id'
+    | '/admin/audit/lap-thao'
+    | '/api/public/qa-reset-test-passwords'
+    | '/qr/thiet-bi/$id'
+    | '/_app/bao-tri/'
+    | '/_app/du-an/'
+    | '/_app/forms/'
+    | '/_app/messages/'
+    | '/_app/so-do/'
+    | '/_app/su-co/'
+    | '/_app/thiet-bi/'
+    | '/_app/admin/forms/$id'
+    | '/_app/forms/new/$code'
+    | '/_app/forms/submissions/$id'
+    | '/api/public/hooks/bootstrap-admin'
+    | '/api/public/hooks/canh-bao-het-han'
+    | '/api/public/hooks/daily-backup'
+    | '/api/public/hooks/pm-generate'
+    | '/api/public/hooks/reliability-report'
+    | '/api/public/hooks/scan-canh-bao'
+    | '/api/public/hooks/telegram-alerts'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
+    | '/lovable/email/transactional/preview'
+    | '/_app/admin/forms/'
+    | '/_app/admin/forms/$id/history'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  McpRoute: typeof McpRoute
+  PendingRoute: typeof PendingRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiBackupRunRoute: typeof ApiBackupRunRoute
+  ApiChatRoute: typeof ApiChatRoute
+  QMaThietBiRoute: typeof QMaThietBiRoute
+  VerifyIdRoute: typeof VerifyIdRoute
+  QIndexRoute: typeof QIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicQaResetTestPasswordsRoute: typeof ApiPublicQaResetTestPasswordsRoute
+  QrThietBiIdRoute: typeof QrThietBiIdRoute
+  ApiPublicHooksBootstrapAdminRoute: typeof ApiPublicHooksBootstrapAdminRoute
+  ApiPublicHooksCanhBaoHetHanRoute: typeof ApiPublicHooksCanhBaoHetHanRoute
+  ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
+  ApiPublicHooksPmGenerateRoute: typeof ApiPublicHooksPmGenerateRoute
+  ApiPublicHooksReliabilityReportRoute: typeof ApiPublicHooksReliabilityReportRoute
+  ApiPublicHooksScanCanhBaoRoute: typeof ApiPublicHooksScanCanhBaoRoute
+  ApiPublicHooksTelegramAlertsRoute: typeof ApiPublicHooksTelegramAlertsRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pending': {
+      id: '/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof PendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/q/': {
+      id: '/q/'
+      path: '/q'
+      fullPath: '/q/'
+      preLoaderRoute: typeof QIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/verify/$id': {
+      id: '/verify/$id'
+      path: '/verify/$id'
+      fullPath: '/verify/$id'
+      preLoaderRoute: typeof VerifyIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/q/$maThietBi': {
+      id: '/q/$maThietBi'
+      path: '/q/$maThietBi'
+      fullPath: '/q/$maThietBi'
+      preLoaderRoute: typeof QMaThietBiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/backup-run': {
+      id: '/api/backup-run'
+      path: '/api/backup-run'
+      fullPath: '/api/backup-run'
+      preLoaderRoute: typeof ApiBackupRunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/schema': {
+      id: '/admin/schema'
+      path: '/schema'
+      fullPath: '/admin/schema'
+      preLoaderRoute: typeof AdminSchemaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/backup': {
+      id: '/admin/backup'
+      path: '/backup'
+      fullPath: '/admin/backup'
+      preLoaderRoute: typeof AdminBackupRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_app/vat-tu': {
+      id: '/_app/vat-tu'
+      path: '/vat-tu'
+      fullPath: '/vat-tu'
+      preLoaderRoute: typeof AppVatTuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/van-de': {
+      id: '/_app/van-de'
+      path: '/van-de'
+      fullPath: '/van-de'
+      preLoaderRoute: typeof AppVanDeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tuoi-tho': {
+      id: '/_app/tuoi-tho'
+      path: '/tuoi-tho'
+      fullPath: '/tuoi-tho'
+      preLoaderRoute: typeof AppTuoiThoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tuan-thu': {
+      id: '/_app/tuan-thu'
+      path: '/tuan-thu'
+      fullPath: '/tuan-thu'
+      preLoaderRoute: typeof AppTuanThuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/topology': {
+      id: '/_app/topology'
+      path: '/topology'
+      fullPath: '/topology'
+      preLoaderRoute: typeof AppTopologyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tong-quan': {
+      id: '/_app/tong-quan'
+      path: '/tong-quan'
+      fullPath: '/tong-quan'
+      preLoaderRoute: typeof AppTongQuanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tickets': {
+      id: '/_app/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AppTicketsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/thong-bao': {
+      id: '/_app/thong-bao'
+      path: '/thong-bao'
+      fullPath: '/thong-bao'
+      preLoaderRoute: typeof AppThongBaoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/thiet-bi': {
+      id: '/_app/thiet-bi'
+      path: '/thiet-bi'
+      fullPath: '/thiet-bi'
+      preLoaderRoute: typeof AppThietBiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/su-co': {
+      id: '/_app/su-co'
+      path: '/su-co'
+      fullPath: '/su-co'
+      preLoaderRoute: typeof AppSuCoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sap-het-han': {
+      id: '/_app/sap-het-han'
+      path: '/sap-het-han'
+      fullPath: '/sap-het-han'
+      preLoaderRoute: typeof AppSapHetHanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/phan-quyen': {
+      id: '/_app/phan-quyen'
+      path: '/phan-quyen'
+      fullPath: '/phan-quyen'
+      preLoaderRoute: typeof AppPhanQuyenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nhap-lieu': {
+      id: '/_app/nhap-lieu'
+      path: '/nhap-lieu'
+      fullPath: '/nhap-lieu'
+      preLoaderRoute: typeof AppNhapLieuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/nhan': {
+      id: '/_app/nhan'
+      path: '/nhan'
+      fullPath: '/nhan'
+      preLoaderRoute: typeof AppNhanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/messages': {
+      id: '/_app/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AppMessagesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kiem-ke': {
+      id: '/_app/kiem-ke'
+      path: '/kiem-ke'
+      fullPath: '/kiem-ke'
+      preLoaderRoute: typeof AppKiemKeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kiem-dinh': {
+      id: '/_app/kiem-dinh'
+      path: '/kiem-dinh'
+      fullPath: '/kiem-dinh'
+      preLoaderRoute: typeof AppKiemDinhRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/hong-hoc': {
+      id: '/_app/hong-hoc'
+      path: '/hong-hoc'
+      fullPath: '/hong-hoc'
+      preLoaderRoute: typeof AppHongHocRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/giay-phep': {
+      id: '/_app/giay-phep'
+      path: '/giay-phep'
+      fullPath: '/giay-phep'
+      preLoaderRoute: typeof AppGiayPhepRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/forms': {
+      id: '/_app/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof AppFormsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cho-duyet': {
+      id: '/_app/cho-duyet'
+      path: '/cho-duyet'
+      fullPath: '/cho-duyet'
+      preLoaderRoute: typeof AppChoDuyetRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/bao-tri': {
+      id: '/_app/bao-tri'
+      path: '/bao-tri'
+      fullPath: '/bao-tri'
+      preLoaderRoute: typeof AppBaoTriRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ban-giao': {
+      id: '/_app/ban-giao'
+      path: '/ban-giao'
+      fullPath: '/ban-giao'
+      preLoaderRoute: typeof AppBanGiaoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/thiet-bi/': {
+      id: '/_app/thiet-bi/'
+      path: '/'
+      fullPath: '/thiet-bi/'
+      preLoaderRoute: typeof AppThietBiIndexRouteImport
+      parentRoute: typeof AppThietBiRoute
+    }
+    '/_app/su-co/': {
+      id: '/_app/su-co/'
+      path: '/'
+      fullPath: '/su-co/'
+      preLoaderRoute: typeof AppSuCoIndexRouteImport
+      parentRoute: typeof AppSuCoRoute
+    }
+    '/_app/so-do/': {
+      id: '/_app/so-do/'
+      path: '/so-do'
+      fullPath: '/so-do/'
+      preLoaderRoute: typeof AppSoDoIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/messages/': {
+      id: '/_app/messages/'
+      path: '/'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof AppMessagesIndexRouteImport
+      parentRoute: typeof AppMessagesRoute
+    }
+    '/_app/forms/': {
+      id: '/_app/forms/'
+      path: '/'
+      fullPath: '/forms/'
+      preLoaderRoute: typeof AppFormsIndexRouteImport
+      parentRoute: typeof AppFormsRoute
+    }
+    '/_app/du-an/': {
+      id: '/_app/du-an/'
+      path: '/du-an'
+      fullPath: '/du-an/'
+      preLoaderRoute: typeof AppDuAnIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/bao-tri/': {
+      id: '/_app/bao-tri/'
+      path: '/'
+      fullPath: '/bao-tri/'
+      preLoaderRoute: typeof AppBaoTriIndexRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
+    '/qr/thiet-bi/$id': {
+      id: '/qr/thiet-bi/$id'
+      path: '/qr/thiet-bi/$id'
+      fullPath: '/qr/thiet-bi/$id'
+      preLoaderRoute: typeof QrThietBiIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/qa-reset-test-passwords': {
+      id: '/api/public/qa-reset-test-passwords'
+      path: '/api/public/qa-reset-test-passwords'
+      fullPath: '/api/public/qa-reset-test-passwords'
+      preLoaderRoute: typeof ApiPublicQaResetTestPasswordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit/lap-thao': {
+      id: '/admin/audit/lap-thao'
+      path: '/lap-thao'
+      fullPath: '/admin/audit/lap-thao'
+      preLoaderRoute: typeof AdminAuditLapThaoRouteImport
+      parentRoute: typeof AdminAuditRoute
+    }
+    '/_app/tickets/$id': {
+      id: '/_app/tickets/$id'
+      path: '/$id'
+      fullPath: '/tickets/$id'
+      preLoaderRoute: typeof AppTicketsIdRouteImport
+      parentRoute: typeof AppTicketsRoute
+    }
+    '/_app/thiet-bi/$maThietBi': {
+      id: '/_app/thiet-bi/$maThietBi'
+      path: '/$maThietBi'
+      fullPath: '/thiet-bi/$maThietBi'
+      preLoaderRoute: typeof AppThietBiMaThietBiRouteImport
+      parentRoute: typeof AppThietBiRoute
+    }
+    '/_app/su-co/moi': {
+      id: '/_app/su-co/moi'
+      path: '/moi'
+      fullPath: '/su-co/moi'
+      preLoaderRoute: typeof AppSuCoMoiRouteImport
+      parentRoute: typeof AppSuCoRoute
+    }
+    '/_app/su-co/$maSuCo': {
+      id: '/_app/su-co/$maSuCo'
+      path: '/$maSuCo'
+      fullPath: '/su-co/$maSuCo'
+      preLoaderRoute: typeof AppSuCoMaSuCoRouteImport
+      parentRoute: typeof AppSuCoRoute
+    }
+    '/_app/so-do/$id': {
+      id: '/_app/so-do/$id'
+      path: '/so-do/$id'
+      fullPath: '/so-do/$id'
+      preLoaderRoute: typeof AppSoDoIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/quan-tri/nguoi-dung': {
+      id: '/_app/quan-tri/nguoi-dung'
+      path: '/quan-tri/nguoi-dung'
+      fullPath: '/quan-tri/nguoi-dung'
+      preLoaderRoute: typeof AppQuanTriNguoiDungRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/messages/$convId': {
+      id: '/_app/messages/$convId'
+      path: '/$convId'
+      fullPath: '/messages/$convId'
+      preLoaderRoute: typeof AppMessagesConvIdRouteImport
+      parentRoute: typeof AppMessagesRoute
+    }
+    '/_app/hong-hoc/moi': {
+      id: '/_app/hong-hoc/moi'
+      path: '/moi'
+      fullPath: '/hong-hoc/moi'
+      preLoaderRoute: typeof AppHongHocMoiRouteImport
+      parentRoute: typeof AppHongHocRoute
+    }
+    '/_app/hong-hoc/$maHongHoc': {
+      id: '/_app/hong-hoc/$maHongHoc'
+      path: '/$maHongHoc'
+      fullPath: '/hong-hoc/$maHongHoc'
+      preLoaderRoute: typeof AppHongHocMaHongHocRouteImport
+      parentRoute: typeof AppHongHocRoute
+    }
+    '/_app/he-thong/thung-rac': {
+      id: '/_app/he-thong/thung-rac'
+      path: '/he-thong/thung-rac'
+      fullPath: '/he-thong/thung-rac'
+      preLoaderRoute: typeof AppHeThongThungRacRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/he-thong/thanh-phan': {
+      id: '/_app/he-thong/thanh-phan'
+      path: '/he-thong/thanh-phan'
+      fullPath: '/he-thong/thanh-phan'
+      preLoaderRoute: typeof AppHeThongThanhPhanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/he-thong/lien-ket': {
+      id: '/_app/he-thong/lien-ket'
+      path: '/he-thong/lien-ket'
+      fullPath: '/he-thong/lien-ket'
+      preLoaderRoute: typeof AppHeThongLienKetRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/he-thong/cay': {
+      id: '/_app/he-thong/cay'
+      path: '/he-thong/cay'
+      fullPath: '/he-thong/cay'
+      preLoaderRoute: typeof AppHeThongCayRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/he-thong/$id': {
+      id: '/_app/he-thong/$id'
+      path: '/he-thong/$id'
+      fullPath: '/he-thong/$id'
+      preLoaderRoute: typeof AppHeThongIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/du-an/$id': {
+      id: '/_app/du-an/$id'
+      path: '/du-an/$id'
+      fullPath: '/du-an/$id'
+      preLoaderRoute: typeof AppDuAnIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/vi-tri': {
+      id: '/_app/danh-muc/vi-tri'
+      path: '/danh-muc/vi-tri'
+      fullPath: '/danh-muc/vi-tri'
+      preLoaderRoute: typeof AppDanhMucViTriRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/thiet-bi': {
+      id: '/_app/danh-muc/thiet-bi'
+      path: '/danh-muc/thiet-bi'
+      fullPath: '/danh-muc/thiet-bi'
+      preLoaderRoute: typeof AppDanhMucThietBiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/nha-san-xuat': {
+      id: '/_app/danh-muc/nha-san-xuat'
+      path: '/danh-muc/nha-san-xuat'
+      fullPath: '/danh-muc/nha-san-xuat'
+      preLoaderRoute: typeof AppDanhMucNhaSanXuatRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/nha-cung-cap': {
+      id: '/_app/danh-muc/nha-cung-cap'
+      path: '/danh-muc/nha-cung-cap'
+      fullPath: '/danh-muc/nha-cung-cap'
+      preLoaderRoute: typeof AppDanhMucNhaCungCapRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/model': {
+      id: '/_app/danh-muc/model'
+      path: '/danh-muc/model'
+      fullPath: '/danh-muc/model'
+      preLoaderRoute: typeof AppDanhMucModelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/loai-thiet-bi': {
+      id: '/_app/danh-muc/loai-thiet-bi'
+      path: '/danh-muc/loai-thiet-bi'
+      fullPath: '/danh-muc/loai-thiet-bi'
+      preLoaderRoute: typeof AppDanhMucLoaiThietBiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/he-thong': {
+      id: '/_app/danh-muc/he-thong'
+      path: '/danh-muc/he-thong'
+      fullPath: '/danh-muc/he-thong'
+      preLoaderRoute: typeof AppDanhMucHeThongRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/don-vi': {
+      id: '/_app/danh-muc/don-vi'
+      path: '/danh-muc/don-vi'
+      fullPath: '/danh-muc/don-vi'
+      preLoaderRoute: typeof AppDanhMucDonViRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/danh-muc/dac-tinh': {
+      id: '/_app/danh-muc/dac-tinh'
+      path: '/danh-muc/dac-tinh'
+      fullPath: '/danh-muc/dac-tinh'
+      preLoaderRoute: typeof AppDanhMucDacTinhRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cai-dat/tai-khoan': {
+      id: '/_app/cai-dat/tai-khoan'
+      path: '/cai-dat/tai-khoan'
+      fullPath: '/cai-dat/tai-khoan'
+      preLoaderRoute: typeof AppCaiDatTaiKhoanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/bao-tri/pm': {
+      id: '/_app/bao-tri/pm'
+      path: '/pm'
+      fullPath: '/bao-tri/pm'
+      preLoaderRoute: typeof AppBaoTriPmRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
+    '/_app/bao-tri/moi': {
+      id: '/_app/bao-tri/moi'
+      path: '/moi'
+      fullPath: '/bao-tri/moi'
+      preLoaderRoute: typeof AppBaoTriMoiRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
+    '/_app/bao-tri/cong-viec': {
+      id: '/_app/bao-tri/cong-viec'
+      path: '/cong-viec'
+      fullPath: '/bao-tri/cong-viec'
+      preLoaderRoute: typeof AppBaoTriCongViecRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
+    '/_app/bao-tri/$maBaoTri': {
+      id: '/_app/bao-tri/$maBaoTri'
+      path: '/$maBaoTri'
+      fullPath: '/bao-tri/$maBaoTri'
+      preLoaderRoute: typeof AppBaoTriMaBaoTriRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
+    '/_app/bao-cao/do-tin-cay': {
+      id: '/_app/bao-cao/do-tin-cay'
+      path: '/bao-cao/do-tin-cay'
+      fullPath: '/bao-cao/do-tin-cay'
+      preLoaderRoute: typeof AppBaoCaoDoTinCayRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ban-giao/moi': {
+      id: '/_app/ban-giao/moi'
+      path: '/moi'
+      fullPath: '/ban-giao/moi'
+      preLoaderRoute: typeof AppBanGiaoMoiRouteImport
+      parentRoute: typeof AppBanGiaoRoute
+    }
+    '/_app/admin/thuong-hieu': {
+      id: '/_app/admin/thuong-hieu'
+      path: '/admin/thuong-hieu'
+      fullPath: '/admin/thuong-hieu'
+      preLoaderRoute: typeof AppAdminThuongHieuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/review': {
+      id: '/_app/admin/review'
+      path: '/admin/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AppAdminReviewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/permissions': {
+      id: '/_app/admin/permissions'
+      path: '/admin/permissions'
+      fullPath: '/admin/permissions'
+      preLoaderRoute: typeof AppAdminPermissionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/nhap-lieu': {
+      id: '/_app/admin/nhap-lieu'
+      path: '/admin/nhap-lieu'
+      fullPath: '/admin/nhap-lieu'
+      preLoaderRoute: typeof AppAdminNhapLieuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/kiem-tra-so-lieu': {
+      id: '/_app/admin/kiem-tra-so-lieu'
+      path: '/admin/kiem-tra-so-lieu'
+      fullPath: '/admin/kiem-tra-so-lieu'
+      preLoaderRoute: typeof AppAdminKiemTraSoLieuRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/kiem-tra-layout': {
+      id: '/_app/admin/kiem-tra-layout'
+      path: '/admin/kiem-tra-layout'
+      fullPath: '/admin/kiem-tra-layout'
+      preLoaderRoute: typeof AppAdminKiemTraLayoutRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/forms': {
+      id: '/_app/admin/forms'
+      path: '/admin/forms'
+      fullPath: '/admin/forms'
+      preLoaderRoute: typeof AppAdminFormsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/bao-tri-chinh-sach': {
+      id: '/_app/admin/bao-tri-chinh-sach'
+      path: '/admin/bao-tri-chinh-sach'
+      fullPath: '/admin/bao-tri-chinh-sach'
+      preLoaderRoute: typeof AppAdminBaoTriChinhSachRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/ai': {
+      id: '/_app/admin/ai'
+      path: '/admin/ai'
+      fullPath: '/admin/ai'
+      preLoaderRoute: typeof AppAdminAiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/admin/forms/': {
+      id: '/_app/admin/forms/'
+      path: '/'
+      fullPath: '/admin/forms/'
+      preLoaderRoute: typeof AppAdminFormsIndexRouteImport
+      parentRoute: typeof AppAdminFormsRoute
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/telegram-alerts': {
+      id: '/api/public/hooks/telegram-alerts'
+      path: '/api/public/hooks/telegram-alerts'
+      fullPath: '/api/public/hooks/telegram-alerts'
+      preLoaderRoute: typeof ApiPublicHooksTelegramAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/scan-canh-bao': {
+      id: '/api/public/hooks/scan-canh-bao'
+      path: '/api/public/hooks/scan-canh-bao'
+      fullPath: '/api/public/hooks/scan-canh-bao'
+      preLoaderRoute: typeof ApiPublicHooksScanCanhBaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/reliability-report': {
+      id: '/api/public/hooks/reliability-report'
+      path: '/api/public/hooks/reliability-report'
+      fullPath: '/api/public/hooks/reliability-report'
+      preLoaderRoute: typeof ApiPublicHooksReliabilityReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/pm-generate': {
+      id: '/api/public/hooks/pm-generate'
+      path: '/api/public/hooks/pm-generate'
+      fullPath: '/api/public/hooks/pm-generate'
+      preLoaderRoute: typeof ApiPublicHooksPmGenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/daily-backup': {
+      id: '/api/public/hooks/daily-backup'
+      path: '/api/public/hooks/daily-backup'
+      fullPath: '/api/public/hooks/daily-backup'
+      preLoaderRoute: typeof ApiPublicHooksDailyBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/canh-bao-het-han': {
+      id: '/api/public/hooks/canh-bao-het-han'
+      path: '/api/public/hooks/canh-bao-het-han'
+      fullPath: '/api/public/hooks/canh-bao-het-han'
+      preLoaderRoute: typeof ApiPublicHooksCanhBaoHetHanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/bootstrap-admin': {
+      id: '/api/public/hooks/bootstrap-admin'
+      path: '/api/public/hooks/bootstrap-admin'
+      fullPath: '/api/public/hooks/bootstrap-admin'
+      preLoaderRoute: typeof ApiPublicHooksBootstrapAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/forms/submissions/$id': {
+      id: '/_app/forms/submissions/$id'
+      path: '/submissions/$id'
+      fullPath: '/forms/submissions/$id'
+      preLoaderRoute: typeof AppFormsSubmissionsIdRouteImport
+      parentRoute: typeof AppFormsRoute
+    }
+    '/_app/forms/new/$code': {
+      id: '/_app/forms/new/$code'
+      path: '/new/$code'
+      fullPath: '/forms/new/$code'
+      preLoaderRoute: typeof AppFormsNewCodeRouteImport
+      parentRoute: typeof AppFormsRoute
+    }
+    '/_app/admin/forms/$id': {
+      id: '/_app/admin/forms/$id'
+      path: '/$id'
+      fullPath: '/admin/forms/$id'
+      preLoaderRoute: typeof AppAdminFormsIdRouteImport
+      parentRoute: typeof AppAdminFormsRoute
+    }
+    '/_app/admin/forms/$id/history': {
+      id: '/_app/admin/forms/$id/history'
+      path: '/history'
+      fullPath: '/admin/forms/$id/history'
+      preLoaderRoute: typeof AppAdminFormsIdHistoryRouteImport
+      parentRoute: typeof AppAdminFormsIdRoute
     }
   }
 }
 
+interface AppBanGiaoRouteChildren {
+  AppBanGiaoMoiRoute: typeof AppBanGiaoMoiRoute
+}
+
+const AppBanGiaoRouteChildren: AppBanGiaoRouteChildren = {
+  AppBanGiaoMoiRoute: AppBanGiaoMoiRoute,
+}
+
+const AppBanGiaoRouteWithChildren = AppBanGiaoRoute._addFileChildren(
+  AppBanGiaoRouteChildren,
+)
+
+interface AppBaoTriRouteChildren {
+  AppBaoTriMaBaoTriRoute: typeof AppBaoTriMaBaoTriRoute
+  AppBaoTriCongViecRoute: typeof AppBaoTriCongViecRoute
+  AppBaoTriMoiRoute: typeof AppBaoTriMoiRoute
+  AppBaoTriPmRoute: typeof AppBaoTriPmRoute
+  AppBaoTriIndexRoute: typeof AppBaoTriIndexRoute
+}
+
+const AppBaoTriRouteChildren: AppBaoTriRouteChildren = {
+  AppBaoTriMaBaoTriRoute: AppBaoTriMaBaoTriRoute,
+  AppBaoTriCongViecRoute: AppBaoTriCongViecRoute,
+  AppBaoTriMoiRoute: AppBaoTriMoiRoute,
+  AppBaoTriPmRoute: AppBaoTriPmRoute,
+  AppBaoTriIndexRoute: AppBaoTriIndexRoute,
+}
+
+const AppBaoTriRouteWithChildren = AppBaoTriRoute._addFileChildren(
+  AppBaoTriRouteChildren,
+)
+
+interface AppFormsRouteChildren {
+  AppFormsIndexRoute: typeof AppFormsIndexRoute
+  AppFormsNewCodeRoute: typeof AppFormsNewCodeRoute
+  AppFormsSubmissionsIdRoute: typeof AppFormsSubmissionsIdRoute
+}
+
+const AppFormsRouteChildren: AppFormsRouteChildren = {
+  AppFormsIndexRoute: AppFormsIndexRoute,
+  AppFormsNewCodeRoute: AppFormsNewCodeRoute,
+  AppFormsSubmissionsIdRoute: AppFormsSubmissionsIdRoute,
+}
+
+const AppFormsRouteWithChildren = AppFormsRoute._addFileChildren(
+  AppFormsRouteChildren,
+)
+
+interface AppHongHocRouteChildren {
+  AppHongHocMaHongHocRoute: typeof AppHongHocMaHongHocRoute
+  AppHongHocMoiRoute: typeof AppHongHocMoiRoute
+}
+
+const AppHongHocRouteChildren: AppHongHocRouteChildren = {
+  AppHongHocMaHongHocRoute: AppHongHocMaHongHocRoute,
+  AppHongHocMoiRoute: AppHongHocMoiRoute,
+}
+
+const AppHongHocRouteWithChildren = AppHongHocRoute._addFileChildren(
+  AppHongHocRouteChildren,
+)
+
+interface AppMessagesRouteChildren {
+  AppMessagesConvIdRoute: typeof AppMessagesConvIdRoute
+  AppMessagesIndexRoute: typeof AppMessagesIndexRoute
+}
+
+const AppMessagesRouteChildren: AppMessagesRouteChildren = {
+  AppMessagesConvIdRoute: AppMessagesConvIdRoute,
+  AppMessagesIndexRoute: AppMessagesIndexRoute,
+}
+
+const AppMessagesRouteWithChildren = AppMessagesRoute._addFileChildren(
+  AppMessagesRouteChildren,
+)
+
+interface AppSuCoRouteChildren {
+  AppSuCoMaSuCoRoute: typeof AppSuCoMaSuCoRoute
+  AppSuCoMoiRoute: typeof AppSuCoMoiRoute
+  AppSuCoIndexRoute: typeof AppSuCoIndexRoute
+}
+
+const AppSuCoRouteChildren: AppSuCoRouteChildren = {
+  AppSuCoMaSuCoRoute: AppSuCoMaSuCoRoute,
+  AppSuCoMoiRoute: AppSuCoMoiRoute,
+  AppSuCoIndexRoute: AppSuCoIndexRoute,
+}
+
+const AppSuCoRouteWithChildren =
+  AppSuCoRoute._addFileChildren(AppSuCoRouteChildren)
+
+interface AppThietBiRouteChildren {
+  AppThietBiMaThietBiRoute: typeof AppThietBiMaThietBiRoute
+  AppThietBiIndexRoute: typeof AppThietBiIndexRoute
+}
+
+const AppThietBiRouteChildren: AppThietBiRouteChildren = {
+  AppThietBiMaThietBiRoute: AppThietBiMaThietBiRoute,
+  AppThietBiIndexRoute: AppThietBiIndexRoute,
+}
+
+const AppThietBiRouteWithChildren = AppThietBiRoute._addFileChildren(
+  AppThietBiRouteChildren,
+)
+
+interface AppTicketsRouteChildren {
+  AppTicketsIdRoute: typeof AppTicketsIdRoute
+}
+
+const AppTicketsRouteChildren: AppTicketsRouteChildren = {
+  AppTicketsIdRoute: AppTicketsIdRoute,
+}
+
+const AppTicketsRouteWithChildren = AppTicketsRoute._addFileChildren(
+  AppTicketsRouteChildren,
+)
+
+interface AppAdminFormsIdRouteChildren {
+  AppAdminFormsIdHistoryRoute: typeof AppAdminFormsIdHistoryRoute
+}
+
+const AppAdminFormsIdRouteChildren: AppAdminFormsIdRouteChildren = {
+  AppAdminFormsIdHistoryRoute: AppAdminFormsIdHistoryRoute,
+}
+
+const AppAdminFormsIdRouteWithChildren = AppAdminFormsIdRoute._addFileChildren(
+  AppAdminFormsIdRouteChildren,
+)
+
+interface AppAdminFormsRouteChildren {
+  AppAdminFormsIdRoute: typeof AppAdminFormsIdRouteWithChildren
+  AppAdminFormsIndexRoute: typeof AppAdminFormsIndexRoute
+}
+
+const AppAdminFormsRouteChildren: AppAdminFormsRouteChildren = {
+  AppAdminFormsIdRoute: AppAdminFormsIdRouteWithChildren,
+  AppAdminFormsIndexRoute: AppAdminFormsIndexRoute,
+}
+
+const AppAdminFormsRouteWithChildren = AppAdminFormsRoute._addFileChildren(
+  AppAdminFormsRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppBanGiaoRoute: typeof AppBanGiaoRouteWithChildren
+  AppBaoTriRoute: typeof AppBaoTriRouteWithChildren
+  AppChoDuyetRoute: typeof AppChoDuyetRoute
+  AppFormsRoute: typeof AppFormsRouteWithChildren
+  AppGiayPhepRoute: typeof AppGiayPhepRoute
+  AppHongHocRoute: typeof AppHongHocRouteWithChildren
+  AppKiemDinhRoute: typeof AppKiemDinhRoute
+  AppKiemKeRoute: typeof AppKiemKeRoute
+  AppMessagesRoute: typeof AppMessagesRouteWithChildren
+  AppNhanRoute: typeof AppNhanRoute
+  AppNhapLieuRoute: typeof AppNhapLieuRoute
+  AppPhanQuyenRoute: typeof AppPhanQuyenRoute
+  AppSapHetHanRoute: typeof AppSapHetHanRoute
+  AppSuCoRoute: typeof AppSuCoRouteWithChildren
+  AppThietBiRoute: typeof AppThietBiRouteWithChildren
+  AppThongBaoRoute: typeof AppThongBaoRoute
+  AppTicketsRoute: typeof AppTicketsRouteWithChildren
+  AppTongQuanRoute: typeof AppTongQuanRoute
+  AppTopologyRoute: typeof AppTopologyRoute
+  AppTuanThuRoute: typeof AppTuanThuRoute
+  AppTuoiThoRoute: typeof AppTuoiThoRoute
+  AppVanDeRoute: typeof AppVanDeRoute
+  AppVatTuRoute: typeof AppVatTuRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppAdminAiRoute: typeof AppAdminAiRoute
+  AppAdminBaoTriChinhSachRoute: typeof AppAdminBaoTriChinhSachRoute
+  AppAdminFormsRoute: typeof AppAdminFormsRouteWithChildren
+  AppAdminKiemTraLayoutRoute: typeof AppAdminKiemTraLayoutRoute
+  AppAdminKiemTraSoLieuRoute: typeof AppAdminKiemTraSoLieuRoute
+  AppAdminNhapLieuRoute: typeof AppAdminNhapLieuRoute
+  AppAdminPermissionsRoute: typeof AppAdminPermissionsRoute
+  AppAdminReviewRoute: typeof AppAdminReviewRoute
+  AppAdminThuongHieuRoute: typeof AppAdminThuongHieuRoute
+  AppBaoCaoDoTinCayRoute: typeof AppBaoCaoDoTinCayRoute
+  AppCaiDatTaiKhoanRoute: typeof AppCaiDatTaiKhoanRoute
+  AppDanhMucDacTinhRoute: typeof AppDanhMucDacTinhRoute
+  AppDanhMucDonViRoute: typeof AppDanhMucDonViRoute
+  AppDanhMucHeThongRoute: typeof AppDanhMucHeThongRoute
+  AppDanhMucLoaiThietBiRoute: typeof AppDanhMucLoaiThietBiRoute
+  AppDanhMucModelRoute: typeof AppDanhMucModelRoute
+  AppDanhMucNhaCungCapRoute: typeof AppDanhMucNhaCungCapRoute
+  AppDanhMucNhaSanXuatRoute: typeof AppDanhMucNhaSanXuatRoute
+  AppDanhMucThietBiRoute: typeof AppDanhMucThietBiRoute
+  AppDanhMucViTriRoute: typeof AppDanhMucViTriRoute
+  AppDuAnIdRoute: typeof AppDuAnIdRoute
+  AppHeThongIdRoute: typeof AppHeThongIdRoute
+  AppHeThongCayRoute: typeof AppHeThongCayRoute
+  AppHeThongLienKetRoute: typeof AppHeThongLienKetRoute
+  AppHeThongThanhPhanRoute: typeof AppHeThongThanhPhanRoute
+  AppHeThongThungRacRoute: typeof AppHeThongThungRacRoute
+  AppQuanTriNguoiDungRoute: typeof AppQuanTriNguoiDungRoute
+  AppSoDoIdRoute: typeof AppSoDoIdRoute
+  AppDuAnIndexRoute: typeof AppDuAnIndexRoute
+  AppSoDoIndexRoute: typeof AppSoDoIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppBanGiaoRoute: AppBanGiaoRouteWithChildren,
+  AppBaoTriRoute: AppBaoTriRouteWithChildren,
+  AppChoDuyetRoute: AppChoDuyetRoute,
+  AppFormsRoute: AppFormsRouteWithChildren,
+  AppGiayPhepRoute: AppGiayPhepRoute,
+  AppHongHocRoute: AppHongHocRouteWithChildren,
+  AppKiemDinhRoute: AppKiemDinhRoute,
+  AppKiemKeRoute: AppKiemKeRoute,
+  AppMessagesRoute: AppMessagesRouteWithChildren,
+  AppNhanRoute: AppNhanRoute,
+  AppNhapLieuRoute: AppNhapLieuRoute,
+  AppPhanQuyenRoute: AppPhanQuyenRoute,
+  AppSapHetHanRoute: AppSapHetHanRoute,
+  AppSuCoRoute: AppSuCoRouteWithChildren,
+  AppThietBiRoute: AppThietBiRouteWithChildren,
+  AppThongBaoRoute: AppThongBaoRoute,
+  AppTicketsRoute: AppTicketsRouteWithChildren,
+  AppTongQuanRoute: AppTongQuanRoute,
+  AppTopologyRoute: AppTopologyRoute,
+  AppTuanThuRoute: AppTuanThuRoute,
+  AppTuoiThoRoute: AppTuoiThoRoute,
+  AppVanDeRoute: AppVanDeRoute,
+  AppVatTuRoute: AppVatTuRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppAdminAiRoute: AppAdminAiRoute,
+  AppAdminBaoTriChinhSachRoute: AppAdminBaoTriChinhSachRoute,
+  AppAdminFormsRoute: AppAdminFormsRouteWithChildren,
+  AppAdminKiemTraLayoutRoute: AppAdminKiemTraLayoutRoute,
+  AppAdminKiemTraSoLieuRoute: AppAdminKiemTraSoLieuRoute,
+  AppAdminNhapLieuRoute: AppAdminNhapLieuRoute,
+  AppAdminPermissionsRoute: AppAdminPermissionsRoute,
+  AppAdminReviewRoute: AppAdminReviewRoute,
+  AppAdminThuongHieuRoute: AppAdminThuongHieuRoute,
+  AppBaoCaoDoTinCayRoute: AppBaoCaoDoTinCayRoute,
+  AppCaiDatTaiKhoanRoute: AppCaiDatTaiKhoanRoute,
+  AppDanhMucDacTinhRoute: AppDanhMucDacTinhRoute,
+  AppDanhMucDonViRoute: AppDanhMucDonViRoute,
+  AppDanhMucHeThongRoute: AppDanhMucHeThongRoute,
+  AppDanhMucLoaiThietBiRoute: AppDanhMucLoaiThietBiRoute,
+  AppDanhMucModelRoute: AppDanhMucModelRoute,
+  AppDanhMucNhaCungCapRoute: AppDanhMucNhaCungCapRoute,
+  AppDanhMucNhaSanXuatRoute: AppDanhMucNhaSanXuatRoute,
+  AppDanhMucThietBiRoute: AppDanhMucThietBiRoute,
+  AppDanhMucViTriRoute: AppDanhMucViTriRoute,
+  AppDuAnIdRoute: AppDuAnIdRoute,
+  AppHeThongIdRoute: AppHeThongIdRoute,
+  AppHeThongCayRoute: AppHeThongCayRoute,
+  AppHeThongLienKetRoute: AppHeThongLienKetRoute,
+  AppHeThongThanhPhanRoute: AppHeThongThanhPhanRoute,
+  AppHeThongThungRacRoute: AppHeThongThungRacRoute,
+  AppQuanTriNguoiDungRoute: AppQuanTriNguoiDungRoute,
+  AppSoDoIdRoute: AppSoDoIdRoute,
+  AppDuAnIndexRoute: AppDuAnIndexRoute,
+  AppSoDoIndexRoute: AppSoDoIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface AdminAuditRouteChildren {
+  AdminAuditLapThaoRoute: typeof AdminAuditLapThaoRoute
+}
+
+const AdminAuditRouteChildren: AdminAuditRouteChildren = {
+  AdminAuditLapThaoRoute: AdminAuditLapThaoRoute,
+}
+
+const AdminAuditRouteWithChildren = AdminAuditRoute._addFileChildren(
+  AdminAuditRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRouteWithChildren
+  AdminBackupRoute: typeof AdminBackupRoute
+  AdminSchemaRoute: typeof AdminSchemaRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRouteWithChildren,
+  AdminBackupRoute: AdminBackupRoute,
+  AdminSchemaRoute: AdminSchemaRoute,
+  AdminUsersRoute: AdminUsersRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  McpRoute: McpRoute,
+  PendingRoute: PendingRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiBackupRunRoute: ApiBackupRunRoute,
+  ApiChatRoute: ApiChatRoute,
+  QMaThietBiRoute: QMaThietBiRoute,
+  VerifyIdRoute: VerifyIdRoute,
+  QIndexRoute: QIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicQaResetTestPasswordsRoute: ApiPublicQaResetTestPasswordsRoute,
+  QrThietBiIdRoute: QrThietBiIdRoute,
+  ApiPublicHooksBootstrapAdminRoute: ApiPublicHooksBootstrapAdminRoute,
+  ApiPublicHooksCanhBaoHetHanRoute: ApiPublicHooksCanhBaoHetHanRoute,
+  ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
+  ApiPublicHooksPmGenerateRoute: ApiPublicHooksPmGenerateRoute,
+  ApiPublicHooksReliabilityReportRoute: ApiPublicHooksReliabilityReportRoute,
+  ApiPublicHooksScanCanhBaoRoute: ApiPublicHooksScanCanhBaoRoute,
+  ApiPublicHooksTelegramAlertsRoute: ApiPublicHooksTelegramAlertsRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -1,0 +1,1 @@
+CREATE TABLE public._tmp_check (id uuid PRIMARY KEY DEFAULT gen_random_uuid());

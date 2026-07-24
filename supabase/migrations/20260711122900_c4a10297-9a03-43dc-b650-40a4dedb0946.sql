@@ -1,0 +1,1 @@
+ALTER TABLE public.dm_nha_san_xuat ADD COLUMN IF NOT EXISTS trang_web text;

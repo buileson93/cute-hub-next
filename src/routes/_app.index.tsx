@@ -1,0 +1,714 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  CartesianGrid,
+} from "recharts";
+import {
+  HardDrive, ShieldCheck, AlertTriangle, Clock, CheckCircle2, ArrowRight, HeartPulse,
+  Wrench, Activity, Radio, TrendingUp, Target, Gauge, Download, Package, Search,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  licenseStatus, healthDetail,
+  mttrPhut, phanTramVongDoi,
+} from "@/lib/mirats/metrics";
+import { fmtDowntime } from "@/lib/mirats/format";
+import {
+  availability as calcAvailability, mttr as calcMttr, mtbf as calcMtbf,
+  rangeHours, formatKpiValue, type KpiResult, type ReliabilityIncident,
+} from "@/lib/mirats/reliability";
+import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
+import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
+import { useScope } from "@/lib/mirats/scope";
+import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { isOpenState } from "@/lib/mirats/su-co-state";
+import { DailyBrief } from "@/components/mirats/DailyBrief";
+
+
+export const Route = createFileRoute("/_app/")({
+  head: () => ({
+    meta: [
+      { title: "Dashboard & KPI — MIRATS 2.0" },
+      { name: "description", content: "M12 — Dashboard điều hành, chỉ số KPI độ tin cậy và báo cáo định kỳ toàn hệ thống MIRATS." },
+      { property: "og:title", content: "Dashboard & KPI — MIRATS 2.0" },
+      { property: "og:description", content: "Availability, MTTR/MTBF, PM đúng hạn, sức khỏe A/B/C/D và xuất báo cáo." },
+    ],
+  }),
+  component: Dashboard,
+});
+
+const STATUS_COLORS: Record<string, string> = {
+  valid: "hsl(142 71% 45%)", expiring: "hsl(38 92% 50%)", expired: "hsl(0 84% 60%)", none: "hsl(215 16% 65%)",
+};
+const HEALTH_HEX: Record<string, string> = { A: "#10b981", B: "#3b82f6", C: "#f59e0b", D: "#ef4444" };
+const SEV_COLORS: Record<string, string> = {
+  "Nghiêm trọng": "hsl(0 84% 60%)", "Cao": "hsl(24 94% 52%)", "Trung bình": "hsl(38 92% 50%)", "Thấp": "hsl(215 16% 55%)",
+};
+
+function pct(n: number, d: number) { return d > 0 ? Math.round((n / d) * 1000) / 10 : 0; }
+/** Trạng thái "đang khai thác/hoạt động" theo nhãn thật trong CSDL. */
+function isActive(tt: string) {
+  const s = (tt ?? "").toLowerCase();
+  return s.includes("hoạt động") || s.includes("khai thác") || s.includes("hoat dong") || s.includes("khai thac");
+}
+
+function Dashboard() {
+  const { donVi, thietBi, giayPhep, suCo, baoTri } = useScope();
+  const { data: tax } = useDbTaxonomy();
+  const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
+  const year = today.getFullYear();
+
+  const donViMap = useMemo(() => new Map(donVi.map((d) => [d.ma, d])), [donVi]);
+  // Nhóm hệ thống & hệ thống lấy THẬT từ CSDL (dm_nhom_he_thong / dm_he_thong).
+  const nhomHeThongMap = useMemo(
+    () => new Map(Array.from(tax?.nhomNameMap ?? []).map(([id, ten]) => [id, { ten }])),
+    [tax],
+  );
+  const heThongMap = useMemo(() => {
+    const dvMa = new Map((tax?.donViList ?? []).map((d) => [d.id, d.ma]));
+    return new Map(
+      (tax?.htList ?? []).map((h) => [h.ma, {
+        ma: h.ma, ten: h.ten, nhom: h.nhomId, don_vi: dvMa.get(h.donViId) ?? "",
+      }]),
+    );
+  }, [tax]);
+
+  // Leadership widgets
+  const byDonVi = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const t of thietBi) m.set(t.don_vi, (m.get(t.don_vi) ?? 0) + 1);
+    return donVi.filter((d) => d.ma !== "CTY")
+      .map((d) => ({ name: d.ma, ten: d.ten, count: m.get(d.ma) ?? 0 }))
+      .sort((a, b) => b.count - a.count);
+  }, [thietBi, donVi]);
+
+  const byTrangThai = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const t of thietBi) m.set(t.trang_thai, (m.get(t.trang_thai) ?? 0) + 1);
+    return Array.from(m.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [thietBi]);
+
+  const healthDist = useMemo(() => {
+    const b: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
+    for (const t of thietBi) b[healthDetail(t, today).xepLoai]++;
+    // Dùng field `name` (default nameKey của Recharts) — tránh legend "Loại undefined".
+    return (["A", "B", "C", "D"] as const).map((k) => ({ name: `Loại ${k}`, loai: k, count: b[k], hex: HEALTH_HEX[k] }));
+  }, [thietBi, today]);
+  const healthDistHasData = useMemo(() => healthDist.some((d) => d.count > 0), [healthDist]);
+
+
+  const gpStats = useMemo(() => {
+    const c: Record<string, number> = { valid: 0, expiring: 0, expired: 0, none: 0 };
+    for (const g of giayPhep) c[licenseStatus(g, today)]++;
+    return c;
+  }, [giayPhep, today]);
+
+  const openIncidents = useMemo(() => suCo.filter((s) => isOpenState(s.trang_thai)), [suCo]);
+  const openBySev = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of openIncidents) m.set(s.muc_do, (m.get(s.muc_do) ?? 0) + 1);
+    return Array.from(m.entries()).map(([name, value]) => ({ name, value, hex: SEV_COLORS[name] ?? "#666" }));
+  }, [openIncidents]);
+
+  // Engineering widgets
+  const pmDueSoon = useMemo(() => {
+    const cutoff = new Date(today); cutoff.setDate(cutoff.getDate() + 30);
+    const cutoffISO = cutoff.toISOString().slice(0, 10);
+    return baoTri
+      .filter((b) => b.trang_thai !== "Hoàn thành" && b.loai_bao_tri === "Định kỳ" && b.ngay_bat_dau <= cutoffISO)
+      .sort((a, b) => a.ngay_bat_dau.localeCompare(b.ngay_bat_dau))
+      .slice(0, 8);
+  }, [baoTri, today]);
+
+  const incidentByGroup = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of suCo) {
+      const nhomMa = heThongMap.get(s.he_thong)?.nhom;
+      const ten = nhomMa ? (nhomHeThongMap.get(nhomMa)?.ten ?? nhomMa) : "Khác";
+      m.set(ten, (m.get(ten) ?? 0) + 1);
+    }
+    return Array.from(m.entries()).map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count).slice(0, 8);
+  }, [suCo, heThongMap, nhomHeThongMap]);
+
+
+  const topFailures = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of suCo) m.set(s.thiet_bi, (m.get(s.thiet_bi) ?? 0) + 1);
+    return Array.from(m.entries())
+      .map(([ma, n]) => ({ ma, n, tb: thietBi.find((t) => t.ma_thiet_bi === ma) }))
+      .filter((r) => r.tb).sort((a, b) => b.n - a.n).slice(0, 8);
+  }, [suCo, thietBi]);
+
+  // KPIs
+  const kpis = useMemo(() => {
+    // Availability (critical devices)
+    const crit = thietBi.filter((t) => t.muc_do_quan_trong === "Rất cao" || t.muc_do_quan_trong === "Cao");
+    const totalHoursYear = 8760;
+    const dtSum = crit.reduce((sum, t) => {
+      const dt = suCo.filter((s) => s.thiet_bi === t.ma_thiet_bi && s.thoi_gian_gian_doan)
+        .reduce((a, s) => a + (s.thoi_gian_gian_doan ?? 0), 0);
+      return sum + dt / 60;
+    }, 0);
+    const availability = crit.length > 0 ? Math.max(0, (crit.length * totalHoursYear - dtSum) / (crit.length * totalHoursYear) * 100) : 100;
+
+    // PM on-time — cần mốc "đến hạn" (due date) thực tế để so với ngày hoàn thành.
+    // Bản ghi bảo dưỡng hiện chỉ có ngày bắt đầu/hoàn thành, KHÔNG có due date,
+    // nên tỷ lệ đúng hạn KHÔNG tính được → trả null để hiển thị "Chưa đủ dữ liệu".
+    const pmDone = baoTri.filter((b) => b.loai_bao_tri === "Định kỳ" && b.trang_thai === "Hoàn thành");
+    const pmOnTimeRatio: number | null = null;
+
+    // MTTR
+    const mttr = mttrPhut(suCo);
+
+    // Incidents affecting ĐHB
+    const dhbIncidents = suCo.filter((s) => s.anh_huong_dhb === "Có").length;
+
+    // License validity
+    const gpValidPct = pct(gpStats.valid, giayPhep.length);
+
+    // Devices over lifecycle
+    const over = thietBi.filter((t) => phanTramVongDoi(t, today) >= 100).length;
+    const overPct = pct(over, thietBi.length);
+
+    return { availability, pmOnTimeRatio: pmOnTimeRatio as number | null, pmDone: pmDone.length, mttr, dhbIncidents, gpValidPct, over, overPct };
+
+  }, [today, gpStats, thietBi, suCo, baoTri, giayPhep]);
+
+  // --- Nguồn tính toán độ tin cậy DUY NHẤT (reliability.ts) ---------------
+  // Luôn tính (thuần, rẻ) để phục vụ drill-down; cờ reliabilityKpiV2 chỉ quyết
+  // định con số HIỂN THỊ lấy từ nguồn mới hay công thức nội tuyến cũ.
+  const [useV2, setUseV2] = useState(false);
+  useEffect(() => { setUseV2(isFeatureEnabled("reliabilityKpiV2")); }, []);
+
+  // --- Nguồn KPI bảo dưỡng DUY NHẤT (bao-tri-kpi.ts) ----------------------
+  // "PM hoàn thành đúng hạn" tính từ phiếu công việc (cong_viec_bao_tri) có
+  // ngày đến hạn thực. Luôn tính để phục vụ drill-down; cờ baoTriKpiV2 chỉ
+  // quyết định con số HIỂN THỊ lấy từ nguồn mới hay giữ "Chưa đủ dữ liệu" cũ.
+  const [useV2Bt, setUseV2Bt] = useState(false);
+  useEffect(() => { setUseV2Bt(isFeatureEnabled("baoTriKpiV2")); }, []);
+  const { result: pmOnTimeRes } = usePmOnTimeKpi();
+
+  const rel = useMemo(() => {
+    const crit = thietBi.filter((t) => t.muc_do_quan_trong === "Rất cao" || t.muc_do_quan_trong === "Cao");
+    const critMa = new Set(crit.map((t) => t.ma_thiet_bi));
+    const critIncidents = suCo.filter((s) => critMa.has(s.thiet_bi));
+    // Khoảng quan sát = trọn năm hiện tại (leap-year aware), KHÔNG hard-code 8760.
+    const windowHours = rangeHours(`${year}-01-01T00:00:00Z`, `${year + 1}-01-01T00:00:00Z`);
+    const toInc = (s: (typeof suCo)[number]): ReliabilityIncident => ({
+      id: s.ma_su_co, ma_su_co: s.ma_su_co, ngay_phat_hien: s.ngay_phat_hien,
+      thoi_diem_khac_phuc: s.thoi_diem_khac_phuc, thoi_gian_gian_doan: s.thoi_gian_gian_doan,
+    });
+    const availabilityRes = calcAvailability({ assetCount: crit.length, windowHours, incidents: critIncidents.map(toInc) });
+    const mttrRes = calcMttr(suCo.map(toInc));
+    const mtbfRes = calcMtbf(suCo.map(toInc));
+    // ĐHB — drill-down danh sách sự cố ảnh hưởng ĐHB
+    const dhbSources = suCo.filter((s) => s.anh_huong_dhb === "Có").map((s) => ({
+      id: s.ma_su_co, ma: s.ma_su_co, ngay: s.ngay_phat_hien,
+      downtimeMinutes: s.thoi_gian_gian_doan ?? null,
+    }));
+    return { availabilityRes, mttrRes, mtbfRes, dhbSources };
+  }, [thietBi, suCo, year]);
+
+  // Bản ghi nguồn đang xem (drill-down). `kind` quyết định cách hiển thị bảng
+  // nguồn: "su-co" (mặc định, sự cố) hay "cong-viec" (phiếu bảo dưỡng).
+  const [drill, setDrill] = useState<{ title: string; result: KpiResult; kind?: "su-co" | "cong-viec" } | null>(null);
+
+  type KpiRow = { ten: string; giaTri: string; muc: string; ok: boolean; icon: typeof Target; result?: KpiResult; kind?: "su-co" | "cong-viec" };
+  const kpiRows: KpiRow[] = [
+    {
+      ten: "Tỷ lệ sẵn sàng (tài sản trọng yếu)",
+      giaTri: useV2 ? formatKpiValue(rel.availabilityRes) : `${kpis.availability.toFixed(2)}%`,
+      muc: "≥ 99,5%",
+      ok: useV2 ? (rel.availabilityRes.value != null && rel.availabilityRes.value >= 99.5) : kpis.availability >= 99.5,
+      icon: Gauge,
+      result: rel.availabilityRes,
+    },
+    {
+      ten: "PM hoàn thành đúng hạn",
+      giaTri: useV2Bt
+        ? formatKpiValue(pmOnTimeRes)
+        : (typeof kpis.pmOnTimeRatio === "number" ? `${kpis.pmOnTimeRatio.toFixed(1)}%` : "Chưa đủ dữ liệu"),
+      muc: "≥ 95%",
+      ok: useV2Bt
+        ? (pmOnTimeRes.value != null && pmOnTimeRes.value >= 95)
+        : (typeof kpis.pmOnTimeRatio === "number" && kpis.pmOnTimeRatio >= 95),
+      icon: CheckCircle2,
+      result: useV2Bt ? pmOnTimeRes : undefined,
+      kind: "cong-viec",
+    },
+    {
+      ten: "MTTR — thời gian khắc phục TB",
+      giaTri: useV2 ? formatKpiValue(rel.mttrRes, fmtDowntime) : fmtDowntime(kpis.mttr),
+      muc: "Giảm theo quý",
+      ok: useV2 ? (rel.mttrRes.value != null && rel.mttrRes.value <= 240) : kpis.mttr <= 240,
+      icon: Clock,
+      result: rel.mttrRes,
+    },
+    {
+      ten: "MTBF — thời gian giữa hai lần hỏng",
+      giaTri: formatKpiValue(rel.mtbfRes),
+      muc: "Tăng theo quý",
+      ok: rel.mtbfRes.value != null && rel.mtbfRes.value >= 30,
+      icon: Activity,
+      result: rel.mtbfRes,
+    },
+    {
+      ten: "Sự cố ảnh hưởng ĐHB",
+      giaTri: `${kpis.dhbIncidents} vụ`,
+      muc: "Tiệm cận 0",
+      ok: kpis.dhbIncidents === 0,
+      icon: Radio,
+      result: { value: kpis.dhbIncidents, unit: "min", sampleSize: rel.dhbSources.length, sources: rel.dhbSources, insufficient: false, reason: null },
+    },
+    { ten: "Giấy phép còn hiệu lực", giaTri: `${kpis.gpValidPct}%`, muc: "100%", ok: kpis.gpValidPct >= 95, icon: ShieldCheck },
+    { ten: "Tài sản quá tuổi thọ", giaTri: `${kpis.over} (${kpis.overPct}%)`, muc: "Theo dõi giảm", ok: kpis.overPct <= 10, icon: TrendingUp },
+  ];
+
+
+  // Export helpers
+  const exportUnitReport = () => {
+    const header = "Đơn vị,Mã,Tổng tài sản,Đang khai thác,Sự cố mở,BT hoàn thành\n";
+    const rows = donVi.filter((d) => d.ma !== "CTY").map((d) => {
+      const tbs = thietBi.filter((t) => t.don_vi === d.ma);
+      const active = tbs.filter((t) => isActive(t.trang_thai)).length;
+      const sc = suCo.filter((s) => s.don_vi === d.ma && s.trang_thai !== "Đã khắc phục").length;
+      const btDone = baoTri.filter((b) => b.don_vi === d.ma && b.trang_thai === "Hoàn thành").length;
+      return `"${d.ten}",${d.ma},${tbs.length},${active},${sc},${btDone}`;
+    }).join("\n");
+    downloadCsv(`bao-cao-don-vi-${year}.csv`, header + rows);
+  };
+  const exportReplacementPlan = () => {
+    const header = "Mã tài sản,Tên,Đơn vị,Health score,Xếp loại,% Vòng đời,Giá trị (VNĐ),Khuyến nghị\n";
+    const rows = thietBi.map((t) => ({ t, h: healthDetail(t, today) }))
+      .filter((r) => r.h.xepLoai === "C" || r.h.xepLoai === "D")
+      .sort((a, b) => a.h.score - b.h.score)
+      .map(({ t, h }) => `${t.ma_thiet_bi},"${t.ten}",${t.don_vi},${h.score},${h.xepLoai},${h.ptVongDoi}%,${t.gia_tri_mua ?? 0},"${h.khuyenNghi}"`)
+      .join("\n");
+    downloadCsv(`de-xuat-thay-the-${year}.csv`, header + rows);
+  };
+  const exportReliabilityReport = () => {
+    const header = "Hệ thống,Nhóm,Đơn vị,Số sự cố,Số sự cố ảnh hưởng ĐHB,Downtime (phút)\n";
+    const rows: string[] = [];
+    for (const ht of Array.from(heThongMap.values())) {
+      const scs = suCo.filter((s) => s.he_thong === ht.ma);
+      if (scs.length === 0) continue;
+      const dhb = scs.filter((s) => s.anh_huong_dhb === "Có").length;
+      const dt = scs.reduce((a, s) => a + (s.thoi_gian_gian_doan ?? 0), 0);
+      const nhomTen = nhomHeThongMap.get(ht.nhom)?.ten ?? ht.nhom;
+      rows.push(`"${ht.ten}","${nhomTen}",${ht.don_vi},${scs.length},${dhb},${dt}`);
+    }
+    downloadCsv(`bao-cao-do-tin-cay-${year}.csv`, header + rows.join("\n"));
+  };
+
+  // Kho / vật tư chưa có CSDL thật (module T13) → không hiển thị số liệu giả.
+  const lowStock: number | null = null;
+
+  return (
+    <div className="space-y-6 p-4 sm:space-y-8 sm:p-6 lg:space-y-10 lg:p-10">
+      {/* Editorial hero */}
+      <header className="border-b border-border pb-5 sm:pb-8">
+        <h1 className="text-3xl font-light tracking-tight sm:text-4xl lg:text-6xl">
+          <span className="font-bold">Overview</span>
+        </h1>
+      </header>
+
+      <DailyBrief />
+
+
+
+
+      <Tabs defaultValue="leader" className="space-y-5 sm:space-y-6">
+        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <TabsList className="w-max sm:w-auto">
+            <TabsTrigger value="leader">Dashboard Lãnh đạo</TabsTrigger>
+            <TabsTrigger value="engineer">Dashboard Kỹ thuật</TabsTrigger>
+            <TabsTrigger value="kpi">Bộ KPI</TabsTrigger>
+          </TabsList>
+        </div>
+
+
+        {/* LEADERSHIP */}
+        <TabsContent value="leader" className="space-y-5">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
+            <MiniKpi title="Tổng tài sản" value={thietBi.length.toLocaleString("vi-VN")} icon={HardDrive} />
+            <MiniKpi title="Đang khai thác" value={thietBi.filter((t) => isActive(t.trang_thai)).length.toLocaleString("vi-VN")} icon={CheckCircle2} tone="text-emerald-600" />
+            <MiniKpi title="Sự cố đang mở" value={openIncidents.length} icon={AlertTriangle} tone="text-orange-600" />
+            <MiniKpi title={`GP sắp hết hạn (≤ ${90} ngày)`} value={gpStats.expiring} icon={ShieldCheck} tone="text-amber-600" />
+            <MiniKpi title="Vật tư dưới định mức" value={lowStock ?? "—"} icon={Package} tone="text-red-600" />
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-3">
+            <Card className="lg:col-span-2">
+              <SectionHeader title="Tài sản theo đơn vị" />
+              <CardContent className="h-64 pt-2 sm:h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={byDonVi}>
+                    <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip
+                      cursor={{ fill: "var(--muted)" }}
+                      contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }}
+                      labelFormatter={(l) => byDonVi.find((x) => x.name === l)?.ten ?? String(l)}
+                    />
+                    <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <SectionHeader title="Sức khỏe tài sản (A/B/C/D)" />
+              <CardContent className="h-64 pt-2 sm:h-72">
+                {healthDistHasData ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={healthDist} dataKey="count" nameKey="name" innerRadius={45} outerRadius={80} paddingAngle={2}>
+                        {healthDist.map((d) => <Cell key={d.loai} fill={d.hex} />)}
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                    Chưa có tài sản trong phạm vi.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Card>
+              <SectionHeader title="Trạng thái vận hành" />
+              <CardContent className="space-y-3 pt-2">
+                {byTrangThai.map((r) => {
+                  const p = pct(r.value, thietBi.length);
+                  return (
+                    <div key={r.name}>
+                      <div className="mb-1 flex items-center justify-between text-sm">
+                        <span>{r.name}</span>
+                        <span className="font-mono text-muted-foreground tabular-nums">{r.value.toLocaleString("vi-VN")} · {p}%</span>
+                      </div>
+                      <Progress value={p} className="h-2" />
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <SectionHeader
+                title="Sự cố đang mở theo mức độ"
+                action={<Button asChild variant="ghost" size="sm"><Link to="/su-co">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+              />
+              <CardContent className="h-56 pt-2 sm:h-60">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={openBySev} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid horizontal={false} stroke="var(--border)" strokeDasharray="3 3" />
+                    <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={110} />
+                    <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }} />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                      {openBySev.map((d) => <Cell key={d.name} fill={d.hex} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+
+        {/* ENGINEERING */}
+        <TabsContent value="engineer" className="space-y-5">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+            <MiniKpi title="Availability (trọng yếu)" value={useV2 ? formatKpiValue(rel.availabilityRes) : `${kpis.availability.toFixed(2)}%`} icon={Gauge} tone={kpis.availability >= 99.5 ? "text-emerald-600" : "text-orange-600"} />
+            <MiniKpi title="MTTR" value={useV2 ? formatKpiValue(rel.mttrRes, fmtDowntime) : fmtDowntime(kpis.mttr)} icon={Clock} />
+            <MiniKpi title="PM đến hạn (30 ngày)" value={pmDueSoon.length} icon={Wrench} tone="text-blue-600" />
+            <MiniKpi title="Kế hoạch PM đang chạy" value={0} icon={Activity} />
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-1">
+            <Card>
+              <SectionHeader title="Sự cố theo nhóm hệ thống" />
+              <CardContent className="h-64 pt-2 sm:h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={incidentByGroup} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid horizontal={false} stroke="var(--border)" strokeDasharray="3 3" />
+                    <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={100} />
+                    <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }} />
+                    <Bar dataKey="count" fill="var(--destructive)" opacity={0.75} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Card>
+              <SectionHeader
+                title="PM đến hạn tuần/tháng"
+                action={<Button asChild variant="ghost" size="sm"><Link to="/bao-tri">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+              />
+              <CardContent className="space-y-2 pt-2">
+                {pmDueSoon.length === 0 ? (
+                  <div className="py-8 text-center text-sm text-muted-foreground">Không có phiếu PM đến hạn.</div>
+                ) : pmDueSoon.map((b) => (
+                  <Link key={b.ma_bao_tri} to="/bao-tri/$maBaoTri" params={{ maBaoTri: b.ma_bao_tri }}
+                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-muted/40">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="font-mono text-[10px]">{b.ma_bao_tri}</Badge>
+                        <Badge variant="secondary" className="text-[10px]">{b.trang_thai}</Badge>
+                      </div>
+                      <div className="mt-1 truncate font-medium">{b.mo_ta_cong_viec}</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">{b.thiet_bi}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-mono text-xs tabular-nums">{b.ngay_bat_dau}</div>
+                    </div>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <SectionHeader
+                title="Top tài sản hay hỏng"
+                action={<Button asChild variant="ghost" size="sm"><Link to="/su-co">Xem sự cố <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+              />
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Tài sản</TableHead>
+                      <TableHead>Đơn vị</TableHead>
+                      <TableHead className="text-right">Số sự cố</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {topFailures.map((r) => (
+                      <TableRow key={r.ma}>
+                        <TableCell>
+                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma }} className="font-medium hover:text-primary">{r.tb?.ten}</Link>
+                          <div className="font-mono text-[11px] text-muted-foreground">{r.ma}</div>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{donViMap.get(r.tb!.don_vi)?.ten}</TableCell>
+                        <TableCell className="text-right font-mono font-semibold tabular-nums text-orange-600">{r.n}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                </div>
+              </CardContent>
+
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* KPI */}
+        <TabsContent value="kpi" className="space-y-5">
+          <Card>
+            <SectionHeader title="Bộ KPI theo dõi độ tin cậy" icon={Target} />
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>KPI</TableHead>
+                    <TableHead>Giá trị hiện tại</TableHead>
+                    <TableHead>Mục tiêu</TableHead>
+                    <TableHead className="text-right">Trạng thái</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {kpiRows.map((k) => {
+                    const Icon = k.icon;
+                    return (
+                      <TableRow key={k.ten}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                            <span className="font-medium">{k.ten}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-mono text-lg font-semibold tabular-nums">
+                          <div>{k.giaTri}</div>
+                          {k.result && k.result.sampleSize > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setDrill({ title: k.ten, result: k.result!, kind: k.kind })}
+                              className="mt-1 inline-flex items-center gap-1 font-sans text-xs font-normal text-muted-foreground hover:text-primary"
+                            >
+                              <Search className="h-3 w-3" /> Xem {k.result.sampleSize} bản ghi nguồn
+                            </button>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{k.muc}</TableCell>
+                        <TableCell className="text-right">
+                          {k.ok ? (
+                            <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">Đạt</Badge>
+                          ) : (
+                            <Badge variant="outline" className="border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-300">Cần cải thiện</Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+              </div>
+            </CardContent>
+
+          </Card>
+
+          <Card>
+            <SectionHeader title="Báo cáo định kỳ (xuất CSV)" icon={Download} />
+            <CardContent className="grid gap-4 pt-2 sm:grid-cols-3">
+              <ReportCard title="Báo cáo tháng/quý theo đơn vị" desc="Tài sản, BT, sự cố, chi phí" onClick={exportUnitReport} />
+              <ReportCard title="Độ tin cậy hệ thống ĐHB" desc="Sự cố, downtime, ảnh hưởng ĐHB theo hệ thống" onClick={exportReliabilityReport} />
+              <ReportCard title="Đề xuất đầu tư/thay thế" desc="Từ M9 · tài sản loại C/D cần thay" onClick={exportReplacementPlan} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+      </Tabs>
+
+      <KpiDrilldownDialog drill={drill} onClose={() => setDrill(null)} />
+    </div>
+  );
+}
+
+/** Drill-down: liệt kê bản ghi nguồn tạo nên một KPI, có liên kết chi tiết. */
+function KpiDrilldownDialog({ drill, onClose }: { drill: { title: string; result: KpiResult; kind?: "su-co" | "cong-viec" } | null; onClose: () => void }) {
+  const isCongViec = drill?.kind === "cong-viec";
+  return (
+    <Dialog open={!!drill} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{drill?.title}</DialogTitle>
+          <DialogDescription>
+            {drill
+              ? `${drill.result.sampleSize} ${isCongViec ? "phiếu bảo dưỡng" : "bản ghi sự cố"} nguồn đóng góp vào chỉ số này.`
+              : null}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[60vh] overflow-y-auto">
+          {drill && drill.result.sources.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{isCongViec ? "Mã phiếu" : "Mã sự cố"}</TableHead>
+                  <TableHead>{isCongViec ? "Ngày đến hạn" : "Ngày phát hiện"}</TableHead>
+                  <TableHead className="text-right">{isCongViec ? "Đúng hạn" : "Downtime"}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {drill.result.sources.map((s, i) => (
+                  <TableRow key={`${s.ma ?? s.id ?? i}`}>
+                    <TableCell className="font-mono">
+                      {isCongViec ? (
+                        s.ma ?? s.id ?? "—"
+                      ) : s.ma ? (
+                        <Link to="/su-co/$maSuCo" params={{ maSuCo: s.ma }} className="text-primary hover:underline" onClick={onClose}>
+                          {s.ma}
+                        </Link>
+                      ) : (s.id ?? "—")}
+                    </TableCell>
+                    <TableCell>{s.ngay ?? "—"}</TableCell>
+                    <TableCell className="text-right font-mono tabular-nums">
+                      {isCongViec ? (
+                        s.onTime == null ? "—" : (
+                          <Badge variant="outline" className={s.onTime
+                            ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                            : "border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-300"}>
+                            {s.onTime ? "Đúng hạn" : "Trễ"}
+                          </Badge>
+                        )
+                      ) : (
+                        s.downtimeMinutes == null ? "—" : fmtDowntime(s.downtimeMinutes)
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="py-6 text-center text-sm text-muted-foreground">Không có bản ghi nguồn.</p>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
+function MiniKpi({ title, value, icon: Icon, tone = "text-primary" }: { title: string; value: string | number; icon: React.ComponentType<{ className?: string }>; tone?: string }) {
+  return (
+    <Card>
+      <CardContent className="flex items-center justify-between gap-2 p-2.5 sm:p-4">
+        <div className="min-w-0">
+          <p className="truncate text-[10.5px] leading-tight text-muted-foreground sm:text-xs">{title}</p>
+          <p className="mt-0.5 text-base font-semibold tabular-nums sm:mt-1 sm:text-xl">{value}</p>
+        </div>
+        <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted sm:h-9 sm:w-9 ${tone}`}>
+          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ReportCard({ title, desc, onClick }: { title: string; desc: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="group flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors hover:border-primary/40 hover:bg-muted/40">
+      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground">
+        <Download className="h-4 w-4" />
+      </div>
+      <div className="text-sm font-semibold">{title}</div>
+      <div className="text-xs text-muted-foreground">{desc}</div>
+      <div className="mt-1 flex items-center gap-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
+        Tải xuống CSV <ArrowRight className="h-3 w-3" />
+      </div>
+    </button>
+  );
+}
+
+function SectionHeader({ title, icon: Icon, action }: { title: string; icon?: React.ComponentType<{ className?: string }>; action?: React.ReactNode }) {
+  return (
+    <CardHeader className="flex flex-row items-center justify-between gap-3 px-6 pb-3 pt-5">
+      <CardTitle className="flex min-w-0 items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+        <span className="truncate">{title}</span>
+      </CardTitle>
+      {action}
+    </CardHeader>
+  );
+}
+
+function downloadCsv(name: string, content: string) {
+  const blob = new Blob(["\ufeff" + content], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Reference imports to keep them alive (used above)
+void HeartPulse;
