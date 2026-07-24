@@ -1,1 +1,0 @@
-GRANT sandbox_exec TO postgres WITH SET TRUE, INHERIT TRUE;

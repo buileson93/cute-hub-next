@@ -1,1 +1,0 @@
-ALTER VIEW public.v_van_de SET (security_invoker = on);

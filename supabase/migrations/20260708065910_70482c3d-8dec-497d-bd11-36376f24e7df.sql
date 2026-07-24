@@ -1,1 +1,0 @@
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA auth TO sandbox_exec;

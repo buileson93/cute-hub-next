@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX IF NOT EXISTS uq_thiet_bi_serial ON public.thiet_bi(ma_serial) WHERE ma_serial IS NOT NULL;
