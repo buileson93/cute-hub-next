@@ -637,42 +637,6 @@ function AssignDialog({
   );
 }
 
-// ---- Mini form: tạo nhanh 1 tài sản mới rồi lắp ngay vào vị trí ----------
-function QuickAddThietBi({
-  onSubmit, onCancel, pending,
-}: {
-  onSubmit: (v: { ten: string; serial?: string }) => void;
-  onCancel: () => void;
-  pending: boolean;
-}) {
-  const [ten, setTen] = useState("");
-  const [serial, setSerial] = useState("");
-  return (
-    <div className="mt-2 rounded-md border bg-muted/30 p-2">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="space-y-1">
-          <Label className="text-xs">Tên tài sản</Label>
-          <Input value={ten} onChange={(e) => setTen(e.target.value)} placeholder="Ví dụ: Máy tính trạm bờ #3" />
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs">Serial (tuỳ chọn)</Label>
-          <Input value={serial} onChange={(e) => setSerial(e.target.value)} placeholder="SN…" className="font-mono" />
-        </div>
-      </div>
-      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>Mã sẽ được sinh tự động dạng <span className="font-mono">TB_XXXXXXXX</span>.</span>
-        <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={onCancel} disabled={pending}>Huỷ</Button>
-          <Button size="sm" onClick={() => {
-            if (!ten.trim()) { toast.error("Nhập tên tài sản"); return; }
-            onSubmit({ ten, serial });
-          }} disabled={pending}>Tạo & chọn</Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ---- BƯỚC 7: lý lịch của một vị trí chức năng (các tài sản đã/đang giữ) ----
 function ViTriLichSu({ thanhPhanId }: { thanhPhanId: string }) {
   const { data = [], isLoading } = useLyLichViTri(thanhPhanId);
