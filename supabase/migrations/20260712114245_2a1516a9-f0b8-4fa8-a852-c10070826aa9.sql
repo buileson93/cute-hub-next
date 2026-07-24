@@ -1,0 +1,1 @@
+ALTER VIEW public.v_thiet_bi_nguon_chuan_conflict SET (security_invoker = true);

@@ -23,12 +23,49 @@ const Command = React.forwardRef<
 ));
 Command.displayName = CommandPrimitive.displayName;
 
-const CommandDialog = ({ children, ...props }: DialogProps) => {
+type CommandDialogProps = DialogProps & {
+  filter?: React.ComponentPropsWithoutRef<typeof CommandPrimitive>["filter"];
+  shouldFilter?: boolean;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  /** Optional preview pane rendered to the right of the command list (Lovable-style). */
+  preview?: React.ReactNode;
+};
+
+const CommandDialog = ({
+  children,
+  filter,
+  shouldFilter,
+  value,
+  onValueChange,
+  preview,
+  ...props
+}: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0">
-        <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
-          {children}
+      <DialogContent
+        className={cn(
+          "overflow-hidden p-0",
+          preview && "sm:max-w-4xl",
+        )}
+      >
+        <Command
+          filter={filter}
+          shouldFilter={shouldFilter}
+          value={value}
+          onValueChange={onValueChange}
+          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:mx-1 [&_[cmdk-item]]:rounded-lg [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 [&_[cmdk-item][data-selected=true]]:bg-primary [&_[cmdk-item][data-selected=true]]:text-primary-foreground [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-primary-foreground/70"
+        >
+          {preview ? (
+            <div className="flex">
+              <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+              <div className="hidden w-[344px] shrink-0 border-l border-border bg-muted/20 md:block">
+                {preview}
+              </div>
+            </div>
+          ) : (
+            children
+          )}
         </Command>
       </DialogContent>
     </Dialog>

@@ -1,0 +1,3 @@
+REVOKE EXECUTE ON FUNCTION public.khai_them_thanh_phan_he_thong(uuid, text, text, uuid, uuid, boolean, integer, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.khai_them_thanh_phan_he_thong(uuid, text, text, uuid, uuid, boolean, integer, text) FROM anon;
+GRANT EXECUTE ON FUNCTION public.khai_them_thanh_phan_he_thong(uuid, text, text, uuid, uuid, boolean, integer, text) TO authenticated, service_role, sandbox_exec, postgres;

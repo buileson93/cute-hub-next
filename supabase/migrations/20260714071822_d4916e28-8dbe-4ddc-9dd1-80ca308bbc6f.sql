@@ -1,0 +1,1 @@
+DELETE FROM public.lien_ket_he_thong WHERE id = '3f3d8601-7218-4555-b105-1ef76dc5ea72';

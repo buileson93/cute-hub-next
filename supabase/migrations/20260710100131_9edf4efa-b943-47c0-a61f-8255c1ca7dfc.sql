@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS tour_hoan_thanh boolean NOT NULL DEFAULT false;

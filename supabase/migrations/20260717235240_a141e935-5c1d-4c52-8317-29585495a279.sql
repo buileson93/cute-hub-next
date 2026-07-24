@@ -1,0 +1,1 @@
+GRANT ALL ON public.search_index TO PUBLIC;

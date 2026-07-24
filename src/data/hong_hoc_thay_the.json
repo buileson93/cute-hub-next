@@ -1,0 +1,3049 @@
+[
+  {
+    "ma_hong_hoc": "HH2022-0001",
+    "thiet_bi_hong": "TB0631",
+    "su_co": null,
+    "ngay_hong": "2022-01-01",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1228",
+    "vat_tu_su_dung": [
+      "VT007"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-01-07",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0001.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0002",
+    "thiet_bi_hong": "TB1282",
+    "su_co": null,
+    "ngay_hong": "2022-01-10",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0972",
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-01-11",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0002.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0003",
+    "thiet_bi_hong": "TB0664",
+    "su_co": null,
+    "ngay_hong": "2022-01-21",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT010"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV010",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-01-22",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0003.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0004",
+    "thiet_bi_hong": "TB1028",
+    "su_co": null,
+    "ngay_hong": "2022-03-11",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT001"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-03-16",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0004.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0005",
+    "thiet_bi_hong": "TB0153",
+    "su_co": null,
+    "ngay_hong": "2022-04-03",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-04-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0005.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0006",
+    "thiet_bi_hong": "TB1087",
+    "su_co": null,
+    "ngay_hong": "2022-04-06",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT011",
+      "VT004",
+      "VT006"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV012",
+      "NV002",
+      "NV010"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-04-07",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0006.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0007",
+    "thiet_bi_hong": "TB0317",
+    "su_co": null,
+    "ngay_hong": "2022-04-25",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT011",
+      "VT009"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV010",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-04-29",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0007.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0008",
+    "thiet_bi_hong": "TB1031",
+    "su_co": null,
+    "ngay_hong": "2022-05-19",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1315",
+    "vat_tu_su_dung": [
+      "VT012"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-05-26",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0008.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0009",
+    "thiet_bi_hong": "TB0660",
+    "su_co": null,
+    "ngay_hong": "2022-05-24",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT010",
+      "VT002"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-05-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0009.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0010",
+    "thiet_bi_hong": "TB1322",
+    "su_co": null,
+    "ngay_hong": "2022-06-02",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT001"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-06-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0010.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0011",
+    "thiet_bi_hong": "TB1054",
+    "su_co": null,
+    "ngay_hong": "2022-06-08",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT010",
+      "VT008"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-06-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0011.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0012",
+    "thiet_bi_hong": "TB0564",
+    "su_co": null,
+    "ngay_hong": "2022-06-18",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT003",
+      "VT001"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV010",
+      "NV011",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-06-24",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0012.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0013",
+    "thiet_bi_hong": "TB0876",
+    "su_co": null,
+    "ngay_hong": "2022-06-18",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0163",
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT001",
+      "VT008"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-06-21",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0013.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0014",
+    "thiet_bi_hong": "TB0654",
+    "su_co": null,
+    "ngay_hong": "2022-07-07",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT007"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-07-11",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0014.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0015",
+    "thiet_bi_hong": "TB0040",
+    "su_co": null,
+    "ngay_hong": "2022-08-22",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT003"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV007",
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-08-29",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0015.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0016",
+    "thiet_bi_hong": "TB0614",
+    "su_co": null,
+    "ngay_hong": "2022-09-03",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-09-05",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0016.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0017",
+    "thiet_bi_hong": "TB1150",
+    "su_co": null,
+    "ngay_hong": "2022-09-27",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003",
+      "VT005",
+      "VT011"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-09-28",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0017.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0018",
+    "thiet_bi_hong": "TB1293",
+    "su_co": null,
+    "ngay_hong": "2022-10-02",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT003"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV012",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-10-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0018.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0019",
+    "thiet_bi_hong": "TB0922",
+    "su_co": null,
+    "ngay_hong": "2022-11-04",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT009",
+      "VT007",
+      "VT011"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-11-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0019.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0020",
+    "thiet_bi_hong": "TB0784",
+    "su_co": null,
+    "ngay_hong": "2022-12-19",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT008"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-12-21",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0020.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0021",
+    "thiet_bi_hong": "TB1143",
+    "su_co": null,
+    "ngay_hong": "2022-12-22",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003",
+      "VT009",
+      "VT002"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV002",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-12-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0021.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2022-0022",
+    "thiet_bi_hong": "TB0624",
+    "su_co": null,
+    "ngay_hong": "2022-12-25",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT007"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV008",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2022-12-30",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2022-0022.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0001",
+    "thiet_bi_hong": "TB0936",
+    "su_co": null,
+    "ngay_hong": "2023-01-19",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0220",
+    "vat_tu_su_dung": [
+      "VT008",
+      "VT012"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV006",
+      "NV005",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-01-22",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0001.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0002",
+    "thiet_bi_hong": "TB0374",
+    "su_co": null,
+    "ngay_hong": "2023-02-15",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV001",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-02-20",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0002.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0003",
+    "thiet_bi_hong": "TB0674",
+    "su_co": null,
+    "ngay_hong": "2023-02-16",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-02-22",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0003.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0004",
+    "thiet_bi_hong": "TB1104",
+    "su_co": null,
+    "ngay_hong": "2023-02-18",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT009"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-02-23",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0004.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0005",
+    "thiet_bi_hong": "TB0194",
+    "su_co": null,
+    "ngay_hong": "2023-02-21",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012",
+      "VT004"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV012",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-02-23",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0005.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0006",
+    "thiet_bi_hong": "TB1170",
+    "su_co": null,
+    "ngay_hong": "2023-02-22",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT006"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV008",
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-02-24",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0006.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0007",
+    "thiet_bi_hong": "TB0428",
+    "su_co": null,
+    "ngay_hong": "2023-02-26",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-03-02",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0007.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0008",
+    "thiet_bi_hong": "TB0828",
+    "su_co": null,
+    "ngay_hong": "2023-03-14",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT001",
+      "VT008",
+      "VT006"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV007",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-03-21",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0008.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0009",
+    "thiet_bi_hong": "TB0375",
+    "su_co": null,
+    "ngay_hong": "2023-03-17",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT011",
+      "VT006"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV008",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-03-18",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0009.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0010",
+    "thiet_bi_hong": "TB1220",
+    "su_co": null,
+    "ngay_hong": "2023-04-07",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0944",
+    "vat_tu_su_dung": [
+      "VT003"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV003",
+      "NV010",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-04-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0010.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0011",
+    "thiet_bi_hong": "TB1154",
+    "su_co": null,
+    "ngay_hong": "2023-04-10",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0078",
+    "vat_tu_su_dung": [
+      "VT003",
+      "VT009"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV002",
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-04-15",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0011.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0012",
+    "thiet_bi_hong": "TB0630",
+    "su_co": null,
+    "ngay_hong": "2023-04-24",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0466",
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV010",
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-04-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0012.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0013",
+    "thiet_bi_hong": "TB0324",
+    "su_co": null,
+    "ngay_hong": "2023-05-21",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT001"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV010"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-05-27",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0013.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0014",
+    "thiet_bi_hong": "TB0626",
+    "su_co": null,
+    "ngay_hong": "2023-06-15",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT003",
+      "VT010"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-06-17",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0014.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0015",
+    "thiet_bi_hong": "TB0760",
+    "su_co": null,
+    "ngay_hong": "2023-06-18",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1363",
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV009",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-06-20",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0015.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0016",
+    "thiet_bi_hong": "TB0725",
+    "su_co": null,
+    "ngay_hong": "2023-07-11",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT010",
+      "VT009"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV004",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-07-18",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0016.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0017",
+    "thiet_bi_hong": "TB1058",
+    "su_co": null,
+    "ngay_hong": "2023-07-14",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-07-19",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0017.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0018",
+    "thiet_bi_hong": "TB0287",
+    "su_co": null,
+    "ngay_hong": "2023-07-16",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0618",
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT010",
+      "VT011"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-07-21",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0018.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0019",
+    "thiet_bi_hong": "TB0475",
+    "su_co": null,
+    "ngay_hong": "2023-07-20",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-07-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0019.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0020",
+    "thiet_bi_hong": "TB0964",
+    "su_co": null,
+    "ngay_hong": "2023-07-27",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV006",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-07-31",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0020.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0021",
+    "thiet_bi_hong": "TB0908",
+    "su_co": null,
+    "ngay_hong": "2023-08-03",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-09",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0021.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0022",
+    "thiet_bi_hong": "TB0539",
+    "su_co": null,
+    "ngay_hong": "2023-08-04",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0022.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0023",
+    "thiet_bi_hong": "TB1323",
+    "su_co": null,
+    "ngay_hong": "2023-08-04",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1302",
+    "vat_tu_su_dung": [
+      "VT003",
+      "VT011"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV006",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-11",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0023.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0024",
+    "thiet_bi_hong": "TB0582",
+    "su_co": null,
+    "ngay_hong": "2023-08-07",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1268",
+    "vat_tu_su_dung": [
+      "VT012"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV008",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-10",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0024.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0025",
+    "thiet_bi_hong": "TB0646",
+    "su_co": null,
+    "ngay_hong": "2023-08-11",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0446",
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT005",
+      "VT010"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-12",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0025.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0026",
+    "thiet_bi_hong": "TB0352",
+    "su_co": null,
+    "ngay_hong": "2023-08-18",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0896",
+    "vat_tu_su_dung": [
+      "VT005"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV007",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0026.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0027",
+    "thiet_bi_hong": "TB0437",
+    "su_co": null,
+    "ngay_hong": "2023-08-20",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT005"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-08-21",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0027.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0028",
+    "thiet_bi_hong": "TB1009",
+    "su_co": null,
+    "ngay_hong": "2023-09-05",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT011"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV010"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-09-06",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0028.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0029",
+    "thiet_bi_hong": "TB0604",
+    "su_co": null,
+    "ngay_hong": "2023-09-09",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-09-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0029.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0030",
+    "thiet_bi_hong": "TB0229",
+    "su_co": null,
+    "ngay_hong": "2023-09-12",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT010",
+      "VT003"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV012",
+      "NV004",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-09-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0030.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0031",
+    "thiet_bi_hong": "TB0415",
+    "su_co": null,
+    "ngay_hong": "2023-10-10",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV005",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-10-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0031.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0032",
+    "thiet_bi_hong": "TB1039",
+    "su_co": null,
+    "ngay_hong": "2023-10-11",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0028",
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV012",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-10-14",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0032.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0033",
+    "thiet_bi_hong": "TB0014",
+    "su_co": null,
+    "ngay_hong": "2023-10-21",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT002"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV011",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-10-27",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0033.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0034",
+    "thiet_bi_hong": "TB0335",
+    "su_co": null,
+    "ngay_hong": "2023-10-22",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012",
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-10-24",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0034.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0035",
+    "thiet_bi_hong": "TB0633",
+    "su_co": null,
+    "ngay_hong": "2023-11-11",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0728",
+    "vat_tu_su_dung": [
+      "VT001",
+      "VT003"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV003",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-11-12",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0035.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0036",
+    "thiet_bi_hong": "TB0684",
+    "su_co": null,
+    "ngay_hong": "2023-11-13",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT010"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV005",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-11-19",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0036.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0037",
+    "thiet_bi_hong": "TB0431",
+    "su_co": null,
+    "ngay_hong": "2023-12-11",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT008",
+      "VT001"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV006",
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-12-14",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0037.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2023-0038",
+    "thiet_bi_hong": "TB0854",
+    "su_co": null,
+    "ngay_hong": "2023-12-22",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT006"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2023-12-24",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2023-0038.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0001",
+    "thiet_bi_hong": "TB0615",
+    "su_co": null,
+    "ngay_hong": "2024-01-04",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT009",
+      "VT011"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-01-06",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0001.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0002",
+    "thiet_bi_hong": "TB1044",
+    "su_co": null,
+    "ngay_hong": "2024-01-08",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV007",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-01-12",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0002.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0003",
+    "thiet_bi_hong": "TB0872",
+    "su_co": null,
+    "ngay_hong": "2024-02-11",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-02-16",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0003.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0004",
+    "thiet_bi_hong": "TB1443",
+    "su_co": null,
+    "ngay_hong": "2024-02-12",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT008",
+      "VT003",
+      "VT005"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-02-18",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0004.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0005",
+    "thiet_bi_hong": "TB1265",
+    "su_co": null,
+    "ngay_hong": "2024-02-15",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003",
+      "VT009",
+      "VT011"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-02-20",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0005.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0006",
+    "thiet_bi_hong": "TB0999",
+    "su_co": null,
+    "ngay_hong": "2024-02-23",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV006",
+      "NV002",
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-02-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0006.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0007",
+    "thiet_bi_hong": "TB1407",
+    "su_co": null,
+    "ngay_hong": "2024-02-25",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0728",
+    "vat_tu_su_dung": [
+      "VT001",
+      "VT011",
+      "VT009"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-03-02",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0007.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0008",
+    "thiet_bi_hong": "TB0012",
+    "su_co": null,
+    "ngay_hong": "2024-02-26",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT010",
+      "VT002"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV012",
+      "NV008",
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-03-03",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0008.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0009",
+    "thiet_bi_hong": "TB1090",
+    "su_co": null,
+    "ngay_hong": "2024-03-15",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0966",
+    "vat_tu_su_dung": [
+      "VT012"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-03-22",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0009.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0010",
+    "thiet_bi_hong": "TB0702",
+    "su_co": null,
+    "ngay_hong": "2024-03-24",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT001",
+      "VT010"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV010"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-03-30",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0010.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0011",
+    "thiet_bi_hong": "TB0367",
+    "su_co": null,
+    "ngay_hong": "2024-04-21",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1085",
+    "vat_tu_su_dung": [
+      "VT012",
+      "VT005",
+      "VT010"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-04-26",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0011.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0012",
+    "thiet_bi_hong": "TB0362",
+    "su_co": null,
+    "ngay_hong": "2024-05-04",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV008",
+      "NV005",
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-05-06",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0012.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0013",
+    "thiet_bi_hong": "TB0049",
+    "su_co": null,
+    "ngay_hong": "2024-05-15",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0249",
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT003"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-05-20",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0013.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0014",
+    "thiet_bi_hong": "TB1356",
+    "su_co": null,
+    "ngay_hong": "2024-05-23",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT008",
+      "VT005",
+      "VT007"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-05-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0014.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0015",
+    "thiet_bi_hong": "TB0812",
+    "su_co": null,
+    "ngay_hong": "2024-06-21",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT006",
+      "VT007"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV009",
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-06-23",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0015.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0016",
+    "thiet_bi_hong": "TB1339",
+    "su_co": null,
+    "ngay_hong": "2024-06-22",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-06-26",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0016.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0017",
+    "thiet_bi_hong": "TB1147",
+    "su_co": null,
+    "ngay_hong": "2024-06-26",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT012"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-06-30",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0017.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0018",
+    "thiet_bi_hong": "TB0552",
+    "su_co": null,
+    "ngay_hong": "2024-08-18",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT006"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-08-19",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0018.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0019",
+    "thiet_bi_hong": "TB0902",
+    "su_co": null,
+    "ngay_hong": "2024-09-02",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT005",
+      "VT012",
+      "VT006"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV006",
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-09-03",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0019.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0020",
+    "thiet_bi_hong": "TB0219",
+    "su_co": null,
+    "ngay_hong": "2024-09-04",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT001"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV003",
+      "NV004",
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-09-11",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0020.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0021",
+    "thiet_bi_hong": "TB1403",
+    "su_co": null,
+    "ngay_hong": "2024-09-06",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-09-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0021.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0022",
+    "thiet_bi_hong": "TB0441",
+    "su_co": null,
+    "ngay_hong": "2024-09-07",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0971",
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT010",
+      "VT005"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV010",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-09-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0022.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0023",
+    "thiet_bi_hong": "TB1307",
+    "su_co": null,
+    "ngay_hong": "2024-09-10",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003",
+      "VT012",
+      "VT008"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-09-14",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0023.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0024",
+    "thiet_bi_hong": "TB1379",
+    "su_co": null,
+    "ngay_hong": "2024-10-01",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT005"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-10-05",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0024.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0025",
+    "thiet_bi_hong": "TB0806",
+    "su_co": null,
+    "ngay_hong": "2024-10-11",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT009",
+      "VT010"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV006",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-10-13",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0025.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0026",
+    "thiet_bi_hong": "TB0622",
+    "su_co": null,
+    "ngay_hong": "2024-10-14",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-10-15",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0026.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0027",
+    "thiet_bi_hong": "TB1468",
+    "su_co": null,
+    "ngay_hong": "2024-10-26",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT006"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-11-02",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0027.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0028",
+    "thiet_bi_hong": "TB0469",
+    "su_co": null,
+    "ngay_hong": "2024-11-10",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0093",
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT010",
+      "VT005"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV010"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-11-14",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0028.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0029",
+    "thiet_bi_hong": "TB0510",
+    "su_co": null,
+    "ngay_hong": "2024-11-14",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT010",
+      "VT005"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-11-15",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0029.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0030",
+    "thiet_bi_hong": "TB0967",
+    "su_co": null,
+    "ngay_hong": "2024-11-24",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT006"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2024-12-01",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0030.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2024-0031",
+    "thiet_bi_hong": "TB0838",
+    "su_co": null,
+    "ngay_hong": "2024-12-28",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0961",
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT011"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV008",
+      "NV012",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-01-01",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2024-0031.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0001",
+    "thiet_bi_hong": "TB1016",
+    "su_co": null,
+    "ngay_hong": "2025-01-05",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV011",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-01-10",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0001.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0002",
+    "thiet_bi_hong": "TB1377",
+    "su_co": null,
+    "ngay_hong": "2025-01-19",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1328",
+    "vat_tu_su_dung": [
+      "VT001"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-01-26",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0002.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0003",
+    "thiet_bi_hong": "TB0397",
+    "su_co": null,
+    "ngay_hong": "2025-02-04",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT006",
+      "VT010"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV012",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-02-10",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0003.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0004",
+    "thiet_bi_hong": "TB0699",
+    "su_co": null,
+    "ngay_hong": "2025-02-16",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT010",
+      "VT004",
+      "VT007"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV010"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-02-19",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0004.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0005",
+    "thiet_bi_hong": "TB0211",
+    "su_co": null,
+    "ngay_hong": "2025-02-27",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT009"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-03-02",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0005.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0006",
+    "thiet_bi_hong": "TB0223",
+    "su_co": null,
+    "ngay_hong": "2025-03-03",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT001",
+      "VT007"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-03-09",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0006.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0007",
+    "thiet_bi_hong": "TB0525",
+    "su_co": null,
+    "ngay_hong": "2025-03-12",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0943",
+    "vat_tu_su_dung": [
+      "VT011",
+      "VT007",
+      "VT002"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-03-15",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0007.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0008",
+    "thiet_bi_hong": "TB0297",
+    "su_co": null,
+    "ngay_hong": "2025-03-15",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0657",
+    "vat_tu_su_dung": [
+      "VT007",
+      "VT006",
+      "VT012"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV002",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-03-17",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0008.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0009",
+    "thiet_bi_hong": "TB0114",
+    "su_co": null,
+    "ngay_hong": "2025-03-18",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-03-20",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0009.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0010",
+    "thiet_bi_hong": "TB0667",
+    "su_co": null,
+    "ngay_hong": "2025-03-27",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT008",
+      "VT010",
+      "VT003"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-03-29",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0010.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0011",
+    "thiet_bi_hong": "TB0668",
+    "su_co": null,
+    "ngay_hong": "2025-04-16",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-04-20",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0011.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0012",
+    "thiet_bi_hong": "TB1357",
+    "su_co": null,
+    "ngay_hong": "2025-05-05",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thanh lý",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT007"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV003",
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-05-06",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0012.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0013",
+    "thiet_bi_hong": "TB1250",
+    "su_co": null,
+    "ngay_hong": "2025-05-06",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012",
+      "VT002"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-05-07",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0013.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0014",
+    "thiet_bi_hong": "TB1389",
+    "su_co": null,
+    "ngay_hong": "2025-05-16",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012",
+      "VT007",
+      "VT006"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV003",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-05-19",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0014.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0015",
+    "thiet_bi_hong": "TB0321",
+    "su_co": null,
+    "ngay_hong": "2025-05-22",
+    "bo_phan_hong": "Bo mạch điều khiển",
+    "mo_ta_hong_hoc": "Phát hiện bo mạch điều khiển bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-05-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0015.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0016",
+    "thiet_bi_hong": "TB0885",
+    "su_co": null,
+    "ngay_hong": "2025-05-27",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1187",
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT008"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-05-28",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0016.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0017",
+    "thiet_bi_hong": "TB0765",
+    "su_co": null,
+    "ngay_hong": "2025-06-06",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012",
+      "VT008"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV007",
+      "NV004",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-06-07",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0017.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0018",
+    "thiet_bi_hong": "TB0855",
+    "su_co": null,
+    "ngay_hong": "2025-06-23",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT002"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV004",
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-06-30",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0018.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0019",
+    "thiet_bi_hong": "TB0656",
+    "su_co": null,
+    "ngay_hong": "2025-07-05",
+    "bo_phan_hong": "Ổ cứng",
+    "mo_ta_hong_hoc": "Phát hiện ổ cứng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT010",
+      "VT001"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV006",
+      "NV005",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-07-08",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0019.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0020",
+    "thiet_bi_hong": "TB0990",
+    "su_co": null,
+    "ngay_hong": "2025-08-04",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0911",
+    "vat_tu_su_dung": [
+      "VT011",
+      "VT002",
+      "VT001"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV008",
+      "NV007",
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-08-11",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0020.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0021",
+    "thiet_bi_hong": "TB0971",
+    "su_co": null,
+    "ngay_hong": "2025-08-13",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB0657",
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV003",
+      "NV010",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Hãng",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-08-17",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0021.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0022",
+    "thiet_bi_hong": "TB1249",
+    "su_co": null,
+    "ngay_hong": "2025-09-18",
+    "bo_phan_hong": "Nguồn",
+    "mo_ta_hong_hoc": "Phát hiện nguồn bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT006",
+      "VT010"
+    ],
+    "chi_phi": 25000000,
+    "nguoi_thuc_hien": [
+      "NV003",
+      "NV004"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-09-19",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0022.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0023",
+    "thiet_bi_hong": "TB0542",
+    "su_co": null,
+    "ngay_hong": "2025-09-21",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV006",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-09-25",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0023.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0024",
+    "thiet_bi_hong": "TB0562",
+    "su_co": null,
+    "ngay_hong": "2025-10-19",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV002"
+    ],
+    "don_vi_thuc_hien": "Thuê ngoài",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-10-22",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0024.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0025",
+    "thiet_bi_hong": "TB0628",
+    "su_co": null,
+    "ngay_hong": "2025-10-22",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1057",
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT009",
+      "VT003"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV011",
+      "NV004",
+      "NV009"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-10-24",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0025.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0026",
+    "thiet_bi_hong": "TB0135",
+    "su_co": null,
+    "ngay_hong": "2025-12-01",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Phát hiện card mạng bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002",
+      "VT006"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV012"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-12-04",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0026.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0027",
+    "thiet_bi_hong": "TB0394",
+    "su_co": null,
+    "ngay_hong": "2025-12-08",
+    "bo_phan_hong": "Anten",
+    "mo_ta_hong_hoc": "Phát hiện anten bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": "TB1378",
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 15000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-12-10",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0027.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0028",
+    "thiet_bi_hong": "TB0409",
+    "su_co": null,
+    "ngay_hong": "2025-12-11",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Phát hiện quạt tản nhiệt bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV002",
+      "NV011",
+      "NV008"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-12-16",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0028.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2025-0029",
+    "thiet_bi_hong": "TB0322",
+    "su_co": null,
+    "ngay_hong": "2025-12-18",
+    "bo_phan_hong": "Bộ khuếch đại",
+    "mo_ta_hong_hoc": "Phát hiện bộ khuếch đại bị hỏng, không hoạt động ổn định.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004",
+      "VT008"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV005"
+    ],
+    "don_vi_thuc_hien": "ATTECH",
+    "ket_qua": "Đã thay thế/sửa chữa, thiết bị hoạt động bình thường sau kiểm tra.",
+    "ngay_hoan_thanh": "2025-12-21",
+    "trang_thai": "Hoàn thành",
+    "file_dinh_kem": "BB-HH2025-0029.pdf"
+  },
+  {
+    "ma_hong_hoc": "HH2026-0001",
+    "thiet_bi_hong": "TB0334",
+    "su_co": null,
+    "ngay_hong": "2026-07-07",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện quạt tản nhiệt có dấu hiệu suy giảm.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV009",
+      "NV003"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0002",
+    "thiet_bi_hong": "TB0737",
+    "su_co": null,
+    "ngay_hong": "2026-07-08",
+    "bo_phan_hong": "Card mạng",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện card mạng có dấu hiệu suy giảm.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT002"
+    ],
+    "chi_phi": 3000000,
+    "nguoi_thuc_hien": [
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0003",
+    "thiet_bi_hong": "TB0395",
+    "su_co": null,
+    "ngay_hong": "2026-07-07",
+    "bo_phan_hong": "Quạt tản nhiệt",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện quạt tản nhiệt có dấu hiệu suy giảm.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT004"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0004",
+    "thiet_bi_hong": "TB1171",
+    "su_co": null,
+    "ngay_hong": "2026-06-27",
+    "bo_phan_hong": "Nguồn 27V DC",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện nguồn 27v dc có dấu hiệu suy giảm.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003"
+    ],
+    "chi_phi": 2000000,
+    "nguoi_thuc_hien": [
+      "NV001"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0005",
+    "thiet_bi_hong": "TB1377",
+    "su_co": null,
+    "ngay_hong": "2026-07-06",
+    "bo_phan_hong": "Anten VHF 118-137MHz",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện anten vhf 118-137mhz có dấu hiệu suy giảm.",
+    "phuong_an": "Sửa chữa",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT007"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0006",
+    "thiet_bi_hong": "TB0255",
+    "su_co": null,
+    "ngay_hong": "2026-06-18",
+    "bo_phan_hong": "Nguồn 27V DC",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện nguồn 27v dc có dấu hiệu suy giảm.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT003"
+    ],
+    "chi_phi": 5000000,
+    "nguoi_thuc_hien": [
+      "NV005",
+      "NV011"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0007",
+    "thiet_bi_hong": "TB1199",
+    "su_co": null,
+    "ngay_hong": "2026-07-07",
+    "bo_phan_hong": "Cáp đồng trục N-type",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện cáp đồng trục n-type có dấu hiệu suy giảm.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT005"
+    ],
+    "chi_phi": 8000000,
+    "nguoi_thuc_hien": [
+      "NV001",
+      "NV006"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Đang xử lý",
+    "file_dinh_kem": null
+  },
+  {
+    "ma_hong_hoc": "HH2026-0008",
+    "thiet_bi_hong": "TB0560",
+    "su_co": null,
+    "ngay_hong": "2026-06-26",
+    "bo_phan_hong": "Bộ lọc thông dải",
+    "mo_ta_hong_hoc": "Kiểm tra định kỳ phát hiện bộ lọc thông dải có dấu hiệu suy giảm.",
+    "phuong_an": "Thay thế",
+    "thiet_bi_thay_the": null,
+    "vat_tu_su_dung": [
+      "VT012"
+    ],
+    "chi_phi": 3000000,
+    "nguoi_thuc_hien": [
+      "NV007"
+    ],
+    "don_vi_thuc_hien": "Nội bộ",
+    "ket_qua": null,
+    "ngay_hoan_thanh": null,
+    "trang_thai": "Mới",
+    "file_dinh_kem": null
+  }
+]

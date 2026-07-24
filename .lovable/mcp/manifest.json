@@ -1,0 +1,678 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://hbgwwdimgzngywtkrjqf.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "mirats-mcp",
+      "version": "0.2.0",
+      "title": "MIRATS AI"
+    },
+    "tools": [
+      {
+        "name": "search_global",
+        "title": "Tìm kiếm toàn hệ thống",
+        "description": "Tìm nhanh tài sản, giấy phép, biểu mẫu theo từ khoá (không dấu vẫn được).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "q": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Từ khoá tìm kiếm"
+            },
+            "limit": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "required": [
+            "q"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "describe_schema",
+        "title": "Mô tả lược đồ CSDL",
+        "description": "Trả về danh sách bảng nghiệp vụ, cột, kiểu dữ liệu và khoá ngoại để hiểu cấu trúc trước khi truy vấn.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "run_select_query",
+        "title": "Chạy truy vấn SELECT",
+        "description": "Chạy 1 câu SELECT/WITH bất kỳ trên CSDL (chỉ đọc, RLS theo quyền user, tối đa 500 dòng). Cho phép tương tác với TOÀN BỘ dữ liệu. Dùng describe_schema trước để biết cột & khoá ngoại.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "sql": {
+              "type": "string",
+              "minLength": 6,
+              "description": "Câu SELECT hoàn chỉnh, không có ; ở cuối"
+            },
+            "max_rows": {
+              "default": 100,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          "required": [
+            "sql"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_table",
+        "title": "Liệt kê bảng bất kỳ",
+        "description": "Liệt kê bản ghi từ bất kỳ bảng nghiệp vụ nào (thiet_bi, giay_phep, tickets, du_an, so_do_he_thong, form_submission, notifications, dm_*...) với bộ lọc/sắp xếp. RLS áp dụng.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "enum": [
+                "thiet_bi",
+                "thiet_bi_tep_dinh_kem",
+                "su_co",
+                "bao_tri",
+                "hong_hoc",
+                "ban_giao",
+                "giay_phep",
+                "giay_phep_khai_thac",
+                "form_template",
+                "form_field",
+                "form_submission",
+                "form_submission_thiet_bi",
+                "tickets",
+                "ticket_comment",
+                "du_an",
+                "du_an_cong_viec",
+                "du_an_moc",
+                "du_an_cong_viec_phoi_hop",
+                "so_do_he_thong",
+                "so_do_tep_dinh_kem",
+                "so_do_thu_vien_hinh",
+                "notifications",
+                "cay_node_edit",
+                "he_thong_truong",
+                "profiles",
+                "user_roles",
+                "audit_log",
+                "dm_don_vi",
+                "dm_he_thong",
+                "dm_nhom_he_thong",
+                "dm_vi_tri",
+                "dm_loai_thiet_bi",
+                "dm_trang_thai_thiet_bi",
+                "dm_nha_san_xuat",
+                "dm_nha_cung_cap",
+                "dm_noi_cap",
+                "dm_loai_giay_phep",
+                "dm_danh_gia_nien_han"
+              ]
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "filters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "column": {
+                    "type": "string",
+                    "description": "Tên cột"
+                  },
+                  "op": {
+                    "type": "string",
+                    "enum": [
+                      "eq",
+                      "neq",
+                      "gt",
+                      "gte",
+                      "lt",
+                      "lte",
+                      "like",
+                      "is_null",
+                      "not_null"
+                    ]
+                  },
+                  "value": {
+                    "description": "Giá trị so sánh (bỏ trống cho is_null/not_null)",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "column",
+                  "op"
+                ]
+              }
+            },
+            "order_by": {
+              "type": "string"
+            },
+            "ascending": {
+              "type": "boolean"
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          },
+          "required": [
+            "table"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_row",
+        "title": "Lấy 1 bản ghi",
+        "description": "Lấy đầy đủ 1 bản ghi từ bất kỳ bảng nào theo cột định danh (mặc định 'id').",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "enum": [
+                "thiet_bi",
+                "thiet_bi_tep_dinh_kem",
+                "su_co",
+                "bao_tri",
+                "hong_hoc",
+                "ban_giao",
+                "giay_phep",
+                "giay_phep_khai_thac",
+                "form_template",
+                "form_field",
+                "form_submission",
+                "form_submission_thiet_bi",
+                "tickets",
+                "ticket_comment",
+                "du_an",
+                "du_an_cong_viec",
+                "du_an_moc",
+                "du_an_cong_viec_phoi_hop",
+                "so_do_he_thong",
+                "so_do_tep_dinh_kem",
+                "so_do_thu_vien_hinh",
+                "notifications",
+                "cay_node_edit",
+                "he_thong_truong",
+                "profiles",
+                "user_roles",
+                "audit_log",
+                "dm_don_vi",
+                "dm_he_thong",
+                "dm_nhom_he_thong",
+                "dm_vi_tri",
+                "dm_loai_thiet_bi",
+                "dm_trang_thai_thiet_bi",
+                "dm_nha_san_xuat",
+                "dm_nha_cung_cap",
+                "dm_noi_cap",
+                "dm_loai_giay_phep",
+                "dm_danh_gia_nien_han"
+              ]
+            },
+            "id_value": {
+              "type": "string"
+            },
+            "id_column": {
+              "default": "id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "table",
+            "id_value"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "count_by",
+        "title": "Đếm / gom nhóm",
+        "description": "Đếm số bản ghi của một bảng, tuỳ chọn gom nhóm theo 1 cột và lọc.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "enum": [
+                "thiet_bi",
+                "thiet_bi_tep_dinh_kem",
+                "su_co",
+                "bao_tri",
+                "hong_hoc",
+                "ban_giao",
+                "giay_phep",
+                "giay_phep_khai_thac",
+                "form_template",
+                "form_field",
+                "form_submission",
+                "form_submission_thiet_bi",
+                "tickets",
+                "ticket_comment",
+                "du_an",
+                "du_an_cong_viec",
+                "du_an_moc",
+                "du_an_cong_viec_phoi_hop",
+                "so_do_he_thong",
+                "so_do_tep_dinh_kem",
+                "so_do_thu_vien_hinh",
+                "notifications",
+                "cay_node_edit",
+                "he_thong_truong",
+                "profiles",
+                "user_roles",
+                "audit_log",
+                "dm_don_vi",
+                "dm_he_thong",
+                "dm_nhom_he_thong",
+                "dm_vi_tri",
+                "dm_loai_thiet_bi",
+                "dm_trang_thai_thiet_bi",
+                "dm_nha_san_xuat",
+                "dm_nha_cung_cap",
+                "dm_noi_cap",
+                "dm_loai_giay_phep",
+                "dm_danh_gia_nien_han"
+              ]
+            },
+            "group_by": {
+              "type": "string"
+            },
+            "filters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "column": {
+                    "type": "string",
+                    "description": "Tên cột"
+                  },
+                  "op": {
+                    "type": "string",
+                    "enum": [
+                      "eq",
+                      "neq",
+                      "gt",
+                      "gte",
+                      "lt",
+                      "lte",
+                      "like",
+                      "is_null",
+                      "not_null"
+                    ]
+                  },
+                  "value": {
+                    "description": "Giá trị so sánh (bỏ trống cho is_null/not_null)",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "column",
+                  "op"
+                ]
+              }
+            }
+          },
+          "required": [
+            "table"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "dashboard_stats",
+        "title": "Thống kê tổng quan",
+        "description": "Số liệu tổng quan: tài sản, giấy phép (và sắp hết hạn), biểu mẫu, tickets, dự án, sơ đồ.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_thiet_bi",
+        "title": "Danh sách tài sản",
+        "description": "Liệt kê tài sản theo bộ lọc (trạng thái, đơn vị, hệ thống, từ khoá).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "keyword": {
+              "type": "string"
+            },
+            "trang_thai_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "don_vi_quan_ly_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_thiet_bi",
+        "title": "Chi tiết tài sản",
+        "description": "Lấy chi tiết 1 tài sản theo id hoặc mã tài sản.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "ma_thiet_bi": {
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "count_thiet_bi_by_trang_thai",
+        "title": "Đếm tài sản theo trạng thái",
+        "description": "Thống kê số lượng tài sản theo từng trạng thái.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_giay_phep_sap_het_han",
+        "title": "Giấy phép sắp hết hạn",
+        "description": "Danh sách giấy phép sẽ hết hạn trong X ngày tới.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "so_ngay": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_form_submissions",
+        "title": "Danh sách biểu mẫu",
+        "description": "Liệt kê biên bản/biểu mẫu đã nộp, lọc theo trạng thái/tài sản/loại.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "submitted",
+                "reviewed",
+                "signed",
+                "rejected"
+              ]
+            },
+            "thiet_bi_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "template_code": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_tickets",
+        "title": "Danh sách ticket",
+        "description": "Liệt kê ticket/yêu cầu hỗ trợ, lọc theo trạng thái/ưu tiên/loại.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "trang_thai": {
+              "type": "string"
+            },
+            "uu_tien": {
+              "type": "string"
+            },
+            "loai": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_du_an",
+        "title": "Danh sách dự án",
+        "description": "Liệt kê dự án, lọc theo trạng thái. Trả về tên, mã, tiến độ, mốc thời gian.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "trang_thai": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_danh_muc",
+        "title": "Danh sách danh mục nền",
+        "description": "Liệt kê danh mục nền (đơn vị, hệ thống, vị trí, loại/ trạng thái tài sản, nhà sản xuất...). Dùng để tra id lọc tài sản.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "enum": [
+                "dm_don_vi",
+                "dm_he_thong",
+                "dm_nhom_he_thong",
+                "dm_vi_tri",
+                "dm_loai_thiet_bi",
+                "dm_trang_thai_thiet_bi",
+                "dm_nha_san_xuat",
+                "dm_nha_cung_cap",
+                "dm_noi_cap",
+                "dm_loai_giay_phep"
+              ]
+            },
+            "limit": {
+              "default": 100,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          "required": [
+            "table"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_notifications",
+        "title": "Thông báo của tôi",
+        "description": "Liệt kê thông báo gần đây của người dùng hiện tại (tuỳ chọn chỉ chưa đọc).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "chua_doc": {
+              "type": "boolean"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

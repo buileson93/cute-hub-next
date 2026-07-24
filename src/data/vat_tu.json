@@ -1,0 +1,189 @@
+[
+  {
+    "ma": "VT001",
+    "ten": "Bộ khuếch đại RF",
+    "don_vi_tinh": "cái",
+    "don_gia": 15000000,
+    "ton_kho": 8,
+    "muc_ton_toi_thieu": 3,
+    "vi_tri_kho": "VTCRA3",
+    "tuong_thich": [
+      "PRN"
+    ],
+    "nha_cung_cap": "VNPT Technology",
+    "loai_vat_tu": "SW",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT002",
+    "ten": "Card mạng",
+    "don_vi_tinh": "cái",
+    "don_gia": 5000000,
+    "ton_kho": 20,
+    "muc_ton_toi_thieu": 4,
+    "vi_tri_kho": "VTCRA1",
+    "tuong_thich": [
+      "SENSOR",
+      "MODEM",
+      "SW"
+    ],
+    "nha_cung_cap": "AIC",
+    "loai_vat_tu": "UPS",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT003",
+    "ten": "Nguồn 27V DC",
+    "don_vi_tinh": "bộ",
+    "don_gia": 12000000,
+    "ton_kho": 10,
+    "muc_ton_toi_thieu": 3,
+    "vi_tri_kho": "VTCRA1",
+    "tuong_thich": [
+      "MON"
+    ],
+    "nha_cung_cap": "Thiên Long",
+    "loai_vat_tu": "PC",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT004",
+    "ten": "Quạt tản nhiệt",
+    "don_vi_tinh": "cái",
+    "don_gia": 1200000,
+    "ton_kho": 50,
+    "muc_ton_toi_thieu": 10,
+    "vi_tri_kho": "VTCRA2",
+    "tuong_thich": [
+      "DGEN"
+    ],
+    "nha_cung_cap": "Thiên Long",
+    "loai_vat_tu": "SW",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT005",
+    "ten": "Cáp đồng trục N-type",
+    "don_vi_tinh": "mét",
+    "don_gia": 450000,
+    "ton_kho": 300,
+    "muc_ton_toi_thieu": 60,
+    "vi_tri_kho": "VTCLA1",
+    "tuong_thich": [
+      "BAT"
+    ],
+    "nha_cung_cap": "VNPT Technology",
+    "loai_vat_tu": "SW",
+    "phan_loai": "tieu_hao"
+  },
+  {
+    "ma": "VT006",
+    "ten": "Bo mạch điều khiển",
+    "don_vi_tinh": "cái",
+    "don_gia": 35000000,
+    "ton_kho": 5,
+    "muc_ton_toi_thieu": 3,
+    "vi_tri_kho": "VTCLA1",
+    "tuong_thich": [
+      "PRN",
+      "SW",
+      "BAT"
+    ],
+    "nha_cung_cap": "Hymetco",
+    "loai_vat_tu": "DGEN",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT007",
+    "ten": "Anten VHF 118-137MHz",
+    "don_vi_tinh": "cái",
+    "don_gia": 28000000,
+    "ton_kho": 4,
+    "muc_ton_toi_thieu": 3,
+    "vi_tri_kho": "VTCRA2",
+    "tuong_thich": [
+      "MON",
+      "VHF"
+    ],
+    "nha_cung_cap": "AIC",
+    "loai_vat_tu": "SENSOR",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT008",
+    "ten": "Pin lithium UPS",
+    "don_vi_tinh": "cái",
+    "don_gia": 4500000,
+    "ton_kho": 30,
+    "muc_ton_toi_thieu": 6,
+    "vi_tri_kho": "VTCLA1",
+    "tuong_thich": [
+      "DGEN",
+      "UHF"
+    ],
+    "nha_cung_cap": "Hymetco",
+    "loai_vat_tu": "UPS",
+    "phan_loai": "tieu_hao"
+  },
+  {
+    "ma": "VT009",
+    "ten": "SSD 480GB công nghiệp",
+    "don_vi_tinh": "cái",
+    "don_gia": 3200000,
+    "ton_kho": 25,
+    "muc_ton_toi_thieu": 5,
+    "vi_tri_kho": "VTCRA3",
+    "tuong_thich": [
+      "DGEN"
+    ],
+    "nha_cung_cap": "VNPT Technology",
+    "loai_vat_tu": "PC",
+    "phan_loai": "du_phong"
+  },
+  {
+    "ma": "VT010",
+    "ten": "Đầu nối SMA",
+    "don_vi_tinh": "cái",
+    "don_gia": 85000,
+    "ton_kho": 500,
+    "muc_ton_toi_thieu": 100,
+    "vi_tri_kho": "VTCLA1",
+    "tuong_thich": [
+      "UPS"
+    ],
+    "nha_cung_cap": "Thiên Long",
+    "loai_vat_tu": "DGEN",
+    "phan_loai": "tieu_hao"
+  },
+  {
+    "ma": "VT011",
+    "ten": "Cầu chì tự phục hồi",
+    "don_vi_tinh": "cái",
+    "don_gia": 180000,
+    "ton_kho": 200,
+    "muc_ton_toi_thieu": 40,
+    "vi_tri_kho": "VTCRA4",
+    "tuong_thich": [
+      "CLOCK",
+      "DGEN"
+    ],
+    "nha_cung_cap": "VTD",
+    "loai_vat_tu": "CAM",
+    "phan_loai": "tieu_hao"
+  },
+  {
+    "ma": "VT012",
+    "ten": "Bộ lọc thông dải",
+    "don_vi_tinh": "bộ",
+    "don_gia": 8500000,
+    "ton_kho": 12,
+    "muc_ton_toi_thieu": 3,
+    "vi_tri_kho": "VTCRA2",
+    "tuong_thich": [
+      "BAT"
+    ],
+    "nha_cung_cap": "Hymetco",
+    "loai_vat_tu": "CAM",
+    "phan_loai": "du_phong"
+  }
+]

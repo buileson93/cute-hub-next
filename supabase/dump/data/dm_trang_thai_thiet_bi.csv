@@ -1,0 +1,7 @@
+id,ma,ten,mo_ta,thu_tu,active,created_at,updated_at,la_ngung_khai_thac,yeu_cau_gan_slot,merged_into,deactivated_at
+1ce915ed-07e9-4b65-9209-2652ffd9b681,DANG_KHAI_THAC,Đang khai thác,,1,t,2026-07-11 07:09:56.588965+00,2026-07-14 00:28:06.756922+00,f,t,,
+c479a7be-b003-484d-bf1b-a7a250623bb5,DANG_SUA_CHUA,Đang sửa chữa,,2,t,2026-07-11 07:09:56.734189+00,2026-07-14 00:28:06.756922+00,f,f,,
+491793b1-cecc-4d89-883b-627d3d912dee,HONG,Hỏng,,3,t,2026-07-11 07:09:56.871875+00,2026-07-14 00:28:06.756922+00,f,f,,
+80e4c431-d6ed-488c-b28d-eea6953c554e,CHO_XU_LY,Chờ xử lý,,4,t,2026-07-11 07:09:57.009737+00,2026-07-14 00:28:06.756922+00,f,f,,
+99ac0a0f-c016-44e0-b4b3-b081b59de2f0,NGUNG_KHAI_THAC,Ngừng khai thác,Thiết bị đã ngừng sử dụng nhưng vẫn lưu hồ sơ lý lịch,90,t,2026-07-12 12:14:37.290891+00,2026-07-14 00:28:06.756922+00,t,f,,
+5f6dd7fb-3f5f-4215-a7e6-552347c19341,THANH_LY,Thanh lý,"Thiết bị đã thanh lý/loại biên, vẫn tra cứu được lịch sử",99,t,2026-07-12 12:14:37.290891+00,2026-07-14 00:28:06.756922+00,t,f,,

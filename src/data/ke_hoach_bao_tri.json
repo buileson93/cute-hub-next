@@ -1,0 +1,122 @@
+[
+  {
+    "ma": "KH-VHF-Q",
+    "ten": "Bảo dưỡng quý nhóm VHF",
+    "ap_dung_nhom_he_thong": "VHF",
+    "ap_dung_loai": null,
+    "chu_ky": "Quý",
+    "noi_dung_checklist": "Vệ sinh anten; Đo công suất phát; Kiểm tra VSWR; Kiểm tra nguồn",
+    "don_vi_phu_trach": "CXR",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-VHF-6",
+    "ten": "Bảo dưỡng 6 tháng nhóm VHF",
+    "ap_dung_nhom_he_thong": "VHF",
+    "ap_dung_loai": null,
+    "chu_ky": "6 tháng",
+    "noi_dung_checklist": "Vệ sinh anten; Đo công suất phát; Kiểm tra VSWR; Kiểm tra nguồn",
+    "don_vi_phu_trach": "CXR",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-VCCS-Q",
+    "ten": "Bảo dưỡng quý nhóm VCCS",
+    "ap_dung_nhom_he_thong": "VCCS",
+    "ap_dung_loai": null,
+    "chu_ky": "Quý",
+    "noi_dung_checklist": "Kiểm tra kết nối; Test loopback; Ghi âm thử; Đồng bộ NTP",
+    "don_vi_phu_trach": "CXR",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-VCCS-6",
+    "ten": "Bảo dưỡng 6 tháng nhóm VCCS",
+    "ap_dung_nhom_he_thong": "VCCS",
+    "ap_dung_loai": null,
+    "chu_ky": "6 tháng",
+    "noi_dung_checklist": "Kiểm tra kết nối; Test loopback; Ghi âm thử; Đồng bộ NTP",
+    "don_vi_phu_trach": "THO",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-RADAR-Q",
+    "ten": "Bảo dưỡng quý nhóm RADAR",
+    "ap_dung_nhom_he_thong": "RADAR",
+    "ap_dung_loai": null,
+    "chu_ky": "Quý",
+    "noi_dung_checklist": "Vệ sinh anten; Đo công suất phát; Xoay anten; Test BITE",
+    "don_vi_phu_trach": "DAD",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-RADAR-6",
+    "ten": "Bảo dưỡng 6 tháng nhóm RADAR",
+    "ap_dung_nhom_he_thong": "RADAR",
+    "ap_dung_loai": null,
+    "chu_ky": "6 tháng",
+    "noi_dung_checklist": "Vệ sinh anten; Đo công suất phát; Xoay anten; Test BITE",
+    "don_vi_phu_trach": "THO",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-AWOS-Q",
+    "ten": "Bảo dưỡng quý nhóm AWOS",
+    "ap_dung_nhom_he_thong": "AWOS",
+    "ap_dung_loai": null,
+    "chu_ky": "Quý",
+    "noi_dung_checklist": "Hiệu chuẩn sensor; Vệ sinh cảm biến; Kiểm tra truyền dữ liệu",
+    "don_vi_phu_trach": "CXR",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-AWOS-6",
+    "ten": "Bảo dưỡng 6 tháng nhóm AWOS",
+    "ap_dung_nhom_he_thong": "AWOS",
+    "ap_dung_loai": null,
+    "chu_ky": "6 tháng",
+    "noi_dung_checklist": "Hiệu chuẩn sensor; Vệ sinh cảm biến; Kiểm tra truyền dữ liệu",
+    "don_vi_phu_trach": "DAD",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-NAV-Q",
+    "ten": "Bảo dưỡng quý nhóm NAV",
+    "ap_dung_nhom_he_thong": "NAV",
+    "ap_dung_loai": null,
+    "chu_ky": "Quý",
+    "noi_dung_checklist": "Đo tần số; Kiểm tra modulation; Vệ sinh anten",
+    "don_vi_phu_trach": "PBA",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-NAV-6",
+    "ten": "Bảo dưỡng 6 tháng nhóm NAV",
+    "ap_dung_nhom_he_thong": "NAV",
+    "ap_dung_loai": null,
+    "chu_ky": "6 tháng",
+    "noi_dung_checklist": "Đo tần số; Kiểm tra modulation; Vệ sinh anten",
+    "don_vi_phu_trach": "THO",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-SDH-Q",
+    "ten": "Bảo dưỡng quý nhóm SDH",
+    "ap_dung_nhom_he_thong": "SDH",
+    "ap_dung_loai": null,
+    "chu_ky": "Quý",
+    "noi_dung_checklist": "Kiểm tra LOS; Đo BER; Vệ sinh quang",
+    "don_vi_phu_trach": "THO",
+    "kich_hoat": true
+  },
+  {
+    "ma": "KH-SDH-6",
+    "ten": "Bảo dưỡng 6 tháng nhóm SDH",
+    "ap_dung_nhom_he_thong": "SDH",
+    "ap_dung_loai": null,
+    "chu_ky": "6 tháng",
+    "noi_dung_checklist": "Kiểm tra LOS; Đo BER; Vệ sinh quang",
+    "don_vi_phu_trach": "THO",
+    "kich_hoat": true
+  }
+]

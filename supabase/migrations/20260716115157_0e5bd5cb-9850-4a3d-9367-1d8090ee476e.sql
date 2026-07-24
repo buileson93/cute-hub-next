@@ -1,0 +1,1 @@
+SELECT current_user, session_user, current_setting('role') INTO TEMP _r; DROP TABLE _r;
