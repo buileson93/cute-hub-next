@@ -1,4 +1,14 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
+  CreateMultipartUploadCommand,
+  UploadPartCommand,
+  CompleteMultipartUploadCommand,
+  AbortMultipartUploadCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 let _client: S3Client | null = null;
@@ -61,4 +71,32 @@ export function r2PublicUrl(key: string): string | null {
   const base = getR2PublicBase();
   if (!base) return null;
   return `${base.replace(/\/$/, "")}/${key.replace(/^\//, "")}`;
+}
+
+// ---- Multipart helpers ----
+export async function r2MultipartCreate(key: string, contentType?: string) {
+  const res = await getR2Client().send(new CreateMultipartUploadCommand({
+    Bucket: getR2Bucket(), Key: key, ContentType: contentType,
+  }));
+  return res.UploadId!;
+}
+
+export async function r2MultipartSignPart(key: string, uploadId: string, partNumber: number, expiresIn = 900) {
+  const cmd = new UploadPartCommand({
+    Bucket: getR2Bucket(), Key: key, UploadId: uploadId, PartNumber: partNumber,
+  });
+  return getSignedUrl(getR2Client(), cmd, { expiresIn, unhoistableHeaders: new Set(["x-amz-content-sha256"]) });
+}
+
+export async function r2MultipartComplete(key: string, uploadId: string, parts: { PartNumber: number; ETag: string }[]) {
+  await getR2Client().send(new CompleteMultipartUploadCommand({
+    Bucket: getR2Bucket(), Key: key, UploadId: uploadId,
+    MultipartUpload: { Parts: parts.sort((a,b) => a.PartNumber - b.PartNumber) },
+  }));
+}
+
+export async function r2MultipartAbort(key: string, uploadId: string) {
+  await getR2Client().send(new AbortMultipartUploadCommand({
+    Bucket: getR2Bucket(), Key: key, UploadId: uploadId,
+  }));
 }
