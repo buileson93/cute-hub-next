@@ -425,17 +425,55 @@ function HeThongInner({
           />
 
           {/* Nhật ký khai thác — cuộn nội bộ để không phá layout khi dữ liệu dài */}
-          <Card>
+          <Card className={nkOpen ? "flex min-h-[420px] flex-col" : ""}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center justify-between gap-2">
               <span>Nhật ký khai thác</span>
-              <span className="text-xs font-normal text-muted-foreground">
-                {timeline.length + baoTri.length + suCo.length + hongHoc.length + banGiao.length} bản ghi
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-normal text-muted-foreground">
+                  {timeline.length + baoTri.length + suCo.length + hongHoc.length + banGiao.length} bản ghi
+                </span>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setNkOpen((v) => !v)} aria-label={nkOpen ? "Thu gọn nhật ký" : "Mở rộng nhật ký"} title={nkOpen ? "Thu gọn" : "Mở rộng"}>
+                  {nkOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          {nkOpen && (
+          <CardContent className="flex-1">
+            {/* Bộ lọc nhanh luôn hiển thị */}
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border bg-background p-2">
+              <div className="relative min-w-[220px] flex-1">
+                <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <Input value={nkQuery} onChange={(e) => { setNkQuery(e.target.value); if (e.target.value) setTab("tl"); }} placeholder="Lọc nhanh nhật ký theo từ khoá, mã, người tạo…" className="h-8 pl-7 pr-7 text-xs" />
+                {nkQuery && (
+                  <button type="button" onClick={() => setNkQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <Select value={nkRange} onValueChange={(v) => { setNkRange(v as typeof nkRange); if (v !== "all") setTab("tl"); }}>
+                <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Thời gian" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Mọi thời gian</SelectItem>
+                  <SelectItem value="3m">3 tháng gần đây</SelectItem>
+                  <SelectItem value="6m">6 tháng gần đây</SelectItem>
+                  <SelectItem value="12m">12 tháng gần đây</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={nkKind} onValueChange={(v) => { setNkKind(v as typeof nkKind); if (v !== "all") setTab("tl"); }}>
+                <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Loại" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả loại</SelectItem>
+                  <SelectItem value="bt">Bảo dưỡng</SelectItem>
+                  <SelectItem value="sc">Sự cố kỹ thuật</SelectItem>
+                  <SelectItem value="hh">Hỏng hóc</SelectItem>
+                  <SelectItem value="bg">Bàn giao</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             {/* Tóm tắt nhanh toàn bộ nhật ký */}
+            {!compact && (
             <div className="mb-3 grid grid-cols-2 gap-2 rounded-md border bg-muted/30 p-2 text-xs sm:grid-cols-6">
               <SummaryStat label="Tổng sự kiện" value={timeline.length} />
               <SummaryStat label="Khoảng thời gian" value={firstEventTs && lastEventTs ? `${fmtVN(firstEventTs)} → ${fmtVN(lastEventTs)}` : "—"} wide />
@@ -444,6 +482,7 @@ function HeThongInner({
               <SummaryStat label="Hỏng hóc" value={kindCounts.hh} tone="text-orange-700" />
               <SummaryStat label="Bàn giao" value={kindCounts.bg} tone="text-sky-700" />
             </div>
+            )}
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
