@@ -1,9 +1,11 @@
-// Empty shim for prismjs — @react-email/components' barrel re-exports
-// @react-email/code-block which pulls prismjs. We don't use CodeBlock,
-// and prismjs 1.30 crashes under Node SSR ("Element is not defined").
-module.exports = {};
-module.exports.default = {};
-module.exports.languages = {};
-module.exports.highlight = () => "";
-module.exports.tokenize = () => [];
-module.exports.hooks = { add: () => {}, run: () => {} };
+var noop = function(){};
+var Prism = {
+  languages: { extend: function(){ return {}; }, insertBefore: function(){ return {}; }, DFS: noop },
+  hooks: { add: noop, run: noop },
+  highlight: function(){ return ""; },
+  tokenize: function(){ return []; },
+  plugins: {},
+  util: { encode: function(x){return x;}, type: function(){return "";}, objId: function(){return 0;}, clone: function(x){return x;} },
+};
+module.exports = Prism;
+module.exports.default = Prism;
