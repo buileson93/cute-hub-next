@@ -88,6 +88,7 @@ function FormEditor() {
   const [chkSections, setChkSections] = useState<DesignerSection[] | null>(null);
   const [chkDirty, setChkDirty] = useState(false);
   const [chkSaving, setChkSaving] = useState(false);
+  const [tabAutoPicked, setTabAutoPicked] = useState(false);
   const [autosaveOn, setAutosaveOn] = useState(true);
   const [mode, setMode] = useState<"simple" | "advanced">(() => {
     if (typeof window === "undefined") return "simple";
@@ -171,6 +172,19 @@ function FormEditor() {
       return true;
     },
   });
+
+  // Auto-chọn tab đúng dựa vào loại nội dung mẫu đang có:
+  // - Có form_check_item (bảng kiểm) & không có form_field → mở tab "Bảng kiểm".
+  // - Có form_field → giữ tab "Thiết kế".
+  // Chỉ chạy 1 lần sau khi cả hai query đã tải xong.
+  useEffect(() => {
+    if (tabAutoPicked) return;
+    if (fields === null || chkSections === null) return;
+    const hasChecklist = chkSections.some((s) => (s.items?.length ?? 0) > 0);
+    const hasFields = fields.length > 0;
+    if (hasChecklist && !hasFields) setTab("checklist");
+    setTabAutoPicked(true);
+  }, [fields, chkSections, tabAutoPicked]);
 
   const { data: taxo } = useQuery({
     queryKey: ["db_taxonomy"],
