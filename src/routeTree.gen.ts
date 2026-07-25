@@ -98,6 +98,7 @@ import { Route as AppAdminThuongHieuRouteImport } from './routes/_app.admin.thuo
 import { Route as AppAdminReviewRouteImport } from './routes/_app.admin.review'
 import { Route as AppAdminPermissionsRouteImport } from './routes/_app.admin.permissions'
 import { Route as AppAdminNhapLieuRouteImport } from './routes/_app.admin.nhap-lieu'
+import { Route as AppAdminLuuTruRouteImport } from './routes/_app.admin.luu-tru'
 import { Route as AppAdminKiemTraSoLieuRouteImport } from './routes/_app.admin.kiem-tra-so-lieu'
 import { Route as AppAdminKiemTraLayoutRouteImport } from './routes/_app.admin.kiem-tra-layout'
 import { Route as AppAdminFormsRouteImport } from './routes/_app.admin.forms'
@@ -572,6 +573,11 @@ const AppAdminNhapLieuRoute = AppAdminNhapLieuRouteImport.update({
   path: '/admin/nhap-lieu',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminLuuTruRoute = AppAdminLuuTruRouteImport.update({
+  id: '/admin/luu-tru',
+  path: '/admin/luu-tru',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminKiemTraSoLieuRoute = AppAdminKiemTraSoLieuRouteImport.update({
   id: '/admin/kiem-tra-so-lieu',
   path: '/admin/kiem-tra-so-lieu',
@@ -763,6 +769,7 @@ export interface FileRoutesByFullPath {
   '/admin/forms': typeof AppAdminFormsRouteWithChildren
   '/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
   '/admin/kiem-tra-so-lieu': typeof AppAdminKiemTraSoLieuRoute
+  '/admin/luu-tru': typeof AppAdminLuuTruRoute
   '/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
   '/admin/permissions': typeof AppAdminPermissionsRoute
   '/admin/review': typeof AppAdminReviewRoute
@@ -873,6 +880,7 @@ export interface FileRoutesByTo {
   '/admin/bao-tri-chinh-sach': typeof AppAdminBaoTriChinhSachRoute
   '/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
   '/admin/kiem-tra-so-lieu': typeof AppAdminKiemTraSoLieuRoute
+  '/admin/luu-tru': typeof AppAdminLuuTruRoute
   '/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
   '/admin/permissions': typeof AppAdminPermissionsRoute
   '/admin/review': typeof AppAdminReviewRoute
@@ -990,6 +998,7 @@ export interface FileRoutesById {
   '/_app/admin/forms': typeof AppAdminFormsRouteWithChildren
   '/_app/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
   '/_app/admin/kiem-tra-so-lieu': typeof AppAdminKiemTraSoLieuRoute
+  '/_app/admin/luu-tru': typeof AppAdminLuuTruRoute
   '/_app/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
   '/_app/admin/permissions': typeof AppAdminPermissionsRoute
   '/_app/admin/review': typeof AppAdminReviewRoute
@@ -1108,6 +1117,7 @@ export interface FileRouteTypes {
     | '/admin/forms'
     | '/admin/kiem-tra-layout'
     | '/admin/kiem-tra-so-lieu'
+    | '/admin/luu-tru'
     | '/admin/nhap-lieu'
     | '/admin/permissions'
     | '/admin/review'
@@ -1218,6 +1228,7 @@ export interface FileRouteTypes {
     | '/admin/bao-tri-chinh-sach'
     | '/admin/kiem-tra-layout'
     | '/admin/kiem-tra-so-lieu'
+    | '/admin/luu-tru'
     | '/admin/nhap-lieu'
     | '/admin/permissions'
     | '/admin/review'
@@ -1334,6 +1345,7 @@ export interface FileRouteTypes {
     | '/_app/admin/forms'
     | '/_app/admin/kiem-tra-layout'
     | '/_app/admin/kiem-tra-so-lieu'
+    | '/_app/admin/luu-tru'
     | '/_app/admin/nhap-lieu'
     | '/_app/admin/permissions'
     | '/_app/admin/review'
@@ -2059,6 +2071,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminNhapLieuRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/luu-tru': {
+      id: '/_app/admin/luu-tru'
+      path: '/admin/luu-tru'
+      fullPath: '/admin/luu-tru'
+      preLoaderRoute: typeof AppAdminLuuTruRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/kiem-tra-so-lieu': {
       id: '/_app/admin/kiem-tra-so-lieu'
       path: '/admin/kiem-tra-so-lieu'
@@ -2434,6 +2453,7 @@ interface AppRouteChildren {
   AppAdminFormsRoute: typeof AppAdminFormsRouteWithChildren
   AppAdminKiemTraLayoutRoute: typeof AppAdminKiemTraLayoutRoute
   AppAdminKiemTraSoLieuRoute: typeof AppAdminKiemTraSoLieuRoute
+  AppAdminLuuTruRoute: typeof AppAdminLuuTruRoute
   AppAdminNhapLieuRoute: typeof AppAdminNhapLieuRoute
   AppAdminPermissionsRoute: typeof AppAdminPermissionsRoute
   AppAdminReviewRoute: typeof AppAdminReviewRoute
@@ -2492,6 +2512,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminFormsRoute: AppAdminFormsRouteWithChildren,
   AppAdminKiemTraLayoutRoute: AppAdminKiemTraLayoutRoute,
   AppAdminKiemTraSoLieuRoute: AppAdminKiemTraSoLieuRoute,
+  AppAdminLuuTruRoute: AppAdminLuuTruRoute,
   AppAdminNhapLieuRoute: AppAdminNhapLieuRoute,
   AppAdminPermissionsRoute: AppAdminPermissionsRoute,
   AppAdminReviewRoute: AppAdminReviewRoute,

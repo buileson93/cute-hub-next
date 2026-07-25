@@ -213,6 +213,7 @@ export const workspaces: Workspace[] = [
           { to: "/admin/kiem-tra-layout", label: "Kiểm tra layout", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/ai", label: "Cấu hình AI", icon: Sparkles, roles: ADMIN_ONLY },
           { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
+         { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
 
         ],
       },
@@ -259,6 +260,7 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/admin/kiem-tra-layout": { crumb: "Hệ thống", title: "Kiểm tra layout theo viewport" },
   "/admin/bao-tri-chinh-sach": { crumb: "Hệ thống", title: "Chính sách bảo dưỡng" },
   "/admin/thuong-hieu": { crumb: "Hệ thống", title: "Thương hiệu & Logo" },
+  "/admin/luu-tru": { crumb: "Hệ thống", title: "Lưu trữ tệp — Cloud & R2" },
 
 
   "/cai-dat/tai-khoan": { crumb: "Cá nhân", title: "Tài khoản của tôi" },
