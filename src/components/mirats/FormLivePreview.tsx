@@ -60,7 +60,7 @@ export function FormLivePreview({ tplName, tplDesc, fields }: FormLivePreviewPro
         <CardContent className="space-y-4">
           {rows.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              Chưa có câu hỏi nào — thêm câu hỏi ở tab Thiết kế để xem trước.
+              Chưa có câu hỏi nào — thêm câu hỏi ở tab Biểu mẫu tự do để xem trước.
             </p>
           )}
           {rows.map((rowFields, ri) => (
