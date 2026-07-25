@@ -27,6 +27,11 @@ import {
   type ItemInput,
   type KetQua,
 } from "@/lib/mirats/checklist";
+import {
+  DEFAULT_ITEM_OPTIONS,
+  evaluateAutoResult,
+  formatThreshold,
+} from "@/lib/mirats/checklist-item-options";
 
 export interface ChecklistRendererProps {
   sections: ChecklistSection[];
@@ -62,16 +67,28 @@ export function ChecklistRenderer({
             {sec.mo_ta && <p className="mt-0.5 text-xs text-muted-foreground">{sec.mo_ta}</p>}
           </div>
           <div className="divide-y">
-            {sec.items.map((item) => (
-              <ItemRow
-                key={item.item_code}
-                item={item}
-                value={values[item.item_code]}
-                readOnly={readOnly}
-                showErrors={showErrors}
-                onPatch={(part) => patch(item.item_code, part)}
-              />
-            ))}
+            {sec.items.map((item, idx) => {
+              const prev = idx > 0 ? sec.items[idx - 1] : null;
+              const grp = item.options?.nhom_lon ?? null;
+              const prevGrp = prev?.options?.nhom_lon ?? null;
+              const showGroup = grp && grp !== prevGrp;
+              return (
+                <div key={item.item_code}>
+                  {showGroup && (
+                    <div className="bg-secondary/50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {grp}
+                    </div>
+                  )}
+                  <ItemRow
+                    item={item}
+                    value={values[item.item_code]}
+                    readOnly={readOnly}
+                    showErrors={showErrors}
+                    onPatch={(part) => patch(item.item_code, part)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}
@@ -89,28 +106,53 @@ function ItemRow({
   onPatch: (part: Partial<ItemInput>) => void;
 }) {
   const v = value ?? {};
+  const opts = item.options ?? DEFAULT_ITEM_OPTIONS;
   const err = showErrors ? validateItemInput(item, v) : null;
   const idBase = `chk-${item.item_code}`;
   const numInvalid =
     item.result_kind === "so" && Number.isNaN(coerceNumber(v.gia_tri_so ?? null));
+  const thresholdLabel = formatThreshold(opts.tieu_chuan_min, opts.tieu_chuan_max, item.don_vi);
+
+  // Tự chấm Đạt/K.Đạt khi nhập số hợp lệ và có ngưỡng — không đè kết luận thủ công khác.
+  const handleNumChange = (raw: string) => {
+    const next: Partial<ItemInput> = { gia_tri_so: raw };
+    const n = coerceNumber(raw);
+    if (n != null && !Number.isNaN(n)) {
+      const auto = evaluateAutoResult(n, opts.tieu_chuan_min, opts.tieu_chuan_max);
+      if (auto && (!v.ket_qua || v.ket_qua === "dat" || v.ket_qua === "khong_dat")) {
+        next.ket_qua = auto;
+      }
+    }
+    onPatch(next);
+  };
 
   return (
     <div className="px-4 py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <Label htmlFor={idBase} className="text-sm flex items-center gap-1">
-            {item.ten}
+            {opts.hang_muc ?? item.ten}
             {item.bat_buoc && <span className="text-destructive" aria-hidden="true">*</span>}
           </Label>
+          {opts.noi_dung_chi_tiet && (
+            <p className="mt-0.5 whitespace-pre-line text-[11px] text-foreground/80">{opts.noi_dung_chi_tiet}</p>
+          )}
           {item.huong_dan && (
             <p className="mt-0.5 text-[11px] text-muted-foreground">{item.huong_dan}</p>
           )}
         </div>
-        {item.tieu_chuan && (
-          <span className="shrink-0 rounded bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground">
-            TC: {item.tieu_chuan}
-          </span>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          {thresholdLabel && (
+            <Badge variant="secondary" className="font-mono text-[10px]" title="Ngưỡng tự chấm">
+              {thresholdLabel}
+            </Badge>
+          )}
+          {item.tieu_chuan && (
+            <span className="rounded bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground">
+              TC: {item.tieu_chuan}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -125,7 +167,7 @@ function ItemRow({
               disabled={readOnly}
               aria-invalid={numInvalid || !!err}
               placeholder="Giá trị đo"
-              onChange={(e) => onPatch({ gia_tri_so: e.target.value })}
+              onChange={(e) => handleNumChange(e.target.value)}
               className="h-8 text-xs"
             />
             {item.don_vi && <span className="text-xs text-muted-foreground">{item.don_vi}</span>}
@@ -140,7 +182,7 @@ function ItemRow({
               <SelectValue placeholder="— Chọn —" />
             </SelectTrigger>
             <SelectContent>
-              {(item.tuy_chon ?? []).map((opt) => (
+              {(opts.choices ?? item.tuy_chon ?? []).map((opt) => (
                 <SelectItem key={opt} value={opt} className="text-xs">{opt}</SelectItem>
               ))}
             </SelectContent>
