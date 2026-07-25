@@ -641,6 +641,11 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
       <div className="flex justify-end gap-2">
         <Button onClick={() => save.mutate()} disabled={save.isPending || readonly}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
       </div>
+
+      <div className="space-y-2 rounded border p-3">
+        <DotAuditTimelineHeader />
+        <DotAuditTimeline hangMucId={hangMuc.id} limit={50} />
+      </div>
     </div>
   );
 }
