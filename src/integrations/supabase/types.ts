@@ -3557,8 +3557,10 @@ export type Database = {
         Row: {
           attrs: Json
           created_at: string
+          created_by: string | null
           dia_diem: string | null
           don_vi: string | null
+          file_gpkt: string | null
           gp_cu: string | null
           gp_han: string | null
           gp_ngay: string | null
@@ -3585,8 +3587,10 @@ export type Database = {
         Insert: {
           attrs?: Json
           created_at?: string
+          created_by?: string | null
           dia_diem?: string | null
           don_vi?: string | null
+          file_gpkt?: string | null
           gp_cu?: string | null
           gp_han?: string | null
           gp_ngay?: string | null
@@ -3613,8 +3617,10 @@ export type Database = {
         Update: {
           attrs?: Json
           created_at?: string
+          created_by?: string | null
           dia_diem?: string | null
           don_vi?: string | null
+          file_gpkt?: string | null
           gp_cu?: string | null
           gp_han?: string | null
           gp_ngay?: string | null
