@@ -15,12 +15,20 @@ const getSchema = z.object({
 
 const delSchema = z.object({ key: z.string().min(1).max(1024) });
 
+// Các prefix bắt buộc riêng tư (chỉ truy cập qua presigned URL, không public qua files.vatm.app)
+const PRIVATE_PREFIXES = ["private/", "gpkt/", "bao-duong/", "dot-bao-duong/", "user/"];
+
+export function isPrivateKey(key: string): boolean {
+  return PRIVATE_PREFIXES.some((p) => key.startsWith(p));
+}
+
 function sanitizeKey(userId: string, rawKey: string): string {
   // Chống path traversal, ép prefix theo user hoặc theo namespace hợp lệ
   const clean = rawKey.replace(/\\/g, "/").replace(/\.\.+/g, "").replace(/^\/+/, "");
   if (!clean) throw new Error("Key không hợp lệ");
-  // Cho phép prefix chung như "uploads/", "gpkt/", "bao-duong/", "user/<uid>/"
-  const allowed = /^(uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|user)\//;
+  // Cho phép prefix chung. "public/" = ai cũng đọc được qua files.vatm.app.
+  // Các prefix còn lại là private, cần presigned URL.
+  const allowed = /^(public|uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|private|user)\//;
   if (!allowed.test(clean)) {
     return `user/${userId}/${clean}`;
   }
@@ -34,7 +42,9 @@ export const r2GetUploadUrl = createServerFn({ method: "POST" })
     const { r2PresignPut, r2PublicUrl } = await import("./r2.server");
     const key = sanitizeKey(context.userId, data.key);
     const url = await r2PresignPut(key, data.contentType, data.expiresIn ?? 900);
-    return { key, url, publicUrl: r2PublicUrl(key), method: "PUT" as const };
+    // Chỉ trả publicUrl cho file "public/*". Các file khác phải xin presigned GET.
+    const publicUrl = isPrivateKey(key) ? null : r2PublicUrl(key);
+    return { key, url, publicUrl, method: "PUT" as const, isPrivate: isPrivateKey(key) };
   });
 
 export const r2GetDownloadUrl = createServerFn({ method: "POST" })
