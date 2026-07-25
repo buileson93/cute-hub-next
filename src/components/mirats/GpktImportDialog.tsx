@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/mirats/Combobox";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -221,14 +220,15 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
 
         {/* Cảnh báo trùng */}
         {dupGpSo && (
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Số giấy phép đã tồn tại</AlertTitle>
-            <AlertDescription className="text-sm">
-              Đã có bản ghi với số <b>{dupGpSo.gp_so}</b>
-              {dupGpSo.he_thong_ten ? <> — hệ thống <b>{dupGpSo.he_thong_ten}</b></> : null}
-              {dupGpSo.gp_han ? <> (hết hạn {dupGpSo.gp_han})</> : null}.
-              {" "}Nếu bạn muốn thay thế, tick "Ghi đè bản ghi trùng" bên dưới.
+          <div className="rounded-md border border-red-300 bg-red-50 dark:border-red-500/40 dark:bg-red-500/10 p-3 text-sm text-red-900 dark:text-red-100 flex gap-2">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <div>
+              <div className="font-medium">Số giấy phép đã tồn tại</div>
+              <div>
+                Đã có bản ghi với số <b>{dupGpSo.gp_so}</b>
+                {dupGpSo.he_thong_ten ? <> — hệ thống <b>{dupGpSo.he_thong_ten}</b></> : null}
+                {dupGpSo.gp_han ? <> (hết hạn {dupGpSo.gp_han})</> : null}.
+              </div>
               <label className="mt-2 flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -237,24 +237,22 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
                 />
                 <span>Ghi đè bản ghi trùng số GP</span>
               </label>
-            </AlertDescription>
-          </Alert>
+            </div>
+          </div>
         )}
         {dupHeThong.length > 0 && (
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Hệ thống đã có {dupHeThong.length} GPKT còn hiệu lực</AlertTitle>
-            <AlertDescription className="text-sm space-y-1">
+          <div className="rounded-md border border-amber-300 bg-amber-50 dark:border-amber-500/40 dark:bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-100 flex gap-2">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <div className="space-y-1">
+              <div className="font-medium">Hệ thống đã có {dupHeThong.length} GPKT còn hiệu lực</div>
               {dupHeThong.slice(0, 5).map((d) => (
-                <div key={d.id}>
-                  • <b>{d.gp_so}</b>{d.gp_han ? ` — hết hạn ${d.gp_han}` : ""}
-                </div>
+                <div key={d.id}>• <b>{d.gp_so}</b>{d.gp_han ? ` — hết hạn ${d.gp_han}` : ""}</div>
               ))}
               <div className="text-xs text-muted-foreground pt-1">
                 Kiểm tra kỹ tránh khai trùng cho cùng một hệ thống.
               </div>
-            </AlertDescription>
-          </Alert>
+            </div>
+          </div>
         )}
 
         {/* Form */}
