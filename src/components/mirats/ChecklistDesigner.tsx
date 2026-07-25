@@ -195,14 +195,14 @@ export function ChecklistDesigner({
   );
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-[280px_1fr_340px]">
+    <div className="grid min-h-0 flex-1 grid-cols-[280px_1fr_340px]" data-testid="chk-designer">
       {/* LEFT — sections + items */}
-      <aside className="min-h-0 overflow-y-auto border-r bg-muted/30">
+      <aside className="min-h-0 overflow-y-auto border-r bg-muted/30" data-testid="chk-sec-panel">
         <div className="flex items-center justify-between p-2">
           <p className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
             <ListChecks className="h-3 w-3" /> Nhóm ({sections.length})
           </p>
-          <Button size="sm" variant="outline" className="h-7" onClick={addSection}>
+          <Button size="sm" variant="outline" className="h-7" onClick={addSection} data-testid="chk-add-section">
             <Plus className="h-3 w-3" />
           </Button>
         </div>
@@ -305,7 +305,7 @@ export function ChecklistDesigner({
       </main>
 
       {/* RIGHT — inspector */}
-      <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3">
+      <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3" data-testid="chk-inspector">
         <div className="mb-2 flex items-center gap-1">
           <Settings2 className="h-4 w-4 text-muted-foreground" />
           <p className="text-xs font-semibold uppercase text-muted-foreground">Thuộc tính</p>
