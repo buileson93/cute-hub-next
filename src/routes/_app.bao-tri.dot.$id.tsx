@@ -298,7 +298,7 @@ function DotDetailPage() {
                     {g.items.map((h) => {
                       const tt = trangThaiHM[h.trang_thai] ?? trangThaiHM.chua_bat_dau;
                       const dt = duyetTT[h.duyet_trang_thai ?? "chua_gui"] ?? duyetTT.chua_gui;
-                      const eff = h.han_hoan_thanh ?? hanByDv.get(h.don_vi_id) ?? null;
+                      const eff = h.han_hoan_thanh ?? hanByDv.get(h.don_vi_id) ?? undefined;
                       const dl = deadlineTone(eff, h.trang_thai === "hoan_thanh" || h.duyet_trang_thai === "da_duyet");
                       const locked = h.duyet_trang_thai === "da_duyet";
                       const isMine = profile?.don_vi === g.donVi?.ma;
@@ -496,11 +496,12 @@ function AddHeThongDialog({ open, onOpenChange, dotId, donViId, existingHeThongI
   );
 }
 
-function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnType<typeof useQuery<Array<{ id: string; trang_thai: string; ket_qua: string | null; ton_tai: string | null; kien_nghi: string | null; he_thong_id: string; dm_he_thong: { id: string; ma: string; ten: string } | null }>>>["data"]>[number]; onSaved: () => void }) {
+function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: { id: string; trang_thai: string; duyet_trang_thai?: string | null; ket_qua: string | null; ton_tai: string | null; kien_nghi: string | null; han_hoan_thanh?: string | null; he_thong_id: string; dm_he_thong: { id: string; ma: string; ten: string } | null; approval_note?: string | null }; onSaved: () => void; readonly?: boolean }) {
   const [trangThai, setTrangThai] = useState(hangMuc.trang_thai);
   const [ketQua, setKetQua] = useState<string>(hangMuc.ket_qua ?? "");
   const [tonTai, setTonTai] = useState(hangMuc.ton_tai ?? "");
   const [kienNghi, setKienNghi] = useState(hangMuc.kien_nghi ?? "");
+  const [han, setHan] = useState<string>(hangMuc.han_hoan_thanh ?? "");
 
   const { data: bienBans } = useQuery({
     queryKey: ["hm-bien-ban", hangMuc.id],
@@ -527,6 +528,7 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
         ket_qua: (ketQua || null) as never,
         ton_tai: tonTai || null,
         kien_nghi: kienNghi || null,
+        han_hoan_thanh: han || null,
       };
       let ngay_hoan_thanh: string | undefined;
       let nguoi_thuc_hien: string | undefined;
@@ -554,6 +556,16 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
 
   return (
     <div className="mt-4 space-y-4">
+      {readonly && (
+        <div className="rounded border border-emerald-300 bg-emerald-50 p-2 text-xs text-emerald-800 flex items-center gap-2">
+          <Lock className="h-3.5 w-3.5" />Hạng mục đã được duyệt và khoá. Cần Admin mở khoá để chỉnh sửa.
+        </div>
+      )}
+      {hangMuc.approval_note && (
+        <div className="rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
+          <span className="font-medium">Ghi chú duyệt:</span> {hangMuc.approval_note}
+        </div>
+      )}
       <div className="rounded bg-muted p-3 text-sm">
         <div className="font-medium">{hangMuc.dm_he_thong?.ten}</div>
         <div className="text-xs text-muted-foreground">{hangMuc.dm_he_thong?.ma}</div>
@@ -561,7 +573,7 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label>Trạng thái</Label>
-          <Select value={trangThai} onValueChange={setTrangThai}>
+          <Select value={trangThai} onValueChange={setTrangThai} disabled={readonly}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="chua_bat_dau">Chưa bắt đầu</SelectItem>
@@ -573,7 +585,7 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
         </div>
         <div>
           <Label>Kết quả</Label>
-          <Select value={ketQua || "none"} onValueChange={(v) => setKetQua(v === "none" ? "" : v)}>
+          <Select value={ketQua || "none"} onValueChange={(v) => setKetQua(v === "none" ? "" : v)} disabled={readonly}>
             <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="none">— Chưa đánh giá</SelectItem>
@@ -583,9 +595,13 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
             </SelectContent>
           </Select>
         </div>
+        <div>
+          <Label>Hạn hoàn thành</Label>
+          <Input type="date" value={han} onChange={(e) => setHan(e.target.value)} disabled={readonly} />
+        </div>
       </div>
-      <div><Label>Tồn tại</Label><Textarea rows={2} value={tonTai} onChange={(e) => setTonTai(e.target.value)} /></div>
-      <div><Label>Kiến nghị</Label><Textarea rows={2} value={kienNghi} onChange={(e) => setKienNghi(e.target.value)} /></div>
+      <div><Label>Tồn tại</Label><Textarea rows={2} value={tonTai} onChange={(e) => setTonTai(e.target.value)} disabled={readonly} /></div>
+      <div><Label>Kiến nghị</Label><Textarea rows={2} value={kienNghi} onChange={(e) => setKienNghi(e.target.value)} disabled={readonly} /></div>
 
       <div className="space-y-2 rounded border p-3">
         <div className="flex items-center gap-2 text-sm font-medium"><FileText className="h-4 w-4" />Biên bản đã gắn</div>
@@ -614,9 +630,54 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
+        <Button onClick={() => save.mutate()} disabled={save.isPending || readonly}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
       </div>
     </div>
+  );
+}
+
+function DeadlinesDialog({ open, onOpenChange, dotId, donViList, existingHans, onDone }: {
+  open: boolean; onOpenChange: (o: boolean) => void; dotId: string;
+  donViList: Array<{ id: string; ma: string; ten: string }>;
+  existingHans: Array<{ id: string; don_vi_id: string; han_ngay: string; mo_ta: string | null }>;
+  onDone: () => void;
+}) {
+  const [rows, setRows] = useState<Record<string, string>>({});
+  useMemo(() => {
+    const initial: Record<string, string> = {};
+    for (const h of existingHans) initial[h.don_vi_id] = h.han_ngay;
+    setRows(initial);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      const upserts = Object.entries(rows).filter(([, v]) => v).map(([don_vi_id, han_ngay]) => ({ dot_id: dotId, don_vi_id, han_ngay }));
+      if (upserts.length === 0) return;
+      const { error } = await supabase.from("dot_bao_duong_han").upsert(upserts, { onConflict: "dot_id,don_vi_id" });
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Đã lưu mốc tiến độ"); onDone(); onOpenChange(false); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader><DialogTitle>Mốc tiến độ theo đơn vị</DialogTitle></DialogHeader>
+        <div className="space-y-2 max-h-96 overflow-auto">
+          {donViList.map((dv) => (
+            <div key={dv.id} className="grid grid-cols-[1fr_180px] items-center gap-2">
+              <div className="text-sm"><span className="font-medium">{dv.ma}</span> <span className="text-muted-foreground">{dv.ten}</span></div>
+              <Input type="date" value={rows[dv.id] ?? ""} onChange={(e) => setRows({ ...rows, [dv.id]: e.target.value })} />
+            </div>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Đóng</Button>
+          <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
