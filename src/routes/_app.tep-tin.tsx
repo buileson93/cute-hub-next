@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import {
   useR2ListMyFiles, useR2Upload, useR2Download, useR2Delete, useR2AbortResumable,
-  listResumableSessions, fileFingerprint, type ResumableSession,
+  useR2InspectResumable,
+  listResumableSessions, cleanupExpiredSessions, fileFingerprint, type ResumableSession,
 } from "@/lib/mirats/r2-client";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File, Search, X, RotateCw, PlayCircle, XCircle } from "lucide-react";
+import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File, Search, X, RotateCw, PlayCircle, XCircle, StopCircle, Trash, Clock, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_app/tep-tin")({
   head: () => ({
@@ -49,18 +50,37 @@ function FilesPage() {
   const download = useR2Download();
   const del = useR2Delete();
   const abortResumable = useR2AbortResumable();
+  const inspectResumable = useR2InspectResumable();
   const inputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
   const resumeTargetRef = useRef<ResumableSession | null>(null);
-  const [progress, setProgress] = useState<{ name: string; percent: number } | null>(null);
+  const [progress, setProgress] = useState<{ name: string; percent: number; loaded: number; total: number; startedAt: number; startedBytes: number } | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const [nowTick, setNowTick] = useState(0);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [status, setStatus] = useState<string>("all");
   const [failed, setFailed] = useState<{ id: string; file: File; error: string }[]>([]);
   const [sessions, setSessions] = useState<ResumableSession[]>([]);
   const [mismatchFor, setMismatchFor] = useState<string | null>(null);
-  const refreshSessions = () => setSessions(listResumableSessions());
+  const [cleanupStats, setCleanupStats] = useState<{ removed: number; kept: number; oldestAgeMs: number | null }>({ removed: 0, kept: 0, oldestAgeMs: null });
+  const refreshSessions = () => {
+    const stats = cleanupExpiredSessions();
+    setCleanupStats(stats);
+    setSessions(listResumableSessions());
+  };
   useEffect(() => { refreshSessions(); }, []);
+  // Dọn định kỳ mỗi 5 phút để phản ánh trạng thái quá hạn.
+  useEffect(() => {
+    const id = window.setInterval(refreshSessions, 5 * 60 * 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  // Tick 1s để cập nhật ETA khi có upload đang chạy.
+  useEffect(() => {
+    if (!progress) return;
+    const id = window.setInterval(() => setNowTick((n) => n + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [progress]);
 
   // Trong lúc upload, poll localStorage để cập nhật % của phiên đang chạy trong panel "Có thể tiếp tục".
   useEffect(() => {
@@ -127,26 +147,62 @@ function FilesPage() {
   const hasFilter = search.trim() !== "" || category !== "all" || status !== "all";
 
   const uploadOne = async (f: File) => {
-    setProgress({ name: f.name, percent: 0 });
+    const startedAt = Date.now();
+    setProgress({ name: f.name, percent: 0, loaded: 0, total: f.size, startedAt, startedBytes: 0 });
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
-      await upload(f, { onProgress: (p) => setProgress({ name: f.name, percent: p.percent }) });
+      // Ghi lại "startedBytes" ở lần onProgress đầu để tính tốc độ từ điểm nối lại (resume).
+      let seededBase = false;
+      await upload(f, {
+        signal: controller.signal,
+        onProgress: (p) => setProgress((prev) => {
+          const base = !seededBase ? p.loaded : (prev?.startedBytes ?? 0);
+          if (!seededBase) seededBase = true;
+          return { name: f.name, percent: p.percent, loaded: p.loaded, total: p.total, startedAt: prev?.startedAt ?? startedAt, startedBytes: base };
+        }),
+      });
       toast.success(`Đã upload: ${f.name}`);
       // xoá khỏi failed nếu retry thành công
       setFailed((prev) => prev.filter((x) => x.file !== f));
       refreshSessions();
     } catch (e: any) {
-      toast.error(`Upload thất bại: ${e.message}. Bạn có thể bấm "Thử lại".`);
+      const msg = String(e?.message || e);
+      if (controller.signal.aborted) toast.message(`Đã dừng upload: ${f.name}`);
+      else toast.error(`Upload thất bại: ${msg}. Bạn có thể bấm "Thử lại".`);
       setFailed((prev) => {
         const id = `${f.name}-${f.size}-${f.lastModified}-${Date.now()}`;
         // giữ duy nhất 1 entry cho mỗi file
         const cleaned = prev.filter((x) => !(x.file.name === f.name && x.file.size === f.size && x.file.lastModified === f.lastModified));
-        return [...cleaned, { id, file: f, error: e.message }];
+        return [...cleaned, { id, file: f, error: msg }];
       });
       refreshSessions();
     } finally {
+      abortRef.current = null;
       setProgress(null);
       q.refetch();
     }
+  };
+
+  const stopCurrentUpload = () => {
+    if (!abortRef.current) return;
+    abortRef.current.abort();
+    toast.message("Đang dừng upload… phiên vẫn được giữ để tiếp tục sau.");
+  };
+
+  const retryFromScratch = async (item: { file: File }) => {
+    // "Thử lại từ đầu" AN TOÀN: giữ nguyên uploadId, mpList sẽ liệt kê part đã có trên R2 và bỏ qua để không upload trùng.
+    const fp = fileFingerprint(item.file);
+    const s = listResumableSessions().find((x) => x.fingerprint === fp);
+    if (s) {
+      try {
+        const info = await inspectResumable(s);
+        if (info.valid && info.partCount > 0) {
+          toast.message(`Tận dụng ${info.partCount} part đã có trên R2 (~${fmtBytes(info.totalBytes)}), chỉ upload phần còn thiếu.`);
+        }
+      } catch { /* không chặn retry */ }
+    }
+    await uploadOne(item.file);
   };
 
   const handleFiles = async (files: FileList | null) => {
@@ -188,6 +244,33 @@ function FilesPage() {
     toast.success("Đã huỷ phiên upload");
   };
 
+  // Tính ETA từ tốc độ trung bình kể từ khi bắt đầu (hoặc điểm nối lại).
+  const eta = (() => {
+    if (!progress) return null;
+    void nowTick;
+    const elapsed = (Date.now() - progress.startedAt) / 1000;
+    const delta = progress.loaded - progress.startedBytes;
+    if (elapsed < 1 || delta <= 0) return { speed: 0, remainSec: null as number | null };
+    const speed = delta / elapsed; // bytes/s
+    const remain = Math.max(0, progress.total - progress.loaded);
+    return { speed, remainSec: remain / speed };
+  })();
+  const fmtDuration = (s: number | null | undefined) => {
+    if (s == null || !isFinite(s)) return "—";
+    const sec = Math.max(0, Math.round(s));
+    if (sec < 60) return `${sec}s`;
+    const m = Math.floor(sec / 60), r = sec % 60;
+    if (m < 60) return `${m}m ${r}s`;
+    const h = Math.floor(m / 60);
+    return `${h}h ${m % 60}m`;
+  };
+  const fmtAge = (ms: number | null) => {
+    if (ms == null) return "—";
+    const h = Math.floor(ms / 3600000);
+    if (h < 1) return `${Math.floor(ms / 60000)} phút`;
+    return `${h}h`;
+  };
+
   const handleDownload = async (key: string) => {
     try {
       const { url } = await download(key);
@@ -218,16 +301,39 @@ function FilesPage() {
       {progress && (
         <Card>
           <CardContent className="py-3">
-            <div className="flex items-center justify-between text-sm mb-1"><span className="truncate">{progress.name}</span><span>{progress.percent}%</span></div>
+            <div className="flex items-center justify-between text-sm mb-1 gap-2">
+              <span className="truncate flex-1">{progress.name}</span>
+              <span className="text-xs text-muted-foreground tabular-nums flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {eta?.remainSec != null ? `còn ~${fmtDuration(eta.remainSec)}` : "đang tính…"}
+                {eta && eta.speed > 0 ? ` · ${fmtBytes(Math.round(eta.speed))}/s` : ""}
+              </span>
+              <span className="tabular-nums">{progress.percent}%</span>
+              <Button size="sm" variant="ghost" onClick={stopCurrentUpload} title="Dừng upload (giữ phiên để tiếp tục sau)">
+                <StopCircle className="h-4 w-4 mr-1 text-destructive" />Dừng
+              </Button>
+            </div>
             <Progress value={progress.percent} />
+            <div className="text-xs text-muted-foreground mt-1 tabular-nums">
+              {fmtBytes(progress.loaded)} / {fmtBytes(progress.total)}
+            </div>
           </CardContent>
         </Card>
       )}
 
-      {sessions.length > 0 && (
+      {(sessions.length > 0 || cleanupStats.removed > 0) && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Có thể tiếp tục ({sessions.length})</CardTitle>
+            <CardTitle className="text-base flex items-center justify-between gap-2">
+              <span>Có thể tiếp tục ({sessions.length})</span>
+              <span className="text-xs font-normal text-muted-foreground flex items-center gap-3">
+                <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" />TTL 24h · phiên cũ nhất: {fmtAge(cleanupStats.oldestAgeMs)}</span>
+                {cleanupStats.removed > 0 && <span>Đã dọn {cleanupStats.removed} phiên quá hạn</span>}
+                <Button size="sm" variant="ghost" onClick={refreshSessions} title="Dọn ngay">
+                  <Trash className="h-3 w-3 mr-1" />Dọn
+                </Button>
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-xs text-muted-foreground">
@@ -255,11 +361,15 @@ function FilesPage() {
                   >
                     <RotateCw className="h-4 w-4 mr-1" />Tải lại
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => cancelResumable(s)}>
-                    <XCircle className="h-4 w-4 mr-1 text-destructive" />Huỷ
+                  <Button size="sm" variant="ghost" onClick={() => cancelResumable(s)} title="Huỷ phiên: abort trên R2 và xoá khỏi localStorage">
+                    <XCircle className="h-4 w-4 mr-1 text-destructive" />Huỷ phiên
                   </Button>
                 </div>
                 <Progress value={s.percent ?? 0} className="h-1.5" />
+                <div className="text-[11px] text-muted-foreground">
+                  Bắt đầu: {new Date(s.createdAt).toLocaleString("vi-VN")}
+                  {s.updatedAt ? ` · cập nhật ${new Date(s.updatedAt).toLocaleTimeString("vi-VN")}` : ""}
+                </div>
                 {mismatchFor === s.fingerprint && (
                   <div className="text-xs text-destructive">
                     File vừa chọn không khớp phiên. Bấm <strong>Tải lại</strong> để chọn đúng "{s.fileName}" ({fmtBytes(s.fileSize)}).
@@ -285,8 +395,11 @@ function FilesPage() {
                   <div className="text-sm font-medium truncate">{it.file.name}</div>
                   <div className="text-xs text-muted-foreground truncate">{it.error}</div>
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => uploadOne(it.file)}>
-                  <RotateCw className="h-4 w-4 mr-1" />Thử lại
+                <Button size="sm" variant="secondary" onClick={() => uploadOne(it.file)} title="Tiếp tục từ điểm dừng (skip part đã upload)">
+                  <PlayCircle className="h-4 w-4 mr-1" />Tiếp tục
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => retryFromScratch(it)} title="Kiểm tra part đã có trên R2 rồi upload phần còn thiếu — tránh trùng">
+                  <RotateCw className="h-4 w-4 mr-1" />Thử lại từ đầu
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setFailed((p) => p.filter((x) => x.id !== it.id))}>
                   <X className="h-4 w-4" />
