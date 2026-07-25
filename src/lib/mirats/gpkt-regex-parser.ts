@@ -137,24 +137,24 @@ export function parseGpktText(raw: string): RegexParseResult {
   // --- Điều 1 items ---
   const t1 = itemValue(text, 1);
   if (t1) {
-    out.ten_he_thong_theo_gp = afterColon(t1, "Tên thiết bị", "Tên hệ thống", "Tên hệ thống, thiết bị");
+    out.ten_he_thong_theo_gp = cleanTail(afterColon(t1, "Tên thiết bị", "Tên hệ thống", "Tên hệ thống, thiết bị"));
   }
   const t2 = itemValue(text, 2);
-  if (t2) out.muc_dich = afterColon(t2, "Mục đích sử dụng", "Mục đích");
+  if (t2) out.muc_dich = cleanTail(afterColon(t2, "Mục đích sử dụng", "Mục đích"));
   const t3 = itemValue(text, 3);
-  if (t3) out.pham_vi = afterColon(t3, "Phạm vi hoạt động", "Phạm vi");
+  if (t3) out.pham_vi = cleanTail(afterColon(t3, "Phạm vi hoạt động", "Phạm vi"));
   const t4 = itemValue(text, 4);
-  if (t4) out.kieu_thiet_bi = afterColon(t4, "Kiểu thiết bị", "Kiểu");
+  if (t4) out.kieu_thiet_bi = cleanTail(afterColon(t4, "Kiểu thiết bị", "Kiểu"));
   const t5 = itemValue(text, 5);
-  if (t5) out.so_san_xuat = afterColon(t5, "Số sản xuất", "Số hiệu");
+  if (t5) out.so_san_xuat = cleanTail(afterColon(t5, "Số sản xuất", "Số hiệu"));
   const t6 = itemValue(text, 6);
   if (t6) {
     // "Nơi sản xuất: ... . Năm sản xuất: ..."
     const noi = t6.match(/Nơi\s*sản\s*xuất\s*[:：]\s*([^.]*?)(?:\.\s*Năm|$)/i);
-    if (noi) out.noi_san_xuat = noi[1].trim().replace(/[.,;]+$/, "");
+    if (noi) out.noi_san_xuat = cleanTail(noi[1]);
     const nam = t6.match(/Năm\s*sản\s*xuất\s*[:：]\s*([0-9,\s\-–]+)/i);
     if (nam) out.nam_sx_gp = nam[1].trim().replace(/[.,;]+$/, "");
-    if (!out.noi_san_xuat && !out.nam_sx_gp) out.noi_san_xuat = afterColon(t6, "Nơi sản xuất");
+    if (!out.noi_san_xuat && !out.nam_sx_gp) out.noi_san_xuat = cleanTail(afterColon(t6, "Nơi sản xuất"));
   }
   const t8 = itemValue(text, 8);
   if (t8) {
@@ -162,14 +162,12 @@ export function parseGpktText(raw: string): RegexParseResult {
     out.ma_dia_chi = /^không$/i.test(v) ? "Không" : v;
   }
   const t9 = itemValue(text, 9);
-  if (t9) out.dia_diem = afterColon(t9, "Địa điểm đặt thiết bị", "Địa điểm");
+  if (t9) out.dia_diem = cleanTail(afterColon(t9, "Địa điểm đặt thiết bị", "Địa điểm"));
   const t10 = itemValue(text, 10);
-  if (t10) out.thoi_gian = afterColon(t10, "Thời gian hoạt động", "Thời gian");
+  if (t10) out.thoi_gian = cleanTail(afterColon(t10, "Thời gian hoạt động", "Thời gian"));
 
-  // --- don_vi: tìm mã đơn vị trong địa điểm (CRA/CLA/THO/PCA/PBA/PLK) ---
-  const hay = `${out.dia_diem} ${out.muc_dich} ${out.ten_he_thong_theo_gp}`;
-  const dv = hay.match(/\b(CRA|CLA|THO|PCA|PBA|PLK)\b/);
-  if (dv) out.don_vi = dv[1];
+  // --- don_vi: mã đơn vị suy từ dia_diem / muc_dich / tên hệ thống ---
+  out.don_vi = detectDonVi(out.dia_diem, out.muc_dich, out.ten_he_thong_theo_gp);
 
   // --- tram: cụm "Đài KSKL X - Cảng HK X" hoặc "Trạm X" ---
   if (out.dia_diem) {
