@@ -2239,6 +2239,260 @@ export type Database = {
           },
         ]
       }
+      dot_bao_duong: {
+        Row: {
+          created_at: string
+          den_ngay: string | null
+          id: string
+          ky: number
+          mo_ta: string | null
+          nam: number
+          nguoi_tao: string | null
+          ten: string
+          trang_thai: Database["public"]["Enums"]["dot_bao_duong_trang_thai"]
+          tu_ngay: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          den_ngay?: string | null
+          id?: string
+          ky: number
+          mo_ta?: string | null
+          nam: number
+          nguoi_tao?: string | null
+          ten: string
+          trang_thai?: Database["public"]["Enums"]["dot_bao_duong_trang_thai"]
+          tu_ngay?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          den_ngay?: string | null
+          id?: string
+          ky?: number
+          mo_ta?: string | null
+          nam?: number
+          nguoi_tao?: string | null
+          ten?: string
+          trang_thai?: Database["public"]["Enums"]["dot_bao_duong_trang_thai"]
+          tu_ngay?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dot_bao_duong_bien_ban: {
+        Row: {
+          created_at: string
+          form_submission_id: string
+          hang_muc_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          form_submission_id: string
+          hang_muc_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          form_submission_id?: string
+          hang_muc_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dot_bao_duong_bien_ban_form_submission_id_fkey"
+            columns: ["form_submission_id"]
+            isOneToOne: false
+            referencedRelation: "form_submission"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_bien_ban_hang_muc_id_fkey"
+            columns: ["hang_muc_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong_hang_muc"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dot_bao_duong_hang_muc: {
+        Row: {
+          bat_buoc: boolean
+          created_at: string
+          don_vi_id: string
+          dot_id: string
+          ghi_chu_kt: string | null
+          he_thong_id: string
+          id: string
+          ket_qua:
+            | Database["public"]["Enums"]["dot_bao_duong_hm_ket_qua"]
+            | null
+          kien_nghi: string | null
+          ngay_hoan_thanh: string | null
+          nguoi_thuc_hien: string | null
+          nguon: Database["public"]["Enums"]["dot_bao_duong_hm_nguon"]
+          ton_tai: string | null
+          trang_thai: Database["public"]["Enums"]["dot_bao_duong_hm_trang_thai"]
+          updated_at: string
+        }
+        Insert: {
+          bat_buoc?: boolean
+          created_at?: string
+          don_vi_id: string
+          dot_id: string
+          ghi_chu_kt?: string | null
+          he_thong_id: string
+          id?: string
+          ket_qua?:
+            | Database["public"]["Enums"]["dot_bao_duong_hm_ket_qua"]
+            | null
+          kien_nghi?: string | null
+          ngay_hoan_thanh?: string | null
+          nguoi_thuc_hien?: string | null
+          nguon?: Database["public"]["Enums"]["dot_bao_duong_hm_nguon"]
+          ton_tai?: string | null
+          trang_thai?: Database["public"]["Enums"]["dot_bao_duong_hm_trang_thai"]
+          updated_at?: string
+        }
+        Update: {
+          bat_buoc?: boolean
+          created_at?: string
+          don_vi_id?: string
+          dot_id?: string
+          ghi_chu_kt?: string | null
+          he_thong_id?: string
+          id?: string
+          ket_qua?:
+            | Database["public"]["Enums"]["dot_bao_duong_hm_ket_qua"]
+            | null
+          kien_nghi?: string | null
+          ngay_hoan_thanh?: string | null
+          nguoi_thuc_hien?: string | null
+          nguon?: Database["public"]["Enums"]["dot_bao_duong_hm_nguon"]
+          ton_tai?: string | null
+          trang_thai?: Database["public"]["Enums"]["dot_bao_duong_hm_trang_thai"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dot_bao_duong_hang_muc_don_vi_id_fkey"
+            columns: ["don_vi_id"]
+            isOneToOne: false
+            referencedRelation: "dm_don_vi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_hang_muc_dot_id_fkey"
+            columns: ["dot_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_hang_muc_he_thong_id_fkey"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_hang_muc_he_thong_id_fkey"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "v_do_thi_toan_canh"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dot_bao_duong_su_co: {
+        Row: {
+          created_at: string
+          ghi_chu: string | null
+          hang_muc_id: string
+          hong_hoc_id: string | null
+          id: string
+          su_co_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          ghi_chu?: string | null
+          hang_muc_id: string
+          hong_hoc_id?: string | null
+          id?: string
+          su_co_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          ghi_chu?: string | null
+          hang_muc_id?: string
+          hong_hoc_id?: string | null
+          id?: string
+          su_co_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dot_bao_duong_su_co_hang_muc_id_fkey"
+            columns: ["hang_muc_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong_hang_muc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_su_co_hong_hoc_id_fkey"
+            columns: ["hong_hoc_id"]
+            isOneToOne: false
+            referencedRelation: "hong_hoc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_su_co_su_co_id_fkey"
+            columns: ["su_co_id"]
+            isOneToOne: false
+            referencedRelation: "su_co"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dot_bao_duong_tep: {
+        Row: {
+          created_at: string
+          duong_dan: string
+          hang_muc_id: string
+          id: string
+          loai: string | null
+          nguoi_up: string | null
+          ten_goc: string | null
+        }
+        Insert: {
+          created_at?: string
+          duong_dan: string
+          hang_muc_id: string
+          id?: string
+          loai?: string | null
+          nguoi_up?: string | null
+          ten_goc?: string | null
+        }
+        Update: {
+          created_at?: string
+          duong_dan?: string
+          hang_muc_id?: string
+          id?: string
+          loai?: string | null
+          nguoi_up?: string | null
+          ten_goc?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dot_bao_duong_tep_hang_muc_id_fkey"
+            columns: ["hang_muc_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong_hang_muc"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       du_an: {
         Row: {
           attrs: Json
@@ -7907,6 +8161,15 @@ export type Database = {
         Args: { p_ghi_chu?: string; p_id: string }
         Returns: undefined
       }
+      dot_bao_cao_tong_hop: { Args: { p_dot_id: string }; Returns: Json }
+      dot_them_hang_muc_hang_loat: {
+        Args: {
+          p_don_vi_id: string
+          p_dot_id: string
+          p_he_thong_ids: string[]
+        }
+        Returns: number
+      }
       f_unaccent: { Args: { "": string }; Returns: string }
       get_ai_public_config: {
         Args: never
@@ -8451,6 +8714,19 @@ export type Database = {
         | "hoan_thanh"
         | "qua_han"
       don_vi_code: "CRA" | "CLA" | "THO" | "PCA" | "PBA" | "PLK"
+      dot_bao_duong_hm_ket_qua: "dat" | "khong_dat" | "khac"
+      dot_bao_duong_hm_nguon: "kt_khoi_tao" | "don_vi_bo_sung"
+      dot_bao_duong_hm_trang_thai:
+        | "chua_bat_dau"
+        | "dang_lam"
+        | "hoan_thanh"
+        | "khong_thuc_hien"
+      dot_bao_duong_trang_thai:
+        | "nhap"
+        | "mo"
+        | "dang_thuc_hien"
+        | "dong"
+        | "huy"
       du_an_trang_thai:
         | "moi"
         | "dang_thuc_hien"
@@ -8680,6 +8956,15 @@ export const Constants = {
         "qua_han",
       ],
       don_vi_code: ["CRA", "CLA", "THO", "PCA", "PBA", "PLK"],
+      dot_bao_duong_hm_ket_qua: ["dat", "khong_dat", "khac"],
+      dot_bao_duong_hm_nguon: ["kt_khoi_tao", "don_vi_bo_sung"],
+      dot_bao_duong_hm_trang_thai: [
+        "chua_bat_dau",
+        "dang_lam",
+        "hoan_thanh",
+        "khong_thuc_hien",
+      ],
+      dot_bao_duong_trang_thai: ["nhap", "mo", "dang_thuc_hien", "dong", "huy"],
       du_an_trang_thai: [
         "moi",
         "dang_thuc_hien",
