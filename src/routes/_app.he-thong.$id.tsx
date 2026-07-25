@@ -285,14 +285,6 @@ function HeThongInner({
         </CardContent>
       </Card>
 
-      {/* KPI hàng ngang – click chuyển tab tương ứng */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="text-emerald-600" onClick={() => setTab("bt")} />
-        <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} onClick={() => setTab("sc")} />
-        <KpiCard icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "text-orange-600" : undefined} onClick={() => setTab("hh")} />
-        <KpiCard icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} tone="text-sky-600" onClick={() => setTab("bg")} />
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
           <Card>
@@ -336,8 +328,6 @@ function HeThongInner({
               </div>
             </CardContent>
           </Card>
-
-          <ThanhPhanCard heThongId={id} />
         </div>
 
         <div className="space-y-4 lg:col-span-2">
@@ -423,6 +413,9 @@ function HeThongInner({
           </Card>
         </div>
       </div>
+
+      {/* Thành phần hệ thống — full width để hiển thị rõ tên */}
+      <ThanhPhanCard heThongId={id} />
 
       <ThresholdDialog
         open={thrOpen}
