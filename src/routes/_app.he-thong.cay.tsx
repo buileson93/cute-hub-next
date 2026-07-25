@@ -5121,7 +5121,7 @@ function NodeEditorSheet({
     : target?.kind === "lv" ? "Sửa lĩnh vực"
     : target?.kind === "nh" ? "Sửa nhóm hệ thống"
     : target?.kind === "ht" ? "Sửa hệ thống"
-    : "Sửa tài sản / thành phần";
+    : "Sửa tài sản";
 
   const submit = () => {
     if (!target) return;
