@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File } from "lucide-react";
+import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File, Search, X } from "lucide-react";
 
 export const Route = createFileRoute("/_app/tep-tin")({
   head: () => ({
@@ -45,12 +46,28 @@ function FilesPage() {
   const del = useR2Delete();
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<{ name: string; percent: number } | null>(null);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<string>("all");
+  const [status, setStatus] = useState<string>("all");
 
   const q = useQuery({
     queryKey: ["r2-my-files"],
     queryFn: () => listFn(),
     refetchOnWindowFocus: false,
   });
+
+  const filtered = (q.data ?? []).filter((f: any) => {
+    if (category !== "all" && (f.category ?? "other") !== category) return false;
+    if (status !== "all" && f.status !== status) return false;
+    if (search.trim()) {
+      const s = search.trim().toLowerCase();
+      const name = (f.original_name || "").toLowerCase();
+      const key = (f.key || "").toLowerCase();
+      if (!name.includes(s) && !key.includes(s)) return false;
+    }
+    return true;
+  });
+  const hasFilter = search.trim() !== "" || category !== "all" || status !== "all";
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || !files.length) return;
@@ -106,12 +123,56 @@ function FilesPage() {
       )}
 
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base">Danh sách ({q.data?.length ?? 0})</CardTitle></CardHeader>
+        <CardContent className="py-3 flex flex-col md:flex-row gap-2 md:items-center">
+          <div className="relative flex-1">
+            <Search className="h-4 w-4 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm theo tên file hoặc đường dẫn…"
+              className="pl-8"
+            />
+          </div>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="md:w-44"><SelectValue placeholder="Loại" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả loại</SelectItem>
+              <SelectItem value="image">Hình ảnh</SelectItem>
+              <SelectItem value="video">Video</SelectItem>
+              <SelectItem value="pdf">PDF</SelectItem>
+              <SelectItem value="office">Office</SelectItem>
+              <SelectItem value="other">Khác</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="md:w-44"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả trạng thái</SelectItem>
+              <SelectItem value="ready">Đã xong</SelectItem>
+              <SelectItem value="temp">Đang xử lý</SelectItem>
+              <SelectItem value="error">Lỗi</SelectItem>
+            </SelectContent>
+          </Select>
+          {hasFilter && (
+            <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setCategory("all"); setStatus("all"); }}>
+              <X className="h-4 w-4 mr-1" />Xoá lọc
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">
+            Danh sách ({filtered.length}{hasFilter && q.data ? ` / ${q.data.length}` : ""})
+          </CardTitle>
+        </CardHeader>
         <CardContent>
           {q.isLoading ? <div className="text-sm text-muted-foreground">Đang tải…</div> :
             !q.data?.length ? <div className="text-sm text-muted-foreground py-8 text-center">Chưa có tệp nào.</div> :
+            !filtered.length ? <div className="text-sm text-muted-foreground py-8 text-center">Không có tệp nào khớp bộ lọc.</div> :
             <div className="divide-y">
-              {q.data.map((f: any) => (
+              {filtered.map((f: any) => (
                 <div key={f.id} className="py-2 flex items-center gap-3">
                   <div className="text-muted-foreground">{iconFor(f.category)}</div>
                   <div className="flex-1 min-w-0">
