@@ -21,6 +21,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
@@ -383,19 +391,7 @@ function HeThongInner({
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
               <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
               <div className="border-t pt-3">
-                <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Liên kết chức năng</div>
-                <div className="grid gap-1.5">
-                  <SidebarLink to="/so-do" search={{ he_thong: id } as never} icon={Waypoints} label="Sơ đồ hệ thống" />
-                  <SidebarLink to="/he-thong/lien-ket" search={{ src: id } as never} icon={Link2} label="Liên kết hệ thống" />
-                  <SidebarLink to="/he-thong/thanh-phan" search={{ he_thong: id } as never} icon={Puzzle} label="Thành phần (dạng bảng)" />
-                  <SidebarLink to="/kiem-dinh" search={{ he_thong: id } as never} icon={ShieldCheck} label="Kiểm định & Hiệu chuẩn" />
-                  <SidebarLink to="/vat-tu" search={{ he_thong: id } as never} icon={HardDrive} label="Vật tư & Kho" />
-                  <SidebarLink to="/du-an" search={{ he_thong: id } as never} icon={FolderKanban} label="Dự án liên quan" />
-                  <SidebarLink to="/nhan" search={{ he_thong: id } as never} icon={QrCode} label="In nhãn QR" />
-                  {hasGp && (
-                    <SidebarLink to="/giay-phep" search={{ q: gpSo } as never} icon={FileText} label="Lịch sử giấy phép" />
-                  )}
-                </div>
+                <FunctionLinksMenu heThongId={id} hasGp={hasGp} gpSo={gpSo} />
               </div>
               <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
