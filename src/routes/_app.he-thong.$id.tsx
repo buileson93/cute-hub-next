@@ -43,6 +43,10 @@ function HeThongDetail() {
     () => (taxo?.devices ?? []).filter((d) => d._htId === id),
     [taxo, id],
   );
+  const sysDonVi = useMemo(() => {
+    const dv = taxo?.donViList.find((v) => v.id === sys?.donViId);
+    return { ma: dv?.ma ?? "", ten: dv?.ten ?? "" };
+  }, [taxo, sys?.donViId]);
 
   if (isLoading) {
     return (
@@ -63,15 +67,15 @@ function HeThongDetail() {
     );
   }
 
-  const donVi = devices[0]?.don_vi ?? "";
+  const donVi = sysDonVi.ma || devices[0]?.don_vi || "";
   if (!scopeAll && donVi && !inScope(donVi)) return <AccessDenied backTo="/thiet-bi" backLabel="Về sổ lý lịch tài sản" />;
 
-  return <HeThongInner id={id} tenHt={nameOv?.get(id) ?? sys?.ten ?? devices[0]?._htTen ?? id} maBravo={sys?.maBravo ?? ""} gpSo={sys?.gpSo ?? ""} gpHan={sys?.gpHan ?? ""} devices={devices} />;
+  return <HeThongInner id={id} tenHt={nameOv?.get(id) ?? sys?.ten ?? devices[0]?._htTen ?? id} maBravo={sys?.maBravo ?? ""} gpSo={sys?.gpSo ?? ""} gpHan={sys?.gpHan ?? ""} devices={devices} donViMa={sysDonVi.ma} donViTen={sysDonVi.ten} />;
 }
 
 function HeThongInner({
-  id, tenHt, maBravo, gpSo, gpHan, devices,
-}: { id: string; tenHt: string; maBravo: string; gpSo: string; gpHan: string; devices: DbDevice[] }) {
+  id, tenHt, maBravo, gpSo, gpHan, devices, donViMa, donViTen,
+}: { id: string; tenHt: string; maBravo: string; gpSo: string; gpHan: string; devices: DbDevice[]; donViMa: string; donViTen: string }) {
   const { ops } = useOperationsData();
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
@@ -97,8 +101,8 @@ function HeThongInner({
   const banGiao = useMemo(() => ops.banGiao.filter((e) => maSet.has(e.thiet_bi)), [ops.banGiao, maSet]);
 
   
-  const donVi = devices[0]?.don_vi ?? "";
-  const donViTen = devices[0]?._donViTen ?? "";
+  const donVi = donViMa || devices[0]?.don_vi || "";
+  const donViTenR = donViTen || devices[0]?._donViTen || "";
 
   const timeline = useMemo<TimelineItem[]>(() => {
     const items: TimelineItem[] = [];
@@ -145,7 +149,7 @@ function HeThongInner({
                 <h1 className="truncate text-xl font-semibold sm:text-2xl">{tenHt}</h1>
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   {maBravo && <span>Mã Bravo: <span className="font-mono text-foreground/80">{maBravo}</span></span>}
-                  {donVi && <span>· {donVi}{donViTen ? ` — ${donViTen}` : ""}</span>}
+                  {donVi && <span>· {donVi}{donViTenR ? ` — ${donViTenR}` : ""}</span>}
                   <span>· {timeline.length} sự kiện</span>
                 </div>
               </div>
