@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
-  Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Cpu, Link2,
+  Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Cpu, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -255,7 +255,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
                   onClick={() => setOpenTpId(tp.id)}
                   className="flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm hover:bg-primary/5"
                 >
-                  <Cpu className="h-4 w-4 shrink-0 text-foreground/60" />
+              <Puzzle className="h-4 w-4 shrink-0 text-emerald-600" />
                   <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
                   {dev ? (
                     <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
@@ -316,7 +316,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
             <>
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2 text-base">
-                  <Cpu className="h-4 w-4" />
+                  <Puzzle className="h-4 w-4 text-emerald-600" />
                   <span className="truncate">{openTp.ten}</span>
                 </SheetTitle>
                 <SheetDescription>Chi tiết thành phần hệ thống & sổ lý lịch.</SheetDescription>
