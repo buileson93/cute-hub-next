@@ -691,10 +691,20 @@ function DanhMucThietBiPage() {
           >
             <PackageMinus className="h-3.5 w-3.5" />
           </Button>
+          {editOn && (
+            <Button
+              size="icon" variant="ghost"
+              className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }}
+              title="Xoá / Ngừng khai thác tài sản"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       ),
     } as StdColumn<DbDevice>] : []),
-  ], [nameOv, tbName, canManage, tagsByDevice, dacTinhById, tagSelected, openDetail]);
+  ], [nameOv, tbName, canManage, editOn, tagsByDevice, dacTinhById, tagSelected, openDetail]);
 
   // ---- Xuất .xlsx (theo bộ lọc hiện tại hoặc dòng đang chọn) ----
   // Ánh xạ khoá cột (giao diện) → trường CSDL + cách lấy giá trị, để file nạp lại được.
