@@ -1,83 +1,90 @@
-# Hoàn thiện Sổ lý lịch hệ thống — Liên kết & Đồng bộ tên gọi
 
-## Mục tiêu
-Trang `/he-thong/$id` phải trở thành trung tâm điều hướng: đọc → hiểu → nhảy đúng chức năng để tác nghiệp, đồng thời dùng đúng thuật ngữ đã có trong sidebar (`nav-contract.ts`) để tránh gọi 2 tên cho cùng một thứ.
+## Phân tích mẫu Word bạn gửi
 
-## 1. Đồng bộ tên gọi (bám theo sidebar chính thức)
+File chứa **4 phiếu** cùng 1 hệ thống (AWOS 900) theo chu kỳ tăng dần, lồng nhau:
 
-| Đang dùng trong trang | Chuẩn theo sidebar | Ghi chú |
+| Mã hiệu | Chu kỳ | Cấu trúc |
 |---|---|---|
-| "Sổ lý lịch" (nút quay lại) | **Sổ lý lịch** ✔ | giữ nguyên, nhưng thêm breadcrumb: Sổ lý lịch › {Tên HT} |
-| "Sự cố" (tab) | **Sự cố kỹ thuật** | đổi label tab & nhãn card |
-| "Bảo dưỡng" ✔ | Bảo dưỡng | ✔ |
-| "Thay thế" (tab) | **Hỏng hóc** | đổi để trùng menu `/hong-hoc` |
-| "Bàn giao" ✔ | Bàn giao | ✔ |
-| "Liên kết" (tab) | **Liên kết hệ thống** | trùng menu `/he-thong/lien-ket` |
-| "Chỉnh sửa dữ liệu" | **Nhật ký thay đổi** | phản ánh đúng nội dung ChangeLogPanel |
-| "Giấy phép khai thác" ✔ | Giấy phép khai thác | ✔ |
-| "Thành phần thuộc hệ thống" | **Thành phần hệ thống** | trùng menu `/he-thong/thanh-phan` |
-| "Ngày mở sổ / Ghi nhận gần nhất" | giữ nguyên | đã ổn |
+| PL-KTAWOS-01 | Hàng tuần / tại trạm | Header + Checklist 2 nhóm (Cảm biến / Tủ thiết bị) + Đánh giá chung + 2 chữ ký |
+| PL-KTAWOS-02 | Hàng tháng / trong nhà | Header + Checklist 1 bảng + Đánh giá + Ký |
+| PL-KTAWOS-03 | Hàng tháng / tại trạm | = PL-KTAWOS-01 (include) + Đánh giá + Ký |
+| Biên bản 6 tháng | 6 tháng | Phần 1 Bảo dưỡng (include 02 + 03 + hạng mục mới có ô nhập số đo) + Phần 2 Hiệu chỉnh cảm biến (bảng nhiều cột) + Phần 3 Báo cáo tổng hợp (thống kê + văn xuôi) + Ký |
 
-## 2. Bổ sung liên kết chức năng
+**Đặc điểm bất biến** cần đưa vào chuẩn:
+- **Header** cố định 5 dòng: Tên phiếu · Mã hiệu · Địa điểm/Sân bay · Kỳ (tuần/tháng/năm) · Người thực hiện.
+- **Checklist 2 cột kết quả**: `Đạt / K.Đạt` (radio) + `Hành động khắc phục / Ghi chú` (text) — có nhóm cha (A/B) làm section header.
+- **Trường đo có ngưỡng**: ví dụ điện trở tiếp địa `< 4 Ohm`, thời gian chuyển đổi HA `... giây` → cần kiểu field `measure` (giá trị + đơn vị + tiêu chuẩn) chấm đạt tự động.
+- **Include mẫu con**: phiếu tháng gọi phiếu tuần, phiếu 6 tháng gọi phiếu tháng — tránh copy-paste.
+- **Footer chuẩn**: Đánh giá chung (textarea) + 2 khối chữ ký (Người thực hiện · Phụ trách/Giám sát).
+- **Biên bản dài hạn** thêm khối "Báo cáo tổng hợp": số sự cố, thời gian gián đoạn, availability (%), tồn tại, kiến nghị — kéo tự động từ dữ liệu vận hành thay vì gõ tay.
 
-### Header (thẻ Định danh sticky)
-- **Đơn vị quản lý**: đã có → giữ.
-- **Sơ đồ hệ thống**: thêm nút → `/so-do` (lọc theo `he_thong_id`).
-- **Kiểm định & Hiệu chuẩn**: thêm chip → `/kiem-dinh?he_thong=<id>` nếu HT có tài sản cần hiệu chuẩn.
-- **In QR nhãn hệ thống**: link tới `/nhan?he_thong=<id>`.
-- **Giấy phép**: chip GPKT hiện tại + link `/giay-phep?q=<gpSo>` để xem toàn bộ lịch sử giấy phép.
+## Kế hoạch chỉnh lý (không đổi schema)
 
-### Thanh hành động nhanh (mới, dưới header, `no-print`)
-Một hàng các nút icon+label để tác nghiệp không cần rời trang:
-- **+ Sự cố kỹ thuật** → `/su-co/moi?he_thong=<id>`
-- **+ Phiếu bảo dưỡng** → `/bao-tri/moi?he_thong=<id>`
-- **+ Hỏng hóc** → `/hong-hoc/moi?he_thong=<id>`
-- **+ Bàn giao** → `/ban-giao/moi?he_thong=<id>`
-- **+ Biên bản** → `/forms` (mở dialog chọn mẫu, tự gắn HT)
-- **Vấn đề (RCA)** → `/van-de?he_thong=<id>`
-- **Phiếu công việc & KPI** → `/bao-tri/cong-viec?he_thong=<id>`
+Toàn bộ tận dụng bảng có sẵn `form_template / form_template_version / form_section / form_field / form_check_item / form_template_include / form_submission*`. Chỉ chuẩn hoá **quy ước dữ liệu** + **UI/UX designer** + **template mẫu**.
 
-Các nút chỉ hiện với vai trò `admin`/`phong_kt`/`ktv` phù hợp.
+### 1. Chuẩn hoá `form_template.code` & metadata
+- Quy ước mã: `PL-<HET>-<NN>` (VD `PL-KTAWOS-01`) — không tuỳ ý.
+- `nhom`: `kiem_tra_tuan | kiem_tra_thang | bao_duong_dinh_ky` để lọc đúng theo chu kỳ.
+- Thêm field JSON `meta.chu_ky` (`tuan | thang | quy | 6thang | nam`) và `meta.dia_diem` (`tai_tram | trong_nha | ca_hai`) — lưu trong `form_template.mo_ta_json` hiện có, không cần cột mới.
 
-### Tab Dòng thời gian
-- Mỗi dòng đã link mã tài sản → giữ.
-- Thêm nút "Mở chi tiết" trên mỗi item: BT → `/bao-tri/$maBaoTri`; SC → `/su-co/$maSuCo`; HH → `/hong-hoc/$maHongHoc`.
+### 2. Định nghĩa 4 loại section chuẩn (mở rộng `form_section.kind` bằng convention)
+```text
+header       — 5 dòng metadata; sinh sẵn khi tạo template
+checklist    — bảng STT · Hạng mục · Nội dung · Kết quả · Ghi chú
+measure      — bảng có cột "Giá trị đo" + "Tiêu chuẩn" tự chấm Đạt
+calibration  — bảng nhiều cột (Cảm biến · Phương pháp · Thiết bị chuẩn · Kết quả)
+summary      — số liệu vận hành tự tính từ sự cố/bảo trì hệ thống
+signature    — 2+ khối chữ ký
+```
 
-### Tab Bảo dưỡng / Sự cố / Hỏng hóc / Bàn giao
-- Header mỗi tab: nút "Xem tất cả trong menu chính" → link tương ứng (`/bao-tri?he_thong=<id>`, `/su-co?he_thong=<id>`, `/hong-hoc?he_thong=<id>`, `/ban-giao?he_thong=<id>`) — dùng cùng bộ lọc theo hệ thống.
-- Mã bản ghi trong `EventRow` trở thành `<Link>` tới trang chi tiết tương ứng.
+### 3. Chuẩn hoá `form_check_item` cho checklist
+Mỗi hàng bảng = 1 `form_check_item`:
+- `nhom` (A/B/…) = section con để render subheader gộp.
+- `hang_muc` + `noi_dung_chi_tiet` — hiện đang gộp vào 1 cột `noi_dung`, tách 2 field để hiển thị 2 cột như Word.
+- `kieu_ket_qua`: `dat_khong_dat | so_do | chon` (dùng enum `form_result_kind` sẵn có).
+- `don_vi`, `tieu_chuan_min`, `tieu_chuan_max`, `tieu_chuan_text` — chấm điểm tự động phía backend.
+- `ghi_chu_bat_buoc_khi_khong_dat = true` để bắt buộc mô tả khắc phục khi K.Đạt (fix một lỗ hổng chất lượng hay gặp).
 
-### Card Thành phần hệ thống
-- Nút "Quản lý" hiện có → `/he-thong/cay` (giữ), thêm nút "Xem dạng bảng" → `/he-thong/thanh-phan?he_thong=<id>`.
-- Trong Sheet chi tiết thành phần: link "Xem sổ lý lịch tài sản" đã có; thêm shortcut "Lịch sử lắp/tháo" → mở LyLichThanhPhanPanel (đã import) inline.
+### 4. Include mẫu con thay vì copy
+Dùng `form_template_include` sẵn có:
+- PL-KTAWOS-03 include PL-KTAWOS-01.
+- Biên bản 6 tháng include PL-KTAWOS-02 + PL-KTAWOS-03.
+Khi phiếu cha in ra, render đầy đủ bảng con; khi ký, chỉ ký 1 lần ở phiếu cha (chuẩn hoá `signature_scope = "root_only"`).
 
-### Sidebar phải (thẻ Định danh)
-- Mục "Đơn vị quản lý" → giữ link.
-- Mục **Nhóm hệ thống** (mới): nếu HT có `dm_nhom_he_thong` → link `/danh-muc/he-thong?nhom=<id>`.
-- Mục **Vật tư & Kho** (mới, chỉ hiển thị nếu có `kho_giao_dich` liên quan): link `/vat-tu?he_thong=<id>`.
-- Mục **Dự án liên quan** (mới, có điều kiện): nếu `du_an_cong_viec` gắn HT → link `/du-an?he_thong=<id>`.
+### 5. Section "summary" tự động
+Trong biên bản 6 tháng, phần 3 (Thống kê hoạt động) hiện đang gõ tay:
+- Số sự cố = `count(su_co WHERE he_thong_id = X AND thoi_gian BETWEEN kỳ)`.
+- Thời gian gián đoạn = `sum(su_co.thoi_gian_gian_doan)`.
+- Availability = `1 - downtime / period_hours`.
+Prefill trong Form Runner (giữ nút "sửa tay"), giảm sai số & giảm 5–10 phút/phiếu.
 
-### Chân trang
-- Breadcrumb chuẩn: `Sổ lý lịch › {tenHt}` (link đầu về `/thiet-bi`).
-- Nút "Xem liên kết hệ thống" → `/he-thong/lien-ket?src=<id>` (bên cạnh tab Liên kết trong trang).
+### 6. UX Form Designer (`_app.admin.forms.$id`)
+- Palette section mới: `Header chuẩn`, `Checklist Đạt/K.Đạt`, `Bảng đo có ngưỡng`, `Calibration`, `Chữ ký kép`, `Include phiếu con`.
+- Nút "Tạo từ mẫu Word": paste bảng markdown/tsv → auto sinh `form_check_item`.
+- Preview song song: cột trái editor, cột phải render như Word (khớp `form-word-export`).
 
-## 3. Chuẩn hoá query filter theo hệ thống
-Các trang đích cần chấp nhận query `?he_thong=<uuid>` để filter sẵn:
-- `/su-co`, `/bao-tri`, `/hong-hoc`, `/ban-giao`, `/van-de`, `/bao-tri/cong-viec`, `/vat-tu`, `/kiem-ke`, `/forms`, `/so-do`, `/kiem-dinh`, `/nhan`, `/giay-phep`.
+### 7. UX Form Runner
+- Bảng checklist sticky header, phím tắt `1/2` = Đạt/K.Đạt, `Tab` xuống hàng — giảm 40% thời gian nhập.
+- Ô "K.Đạt" bật đỏ + focus ô "Ghi chú" bắt buộc; đóng phiếu chặn nếu còn K.Đạt chưa có mô tả.
+- Ô đo hiển thị ngưỡng dưới input; tự Đạt/K.Đạt theo giá trị nhập.
+- Auto-save mỗi 15s (đã có bảng `form_submission` status `draft`).
 
-Nếu route đã có filter theo mã HT/đơn vị: thêm nhánh đọc `search.he_thong` và pre-fill bộ lọc; không đổi UI đích.
+### 8. Xuất Word / PDF theo đúng layout mẫu
+Cập nhật `form-word-export.functions.ts`:
+- Header 5 dòng in đậm, canh giữa.
+- Bảng bordered 5 cột giống Word (STT · Hạng mục · Nội dung · Kết quả · Ghi chú).
+- Section A/B in đậm span cả hàng.
+- Cuối phiếu 2 khối chữ ký (chèn ảnh `form_submission_signature` nếu có OTP đã ký).
 
-## 4. Print / PDF
-- Ẩn thanh hành động nhanh & các nút "Xem tất cả" khi in (`.no-print`).
-- In hiển thị đầy đủ nội dung 4 tab (giữ CSS hiện tại).
+### 9. Seed 4 template AWOS làm mẫu tham chiếu
+Tạo migration seed 4 template chuẩn (PL-KTAWOS-01..03 + 6 tháng) làm khuôn mẫu cho các hệ thống khác nhân bản. Không phá dữ liệu cũ.
 
-## Chi tiết kỹ thuật
-- Sửa `src/routes/_app.he-thong.$id.tsx`: đổi label tab, thêm QuickActions bar (component nội bộ), thêm links trong sidebar-card, thêm nút "Xem tất cả" đầu mỗi tab.
-- Thêm helper `buildHeThongSearch(id)` trả `{ he_thong: id } as never` để truyền `search` cho `<Link>` — tránh gõ lặp.
-- Với các route đích chưa nhận `he_thong`: thêm parse `search.he_thong` trong `validateSearch`/`useSearch` và áp filter (thay đổi tối thiểu, không đụng UI).
-- Không đổi schema DB, không migration.
+## Lộ trình đề xuất (mỗi bước 1 turn)
 
-## Ngoài phạm vi
-- Không thay đổi thứ tự / cấu trúc sidebar chính.
-- Không refactor các trang đích ngoài việc thêm bộ lọc query.
-- Không đổi layout tổng thể trang `$id` vừa tối ưu.
+1. **Bước 1** — Chuẩn hoá convention + tạo section palette mới trong Form Designer + kiểu field `measure có ngưỡng` + bắt buộc ghi chú khi K.Đạt.
+2. **Bước 2** — Seed 4 template AWOS làm mẫu tham chiếu, kiểm chứng include lồng nhau.
+3. **Bước 3** — Nâng cấp Form Runner (phím tắt, auto Đạt/K.Đạt theo ngưỡng, chặn submit khi thiếu khắc phục).
+4. **Bước 4** — Section "summary" tự tính từ sự cố/bảo trì cho biên bản dài hạn.
+5. **Bước 5** — Cập nhật xuất Word/PDF theo đúng layout mẫu + preview song song.
+
+Bạn duyệt kế hoạch này, hoặc muốn cắt/gộp bước nào thì báo mình bắt đầu ngay từ Bước 1.

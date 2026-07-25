@@ -1,3 +1,9 @@
+import {
+  DEFAULT_ITEM_OPTIONS,
+  evaluateAutoResult,
+  type ChecklistItemOptions,
+} from "@/lib/mirats/checklist-item-options";
+
 // ============================================================================
 // checklist.ts — Logic THUẦN (pure) cho mẫu phiếu dạng BẢNG KIỂM (checklist).
 //
@@ -43,6 +49,12 @@ export type ChecklistItem = {
   tuy_chon: string[] | null;
   bat_buoc: boolean;
   position: number;
+  /**
+   * Tuỳ chọn nâng cao (bảng chuẩn phiếu bảo dưỡng). Không đổi schema DB:
+   * ánh xạ vào cột `tuy_chon` (JSONB) qua checklist-item-options.
+   * Optional để tương thích ngược mọi code cũ dựng ChecklistItem theo tay.
+   */
+  options?: ChecklistItemOptions;
 };
 
 /** 1 nhóm hạng mục trong mẫu. */
@@ -111,9 +123,14 @@ export function validateItemInput(
   input: ItemInput | undefined,
 ): string | null {
   const inp = input ?? {};
+  const opts = item.options ?? DEFAULT_ITEM_OPTIONS;
 
-  // KHÔNG ĐẠT ⇒ bắt buộc hành động (áp dụng cho MỌI hạng mục).
-  if (inp.ket_qua === "khong_dat" && isEmpty(inp.hanh_dong)) {
+  // KHÔNG ĐẠT ⇒ bắt buộc hành động (mặc định TRUE, có thể tắt cho từng item).
+  if (
+    opts.require_note_when_fail !== false &&
+    inp.ket_qua === "khong_dat" &&
+    isEmpty(inp.hanh_dong)
+  ) {
     return `"${item.ten}": Không đạt phải nêu hành động khắc phục`;
   }
 
@@ -124,6 +141,15 @@ export function validateItemInput(
     }
     if (item.bat_buoc && n === null) {
       return `"${item.ten}": bắt buộc nhập giá trị đo`;
+    }
+    // Ngưỡng số: giá trị nằm ngoài min/max ⇒ K.Đạt ngầm ⇒ vẫn bắt buộc hành động.
+    if (
+      opts.require_note_when_fail !== false &&
+      n != null &&
+      evaluateAutoResult(n, opts.tieu_chuan_min, opts.tieu_chuan_max) === "khong_dat" &&
+      isEmpty(inp.hanh_dong)
+    ) {
+      return `"${item.ten}": giá trị đo ngoài ngưỡng, phải nêu hành động khắc phục`;
     }
     return null;
   }
