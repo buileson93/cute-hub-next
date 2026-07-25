@@ -28,6 +28,8 @@ export type ChecklistItemOptions = {
   require_note_when_fail: boolean;
   /** Danh sách lựa chọn (dành cho result_kind = "chon"). */
   choices: string[] | null;
+  /** Cho phép đính kèm ảnh chứng minh cho hạng mục này (mỗi ảnh ≤ 15MB). */
+  cho_upload_anh: boolean;
 };
 
 export const DEFAULT_ITEM_OPTIONS: ChecklistItemOptions = {
@@ -38,6 +40,7 @@ export const DEFAULT_ITEM_OPTIONS: ChecklistItemOptions = {
   tieu_chuan_max: null,
   require_note_when_fail: true,
   choices: null,
+  cho_upload_anh: false,
 };
 
 function toNumOrNull(v: unknown): number | null {
@@ -70,6 +73,7 @@ export function parseItemOptions(raw: unknown): ChecklistItemOptions {
     require_note_when_fail:
       typeof o.require_note_when_fail === "boolean" ? o.require_note_when_fail : true,
     choices,
+    cho_upload_anh: o.cho_upload_anh === true,
   };
 }
 
@@ -84,6 +88,7 @@ export function serializeItemOptions(opts: Partial<ChecklistItemOptions>): unkno
   // require_note_when_fail default TRUE — chỉ ghi khi tắt.
   if (opts.require_note_when_fail === false) out.require_note_when_fail = false;
   if (opts.choices && opts.choices.length > 0) out.choices = opts.choices;
+  if (opts.cho_upload_anh === true) out.cho_upload_anh = true;
   return Object.keys(out).length === 0 ? null : out;
 }
 
