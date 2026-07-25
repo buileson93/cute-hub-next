@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageCropDialog } from "@/components/mirats/ImageCropDialog";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
+import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -183,6 +184,7 @@ function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boole
 function DocRow({ row, canManage, onDelete }: { row: TepRow; canManage: boolean; onDelete: () => void }) {
   const url = useSignedUrl(row.bucket, row.file_path);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const canDownload = useCanDownloadAttachments();
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">
       <div className="flex min-w-0 items-center gap-3">
@@ -201,7 +203,9 @@ function DocRow({ row, canManage, onDelete }: { row: TepRow; canManage: boolean;
           <>
             <Button size="sm" variant="ghost" title="Xem" onClick={() => setViewerOpen(true)}><Eye className="h-4 w-4" /></Button>
             <Button asChild size="sm" variant="ghost"><a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a></Button>
-            <Button asChild size="sm" variant="ghost"><a href={url} download={row.file_name}><Download className="h-4 w-4" /></a></Button>
+            {canDownload && (
+              <Button asChild size="sm" variant="ghost" title="Tải xuống"><a href={url} download={row.file_name}><Download className="h-4 w-4" /></a></Button>
+            )}
           </>
         )}
         {canManage && (

@@ -7,6 +7,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, ExternalLink } from "lucide-react";
+import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 
 type Kind = "pdf" | "image" | "office" | "other";
 
@@ -30,6 +31,7 @@ export function DocViewerDialog({
 }) {
   const kind = detectKind(fileName, mimeType);
   const officeSrc = url ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}` : null;
+  const canDownload = useCanDownloadAttachments();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -42,9 +44,11 @@ export function DocViewerDialog({
                 <Button asChild size="sm" variant="ghost" title="Mở tab mới">
                   <a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a>
                 </Button>
-                <Button asChild size="sm" variant="ghost" title="Tải xuống">
-                  <a href={url} download={fileName}><Download className="h-4 w-4" /></a>
-                </Button>
+                {canDownload && (
+                  <Button asChild size="sm" variant="ghost" title="Tải xuống">
+                    <a href={url} download={fileName}><Download className="h-4 w-4" /></a>
+                  </Button>
+                )}
               </>
             )}
           </div>
@@ -63,9 +67,13 @@ export function DocViewerDialog({
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted-foreground">
               <p>Loại tệp này chưa hỗ trợ xem trực tiếp trong ứng dụng.</p>
-              <Button asChild size="sm">
-                <a href={url} download={fileName}><Download className="mr-2 h-4 w-4" /> Tải xuống</a>
-              </Button>
+              {canDownload ? (
+                <Button asChild size="sm">
+                  <a href={url} download={fileName}><Download className="mr-2 h-4 w-4" /> Tải xuống</a>
+                </Button>
+              ) : (
+                <p className="text-xs">Tài khoản của bạn không có quyền tải tệp này.</p>
+              )}
             </div>
           )}
         </div>
