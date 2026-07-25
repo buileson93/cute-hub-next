@@ -454,8 +454,9 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
           </Button>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-1">
+      <CardContent>
         {list.length === 0 && <p className="text-sm text-muted-foreground">Chưa có thành phần.</p>}
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {list.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
@@ -519,6 +520,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
             </HoverCard>
           );
         })}
+        </div>
       </CardContent>
 
       <Sheet open={!!openTpId} onOpenChange={(v) => { if (!v) setOpenTpId(null); }}>
