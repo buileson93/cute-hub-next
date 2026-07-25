@@ -13,10 +13,10 @@
 // ============================================================================
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus,
+  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -51,6 +52,7 @@ import { DeviceMovementHistoryDialog } from "@/components/mirats/DeviceMovementH
 import { showUndoToast } from "@/components/mirats/UndoToast";
 import { useScope } from "@/lib/mirats/scope";
 import { useSession } from "@/hooks/use-session";
+import { useUserPref } from "@/hooks/use-user-pref";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 import { normalize } from "@/lib/mirats/global-search";
 import {
