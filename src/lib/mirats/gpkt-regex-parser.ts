@@ -186,7 +186,7 @@ export function validateFields(f: GpktParsedFields, defaultSource: FieldSource =
 export function parseGpktText(raw: string): RegexParseResult {
   const out: GpktParsedFields = { ...EMPTY };
   const text = normalize(raw);
-  if (!text) return { fields: out, filledCount: 0, totalCount: 17 };
+  if (!text) return { fields: out, filledCount: 0, totalCount: 17, perField: validateFields(out, "regex") };
 
   // --- gp_so ---
   const soM = text.match(/Số\s*:?\s*(\d{1,6})\s*\/\s*GP-?CHK/i);
