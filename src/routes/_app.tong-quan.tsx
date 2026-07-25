@@ -707,7 +707,7 @@ function fmtRelative(iso: string): string {
 
 function HealthTile({ icon, label, value, hint, tone, loading }: {
   icon: React.ReactNode; label: string; value: string; hint?: string;
-  tone: "default" | "ok" | "warn" | "danger"; loading: boolean;
+  tone: "default" | "ok" | "warn" | "danger"; loading: boolean; to?: string;
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
@@ -717,7 +717,7 @@ function HealthTile({ icon, label, value, hint, tone, loading }: {
   };
   return (
     <Card>
-      <CardContent className="flex flex-col gap-1 p-3">
+      <CardContent className="flex flex-col gap-1 p-3 transition-colors hover:bg-accent/40">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className={toneClasses[tone]}>{icon}</span>
           <span className="truncate">{label}</span>
