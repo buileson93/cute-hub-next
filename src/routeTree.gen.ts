@@ -107,6 +107,7 @@ import { Route as AppAdminFormsIndexRouteImport } from './routes/_app.admin.form
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicHooksTestEmailAlertsRouteImport } from './routes/api/public/hooks/test-email-alerts'
 import { Route as ApiPublicHooksTelegramAlertsRouteImport } from './routes/api/public/hooks/telegram-alerts'
 import { Route as ApiPublicHooksScanCanhBaoRouteImport } from './routes/api/public/hooks/scan-canh-bao'
 import { Route as ApiPublicHooksReliabilityReportRouteImport } from './routes/api/public/hooks/reliability-report'
@@ -613,6 +614,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksTestEmailAlertsRoute =
+  ApiPublicHooksTestEmailAlertsRouteImport.update({
+    id: '/api/public/hooks/test-email-alerts',
+    path: '/api/public/hooks/test-email-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksTelegramAlertsRoute =
   ApiPublicHooksTelegramAlertsRouteImport.update({
     id: '/api/public/hooks/telegram-alerts',
@@ -780,6 +787,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
+  '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -884,6 +892,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
+  '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -996,6 +1005,7 @@ export interface FileRoutesById {
   '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
+  '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -1108,6 +1118,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/reliability-report'
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
+    | '/api/public/hooks/test-email-alerts'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -1212,6 +1223,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/reliability-report'
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
+    | '/api/public/hooks/test-email-alerts'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -1323,6 +1335,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/reliability-report'
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
+    | '/api/public/hooks/test-email-alerts'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -1356,6 +1369,7 @@ export interface RootRouteChildren {
   ApiPublicHooksReliabilityReportRoute: typeof ApiPublicHooksReliabilityReportRoute
   ApiPublicHooksScanCanhBaoRoute: typeof ApiPublicHooksScanCanhBaoRoute
   ApiPublicHooksTelegramAlertsRoute: typeof ApiPublicHooksTelegramAlertsRoute
+  ApiPublicHooksTestEmailAlertsRoute: typeof ApiPublicHooksTestEmailAlertsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -2049,6 +2063,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/test-email-alerts': {
+      id: '/api/public/hooks/test-email-alerts'
+      path: '/api/public/hooks/test-email-alerts'
+      fullPath: '/api/public/hooks/test-email-alerts'
+      preLoaderRoute: typeof ApiPublicHooksTestEmailAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/telegram-alerts': {
       id: '/api/public/hooks/telegram-alerts'
       path: '/api/public/hooks/telegram-alerts'
@@ -2443,6 +2464,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksReliabilityReportRoute: ApiPublicHooksReliabilityReportRoute,
   ApiPublicHooksScanCanhBaoRoute: ApiPublicHooksScanCanhBaoRoute,
   ApiPublicHooksTelegramAlertsRoute: ApiPublicHooksTelegramAlertsRoute,
+  ApiPublicHooksTestEmailAlertsRoute: ApiPublicHooksTestEmailAlertsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
