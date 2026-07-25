@@ -17,6 +17,7 @@ import { useMemo, useState } from "react";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { DotAuditTimeline, DotAuditTimelineHeader } from "@/components/mirats/DotAuditTimeline";
 
 export const Route = createFileRoute("/_app/bao-tri/dot/$id")({
   head: ({ params }) => ({
@@ -249,6 +250,7 @@ function DotDetailPage() {
         <TabsList>
           <TabsTrigger value="danh-muc"><ClipboardCheck className="mr-1 h-4 w-4" />Danh mục & Kết quả</TabsTrigger>
           <TabsTrigger value="bao-cao"><BarChart3 className="mr-1 h-4 w-4" />Báo cáo</TabsTrigger>
+          <TabsTrigger value="nhat-ky"><FileText className="mr-1 h-4 w-4" />Nhật ký</TabsTrigger>
         </TabsList>
 
         <TabsContent value="danh-muc" className="space-y-3">
@@ -387,6 +389,13 @@ function DotDetailPage() {
 
         <TabsContent value="bao-cao">
           <BaoCaoTab dotId={id} dotName={dot?.ten ?? ""} kpi={kpi} grouped={groupedByDv} />
+        </TabsContent>
+
+        <TabsContent value="nhat-ky">
+          <Card>
+            <CardHeader className="pb-2"><CardTitle className="text-base"><DotAuditTimelineHeader /></CardTitle></CardHeader>
+            <CardContent><DotAuditTimeline dotId={id} limit={200} /></CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 
@@ -631,6 +640,11 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
 
       <div className="flex justify-end gap-2">
         <Button onClick={() => save.mutate()} disabled={save.isPending || readonly}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
+      </div>
+
+      <div className="space-y-2 rounded border p-3">
+        <DotAuditTimelineHeader />
+        <DotAuditTimeline hangMucId={hangMuc.id} limit={50} />
       </div>
     </div>
   );

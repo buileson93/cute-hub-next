@@ -2281,6 +2281,57 @@ export type Database = {
         }
         Relationships: []
       }
+      dot_bao_duong_audit_log: {
+        Row: {
+          action: string
+          actor: string | null
+          changes: Json | null
+          created_at: string
+          don_vi_id: string | null
+          dot_id: string
+          hang_muc_id: string
+          id: string
+          note: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          changes?: Json | null
+          created_at?: string
+          don_vi_id?: string | null
+          dot_id: string
+          hang_muc_id: string
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          changes?: Json | null
+          created_at?: string
+          don_vi_id?: string | null
+          dot_id?: string
+          hang_muc_id?: string
+          id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dot_bao_duong_audit_log_dot_id_fkey"
+            columns: ["dot_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_audit_log_hang_muc_id_fkey"
+            columns: ["hang_muc_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong_hang_muc"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dot_bao_duong_bien_ban: {
         Row: {
           created_at: string
