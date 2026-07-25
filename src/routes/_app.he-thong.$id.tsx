@@ -613,7 +613,7 @@ function HeThongInner({
   );
 }
 
-function ThanhPhanCard({ heThongId }: { heThongId: string }) {
+function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { heThongId: string; open?: boolean; onToggle?: () => void; compact?: boolean }) {
   const { data: tps } = useViTriChucNang(heThongId);
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const list = tps ?? [];
@@ -621,7 +621,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
   const openTp = openTpId ? list.find((t) => t.id === openTpId) ?? null : null;
   const openDev = openTpId ? dangLap?.get(openTpId) ?? null : null;
   return (
-    <Card id="thanh-phan-card">
+    <Card id="thanh-phan-card" className={open ? "min-h-[220px]" : ""}>
       <CardHeader>
         <CardTitle className="text-base flex items-center justify-between gap-2">
           <span>Thành phần hệ thống ({list.length})</span>
@@ -634,12 +634,18 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
             <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
               <Link to="/he-thong/cay">Quản lý cây</Link>
             </Button>
+            {onToggle && (
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onToggle} aria-label={open ? "Thu gọn thành phần" : "Mở rộng thành phần"} title={open ? "Thu gọn" : "Mở rộng"}>
+                {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            )}
           </div>
         </CardTitle>
       </CardHeader>
+      {open && (
       <CardContent>
         {list.length === 0 && <p className="text-sm text-muted-foreground">Chưa có thành phần.</p>}
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className={`grid gap-2 ${compact ? "sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" : "sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
         {list.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
