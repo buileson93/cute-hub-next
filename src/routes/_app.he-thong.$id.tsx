@@ -224,7 +224,15 @@ function HeThongInner({
                 <h1 className="truncate text-xl font-semibold sm:text-2xl">{tenHt}</h1>
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   {maBravo && <span>Mã Bravo: <span className="font-mono text-foreground/80">{maBravo}</span></span>}
-                  {donVi && <span>· {donVi}{donViTenR ? ` — ${donViTenR}` : ""}</span>}
+                  {donVi ? (
+                    <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="inline-flex items-center gap-1 hover:text-primary hover:underline">
+                      <Building2 className="h-3 w-3" /> {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
+                    </Link>
+                  ) : (
+                    <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 text-amber-600 hover:underline">
+                      <Building2 className="h-3 w-3" /> Chưa phân công đơn vị
+                    </Link>
+                  )}
                   <span>· {timeline.length} sự kiện</span>
                 </div>
               </div>
@@ -270,7 +278,27 @@ function HeThongInner({
             <CardContent className="space-y-3 text-sm">
               <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
               <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
-              <InfoRow icon={Building2} label="Đơn vị quản lý" value={`${donVi || "—"}${donViTenR ? " — " + donViTenR : ""}`} />
+              <div className="flex items-start gap-2 text-sm">
+                <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs text-muted-foreground">Đơn vị quản lý</div>
+                  {donVi ? (
+                    <Link
+                      to="/danh-muc/don-vi"
+                      search={{ q: donVi } as never}
+                      className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
+                    >
+                      {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
+                      <ExternalLink className="h-3 w-3 opacity-60" />
+                    </Link>
+                  ) : (
+                    <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 font-medium text-amber-600 hover:underline">
+                      Chưa phân công đơn vị
+                      <ExternalLink className="h-3 w-3 opacity-60" />
+                    </Link>
+                  )}
+                </div>
+              </div>
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
               <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
