@@ -261,7 +261,6 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
                 onChange={(v) => setForm({ ...form, loaiGiayPhepId: v })}
                 options={(loaiOpts.data ?? []).map((o) => ({ value: o.id, label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}` }))}
                 placeholder="Chọn loại…"
-                disabled={nguon === "gpkt"}
               />
             </Field>
             <Field label={nguon === "gpkt" ? "Số giấy phép *" : "Số giấy phép"}>
@@ -279,7 +278,6 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
                 onChange={(v) => setForm({ ...form, noiCapId: v })}
                 options={(noiOpts.data ?? []).map((o) => ({ value: o.id, label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}` }))}
                 placeholder="Chọn nơi cấp…"
-                disabled={nguon === "gpkt"}
               />
             </Field>
             <Field label="Link file (tuỳ chọn)">
