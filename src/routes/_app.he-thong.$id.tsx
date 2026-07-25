@@ -1273,20 +1273,79 @@ function QuickActionsBar({ heThongId }: { heThongId: string }) {
     { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
   ];
   return (
-    <div className="no-print rounded-lg border bg-card p-2">
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="px-2 text-xs font-medium text-muted-foreground">Tác nghiệp nhanh</span>
-        {actions.map((a) => (
-          <Button key={a.to} asChild size="sm" variant="outline" className="h-8 gap-1.5 text-xs">
-            <Link to={a.to} search={search}>
-              <Plus className="h-3.5 w-3.5" />
-              <a.icon className={`h-3.5 w-3.5 ${a.tone}`} />
-              {a.label}
-            </Link>
+    <div className="no-print flex items-center justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Tác nghiệp nhanh
+            <ChevronDown className="h-3.5 w-3.5 opacity-70" />
           </Button>
-        ))}
-      </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-64">
+          <DropdownMenuLabel className="text-xs">Tạo mới cho hệ thống này</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {actions.map((a) => (
+            <DropdownMenuItem key={a.to} asChild>
+              <Link to={a.to} search={search} className="flex items-center gap-2">
+                <a.icon className={`h-4 w-4 ${a.tone}`} />
+                <span className="flex-1">{a.label}</span>
+                <Plus className="h-3.5 w-3.5 opacity-60" />
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
+  );
+}
+
+function FunctionLinksMenu({ heThongId, hasGp, gpSo }: { heThongId: string; hasGp: boolean; gpSo: string }) {
+  const search = { he_thong: heThongId } as never;
+  const items: { to: "/so-do" | "/he-thong/lien-ket" | "/he-thong/thanh-phan" | "/kiem-dinh" | "/vat-tu" | "/du-an" | "/nhan"; label: string; icon: React.ComponentType<{ className?: string }>; sp?: never }[] = [
+    { to: "/so-do", label: "Sơ đồ hệ thống", icon: Waypoints },
+    { to: "/he-thong/lien-ket", label: "Liên kết hệ thống", icon: Link2, sp: { src: heThongId } as never },
+    { to: "/he-thong/thanh-phan", label: "Thành phần (dạng bảng)", icon: Puzzle },
+    { to: "/kiem-dinh", label: "Kiểm định & Hiệu chuẩn", icon: ShieldCheck },
+    { to: "/vat-tu", label: "Vật tư & Kho", icon: HardDrive },
+    { to: "/du-an", label: "Dự án liên quan", icon: FolderKanban },
+    { to: "/nhan", label: "In nhãn QR", icon: QrCode },
+  ];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="h-8 w-full justify-between gap-2">
+          <span className="inline-flex items-center gap-2">
+            <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+            Liên kết chức năng
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64">
+        {items.map((it) => (
+          <DropdownMenuItem key={it.to} asChild>
+            <Link to={it.to} search={(it.sp ?? search) as never} className="flex items-center gap-2">
+              <it.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="flex-1">{it.label}</span>
+              <ExternalLink className="h-3 w-3 opacity-60" />
+            </Link>
+          </DropdownMenuItem>
+        ))}
+        {hasGp && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/giay-phep" search={{ q: gpSo } as never} className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="flex-1">Lịch sử giấy phép</span>
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
