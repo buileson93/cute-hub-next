@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { CalendarClock, Plus, ArrowLeft, Printer, FileText, ClipboardCheck, BarChart3, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { CalendarClock, Plus, ArrowLeft, Printer, FileText, ClipboardCheck, BarChart3, CheckCircle2, XCircle, AlertCircle, Lock, Send, Undo2, ShieldCheck, TimerReset, Clock, AlertTriangle } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMemo, useState } from "react";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
@@ -34,13 +35,33 @@ const trangThaiHM: Record<string, { label: string; color: string }> = {
   khong_thuc_hien: { label: "Không thực hiện", color: "bg-rose-100 text-rose-700" },
 };
 
+const duyetTT: Record<string, { label: string; color: string }> = {
+  chua_gui: { label: "Chưa gửi", color: "bg-slate-100 text-slate-700" },
+  cho_duyet: { label: "Chờ duyệt", color: "bg-amber-100 text-amber-700" },
+  da_duyet: { label: "Đã duyệt (khoá)", color: "bg-emerald-100 text-emerald-700" },
+  tu_choi: { label: "Bị trả lại", color: "bg-rose-100 text-rose-700" },
+};
+
+function deadlineTone(han: string | null | undefined, done: boolean) {
+  if (!han) return { color: "text-muted-foreground", label: "—" };
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const d = new Date(han); d.setHours(0, 0, 0, 0);
+  const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+  if (done) return { color: "text-emerald-600", label: han };
+  if (diff < 0) return { color: "text-rose-600 font-semibold", label: `${han} (quá ${-diff}d)` };
+  if (diff <= 3) return { color: "text-amber-600 font-semibold", label: `${han} (còn ${diff}d)` };
+  return { color: "text-foreground", label: han };
+}
+
 function DotDetailPage() {
   const { id } = Route.useParams();
   const { roles, profile } = useSession();
   const isKt = roles.includes("admin") || roles.includes("phong_kt");
+  const isAdmin = roles.includes("admin");
   const qc = useQueryClient();
   const [selHM, setSelHM] = useState<string | null>(null);
   const [addOpenForDvId, setAddOpenForDvId] = useState<string | null>(null);
+  const [deadlineDialogOpen, setDeadlineDialogOpen] = useState(false);
 
   const { data: dot } = useQuery({
     queryKey: ["dot-bao-duong", id],
@@ -73,6 +94,30 @@ function DotDetailPage() {
     },
   });
 
+  const { data: alerts, refetch: refetchAlerts } = useQuery({
+    queryKey: ["dot-alerts", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dot_bao_duong_canh_bao", { p_dot_id: id, p_sap_han_ngay: 3 });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: hans } = useQuery({
+    queryKey: ["dot-hans", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("dot_bao_duong_han").select("*").eq("dot_id", id);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const hanByDv = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const h of hans ?? []) m.set(h.don_vi_id, h.han_ngay);
+    return m;
+  }, [hans]);
+
   const groupedByDv = useMemo(() => {
     const m = new Map<string, { donVi: { id: string; ma: string; ten: string } | null; items: NonNullable<typeof hangMuc>[number][] }>();
     for (const h of hangMuc ?? []) {
@@ -103,6 +148,24 @@ function DotDetailPage() {
 
   const selectedHM = hangMuc?.find((h) => h.id === selHM) ?? null;
 
+  const workflowMut = useMutation({
+    mutationFn: async (args: { fn: "dot_hm_submit" | "dot_hm_approve" | "dot_hm_reject" | "dot_hm_unlock"; id: string; note?: string }) => {
+      if (args.fn === "dot_hm_submit" || args.fn === "dot_hm_unlock") {
+        const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id, p_note: args.note ?? null });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Đã cập nhật quy trình duyệt");
+      qc.invalidateQueries({ queryKey: ["dot-bao-duong-hm", id] });
+      qc.invalidateQueries({ queryKey: ["dot-alerts", id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 print:hidden">
@@ -128,11 +191,51 @@ function DotDetailPage() {
                   <SelectItem value="huy">Đã huỷ</SelectItem>
                 </SelectContent>
               </Select>
+              <Button variant="outline" size="sm" onClick={() => setDeadlineDialogOpen(true)}><TimerReset className="mr-1 h-4 w-4" />Mốc tiến độ</Button>
               <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="mr-1 h-4 w-4" />In</Button>
             </div>
           )
         }
       />
+
+      {/* Alerts card */}
+      {(alerts?.length ?? 0) > 0 && (
+        <Card className="border-amber-200 bg-amber-50/40">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-600" />Cảnh báo tiến độ theo đơn vị</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+            {alerts!.map((a) => {
+              const tone =
+                a.muc_do === "qua_han" ? "border-rose-300 bg-rose-50" :
+                a.muc_do === "sap_han" ? "border-amber-300 bg-amber-50" :
+                a.muc_do === "hoan_tat" ? "border-emerald-300 bg-emerald-50" :
+                "border-slate-200 bg-white";
+              const label =
+                a.muc_do === "qua_han" ? "Quá hạn" :
+                a.muc_do === "sap_han" ? "Sắp hết hạn" :
+                a.muc_do === "hoan_tat" ? "Hoàn tất" : "Đúng tiến độ";
+              return (
+                <div key={a.don_vi_id} className={`rounded border p-2 text-xs ${tone}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium">{a.don_vi_ma} — {a.don_vi_ten}</div>
+                    <Badge variant="outline" className="text-[10px]">{label}</Badge>
+                  </div>
+                  <div className="mt-1 text-muted-foreground">
+                    Hạn: {a.han_ngay ?? "—"} · Tổng {a.tong} · HT {a.hoan_thanh} · Duyệt {a.da_duyet}
+                  </div>
+                  {(a.qua_han > 0 || a.sap_han > 0) && (
+                    <div className="mt-1 flex gap-2 text-[11px]">
+                      {a.qua_han > 0 && <span className="text-rose-600">● Quá hạn: {a.qua_han}</span>}
+                      {a.sap_han > 0 && <span className="text-amber-600">● Sắp hạn: {a.sap_han}</span>}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -183,34 +286,81 @@ function DotDetailPage() {
                   <thead className="bg-muted/50 text-xs text-muted-foreground">
                     <tr>
                       <th className="px-3 py-2 text-left">Hệ thống</th>
-                      <th className="px-3 py-2 text-left">Nguồn</th>
                       <th className="px-3 py-2 text-left">Trạng thái</th>
+                      <th className="px-3 py-2 text-left">Duyệt</th>
                       <th className="px-3 py-2 text-left">Kết quả</th>
+                      <th className="px-3 py-2 text-left">Hạn</th>
                       <th className="px-3 py-2 text-left">Tồn tại</th>
-                      <th className="px-3 py-2 w-24" />
+                      <th className="px-3 py-2 w-32" />
                     </tr>
                   </thead>
                   <tbody>
                     {g.items.map((h) => {
                       const tt = trangThaiHM[h.trang_thai] ?? trangThaiHM.chua_bat_dau;
+                      const dt = duyetTT[h.duyet_trang_thai ?? "chua_gui"] ?? duyetTT.chua_gui;
+                      const eff = h.han_hoan_thanh ?? hanByDv.get(h.don_vi_id) ?? null;
+                      const dl = deadlineTone(eff, h.trang_thai === "hoan_thanh" || h.duyet_trang_thai === "da_duyet");
+                      const locked = h.duyet_trang_thai === "da_duyet";
+                      const isMine = profile?.don_vi === g.donVi?.ma;
                       return (
                         <tr key={h.id} className="border-t hover:bg-muted/30">
                           <td className="px-3 py-2">
-                            <div className="font-medium">{h.dm_he_thong?.ten}</div>
+                            <div className="font-medium flex items-center gap-1">
+                              {locked && <Lock className="h-3 w-3 text-emerald-600" />}
+                              {h.dm_he_thong?.ten}
+                            </div>
                             <div className="text-xs text-muted-foreground">{h.dm_he_thong?.ma}</div>
                           </td>
-                          <td className="px-3 py-2">
-                            <Badge variant="outline" className="text-xs">{h.nguon === "kt_khoi_tao" ? "KT" : "Đơn vị"}</Badge>
-                          </td>
                           <td className="px-3 py-2"><Badge className={tt.color} variant="secondary">{tt.label}</Badge></td>
+                          <td className="px-3 py-2"><Badge className={dt.color} variant="secondary">{dt.label}</Badge></td>
                           <td className="px-3 py-2">
                             {h.ket_qua === "dat" && <span className="inline-flex items-center gap-1 text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" />Đạt</span>}
                             {h.ket_qua === "khong_dat" && <span className="inline-flex items-center gap-1 text-rose-600"><XCircle className="h-3.5 w-3.5" />Không đạt</span>}
                             {!h.ket_qua && <span className="text-muted-foreground">—</span>}
                           </td>
+                          <td className={`px-3 py-2 text-xs ${dl.color}`}>{dl.label}</td>
                           <td className="px-3 py-2 text-xs text-muted-foreground line-clamp-1 max-w-[240px]">{h.ton_tai || "—"}</td>
                           <td className="px-3 py-2 text-right">
-                            <Button size="sm" variant="ghost" onClick={() => setSelHM(h.id)}>Cập nhật</Button>
+                            <div className="flex items-center justify-end gap-1">
+                              <Button size="sm" variant="ghost" onClick={() => setSelHM(h.id)} disabled={locked && !isAdmin}>
+                                {locked ? "Xem" : "Cập nhật"}
+                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button size="sm" variant="ghost">⋯</Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-52">
+                                  {(isMine || isKt) && !locked && h.duyet_trang_thai !== "cho_duyet" && (
+                                    <DropdownMenuItem onClick={() => workflowMut.mutate({ fn: "dot_hm_submit", id: h.id })}>
+                                      <Send className="mr-2 h-3.5 w-3.5" />Gửi phê duyệt
+                                    </DropdownMenuItem>
+                                  )}
+                                  {isKt && h.duyet_trang_thai === "cho_duyet" && (
+                                    <>
+                                      <DropdownMenuItem onClick={() => workflowMut.mutate({ fn: "dot_hm_approve", id: h.id })}>
+                                        <ShieldCheck className="mr-2 h-3.5 w-3.5" />Duyệt & khoá
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => {
+                                        const note = window.prompt("Lý do trả lại (tuỳ chọn):") ?? "";
+                                        workflowMut.mutate({ fn: "dot_hm_reject", id: h.id, note: note || undefined });
+                                      }}>
+                                        <Undo2 className="mr-2 h-3.5 w-3.5" />Trả lại đơn vị
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                  {isAdmin && locked && (
+                                    <>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem onClick={() => {
+                                        if (window.confirm("Mở khoá hạng mục đã duyệt?")) workflowMut.mutate({ fn: "dot_hm_unlock", id: h.id });
+                                      }}>
+                                        <Lock className="mr-2 h-3.5 w-3.5" />Mở khoá (Admin)
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -257,11 +407,21 @@ function DotDetailPage() {
           {selectedHM && (
             <UpdateHangMucPanel
               hangMuc={selectedHM}
+              readonly={selectedHM.duyet_trang_thai === "da_duyet" && !isAdmin}
               onSaved={() => { setSelHM(null); refetchHM(); }}
             />
           )}
         </SheetContent>
       </Sheet>
+
+      <DeadlinesDialog
+        open={deadlineDialogOpen}
+        onOpenChange={setDeadlineDialogOpen}
+        dotId={id}
+        donViList={donViList ?? []}
+        existingHans={hans ?? []}
+        onDone={() => { qc.invalidateQueries({ queryKey: ["dot-hans", id] }); refetchAlerts(); }}
+      />
     </div>
   );
 }
