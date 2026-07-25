@@ -206,7 +206,7 @@ function GiayPhepPage() {
         open={!!viewerRow}
         onOpenChange={(v) => { if (!v) setViewerRow(null); }}
         url={viewerRow?.file ?? null}
-        fileName={viewerRow?.so_giay_phep ? `${viewerRow.so_giay_phep}` : (viewerRow?.file ?? "").split("/").pop() ?? "tai-lieu"}
+        fileName={viewerRow?.soGP ?? (viewerRow?.file ?? "").split("/").pop() ?? "tai-lieu"}
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
