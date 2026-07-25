@@ -49,12 +49,38 @@ function FormsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("form_submission")
-        .select("id,template_code,tieu_de,ky_bao_cao,status,created_at,updated_at")
+        .select("id,template_code,tieu_de,ky_bao_cao,status,created_at,updated_at,he_thong_id,he_thong:dm_he_thong(id,ma,ten)")
         .order("updated_at", { ascending: false })
         .limit(200);
       if (error) throw error;
       return data ?? [];
     },
+  });
+
+  const { data: heThongOpts } = useQuery({
+    queryKey: ["forms-hethong-opts"],
+    enabled: !!session,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("dm_he_thong")
+        .select("id,ma,ten")
+        .order("ma");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const [subQ, setSubQ] = useState("");
+  const [heThongFilter, setHeThongFilter] = useState<string>("all");
+  const filteredSubs = (subs ?? []).filter((s) => {
+    if (heThongFilter === "__none__" && s.he_thong_id) return false;
+    if (heThongFilter !== "all" && heThongFilter !== "__none__" && s.he_thong_id !== heThongFilter) return false;
+    if (subQ) {
+      const q = subQ.toLowerCase();
+      const hay = `${s.tieu_de ?? ""} ${s.template_code ?? ""} ${s.ky_bao_cao ?? ""} ${s.he_thong?.ma ?? ""} ${s.he_thong?.ten ?? ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
   });
 
   if (loading) return <><div className="flex h-96 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div></>;
@@ -108,16 +134,48 @@ function FormsPage() {
           </TabsContent>
 
           <TabsContent value="mine" className="mt-4">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Input
+                placeholder="Tìm tiêu đề, mã mẫu, kỳ, hệ thống…"
+                value={subQ}
+                onChange={(e) => setSubQ(e.target.value)}
+                className="max-w-sm"
+              />
+              <select
+                value={heThongFilter}
+                onChange={(e) => setHeThongFilter(e.target.value)}
+                className="h-9 rounded-md border bg-background px-2 text-sm"
+              >
+                <option value="all">Tất cả hệ thống</option>
+                <option value="__none__">— Chưa gán hệ thống —</option>
+                {(heThongOpts ?? []).map((h) => (
+                  <option key={h.id} value={h.id}>{h.ma ? `${h.ma} — ` : ""}{h.ten}</option>
+                ))}
+              </select>
+              {(subQ || heThongFilter !== "all") && (
+                <Button variant="ghost" size="sm" onClick={() => { setSubQ(""); setHeThongFilter("all"); }}>Xoá lọc</Button>
+              )}
+              <span className="text-xs text-muted-foreground ml-auto">{filteredSubs.length}/{subs?.length ?? 0}</span>
+            </div>
             <StandardTable<NonNullable<typeof subs>[number]>
               tableKey="forms_my_submissions"
               trangThai={{ dangTai: subsLoading }}
-              rows={subs ?? []}
+              rows={filteredSubs}
               getRowId={(s) => s.id}
               requireFilterToShow={false}
               emptyContent={<div className="py-8 text-center text-muted-foreground">Chưa có biên bản nào.</div>}
               columns={[
                 { key: "template_code", label: "Mã mẫu", filter: "text", value: (s) => s.template_code ?? "", cell: (s) => <span className="font-mono text-xs">{s.template_code}</span> },
                 { key: "tieu_de", label: "Tiêu đề", filter: "text", value: (s) => s.tieu_de ?? "", cell: (s) => <span className="font-medium">{s.tieu_de ?? "—"}</span> },
+                {
+                  key: "he_thong", label: "Hệ thống", filter: "cat",
+                  value: (s) => s.he_thong ? `${s.he_thong.ma ?? ""} ${s.he_thong.ten ?? ""}`.trim() : "—",
+                  cell: (s) => s.he_thong ? (
+                    <Link to="/he-thong/$id" params={{ id: s.he_thong.id }} className="text-xs text-primary hover:underline">
+                      {s.he_thong.ma ? <span className="font-mono">{s.he_thong.ma}</span> : null} {s.he_thong.ten}
+                    </Link>
+                  ) : <span className="text-xs text-muted-foreground">—</span>,
+                },
                 { key: "ky_bao_cao", label: "Kỳ", filter: "cat", value: (s) => s.ky_bao_cao ?? "", cell: (s) => <span>{s.ky_bao_cao ?? "—"}</span> },
                 {
                   key: "status", label: "Trạng thái", filter: "cat",

@@ -29,7 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
@@ -161,6 +161,21 @@ function HeThongInner({
     },
   });
   const bienBan = useMemo(() => bienBanRows ?? [], [bienBanRows]);
+
+  // Realtime: đồng bộ ngay khi có biên bản mới/cập nhật cho hệ thống này.
+  const qcHt = useQueryClient();
+  useEffect(() => {
+    if (!id) return;
+    const ch = supabase
+      .channel(`he-thong-submissions-${id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "form_submission", filter: `he_thong_id=eq.${id}` },
+        () => qcHt.invalidateQueries({ queryKey: ["he-thong-submissions", id] }),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [id, qcHt]);
 
   
   const donVi = donViMa || devices[0]?.don_vi || "";

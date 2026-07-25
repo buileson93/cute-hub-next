@@ -10,7 +10,7 @@
 // ============================================================================
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, Send, Save } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +40,7 @@ function NewSubmission() {
   const { code } = Route.useParams();
   const nav = useNavigate();
   const { session, profile, loading } = useSession();
+  const qc = useQueryClient();
 
   const draftIdRef = useRef<string>(makeDraftId());
   const [values, setValues] = useState<Record<string, unknown>>({});
@@ -250,6 +251,12 @@ function NewSubmission() {
       return ins.id as string;
     },
     onSuccess: (id, status) => {
+      // Sync ngay Nhật ký khai thác của hệ thống liên quan
+      if (effectiveHeThongId) {
+        qc.invalidateQueries({ queryKey: ["he-thong-submissions", effectiveHeThongId] });
+      }
+      qc.invalidateQueries({ queryKey: ["my-submissions"] });
+      qc.invalidateQueries({ queryKey: ["submissions-all"] });
       toast.success(status === "draft" ? "Đã lưu nháp" : "Đã gửi biên bản");
       nav({ to: "/forms/submissions/$id", params: { id } });
     },
