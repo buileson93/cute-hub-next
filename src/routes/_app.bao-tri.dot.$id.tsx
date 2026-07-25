@@ -345,16 +345,16 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
   const { data: bienBans } = useQuery({
     queryKey: ["hm-bien-ban", hangMuc.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("dot_bao_duong_bien_ban").select("id, form_submission:form_submission_id(id, so_bien_ban, ten, created_at)").eq("hang_muc_id", hangMuc.id);
+      const { data, error } = await supabase.from("dot_bao_duong_bien_ban").select("id, form_submission:form_submission_id(id, tieu_de, template_code, created_at)").eq("hang_muc_id", hangMuc.id);
       if (error) throw error;
-      return data;
+      return data as Array<{ id: string; form_submission: { id: string; tieu_de: string | null; template_code: string; created_at: string } | null }>;
     },
   });
 
   const { data: candidates } = useQuery({
     queryKey: ["hm-candidate-forms", hangMuc.he_thong_id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("form_submission").select("id, so_bien_ban, ten, created_at").eq("he_thong_id", hangMuc.he_thong_id).order("created_at", { ascending: false }).limit(20);
+      const { data, error } = await supabase.from("form_submission").select("id, tieu_de, template_code, created_at").eq("he_thong_id", hangMuc.he_thong_id).order("created_at", { ascending: false }).limit(20);
       if (error) throw error;
       return data;
     },
@@ -363,7 +363,7 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
   const save = useMutation({
     mutationFn: async () => {
       const base = {
-        trang_thai: trangThai,
+        trang_thai: trangThai as "chua_bat_dau" | "dang_lam" | "hoan_thanh" | "khong_thuc_hien",
         ket_qua: (ketQua || null) as never,
         ton_tai: tonTai || null,
         kien_nghi: kienNghi || null,
@@ -432,7 +432,7 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
         {(bienBans ?? []).length === 0 && <div className="text-xs text-muted-foreground">Chưa có biên bản.</div>}
         {(bienBans ?? []).map((b) => (
           <div key={b.id} className="flex items-center justify-between text-xs">
-            <span>{b.form_submission?.so_bien_ban ?? b.form_submission?.id?.slice(0, 8)} — {b.form_submission?.ten}</span>
+            <span>{b.form_submission?.tieu_de ?? b.form_submission?.template_code ?? b.form_submission?.id?.slice(0, 8)}</span>
             {b.form_submission?.id && (
               <Link to="/forms/submissions/$id" params={{ id: b.form_submission.id }} className="text-primary">Mở</Link>
             )}
@@ -444,7 +444,7 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
             <div className="mt-2 space-y-1">
               {(candidates ?? []).map((f) => (
                 <div key={f.id} className="flex items-center justify-between rounded p-1 hover:bg-muted">
-                  <span>{f.so_bien_ban ?? f.id.slice(0, 8)} — {f.ten}</span>
+                  <span>{f.tieu_de ?? f.template_code ?? f.id.slice(0, 8)}</span>
                   <Button size="sm" variant="ghost" onClick={() => linkBb.mutate(f.id)}>Gắn</Button>
                 </div>
               ))}
