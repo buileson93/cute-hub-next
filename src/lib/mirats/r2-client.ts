@@ -24,6 +24,9 @@ export type ResumableSession = {
   uploadId: string;
   partSize: number;
   createdAt: number;
+  uploadedBytes?: number;
+  percent?: number;
+  updatedAt?: number;
 };
 
 export function fileFingerprint(file: File): string {
@@ -51,6 +54,13 @@ export function removeResumableSession(fingerprint: string) {
 function upsertSession(s: ResumableSession) {
   const list = loadSessions().filter((x) => x.fingerprint !== s.fingerprint);
   list.push(s);
+  saveSessions(list);
+}
+function patchSession(fingerprint: string, patch: Partial<ResumableSession>) {
+  const list = loadSessions();
+  const i = list.findIndex((x) => x.fingerprint === fingerprint);
+  if (i < 0) return;
+  list[i] = { ...list[i], ...patch, updatedAt: Date.now() };
   saveSessions(list);
 }
 
@@ -124,6 +134,7 @@ export function useR2Upload() {
     upsertSession({
       fingerprint: fp, fileName: file.name, fileSize: file.size, fileLastModified: file.lastModified,
       contentType: ct, key, uploadId, partSize: PART_SIZE, createdAt: Date.now(),
+      uploadedBytes: 0, percent: 0, updatedAt: Date.now(),
     });
 
     try {
@@ -134,7 +145,12 @@ export function useR2Upload() {
       const totalLoaded = () => Array.from(uploadedByPart.values()).reduce((a, b) => a + b, 0);
       const parts: { PartNumber: number; ETag: string }[] = [];
       for (const [n, meta] of alreadyDone) parts.push({ PartNumber: n, ETag: meta.ETag });
-      opts.onProgress?.({ loaded: totalLoaded(), total: file.size, percent: Math.min(99, Math.round((totalLoaded() / file.size) * 100)) });
+      {
+        const tl = totalLoaded();
+        const pct = Math.min(99, Math.round((tl / file.size) * 100));
+        opts.onProgress?.({ loaded: tl, total: file.size, percent: pct });
+        patchSession(fp, { uploadedBytes: tl, percent: pct });
+      }
 
       for (let batchStart = 1; batchStart <= partCount; batchStart += PART_BATCH) {
         const batchNums: number[] = [];
@@ -150,10 +166,13 @@ export function useR2Upload() {
           const { etag } = await putWithProgress(url, chunk, undefined, (loaded) => {
             uploadedByPart.set(partNumber, loaded);
             const tl = totalLoaded();
-            opts.onProgress?.({ loaded: tl, total: file.size, percent: Math.min(99, Math.round((tl / file.size) * 100)) });
+            const pct = Math.min(99, Math.round((tl / file.size) * 100));
+            opts.onProgress?.({ loaded: tl, total: file.size, percent: pct });
+            patchSession(fp, { uploadedBytes: tl, percent: pct });
           }, opts.signal);
           if (!etag) throw new Error(`Part ${partNumber} không nhận được ETag`);
           parts.push({ PartNumber: partNumber, ETag: etag });
+          patchSession(fp, { uploadedBytes: totalLoaded(), percent: Math.min(99, Math.round((totalLoaded() / file.size) * 100)) });
         }
       }
       await mpFinish({ data: { key, uploadId, parts, size: file.size } });
