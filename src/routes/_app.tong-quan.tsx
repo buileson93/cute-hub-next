@@ -641,8 +641,8 @@ function KpiCard({
     warn: "text-amber-600 dark:text-amber-400",
     danger: "text-destructive",
   };
-  return (
-    <Card>
+  const body = (
+    <Card className={cn(link && "cursor-pointer transition-shadow hover:shadow-md hover:border-primary/40")}>
       <CardContent className="flex flex-col gap-1 p-3">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className={toneClasses[tone]}>{icon}</span>
@@ -653,13 +653,13 @@ function KpiCard({
         </div>
         {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
         {link && (
-          <Link to={link.to as never} className="mt-1 text-[11px] text-primary hover:underline">
-            {link.label} →
-          </Link>
+          <span className="mt-1 text-[11px] text-primary">{link.label} →</span>
         )}
       </CardContent>
     </Card>
   );
+  if (link) return <Link to={link.to as never} className="block">{body}</Link>;
+  return body;
 }
 
 function ChartLoader() {
