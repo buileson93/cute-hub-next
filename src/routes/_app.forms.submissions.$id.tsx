@@ -132,7 +132,7 @@ function SubmissionDetail() {
     onSuccess: () => {
       toast.success("Đã cập nhật");
       qc.invalidateQueries({ queryKey: ["submission", id] });
-      const ht = (data as { submission?: { he_thong_id?: string | null } } | undefined)?.submission?.he_thong_id;
+      const ht = data?.s?.he_thong_id;
       if (ht) qc.invalidateQueries({ queryKey: ["he-thong-submissions", ht] });
       qc.invalidateQueries({ queryKey: ["my-submissions"] });
       qc.invalidateQueries({ queryKey: ["submissions-all"] });
