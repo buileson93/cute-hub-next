@@ -11,9 +11,7 @@
 // ============================================================================
 import { readdirSync, statSync, readFileSync } from "node:fs";
 import { join, resolve, extname } from "node:path";
-import {
-  linesFromItems, normalizeWgs84,
-} from "../src/lib/mirats/gpkt-pdf-text";
+import { linesFromItems, normalizeWgs84 } from "../src/lib/mirats/gpkt-pdf-parse";
 import { parseGpktText } from "../src/lib/mirats/gpkt-regex-parser";
 // pdfjs "legacy" build chạy được trong Node
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
