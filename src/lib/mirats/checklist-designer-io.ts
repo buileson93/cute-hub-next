@@ -90,7 +90,7 @@ export async function saveChecklistDesigner(
     result_kind: ChecklistSection["items"][number]["result_kind"];
     don_vi: string | null;
     tieu_chuan: string | null;
-    tuy_chon: unknown;
+    tuy_chon: import("@/integrations/supabase/types").Json;
     bat_buoc: boolean;
     position: number;
   };
@@ -108,11 +108,11 @@ export async function saveChecklistDesigner(
         result_kind: it.result_kind,
         don_vi: it.don_vi ?? null,
         tieu_chuan: it.tieu_chuan ?? null,
-        tuy_chon: serializeItemOptions({
+      tuy_chon: (serializeItemOptions({
           ...it.options,
           // đảm bảo choices cho kiểu "chon" đồng bộ từ tuy_chon phẳng.
           choices: it.options.choices ?? it.tuy_chon ?? null,
-        }),
+        }) ?? null) as import("@/integrations/supabase/types").Json,
         bat_buoc: !!it.bat_buoc,
         position: si * 1000 + ii,
       });
