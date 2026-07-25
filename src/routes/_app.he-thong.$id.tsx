@@ -1048,17 +1048,78 @@ function DeviceChip({ tb, tenMap }: { tb: string; tenMap: Map<string, string> })
   );
 }
 
-function EventRow({ title, date, label, desc, tag, tone, tb, tenMap }: { title: string; date: string; label: string; desc: string; tag?: string; tone?: string; tb: string; tenMap: Map<string, string> }) {
+function EventRow({ title, date, label, desc, tag, tone, tb, tenMap, code, detailKind }: { title: string; date: string; label: string; desc: string; tag?: string; tone?: string; tb: string; tenMap: Map<string, string>; code?: string; detailKind?: "bt" | "sc" | "hh" }) {
+  const detailLink = code && detailKind ? (
+    detailKind === "bt" ? (
+      <Link to="/bao-tri/$maBaoTri" params={{ maBaoTri: code }} className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
+        <span className="font-mono">{code}</span> <ExternalLink className="h-3 w-3" />
+      </Link>
+    ) : detailKind === "sc" ? (
+      <Link to="/su-co/$maSuCo" params={{ maSuCo: code }} className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
+        <span className="font-mono">{code}</span> <ExternalLink className="h-3 w-3" />
+      </Link>
+    ) : (
+      <Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: code }} className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
+        <span className="font-mono">{code}</span> <ExternalLink className="h-3 w-3" />
+      </Link>
+    )
+  ) : null;
   return (
     <div className="rounded-md border p-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="outline" className={tone}>{label}</Badge>
         {date && <span className="text-xs text-muted-foreground">{date}</span>}
         <DeviceChip tb={tb} tenMap={tenMap} />
-        {tag && <Badge variant="secondary" className="ml-auto">{tag}</Badge>}
+        {tag && <Badge variant="secondary">{tag}</Badge>}
+        {detailLink}
       </div>
       <div className="mt-1 font-medium">{title || "—"}</div>
       {desc && <div className="text-muted-foreground">{desc}</div>}
+    </div>
+  );
+}
+
+function TabHeaderLink({ label, to, heThongId }: { label: string; to: "/bao-tri" | "/su-co" | "/hong-hoc" | "/ban-giao"; heThongId: string }) {
+  return (
+    <div className="mb-2 flex items-center justify-between rounded-md border bg-muted/30 px-3 py-1.5 text-xs">
+      <span className="text-muted-foreground">Danh sách {label} của hệ thống này</span>
+      <Link
+        to={to}
+        search={{ he_thong: heThongId } as never}
+        className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+      >
+        Xem tất cả trong menu {label}
+        <ExternalLink className="h-3 w-3" />
+      </Link>
+    </div>
+  );
+}
+
+function QuickActionsBar({ heThongId }: { heThongId: string }) {
+  const search = { he_thong: heThongId } as never;
+  const actions: { to: "/su-co/moi" | "/bao-tri/moi" | "/hong-hoc/moi" | "/ban-giao/moi" | "/forms" | "/van-de" | "/bao-tri/cong-viec"; label: string; icon: React.ComponentType<{ className?: string }>; tone: string }[] = [
+    { to: "/su-co/moi", label: "Sự cố kỹ thuật", icon: AlertTriangle, tone: "text-red-600" },
+    { to: "/bao-tri/moi", label: "Phiếu bảo dưỡng", icon: Wrench, tone: "text-emerald-600" },
+    { to: "/hong-hoc/moi", label: "Hỏng hóc", icon: RefreshCw, tone: "text-orange-600" },
+    { to: "/ban-giao/moi", label: "Bàn giao", icon: ArrowLeftRight, tone: "text-sky-600" },
+    { to: "/forms", label: "Biên bản", icon: FileText, tone: "text-violet-600" },
+    { to: "/van-de", label: "Vấn đề (RCA)", icon: Bug, tone: "text-amber-600" },
+    { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
+  ];
+  return (
+    <div className="no-print rounded-lg border bg-card p-2">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="px-2 text-xs font-medium text-muted-foreground">Tác nghiệp nhanh</span>
+        {actions.map((a) => (
+          <Button key={a.to} asChild size="sm" variant="outline" className="h-8 gap-1.5 text-xs">
+            <Link to={a.to} search={search}>
+              <Plus className="h-3.5 w-3.5" />
+              <a.icon className={`h-3.5 w-3.5 ${a.tone}`} />
+              {a.label}
+            </Link>
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }
