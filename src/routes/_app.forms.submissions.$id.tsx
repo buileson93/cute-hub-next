@@ -129,7 +129,14 @@ function SubmissionDetail() {
       const { error } = await supabase.from("form_submission").update(patch).eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã cập nhật"); qc.invalidateQueries({ queryKey: ["submission", id] }); },
+    onSuccess: () => {
+      toast.success("Đã cập nhật");
+      qc.invalidateQueries({ queryKey: ["submission", id] });
+      const ht = (data as { submission?: { he_thong_id?: string | null } } | undefined)?.submission?.he_thong_id;
+      if (ht) qc.invalidateQueries({ queryKey: ["he-thong-submissions", ht] });
+      qc.invalidateQueries({ queryKey: ["my-submissions"] });
+      qc.invalidateQueries({ queryKey: ["submissions-all"] });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
