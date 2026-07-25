@@ -451,7 +451,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
   const openTp = openTpId ? list.find((t) => t.id === openTpId) ?? null : null;
   const openDev = openTpId ? dangLap?.get(openTpId) ?? null : null;
   return (
-    <Card>
+    <Card id="thanh-phan-card">
       <CardHeader>
         <CardTitle className="text-base flex items-center justify-between gap-2">
           <span>Thành phần thuộc hệ thống ({list.length})</span>
