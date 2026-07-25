@@ -88,6 +88,7 @@ import { Route as AppDanhMucDacTinhRouteImport } from './routes/_app.danh-muc.da
 import { Route as AppCaiDatTaiKhoanRouteImport } from './routes/_app.cai-dat.tai-khoan'
 import { Route as AppBaoTriPmRouteImport } from './routes/_app.bao-tri.pm'
 import { Route as AppBaoTriMoiRouteImport } from './routes/_app.bao-tri.moi'
+import { Route as AppBaoTriDotRouteImport } from './routes/_app.bao-tri.dot'
 import { Route as AppBaoTriCongViecRouteImport } from './routes/_app.bao-tri.cong-viec'
 import { Route as AppBaoTriMaBaoTriRouteImport } from './routes/_app.bao-tri.$maBaoTri'
 import { Route as AppBaoCaoDoTinCayRouteImport } from './routes/_app.bao-cao.do-tin-cay'
@@ -517,6 +518,11 @@ const AppBaoTriMoiRoute = AppBaoTriMoiRouteImport.update({
   path: '/moi',
   getParentRoute: () => AppBaoTriRoute,
 } as any)
+const AppBaoTriDotRoute = AppBaoTriDotRouteImport.update({
+  id: '/dot',
+  path: '/dot',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
 const AppBaoTriCongViecRoute = AppBaoTriCongViecRouteImport.update({
   id: '/cong-viec',
   path: '/cong-viec',
@@ -740,6 +746,7 @@ export interface FileRoutesByFullPath {
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/bao-tri/dot': typeof AppBaoTriDotRoute
   '/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/bao-tri/pm': typeof AppBaoTriPmRoute
   '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -845,6 +852,7 @@ export interface FileRoutesByTo {
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/bao-tri/dot': typeof AppBaoTriDotRoute
   '/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/bao-tri/pm': typeof AppBaoTriPmRoute
   '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -958,6 +966,7 @@ export interface FileRoutesById {
   '/_app/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/_app/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/_app/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/_app/bao-tri/dot': typeof AppBaoTriDotRoute
   '/_app/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/_app/bao-tri/pm': typeof AppBaoTriPmRoute
   '/_app/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -1071,6 +1080,7 @@ export interface FileRouteTypes {
     | '/bao-cao/do-tin-cay'
     | '/bao-tri/$maBaoTri'
     | '/bao-tri/cong-viec'
+    | '/bao-tri/dot'
     | '/bao-tri/moi'
     | '/bao-tri/pm'
     | '/cai-dat/tai-khoan'
@@ -1176,6 +1186,7 @@ export interface FileRouteTypes {
     | '/bao-cao/do-tin-cay'
     | '/bao-tri/$maBaoTri'
     | '/bao-tri/cong-viec'
+    | '/bao-tri/dot'
     | '/bao-tri/moi'
     | '/bao-tri/pm'
     | '/cai-dat/tai-khoan'
@@ -1288,6 +1299,7 @@ export interface FileRouteTypes {
     | '/_app/bao-cao/do-tin-cay'
     | '/_app/bao-tri/$maBaoTri'
     | '/_app/bao-tri/cong-viec'
+    | '/_app/bao-tri/dot'
     | '/_app/bao-tri/moi'
     | '/_app/bao-tri/pm'
     | '/_app/cai-dat/tai-khoan'
@@ -1930,6 +1942,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBaoTriMoiRouteImport
       parentRoute: typeof AppBaoTriRoute
     }
+    '/_app/bao-tri/dot': {
+      id: '/_app/bao-tri/dot'
+      path: '/dot'
+      fullPath: '/bao-tri/dot'
+      preLoaderRoute: typeof AppBaoTriDotRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
     '/_app/bao-tri/cong-viec': {
       id: '/_app/bao-tri/cong-viec'
       path: '/cong-viec'
@@ -2165,6 +2184,7 @@ const AppBanGiaoRouteWithChildren = AppBanGiaoRoute._addFileChildren(
 interface AppBaoTriRouteChildren {
   AppBaoTriMaBaoTriRoute: typeof AppBaoTriMaBaoTriRoute
   AppBaoTriCongViecRoute: typeof AppBaoTriCongViecRoute
+  AppBaoTriDotRoute: typeof AppBaoTriDotRoute
   AppBaoTriMoiRoute: typeof AppBaoTriMoiRoute
   AppBaoTriPmRoute: typeof AppBaoTriPmRoute
   AppBaoTriIndexRoute: typeof AppBaoTriIndexRoute
@@ -2173,6 +2193,7 @@ interface AppBaoTriRouteChildren {
 const AppBaoTriRouteChildren: AppBaoTriRouteChildren = {
   AppBaoTriMaBaoTriRoute: AppBaoTriMaBaoTriRoute,
   AppBaoTriCongViecRoute: AppBaoTriCongViecRoute,
+  AppBaoTriDotRoute: AppBaoTriDotRoute,
   AppBaoTriMoiRoute: AppBaoTriMoiRoute,
   AppBaoTriPmRoute: AppBaoTriPmRoute,
   AppBaoTriIndexRoute: AppBaoTriIndexRoute,
