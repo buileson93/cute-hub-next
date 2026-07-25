@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   ChevronRight, ChevronDown, Network, Layers, Cpu, Search, Building2, ListTree, GitFork,
-  Pencil, Check, X, Save, Loader2, Eye, MapPin, Plus, Minus, Table2, Boxes, Component,
+  Pencil, Check, X, Save, Loader2, Eye, MapPin, Plus, Minus, Table2, Boxes, Puzzle,
   Download, Upload, ExternalLink, FolderTree, ArrowRightLeft, ArrowUp, ArrowDown, Palette,
   History, Wrench, AlertTriangle, Package, Users, FileText, ClipboardList, BookMarked, Trash2, Info, Plug,
 } from "lucide-react";
@@ -181,7 +181,7 @@ const LEVEL_META: Record<
   nh: { label: "Nhóm hệ thống", badge: "border-violet-500/30 bg-violet-500/10 text-violet-600", Icon: FolderTree },
   ht: { label: "Hệ thống", badge: "border-blue-500/30 bg-blue-500/10 text-blue-600", Icon: Network },
   tb: { label: "Tài sản", badge: "border-border bg-muted text-muted-foreground", Icon: Cpu },
-  tp: { label: "Thành phần hệ thống", badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600", Icon: Component },
+  tp: { label: "Thành phần hệ thống", badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600", Icon: Puzzle },
 };
 
 /* ---- Tag/badge thông tin cho tài sản (list & table view) ---- */
@@ -2131,7 +2131,7 @@ const KIND_STYLE: Record<MindKind, string> = {
   vt: "border-sky-500/30 bg-sky-500/[0.03]",
 };
 const KIND_ICON: Record<MindKind, React.ComponentType<{ className?: string }>> = {
-  root: Building2, pl: Boxes, lv: Layers, nh: FolderTree, ht: Network, tb: Cpu, tp: Component, vtg: Plug, vt: MapPin,
+  root: Building2, pl: Boxes, lv: Layers, nh: FolderTree, ht: Network, tb: Cpu, tp: Puzzle, vtg: Plug, vt: MapPin,
 };
 // Bề rộng node theo cấp: nhóm phân loại gọn hơn, node nội dung rộng thoáng để dễ đọc.
 const KIND_WIDTH: Record<MindKind, string> = {
@@ -2991,7 +2991,7 @@ function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: strin
     <>
       <div className="border-b bg-muted/40 px-3 py-2">
         <div className="flex items-start gap-1.5 text-sm font-semibold">
-          {isComponent ? <Component className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" /> : <Cpu className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />}
+          {isComponent ? <Puzzle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" /> : <Cpu className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />}
           <span className="break-words">{name}</span>
         </div>
         <div className="mt-0.5 pl-5"><CodeBadge code={d.ma_thiet_bi} title={`Mã tài sản: ${d.ma_thiet_bi}`} /></div>
@@ -3821,7 +3821,7 @@ function TreeView({
                       {d.children.map((c) => (
                         <div key={c.ma_thiet_bi} id={`row-tp-${c.ma_thiet_bi}`}>
                           <Disclosure
-                            icon={Component} label={tbLabel(c)} depth={depth + 1}
+                            icon={Puzzle} label={tbLabel(c)} depth={depth + 1}
                             tone="bg-emerald-500/5" donViMa={(c.don_vi ?? "").trim() || null} chips={deviceChips(c)}
                             canManage={canManage} onEdit={() => onOpenEditor("tb", c.ma_thiet_bi)}
                             onRecord={() => onRecord("tp", c.ma_thiet_bi, tbLabel(c))}
@@ -4677,7 +4677,7 @@ function TableView({
                             contentClassName="p-0"
                             trigger={
                               <button className="flex items-center gap-1 text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tp!.ma_thiet_bi } })}>
-                                <Component className="h-3.5 w-3.5 text-emerald-600" />
+                                <Puzzle className="h-3.5 w-3.5 text-emerald-600" />
                                 {tbLabel(r.tp)}
                               </button>
                             }
