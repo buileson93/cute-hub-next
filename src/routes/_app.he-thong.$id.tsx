@@ -711,6 +711,7 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
         })}
         </div>
       </CardContent>
+      )}
 
       <Sheet open={!!openTpId} onOpenChange={(v) => { if (!v) setOpenTpId(null); }}>
         <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
