@@ -975,6 +975,15 @@ function DanhMucThietBiPage() {
                     >
                       <PackageMinus className="h-3.5 w-3.5" /> Gỡ khỏi hệ thống
                     </Button>
+                    {editOn && (
+                      <Button
+                        size="sm" variant="outline"
+                        className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => { setDeleteTargets(selectedRows); setDeleteKind("retire"); }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Xoá / Ngừng khai thác
+                      </Button>
+                    )}
                   </>
                 )}
                 <Button
