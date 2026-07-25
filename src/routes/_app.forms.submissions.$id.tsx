@@ -95,6 +95,11 @@ function SubmissionDetail() {
         const { data: tb } = await supabase.from("thiet_bi").select("id,ma_thiet_bi,ten_thiet_bi").eq("id", s.thiet_bi_id).maybeSingle();
         singleTb = tb;
       }
+      let heThong: { id: string; ma: string | null; ten: string | null } | null = null;
+      if (s.he_thong_id) {
+        const { data: ht } = await supabase.from("dm_he_thong").select("id,ma,ten").eq("id", s.he_thong_id).maybeSingle();
+        heThong = ht;
+      }
       // Kết quả bảng kiểm (nếu mẫu dạng checklist) — dựng lại từ snapshot đã lưu.
       const itemResults = await fetchSubmissionItemResults(id);
       const chkSections = sectionsFromResults(itemResults);
@@ -102,6 +107,7 @@ function SubmissionDetail() {
       return {
         s, fields,
         chkSections, chkValues,
+        heThong,
         devices: [...(singleTb ? [singleTb] : []), ...(links ?? []).map((l) => l.thiet_bi).filter(Boolean)],
       };
     },
@@ -218,7 +224,7 @@ function SubmissionDetail() {
   if (loading || isLoading || !data) {
     return <><div className="flex h-96 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div></>;
   }
-  const { s, fields, devices, chkSections, chkValues } = data;
+  const { s, fields, devices, chkSections, chkValues, heThong } = data;
   const isChecklist = chkSections.length > 0;
   const st = STATUS[s.status] ?? { label: s.status, cls: "" };
   const dataObj = (s.data ?? {}) as Record<string, unknown>;
@@ -279,6 +285,25 @@ function SubmissionDetail() {
                   <li key={d.id}><span className="font-mono text-xs">{d.ma_thiet_bi}</span> — {d.ten_thiet_bi}</li>
                 ))}
               </ul>
+            </CardContent>
+          </Card>
+        )}
+
+        {heThong && (
+          <Card className="mb-4">
+            <CardHeader><CardTitle className="text-base">Hệ thống liên kết</CardTitle></CardHeader>
+            <CardContent className="text-sm">
+              <Link
+                to="/he-thong/$id"
+                params={{ id: heThong.id }}
+                className="font-medium text-primary hover:underline"
+              >
+                <span className="font-mono text-xs text-muted-foreground">{heThong.ma}</span>
+                <span className="ml-2">{heThong.ten}</span>
+              </Link>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Kết quả biên bản này được ghi vào Sổ lý lịch của hệ thống để phục vụ đánh giá về sau.
+              </p>
             </CardContent>
           </Card>
         )}
