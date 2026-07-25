@@ -310,6 +310,73 @@ function TongQuanPage() {
         </Card>
       )}
 
+      {/* ROW 1 — BRIEF HÔM NAY */}
+      <div>
+        <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <Radio className="h-3.5 w-3.5" /> Brief hôm nay
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+          <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
+            value={briefQ.data?.su_co_khan} loading={briefQ.isLoading} tone="danger"
+            link={{ to: "/su-co", label: "Xử lý" }} />
+          <KpiCard icon={<Wrench className="h-4 w-4" />} label="PM hôm nay"
+            value={briefQ.data?.pm_hom_nay} loading={briefQ.isLoading} tone="warn"
+            link={{ to: "/bao-tri/pm", label: "Lịch PM" }} />
+          <KpiCard icon={<CalendarX className="h-4 w-4" />} label="PM quá hạn"
+            value={briefQ.data?.pm_qua_han} loading={briefQ.isLoading} tone="danger"
+            link={{ to: "/bao-tri/pm", label: "Xử lý" }} />
+          <KpiCard icon={<CalendarClock className="h-4 w-4" />} label="Hạn 7 ngày tới"
+            value={briefQ.data?.han_7_ngay} loading={briefQ.isLoading} tone="warn"
+            link={{ to: "/giay-phep", label: "Giấy phép" }} />
+          <KpiCard icon={<BadgeAlert className="h-4 w-4" />} label="Sắp hết hạn 30 ngày"
+            value={briefQ.data?.sap_het_han_30} loading={briefQ.isLoading} tone="warn"
+            link={{ to: "/giay-phep", label: "Xem" }} />
+        </div>
+      </div>
+
+      {/* ROW 2 — SỨC KHOẺ KHAI THÁC */}
+      <div>
+        <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <HeartPulse className="h-3.5 w-3.5" /> Sức khoẻ khai thác ({days} ngày)
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <HealthTile
+            icon={<Gauge className="h-4 w-4" />}
+            label="Availability"
+            value={healthQ.data?.availability_pct == null ? "—" : `${healthQ.data.availability_pct}%`}
+            hint={healthQ.data ? `Downtime ${healthQ.data.downtime_h}h / ${healthQ.data.total_h}h` : ""}
+            tone={healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 99 ? "ok"
+              : healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 95 ? "warn" : "danger"}
+            loading={healthQ.isLoading}
+          />
+          <HealthTile
+            icon={<Repeat2 className="h-4 w-4" />}
+            label="MTBF (giờ)"
+            value={healthQ.data ? fmtHours(healthQ.data.mtbf_h) : "—"}
+            hint="Thời gian trung bình giữa 2 sự cố"
+            tone="default"
+            loading={healthQ.isLoading}
+          />
+          <HealthTile
+            icon={<Wrench className="h-4 w-4" />}
+            label="MTTR (giờ)"
+            value={healthQ.data ? fmtHours(healthQ.data.mttr_h) : "—"}
+            hint={healthQ.data ? compareLabel(healthQ.data.mttr_h, healthQ.data.mttr_prev_h, true) : ""}
+            tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
+            loading={healthQ.isLoading}
+          />
+          <HealthTile
+            icon={<ShieldCheck className="h-4 w-4" />}
+            label="Compliance (giấy phép + chứng chỉ)"
+            value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
+            hint="Tỷ lệ còn hiệu lực"
+            tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
+              : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
+            loading={healthQ.isLoading}
+          />
+        </div>
+      </div>
+
       {/* KPI cards */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <KpiCard icon={<HardDrive className="h-4 w-4" />} label="Tổng tài sản"
