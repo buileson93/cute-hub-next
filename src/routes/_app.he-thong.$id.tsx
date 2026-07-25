@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Cpu, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
+  Printer, Settings2,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -15,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useScope } from "@/lib/mirats/scope";
@@ -91,6 +95,21 @@ function HeThongInner({
     [devices, devNameOv],
   );
   const [tab, setTab] = useState<string>("tl");
+  const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
+  const [thrOpen, setThrOpen] = useState(false);
+  const thrKey = `hp-thresholds:${donViMa || "default"}`;
+  const [thr, setThr] = useState<{ good: number; ok: number; warn: number }>({ good: 85, ok: 60, warn: 40 });
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" ? window.localStorage.getItem(thrKey) : null;
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (typeof p?.good === "number" && typeof p?.ok === "number" && typeof p?.warn === "number") setThr(p);
+      } else {
+        setThr({ good: 85, ok: 60, warn: 40 });
+      }
+    } catch { /* ignore */ }
+  }, [thrKey]);
 
   // Khớp lý lịch hệ thống: bản ghi gắn trực tiếp hệ thống (he_thong_id === id),
   // hoặc gắn với tài sản con (ưu tiên UUID, fallback mã text cho dữ liệu cũ).
@@ -165,11 +184,11 @@ function HeThongInner({
   const btScore = bt90d > 0 ? 15 : baoTri.length ? 5 : 0;
 
   const hp = Math.min(100, gpScore + suCoScore + devScore + btScore);
-  const hpLabel = hp >= 85 ? "Tốt" : hp >= 60 ? "Ổn" : hp >= 40 ? "Cảnh báo" : "Yếu";
+  const hpLabel = hp >= thr.good ? "Tốt" : hp >= thr.ok ? "Ổn" : hp >= thr.warn ? "Cảnh báo" : "Yếu";
   const hpTone =
-    hp >= 85 ? "text-emerald-600"
-    : hp >= 60 ? "text-sky-600"
-    : hp >= 40 ? "text-amber-600"
+    hp >= thr.good ? "text-emerald-600"
+    : hp >= thr.ok ? "text-sky-600"
+    : hp >= thr.warn ? "text-amber-600"
     : "text-red-600";
 
   const monthKey = (t: number) => {
@@ -186,11 +205,11 @@ function HeThongInner({
     }
     return out;
   };
-  const suCoByMonth = monthsBack(12).map((m) => ({
+  const suCoByMonth = monthsBack(chartMonths).map((m) => ({
     m: m.slice(5),
     v: suCo.filter((e) => monthKey(Date.parse(e.ngay_phat_hien || "")) === m).length,
   }));
-  const trend6 = monthsBack(6).map((m) => ({
+  const trend6 = monthsBack(chartMonths).map((m) => ({
     m: m.slice(5),
     bt: baoTri.filter((e) => monthKey(Date.parse(e.ngay_bat_dau || "")) === m).length,
     sc: suCo.filter((e) => monthKey(Date.parse(e.ngay_phat_hien || "")) === m).length,
@@ -204,11 +223,20 @@ function HeThongInner({
   ).map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
+    <div className="space-y-6 print:space-y-3">
+      <style>{`@media print{
+        .no-print,[data-slot="tabs-list"]{display:none !important;}
+        .sticky{position:static !important;}
+        [role="tabpanel"]{display:block !important;}
+        body{background:white !important;}
+      }`}</style>
+      <div className="flex items-center gap-3 no-print">
         <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi"><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
-        <div className="ml-auto text-xs text-muted-foreground">
+        <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
+          <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => window.print()}>
+            <Printer className="h-3.5 w-3.5" /> In / PDF
+          </Button>
         </div>
       </div>
 
@@ -256,6 +284,7 @@ function HeThongInner({
             suCo30d={suCo30dOpen}
             bt90d={bt90d}
             onGoto={setTab}
+            onConfigure={() => setThrOpen(true)}
           />
         </CardContent>
       </Card>
@@ -321,6 +350,8 @@ function HeThongInner({
             statusGroups={statusGroups}
             trend6={trend6}
             onPickStatus={() => setTab("vt")}
+            months={chartMonths}
+            onChangeMonths={setChartMonths}
           />
           <Card>
           <CardHeader className="pb-3">
@@ -396,6 +427,23 @@ function HeThongInner({
           </Card>
         </div>
       </div>
+
+      <ThresholdDialog
+        open={thrOpen}
+        onOpenChange={setThrOpen}
+        value={thr}
+        donViMa={donViMa}
+        onSave={(v) => {
+          setThr(v);
+          try { window.localStorage.setItem(thrKey, JSON.stringify(v)); } catch { /* ignore */ }
+          setThrOpen(false);
+        }}
+        onReset={() => {
+          const def = { good: 85, ok: 60, warn: 40 };
+          setThr(def);
+          try { window.localStorage.removeItem(thrKey); } catch { /* ignore */ }
+        }}
+      />
     </div>
   );
 }
@@ -598,13 +646,13 @@ function KpiCard({ icon: Icon, label, value, tone, onClick }: { icon: React.Comp
 }
 
 function HealthBar({
-  hp, label, tone, uptime, mtbf, suCo30d, bt90d, onGoto,
-}: { hp: number; label: string; tone: string; uptime: number; mtbf: number | null; suCo30d: number; bt90d: number; onGoto: (t: string) => void }) {
+  hp, label, tone, uptime, mtbf, suCo30d, bt90d, onGoto, onConfigure,
+}: { hp: number; label: string; tone: string; uptime: number; mtbf: number | null; suCo30d: number; bt90d: number; onGoto: (t: string) => void; onConfigure?: () => void }) {
   const pct = Math.max(0, Math.min(100, hp));
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <HeartPulse className="h-4 w-4 text-primary" />
+        <HeartPulse className="h-3.5 w-3.5 text-primary" />
         <span className="font-medium">Sức khỏe hệ thống</span>
         <HoverCard openDelay={120} closeDelay={80}>
           <HoverCardTrigger asChild>
@@ -621,8 +669,19 @@ function HealthBar({
           </HoverCardContent>
         </HoverCard>
         <div className={`ml-auto font-semibold ${tone}`}>{pct}/100 · {label}</div>
+        {onConfigure && (
+          <button
+            type="button"
+            onClick={onConfigure}
+            className="no-print inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-muted"
+            aria-label="Cấu hình ngưỡng HP"
+            title="Cấu hình ngưỡng HP theo đơn vị"
+          >
+            <Settings2 className="h-3 w-3" /> Ngưỡng
+          </button>
+        )}
       </div>
-      <div className="mt-1.5 h-3 w-full overflow-hidden rounded-full bg-muted">
+      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
         <div
           className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 transition-[width] duration-500"
           style={{ width: `${pct}%` }}
@@ -661,19 +720,35 @@ function HpChip({ icon: Icon, label, value, tone, onClick }: { icon: React.Compo
 const CHART_COLORS = ["hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)", "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)"];
 
 function MiniCharts({
-  suCoByMonth, statusGroups, trend6, onPickStatus,
+  suCoByMonth, statusGroups, trend6, onPickStatus, months, onChangeMonths,
 }: {
   suCoByMonth: Array<{ m: string; v: number }>;
   statusGroups: Array<{ name: string; value: number }>;
   trend6: Array<{ m: string; bt: number; sc: number }>;
   onPickStatus: () => void;
+  months: 3 | 6 | 12;
+  onChangeMonths: (m: 3 | 6 | 12) => void;
 }) {
   const avgSc = suCoByMonth.length ? suCoByMonth.reduce((a, x) => a + x.v, 0) / suCoByMonth.length : 0;
   const totalDev = statusGroups.reduce((a, x) => a + x.value, 0);
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="space-y-2">
+      <div className="no-print flex items-center justify-end gap-1 text-xs">
+        <span className="mr-1 text-muted-foreground">Khoảng thời gian:</span>
+        {[3, 6, 12].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onChangeMonths(n as 3 | 6 | 12)}
+            className={`rounded border px-2 py-0.5 transition ${months === n ? "bg-primary text-primary-foreground border-primary" : "hover:bg-muted"}`}
+          >
+            {n} tháng
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
       <Card>
-        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> Sự cố 12 tháng</CardTitle></CardHeader>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> Sự cố {months} tháng</CardTitle></CardHeader>
         <CardContent className="pb-3">
           <div className="h-[120px] w-full">
             <ResponsiveContainer>
@@ -722,7 +797,7 @@ function MiniCharts({
       </Card>
 
       <Card>
-        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> Bảo dưỡng vs Sự cố (6 tháng)</CardTitle></CardHeader>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> Bảo dưỡng vs Sự cố ({months} tháng)</CardTitle></CardHeader>
         <CardContent className="pb-3">
           <div className="h-[120px] w-full">
             <ResponsiveContainer>
@@ -736,7 +811,54 @@ function MiniCharts({
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
+  );
+}
+
+function ThresholdDialog({
+  open, onOpenChange, value, donViMa, onSave, onReset,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  value: { good: number; ok: number; warn: number };
+  donViMa: string;
+  onSave: (v: { good: number; ok: number; warn: number }) => void;
+  onReset: () => void;
+}) {
+  const [good, setGood] = useState(value.good);
+  const [ok, setOk] = useState(value.ok);
+  const [warn, setWarn] = useState(value.warn);
+  useEffect(() => { setGood(value.good); setOk(value.ok); setWarn(value.warn); }, [value, open]);
+  const valid = good > ok && ok > warn && warn >= 0 && good <= 100;
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Ngưỡng chấm điểm HP</DialogTitle>
+          <DialogDescription>
+            Cấu hình ngưỡng màu cho đơn vị <span className="font-mono">{donViMa || "mặc định"}</span>. Lưu cục bộ theo tài khoản/thiết bị.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 py-2 text-sm">
+          <div className="grid grid-cols-[1fr_100px] items-center gap-3">
+            <Label htmlFor="hp-good" className="text-emerald-700">Xanh — Tốt ≥</Label>
+            <Input id="hp-good" type="number" min={1} max={100} value={good} onChange={(e) => setGood(Number(e.target.value))} />
+            <Label htmlFor="hp-ok" className="text-sky-700">Xanh dương — Ổn ≥</Label>
+            <Input id="hp-ok" type="number" min={1} max={100} value={ok} onChange={(e) => setOk(Number(e.target.value))} />
+            <Label htmlFor="hp-warn" className="text-amber-700">Vàng — Cảnh báo ≥</Label>
+            <Input id="hp-warn" type="number" min={0} max={100} value={warn} onChange={(e) => setWarn(Number(e.target.value))} />
+            <div className="col-span-2 text-xs text-muted-foreground">Dưới ngưỡng cảnh báo sẽ hiển thị Đỏ — Yếu.</div>
+          </div>
+          {!valid && <div className="text-xs text-red-600">Cần: Tốt &gt; Ổn &gt; Cảnh báo, trong 0–100.</div>}
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={onReset}>Mặc định</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button disabled={!valid} onClick={() => onSave({ good, ok, warn })}>Lưu</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
