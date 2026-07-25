@@ -327,7 +327,7 @@ function FormEditor() {
   const chkBlocked = hasChkBlocking(chkIssues);
   const saveChecklist = async () => {
     if (!chkSections) return;
-    if (chkBlocked) { toast.error("Bảng kiểm chưa hợp lệ — sửa lỗi trước khi lưu."); return; }
+    if (chkBlocked) { toast.error("Bảng kiểm bảo dưỡng chưa hợp lệ — sửa lỗi trước khi lưu."); return; }
     try {
       setChkSaving(true);
       await saveChecklistDesigner(id, chkSections);
