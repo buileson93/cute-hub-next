@@ -15,12 +15,20 @@ const getSchema = z.object({
 
 const delSchema = z.object({ key: z.string().min(1).max(1024) });
 
+// Các prefix bắt buộc riêng tư (chỉ truy cập qua presigned URL, không public qua files.vatm.app)
+const PRIVATE_PREFIXES = ["private/", "gpkt/", "bao-duong/", "dot-bao-duong/", "user/"];
+
+export function isPrivateKey(key: string): boolean {
+  return PRIVATE_PREFIXES.some((p) => key.startsWith(p));
+}
+
 function sanitizeKey(userId: string, rawKey: string): string {
   // Chống path traversal, ép prefix theo user hoặc theo namespace hợp lệ
   const clean = rawKey.replace(/\\/g, "/").replace(/\.\.+/g, "").replace(/^\/+/, "");
   if (!clean) throw new Error("Key không hợp lệ");
-  // Cho phép prefix chung như "uploads/", "gpkt/", "bao-duong/", "user/<uid>/"
-  const allowed = /^(uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|user)\//;
+  // Cho phép prefix chung. "public/" = ai cũng đọc được qua files.vatm.app.
+  // Các prefix còn lại là private, cần presigned URL.
+  const allowed = /^(public|uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|private|user)\//;
   if (!allowed.test(clean)) {
     return `user/${userId}/${clean}`;
   }
