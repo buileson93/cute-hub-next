@@ -5,7 +5,7 @@ import {
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
   Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
-  Search, X, Filter,
+  Search, X, Filter, ChevronDown, ChevronUp, Minimize2, Maximize2,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
