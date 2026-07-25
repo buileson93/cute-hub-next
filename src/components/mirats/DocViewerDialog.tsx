@@ -6,7 +6,7 @@
 // ============================================================================
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, AlertTriangle, Loader2, RefreshCw } from "lucide-react";
 import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 
 type Kind = "pdf" | "image" | "office" | "other";
@@ -21,13 +21,16 @@ function detectKind(fileName: string, mimeType?: string | null): Kind {
 }
 
 export function DocViewerDialog({
-  open, onOpenChange, url, fileName, mimeType,
+  open, onOpenChange, url, fileName, mimeType, isLoading, error, onRetry,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   url: string | null;
   fileName: string;
   mimeType?: string | null;
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }) {
   const kind = detectKind(fileName, mimeType);
   const officeSrc = url ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}` : null;
@@ -54,8 +57,25 @@ export function DocViewerDialog({
           </div>
         </DialogHeader>
         <div className="h-[80vh] w-full overflow-auto bg-muted/30">
-          {!url ? (
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Đang tải…</div>
+          {error ? (
+            <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm">
+              <AlertTriangle className="h-8 w-8 text-red-500" />
+              <div className="max-w-md space-y-1">
+                <div className="font-medium text-red-700">Không tải được file giấy phép</div>
+                <p className="text-xs text-muted-foreground">{error}</p>
+                <p className="text-xs text-muted-foreground">Có thể do lỗi mạng hoặc bạn không có quyền truy cập file này.</p>
+              </div>
+              {onRetry && (
+                <Button size="sm" variant="outline" onClick={onRetry}>
+                  <RefreshCw className="mr-2 h-4 w-4" /> Thử lại
+                </Button>
+              )}
+            </div>
+          ) : isLoading || !url ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span>Đang tải file…</span>
+            </div>
           ) : kind === "pdf" ? (
             <iframe src={url} title={fileName} className="h-full w-full" />
           ) : kind === "image" ? (
