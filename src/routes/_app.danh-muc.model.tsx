@@ -131,7 +131,10 @@ function ModelCatalogPage() {
   const { q: qParam, edit: editParam, filter: filterParam } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [q, setQ] = useState(qParam ?? "");
+  const [nsxFilter, setNsxFilter] = useState<string>("");
   const [loaiFilter, setLoaiFilter] = useState<string>("");
+  const [tenFilter, setTenFilter] = useState<string>("");
+  const [pnFilter, setPnFilter] = useState<string>("");
   const [editing, setEditing] = useState<ModelRow | "new" | null>(null);
   const [dacTinhIOOpen, setDacTinhIOOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
@@ -238,14 +241,43 @@ function ModelCatalogPage() {
 
 
 
-  const loaiOptions = useMemo(() => {
+  // Filter thu hẹp dần: NSX → Chủng loại → Tên mẫu → P/N.
+  // Mỗi filter sau chỉ hiện các giá trị còn lại sau khi đã áp dụng các filter trước.
+  const all = models ?? [];
+  const afterNsx = useMemo(
+    () => all.filter((m) => !nsxFilter || (m.nhaSanXuat || "(Chưa có NSX)") === nsxFilter),
+    [all, nsxFilter],
+  );
+  const afterLoai = useMemo(
+    () => afterNsx.filter((m) => !loaiFilter || (m.loaiThietBi || "(Chưa phân loại)") === loaiFilter),
+    [afterNsx, loaiFilter],
+  );
+  const afterTen = useMemo(
+    () => afterLoai.filter((m) => !tenFilter || m.ten === tenFilter),
+    [afterLoai, tenFilter],
+  );
+  const afterPn = useMemo(
+    () => afterTen.filter((m) => !pnFilter || (m.p_n ?? "(Không P/N)") === pnFilter),
+    [afterTen, pnFilter],
+  );
+
+  function buildOpts(list: ModelRow[], get: (m: ModelRow) => string, empty: string) {
     const set = new Map<string, number>();
-    for (const m of models ?? []) {
-      const k = m.loaiThietBi || "(Chưa phân loại)";
+    for (const m of list) {
+      const k = get(m) || empty;
       set.set(k, (set.get(k) ?? 0) + 1);
     }
     return Array.from(set.entries()).sort((a, b) => a[0].localeCompare(b[0], "vi"));
-  }, [models]);
+  }
+  const nsxOptions = useMemo(() => buildOpts(all, (m) => m.nhaSanXuat, "(Chưa có NSX)"), [all]);
+  const loaiOptions = useMemo(() => buildOpts(afterNsx, (m) => m.loaiThietBi, "(Chưa phân loại)"), [afterNsx]);
+  const tenOptions = useMemo(() => buildOpts(afterLoai, (m) => m.ten, "(Không tên)"), [afterLoai]);
+  const pnOptions = useMemo(() => buildOpts(afterTen, (m) => m.p_n ?? "", "(Không P/N)"), [afterTen]);
+
+  // Nếu giá trị filter con không còn hợp lệ sau khi filter cha đổi → tự reset.
+  useEffect(() => { if (loaiFilter && !loaiOptions.some(([k]) => k === loaiFilter)) setLoaiFilter(""); }, [loaiOptions, loaiFilter]);
+  useEffect(() => { if (tenFilter && !tenOptions.some(([k]) => k === tenFilter)) setTenFilter(""); }, [tenOptions, tenFilter]);
+  useEffect(() => { if (pnFilter && !pnOptions.some(([k]) => k === pnFilter)) setPnFilter(""); }, [pnOptions, pnFilter]);
 
   const thieuLoaiCount = useMemo(
     () => (models ?? []).filter((m) => !m.loai_thiet_bi_id).length,
@@ -254,9 +286,8 @@ function ModelCatalogPage() {
 
   const filtered = useMemo(() => {
     const nq = normalize(q);
-    return (models ?? []).filter((m) => {
+    return afterPn.filter((m) => {
       if (filterParam === "thieu-loai" && m.loai_thiet_bi_id) return false;
-      if (loaiFilter && (m.loaiThietBi || "(Chưa phân loại)") !== loaiFilter) return false;
       if (!nq) return true;
       return (
         normalize(m.ten).includes(nq) ||
@@ -265,7 +296,7 @@ function ModelCatalogPage() {
         normalize(m.loaiThietBi).includes(nq)
       );
     });
-  }, [models, q, loaiFilter, filterParam]);
+  }, [afterPn, q, filterParam]);
 
   const delMut = useMutation({
     mutationFn: async (m: ModelRow) => {
@@ -372,13 +403,46 @@ function ModelCatalogPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm mẫu, số model, nhà sản xuất…" className="pl-8" />
         </div>
         <Combobox
-          className="w-full sm:w-56"
+          className="w-full sm:w-48"
+          value={nsxFilter || "__all__"}
+          onChange={(v) => setNsxFilter(v === "__all__" ? "" : v)}
+          placeholder="Tất cả NSX"
+          searchPlaceholder="Tìm nhà sản xuất…"
+          options={[{ value: "__all__", label: `Tất cả NSX (${all.length})` }, ...nsxOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+        />
+        <Combobox
+          className="w-full sm:w-48"
           value={loaiFilter || "__all__"}
           onChange={(v) => setLoaiFilter(v === "__all__" ? "" : v)}
           placeholder="Tất cả chủng loại"
           searchPlaceholder="Tìm chủng loại…"
-          options={[{ value: "__all__", label: "Tất cả chủng loại" }, ...loaiOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+          options={[{ value: "__all__", label: `Tất cả chủng loại (${afterNsx.length})` }, ...loaiOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
         />
+        <Combobox
+          className="w-full sm:w-48"
+          value={tenFilter || "__all__"}
+          onChange={(v) => setTenFilter(v === "__all__" ? "" : v)}
+          placeholder="Tất cả tên mẫu"
+          searchPlaceholder="Tìm tên mẫu…"
+          options={[{ value: "__all__", label: `Tất cả tên mẫu (${afterLoai.length})` }, ...tenOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+        />
+        <Combobox
+          className="w-full sm:w-44"
+          value={pnFilter || "__all__"}
+          onChange={(v) => setPnFilter(v === "__all__" ? "" : v)}
+          placeholder="Tất cả P/N"
+          searchPlaceholder="Tìm P/N…"
+          options={[{ value: "__all__", label: `Tất cả P/N (${afterTen.length})` }, ...pnOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+        />
+        {(nsxFilter || loaiFilter || tenFilter || pnFilter) && (
+          <Button
+            variant="ghost" size="sm" className="h-9 gap-1 text-muted-foreground"
+            onClick={() => { setNsxFilter(""); setLoaiFilter(""); setTenFilter(""); setPnFilter(""); }}
+            title="Bỏ tất cả filter"
+          >
+            <X className="h-3.5 w-3.5" /> Bỏ filter
+          </Button>
+        )}
         {(thieuLoaiCount > 0 || filterParam === "thieu-loai") && (
           <Button
             variant={filterParam === "thieu-loai" ? "default" : "outline"}
