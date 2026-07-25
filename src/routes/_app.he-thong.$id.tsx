@@ -561,11 +561,9 @@ function KpiCard({ icon: Icon, label, value, tone, onClick }: { icon: React.Comp
   );
   if (onClick) {
     return (
-      <Card asChild>
-        <button type="button" onClick={onClick} className="text-left transition hover:bg-primary/5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-          {inner}
-        </button>
-      </Card>
+      <button type="button" onClick={onClick} className="rounded-xl border bg-card text-left text-card-foreground shadow-sm transition hover:bg-primary/5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        {inner}
+      </button>
     );
   }
   return <Card>{inner}</Card>;
