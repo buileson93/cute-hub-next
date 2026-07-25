@@ -549,17 +549,168 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ComponentType<{ cla
   );
 }
 
-function KpiCard({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: string }) {
+function KpiCard({ icon: Icon, label, value, tone, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: string; onClick?: () => void }) {
+  const inner = (
+    <CardContent className="flex items-center gap-3 p-4">
+      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"><Icon className={`h-5 w-5 ${tone ?? "text-foreground/70"}`} /></div>
+      <div className="min-w-0 text-left">
+        <div className="text-xs uppercase tracking-wide text-muted-foreground truncate">{label}</div>
+        <div className={`font-semibold ${tone ?? ""}`}>{value}</div>
+      </div>
+    </CardContent>
+  );
+  if (onClick) {
+    return (
+      <Card asChild>
+        <button type="button" onClick={onClick} className="text-left transition hover:bg-primary/5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+          {inner}
+        </button>
+      </Card>
+    );
+  }
+  return <Card>{inner}</Card>;
+}
+
+function HealthBar({
+  hp, label, tone, uptime, mtbf, suCo30d, bt90d, onGoto,
+}: { hp: number; label: string; tone: string; uptime: number; mtbf: number | null; suCo30d: number; bt90d: number; onGoto: (t: string) => void }) {
+  const pct = Math.max(0, Math.min(100, hp));
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"><Icon className={`h-5 w-5 ${tone ?? "text-foreground/70"}`} /></div>
-        <div className="min-w-0">
-          <div className="text-xs uppercase tracking-wide text-muted-foreground truncate">{label}</div>
-          <div className={`font-semibold ${tone ?? ""}`}>{value}</div>
-        </div>
-      </CardContent>
-    </Card>
+    <div>
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <HeartPulse className="h-4 w-4 text-primary" />
+        <span className="font-medium">Sức khỏe hệ thống</span>
+        <HoverCard openDelay={120} closeDelay={80}>
+          <HoverCardTrigger asChild>
+            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Cách tính HP">
+              <Info className="h-3.5 w-3.5" />
+            </button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-72 space-y-1 text-xs">
+            <div className="font-medium">Cách tính điểm HP (0–100)</div>
+            <div>+40 GPKT còn hiệu lực (+20 nếu sắp hết ≤90 ngày)</div>
+            <div>+25 không sự cố trong 30 ngày (−5 mỗi sự cố mở)</div>
+            <div>+20 theo tỷ lệ tài sản đang hoạt động</div>
+            <div>+15 có bảo dưỡng trong 90 ngày</div>
+          </HoverCardContent>
+        </HoverCard>
+        <div className={`ml-auto font-semibold ${tone}`}>{pct}/100 · {label}</div>
+      </div>
+      <div className="mt-1.5 h-3 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 transition-[width] duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <HpChip icon={Activity} label="Đang hoạt động" value={`${uptime}%`} tone={uptime >= 80 ? "text-emerald-600" : uptime >= 50 ? "text-amber-600" : "text-red-600"} />
+        <HpChip icon={Gauge} label="MTBF" value={mtbf == null ? "—" : `${mtbf} ngày`} />
+        <HpChip icon={AlertTriangle} label="Sự cố 30 ngày" value={String(suCo30d)} tone={suCo30d > 0 ? "text-red-600" : "text-emerald-600"} onClick={() => onGoto("sc")} />
+        <HpChip icon={Wrench} label="Bảo dưỡng 90 ngày" value={String(bt90d)} tone={bt90d > 0 ? "text-emerald-600" : "text-amber-600"} onClick={() => onGoto("bt")} />
+      </div>
+    </div>
+  );
+}
+
+function HpChip({ icon: Icon, label, value, tone, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: string; onClick?: () => void }) {
+  const body = (
+    <div className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 text-xs">
+      <Icon className={`h-3.5 w-3.5 ${tone ?? "text-muted-foreground"}`} />
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+        <div className={`text-sm font-semibold ${tone ?? ""}`}>{value}</div>
+      </div>
+    </div>
+  );
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className="text-left transition hover:bg-primary/5">
+        {body}
+      </button>
+    );
+  }
+  return body;
+}
+
+const CHART_COLORS = ["hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)", "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)"];
+
+function MiniCharts({
+  suCoByMonth, statusGroups, trend6, onPickStatus,
+}: {
+  suCoByMonth: Array<{ m: string; v: number }>;
+  statusGroups: Array<{ name: string; value: number }>;
+  trend6: Array<{ m: string; bt: number; sc: number }>;
+  onPickStatus: () => void;
+}) {
+  const avgSc = suCoByMonth.length ? suCoByMonth.reduce((a, x) => a + x.v, 0) / suCoByMonth.length : 0;
+  const totalDev = statusGroups.reduce((a, x) => a + x.value, 0);
+  return (
+    <div className="grid gap-3 sm:grid-cols-3">
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> Sự cố 12 tháng</CardTitle></CardHeader>
+        <CardContent className="pb-3">
+          <div className="h-[120px] w-full">
+            <ResponsiveContainer>
+              <BarChart data={suCoByMonth} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <XAxis dataKey="m" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: "hsl(var(--muted) / 0.5)" }} contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="v" radius={[3, 3, 0, 0]}>
+                  {suCoByMonth.map((d, i) => (
+                    <Cell key={i} fill={d.v > avgSc && avgSc > 0 ? "hsl(0 84% 60%)" : "hsl(217 91% 55%)"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><HardDrive className="h-3.5 w-3.5" /> Trạng thái tài sản</CardTitle></CardHeader>
+        <CardContent className="pb-3">
+          <div className="flex h-[120px] items-center gap-2">
+            <div className="h-full w-1/2">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={statusGroups.length ? statusGroups : [{ name: "—", value: 1 }]} dataKey="value" innerRadius={26} outerRadius={44} paddingAngle={2} onClick={onPickStatus} className="cursor-pointer">
+                    {(statusGroups.length ? statusGroups : [{ name: "—", value: 1 }]).map((_, i) => (
+                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <ul className="min-w-0 flex-1 space-y-0.5 text-[11px]">
+              {statusGroups.slice(0, 5).map((s, i) => (
+                <li key={s.name} className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 shrink-0 rounded-sm" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                  <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                  <span className="tabular-nums text-muted-foreground">{s.value}</span>
+                </li>
+              ))}
+              {totalDev === 0 && <li className="text-muted-foreground">Chưa có tài sản</li>}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> Bảo dưỡng vs Sự cố (6 tháng)</CardTitle></CardHeader>
+        <CardContent className="pb-3">
+          <div className="h-[120px] w-full">
+            <ResponsiveContainer>
+              <LineChart data={trend6} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <XAxis dataKey="m" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Line type="monotone" dataKey="bt" name="Bảo dưỡng" stroke="hsl(142 71% 45%)" strokeWidth={2} dot={{ r: 2 }} />
+                <Line type="monotone" dataKey="sc" name="Sự cố" stroke="hsl(0 84% 60%)" strokeWidth={2} dot={{ r: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
