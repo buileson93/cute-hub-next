@@ -12,6 +12,7 @@ import type {
   ChecklistSection,
   ResultKind,
 } from "@/lib/mirats/checklist";
+import { parseItemOptions } from "@/lib/mirats/checklist-item-options";
 
 const RESULT_KINDS: ResultKind[] = ["so", "dat_khong_dat", "chon", "text"];
 
@@ -53,6 +54,7 @@ export function buildSections(
 ): ChecklistSection[] {
   const bySection = new Map<string, ChecklistItem[]>();
   for (const r of itemRows ?? []) {
+    const options = parseItemOptions(r.tuy_chon);
     const item: ChecklistItem = {
       item_code: r.item_code,
       ten: r.ten,
@@ -60,9 +62,10 @@ export function buildSections(
       result_kind: toResultKind(r.result_kind),
       don_vi: r.don_vi ?? null,
       tieu_chuan: r.tieu_chuan ?? null,
-      tuy_chon: toStringArray(r.tuy_chon),
+      tuy_chon: options.choices ?? toStringArray(r.tuy_chon),
       bat_buoc: r.bat_buoc ?? false,
       position: typeof r.position === "number" ? r.position : 0,
+      options,
     };
     const list = bySection.get(r.section_id) ?? [];
     list.push(item);
@@ -118,6 +121,7 @@ export function parseCompiledSections(schema: unknown): ChecklistSection[] | nul
       position: typeof o.position === "number" ? o.position : si,
       items: items.map((it, ii): ChecklistItem => {
         const r = (it ?? {}) as Record<string, unknown>;
+        const options = parseItemOptions(r.tuy_chon);
         return {
           item_code: String(r.item_code ?? `item-${si}-${ii}`),
           ten: String(r.ten ?? r.item_code ?? ""),
@@ -125,9 +129,10 @@ export function parseCompiledSections(schema: unknown): ChecklistSection[] | nul
           result_kind: toResultKind(r.result_kind),
           don_vi: r.don_vi == null ? null : String(r.don_vi),
           tieu_chuan: r.tieu_chuan == null ? null : String(r.tieu_chuan),
-          tuy_chon: toStringArray(r.tuy_chon),
+          tuy_chon: options.choices ?? toStringArray(r.tuy_chon),
           bat_buoc: Boolean(r.bat_buoc),
           position: typeof r.position === "number" ? r.position : ii,
+          options,
         };
       }),
     };
