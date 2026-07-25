@@ -159,6 +159,7 @@ const mpCompleteSchema = z.object({
   size: z.number().int().nonnegative().optional(),
 });
 const mpAbortSchema = z.object({ key: z.string().min(1).max(1024), uploadId: z.string().min(1) });
+const mpListSchema = z.object({ key: z.string().min(1).max(1024), uploadId: z.string().min(1) });
 
 export const r2MultipartInit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -218,6 +219,21 @@ export const r2MultipartCancel = createServerFn({ method: "POST" })
     await supabaseAdmin.from("r2_file").delete().eq("key", data.key).eq("user_id", context.userId);
     await logAccess({ user_id: context.userId, key: data.key, action: "mp_abort", ok: true });
     return { ok: true };
+  });
+
+export const r2MultipartListParts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => mpListSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { r2MultipartList } = await import("./r2.server");
+    await assertAccess(context.supabase, context.userId, data.key, "put");
+    try {
+      const parts = await r2MultipartList(data.key, data.uploadId);
+      return { parts, valid: true as const };
+    } catch (err: any) {
+      // uploadId có thể đã hết hạn hoặc bị abort
+      return { parts: [] as { PartNumber: number; ETag: string; Size: number }[], valid: false as const, reason: err?.message ?? "unknown" };
+    }
   });
 
 // ---------- Dashboard listing ----------

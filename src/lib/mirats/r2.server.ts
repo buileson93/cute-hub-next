@@ -8,6 +8,7 @@ import {
   UploadPartCommand,
   CompleteMultipartUploadCommand,
   AbortMultipartUploadCommand,
+  ListPartsCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -99,4 +100,19 @@ export async function r2MultipartAbort(key: string, uploadId: string) {
   await getR2Client().send(new AbortMultipartUploadCommand({
     Bucket: getR2Bucket(), Key: key, UploadId: uploadId,
   }));
+}
+
+export async function r2MultipartList(key: string, uploadId: string) {
+  const parts: { PartNumber: number; ETag: string; Size: number }[] = [];
+  let marker: number | undefined;
+  do {
+    const res: any = await getR2Client().send(new ListPartsCommand({
+      Bucket: getR2Bucket(), Key: key, UploadId: uploadId, PartNumberMarker: marker ? String(marker) : undefined,
+    }));
+    for (const p of res.Parts ?? []) {
+      if (p.PartNumber != null && p.ETag) parts.push({ PartNumber: p.PartNumber, ETag: p.ETag.replace(/"/g, ""), Size: p.Size ?? 0 });
+    }
+    marker = res.IsTruncated ? Number(res.NextPartNumberMarker) : undefined;
+  } while (marker);
+  return parts;
 }
