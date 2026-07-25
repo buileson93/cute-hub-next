@@ -608,9 +608,8 @@ function InfoLine({ icon: Icon, label, value }: { icon: React.ComponentType<{ cl
   );
 }
 
-function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string; gpHan: string }) {
-  const [open, setOpen] = useState(false);
-  const { data, isLoading } = useQuery({
+function useGpktFile(heThongId: string) {
+  const q = useQuery({
     queryKey: ["gpkt-file", heThongId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -624,14 +623,25 @@ function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string
       return data;
     },
   });
-  const url = data?.file_gpkt ?? null;
-  const fileName = `GPKT-${gpSo || data?.gp_so || heThongId.slice(0, 8)}.pdf`;
+  return {
+    url: (q.data?.file_gpkt as string | null) ?? null,
+    gpSoDb: (q.data?.gp_so as string | null) ?? null,
+    isLoading: q.isLoading,
+    error: q.error ? (q.error as Error).message : null,
+    refetch: q.refetch,
+  };
+}
+
+function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string; gpHan: string }) {
+  const [open, setOpen] = useState(false);
+  const { url, gpSoDb, isLoading, error, refetch } = useGpktFile(heThongId);
+  const fileName = `GPKT-${gpSo || gpSoDb || heThongId.slice(0, 8)}.pdf`;
   const label = (
     <>
       <ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}
     </>
   );
-  if (!url) {
+  if (!url && !error) {
     return (
       <Badge
         variant="outline"
@@ -648,12 +658,86 @@ function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string
         type="button"
         onClick={() => setOpen(true)}
         className="no-print inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 shadow-sm transition hover:bg-emerald-100 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 dark:bg-emerald-950/40"
-        title="Mở file PDF giấy phép khai thác"
+        title={error ? `Lỗi tải file: ${error}` : "Mở file PDF giấy phép khai thác"}
       >
         {label}
         <ExternalLink className="h-3 w-3 opacity-70" />
       </button>
-      <DocViewerDialog open={open} onOpenChange={setOpen} url={url} fileName={fileName} mimeType="application/pdf" />
+      <DocViewerDialog
+        open={open}
+        onOpenChange={setOpen}
+        url={url}
+        fileName={fileName}
+        mimeType="application/pdf"
+        isLoading={isLoading}
+        error={error}
+        onRetry={() => { void refetch(); }}
+      />
+    </>
+  );
+}
+
+function GpktSidebarItem({ heThongId, hasGp, gpSo }: { heThongId: string; hasGp: boolean; gpSo: string }) {
+  const [open, setOpen] = useState(false);
+  const { url, gpSoDb, isLoading, error, refetch } = useGpktFile(heThongId);
+  const fileName = `GPKT-${gpSo || gpSoDb || heThongId.slice(0, 8)}.pdf`;
+
+  if (!hasGp) {
+    return (
+      <div className="flex items-center gap-2 rounded-md border border-dashed px-2.5 py-2 text-xs text-muted-foreground">
+        <FileText className="h-4 w-4 shrink-0" />
+        <span>Hệ thống chưa có giấy phép khai thác</span>
+      </div>
+    );
+  }
+
+  const disabled = !url && !error;
+  const stateLabel = error
+    ? "Lỗi tải file — bấm để thử lại"
+    : isLoading
+      ? "Đang tải file giấy phép…"
+      : url
+        ? "Mở file PDF giấy phép"
+        : "Chưa có file giấy phép PDF đính kèm";
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        disabled={disabled}
+        title={stateLabel}
+        className={`no-print group flex w-full items-center gap-2 rounded-md border px-2.5 py-2 text-left text-xs transition ${
+          disabled
+            ? "cursor-not-allowed border-dashed text-muted-foreground opacity-70"
+            : error
+              ? "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-950/30"
+              : "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/30"
+        }`}
+      >
+        {error ? (
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+        ) : isLoading ? (
+          <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
+        ) : (
+          <FileText className="h-4 w-4 shrink-0" />
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="font-medium">Giấy phép PDF</div>
+          <div className="truncate text-[11px] opacity-80">{stateLabel}</div>
+        </div>
+        {url && !error && <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70 transition group-hover:opacity-100" />}
+      </button>
+      <DocViewerDialog
+        open={open}
+        onOpenChange={setOpen}
+        url={url}
+        fileName={fileName}
+        mimeType="application/pdf"
+        isLoading={isLoading}
+        error={error}
+        onRetry={() => { void refetch(); }}
+      />
     </>
   );
 }
