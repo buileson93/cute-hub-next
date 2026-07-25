@@ -3,8 +3,12 @@ import { useCallback, useMemo, useState } from "react";
 import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Cpu, Link2, Puzzle,
-  MapPin, Tag, Info, ExternalLink,
+  MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
 } from "lucide-react";
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, Tooltip, ResponsiveContainer,
+} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -86,6 +90,7 @@ function HeThongInner({
     () => new Map(devices.map((d) => [d.ma_thiet_bi, devNameOv?.get(d.ma_thiet_bi) || d.ten])),
     [devices, devNameOv],
   );
+  const [tab, setTab] = useState<string>("tl");
 
   // Khớp lý lịch hệ thống: bản ghi gắn trực tiếp hệ thống (he_thong_id === id),
   // hoặc gắn với tài sản con (ưu tiên UUID, fallback mã text cho dữ liệu cũ).
@@ -128,6 +133,76 @@ function HeThongInner({
   const bookNo = id.slice(0, 8).toUpperCase();
   const openYear = firstEventTs ? new Date(firstEventTs).getFullYear() : new Date().getFullYear();
 
+  // ==== HP + charts data =====================================================
+  const now = Date.now();
+  const D = 86_400_000;
+  const gpHanTs = gpHan ? Date.parse(gpHan) : NaN;
+  const gpDaysLeft = Number.isNaN(gpHanTs) ? null : Math.round((gpHanTs - now) / D);
+  const gpScore = !hasGp
+    ? 0
+    : gpDaysLeft == null
+      ? 20
+      : gpDaysLeft < 0
+        ? 0
+        : gpDaysLeft <= 90
+          ? 20
+          : 40;
+
+  const suCo30dOpen = suCo.filter((e) => {
+    const t = Date.parse(e.ngay_phat_hien || "");
+    return !Number.isNaN(t) && now - t <= 30 * D;
+  }).length;
+  const suCoScore = Math.max(0, 25 - suCo30dOpen * 5);
+
+  const devActive = devices.filter((d) => /hoat|khai thac|dang/i.test(d.trang_thai || "")).length;
+  const activeRatio = devices.length ? devActive / devices.length : 1;
+  const devScore = Math.round(activeRatio * 20);
+
+  const bt90d = baoTri.filter((e) => {
+    const t = Date.parse(e.ngay_bat_dau || "");
+    return !Number.isNaN(t) && now - t <= 90 * D;
+  }).length;
+  const btScore = bt90d > 0 ? 15 : baoTri.length ? 5 : 0;
+
+  const hp = Math.min(100, gpScore + suCoScore + devScore + btScore);
+  const hpLabel = hp >= 85 ? "Tốt" : hp >= 60 ? "Ổn" : hp >= 40 ? "Cảnh báo" : "Yếu";
+  const hpTone =
+    hp >= 85 ? "text-emerald-600"
+    : hp >= 60 ? "text-sky-600"
+    : hp >= 40 ? "text-amber-600"
+    : "text-red-600";
+
+  const monthKey = (t: number) => {
+    if (Number.isNaN(t)) return "";
+    const d = new Date(t);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
+  const monthsBack = (n: number) => {
+    const out: string[] = [];
+    const today = new Date();
+    for (let i = n - 1; i >= 0; i--) {
+      const c = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      out.push(`${c.getFullYear()}-${String(c.getMonth() + 1).padStart(2, "0")}`);
+    }
+    return out;
+  };
+  const suCoByMonth = monthsBack(12).map((m) => ({
+    m: m.slice(5),
+    v: suCo.filter((e) => monthKey(Date.parse(e.ngay_phat_hien || "")) === m).length,
+  }));
+  const trend6 = monthsBack(6).map((m) => ({
+    m: m.slice(5),
+    bt: baoTri.filter((e) => monthKey(Date.parse(e.ngay_bat_dau || "")) === m).length,
+    sc: suCo.filter((e) => monthKey(Date.parse(e.ngay_phat_hien || "")) === m).length,
+  }));
+  const statusGroups = Array.from(
+    devices.reduce((m, d) => {
+      const k = d.trang_thai || "Chưa rõ";
+      m.set(k, (m.get(k) || 0) + 1);
+      return m;
+    }, new Map<string, number>()),
+  ).map(([name, value]) => ({ name, value }));
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -137,9 +212,9 @@ function HeThongInner({
         </div>
       </div>
 
-      {/* Header hệ thống */}
-      <Card>
-        <CardContent className="p-5">
+      {/* Header + HP bar (sticky) */}
+      <Card className="sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-card/85">
+        <CardContent className="space-y-4 p-5">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
@@ -164,16 +239,26 @@ function HeThongInner({
               )}
             </div>
           </div>
+          <HealthBar
+            hp={hp}
+            label={hpLabel}
+            tone={hpTone}
+            uptime={Math.round(activeRatio * 100)}
+            mtbf={mtbfDays}
+            suCo30d={suCo30dOpen}
+            bt90d={bt90d}
+            onGoto={setTab}
+          />
         </CardContent>
       </Card>
 
-      {/* KPI hàng ngang */}
+      {/* KPI hàng ngang – click chuyển tab tương ứng */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <KpiCard icon={HardDrive} label="Tài sản con" value={String(devices.length)} />
-        <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="text-emerald-600" />
-        <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} />
-        <KpiCard icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "text-orange-600" : undefined} />
-        <KpiCard icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} tone="text-sky-600" />
+        <KpiCard icon={HardDrive} label="Tài sản con" value={String(devices.length)} onClick={() => setTab("vt")} />
+        <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="text-emerald-600" onClick={() => setTab("bt")} />
+        <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} onClick={() => setTab("sc")} />
+        <KpiCard icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "text-orange-600" : undefined} onClick={() => setTab("hh")} />
+        <KpiCard icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} tone="text-sky-600" onClick={() => setTab("bg")} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -202,12 +287,19 @@ function HeThongInner({
           <ThanhPhanCard heThongId={id} />
         </div>
 
-        <Card className="lg:col-span-2">
+        <div className="space-y-4 lg:col-span-2">
+          <MiniCharts
+            suCoByMonth={suCoByMonth}
+            statusGroups={statusGroups}
+            trend6={trend6}
+            onPickStatus={() => setTab("vt")}
+          />
+          <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Nhật ký khai thác</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="tl">
+            <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="flex h-auto flex-wrap gap-1">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
                 <TabsTrigger value="vt"><Cpu className="mr-1 h-3.5 w-3.5" />Thành phần hệ thống</TabsTrigger>
@@ -273,7 +365,8 @@ function HeThongInner({
               )}
             </Tabs>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
       </div>
     </div>
   );
@@ -456,17 +549,166 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ComponentType<{ cla
   );
 }
 
-function KpiCard({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: string }) {
+function KpiCard({ icon: Icon, label, value, tone, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: string; onClick?: () => void }) {
+  const inner = (
+    <CardContent className="flex items-center gap-3 p-4">
+      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"><Icon className={`h-5 w-5 ${tone ?? "text-foreground/70"}`} /></div>
+      <div className="min-w-0 text-left">
+        <div className="text-xs uppercase tracking-wide text-muted-foreground truncate">{label}</div>
+        <div className={`font-semibold ${tone ?? ""}`}>{value}</div>
+      </div>
+    </CardContent>
+  );
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className="rounded-xl border bg-card text-left text-card-foreground shadow-sm transition hover:bg-primary/5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        {inner}
+      </button>
+    );
+  }
+  return <Card>{inner}</Card>;
+}
+
+function HealthBar({
+  hp, label, tone, uptime, mtbf, suCo30d, bt90d, onGoto,
+}: { hp: number; label: string; tone: string; uptime: number; mtbf: number | null; suCo30d: number; bt90d: number; onGoto: (t: string) => void }) {
+  const pct = Math.max(0, Math.min(100, hp));
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"><Icon className={`h-5 w-5 ${tone ?? "text-foreground/70"}`} /></div>
-        <div className="min-w-0">
-          <div className="text-xs uppercase tracking-wide text-muted-foreground truncate">{label}</div>
-          <div className={`font-semibold ${tone ?? ""}`}>{value}</div>
-        </div>
-      </CardContent>
-    </Card>
+    <div>
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <HeartPulse className="h-4 w-4 text-primary" />
+        <span className="font-medium">Sức khỏe hệ thống</span>
+        <HoverCard openDelay={120} closeDelay={80}>
+          <HoverCardTrigger asChild>
+            <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Cách tính HP">
+              <Info className="h-3.5 w-3.5" />
+            </button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-72 space-y-1 text-xs">
+            <div className="font-medium">Cách tính điểm HP (0–100)</div>
+            <div>+40 GPKT còn hiệu lực (+20 nếu sắp hết ≤90 ngày)</div>
+            <div>+25 không sự cố trong 30 ngày (−5 mỗi sự cố mở)</div>
+            <div>+20 theo tỷ lệ tài sản đang hoạt động</div>
+            <div>+15 có bảo dưỡng trong 90 ngày</div>
+          </HoverCardContent>
+        </HoverCard>
+        <div className={`ml-auto font-semibold ${tone}`}>{pct}/100 · {label}</div>
+      </div>
+      <div className="mt-1.5 h-3 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 transition-[width] duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <HpChip icon={Activity} label="Đang hoạt động" value={`${uptime}%`} tone={uptime >= 80 ? "text-emerald-600" : uptime >= 50 ? "text-amber-600" : "text-red-600"} />
+        <HpChip icon={Gauge} label="MTBF" value={mtbf == null ? "—" : `${mtbf} ngày`} />
+        <HpChip icon={AlertTriangle} label="Sự cố 30 ngày" value={String(suCo30d)} tone={suCo30d > 0 ? "text-red-600" : "text-emerald-600"} onClick={() => onGoto("sc")} />
+        <HpChip icon={Wrench} label="Bảo dưỡng 90 ngày" value={String(bt90d)} tone={bt90d > 0 ? "text-emerald-600" : "text-amber-600"} onClick={() => onGoto("bt")} />
+      </div>
+    </div>
+  );
+}
+
+function HpChip({ icon: Icon, label, value, tone, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: string; onClick?: () => void }) {
+  const body = (
+    <div className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 text-xs">
+      <Icon className={`h-3.5 w-3.5 ${tone ?? "text-muted-foreground"}`} />
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+        <div className={`text-sm font-semibold ${tone ?? ""}`}>{value}</div>
+      </div>
+    </div>
+  );
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className="text-left transition hover:bg-primary/5">
+        {body}
+      </button>
+    );
+  }
+  return body;
+}
+
+const CHART_COLORS = ["hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)", "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)"];
+
+function MiniCharts({
+  suCoByMonth, statusGroups, trend6, onPickStatus,
+}: {
+  suCoByMonth: Array<{ m: string; v: number }>;
+  statusGroups: Array<{ name: string; value: number }>;
+  trend6: Array<{ m: string; bt: number; sc: number }>;
+  onPickStatus: () => void;
+}) {
+  const avgSc = suCoByMonth.length ? suCoByMonth.reduce((a, x) => a + x.v, 0) / suCoByMonth.length : 0;
+  const totalDev = statusGroups.reduce((a, x) => a + x.value, 0);
+  return (
+    <div className="grid gap-3 sm:grid-cols-3">
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> Sự cố 12 tháng</CardTitle></CardHeader>
+        <CardContent className="pb-3">
+          <div className="h-[120px] w-full">
+            <ResponsiveContainer>
+              <BarChart data={suCoByMonth} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <XAxis dataKey="m" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: "hsl(var(--muted) / 0.5)" }} contentStyle={{ fontSize: 12 }} />
+                <Bar dataKey="v" radius={[3, 3, 0, 0]}>
+                  {suCoByMonth.map((d, i) => (
+                    <Cell key={i} fill={d.v > avgSc && avgSc > 0 ? "hsl(0 84% 60%)" : "hsl(217 91% 55%)"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><HardDrive className="h-3.5 w-3.5" /> Trạng thái tài sản</CardTitle></CardHeader>
+        <CardContent className="pb-3">
+          <div className="flex h-[120px] items-center gap-2">
+            <div className="h-full w-1/2">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={statusGroups.length ? statusGroups : [{ name: "—", value: 1 }]} dataKey="value" innerRadius={26} outerRadius={44} paddingAngle={2} onClick={onPickStatus} className="cursor-pointer">
+                    {(statusGroups.length ? statusGroups : [{ name: "—", value: 1 }]).map((_, i) => (
+                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <ul className="min-w-0 flex-1 space-y-0.5 text-[11px]">
+              {statusGroups.slice(0, 5).map((s, i) => (
+                <li key={s.name} className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 shrink-0 rounded-sm" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                  <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                  <span className="tabular-nums text-muted-foreground">{s.value}</span>
+                </li>
+              ))}
+              {totalDev === 0 && <li className="text-muted-foreground">Chưa có tài sản</li>}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-1"><CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> Bảo dưỡng vs Sự cố (6 tháng)</CardTitle></CardHeader>
+        <CardContent className="pb-3">
+          <div className="h-[120px] w-full">
+            <ResponsiveContainer>
+              <LineChart data={trend6} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <XAxis dataKey="m" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ fontSize: 12 }} />
+                <Line type="monotone" dataKey="bt" name="Bảo dưỡng" stroke="hsl(142 71% 45%)" strokeWidth={2} dot={{ r: 2 }} />
+                <Line type="monotone" dataKey="sc" name="Sự cố" stroke="hsl(0 84% 60%)" strokeWidth={2} dot={{ r: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
