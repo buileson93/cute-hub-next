@@ -512,9 +512,98 @@ function TongQuanPage() {
                       />
                     </div>
                   </div>
+                  <span className="w-16 text-right text-[11px] text-muted-foreground tabular-nums">
+                    MTTR {fmtHours(r.mttr_h)}
+                  </span>
                   <span className="w-10 text-right font-mono text-sm tabular-nums">
                     {r.so_su_co_mo}
                   </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ROW — Heatmap sự cố + Top TB hỏng lặp */}
+      <div className="grid gap-3 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Heatmap sự cố (90 ngày) — thứ × giờ</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Heatmap data={heatQ.data ?? []} loading={heatQ.isLoading} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Top thiết bị hỏng lặp (90 ngày)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {tbLapQ.isLoading ? (
+              <ChartLoader />
+            ) : (tbLapQ.data ?? []).length === 0 ? (
+              <EmptyChart>Chưa phát hiện thiết bị hỏng lặp.</EmptyChart>
+            ) : (
+              <ul className="divide-y divide-border">
+                {(tbLapQ.data ?? []).map((r) => (
+                  <li key={r.thiet_bi_id} className="flex items-center gap-2 py-2">
+                    <div className="min-w-0 flex-1">
+                      <Link to="/thiet-bi/$id" params={{ id: r.thiet_bi_id }}
+                        className="truncate text-sm font-medium hover:underline">
+                        {r.ma ?? "—"} · {r.ten ?? ""}
+                      </Link>
+                      <div className="text-[11px] text-muted-foreground">MTTR {fmtHours(r.mttr_h)}</div>
+                    </div>
+                    <span className="rounded bg-destructive/10 px-2 py-0.5 text-xs font-mono text-destructive tabular-nums">
+                      {r.so_lan} lần
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ROW — Timeline hạn */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Hạn giấy phép & kiểm định (90 ngày tới)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {expQ.isLoading ? (
+            <ChartLoader />
+          ) : (expQ.data ?? []).length === 0 ? (
+            <EmptyChart>Không có hạn nào trong khung 90 ngày.</EmptyChart>
+          ) : (
+            <ExpiryTimeline data={expQ.data ?? []} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ROW — Feed hoạt động */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Hoạt động gần đây</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {feedQ.isLoading ? (
+            <ChartLoader />
+          ) : (feedQ.data ?? []).length === 0 ? (
+            <EmptyChart>Chưa có hoạt động.</EmptyChart>
+          ) : (
+            <ul className="divide-y divide-border">
+              {(feedQ.data ?? []).map((r, i) => (
+                <li key={`${r.loai}-${r.ref_id}-${i}`} className="flex items-center gap-3 py-2">
+                  <FeedIcon loai={r.loai} />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm">{r.tieu_de}</div>
+                    <div className="text-[11px] text-muted-foreground">{fmtRelative(r.at)}</div>
+                  </div>
+                  <Link to={r.ref_route as never} className="text-[11px] text-primary hover:underline">
+                    Mở →
+                  </Link>
                 </li>
               ))}
             </ul>
