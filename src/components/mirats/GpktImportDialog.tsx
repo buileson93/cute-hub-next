@@ -1,0 +1,337 @@
+// ============================================================================
+// GpktImportDialog — Nhập giấy phép khai thác từ PDF, dùng AI bóc tách các
+// trường, cảnh báo trùng lặp, gán vào hệ thống và lưu bản ghi kèm file PDF.
+// ============================================================================
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, Upload, FileText, AlertTriangle, CheckCircle2, Sparkles } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Combobox } from "@/components/mirats/Combobox";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  parseGpktPdf, checkGpktDuplicate, saveGpktRecord,
+  type GpktParsedFields, type GpktDuplicate,
+} from "@/lib/mirats/gpkt-import.functions";
+
+const BUCKET = "giay-phep-khai-thac";
+
+const EMPTY: GpktParsedFields = {
+  gp_so: "", gp_ngay: "", gp_han: "", gp_cu: "",
+  ten_he_thong_theo_gp: "", nam_sx_gp: "", kieu_thiet_bi: "",
+  so_san_xuat: "", noi_san_xuat: "", muc_dich: "", pham_vi: "",
+  ma_dia_chi: "", dia_diem: "", thoi_gian: "", thanh_phan_theo_gp: "",
+  don_vi: "", tram: "",
+};
+
+async function fetchHeThongOptions() {
+  const { data, error } = await supabase
+    .from("dm_he_thong")
+    .select("id, ten, don_vi_id")
+    .order("ten", { ascending: true })
+    .limit(3000);
+  if (error) throw error;
+  return (data ?? []) as Array<{ id: string; ten: string; don_vi_id: string | null }>;
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onerror = () => reject(new Error("Không đọc được tệp"));
+    r.onload = () => {
+      const s = String(r.result ?? "");
+      const i = s.indexOf("base64,");
+      resolve(i >= 0 ? s.slice(i + 7) : s);
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+function similarity(a: string, b: string): number {
+  const norm = (x: string) => x.toLowerCase().replace(/\s+/g, " ").trim();
+  const A = norm(a), B = norm(b);
+  if (!A || !B) return 0;
+  if (A === B) return 1;
+  if (A.includes(B) || B.includes(A)) return 0.85;
+  const wa = new Set(A.split(/[\s\-_/.,()]+/).filter((w) => w.length > 2));
+  const wb = new Set(B.split(/[\s\-_/.,()]+/).filter((w) => w.length > 2));
+  if (!wa.size || !wb.size) return 0;
+  let hit = 0;
+  wa.forEach((w) => { if (wb.has(w)) hit++; });
+  return hit / Math.max(wa.size, wb.size);
+}
+
+interface Props {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}
+
+export function GpktImportDialog({ open, onOpenChange }: Props) {
+  const qc = useQueryClient();
+  const [file, setFile] = useState<File | null>(null);
+  const [fields, setFields] = useState<GpktParsedFields>(EMPTY);
+  const [heThongId, setHeThongId] = useState<string>("");
+  const [duplicates, setDuplicates] = useState<GpktDuplicate[]>([]);
+  const [overwriteId, setOverwriteId] = useState<string | null>(null);
+
+  const htQ = useQuery({ queryKey: ["dm_he_thong_all"], queryFn: fetchHeThongOptions, staleTime: 60_000, enabled: open });
+
+  // Reset khi đóng
+  useEffect(() => {
+    if (!open) {
+      setFile(null); setFields(EMPTY); setHeThongId(""); setDuplicates([]); setOverwriteId(null);
+    }
+  }, [open]);
+
+  // Auto suggest hệ thống theo tên bóc tách
+  useEffect(() => {
+    if (heThongId || !fields.ten_he_thong_theo_gp || !htQ.data) return;
+    const scored = htQ.data
+      .map((h) => ({ h, s: similarity(fields.ten_he_thong_theo_gp, h.ten) }))
+      .sort((a, b) => b.s - a.s);
+    if (scored[0] && scored[0].s >= 0.5) setHeThongId(scored[0].h.id);
+  }, [fields.ten_he_thong_theo_gp, htQ.data, heThongId]);
+
+  const parseM = useMutation({
+    mutationFn: async (f: File) => {
+      const base64 = await fileToBase64(f);
+      return parseGpktPdf({
+        data: { base64, filename: f.name, mime: f.type || "application/pdf" },
+      });
+    },
+    onSuccess: (d) => {
+      setFields(d);
+      toast.success("Đã bóc tách nội dung. Kiểm tra lại và bổ sung nếu cần.");
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : String(e)),
+  });
+
+  // Kiểm tra trùng khi gp_so hoặc he_thong_id đổi
+  useEffect(() => {
+    const gp = fields.gp_so.trim();
+    if (!gp) { setDuplicates([]); return; }
+    let cancel = false;
+    checkGpktDuplicate({ data: { gp_so: gp, he_thong_id: heThongId || null } })
+      .then((rs) => { if (!cancel) setDuplicates(rs); })
+      .catch(() => {});
+    return () => { cancel = true; };
+  }, [fields.gp_so, heThongId]);
+
+  const dupGpSo = duplicates.find((d) => d.match === "gp_so");
+  const dupHeThong = duplicates.filter((d) => d.match === "he_thong_active");
+
+  const canSave = !!file && !!fields.gp_so.trim();
+
+  const saveM = useMutation({
+    mutationFn: async () => {
+      if (!file) throw new Error("Chưa chọn tệp PDF");
+      // Upload file trước
+      const safe = file.name.replace(/[^\w.\-]+/g, "_");
+      const path = `${new Date().getFullYear()}/${Date.now()}_${safe}`;
+      const up = await supabase.storage.from(BUCKET).upload(path, file, {
+        contentType: file.type || "application/pdf",
+        upsert: false,
+      });
+      if (up.error) throw new Error("Tải PDF thất bại: " + up.error.message);
+      // Signed URL dài hạn (~10 năm) để lưu vào file_gpkt
+      const sig = await supabase.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      const fileUrl = sig.data?.signedUrl ?? null;
+      const targetOverwriteId = overwriteId || (dupGpSo ? dupGpSo.id : null);
+      const res = await saveGpktRecord({
+        data: {
+          fields,
+          he_thong_id: heThongId || null,
+          file_gpkt: fileUrl,
+          overwrite_id: targetOverwriteId,
+        },
+      });
+      return { id: res.id, replaced: !!targetOverwriteId };
+    },
+    onSuccess: (r) => {
+      toast.success(r.replaced ? "Đã cập nhật GPKT trùng số" : "Đã lưu giấy phép khai thác");
+      qc.invalidateQueries({ queryKey: ["licenses_data"] });
+      onOpenChange(false);
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : String(e)),
+  });
+
+  const heThongOpts = useMemo(
+    () => (htQ.data ?? []).map((h) => ({ value: h.id, label: h.ten })),
+    [htQ.data],
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            Nhập giấy phép khai thác từ PDF (AI hỗ trợ)
+          </DialogTitle>
+          <DialogDescription>
+            Chọn file PDF giấy phép khai thác. AI sẽ bóc tách các trường; bạn kiểm tra,
+            gán hệ thống và lưu. Hệ thống sẽ cảnh báo nếu số GP đã tồn tại hoặc hệ thống
+            đã có GPKT còn hiệu lực.
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Upload */}
+        <div className="rounded-md border border-dashed p-4 flex items-center gap-3">
+          <FileText className="h-6 w-6 text-muted-foreground" />
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium truncate">
+              {file ? file.name : "Chưa chọn tệp PDF"}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Chấp nhận .pdf (tối đa 20MB). Ưu tiên bản scan rõ chữ hoặc PDF gốc.
+            </div>
+          </div>
+          <Input
+            id="gpkt-file-input"
+            type="file"
+            accept="application/pdf,.pdf"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0] ?? null;
+              if (!f) return;
+              if (f.size > 20 * 1024 * 1024) { toast.error("Tệp vượt quá 20MB"); return; }
+              setFile(f);
+              parseM.mutate(f);
+            }}
+          />
+          <Button variant="outline" onClick={() => document.getElementById("gpkt-file-input")?.click()}>
+            <Upload className="mr-1.5 h-4 w-4" /> Chọn PDF
+          </Button>
+          <Button
+            disabled={!file || parseM.isPending}
+            onClick={() => file && parseM.mutate(file)}
+          >
+            {parseM.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
+            Bóc tách lại
+          </Button>
+        </div>
+
+        {/* Cảnh báo trùng */}
+        {dupGpSo && (
+          <div className="rounded-md border border-red-300 bg-red-50 dark:border-red-500/40 dark:bg-red-500/10 p-3 text-sm text-red-900 dark:text-red-100 flex gap-2">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <div>
+              <div className="font-medium">Số giấy phép đã tồn tại</div>
+              <div>
+                Đã có bản ghi với số <b>{dupGpSo.gp_so}</b>
+                {dupGpSo.he_thong_ten ? <> — hệ thống <b>{dupGpSo.he_thong_ten}</b></> : null}
+                {dupGpSo.gp_han ? <> (hết hạn {dupGpSo.gp_han})</> : null}.
+              </div>
+              <label className="mt-2 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={overwriteId === dupGpSo.id}
+                  onChange={(e) => setOverwriteId(e.target.checked ? dupGpSo.id : null)}
+                />
+                <span>Ghi đè bản ghi trùng số GP</span>
+              </label>
+            </div>
+          </div>
+        )}
+        {dupHeThong.length > 0 && (
+          <div className="rounded-md border border-amber-300 bg-amber-50 dark:border-amber-500/40 dark:bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-100 flex gap-2">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <div className="space-y-1">
+              <div className="font-medium">Hệ thống đã có {dupHeThong.length} GPKT còn hiệu lực</div>
+              {dupHeThong.slice(0, 5).map((d) => (
+                <div key={d.id}>• <b>{d.gp_so}</b>{d.gp_han ? ` — hết hạn ${d.gp_han}` : ""}</div>
+              ))}
+              <div className="text-xs text-muted-foreground pt-1">
+                Kiểm tra kỹ tránh khai trùng cho cùng một hệ thống.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Form */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Field label="Số giấy phép *">
+            <Input value={fields.gp_so} onChange={(e) => setFields({ ...fields, gp_so: e.target.value })} placeholder="622/GP-CHK" />
+          </Field>
+          <Field label="Số GP cũ (thay thế)">
+            <Input value={fields.gp_cu} onChange={(e) => setFields({ ...fields, gp_cu: e.target.value })} />
+          </Field>
+          <Field label="Ngày cấp">
+            <Input type="date" value={fields.gp_ngay} onChange={(e) => setFields({ ...fields, gp_ngay: e.target.value })} />
+          </Field>
+          <Field label="Ngày hết hạn">
+            <Input type="date" value={fields.gp_han} onChange={(e) => setFields({ ...fields, gp_han: e.target.value })} />
+          </Field>
+          <Field label="Tên hệ thống theo GP">
+            <Input value={fields.ten_he_thong_theo_gp} onChange={(e) => setFields({ ...fields, ten_he_thong_theo_gp: e.target.value })} />
+          </Field>
+          <Field label="Gán hệ thống (CSDL) *">
+            <Combobox
+              value={heThongId}
+              onChange={setHeThongId}
+              options={heThongOpts}
+              placeholder="Chọn hệ thống…"
+              searchPlaceholder="Tìm hệ thống…"
+            />
+          </Field>
+          <Field label="Đơn vị"><Input value={fields.don_vi} onChange={(e) => setFields({ ...fields, don_vi: e.target.value })} /></Field>
+          <Field label="Trạm"><Input value={fields.tram} onChange={(e) => setFields({ ...fields, tram: e.target.value })} /></Field>
+          <Field label="Kiểu thiết bị"><Input value={fields.kieu_thiet_bi} onChange={(e) => setFields({ ...fields, kieu_thiet_bi: e.target.value })} /></Field>
+          <Field label="Số sản xuất"><Input value={fields.so_san_xuat} onChange={(e) => setFields({ ...fields, so_san_xuat: e.target.value })} /></Field>
+          <Field label="Nơi sản xuất"><Input value={fields.noi_san_xuat} onChange={(e) => setFields({ ...fields, noi_san_xuat: e.target.value })} /></Field>
+          <Field label="Năm SX"><Input value={fields.nam_sx_gp} onChange={(e) => setFields({ ...fields, nam_sx_gp: e.target.value })} /></Field>
+          <Field label="Địa điểm"><Input value={fields.dia_diem} onChange={(e) => setFields({ ...fields, dia_diem: e.target.value })} /></Field>
+          <Field label="Mã địa chỉ"><Input value={fields.ma_dia_chi} onChange={(e) => setFields({ ...fields, ma_dia_chi: e.target.value })} /></Field>
+          <div className="sm:col-span-2">
+            <Field label="Mục đích"><Textarea rows={2} value={fields.muc_dich} onChange={(e) => setFields({ ...fields, muc_dich: e.target.value })} /></Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Phạm vi"><Textarea rows={2} value={fields.pham_vi} onChange={(e) => setFields({ ...fields, pham_vi: e.target.value })} /></Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Thành phần theo GP"><Textarea rows={3} value={fields.thanh_phan_theo_gp} onChange={(e) => setFields({ ...fields, thanh_phan_theo_gp: e.target.value })} /></Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Thời gian khai thác"><Input value={fields.thoi_gian} onChange={(e) => setFields({ ...fields, thoi_gian: e.target.value })} /></Field>
+          </div>
+        </div>
+
+        {!parseM.isPending && fields.gp_so && !dupGpSo && (
+          <div className="flex items-center gap-2 text-emerald-600 text-sm">
+            <CheckCircle2 className="h-4 w-4" />
+            Không phát hiện số GP trùng.
+            {heThongId && dupHeThong.length === 0 ? " Hệ thống chưa có GPKT nào còn hiệu lực." : ""}
+          </div>
+        )}
+
+        <DialogFooter className="gap-2">
+          <div className="mr-auto text-xs text-muted-foreground flex items-center gap-2">
+            {parseM.isPending && <><Loader2 className="h-3 w-3 animate-spin" /> Đang bóc tách bằng AI…</>}
+            {file && !parseM.isPending && <Badge variant="secondary">PDF: {(file.size / 1024).toFixed(0)} KB</Badge>}
+          </div>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button disabled={!canSave || saveM.isPending} onClick={() => saveM.mutate()}>
+            {saveM.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {overwriteId ? "Ghi đè & lưu file" : "Tạo GPKT & lưu file"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      {children}
+    </div>
+  );
+}
