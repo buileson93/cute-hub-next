@@ -119,6 +119,7 @@ import { Route as ApiPublicHooksCanhBaoHetHanRouteImport } from './routes/api/pu
 import { Route as ApiPublicHooksBootstrapAdminRouteImport } from './routes/api/public/hooks/bootstrap-admin'
 import { Route as AppFormsSubmissionsIdRouteImport } from './routes/_app.forms.submissions.$id'
 import { Route as AppFormsNewCodeRouteImport } from './routes/_app.forms.new.$code'
+import { Route as AppBaoTriDotIdRouteImport } from './routes/_app.bao-tri.dot.$id'
 import { Route as AppAdminFormsIdRouteImport } from './routes/_app.admin.forms.$id'
 import { Route as AppAdminFormsIdHistoryRouteImport } from './routes/_app.admin.forms.$id.history'
 
@@ -684,6 +685,11 @@ const AppFormsNewCodeRoute = AppFormsNewCodeRouteImport.update({
   path: '/new/$code',
   getParentRoute: () => AppFormsRoute,
 } as any)
+const AppBaoTriDotIdRoute = AppBaoTriDotIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppBaoTriDotRoute,
+} as any)
 const AppAdminFormsIdRoute = AppAdminFormsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -791,6 +797,7 @@ export interface FileRoutesByFullPath {
   '/su-co/': typeof AppSuCoIndexRoute
   '/thiet-bi/': typeof AppThietBiIndexRoute
   '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
@@ -897,6 +904,7 @@ export interface FileRoutesByTo {
   '/su-co': typeof AppSuCoIndexRoute
   '/thiet-bi': typeof AppThietBiIndexRoute
   '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
@@ -1012,6 +1020,7 @@ export interface FileRoutesById {
   '/_app/su-co/': typeof AppSuCoIndexRoute
   '/_app/thiet-bi/': typeof AppThietBiIndexRoute
   '/_app/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/_app/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/_app/forms/new/$code': typeof AppFormsNewCodeRoute
   '/_app/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
@@ -1127,6 +1136,7 @@ export interface FileRouteTypes {
     | '/su-co/'
     | '/thiet-bi/'
     | '/admin/forms/$id'
+    | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
     | '/api/public/hooks/bootstrap-admin'
@@ -1233,6 +1243,7 @@ export interface FileRouteTypes {
     | '/su-co'
     | '/thiet-bi'
     | '/admin/forms/$id'
+    | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
     | '/api/public/hooks/bootstrap-admin'
@@ -1347,6 +1358,7 @@ export interface FileRouteTypes {
     | '/_app/su-co/'
     | '/_app/thiet-bi/'
     | '/_app/admin/forms/$id'
+    | '/_app/bao-tri/dot/$id'
     | '/_app/forms/new/$code'
     | '/_app/forms/submissions/$id'
     | '/api/public/hooks/bootstrap-admin'
@@ -2169,6 +2181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFormsNewCodeRouteImport
       parentRoute: typeof AppFormsRoute
     }
+    '/_app/bao-tri/dot/$id': {
+      id: '/_app/bao-tri/dot/$id'
+      path: '/$id'
+      fullPath: '/bao-tri/dot/$id'
+      preLoaderRoute: typeof AppBaoTriDotIdRouteImport
+      parentRoute: typeof AppBaoTriDotRoute
+    }
     '/_app/admin/forms/$id': {
       id: '/_app/admin/forms/$id'
       path: '/$id'
@@ -2199,10 +2218,12 @@ const AppBanGiaoRouteWithChildren = AppBanGiaoRoute._addFileChildren(
 )
 
 interface AppBaoTriDotRouteChildren {
+  AppBaoTriDotIdRoute: typeof AppBaoTriDotIdRoute
   AppBaoTriDotIndexRoute: typeof AppBaoTriDotIndexRoute
 }
 
 const AppBaoTriDotRouteChildren: AppBaoTriDotRouteChildren = {
+  AppBaoTriDotIdRoute: AppBaoTriDotIdRoute,
   AppBaoTriDotIndexRoute: AppBaoTriDotIndexRoute,
 }
 
