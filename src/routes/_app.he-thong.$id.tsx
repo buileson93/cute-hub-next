@@ -493,11 +493,11 @@ function StatLine({ label, value, tone }: { label: string; value: string; tone?:
   );
 }
 
-function MicroStat({ label, value }: { label: string; value: string }) {
+function MicroStat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
-    <div className="rounded border border-amber-900/15 bg-amber-50/70 px-2 py-1 dark:border-amber-100/10 dark:bg-amber-950/20">
+    <div className="rounded border bg-muted/40 px-2 py-1">
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="font-serif text-sm">{value}</div>
+      <div className={`text-sm font-medium ${tone ?? ""}`}>{value}</div>
     </div>
   );
 }
