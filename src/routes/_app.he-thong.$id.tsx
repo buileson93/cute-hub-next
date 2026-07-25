@@ -367,12 +367,12 @@ function HeThongInner({
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
-                <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
-                <TabsTrigger value="sc">Sự cố ({suCo.length})</TabsTrigger>
-                <TabsTrigger value="hh">Thay thế ({hongHoc.length})</TabsTrigger>
-                <TabsTrigger value="bg">Bàn giao ({banGiao.length})</TabsTrigger>
-                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết</TabsTrigger>
-                {canManage && <TabsTrigger value="cd">Chỉnh sửa dữ liệu</TabsTrigger>}
+                <TabsTrigger value="bt"><Wrench className="mr-1 h-3.5 w-3.5" />Bảo dưỡng ({baoTri.length})</TabsTrigger>
+                <TabsTrigger value="sc"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
+                <TabsTrigger value="hh"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
+                <TabsTrigger value="bg"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
+                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết hệ thống</TabsTrigger>
+                {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký thay đổi</TabsTrigger>}
               </TabsList>
 
               <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
@@ -385,30 +385,34 @@ function HeThongInner({
               </TabsContent>
 
               <TabsContent value="bt" className="space-y-2">
+                <TabHeaderLink label="Bảo dưỡng" to="/bao-tri" heThongId={id} />
                 {baoTri.length === 0 && <p className="text-sm text-muted-foreground">Chưa có phiếu bảo dưỡng.</p>}
                 {baoTri.map((e) => (
-                  <EventRow key={e.ma_bao_tri} tb={e.thiet_bi} tenMap={tenMap} title={e.mo_ta_cong_viec || e.loai_bao_tri} date={e.ngay_bat_dau} label={e.loai_bao_tri} desc={e.ket_qua ?? ""} tag={e.trang_thai} />
+                  <EventRow key={e.ma_bao_tri} code={e.ma_bao_tri} detailKind="bt" tb={e.thiet_bi} tenMap={tenMap} title={e.mo_ta_cong_viec || e.loai_bao_tri} date={e.ngay_bat_dau} label={e.loai_bao_tri} desc={e.ket_qua ?? ""} tag={e.trang_thai} />
                 ))}
               </TabsContent>
 
               <TabsContent value="sc" className="space-y-2">
+                <TabHeaderLink label="Sự cố kỹ thuật" to="/su-co" heThongId={id} />
                 {suCo.length === 0 && <p className="text-sm text-muted-foreground">Không có sự cố ghi nhận.</p>}
                 {suCo.map((e) => (
-                  <EventRow key={e.ma_su_co} tb={e.thiet_bi} tenMap={tenMap} title={e.hien_tuong} date={e.ngay_phat_hien} label={e.muc_do || "Sự cố"} desc={e.bien_phap_xu_ly ?? e.nguyen_nhan ?? ""} tag={e.trang_thai} tone="bg-red-50 text-red-700" />
+                  <EventRow key={e.ma_su_co} code={e.ma_su_co} detailKind="sc" tb={e.thiet_bi} tenMap={tenMap} title={e.hien_tuong} date={e.ngay_phat_hien} label={e.muc_do || "Sự cố"} desc={e.bien_phap_xu_ly ?? e.nguyen_nhan ?? ""} tag={e.trang_thai} tone="bg-red-50 text-red-700" />
                 ))}
               </TabsContent>
 
               <TabsContent value="hh" className="space-y-2">
-                {hongHoc.length === 0 && <p className="text-sm text-muted-foreground">Chưa có ghi nhận hỏng hóc / thay thế.</p>}
+                <TabHeaderLink label="Hỏng hóc" to="/hong-hoc" heThongId={id} />
+                {hongHoc.length === 0 && <p className="text-sm text-muted-foreground">Chưa có ghi nhận hỏng hóc.</p>}
                 {hongHoc.map((e) => (
-                  <EventRow key={e.ma_hong_hoc} tb={e.thiet_bi_hong} tenMap={tenMap} title={e.mo_ta_hong_hoc || e.bo_phan_hong} date={e.ngay_hong} label={e.bo_phan_hong || "Hỏng hóc"} desc={e.phuong_an ?? ""} tag={e.trang_thai} tone="bg-orange-50 text-orange-700" />
+                  <EventRow key={e.ma_hong_hoc} code={e.ma_hong_hoc} detailKind="hh" tb={e.thiet_bi_hong} tenMap={tenMap} title={e.mo_ta_hong_hoc || e.bo_phan_hong} date={e.ngay_hong} label={e.bo_phan_hong || "Hỏng hóc"} desc={e.phuong_an ?? ""} tag={e.trang_thai} tone="bg-orange-50 text-orange-700" />
                 ))}
               </TabsContent>
 
               <TabsContent value="bg" className="space-y-2">
+                <TabHeaderLink label="Bàn giao" to="/ban-giao" heThongId={id} />
                 {banGiao.length === 0 && <p className="text-sm text-muted-foreground">Chưa có bản ghi bàn giao.</p>}
                 {banGiao.map((e) => (
-                  <EventRow key={e.ma_ban_giao} tb={e.thiet_bi} tenMap={tenMap} title={`${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`} date={e.ngay_nhan} label={e.loai_ban_giao || "Bàn giao"} desc={e.don_vi_nhan ?? ""} tag={e.trang_thai} tone="bg-sky-50 text-sky-700" />
+                  <EventRow key={e.ma_ban_giao} code={e.ma_ban_giao} tb={e.thiet_bi} tenMap={tenMap} title={`${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`} date={e.ngay_nhan} label={e.loai_ban_giao || "Bàn giao"} desc={e.don_vi_nhan ?? ""} tag={e.trang_thai} tone="bg-sky-50 text-sky-700" />
                 ))}
               </TabsContent>
 
