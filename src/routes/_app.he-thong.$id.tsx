@@ -289,6 +289,11 @@ function HeThongInner({
         </CardContent>
       </Card>
 
+      {/* Thanh hành động nhanh — mở nhanh biểu mẫu tạo mới đã pre-fill hệ thống */}
+      {canManage && (
+        <QuickActionsBar heThongId={id} />
+      )}
+
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
           <Card className="lg:sticky lg:top-24">
