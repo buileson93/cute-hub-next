@@ -324,6 +324,7 @@ function HeThongInner({
                 </div>
               </div>
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
+              <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
               <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
