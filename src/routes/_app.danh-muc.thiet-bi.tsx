@@ -1072,6 +1072,100 @@ function DanhMucThietBiPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Xoá / Ngừng khai thác tài sản — chỉ mở khi bật Chế độ chỉnh sửa */}
+      <AlertDialog open={!!deleteTargets} onOpenChange={(o) => { if (!o) closeDelete(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xoá / Ngừng khai thác tài sản?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Đang thao tác trên <b>{deleteTargets?.length ?? 0}</b> tài sản. Chọn cách xử lý phù hợp bên dưới.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3">
+            <div className="grid gap-2">
+              <label className={cn(
+                "flex cursor-pointer gap-2 rounded-md border p-3 text-sm",
+                deleteKind === "retire" ? "border-primary/50 bg-primary/5" : "border-border",
+              )}>
+                <input
+                  type="radio" className="mt-0.5 h-4 w-4 accent-primary"
+                  checked={deleteKind === "retire"} onChange={() => setDeleteKind("retire")}
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <PackageX className="h-4 w-4 text-amber-600" /> Ngừng khai thác (khuyến nghị)
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Chuyển tài sản sang trạng thái ngừng/thanh lý. Toàn bộ lịch sử (sự cố, bảo dưỡng,
+                    hỏng hóc, bàn giao, kiểm kê) <b>được giữ nguyên</b> để tra cứu.
+                  </p>
+                </div>
+              </label>
+
+              <label className={cn(
+                "flex gap-2 rounded-md border p-3 text-sm",
+                !isAdmin ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                deleteKind === "purge" ? "border-destructive/50 bg-destructive/5" : "border-border",
+              )}>
+                <input
+                  type="radio" className="mt-0.5 h-4 w-4 accent-destructive"
+                  disabled={!isAdmin}
+                  checked={deleteKind === "purge"} onChange={() => setDeleteKind("purge")}
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 font-medium text-destructive">
+                    <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn {!isAdmin && <span className="text-[10px] font-normal text-muted-foreground">(chỉ admin)</span>}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Chỉ dành cho bản ghi <b>nhập nhầm</b>. Hệ thống sẽ tự bỏ qua các tài sản đã có
+                    lịch sử. <b>Không thể hoàn tác.</b>
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {deleteKind === "retire" && (
+              <>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox" className="h-4 w-4 accent-primary"
+                    checked={deleteThanhLy} onChange={(e) => setDeleteThanhLy(e.target.checked)}
+                  />
+                  Đây là <b>thanh lý / loại biên</b> (không phải ngừng tạm thời)
+                </label>
+                <div className="space-y-1">
+                  <Label htmlFor="ly-do-xoa">Lý do</Label>
+                  <Textarea
+                    id="ly-do-xoa" rows={2}
+                    value={deleteReason} onChange={(e) => setDeleteReason(e.target.value)}
+                    placeholder="VD: hết niên hạn, hư hỏng không sửa được…"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteBusy}>Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteBusy || !deleteTargets?.length}
+              className={deleteKind === "purge" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                const mas = (deleteTargets ?? []).map((d) => d.ma_thiet_bi);
+                if (!mas.length) return;
+                if (deleteKind === "purge") purgeMut.mutate(mas);
+                else retireMut.mutate(mas);
+              }}
+            >
+              {deleteBusy && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+              {deleteKind === "purge" ? "Xoá vĩnh viễn" : "Xác nhận ngừng"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
