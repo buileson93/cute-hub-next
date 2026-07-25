@@ -64,15 +64,17 @@ function afterColon(s: string, ...prefixes: string[]): string {
   return s.trim();
 }
 
+const UNIT_TOKEN = /^(?:km|m|cm|mm|dm|Hz|kHz|MHz|GHz|dB|dBm|W|kW|mW|V|kV|mV|A|mA|µV|uV|h|s|ms|Đ|B|N|E|W)\.?$/i;
+
 // Loại bỏ "rác" watermark ở cuối câu (chỉ tokens ASCII ngắn, giữ nguyên
 // từ tiếng Việt có dấu và các đơn vị hợp lệ như km, Đ, B).
 function cleanTail(s: string): string {
   if (!s) return s;
   let v = s.trim().replace(/[–\-]\s*$/, "").trim();
   for (let i = 0; i < 6; i++) {
-    // token ASCII 1-2 ký tự, hoặc dạng "M.", "T.k", cuối câu
-    const m = v.match(/^(.*?[A-Za-zÀ-ỹ0-9\)])[\s.,;:\-]+(?:[A-Za-z]\.?[A-Za-z]?|[A-Za-z]{1,2}\.?)\s*$/);
+    const m = v.match(/^(.*?[A-Za-zÀ-ỹ0-9\)])[\s.,;:\-]+([A-Za-z]\.?[A-Za-z]?|[A-Za-z]{1,2}\.?)\s*$/);
     if (!m) break;
+    if (UNIT_TOKEN.test(m[2])) break; // đơn vị vật lý — giữ nguyên
     v = m[1].trim();
   }
   return v.replace(/[\s,;:]+$/, "").trim();
