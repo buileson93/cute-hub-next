@@ -471,9 +471,6 @@ function FormEditor() {
         </div>
       )}
 
-      {tab === "design" && preview ? (
-        null
-      ) : null}
       {tab === "design" && !preview && fields.length === 0 && chkSections && chkSections.some((s) => (s.items?.length ?? 0) > 0) && (
         <div className="border-b bg-sky-50 px-4 py-2 text-xs text-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
           <AlertTriangle className="mr-1 inline h-3 w-3" />
