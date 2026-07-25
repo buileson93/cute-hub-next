@@ -617,10 +617,11 @@ function DanhMucThietBiPage() {
           >
             <Info className="h-3.5 w-3.5" />
           </Button>
-          <Button asChild size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" title="Sửa thông tin tài sản" aria-label="Liên kết">
-            <Link to="/he-thong/cay" search={{ editTb: d.ma_thiet_bi }}>
-              <Pencil className="h-3.5 w-3.5" />
-            </Link>
+          <Button
+            size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary"
+            onClick={() => openEdit(d)} title="Sửa thông tin tài sản"
+          >
+            <Pencil className="h-3.5 w-3.5" />
           </Button>
           <Button
             size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary"
