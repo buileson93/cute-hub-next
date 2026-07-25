@@ -354,13 +354,10 @@ function DotDetailPage() {
                                   )}
                                   {isKt && h.duyet_trang_thai === "cho_duyet" && (
                                     <>
-                                      <DropdownMenuItem onClick={() => workflowMut.mutate({ fn: "dot_hm_approve", id: h.id })}>
+                                      <DropdownMenuItem onClick={() => openNoteDialog("dot_hm_approve", h.id)}>
                                         <ShieldCheck className="mr-2 h-3.5 w-3.5" />Duyệt & khoá
                                       </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => {
-                                        const note = window.prompt("Lý do trả lại (tuỳ chọn):") ?? "";
-                                        workflowMut.mutate({ fn: "dot_hm_reject", id: h.id, note: note || undefined });
-                                      }}>
+                                      <DropdownMenuItem onClick={() => openNoteDialog("dot_hm_reject", h.id)}>
                                         <Undo2 className="mr-2 h-3.5 w-3.5" />Trả lại đơn vị
                                       </DropdownMenuItem>
                                     </>
