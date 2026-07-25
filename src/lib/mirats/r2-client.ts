@@ -9,6 +9,7 @@ const MULTIPART_THRESHOLD = 50 * 1024 * 1024; // 50MB
 const PART_SIZE = 8 * 1024 * 1024; // 8MB
 const PART_BATCH = 20; // xin presigned URL theo lô
 const SESSION_STORE_KEY = "r2:resumable-sessions:v1";
+const SESSION_TTL_MS = 24 * 3600 * 1000;
 
 export type UploadProgress = { loaded: number; total: number; percent: number };
 export type UploadOptions = { keyHint?: string; onProgress?: (p: UploadProgress) => void; signal?: AbortSignal };
@@ -42,11 +43,31 @@ function saveSessions(list: ResumableSession[]) {
   try { localStorage.setItem(SESSION_STORE_KEY, JSON.stringify(list)); } catch {}
 }
 export function listResumableSessions(): ResumableSession[] {
-  // xoá session cũ quá 24h
+  cleanupExpiredSessions();
+  return loadSessions().sort((a, b) => b.createdAt - a.createdAt);
+}
+
+/** Dọn session localStorage quá TTL. Trả về số lượng đã dọn & còn lại. */
+export function cleanupExpiredSessions(): { removed: number; kept: number; oldestAgeMs: number | null } {
   const now = Date.now();
-  const kept = loadSessions().filter((s) => now - s.createdAt < 24 * 3600 * 1000);
-  if (kept.length !== loadSessions().length) saveSessions(kept);
-  return kept.sort((a, b) => b.createdAt - a.createdAt);
+  const all = loadSessions();
+  const kept = all.filter((s) => now - s.createdAt < SESSION_TTL_MS);
+  if (kept.length !== all.length) saveSessions(kept);
+  const oldest = kept.reduce<number | null>((min, s) => {
+    const age = now - s.createdAt;
+    return min === null || age > min ? age : min;
+  }, null);
+  return { removed: all.length - kept.length, kept: kept.length, oldestAgeMs: oldest };
+}
+
+/** Kiểm tra part đã có trên R2 cho 1 session (tránh upload trùng khi retry). */
+export function useR2InspectResumable() {
+  const mpList = useServerFn(r2MultipartListParts);
+  return async (s: ResumableSession) => {
+    const r = await mpList({ data: { key: s.key, uploadId: s.uploadId } });
+    const totalBytes = r.parts.reduce((a, p) => a + (p.Size || 0), 0);
+    return { valid: r.valid, partCount: r.parts.length, totalBytes };
+  };
 }
 export function removeResumableSession(fingerprint: string) {
   saveSessions(loadSessions().filter((s) => s.fingerprint !== fingerprint));
