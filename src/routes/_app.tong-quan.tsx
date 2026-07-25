@@ -549,7 +549,7 @@ function TongQuanPage() {
                 {(tbLapQ.data ?? []).map((r) => (
                   <li key={r.thiet_bi_id} className="flex items-center gap-2 py-2">
                     <div className="min-w-0 flex-1">
-                      <Link to="/thiet-bi/$id" params={{ id: r.thiet_bi_id }}
+                      <Link to="/qr/thiet-bi/$id" params={{ id: r.thiet_bi_id }}
                         className="truncate text-sm font-medium hover:underline">
                         {r.ma ?? "—"} · {r.ten ?? ""}
                       </Link>
