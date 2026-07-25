@@ -5,6 +5,7 @@ import {
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
   Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
+  Search, X, Filter,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -19,6 +20,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
@@ -97,6 +99,12 @@ function HeThongInner({
     [devices, devNameOv],
   );
   const [tab, setTab] = useState<string>("tl");
+  // Bộ lọc & phân trang cho Nhật ký (Dòng thời gian)
+  const [nkQuery, setNkQuery] = useState("");
+  const [nkKind, setNkKind] = useState<"all" | TimelineKind>("all");
+  const [nkPerson, setNkPerson] = useState<string>("all");
+  const [nkRange, setNkRange] = useState<"all" | "3m" | "6m" | "12m">("all");
+  const [nkLimit, setNkLimit] = useState(20);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
   const [thrOpen, setThrOpen] = useState(false);
   const thrKey = `hp-thresholds:${donViMa || "default"}`;
@@ -132,13 +140,46 @@ function HeThongInner({
 
   const timeline = useMemo<TimelineItem[]>(() => {
     const items: TimelineItem[] = [];
-    for (const e of baoTri) items.push({ kind: "bt", date: e.ngay_bat_dau || "", title: e.mo_ta_cong_viec || e.loai_bao_tri || "Bảo dưỡng", label: e.loai_bao_tri || "Bảo dưỡng", desc: e.ket_qua ?? "", tag: e.trang_thai, tb: e.thiet_bi });
-    for (const e of suCo) items.push({ kind: "sc", date: e.ngay_phat_hien || "", title: e.hien_tuong || "Sự cố", label: e.muc_do || "Sự cố", desc: e.bien_phap_xu_ly ?? e.nguyen_nhan ?? "", tag: e.trang_thai, tb: e.thiet_bi });
-    for (const e of hongHoc) items.push({ kind: "hh", date: e.ngay_hong || "", title: e.mo_ta_hong_hoc || e.bo_phan_hong || "Hỏng hóc / thay thế", label: e.bo_phan_hong || "Hỏng hóc", desc: e.phuong_an ?? "", tag: e.trang_thai, tb: e.thiet_bi_hong });
-    for (const e of banGiao) items.push({ kind: "bg", date: e.ngay_nhan || "", title: `${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`, label: e.loai_ban_giao || "Bàn giao", desc: e.don_vi_nhan ?? "", tag: e.trang_thai, tb: e.thiet_bi });
+    for (const e of baoTri) items.push({ kind: "bt", date: e.ngay_bat_dau || "", title: e.mo_ta_cong_viec || e.loai_bao_tri || "Bảo dưỡng", label: e.loai_bao_tri || "Bảo dưỡng", desc: e.ket_qua ?? "", tag: e.trang_thai, tb: e.thiet_bi, person: (e.nguoi_thuc_hien || [])[0] || "", code: e.ma_bao_tri });
+    for (const e of suCo) items.push({ kind: "sc", date: e.ngay_phat_hien || "", title: e.hien_tuong || "Sự cố", label: e.muc_do || "Sự cố", desc: e.bien_phap_xu_ly ?? e.nguyen_nhan ?? "", tag: e.trang_thai, tb: e.thiet_bi, person: e.nguoi_bao_cao || (e.nguoi_xu_ly || [])[0] || "", code: e.ma_su_co });
+    for (const e of hongHoc) items.push({ kind: "hh", date: e.ngay_hong || "", title: e.mo_ta_hong_hoc || e.bo_phan_hong || "Hỏng hóc / thay thế", label: e.bo_phan_hong || "Hỏng hóc", desc: e.phuong_an ?? "", tag: e.trang_thai, tb: e.thiet_bi_hong, person: (e.nguoi_thuc_hien || [])[0] || "", code: e.ma_hong_hoc });
+    for (const e of banGiao) items.push({ kind: "bg", date: e.ngay_nhan || "", title: `${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`, label: e.loai_ban_giao || "Bàn giao", desc: e.don_vi_nhan ?? "", tag: e.trang_thai, tb: e.thiet_bi, person: e.nguoi_giao || "", code: e.ma_ban_giao });
     const toKey = (d: string) => { const t = Date.parse(d); return Number.isNaN(t) ? -Infinity : t; };
     return items.sort((a, b) => toKey(b.date) - toKey(a.date));
   }, [baoTri, suCo, hongHoc, banGiao]);
+
+  // Dữ liệu suy diễn cho bộ lọc / tóm tắt Nhật ký khai thác
+  const personOptions = useMemo(() => {
+    const s = new Set<string>();
+    for (const it of timeline) if (it.person) s.add(it.person);
+    return Array.from(s).sort((a, b) => a.localeCompare(b, "vi"));
+  }, [timeline]);
+  const kindCounts = useMemo(() => {
+    const c: Record<TimelineKind, number> = { bt: 0, sc: 0, hh: 0, bg: 0 };
+    for (const it of timeline) c[it.kind]++;
+    return c;
+  }, [timeline]);
+  const nkRangeMs = nkRange === "3m" ? 90 * 86_400_000 : nkRange === "6m" ? 180 * 86_400_000 : nkRange === "12m" ? 365 * 86_400_000 : null;
+  const filteredTimeline = useMemo(() => {
+    const q = nkQuery.trim().toLowerCase();
+    const cutoff = nkRangeMs ? Date.now() - nkRangeMs : null;
+    return timeline.filter((it) => {
+      if (nkKind !== "all" && it.kind !== nkKind) return false;
+      if (nkPerson !== "all" && (it.person || "") !== nkPerson) return false;
+      if (cutoff != null) {
+        const t = Date.parse(it.date);
+        if (Number.isNaN(t) || t < cutoff) return false;
+      }
+      if (q) {
+        const hay = `${it.title} ${it.desc} ${it.label} ${it.tag ?? ""} ${it.person ?? ""} ${it.code ?? ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [timeline, nkQuery, nkKind, nkPerson, nkRangeMs]);
+  useEffect(() => { setNkLimit(20); }, [nkQuery, nkKind, nkPerson, nkRange]);
+  const nkFirstTs = filteredTimeline.reduce<number | null>((a, it) => { const t = Date.parse(it.date); if (Number.isNaN(t)) return a; return a == null ? t : Math.min(a, t); }, null);
+  const nkLastTs = filteredTimeline.reduce<number | null>((a, it) => { const t = Date.parse(it.date); if (Number.isNaN(t)) return a; return a == null ? t : Math.max(a, t); }, null);
 
   const hasGp = Boolean(gpSo);
 
@@ -379,6 +420,15 @@ function HeThongInner({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Tóm tắt nhanh toàn bộ nhật ký */}
+            <div className="mb-3 grid grid-cols-2 gap-2 rounded-md border bg-muted/30 p-2 text-xs sm:grid-cols-6">
+              <SummaryStat label="Tổng sự kiện" value={timeline.length} />
+              <SummaryStat label="Khoảng thời gian" value={firstEventTs && lastEventTs ? `${fmtVN(firstEventTs)} → ${fmtVN(lastEventTs)}` : "—"} wide />
+              <SummaryStat label="Bảo dưỡng" value={kindCounts.bt} tone="text-emerald-700" />
+              <SummaryStat label="Sự cố" value={kindCounts.sc} tone="text-red-700" />
+              <SummaryStat label="Hỏng hóc" value={kindCounts.hh} tone="text-orange-700" />
+              <SummaryStat label="Bàn giao" value={kindCounts.bg} tone="text-sky-700" />
+            </div>
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
@@ -395,7 +445,76 @@ function HeThongInner({
                 {timeline.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Chưa có sự kiện lịch sử nào cho hệ thống này.</p>
                 ) : (
-                  <Timeline items={timeline} tenMap={tenMap} />
+                  <>
+                    {/* Bộ lọc */}
+                    <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border bg-background p-2">
+                      <div className="relative min-w-[220px] flex-1">
+                        <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          value={nkQuery}
+                          onChange={(e) => setNkQuery(e.target.value)}
+                          placeholder="Tìm theo tiêu đề, mô tả, mã, người tạo…"
+                          className="h-8 pl-7 pr-7 text-xs"
+                        />
+                        {nkQuery && (
+                          <button type="button" onClick={() => setNkQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <Select value={nkKind} onValueChange={(v) => setNkKind(v as typeof nkKind)}>
+                        <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Loại sự kiện" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Tất cả loại</SelectItem>
+                          <SelectItem value="bt">Bảo dưỡng</SelectItem>
+                          <SelectItem value="sc">Sự cố kỹ thuật</SelectItem>
+                          <SelectItem value="hh">Hỏng hóc</SelectItem>
+                          <SelectItem value="bg">Bàn giao</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={nkPerson} onValueChange={setNkPerson}>
+                        <SelectTrigger className="h-8 w-[180px] text-xs"><SelectValue placeholder="Người tạo" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Mọi người tạo</SelectItem>
+                          {personOptions.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <Select value={nkRange} onValueChange={(v) => setNkRange(v as typeof nkRange)}>
+                        <SelectTrigger className="h-8 w-[130px] text-xs"><SelectValue placeholder="Thời gian" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Mọi thời gian</SelectItem>
+                          <SelectItem value="3m">3 tháng gần đây</SelectItem>
+                          <SelectItem value="6m">6 tháng gần đây</SelectItem>
+                          <SelectItem value="12m">12 tháng gần đây</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {(nkQuery || nkKind !== "all" || nkPerson !== "all" || nkRange !== "all") && (
+                        <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs" onClick={() => { setNkQuery(""); setNkKind("all"); setNkPerson("all"); setNkRange("all"); }}>
+                          <Filter className="h-3.5 w-3.5" /> Xoá lọc
+                        </Button>
+                      )}
+                    </div>
+                    <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+                      <span>
+                        Hiển thị {Math.min(nkLimit, filteredTimeline.length)} / {filteredTimeline.length} sự kiện
+                        {nkFirstTs && nkLastTs ? ` · ${fmtVN(nkFirstTs)} → ${fmtVN(nkLastTs)}` : ""}
+                      </span>
+                    </div>
+                    {filteredTimeline.length === 0 ? (
+                      <p className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">Không tìm thấy sự kiện phù hợp với bộ lọc.</p>
+                    ) : (
+                      <>
+                        <Timeline items={filteredTimeline.slice(0, nkLimit)} tenMap={tenMap} />
+                        {filteredTimeline.length > nkLimit && (
+                          <div className="mt-3 flex justify-center print:hidden">
+                            <Button variant="outline" size="sm" onClick={() => setNkLimit((n) => n + 20)}>
+                              Tải thêm ({filteredTimeline.length - nkLimit})
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </TabsContent>
 
@@ -1171,7 +1290,17 @@ function SidebarLink({
 }
 
 type TimelineKind = "bt" | "sc" | "hh" | "bg";
-type TimelineItem = { kind: TimelineKind; date: string; title: string; label: string; desc: string; tag?: string; tb: string };
+
+function SummaryStat({ label, value, tone, wide }: { label: string; value: string | number; tone?: string; wide?: boolean }) {
+  return (
+    <div className={`rounded-md bg-background px-2 py-1.5 ${wide ? "col-span-2 sm:col-span-2" : ""}`}>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className={`truncate text-sm font-semibold ${tone || ""}`}>{value}</div>
+    </div>
+  );
+}
+
+type TimelineItem = { kind: TimelineKind; date: string; title: string; label: string; desc: string; tag?: string; tb: string; person?: string; code?: string };
 
 const timelineMeta: Record<TimelineKind, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string; chip: string }> = {
   bt: { icon: Wrench, name: "Bảo dưỡng", dot: "bg-emerald-500", chip: "bg-emerald-50 text-emerald-700" },
