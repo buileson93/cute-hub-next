@@ -268,31 +268,25 @@ function HeThongInner({
                 </div>
               </div>
             </div>
-            <div className="shrink-0">
+            <div className="flex shrink-0 flex-col items-end gap-2">
               {hasGp ? (
                 <GpktBadge heThongId={id} gpSo={gpSo} gpHan={gpHan} />
               ) : (
                 <Badge variant="outline" className="border-red-300 bg-red-50 text-red-700 dark:bg-red-950/40">Chưa có GPKT</Badge>
               )}
+              <HealthBar
+                hp={hp}
+                label={hpLabel}
+                tone={hpTone}
+                onConfigure={() => setThrOpen(true)}
+              />
             </div>
           </div>
-          <HealthBar
-            hp={hp}
-            label={hpLabel}
-            tone={hpTone}
-            uptime={Math.round(activeRatio * 100)}
-            mtbf={mtbfDays}
-            suCo30d={suCo30dOpen}
-            bt90d={bt90d}
-            onGoto={setTab}
-            onConfigure={() => setThrOpen(true)}
-          />
         </CardContent>
       </Card>
 
       {/* KPI hàng ngang – click chuyển tab tương ứng */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <KpiCard icon={HardDrive} label="Tài sản con" value={String(devices.length)} onClick={() => setTab("vt")} />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="text-emerald-600" onClick={() => setTab("bt")} />
         <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} onClick={() => setTab("sc")} />
         <KpiCard icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "text-orange-600" : undefined} onClick={() => setTab("hh")} />
