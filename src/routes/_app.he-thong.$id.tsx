@@ -1350,16 +1350,19 @@ function TabHeaderLink({ label, to, heThongId }: { label: string; to: "/bao-tri"
 }
 
 function QuickActionsBar({ heThongId }: { heThongId: string }) {
-  const search = { he_thong: heThongId } as never;
-  const actions: { to: "/su-co/moi" | "/bao-tri/moi" | "/hong-hoc/moi" | "/ban-giao/moi" | "/forms" | "/van-de" | "/bao-tri/cong-viec"; label: string; icon: React.ComponentType<{ className?: string }>; tone: string }[] = [
-    { to: "/su-co/moi", label: "Sự cố kỹ thuật", icon: AlertTriangle, tone: "text-red-600" },
-    { to: "/bao-tri/moi", label: "Phiếu bảo dưỡng", icon: Wrench, tone: "text-emerald-600" },
-    { to: "/hong-hoc/moi", label: "Hỏng hóc", icon: RefreshCw, tone: "text-orange-600" },
-    { to: "/ban-giao/moi", label: "Bàn giao", icon: ArrowLeftRight, tone: "text-sky-600" },
-    { to: "/forms", label: "Biên bản", icon: FileText, tone: "text-violet-600" },
-    { to: "/van-de", label: "Vấn đề (RCA)", icon: Bug, tone: "text-amber-600" },
-    { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
+  const [open, setOpen] = useState<null | { path: string; label: string }>(null);
+  const actions: { path: string; label: string; icon: React.ComponentType<{ className?: string }>; tone: string }[] = [
+    { path: "/su-co/moi", label: "Sự cố kỹ thuật", icon: AlertTriangle, tone: "text-red-600" },
+    { path: "/bao-tri/moi", label: "Phiếu bảo dưỡng", icon: Wrench, tone: "text-emerald-600" },
+    { path: "/hong-hoc/moi", label: "Hỏng hóc", icon: RefreshCw, tone: "text-orange-600" },
+    { path: "/ban-giao/moi", label: "Bàn giao", icon: ArrowLeftRight, tone: "text-sky-600" },
+    { path: "/forms", label: "Biên bản", icon: FileText, tone: "text-violet-600" },
+    { path: "/van-de", label: "Vấn đề (RCA)", icon: Bug, tone: "text-amber-600" },
+    { path: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
   ];
+  const embedUrl = open
+    ? `${open.path}?he_thong=${encodeURIComponent(heThongId)}&embed=1`
+    : "";
   return (
     <div className="no-print flex items-center justify-end">
       <DropdownMenu>
@@ -1371,19 +1374,44 @@ function QuickActionsBar({ heThongId }: { heThongId: string }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel className="text-xs">Tạo mới cho hệ thống này</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs">Tạo nhanh (mở trong ngăn bên, không rời sổ lý lịch)</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {actions.map((a) => (
-            <DropdownMenuItem key={a.to} asChild>
-              <Link to={a.to} search={search} className="flex items-center gap-2">
-                <a.icon className={`h-4 w-4 ${a.tone}`} />
-                <span className="flex-1">{a.label}</span>
-                <Plus className="h-3.5 w-3.5 opacity-60" />
-              </Link>
+            <DropdownMenuItem
+              key={a.path}
+              onSelect={(e) => { e.preventDefault(); setOpen({ path: a.path, label: a.label }); }}
+              className="flex items-center gap-2"
+            >
+              <a.icon className={`h-4 w-4 ${a.tone}`} />
+              <span className="flex-1">{a.label}</span>
+              <Plus className="h-3.5 w-3.5 opacity-60" />
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      <Sheet open={!!open} onOpenChange={(v) => { if (!v) setOpen(null); }}>
+        <SheetContent side="right" className="w-full p-0 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
+          <SheetHeader className="border-b px-4 py-3">
+            <SheetTitle className="text-base">{open?.label ?? "Tác nghiệp nhanh"}</SheetTitle>
+            <SheetDescription className="text-xs">
+              Pre-fill cho hệ thống đang xem — thao tác xong đóng ngăn để về sổ lý lịch.{" "}
+              {open && (
+                <a href={embedUrl.replace(/[?&]embed=1/, "")} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                  Mở tab mới
+                </a>
+              )}
+            </SheetDescription>
+          </SheetHeader>
+          {open && (
+            <iframe
+              key={embedUrl}
+              src={embedUrl}
+              title={open.label}
+              className="h-[calc(100dvh-64px)] w-full border-0 bg-background"
+            />
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
