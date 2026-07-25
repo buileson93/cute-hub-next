@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
@@ -37,10 +38,12 @@ export interface ButtonProps
   asChild?: boolean;
   /** Hiển thị spinner + disable nút khi đang chạy async (feedback thân thiện). */
   loading?: boolean;
+  /** Nội dung tooltip hiển thị khi hover (mặc định lấy từ aria-label / title cho nút icon-only). */
+  tooltip?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, disabled, children, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, loading = false, disabled, children, tooltip, title, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     // Slot chỉ chấp nhận đúng 1 React child — khi asChild=true, không thể chèn spinner.
     const content =
@@ -52,16 +55,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ) : (
         children
       );
-    return (
+    const ariaLabel = (props as { "aria-label"?: string })["aria-label"];
+    // Nút icon-only: tự động hiện tooltip từ prop tooltip / aria-label / title.
+    const autoTip = tooltip ?? (size === "icon" ? ariaLabel ?? title : undefined);
+    const button = (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={disabled || (!asChild && loading)}
         aria-busy={loading || undefined}
+        // Ẩn native title khi đã có tooltip Radix để tránh hiển thị chồng.
+        title={autoTip ? undefined : title}
         {...props}
       >
         {content}
       </Comp>
+    );
+    if (!autoTip) return button;
+    return (
+      <TooltipProvider delayDuration={200} disableHoverableContent>
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent side="top">{autoTip}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   },
 );
