@@ -37,10 +37,10 @@ export interface HongHocMoiFormProps {
 
 export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, embedded, onDone }: HongHocMoiFormProps) {
   const { roles, profile } = useSession();
-  const { suCo, thietBi, heThong: heThongScope, inScope } = useScope();
+  const { suCo, heThong: heThongScope, inScope } = useScope();
   const suCoParam = defaultSuCo;
   const htParam = defaultHeThongId;
-  const tbParam = defaultThietBi;
+  void defaultThietBi;
   const qc = useQueryClient();
 
   const [suCoMa, setSuCoMa] = useState(suCoParam ?? "");
