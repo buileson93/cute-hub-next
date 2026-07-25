@@ -193,7 +193,13 @@ function DanhMucThietBiPage() {
   
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
+  const isAdmin = hasRole("admin");
+  // Chế độ chỉnh sửa: BẬT mới hiện nút "Thêm tài sản" và các nút xoá.
+  // Persist theo user để lần sau vào trang giữ nguyên lựa chọn.
+  const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-tb:edit-mode", false);
+  const editOn = canManage && editMode;
   const { submit, submitMany, hoanTac } = useCayRpc();
+  const qc = useQueryClient();
 
   const [exporting, setExporting] = useState(false);
 
