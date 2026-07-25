@@ -666,3 +666,132 @@ function EmptyChart({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+// --------- Helpers ---------------------------------------------------------
+function fmtHours(h: number | null | undefined): string {
+  if (h == null || Number.isNaN(Number(h))) return "—";
+  const n = Number(h);
+  if (n >= 24) return `${(n / 24).toFixed(1)}d`;
+  return `${n.toFixed(1)}h`;
+}
+function compareLabel(cur: number, prev: number, lowerIsBetter = false): string {
+  if (!prev) return "Không có kỳ trước";
+  const diff = ((cur - prev) / prev) * 100;
+  const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "▬";
+  const good = lowerIsBetter ? diff < 0 : diff > 0;
+  const tone = good ? "tốt hơn" : "kém hơn";
+  return `${arrow} ${Math.abs(diff).toFixed(0)}% ${tone} kỳ trước`;
+}
+function fmtRelative(iso: string): string {
+  const t = new Date(iso).getTime();
+  const diff = Date.now() - t;
+  const m = Math.round(diff / 60_000);
+  if (m < 1) return "vừa xong";
+  if (m < 60) return `${m} phút trước`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} giờ trước`;
+  const d = Math.round(h / 24);
+  if (d < 30) return `${d} ngày trước`;
+  return new Date(iso).toLocaleDateString("vi-VN");
+}
+
+function HealthTile({ icon, label, value, hint, tone, loading }: {
+  icon: React.ReactNode; label: string; value: string; hint?: string;
+  tone: "default" | "ok" | "warn" | "danger"; loading: boolean;
+}) {
+  const toneClasses: Record<string, string> = {
+    default: "text-foreground",
+    ok: "text-emerald-600 dark:text-emerald-400",
+    warn: "text-amber-600 dark:text-amber-400",
+    danger: "text-destructive",
+  };
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-1 p-3">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className={toneClasses[tone]}>{icon}</span>
+          <span className="truncate">{label}</span>
+        </div>
+        <div className={cn("text-2xl font-semibold tabular-nums", toneClasses[tone])}>
+          {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
+        </div>
+        {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+      </CardContent>
+    </Card>
+  );
+}
+
+function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
+  const DOW = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+  const max = Math.max(1, ...data.map((d) => d.so_luong));
+  const grid = useMemo(() => {
+    const m = new Map<string, number>();
+    data.forEach((d) => m.set(`${d.dow}-${d.hour}`, d.so_luong));
+    return m;
+  }, [data]);
+  if (loading) return <ChartLoader />;
+  if (data.length === 0) return <EmptyChart>Chưa có sự cố trong 90 ngày.</EmptyChart>;
+  return (
+    <div className="overflow-x-auto">
+      <div className="min-w-[560px]">
+        <div className="grid grid-cols-[32px_repeat(24,minmax(0,1fr))] gap-[2px] text-[9px] text-muted-foreground">
+          <div />
+          {Array.from({ length: 24 }, (_, h) => (
+            <div key={h} className="text-center">{h % 3 === 0 ? h : ""}</div>
+          ))}
+          {DOW.map((label, dow) => (
+            <>
+              <div key={`l-${dow}`} className="pr-1 text-right leading-4">{label}</div>
+              {Array.from({ length: 24 }, (_, h) => {
+                const n = grid.get(`${dow}-${h}`) ?? 0;
+                const alpha = n === 0 ? 0.05 : 0.15 + 0.85 * (n / max);
+                return (
+                  <div
+                    key={`c-${dow}-${h}`}
+                    className="aspect-square rounded-sm"
+                    style={{ backgroundColor: `hsl(0 84% 60% / ${alpha})` }}
+                    title={`${DOW[dow]} ${h}h: ${n} sự cố`}
+                  />
+                );
+              })}
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
+  const rows = data.slice(0, 20);
+  return (
+    <ul className="divide-y divide-border">
+      {rows.map((r) => {
+        const overdue = r.days_left < 0;
+        const soon = r.days_left >= 0 && r.days_left <= 7;
+        const tone = overdue ? "text-destructive" : soon ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground";
+        const badge = r.loai === "giay_phep" ? "GP" : r.loai === "KIEM_DINH" ? "KĐ" : "HC";
+        return (
+          <li key={`${r.loai}-${r.ref_id}`} className="flex items-center gap-3 py-2">
+            <span className="w-8 rounded bg-secondary px-1 text-center text-[10px] font-semibold uppercase">{badge}</span>
+            <div className="min-w-0 flex-1 truncate text-sm">{r.ten}</div>
+            <div className="text-[11px] text-muted-foreground">{new Date(r.ngay_het).toLocaleDateString("vi-VN")}</div>
+            <div className={cn("w-24 text-right text-xs font-medium tabular-nums", tone)}>
+              {overdue ? `${Math.abs(r.days_left)} ngày quá hạn` : `còn ${r.days_left} ngày`}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function FeedIcon({ loai }: { loai: string }) {
+  const map: Record<string, React.ReactNode> = {
+    su_co: <AlertOctagon className="h-4 w-4 text-destructive" />,
+    bao_tri: <Wrench className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
+    ban_giao: <ArrowRightLeft className="h-4 w-4 text-primary" />,
+    kiem_ke: <ClipboardCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />,
+  };
+  return <>{map[loai] ?? <Activity className="h-4 w-4 text-muted-foreground" />}</>;
+}
