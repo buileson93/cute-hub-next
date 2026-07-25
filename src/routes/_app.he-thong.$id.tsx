@@ -19,6 +19,9 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useScope } from "@/lib/mirats/scope";
@@ -267,9 +270,7 @@ function HeThongInner({
             </div>
             <div className="shrink-0">
               {hasGp ? (
-                <Badge variant="outline" className="gap-1 border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40">
-                  <ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}
-                </Badge>
+                <GpktBadge heThongId={id} gpSo={gpSo} gpHan={gpHan} />
               ) : (
                 <Badge variant="outline" className="border-red-300 bg-red-50 text-red-700 dark:bg-red-950/40">Chưa có GPKT</Badge>
               )}
