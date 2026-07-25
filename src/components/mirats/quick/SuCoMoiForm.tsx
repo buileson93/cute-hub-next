@@ -465,15 +465,16 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   const daDong = !!thoiGianKetThuc;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-3 pb-28">
-      <FormPageHeader
-        backTo="/su-co"
-        backLabel="Nhật ký sự cố"
-        icon={FileText}
-        title="Báo cáo ban đầu"
-        description="Lập biên bản sự cố → ghi vào sổ lý lịch tài sản & hệ thống → xuất Word theo mẫu."
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
+    <div className={embedded ? "space-y-3 p-4 pb-28" : "mx-auto max-w-5xl space-y-3 pb-28"}>
+      {!embedded && (
+        <FormPageHeader
+          backTo="/su-co"
+          backLabel="Nhật ký sự cố"
+          icon={FileText}
+          title="Báo cáo ban đầu"
+          description="Lập biên bản sự cố → ghi vào sổ lý lịch tài sản & hệ thống → xuất Word theo mẫu."
+          actions={
+            <div className="flex flex-wrap items-center gap-2">
             {aiFilled && (
               <Badge variant="secondary" className="gap-1 border-primary/30 bg-primary/10 text-primary">
                 <Sparkles className="h-3 w-3" /> AI điền · chờ xác nhận
@@ -488,9 +489,11 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                 Chưa kết thúc · theo dõi thêm
               </Badge>
             )}
-          </div>
-        }
-      />
+            </div>
+          }
+        />
+      )}
+      {void onDone}
 
 
       {aiNote && (
