@@ -162,6 +162,21 @@ function HeThongInner({
   });
   const bienBan = useMemo(() => bienBanRows ?? [], [bienBanRows]);
 
+  // Realtime: đồng bộ ngay khi có biên bản mới/cập nhật cho hệ thống này.
+  const qcHt = useQueryClient();
+  useEffect(() => {
+    if (!id) return;
+    const ch = supabase
+      .channel(`he-thong-submissions-${id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "form_submission", filter: `he_thong_id=eq.${id}` },
+        () => qcHt.invalidateQueries({ queryKey: ["he-thong-submissions", id] }),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [id, qcHt]);
+
   
   const donVi = donViMa || devices[0]?.don_vi || "";
   const donViTenR = donViTen || devices[0]?._donViTen || "";
