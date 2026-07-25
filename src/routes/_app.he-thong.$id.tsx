@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useScope } from "@/lib/mirats/scope";
@@ -247,22 +248,64 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
         {list.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
-            <button
-              key={tp.id}
-              type="button"
-              onClick={() => setOpenTpId(tp.id)}
-              className="flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm hover:bg-primary/5"
-            >
-              <Cpu className="h-4 w-4 shrink-0 text-foreground/60" />
-              <span className="font-mono text-xs text-primary">{tp.ma_thanh_phan}</span>
-              <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
-              {dev ? (
-                <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
-              ) : (
-                <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
-              )}
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </button>
+            <HoverCard key={tp.id} openDelay={120} closeDelay={80}>
+              <HoverCardTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => setOpenTpId(tp.id)}
+                  className="flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm hover:bg-primary/5"
+                >
+                  <Cpu className="h-4 w-4 shrink-0 text-foreground/60" />
+                  <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
+                  {dev ? (
+                    <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
+                  )}
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </button>
+              </HoverCardTrigger>
+              <HoverCardContent side="right" align="start" className="w-80 text-sm">
+                <div className="space-y-2">
+                  <div className="font-medium">{tp.ten}</div>
+                  <div className="grid grid-cols-[110px_1fr] gap-y-1 text-xs">
+                    <span className="text-muted-foreground">Loại yêu cầu</span>
+                    <span>{tp.loai_thiet_bi_yeu_cau || "—"}</span>
+                    <span className="text-muted-foreground">Bắt buộc</span>
+                    <span>{tp.bat_buoc ? "Có" : "Không"}</span>
+                    <span className="text-muted-foreground">Trạng thái</span>
+                    <span>{tp.trang_thai === "ngung" ? "Ngừng" : "Đang khai thác"}</span>
+                    <span className="text-muted-foreground">Tài sản lắp</span>
+                    <span>
+                      {dev ? (
+                        <>
+                          <span className="font-mono">{dev.ma_thiet_bi}</span>
+                          {dev.ten_thiet_bi ? ` — ${dev.ten_thiet_bi}` : ""}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">Chưa lắp</span>
+                      )}
+                    </span>
+                    {dev?.ma_serial && (
+                      <>
+                        <span className="text-muted-foreground">Serial</span>
+                        <span className="font-mono">{dev.ma_serial}</span>
+                      </>
+                    )}
+                    {(tp.hieu_luc_tu || tp.hieu_luc_den) && (
+                      <>
+                        <span className="text-muted-foreground">Hiệu lực</span>
+                        <span>{tp.hieu_luc_tu || "—"} → {tp.hieu_luc_den || "hiện tại"}</span>
+                      </>
+                    )}
+                  </div>
+                  {tp.mo_ta && (
+                    <p className="border-t pt-2 text-xs text-muted-foreground whitespace-pre-wrap">{tp.mo_ta}</p>
+                  )}
+                  <p className="border-t pt-2 text-[11px] text-muted-foreground">Bấm để xem sổ lý lịch thành phần.</p>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           );
         })}
       </CardContent>
@@ -274,8 +317,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2 text-base">
                   <Cpu className="h-4 w-4" />
-                  <span className="font-mono text-primary">{openTp.ma_thanh_phan}</span>
-                  <span className="truncate">— {openTp.ten}</span>
+                  <span className="truncate">{openTp.ten}</span>
                 </SheetTitle>
                 <SheetDescription>Chi tiết thành phần hệ thống & sổ lý lịch.</SheetDescription>
               </SheetHeader>
