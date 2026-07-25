@@ -493,6 +493,13 @@ function ItemInspector({
         />
         <Label className="text-xs">Bắt buộc "Hành động khắc phục" khi K.Đạt</Label>
       </div>
+      <div className="flex items-center gap-2">
+        <Switch
+          checked={opts.cho_upload_anh === true}
+          onCheckedChange={(v) => onPatchOptions({ cho_upload_anh: v })}
+        />
+        <Label className="text-xs">Cho phép đính kèm ảnh chứng minh</Label>
+      </div>
     </div>
   );
 }
