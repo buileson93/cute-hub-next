@@ -32,7 +32,7 @@ export default defineConfig({
       ],
     },
     ssr: {
-      noExternal: ["prismjs", "@react-email/code-block", "@react-email/components"],
+      noExternal: ["@react-email/components"],
     },
 
 
