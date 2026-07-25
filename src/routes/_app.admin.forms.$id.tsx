@@ -88,6 +88,7 @@ function FormEditor() {
   const [chkSections, setChkSections] = useState<DesignerSection[] | null>(null);
   const [chkDirty, setChkDirty] = useState(false);
   const [chkSaving, setChkSaving] = useState(false);
+  const [tabAutoPicked, setTabAutoPicked] = useState(false);
   const [autosaveOn, setAutosaveOn] = useState(true);
   const [mode, setMode] = useState<"simple" | "advanced">(() => {
     if (typeof window === "undefined") return "simple";
@@ -171,6 +172,19 @@ function FormEditor() {
       return true;
     },
   });
+
+  // Auto-chọn tab đúng dựa vào loại nội dung mẫu đang có:
+  // - Có form_check_item (bảng kiểm) & không có form_field → mở tab "Bảng kiểm".
+  // - Có form_field → giữ tab "Thiết kế".
+  // Chỉ chạy 1 lần sau khi cả hai query đã tải xong.
+  useEffect(() => {
+    if (tabAutoPicked) return;
+    if (fields === null || chkSections === null) return;
+    const hasChecklist = chkSections.some((s) => (s.items?.length ?? 0) > 0);
+    const hasFields = fields.length > 0;
+    if (hasChecklist && !hasFields) setTab("checklist");
+    setTabAutoPicked(true);
+  }, [fields, chkSections, tabAutoPicked]);
 
   const { data: taxo } = useQuery({
     queryKey: ["db_taxonomy"],
@@ -457,6 +471,15 @@ function FormEditor() {
         </div>
       )}
 
+      {tab === "design" && !preview && fields.length === 0 && chkSections && chkSections.some((s) => (s.items?.length ?? 0) > 0) && (
+        <div className="border-b bg-sky-50 px-4 py-2 text-xs text-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
+          <AlertTriangle className="mr-1 inline h-3 w-3" />
+          Mẫu này (AWOS/PL-KT) dùng <b>Bảng kiểm</b> — không có "Trường" ở tab Thiết kế.
+          <button className="ml-2 rounded bg-sky-600 px-2 py-0.5 text-white hover:bg-sky-700" onClick={() => setTab("checklist")}>
+            Mở tab Bảng kiểm
+          </button>
+        </div>
+      )}
       {tab === "design" && preview ? (
         <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20">
           <FormLivePreview
