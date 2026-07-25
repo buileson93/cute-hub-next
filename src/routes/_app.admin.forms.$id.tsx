@@ -409,8 +409,14 @@ function FormEditor() {
 
           <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
             <TabsList className="h-8">
-              <TabsTrigger value="design" className="h-6 text-xs"><LayoutGrid className="mr-1 h-3 w-3" />Thiết kế</TabsTrigger>
-              <TabsTrigger value="checklist" className="h-6 text-xs"><ListChecks className="mr-1 h-3 w-3" />Bảng kiểm</TabsTrigger>
+              <TabsTrigger
+                value="design" className="h-6 text-xs"
+                title="Dùng cho biên bản / báo cáo / khảo sát tự do — mỗi câu hỏi là 1 trường (text, số, chọn, chữ ký, ảnh…)."
+              ><LayoutGrid className="mr-1 h-3 w-3" />Biểu mẫu tự do</TabsTrigger>
+              <TabsTrigger
+                value="checklist" className="h-6 text-xs"
+                title="Dùng cho phiếu bảo dưỡng/kiểm tra định kỳ — mỗi hàng là 1 hạng mục Đạt/Không đạt kèm giá trị đo, ảnh trước/sau."
+              ><ListChecks className="mr-1 h-3 w-3" />Bảng kiểm bảo dưỡng</TabsTrigger>
               <TabsTrigger value="info" className="h-6 text-xs"><FileText className="mr-1 h-3 w-3" />Thông tin</TabsTrigger>
               <TabsTrigger value="includes" className="h-6 text-xs"><Link2 className="mr-1 h-3 w-3" />Version / Include</TabsTrigger>
             </TabsList>
