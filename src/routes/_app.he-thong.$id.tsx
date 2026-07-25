@@ -178,25 +178,41 @@ function HeThongInner({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
-          <Card>
-            <CardHeader><CardTitle className="text-base">Thông tin hệ thống</CardTitle></CardHeader>
-            <CardContent className="space-y-3 text-sm">
+          <Card className="border-amber-900/15 bg-[linear-gradient(180deg,#fdfaf1_0%,#f7efdb_100%)] shadow-sm dark:border-amber-100/10 dark:bg-amber-950/20">
+            <CardHeader className="border-b border-dashed border-amber-900/20 pb-2">
+              <CardTitle className="font-serif text-base tracking-wide">
+                <span className="mr-2 text-amber-800/70 dark:text-amber-200/70">I.</span>Trang chính — Định danh
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-4 text-sm">
               <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
               <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
               
               <InfoRow icon={Building2} label="Đơn vị quản lý" value={`${donVi || "—"}${donViTen ? " — " + donViTen : ""}`} />
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
+              <div className="border-t border-dashed border-amber-900/20 pt-3">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
+                  <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
+                  <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} />
+                  <MicroStat label="Nhịp sự cố TB" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           <ThanhPhanCard heThongId={id} />
         </div>
 
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle className="text-base">Sổ lý lịch hệ thống</CardTitle></CardHeader>
-          <CardContent>
+        <Card className="lg:col-span-2 border-amber-900/15 bg-[linear-gradient(180deg,#fdfaf1_0%,#f9f2df_100%)] shadow-sm dark:border-amber-100/10 dark:bg-amber-950/20">
+          <CardHeader className="border-b border-dashed border-amber-900/20 pb-2">
+            <CardTitle className="font-serif text-base tracking-wide">
+              <span className="mr-2 text-amber-800/70 dark:text-amber-200/70">II.</span>Nhật ký khai thác
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
             <Tabs defaultValue="tl">
-              <TabsList className="flex flex-wrap h-auto">
+              <TabsList className="flex h-auto flex-wrap gap-1 bg-amber-100/40 dark:bg-amber-950/30">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
                 <TabsTrigger value="vt"><Cpu className="mr-1 h-3.5 w-3.5" />Thành phần hệ thống</TabsTrigger>
                 <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
