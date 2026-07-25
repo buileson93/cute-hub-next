@@ -167,6 +167,21 @@ function DotDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [noteDialog, setNoteDialog] = useState<{ open: boolean; action: "dot_hm_approve" | "dot_hm_reject"; id: string } | null>(null);
+  const [noteText, setNoteText] = useState("");
+  function openNoteDialog(action: "dot_hm_approve" | "dot_hm_reject", hmId: string) {
+    setNoteText("");
+    setNoteDialog({ open: true, action, id: hmId });
+  }
+  function submitNoteDialog() {
+    if (!noteDialog) return;
+    if (noteDialog.action === "dot_hm_reject" && !noteText.trim()) {
+      toast.error("Vui lòng nhập lý do trả lại"); return;
+    }
+    workflowMut.mutate({ fn: noteDialog.action, id: noteDialog.id, note: noteText.trim() || undefined });
+    setNoteDialog(null);
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 print:hidden">
