@@ -664,18 +664,6 @@ function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string
   );
 }
 
-function InfoLineOld({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2">
-      <Icon className="mt-0.5 h-3.5 w-3.5 text-muted-foreground" />
-      <div className="min-w-0 flex-1">
-        <div className="text-xs text-muted-foreground">{label}</div>
-        <div className="text-sm">{value}</div>
-      </div>
-    </div>
-  );
-}
-
 function InfoRow({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
