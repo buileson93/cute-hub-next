@@ -362,18 +362,22 @@ function UpdateHangMucPanel({ hangMuc, onSaved }: { hangMuc: NonNullable<ReturnT
 
   const save = useMutation({
     mutationFn: async () => {
-      const patch: Record<string, unknown> = {
+      const base = {
         trang_thai: trangThai,
-        ket_qua: ketQua || null,
+        ket_qua: (ketQua || null) as never,
         ton_tai: tonTai || null,
         kien_nghi: kienNghi || null,
       };
+      let ngay_hoan_thanh: string | undefined;
+      let nguoi_thuc_hien: string | undefined;
       if (trangThai === "hoan_thanh") {
-        patch.ngay_hoan_thanh = new Date().toISOString();
+        ngay_hoan_thanh = new Date().toISOString();
         const { data: u } = await supabase.auth.getUser();
-        if (u.user) patch.nguoi_thuc_hien = u.user.id;
+        if (u.user) nguoi_thuc_hien = u.user.id;
       }
-      const { error } = await supabase.from("dot_bao_duong_hang_muc").update(patch).eq("id", hangMuc.id);
+      const { error } = await supabase.from("dot_bao_duong_hang_muc")
+        .update({ ...base, ...(ngay_hoan_thanh ? { ngay_hoan_thanh } : {}), ...(nguoi_thuc_hien ? { nguoi_thuc_hien } : {}) })
+        .eq("id", hangMuc.id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Đã lưu"); onSaved(); },
