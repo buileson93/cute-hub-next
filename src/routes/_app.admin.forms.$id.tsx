@@ -472,6 +472,18 @@ function FormEditor() {
       )}
 
       {tab === "design" && preview ? (
+        null
+      ) : null}
+      {tab === "design" && !preview && fields.length === 0 && chkSections && chkSections.some((s) => (s.items?.length ?? 0) > 0) && (
+        <div className="border-b bg-sky-50 px-4 py-2 text-xs text-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
+          <AlertTriangle className="mr-1 inline h-3 w-3" />
+          Mẫu này (AWOS/PL-KT) dùng <b>Bảng kiểm</b> — không có "Trường" ở tab Thiết kế.
+          <button className="ml-2 rounded bg-sky-600 px-2 py-0.5 text-white hover:bg-sky-700" onClick={() => setTab("checklist")}>
+            Mở tab Bảng kiểm
+          </button>
+        </div>
+      )}
+      {tab === "design" && preview ? (
         <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20">
           <FormLivePreview
             tplName={tpl.ten}
