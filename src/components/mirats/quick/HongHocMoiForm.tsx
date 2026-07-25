@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, LifeBuoy } from "lucide-react";
@@ -21,33 +21,26 @@ import { ghiHongHocFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
 import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 
-export const Route = createFileRoute("/_app/hong-hoc/moi")({
-  head: () => ({
-    meta: [
-      { title: "Tạo phiếu hỏng hóc — MIRATS 2.0" },
-      { name: "description", content: "Lập phiếu hỏng hóc–thay thế mới, gắn với sự cố nguồn và vị trí lắp đặt để khép vòng lý lịch tài sản." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  validateSearch: (s: Record<string, unknown>): { suCo?: string; heThong?: string; thietBi?: string } => ({
-    suCo: typeof s.suCo === "string" ? s.suCo : undefined,
-    heThong: typeof s.heThong === "string" ? s.heThong : undefined,
-    thietBi: typeof s.thietBi === "string" ? s.thietBi : undefined,
-  }),
-  component: HongHocMoiPage,
-});
-
 const PHUONG_AN = [
   { code: "sua_chua", label: "Sửa chữa" },
   { code: "thay_the", label: "Thay thế" },
   { code: "thanh_ly", label: "Thanh lý" },
 ];
 
-function HongHocMoiPage() {
+export interface HongHocMoiFormProps {
+  defaultSuCo?: string;
+  defaultHeThongId?: string;
+  defaultThietBi?: string;
+  embedded?: boolean;
+  onDone?: () => void;
+}
+
+export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, embedded, onDone }: HongHocMoiFormProps) {
   const { roles, profile } = useSession();
   const { suCo, thietBi, heThong: heThongScope, inScope } = useScope();
-  const { suCo: suCoParam, heThong: htParam, thietBi: tbParam } = Route.useSearch();
-  const navigate = useNavigate();
+  const suCoParam = defaultSuCo;
+  const htParam = defaultHeThongId;
+  const tbParam = defaultThietBi;
   const qc = useQueryClient();
 
   const [suCoMa, setSuCoMa] = useState(suCoParam ?? "");
@@ -219,7 +212,7 @@ function HongHocMoiPage() {
       // Link su_co ↔ hong_hoc đã do RPC xử lý; đảm bảo view refresh.
       qc.invalidateQueries({ queryKey: ["operations_data"] });
       void created;
-      navigate({ to: "/hong-hoc" });
+      if (onDone) onDone();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -229,14 +222,16 @@ function HongHocMoiPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4 pb-24">
-      <FormPageHeader
-        backTo="/hong-hoc"
-        backLabel="Danh sách"
-        icon={LifeBuoy}
-        title="Tạo phiếu hỏng hóc"
-        description="Ghi nhận phiếu hỏng hóc — có thể liên kết tới sự cố nguồn để đối chiếu và bàn giao xử lý."
-      />
+    <div className={embedded ? "space-y-4 p-4 pb-24" : "mx-auto max-w-3xl space-y-4 pb-24"}>
+      {!embedded && (
+        <FormPageHeader
+          backTo="/hong-hoc"
+          backLabel="Danh sách"
+          icon={LifeBuoy}
+          title="Tạo phiếu hỏng hóc"
+          description="Ghi nhận phiếu hỏng hóc — có thể liên kết tới sự cố nguồn để đối chiếu và bàn giao xử lý."
+        />
+      )}
 
 
       <Card>
