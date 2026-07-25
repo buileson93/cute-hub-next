@@ -145,8 +145,67 @@ function TongQuanPage() {
     },
   });
 
-  const loading = kpiQ.isLoading || trendQ.isLoading || statusQ.isLoading || topQ.isLoading;
-  const err = kpiQ.error || trendQ.error || statusQ.error || topQ.error;
+  const briefQ = useQuery({
+    queryKey: ["dashboard_brief_today", donViIds],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_brief_today" as never, { p_don_vi_ids: donViIds } as never);
+      if (error) throw error;
+      return data as unknown as Brief;
+    },
+  });
+  const healthQ = useQuery({
+    queryKey: ["dashboard_health", donViIds, fromDate, toDate],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_health" as never, {
+        p_don_vi_ids: donViIds, p_from: fromDate, p_to: toDate,
+      } as never);
+      if (error) throw error;
+      return data as unknown as Health;
+    },
+  });
+  const heatQ = useQuery({
+    queryKey: ["dashboard_su_co_heatmap", donViIds],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_su_co_heatmap" as never, {
+        p_don_vi_ids: donViIds, p_days: 90,
+      } as never);
+      if (error) throw error;
+      return (data ?? []) as HeatCell[];
+    },
+  });
+  const expQ = useQuery({
+    queryKey: ["dashboard_expiry_timeline", donViIds],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_expiry_timeline" as never, {
+        p_don_vi_ids: donViIds, p_days: 90,
+      } as never);
+      if (error) throw error;
+      return (data ?? []) as ExpiryRow[];
+    },
+  });
+  const tbLapQ = useQuery({
+    queryKey: ["dashboard_top_thiet_bi_hong_lap", donViIds],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_top_thiet_bi_hong_lap" as never, {
+        p_don_vi_ids: donViIds, p_limit: 5,
+      } as never);
+      if (error) throw error;
+      return (data ?? []) as TopTbLap[];
+    },
+  });
+  const feedQ = useQuery({
+    queryKey: ["dashboard_activity_feed", donViIds],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_activity_feed" as never, {
+        p_don_vi_ids: donViIds, p_limit: 20,
+      } as never);
+      if (error) throw error;
+      return (data ?? []) as FeedRow[];
+    },
+  });
+
+  const loading = kpiQ.isLoading || trendQ.isLoading || statusQ.isLoading || topQ.isLoading || briefQ.isLoading || healthQ.isLoading;
+  const err = kpiQ.error || trendQ.error || statusQ.error || topQ.error || briefQ.error || healthQ.error;
 
   // Gom xu hướng sự cố theo tháng × muc_do.
   const trendData = useMemo(() => {
