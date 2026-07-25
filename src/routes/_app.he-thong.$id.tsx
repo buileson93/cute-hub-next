@@ -483,10 +483,17 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
     <Card id="thanh-phan-card">
       <CardHeader>
         <CardTitle className="text-base flex items-center justify-between gap-2">
-          <span>Thành phần thuộc hệ thống ({list.length})</span>
-          <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
-            <Link to="/he-thong/cay">Quản lý</Link>
-          </Button>
+          <span>Thành phần hệ thống ({list.length})</span>
+          <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+              <Link to="/he-thong/thanh-phan" search={{ he_thong: heThongId } as never}>
+                <Puzzle className="mr-1 h-3 w-3" /> Xem dạng bảng
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+              <Link to="/he-thong/cay">Quản lý cây</Link>
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
