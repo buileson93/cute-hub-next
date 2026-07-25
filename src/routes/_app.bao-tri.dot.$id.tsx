@@ -167,6 +167,21 @@ function DotDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [noteDialog, setNoteDialog] = useState<{ open: boolean; action: "dot_hm_approve" | "dot_hm_reject"; id: string } | null>(null);
+  const [noteText, setNoteText] = useState("");
+  function openNoteDialog(action: "dot_hm_approve" | "dot_hm_reject", hmId: string) {
+    setNoteText("");
+    setNoteDialog({ open: true, action, id: hmId });
+  }
+  function submitNoteDialog() {
+    if (!noteDialog) return;
+    if (noteDialog.action === "dot_hm_reject" && !noteText.trim()) {
+      toast.error("Vui lòng nhập lý do trả lại"); return;
+    }
+    workflowMut.mutate({ fn: noteDialog.action, id: noteDialog.id, note: noteText.trim() || undefined });
+    setNoteDialog(null);
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 print:hidden">
@@ -339,13 +354,10 @@ function DotDetailPage() {
                                   )}
                                   {isKt && h.duyet_trang_thai === "cho_duyet" && (
                                     <>
-                                      <DropdownMenuItem onClick={() => workflowMut.mutate({ fn: "dot_hm_approve", id: h.id })}>
+                                      <DropdownMenuItem onClick={() => openNoteDialog("dot_hm_approve", h.id)}>
                                         <ShieldCheck className="mr-2 h-3.5 w-3.5" />Duyệt & khoá
                                       </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => {
-                                        const note = window.prompt("Lý do trả lại (tuỳ chọn):") ?? "";
-                                        workflowMut.mutate({ fn: "dot_hm_reject", id: h.id, note: note || undefined });
-                                      }}>
+                                      <DropdownMenuItem onClick={() => openNoteDialog("dot_hm_reject", h.id)}>
                                         <Undo2 className="mr-2 h-3.5 w-3.5" />Trả lại đơn vị
                                       </DropdownMenuItem>
                                     </>
@@ -431,6 +443,40 @@ function DotDetailPage() {
         existingHans={hans ?? []}
         onDone={() => { qc.invalidateQueries({ queryKey: ["dot-hans", id] }); refetchAlerts(); }}
       />
+
+      <Dialog open={!!noteDialog?.open} onOpenChange={(o) => { if (!o) setNoteDialog(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {noteDialog?.action === "dot_hm_approve" ? "Duyệt & khoá hạng mục" : "Trả lại hạng mục cho đơn vị"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label>
+              {noteDialog?.action === "dot_hm_approve" ? "Ý kiến phê duyệt (tuỳ chọn)" : "Lý do trả lại"}
+              {noteDialog?.action === "dot_hm_reject" && <span className="text-rose-600"> *</span>}
+            </Label>
+            <Textarea
+              rows={4}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder={noteDialog?.action === "dot_hm_approve" ? "Nhận xét thêm cho hồ sơ…" : "Nêu rõ nội dung cần đơn vị chỉnh sửa/bổ sung"}
+              autoFocus
+            />
+            <p className="text-xs text-muted-foreground">Ghi chú sẽ hiển thị cho đơn vị và lưu vào nhật ký thao tác.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNoteDialog(null)}>Huỷ</Button>
+            <Button
+              onClick={submitNoteDialog}
+              disabled={workflowMut.isPending || (noteDialog?.action === "dot_hm_reject" && !noteText.trim())}
+              variant={noteDialog?.action === "dot_hm_reject" ? "destructive" : "default"}
+            >
+              {noteDialog?.action === "dot_hm_approve" ? "Duyệt & khoá" : "Trả lại đơn vị"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
