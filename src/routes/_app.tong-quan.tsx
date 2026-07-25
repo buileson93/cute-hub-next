@@ -249,6 +249,8 @@ function TongQuanPage() {
   };
   const refetchAll = () => {
     kpiQ.refetch(); trendQ.refetch(); statusQ.refetch(); topQ.refetch();
+    briefQ.refetch(); healthQ.refetch(); heatQ.refetch();
+    expQ.refetch(); tbLapQ.refetch(); feedQ.refetch();
   };
 
   return (
