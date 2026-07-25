@@ -18,6 +18,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { CheckCircle2, XCircle, MinusCircle } from "lucide-react";
 import {
   KET_QUA_LABEL,
   coerceNumber,
@@ -112,6 +113,11 @@ function ItemRow({
   const numInvalid =
     item.result_kind === "so" && Number.isNaN(coerceNumber(v.gia_tri_so ?? null));
   const thresholdLabel = formatThreshold(opts.tieu_chuan_min, opts.tieu_chuan_max, item.don_vi);
+  const hasThreshold = opts.tieu_chuan_min != null || opts.tieu_chuan_max != null;
+  const numValue = item.result_kind === "so" ? coerceNumber(v.gia_tri_so ?? null) : null;
+  const autoRes = item.result_kind === "so" && numValue != null && !Number.isNaN(numValue)
+    ? evaluateAutoResult(numValue, opts.tieu_chuan_min, opts.tieu_chuan_max)
+    : null;
 
   // Tự chấm Đạt/K.Đạt khi nhập số hợp lệ và có ngưỡng — không đè kết luận thủ công khác.
   const handleNumChange = (raw: string) => {
@@ -152,6 +158,12 @@ function ItemRow({
               TC: {item.tieu_chuan}
             </span>
           )}
+          {item.result_kind === "so" && hasThreshold && (
+            <LiveStatusBadge status={autoRes} hasValue={numValue != null && !Number.isNaN(numValue)} />
+          )}
+          {v.ket_qua && (item.result_kind !== "so" || !hasThreshold) && (
+            <KetQuaBadge value={v.ket_qua} />
+          )}
         </div>
       </div>
 
@@ -168,7 +180,12 @@ function ItemRow({
               aria-invalid={numInvalid || !!err}
               placeholder="Giá trị đo"
               onChange={(e) => handleNumChange(e.target.value)}
-              className="h-8 text-xs"
+              className={cn(
+                "h-8 text-xs transition-colors",
+                autoRes === "dat" && "border-emerald-500/70 bg-emerald-50/40 dark:bg-emerald-950/20",
+                autoRes === "khong_dat" && "border-rose-500/70 bg-rose-50/40 dark:bg-rose-950/20",
+              )}
+              data-testid={`chk-num-${item.item_code}`}
             />
             {item.don_vi && <span className="text-xs text-muted-foreground">{item.don_vi}</span>}
           </div>
