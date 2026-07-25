@@ -6,7 +6,7 @@
 //              bắt buộc, đơn vị, hạng mục/nội dung chi tiết, nhóm lớn, choices.
 // Không có state DB — chỉ props/onChange; save do route xử lý.
 // ============================================================================
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +17,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Plus, Trash2, ChevronUp, ChevronDown, ListChecks, Copy, Settings2,
+  Plus, Trash2, ChevronUp, ChevronDown, ListChecks, Copy, Settings2, Undo2, Redo2,
 } from "lucide-react";
 import { ChecklistRenderer } from "@/components/mirats/ChecklistRenderer";
 import type { ChecklistSection, ResultKind } from "@/lib/mirats/checklist";
@@ -73,7 +73,50 @@ export function ChecklistDesigner({
   );
   const [previewValues, setPreviewValues] = useState<Record<string, unknown>>({});
 
-  const patch = (next: DesignerSection[]) => onChange(next);
+  // ── Undo/Redo history — chỉ push khi thay đổi structural (add/remove/move/dup/patch).
+  //    Không push lần khởi tạo/đồng bộ props từ ngoài. Cap 50 bước để tránh phồng RAM.
+  const [history, setHistory] = useState<DesignerSection[][]>([]);
+  const [future, setFuture] = useState<DesignerSection[][]>([]);
+  const skipHistoryRef = useRef(false);
+
+  const patch = useCallback((next: DesignerSection[]) => {
+    setHistory((h) => [...h, sections].slice(-50));
+    setFuture([]);
+    onChange(next);
+  }, [sections, onChange]);
+
+  const undo = useCallback(() => {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setFuture((f) => [sections, ...f].slice(0, 50));
+    setHistory((h) => h.slice(0, -1));
+    skipHistoryRef.current = true;
+    onChange(prev);
+  }, [history, sections, onChange]);
+
+  const redo = useCallback(() => {
+    if (future.length === 0) return;
+    const next = future[0];
+    setHistory((h) => [...h, sections].slice(-50));
+    setFuture((f) => f.slice(1));
+    skipHistoryRef.current = true;
+    onChange(next);
+  }, [future, sections, onChange]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const meta = e.ctrlKey || e.metaKey;
+      if (!meta) return;
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      // Cho phép Ctrl+Z ngay cả khi focus input để undo thao tác structural gần nhất.
+      if (e.key === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
+      else if ((e.key === "z" && e.shiftKey) || e.key === "y") { e.preventDefault(); redo(); }
+      else return;
+      void tag;
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [undo, redo]);
 
   const addSection = () => {
     const next = [...sections, newSection(sections.length)];
@@ -145,14 +188,14 @@ export function ChecklistDesigner({
   );
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-[280px_1fr_340px]">
+    <div className="grid min-h-0 flex-1 grid-cols-[280px_1fr_340px]" data-testid="chk-designer">
       {/* LEFT — sections + items */}
-      <aside className="min-h-0 overflow-y-auto border-r bg-muted/30">
+      <aside className="min-h-0 overflow-y-auto border-r bg-muted/30" data-testid="chk-sec-panel">
         <div className="flex items-center justify-between p-2">
           <p className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
             <ListChecks className="h-3 w-3" /> Nhóm ({sections.length})
           </p>
-          <Button size="sm" variant="outline" className="h-7" onClick={addSection}>
+          <Button size="sm" variant="outline" className="h-7" onClick={addSection} data-testid="chk-add-section">
             <Plus className="h-3 w-3" />
           </Button>
         </div>
@@ -255,7 +298,7 @@ export function ChecklistDesigner({
       </main>
 
       {/* RIGHT — inspector */}
-      <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3">
+      <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3" data-testid="chk-inspector">
         <div className="mb-2 flex items-center gap-1">
           <Settings2 className="h-4 w-4 text-muted-foreground" />
           <p className="text-xs font-semibold uppercase text-muted-foreground">Thuộc tính</p>
@@ -277,6 +320,29 @@ export function ChecklistDesigner({
           />
         ) : null}
       </aside>
+
+      {/* Undo/Redo floating toolbar */}
+      <div className="pointer-events-none fixed bottom-4 left-1/2 z-30 -translate-x-1/2">
+        <div className="pointer-events-auto flex items-center gap-1 rounded-full border bg-background/95 px-1.5 py-1 shadow-md backdrop-blur">
+          <Button
+            variant="ghost" size="sm" className="h-7 px-2"
+            onClick={undo} disabled={history.length === 0}
+            title="Hoàn tác (Ctrl+Z)" data-testid="chk-undo"
+          >
+            <Undo2 className="mr-1 h-3.5 w-3.5" /> Hoàn tác
+            {history.length > 0 && <span className="ml-1 text-[10px] text-muted-foreground">{history.length}</span>}
+          </Button>
+          <div className="h-4 w-px bg-border" />
+          <Button
+            variant="ghost" size="sm" className="h-7 px-2"
+            onClick={redo} disabled={future.length === 0}
+            title="Làm lại (Ctrl+Shift+Z)" data-testid="chk-redo"
+          >
+            <Redo2 className="mr-1 h-3.5 w-3.5" /> Làm lại
+            {future.length > 0 && <span className="ml-1 text-[10px] text-muted-foreground">{future.length}</span>}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
