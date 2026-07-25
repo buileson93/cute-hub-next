@@ -42,10 +42,10 @@ export function DotAuditTimeline({ hangMucId, dotId, limit = 100 }: { hangMucId?
       const { data, error } = await q;
       if (error) throw error;
       const actorIds = Array.from(new Set((data ?? []).map((r) => r.actor).filter((x): x is string => !!x)));
-      let profiles: Record<string, { full_name: string | null; email: string | null }> = {};
+      const profiles: Record<string, { ho_ten: string | null; email: string | null }> = {};
       if (actorIds.length) {
-        const { data: ps } = await supabase.from("profiles").select("id, full_name, email").in("id", actorIds);
-        for (const p of ps ?? []) profiles[p.id] = { full_name: p.full_name, email: p.email };
+        const { data: ps } = await supabase.from("profiles").select("id, ho_ten, email").in("id", actorIds);
+        for (const p of ps ?? []) profiles[p.id] = { ho_ten: p.ho_ten, email: p.email };
       }
       return (data ?? []).map((r) => ({ ...r, actor_profile: r.actor ? profiles[r.actor] : null }));
     },
@@ -59,7 +59,7 @@ export function DotAuditTimeline({ hangMucId, dotId, limit = 100 }: { hangMucId?
       {data.map((row) => {
         const meta = ACTION_META[row.action] ?? { label: row.action, color: "bg-slate-100 text-slate-700" };
         const changes = (row.changes ?? {}) as Record<string, [unknown, unknown]>;
-        const actorName = row.actor_profile?.full_name || row.actor_profile?.email || "Hệ thống";
+        const actorName = row.actor_profile?.ho_ten || row.actor_profile?.email || "Hệ thống";
         const heThong = (row as { hang_muc?: { dm_he_thong?: { ma?: string; ten?: string } } }).hang_muc?.dm_he_thong;
         return (
           <div key={row.id} className="rounded border p-2 text-xs bg-card">
