@@ -32,6 +32,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
+import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useScope } from "@/lib/mirats/scope";
@@ -887,7 +888,7 @@ function useGpktFile(heThongId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("giay_phep_khai_thac")
-        .select("file_gpkt, gp_so")
+        .select("id, file_gpkt, gp_so, gp_ngay, gp_han, gp_cu, ten_he_thong_theo_gp, nam_sx_gp, kieu_thiet_bi, so_san_xuat, noi_san_xuat, muc_dich, pham_vi, ma_dia_chi, dia_diem, thoi_gian, thanh_phan_theo_gp, don_vi, tram")
         .eq("he_thong_id", heThongId)
         .order("gp_ngay", { ascending: false })
         .limit(1)
@@ -897,6 +898,7 @@ function useGpktFile(heThongId: string) {
     },
   });
   return {
+    record: q.data as Record<string, unknown> | null,
     url: (q.data?.file_gpkt as string | null) ?? null,
     gpSoDb: (q.data?.gp_so as string | null) ?? null,
     isLoading: q.isLoading,
@@ -905,43 +907,140 @@ function useGpktFile(heThongId: string) {
   };
 }
 
+function GpktDetailSheet({
+  open, onOpenChange, record, url, fileName, isLoading, error, onRetry,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  record: Record<string, unknown> | null;
+  url: string | null;
+  fileName: string;
+  isLoading: boolean;
+  error: string | null;
+  onRetry: () => void;
+}) {
+  const canDownload = useCanDownloadAttachments();
+  const val = (k: string): string => {
+    const v = record?.[k];
+    if (v === null || v === undefined || v === "") return "—";
+    return String(v);
+  };
+  const rows: Array<{ label: string; key: string; mono?: boolean }> = [
+    { label: "Số GP", key: "gp_so", mono: true },
+    { label: "Ngày cấp", key: "gp_ngay" },
+    { label: "Hết hạn", key: "gp_han" },
+    { label: "GP cũ (thay thế)", key: "gp_cu", mono: true },
+    { label: "Tên hệ thống theo GP", key: "ten_he_thong_theo_gp" },
+    { label: "Kiểu thiết bị", key: "kieu_thiet_bi" },
+    { label: "Số sản xuất", key: "so_san_xuat", mono: true },
+    { label: "Nơi sản xuất", key: "noi_san_xuat" },
+    { label: "Năm SX", key: "nam_sx_gp" },
+    { label: "Mục đích", key: "muc_dich" },
+    { label: "Phạm vi", key: "pham_vi" },
+    { label: "Mã địa chỉ", key: "ma_dia_chi", mono: true },
+    { label: "Địa điểm", key: "dia_diem" },
+    { label: "Thời gian khai thác", key: "thoi_gian" },
+    { label: "Đơn vị", key: "don_vi" },
+    { label: "Trạm", key: "tram" },
+    { label: "Thành phần theo GP", key: "thanh_phan_theo_gp" },
+  ];
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full p-0 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
+        <SheetHeader className="border-b px-4 py-3">
+          <SheetTitle className="flex items-center gap-2 text-base">
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            Giấy phép khai thác {record ? String(record.gp_so ?? "") : ""}
+          </SheetTitle>
+          <SheetDescription className="text-xs">
+            Thông tin chi tiết & bản PDF gốc.{" "}
+            {url && canDownload && (
+              <a href={url} download={fileName} className="text-primary hover:underline">Tải xuống PDF</a>
+            )}
+            {url && !canDownload && <span className="text-muted-foreground">Vai trò của bạn chỉ được xem, không tải.</span>}
+          </SheetDescription>
+        </SheetHeader>
+        <div className="grid h-[calc(100dvh-64px)] grid-cols-1 lg:grid-cols-[minmax(0,380px)_1fr]">
+          <div className="overflow-y-auto border-r p-4">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Chi tiết giấy phép</div>
+            {!record && !isLoading && <div className="text-sm text-muted-foreground">Không có dữ liệu.</div>}
+            {isLoading && <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Đang tải…</div>}
+            {record && (
+              <dl className="space-y-2 text-sm">
+                {rows.map((r) => (
+                  <div key={r.key} className="grid grid-cols-[128px_1fr] gap-2 border-b py-1.5 last:border-0">
+                    <dt className="text-xs uppercase tracking-wide text-muted-foreground">{r.label}</dt>
+                    <dd className={`break-words ${r.mono ? "font-mono" : ""}`}>{val(r.key)}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+          <div className="relative bg-muted/40">
+            {error && (
+              <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+                <div className="text-sm text-red-700">Lỗi tải file: {error}</div>
+                <Button size="sm" variant="outline" onClick={onRetry}><RefreshCw className="mr-1 h-3 w-3" /> Thử lại</Button>
+              </div>
+            )}
+            {!error && !url && !isLoading && (
+              <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
+                Chưa đính kèm file PDF của giấy phép này.
+              </div>
+            )}
+            {!error && isLoading && (
+              <div className="flex h-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> Đang tải PDF…
+              </div>
+            )}
+            {!error && url && (
+              <>
+                <iframe src={`${url}#toolbar=1&view=FitH`} title={fileName} className="h-full w-full border-0 bg-white" />
+                {canDownload && (
+                  <a
+                    href={url}
+                    download={fileName}
+                    className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border bg-background/95 px-2.5 py-1 text-xs font-medium shadow hover:bg-background"
+                  >
+                    <FileText className="h-3.5 w-3.5" /> Tải PDF
+                  </a>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string; gpHan: string }) {
   const [open, setOpen] = useState(false);
-  const { url, gpSoDb, isLoading, error, refetch } = useGpktFile(heThongId);
+  const { record, url, gpSoDb, isLoading, error, refetch } = useGpktFile(heThongId);
   const fileName = `GPKT-${gpSo || gpSoDb || heThongId.slice(0, 8)}.pdf`;
   const label = (
     <>
       <ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}
     </>
   );
-  if (!url && !error) {
-    return (
-      <Badge
-        variant="outline"
-        className="gap-1 border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40"
-        title={isLoading ? "Đang tải file GPKT…" : "Chưa đính kèm file PDF của GPKT"}
-      >
-        {label}
-      </Badge>
-    );
-  }
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
         className="no-print inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 shadow-sm transition hover:bg-emerald-100 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 dark:bg-emerald-950/40"
-        title={error ? `Lỗi tải file: ${error}` : "Mở file PDF giấy phép khai thác"}
+        title={error ? `Lỗi tải file: ${error}` : "Mở chi tiết & PDF giấy phép khai thác"}
       >
         {label}
         <ExternalLink className="h-3 w-3 opacity-70" />
       </button>
-      <DocViewerDialog
+      <GpktDetailSheet
         open={open}
         onOpenChange={setOpen}
+        record={record}
         url={url}
         fileName={fileName}
-        mimeType="application/pdf"
         isLoading={isLoading}
         error={error}
         onRetry={() => { void refetch(); }}
@@ -952,7 +1051,7 @@ function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string
 
 function GpktSidebarItem({ heThongId, hasGp, gpSo }: { heThongId: string; hasGp: boolean; gpSo: string }) {
   const [open, setOpen] = useState(false);
-  const { url, gpSoDb, isLoading, error, refetch } = useGpktFile(heThongId);
+  const { record, url, gpSoDb, isLoading, error, refetch } = useGpktFile(heThongId);
   const fileName = `GPKT-${gpSo || gpSoDb || heThongId.slice(0, 8)}.pdf`;
 
   if (!hasGp) {
@@ -964,14 +1063,14 @@ function GpktSidebarItem({ heThongId, hasGp, gpSo }: { heThongId: string; hasGp:
     );
   }
 
-  const disabled = !url && !error;
+  const disabled = false;
   const stateLabel = error
     ? "Lỗi tải file — bấm để thử lại"
     : isLoading
-      ? "Đang tải file giấy phép…"
+      ? "Đang tải giấy phép…"
       : url
-        ? "Mở file PDF giấy phép"
-        : "Chưa có file giấy phép PDF đính kèm";
+        ? "Xem chi tiết & PDF giấy phép"
+        : "Xem chi tiết giấy phép (chưa có PDF)";
 
   return (
     <>
@@ -1001,12 +1100,12 @@ function GpktSidebarItem({ heThongId, hasGp, gpSo }: { heThongId: string; hasGp:
         </div>
         {url && !error && <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70 transition group-hover:opacity-100" />}
       </button>
-      <DocViewerDialog
+      <GpktDetailSheet
         open={open}
         onOpenChange={setOpen}
+        record={record}
         url={url}
         fileName={fileName}
-        mimeType="application/pdf"
         isLoading={isLoading}
         error={error}
         onRetry={() => { void refetch(); }}
