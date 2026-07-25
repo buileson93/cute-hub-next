@@ -112,6 +112,18 @@ function HeThongInner({
 
   const hasGp = Boolean(gpSo);
 
+  const parseD = (d: string) => { const t = Date.parse(d); return Number.isNaN(t) ? null : t; };
+  const firstEventTs = timeline.reduce<number | null>((a, it) => { const t = parseD(it.date); if (t == null) return a; return a == null ? t : Math.min(a, t); }, null);
+  const lastEventTs = timeline.reduce<number | null>((a, it) => { const t = parseD(it.date); if (t == null) return a; return a == null ? t : Math.max(a, t); }, null);
+  const suCoDates = suCo.map((e) => parseD(e.ngay_phat_hien || "")).filter((t): t is number => t != null).sort((a, b) => a - b);
+  const lastSuCoTs = suCoDates.length ? suCoDates[suCoDates.length - 1] : null;
+  const daysSinceIncident = lastSuCoTs != null ? Math.max(0, Math.round((Date.now() - lastSuCoTs) / 86_400_000)) : null;
+  const mtbfDays = suCoDates.length >= 2 ? Math.round((suCoDates[suCoDates.length - 1] - suCoDates[0]) / 86_400_000 / (suCoDates.length - 1)) : null;
+  const replacedDevices = new Set(hongHoc.map((e) => e.thiet_bi_hong).filter(Boolean));
+  const fmtVN = (t: number | null) => (t == null ? "—" : new Date(t).toLocaleDateString("vi-VN"));
+  const bookNo = id.slice(0, 8).toUpperCase();
+  const openYear = firstEventTs ? new Date(firstEventTs).getFullYear() : new Date().getFullYear();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
