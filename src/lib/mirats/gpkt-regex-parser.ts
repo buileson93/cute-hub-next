@@ -5,6 +5,10 @@
 // ============================================================================
 import type { GpktParsedFields } from "./gpkt-import.functions";
 
+export type FieldSource = "regex" | "ai" | "manual" | "empty";
+export interface FieldMeta { source: FieldSource; needsCheck: boolean; reason?: string }
+export type FieldMetaMap = Record<keyof GpktParsedFields, FieldMeta>;
+
 const EMPTY: GpktParsedFields = {
   gp_so: "", gp_ngay: "", gp_han: "", gp_cu: "",
   ten_he_thong_theo_gp: "", nam_sx_gp: "", kieu_thiet_bi: "",
@@ -100,6 +104,83 @@ export interface RegexParseResult {
   fields: GpktParsedFields;
   filledCount: number;
   totalCount: number;
+  perField: FieldMetaMap;
+}
+
+const REQUIRED: Array<keyof GpktParsedFields> = [
+  "gp_so", "gp_ngay", "gp_han", "ten_he_thong_theo_gp",
+  "muc_dich", "pham_vi", "kieu_thiet_bi", "dia_diem", "don_vi",
+];
+
+/**
+ * Xác thực từng trường sau khi bóc tách: đánh dấu `needsCheck` để UI
+ * highlight và kèm lý do gợi ý người dùng sửa. Dùng chung cho cả kết
+ * quả regex lẫn AI.
+ */
+export function validateFields(f: GpktParsedFields, defaultSource: FieldSource = "regex"): FieldMetaMap {
+  const meta = {} as FieldMetaMap;
+  const empty = (k: keyof GpktParsedFields) => {
+    meta[k] = {
+      source: "empty",
+      needsCheck: REQUIRED.includes(k),
+      reason: REQUIRED.includes(k) ? "Trường bắt buộc" : undefined,
+    };
+  };
+  const ok = (k: keyof GpktParsedFields) => { meta[k] = { source: defaultSource, needsCheck: false }; };
+  const warn = (k: keyof GpktParsedFields, reason: string) => {
+    meta[k] = { source: defaultSource, needsCheck: true, reason };
+  };
+
+  // gp_so — dạng NNN/GP-CHK
+  if (!f.gp_so) empty("gp_so");
+  else if (!/^\d{1,6}\s*\/\s*GP-?CHK$/i.test(f.gp_so)) warn("gp_so", "Không đúng mẫu NNN/GP-CHK");
+  else ok("gp_so");
+
+  // gp_ngay — ISO
+  if (!f.gp_ngay) empty("gp_ngay");
+  else if (!/^\d{4}-\d{2}-\d{2}$/.test(f.gp_ngay)) warn("gp_ngay", "Ngày cấp không đúng dạng ISO");
+  else ok("gp_ngay");
+
+  // gp_han — ISO và sau ngày cấp
+  if (!f.gp_han) empty("gp_han");
+  else if (!/^\d{4}-\d{2}-\d{2}$/.test(f.gp_han)) warn("gp_han", "Ngày hết hạn không đúng dạng ISO");
+  else if (f.gp_ngay && /^\d{4}-\d{2}-\d{2}$/.test(f.gp_ngay) && f.gp_han <= f.gp_ngay) {
+    warn("gp_han", "Ngày hết hạn phải sau ngày cấp");
+  } else ok("gp_han");
+
+  // gp_cu — tùy chọn
+  if (!f.gp_cu) empty("gp_cu");
+  else if (!/GP-?CHK/i.test(f.gp_cu)) warn("gp_cu", "Không đúng mẫu số GP cũ");
+  else ok("gp_cu");
+
+  // don_vi — enum
+  if (!f.don_vi) empty("don_vi");
+  else if (!/^(CLA|CRA|THO|PCA|PBA|PLK)$/.test(f.don_vi)) warn("don_vi", "Mã đơn vị không thuộc danh mục chuẩn");
+  else ok("don_vi");
+
+  // nam_sx_gp — phải có năm 4 chữ số
+  if (!f.nam_sx_gp) empty("nam_sx_gp");
+  else if (!/\b(19|20)\d{2}\b/.test(f.nam_sx_gp)) warn("nam_sx_gp", "Không nhận diện được năm 4 chữ số");
+  else ok("nam_sx_gp");
+
+  // các trường mô tả — cảnh báo nếu quá ngắn
+  const desc: Array<keyof GpktParsedFields> = [
+    "ten_he_thong_theo_gp", "muc_dich", "pham_vi", "kieu_thiet_bi", "dia_diem",
+  ];
+  desc.forEach((k) => {
+    const v = f[k];
+    if (!v) empty(k);
+    else if (v.length < 4) warn(k, "Giá trị quá ngắn — có thể bóc tách chưa đủ");
+    else ok(k);
+  });
+
+  // còn lại — không kiểm tra, chỉ đánh dấu empty/regex
+  const rest: Array<keyof GpktParsedFields> = [
+    "so_san_xuat", "noi_san_xuat", "ma_dia_chi", "thoi_gian", "thanh_phan_theo_gp", "tram",
+  ];
+  rest.forEach((k) => { if (!f[k]) empty(k); else ok(k); });
+
+  return meta;
 }
 
 export function parseGpktText(raw: string): RegexParseResult {
@@ -180,5 +261,5 @@ export function parseGpktText(raw: string): RegexParseResult {
   const filledCount = (Object.keys(EMPTY) as Array<keyof GpktParsedFields>)
     .reduce((n, k) => n + (out[k] ? 1 : 0), 0);
 
-  return { fields: out, filledCount, totalCount: 17 };
+  return { fields: out, filledCount, totalCount: 17, perField: validateFields(out, "regex") };
 }
