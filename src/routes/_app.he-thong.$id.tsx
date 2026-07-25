@@ -579,10 +579,11 @@ function HeThongInner({
               </div>
             </Tabs>
           </CardContent>
+          )}
           </Card>
 
-          {/* Thành phần hệ thống — nằm trong cột phải để lấp khoảng trống cạnh cột định danh sticky */}
-          <ThanhPhanCard heThongId={id} />
+          {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
+          <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} />
         </div>
       </div>
 
