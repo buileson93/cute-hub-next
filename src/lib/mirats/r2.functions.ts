@@ -15,11 +15,9 @@ const getSchema = z.object({
 
 const delSchema = z.object({ key: z.string().min(1).max(1024) });
 
-// Các prefix bắt buộc riêng tư (chỉ truy cập qua presigned URL, không public qua files.vatm.app)
-const PRIVATE_PREFIXES = ["private/", "gpkt/", "bao-duong/", "dot-bao-duong/", "user/"];
-
-export function isPrivateKey(key: string): boolean {
-  return PRIVATE_PREFIXES.some((p) => key.startsWith(p));
+// Chính sách: MỌI file đều truy cập qua presigned URL. Không dùng custom public domain.
+export function isPrivateKey(_key: string): boolean {
+  return true;
 }
 
 function sanitizeKey(userId: string, rawKey: string): string {
@@ -39,12 +37,10 @@ export const r2GetUploadUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => putSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const { r2PresignPut, r2PublicUrl } = await import("./r2.server");
+    const { r2PresignPut } = await import("./r2.server");
     const key = sanitizeKey(context.userId, data.key);
     const url = await r2PresignPut(key, data.contentType, data.expiresIn ?? 900);
-    // Chỉ trả publicUrl cho file "public/*". Các file khác phải xin presigned GET.
-    const publicUrl = isPrivateKey(key) ? null : r2PublicUrl(key);
-    return { key, url, publicUrl, method: "PUT" as const, isPrivate: isPrivateKey(key) };
+    return { key, url, publicUrl: null, method: "PUT" as const, isPrivate: true };
   });
 
 export const r2GetDownloadUrl = createServerFn({ method: "POST" })
