@@ -420,6 +420,15 @@ function HeThongInner({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Tóm tắt nhanh toàn bộ nhật ký */}
+            <div className="mb-3 grid grid-cols-2 gap-2 rounded-md border bg-muted/30 p-2 text-xs sm:grid-cols-6">
+              <SummaryStat label="Tổng sự kiện" value={timeline.length} />
+              <SummaryStat label="Khoảng thời gian" value={firstEventTs && lastEventTs ? `${fmtVN(firstEventTs)} → ${fmtVN(lastEventTs)}` : "—"} wide />
+              <SummaryStat label="Bảo dưỡng" value={kindCounts.bt} tone="text-emerald-700" />
+              <SummaryStat label="Sự cố" value={kindCounts.sc} tone="text-red-700" />
+              <SummaryStat label="Hỏng hóc" value={kindCounts.hh} tone="text-orange-700" />
+              <SummaryStat label="Bàn giao" value={kindCounts.bg} tone="text-sky-700" />
+            </div>
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
@@ -436,7 +445,76 @@ function HeThongInner({
                 {timeline.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Chưa có sự kiện lịch sử nào cho hệ thống này.</p>
                 ) : (
-                  <Timeline items={timeline} tenMap={tenMap} />
+                  <>
+                    {/* Bộ lọc */}
+                    <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border bg-background p-2">
+                      <div className="relative min-w-[220px] flex-1">
+                        <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          value={nkQuery}
+                          onChange={(e) => setNkQuery(e.target.value)}
+                          placeholder="Tìm theo tiêu đề, mô tả, mã, người tạo…"
+                          className="h-8 pl-7 pr-7 text-xs"
+                        />
+                        {nkQuery && (
+                          <button type="button" onClick={() => setNkQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <Select value={nkKind} onValueChange={(v) => setNkKind(v as typeof nkKind)}>
+                        <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Loại sự kiện" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Tất cả loại</SelectItem>
+                          <SelectItem value="bt">Bảo dưỡng</SelectItem>
+                          <SelectItem value="sc">Sự cố kỹ thuật</SelectItem>
+                          <SelectItem value="hh">Hỏng hóc</SelectItem>
+                          <SelectItem value="bg">Bàn giao</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={nkPerson} onValueChange={setNkPerson}>
+                        <SelectTrigger className="h-8 w-[180px] text-xs"><SelectValue placeholder="Người tạo" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Mọi người tạo</SelectItem>
+                          {personOptions.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <Select value={nkRange} onValueChange={(v) => setNkRange(v as typeof nkRange)}>
+                        <SelectTrigger className="h-8 w-[130px] text-xs"><SelectValue placeholder="Thời gian" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Mọi thời gian</SelectItem>
+                          <SelectItem value="3m">3 tháng gần đây</SelectItem>
+                          <SelectItem value="6m">6 tháng gần đây</SelectItem>
+                          <SelectItem value="12m">12 tháng gần đây</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {(nkQuery || nkKind !== "all" || nkPerson !== "all" || nkRange !== "all") && (
+                        <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs" onClick={() => { setNkQuery(""); setNkKind("all"); setNkPerson("all"); setNkRange("all"); }}>
+                          <Filter className="h-3.5 w-3.5" /> Xoá lọc
+                        </Button>
+                      )}
+                    </div>
+                    <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+                      <span>
+                        Hiển thị {Math.min(nkLimit, filteredTimeline.length)} / {filteredTimeline.length} sự kiện
+                        {nkFirstTs && nkLastTs ? ` · ${fmtVN(nkFirstTs)} → ${fmtVN(nkLastTs)}` : ""}
+                      </span>
+                    </div>
+                    {filteredTimeline.length === 0 ? (
+                      <p className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">Không tìm thấy sự kiện phù hợp với bộ lọc.</p>
+                    ) : (
+                      <>
+                        <Timeline items={filteredTimeline.slice(0, nkLimit)} tenMap={tenMap} />
+                        {filteredTimeline.length > nkLimit && (
+                          <div className="mt-3 flex justify-center print:hidden">
+                            <Button variant="outline" size="sm" onClick={() => setNkLimit((n) => n + 20)}>
+                              Tải thêm ({filteredTimeline.length - nkLimit})
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </TabsContent>
 
