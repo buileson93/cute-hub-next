@@ -114,6 +114,7 @@ import { Route as ApiPublicHooksTestEmailAlertsRouteImport } from './routes/api/
 import { Route as ApiPublicHooksTelegramAlertsRouteImport } from './routes/api/public/hooks/telegram-alerts'
 import { Route as ApiPublicHooksScanCanhBaoRouteImport } from './routes/api/public/hooks/scan-canh-bao'
 import { Route as ApiPublicHooksReliabilityReportRouteImport } from './routes/api/public/hooks/reliability-report'
+import { Route as ApiPublicHooksR2CleanupRouteImport } from './routes/api/public/hooks/r2-cleanup'
 import { Route as ApiPublicHooksPmGenerateRouteImport } from './routes/api/public/hooks/pm-generate'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCanhBaoHetHanRouteImport } from './routes/api/public/hooks/canh-bao-het-han'
@@ -657,6 +658,11 @@ const ApiPublicHooksReliabilityReportRoute =
     path: '/api/public/hooks/reliability-report',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksR2CleanupRoute = ApiPublicHooksR2CleanupRouteImport.update({
+  id: '/api/public/hooks/r2-cleanup',
+  path: '/api/public/hooks/r2-cleanup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksPmGenerateRoute =
   ApiPublicHooksPmGenerateRouteImport.update({
     id: '/api/public/hooks/pm-generate',
@@ -811,6 +817,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/pm-generate': typeof ApiPublicHooksPmGenerateRoute
+  '/api/public/hooks/r2-cleanup': typeof ApiPublicHooksR2CleanupRoute
   '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
@@ -919,6 +926,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/pm-generate': typeof ApiPublicHooksPmGenerateRoute
+  '/api/public/hooks/r2-cleanup': typeof ApiPublicHooksR2CleanupRoute
   '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
@@ -1036,6 +1044,7 @@ export interface FileRoutesById {
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
   '/api/public/hooks/pm-generate': typeof ApiPublicHooksPmGenerateRoute
+  '/api/public/hooks/r2-cleanup': typeof ApiPublicHooksR2CleanupRoute
   '/api/public/hooks/reliability-report': typeof ApiPublicHooksReliabilityReportRoute
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
@@ -1153,6 +1162,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/pm-generate'
+    | '/api/public/hooks/r2-cleanup'
     | '/api/public/hooks/reliability-report'
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
@@ -1261,6 +1271,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/pm-generate'
+    | '/api/public/hooks/r2-cleanup'
     | '/api/public/hooks/reliability-report'
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
@@ -1377,6 +1388,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
     | '/api/public/hooks/pm-generate'
+    | '/api/public/hooks/r2-cleanup'
     | '/api/public/hooks/reliability-report'
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
@@ -1412,6 +1424,7 @@ export interface RootRouteChildren {
   ApiPublicHooksCanhBaoHetHanRoute: typeof ApiPublicHooksCanhBaoHetHanRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
   ApiPublicHooksPmGenerateRoute: typeof ApiPublicHooksPmGenerateRoute
+  ApiPublicHooksR2CleanupRoute: typeof ApiPublicHooksR2CleanupRoute
   ApiPublicHooksReliabilityReportRoute: typeof ApiPublicHooksReliabilityReportRoute
   ApiPublicHooksScanCanhBaoRoute: typeof ApiPublicHooksScanCanhBaoRoute
   ApiPublicHooksTelegramAlertsRoute: typeof ApiPublicHooksTelegramAlertsRoute
@@ -2158,6 +2171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksReliabilityReportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/r2-cleanup': {
+      id: '/api/public/hooks/r2-cleanup'
+      path: '/api/public/hooks/r2-cleanup'
+      fullPath: '/api/public/hooks/r2-cleanup'
+      preLoaderRoute: typeof ApiPublicHooksR2CleanupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/pm-generate': {
       id: '/api/public/hooks/pm-generate'
       path: '/api/public/hooks/pm-generate'
@@ -2553,6 +2573,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksCanhBaoHetHanRoute: ApiPublicHooksCanhBaoHetHanRoute,
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
   ApiPublicHooksPmGenerateRoute: ApiPublicHooksPmGenerateRoute,
+  ApiPublicHooksR2CleanupRoute: ApiPublicHooksR2CleanupRoute,
   ApiPublicHooksReliabilityReportRoute: ApiPublicHooksReliabilityReportRoute,
   ApiPublicHooksScanCanhBaoRoute: ApiPublicHooksScanCanhBaoRoute,
   ApiPublicHooksTelegramAlertsRoute: ApiPublicHooksTelegramAlertsRoute,
