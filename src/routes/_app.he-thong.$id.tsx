@@ -185,7 +185,7 @@ function HeThongInner({
             <CardContent className="space-y-3 text-sm">
               <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
               <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
-              <InfoRow icon={Building2} label="Đơn vị quản lý" value={`${donVi || "—"}${donViTen ? " — " + donViTen : ""}`} />
+              <InfoRow icon={Building2} label="Đơn vị quản lý" value={`${donVi || "—"}${donViTenR ? " — " + donViTenR : ""}`} />
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
               <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
