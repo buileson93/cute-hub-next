@@ -341,6 +341,51 @@ function DanhMucThietBiPage() {
   const openCreate = useCallback(() => { setFormDevice(null); setFormMode("create"); }, []);
   const openEdit = useCallback((d: DbDevice) => { setFormDevice(d); setFormMode("edit"); }, []);
 
+  // Xoá tài sản: 2 chế độ — "Ngừng khai thác" (giữ lịch sử) và "Xoá vĩnh viễn"
+  // (chỉ dùng cho bản ghi nhập nhầm, chưa phát sinh lịch sử; chỉ admin).
+  const [deleteTargets, setDeleteTargets] = useState<DbDevice[] | null>(null);
+  const [deleteKind, setDeleteKind] = useState<"retire" | "purge">("retire");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteThanhLy, setDeleteThanhLy] = useState(false);
+  const closeDelete = useCallback(() => {
+    setDeleteTargets(null); setDeleteReason(""); setDeleteThanhLy(false); setDeleteKind("retire");
+  }, []);
+
+  const retireMut = useMutation({
+    mutationFn: async (mas: string[]) => {
+      const { data, error } = await supabase.rpc("ngung_khai_thac_thiet_bi", {
+        _mas: mas, _ly_do: deleteReason || undefined, _thanh_ly: deleteThanhLy,
+      });
+      if (error) throw error;
+      return data as { trang_thai: string };
+    },
+    onSuccess: (_d, mas) => {
+      qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
+      qc.invalidateQueries({ queryKey: ["change_log"] });
+      toast.success(`Đã ngừng khai thác ${mas.length} tài sản — lịch sử được giữ nguyên`);
+      closeDelete();
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không thực hiện được"),
+  });
+  const purgeMut = useMutation({
+    mutationFn: async (mas: string[]) => {
+      const { data, error } = await supabase.rpc("purge_thiet_bi", { _mas: mas });
+      if (error) throw error;
+      return data as { so_da_xoa: number | null; so_bo_qua: number | null };
+    },
+    onSuccess: (d) => {
+      qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
+      qc.invalidateQueries({ queryKey: ["change_log"] });
+      const daXoa = d?.so_da_xoa ?? 0;
+      const boQua = d?.so_bo_qua ?? 0;
+      if (daXoa > 0) toast.success(`Đã xoá vĩnh viễn ${daXoa} bản ghi${boQua ? ` — bỏ qua ${boQua} bản ghi đã có lịch sử` : ""}`);
+      else toast.error("Không xoá được: tài sản đã có lịch sử. Hãy dùng “Ngừng khai thác”.");
+      closeDelete();
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không xoá được"),
+  });
+  const deleteBusy = retireMut.isPending || purgeMut.isPending;
+
   const htName = (id: string | undefined, fallback: string) => (id && nameOv?.get(id)) || fallback;
   const tbName = useCallback(
     (d: DbDevice) => devNameOv?.get(d.ma_thiet_bi) || d.ten,
