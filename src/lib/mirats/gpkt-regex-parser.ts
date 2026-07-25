@@ -64,6 +64,37 @@ function afterColon(s: string, ...prefixes: string[]): string {
   return s.trim();
 }
 
+// Loại bỏ "rác" watermark ở cuối câu: các token 1-3 ký tự lẻ, chấm cuối thừa.
+function cleanTail(s: string): string {
+  if (!s) return s;
+  let v = s.trim();
+  // bỏ tối đa 4 token lẻ (1-3 ký tự, không phải số/đơn vị) ở cuối
+  for (let i = 0; i < 4; i++) {
+    const m = v.match(/^(.*?)(?:\s+[A-Za-zÀ-ỹ.]{1,3})\s*[.,;]?\s*$/);
+    if (!m) break;
+    const trimmed = m[1].trim();
+    if (!trimmed || trimmed.length < 5) break;
+    v = trimmed;
+  }
+  return v.replace(/[\s.,;]+$/, "").trim();
+}
+
+// Bản đồ trạm/địa danh → mã đơn vị quản lý (khớp app_role/enum don_vi_code).
+const PLACE_TO_DONVI: Array<[RegExp, string]> = [
+  [/\bCLA\b|Chu\s*Lai/i, "CLA"],
+  [/\bCRA\b|Cam\s*Ranh/i, "CRA"],
+  [/\bTHO\b|Thọ\s*Xuân|Tho\s*Xuan/i, "THO"],
+  [/\bPCA\b|Phù\s*Cát|Phu\s*Cat/i, "PCA"],
+  [/\bPBA\b|Pleiku/i, "PBA"],
+  [/\bPLK\b|Plây\s*Ku/i, "PLK"],
+];
+
+function detectDonVi(...blobs: string[]): string {
+  const hay = blobs.filter(Boolean).join(" ");
+  for (const [re, code] of PLACE_TO_DONVI) if (re.test(hay)) return code;
+  return "";
+}
+
 export interface RegexParseResult {
   fields: GpktParsedFields;
   filledCount: number;
