@@ -493,7 +493,6 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
           }
         />
       )}
-      {void onDone}
 
 
       {aiNote && (
