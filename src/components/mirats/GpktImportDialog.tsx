@@ -21,9 +21,12 @@ import {
   type GpktParsedFields, type GpktDuplicate,
 } from "@/lib/mirats/gpkt-import.functions";
 import { extractPdfText } from "@/lib/mirats/gpkt-pdf-text";
-import { parseGpktText } from "@/lib/mirats/gpkt-regex-parser";
-  const [parseMethod, setParseMethod] = useState<"regex" | "ai" | null>(null);
-
+import {
+  parseGpktText, validateFields,
+  type FieldMeta, type FieldMetaMap,
+} from "@/lib/mirats/gpkt-regex-parser";
+import { GpktBulkImportDialog } from "@/components/mirats/GpktBulkImportDialog";
+import { cn } from "@/lib/utils";
 
 const BUCKET = "giay-phep-khai-thac";
 
@@ -84,13 +87,18 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
   const [heThongId, setHeThongId] = useState<string>("");
   const [duplicates, setDuplicates] = useState<GpktDuplicate[]>([]);
   const [overwriteId, setOverwriteId] = useState<string | null>(null);
+  const [parseMethod, setParseMethod] = useState<"regex" | "ai" | null>(null);
+  const [perField, setPerField] = useState<FieldMetaMap>(() => validateFields(EMPTY, "empty"));
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const htQ = useQuery({ queryKey: ["dm_he_thong_all"], queryFn: fetchHeThongOptions, staleTime: 60_000, enabled: open });
 
   // Reset khi đóng
   useEffect(() => {
     if (!open) {
-      setFile(null); setFields(EMPTY); setHeThongId(""); setDuplicates([]); setOverwriteId(null); setParseMethod(null);
+      setFile(null); setFields(EMPTY); setHeThongId("");
+      setDuplicates([]); setOverwriteId(null); setParseMethod(null);
+      setPerField(validateFields(EMPTY, "empty"));
     }
   }, [open]);
 
@@ -112,7 +120,7 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
           const r = parseGpktText(txt);
           // đạt >=8/17 trường và có số GP → dùng luôn kết quả regex
           if (r.fields.gp_so && r.filledCount >= 8) {
-            return { fields: r.fields, method: "regex" as const, filled: r.filledCount };
+            return { fields: r.fields, method: "regex" as const, filled: r.filledCount, perField: r.perField };
           }
         }
       } catch (e) {
@@ -123,11 +131,12 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
       const fields = await parseGpktPdf({
         data: { base64, filename: f.name, mime: f.type || "application/pdf" },
       });
-      return { fields, method: "ai" as const, filled: 0 };
+      return { fields, method: "ai" as const, filled: 0, perField: validateFields(fields, "ai") };
     },
     onSuccess: (r) => {
       setFields(r.fields);
       setParseMethod(r.method);
+      setPerField(r.perField);
       if (r.method === "regex") {
         toast.success(`Bóc tách nhanh xong (${r.filled}/17 trường). Kiểm tra và bổ sung nếu cần.`);
       } else {
@@ -148,10 +157,33 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
     onSuccess: (fields) => {
       setFields(fields);
       setParseMethod("ai");
+      setPerField(validateFields(fields, "ai"));
       toast.success("Đã bóc tách lại bằng AI.");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : String(e)),
   });
+
+  // Sửa tay 1 trường → tính lại meta cho trường đó, giữ nhãn "manual".
+  function updateField<K extends keyof GpktParsedFields>(k: K, v: string) {
+    const next = { ...fields, [k]: v };
+    setFields(next);
+    const rev = validateFields(next, "manual");
+    // giữ nguyên source của các trường không đổi để badge phản ánh đúng
+    setPerField((prev) => {
+      const out: FieldMetaMap = { ...prev };
+      (Object.keys(rev) as Array<keyof GpktParsedFields>).forEach((key) => {
+        if (key === k) out[key] = rev[key];
+        else out[key] = { ...prev[key], needsCheck: rev[key].needsCheck, reason: rev[key].reason };
+      });
+      return out;
+    });
+  }
+
+  // Tổng số trường bắt buộc/warn cần chú ý
+  const needsCheckCount = useMemo(
+    () => (Object.values(perField) as FieldMeta[]).filter((m) => m.needsCheck).length,
+    [perField],
+  );
 
   // Kiểm tra trùng khi gp_so hoặc he_thong_id đổi
   useEffect(() => {
