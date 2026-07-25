@@ -5220,6 +5220,93 @@ export type Database = {
         }
         Relationships: []
       }
+      r2_access_log: {
+        Row: {
+          action: string
+          category: string | null
+          created_at: string
+          expires_in: number | null
+          id: number
+          ip: string | null
+          key: string
+          ok: boolean
+          reason: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          category?: string | null
+          created_at?: string
+          expires_in?: number | null
+          id?: number
+          ip?: string | null
+          key: string
+          ok?: boolean
+          reason?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          category?: string | null
+          created_at?: string
+          expires_in?: number | null
+          id?: number
+          ip?: string | null
+          key?: string
+          ok?: boolean
+          reason?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      r2_file: {
+        Row: {
+          category: string
+          content_type: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          key: string
+          meta: Json
+          original_name: string | null
+          size: number | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          content_type?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key: string
+          meta?: Json
+          original_name?: string | null
+          size?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content_type?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key?: string
+          meta?: Json
+          original_name?: string | null
+          size?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       role_permission: {
         Row: {
           action: string
