@@ -448,7 +448,7 @@ function TongQuanPage() {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Phân bổ trạng thái tài sản</CardTitle>
-            <Link to="/tai-san" className="text-[11px] text-primary hover:underline">Tài sản →</Link>
+            <Link to="/thiet-bi" className="text-[11px] text-primary hover:underline">Tài sản →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {statusQ.isLoading ? (
@@ -483,7 +483,7 @@ function TongQuanPage() {
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm">Top 5 hệ thống có nhiều sự cố đang mở</CardTitle>
-          <Link to="/he-thong" className="text-[11px] text-primary hover:underline">Cây hệ thống →</Link>
+          <Link to="/he-thong/cay" className="text-[11px] text-primary hover:underline">Cây hệ thống →</Link>
         </CardHeader>
         <CardContent>
           {topQ.isLoading ? (
