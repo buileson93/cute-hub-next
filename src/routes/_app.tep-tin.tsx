@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useRef } from "react";
-import { useR2ListMyFiles, useR2Upload, useR2Download, useR2Delete } from "@/lib/mirats/r2-client";
+import { useState, useRef, useEffect } from "react";
+import {
+  useR2ListMyFiles, useR2Upload, useR2Download, useR2Delete, useR2AbortResumable,
+  listResumableSessions, fileFingerprint, type ResumableSession,
+} from "@/lib/mirats/r2-client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File, Search, X } from "lucide-react";
+import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File, Search, X, RotateCw, PlayCircle, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_app/tep-tin")({
   head: () => ({
@@ -44,17 +48,56 @@ function FilesPage() {
   const upload = useR2Upload();
   const download = useR2Download();
   const del = useR2Delete();
+  const abortResumable = useR2AbortResumable();
   const inputRef = useRef<HTMLInputElement>(null);
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+  const resumeTargetRef = useRef<ResumableSession | null>(null);
   const [progress, setProgress] = useState<{ name: string; percent: number } | null>(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [status, setStatus] = useState<string>("all");
+  const [failed, setFailed] = useState<{ id: string; file: File; error: string }[]>([]);
+  const [sessions, setSessions] = useState<ResumableSession[]>([]);
+  const refreshSessions = () => setSessions(listResumableSessions());
+  useEffect(() => { refreshSessions(); }, []);
 
   const q = useQuery({
     queryKey: ["r2-my-files"],
     queryFn: () => listFn(),
     refetchOnWindowFocus: false,
   });
+
+  // Realtime: nhận thông báo khi trạng thái file đổi từ "temp" -> "ready" / "error"
+  const prevStatusRef = useRef<Map<string, string>>(new Map());
+  useEffect(() => {
+    if (!q.data) return;
+    const prev = prevStatusRef.current;
+    for (const f of q.data as any[]) {
+      const old = prev.get(f.id);
+      if (old && old !== f.status) {
+        const label = f.original_name || f.key.split("/").pop();
+        if (f.status === "ready") toast.success(`✓ Hoàn tất: ${label}`);
+        else if (f.status === "error") toast.error(`⚠ Lỗi xử lý: ${label}`);
+      }
+      prev.set(f.id, f.status);
+    }
+  }, [q.data]);
+
+  useEffect(() => {
+    let userId: string | null = null;
+    let ch: ReturnType<typeof supabase.channel> | null = null;
+    supabase.auth.getUser().then(({ data }) => {
+      userId = data.user?.id ?? null;
+      if (!userId) return;
+      ch = supabase
+        .channel(`r2-file-${userId}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "r2_file", filter: `user_id=eq.${userId}` }, () => {
+          q.refetch();
+        })
+        .subscribe();
+    });
+    return () => { if (ch) supabase.removeChannel(ch); };
+  }, []);
 
   const filtered = (q.data ?? []).filter((f: any) => {
     if (category !== "all" && (f.category ?? "other") !== category) return false;
@@ -69,21 +112,56 @@ function FilesPage() {
   });
   const hasFilter = search.trim() !== "" || category !== "all" || status !== "all";
 
+  const uploadOne = async (f: File) => {
+    setProgress({ name: f.name, percent: 0 });
+    try {
+      await upload(f, { onProgress: (p) => setProgress({ name: f.name, percent: p.percent }) });
+      toast.success(`Đã upload: ${f.name}`);
+      // xoá khỏi failed nếu retry thành công
+      setFailed((prev) => prev.filter((x) => x.file !== f));
+      refreshSessions();
+    } catch (e: any) {
+      toast.error(`Upload thất bại: ${e.message}. Bạn có thể bấm "Thử lại".`);
+      setFailed((prev) => {
+        const id = `${f.name}-${f.size}-${f.lastModified}-${Date.now()}`;
+        // giữ duy nhất 1 entry cho mỗi file
+        const cleaned = prev.filter((x) => !(x.file.name === f.name && x.file.size === f.size && x.file.lastModified === f.lastModified));
+        return [...cleaned, { id, file: f, error: e.message }];
+      });
+      refreshSessions();
+    } finally {
+      setProgress(null);
+      q.refetch();
+    }
+  };
+
   const handleFiles = async (files: FileList | null) => {
     if (!files || !files.length) return;
-    for (const f of Array.from(files)) {
-      setProgress({ name: f.name, percent: 0 });
-      try {
-        await upload(f, {
-          onProgress: (p) => setProgress({ name: f.name, percent: p.percent }),
-        });
-        toast.success(`Đã upload: ${f.name}`);
-      } catch (e: any) {
-        toast.error(`Upload thất bại: ${e.message}`);
-      }
+    for (const f of Array.from(files)) await uploadOne(f);
+  };
+
+  const handleResumeSelect = async (files: FileList | null) => {
+    const target = resumeTargetRef.current;
+    resumeTargetRef.current = null;
+    if (!files?.length || !target) return;
+    const f = files[0];
+    if (fileFingerprint(f) !== target.fingerprint) {
+      toast.error("File bạn chọn không khớp phiên đang chờ (tên/kích thước/thời gian sửa khác).");
+      return;
     }
-    setProgress(null);
-    q.refetch();
+    await uploadOne(f);
+  };
+
+  const askResume = (s: ResumableSession) => {
+    resumeTargetRef.current = s;
+    resumeInputRef.current?.click();
+  };
+
+  const cancelResumable = async (s: ResumableSession) => {
+    if (!confirm(`Huỷ phiên upload "${s.fileName}"?`)) return;
+    await abortResumable(s);
+    refreshSessions();
+    toast.success("Đã huỷ phiên upload");
   };
 
   const handleDownload = async (key: string) => {
@@ -118,6 +196,60 @@ function FilesPage() {
           <CardContent className="py-3">
             <div className="flex items-center justify-between text-sm mb-1"><span className="truncate">{progress.name}</span><span>{progress.percent}%</span></div>
             <Progress value={progress.percent} />
+          </CardContent>
+        </Card>
+      )}
+
+      {sessions.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Có thể tiếp tục ({sessions.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Các phiên upload nhiều phần đang dở dang. Chọn lại đúng file để tiếp tục phần còn thiếu (không upload lại từ đầu).
+            </p>
+            {sessions.map((s) => (
+              <div key={s.fingerprint} className="flex items-center gap-3 rounded-md border p-2">
+                <div className="text-muted-foreground"><UploadCloud className="h-4 w-4" /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">{s.fileName}</div>
+                  <div className="text-xs text-muted-foreground truncate">{s.key} · {fmtBytes(s.fileSize)}</div>
+                </div>
+                <Button size="sm" variant="secondary" onClick={() => askResume(s)}>
+                  <PlayCircle className="h-4 w-4 mr-1" />Tiếp tục
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => cancelResumable(s)}>
+                  <XCircle className="h-4 w-4 mr-1 text-destructive" />Huỷ
+                </Button>
+              </div>
+            ))}
+            <input ref={resumeInputRef} type="file" className="hidden" onChange={(e) => { handleResumeSelect(e.target.files); e.currentTarget.value = ""; }} />
+          </CardContent>
+        </Card>
+      )}
+
+      {failed.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base text-destructive">Upload lỗi ({failed.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {failed.map((it) => (
+              <div key={it.id} className="flex items-center gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-2">
+                <div className="text-destructive"><XCircle className="h-4 w-4" /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">{it.file.name}</div>
+                  <div className="text-xs text-muted-foreground truncate">{it.error}</div>
+                </div>
+                <Button size="sm" variant="secondary" onClick={() => uploadOne(it.file)}>
+                  <RotateCw className="h-4 w-4 mr-1" />Thử lại
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setFailed((p) => p.filter((x) => x.id !== it.id))}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
           </CardContent>
         </Card>
       )}
