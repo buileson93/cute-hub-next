@@ -97,6 +97,12 @@ function HeThongInner({
     [devices, devNameOv],
   );
   const [tab, setTab] = useState<string>("tl");
+  // Bộ lọc & phân trang cho Nhật ký (Dòng thời gian)
+  const [nkQuery, setNkQuery] = useState("");
+  const [nkKind, setNkKind] = useState<"all" | TimelineKind>("all");
+  const [nkPerson, setNkPerson] = useState<string>("all");
+  const [nkRange, setNkRange] = useState<"all" | "3m" | "6m" | "12m">("all");
+  const [nkLimit, setNkLimit] = useState(20);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
   const [thrOpen, setThrOpen] = useState(false);
   const thrKey = `hp-thresholds:${donViMa || "default"}`;
