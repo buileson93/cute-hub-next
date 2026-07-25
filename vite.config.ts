@@ -6,6 +6,10 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
+import path from "node:path";
+
+const codeBlockShim = path.resolve(process.cwd(), "src/shims/react-email-code-block-empty.js");
+const prismShim = path.resolve(process.cwd(), "src/shims/prismjs-empty.js");
 
 export default defineConfig({
   tanstackStart: {
@@ -23,12 +27,15 @@ export default defineConfig({
         // stay safe. Regex catches subpath imports like `prismjs/prism.js` too.
         {
           find: /^@react-email\/code-block(\/.*)?$/,
-          replacement: new URL("./src/shims/react-email-code-block-empty.js", import.meta.url).pathname,
+          replacement: codeBlockShim,
         },
         {
           find: /^prismjs(\/.*)?$/,
-          replacement: new URL("./src/shims/prismjs-empty.js", import.meta.url).pathname,
+          replacement: prismShim,
         },
+        // Also intercept resolved absolute paths (Vite may resolve package to src/prism.ts first)
+        { find: /.*\/@react-email\/code-block\/.*$/, replacement: codeBlockShim },
+        { find: /.*\/prismjs\/.*\.js$/, replacement: prismShim },
       ],
     },
     ssr: {
