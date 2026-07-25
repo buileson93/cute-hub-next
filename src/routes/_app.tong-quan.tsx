@@ -312,9 +312,7 @@ function TongQuanPage() {
 
       {/* ROW 1 — BRIEF HÔM NAY */}
       <div>
-        <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          <Radio className="h-3.5 w-3.5" /> Brief hôm nay
-        </div>
+        <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Đi tới Sự cố" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
             value={briefQ.data?.su_co_khan} loading={briefQ.isLoading} tone="danger"
@@ -336,9 +334,7 @@ function TongQuanPage() {
 
       {/* ROW 2 — SỨC KHOẺ KHAI THÁC */}
       <div>
-        <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          <HeartPulse className="h-3.5 w-3.5" /> Sức khoẻ khai thác ({days} ngày)
-        </div>
+        <SectionHeader icon={<HeartPulse className="h-3.5 w-3.5" />} title={`Sức khoẻ khai thác (${days} ngày)`} to="/bao-tri/pm" more="Kế hoạch bảo trì" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <HealthTile
             icon={<Gauge className="h-4 w-4" />}
@@ -348,6 +344,7 @@ function TongQuanPage() {
             tone={healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 99 ? "ok"
               : healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 95 ? "warn" : "danger"}
             loading={healthQ.isLoading}
+            to="/su-co"
           />
           <HealthTile
             icon={<Repeat2 className="h-4 w-4" />}
@@ -356,6 +353,7 @@ function TongQuanPage() {
             hint="Thời gian trung bình giữa 2 sự cố"
             tone="default"
             loading={healthQ.isLoading}
+            to="/su-co"
           />
           <HealthTile
             icon={<Wrench className="h-4 w-4" />}
@@ -364,6 +362,7 @@ function TongQuanPage() {
             hint={healthQ.data ? compareLabel(healthQ.data.mttr_h, healthQ.data.mttr_prev_h, true) : ""}
             tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
             loading={healthQ.isLoading}
+            to="/bao-tri"
           />
           <HealthTile
             icon={<ShieldCheck className="h-4 w-4" />}
@@ -373,6 +372,7 @@ function TongQuanPage() {
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
+            to="/giay-phep"
           />
         </div>
       </div>
@@ -380,11 +380,14 @@ function TongQuanPage() {
       {/* KPI cards */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <KpiCard icon={<HardDrive className="h-4 w-4" />} label="Tổng tài sản"
-          value={kpiQ.data?.tong_tai_san} loading={kpiQ.isLoading} tone="default" />
+          value={kpiQ.data?.tong_tai_san} loading={kpiQ.isLoading} tone="default"
+          link={{ to: "/tai-san", label: "Danh sách" }} />
         <KpiCard icon={<Activity className="h-4 w-4" />} label="Đang khai thác"
-          value={kpiQ.data?.dang_hoat_dong} loading={kpiQ.isLoading} tone="ok" />
+          value={kpiQ.data?.dang_hoat_dong} loading={kpiQ.isLoading} tone="ok"
+          link={{ to: "/tai-san", label: "Xem" }} />
         <KpiCard icon={<PauseCircle className="h-4 w-4" />} label="Ngừng / Hỏng / Thanh lý"
-          value={kpiQ.data?.ngung_khai_thac} loading={kpiQ.isLoading} tone="warn" />
+          value={kpiQ.data?.ngung_khai_thac} loading={kpiQ.isLoading} tone="warn"
+          link={{ to: "/tai-san", label: "Xem" }} />
         <KpiCard icon={<AlertOctagon className="h-4 w-4" />} label="Sự cố đang mở"
           value={kpiQ.data?.su_co_mo} loading={kpiQ.isLoading} tone="danger"
           link={{ to: "/su-co", label: "Xem" }} sub={`+${kpiQ.data?.su_co_moi ?? 0} mới trong ${days} ngày`} />
@@ -406,8 +409,9 @@ function TongQuanPage() {
       {/* Biểu đồ */}
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Xu hướng sự cố theo tháng (12 tháng)</CardTitle>
+            <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {trendQ.isLoading ? (
@@ -442,8 +446,9 @@ function TongQuanPage() {
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Phân bổ trạng thái tài sản</CardTitle>
+            <Link to="/tai-san" className="text-[11px] text-primary hover:underline">Tài sản →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {statusQ.isLoading ? (
@@ -476,8 +481,9 @@ function TongQuanPage() {
 
       {/* Top hệ thống */}
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm">Top 5 hệ thống có nhiều sự cố đang mở</CardTitle>
+          <Link to="/he-thong" className="text-[11px] text-primary hover:underline">Cây hệ thống →</Link>
         </CardHeader>
         <CardContent>
           {topQ.isLoading ? (
@@ -528,16 +534,18 @@ function TongQuanPage() {
       {/* ROW — Heatmap sự cố + Top TB hỏng lặp */}
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Heatmap sự cố (90 ngày) — thứ × giờ</CardTitle>
+            <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent>
             <Heatmap data={heatQ.data ?? []} loading={heatQ.isLoading} />
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Top thiết bị hỏng lặp (90 ngày)</CardTitle>
+            <Link to="/thiet-bi" className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
           </CardHeader>
           <CardContent>
             {tbLapQ.isLoading ? (
@@ -568,8 +576,9 @@ function TongQuanPage() {
 
       {/* ROW — Timeline hạn */}
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm">Hạn giấy phép & kiểm định (90 ngày tới)</CardTitle>
+          <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
         </CardHeader>
         <CardContent>
           {expQ.isLoading ? (
@@ -584,8 +593,9 @@ function TongQuanPage() {
 
       {/* ROW — Feed hoạt động */}
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm">Hoạt động gần đây</CardTitle>
+          <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sự cố →</Link>
         </CardHeader>
         <CardContent>
           {feedQ.isLoading ? (
