@@ -20,6 +20,7 @@ const pdfjs: any = await import("pdfjs-dist/legacy/build/pdf.mjs");
 function walk(dir: string): string[] {
   const out: string[] = [];
   for (const name of readdirSync(dir)) {
+    if (name.startsWith(".") || name === "__MACOSX") continue;
     const p = join(dir, name);
     const st = statSync(p);
     if (st.isDirectory()) out.push(...walk(p));
