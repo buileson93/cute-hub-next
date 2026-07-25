@@ -234,6 +234,11 @@ function HeThongInner({
       }`}</style>
       <div className="flex items-center gap-3 no-print">
         <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi"><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
+        <div className="text-xs text-muted-foreground truncate">
+          <Link to="/thiet-bi" className="hover:underline">Sổ lý lịch</Link>
+          <ChevronRight className="inline h-3 w-3 mx-1 opacity-60" />
+          <span className="text-foreground/80">{tenHt}</span>
+        </div>
         <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
           <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => window.print()}>
