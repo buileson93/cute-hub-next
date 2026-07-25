@@ -1,90 +1,65 @@
+# Kế hoạch: Chiến dịch bảo dưỡng lớn (Đợt bảo dưỡng)
 
-## Phân tích mẫu Word bạn gửi
+## Mục tiêu
+Quản lý 2 đợt bảo dưỡng lớn/năm của Công ty QLB Miền Trung: Phòng KT khởi tạo danh mục hệ thống cho từng đơn vị → đơn vị bổ sung/điều chỉnh và cập nhật kết quả → tổng hợp thành báo cáo (dashboard + Word/PDF).
 
-File chứa **4 phiếu** cùng 1 hệ thống (AWOS 900) theo chu kỳ tăng dần, lồng nhau:
+## Cấu trúc dữ liệu (backend)
 
-| Mã hiệu | Chu kỳ | Cấu trúc |
-|---|---|---|
-| PL-KTAWOS-01 | Hàng tuần / tại trạm | Header + Checklist 2 nhóm (Cảm biến / Tủ thiết bị) + Đánh giá chung + 2 chữ ký |
-| PL-KTAWOS-02 | Hàng tháng / trong nhà | Header + Checklist 1 bảng + Đánh giá + Ký |
-| PL-KTAWOS-03 | Hàng tháng / tại trạm | = PL-KTAWOS-01 (include) + Đánh giá + Ký |
-| Biên bản 6 tháng | 6 tháng | Phần 1 Bảo dưỡng (include 02 + 03 + hạng mục mới có ô nhập số đo) + Phần 2 Hiệu chỉnh cảm biến (bảng nhiều cột) + Phần 3 Báo cáo tổng hợp (thống kê + văn xuôi) + Ký |
+Migration mới, tuân thủ đủ 4 bước GRANT + RLS + policy theo `has_role`/`get_user_don_vi_id`:
 
-**Đặc điểm bất biến** cần đưa vào chuẩn:
-- **Header** cố định 5 dòng: Tên phiếu · Mã hiệu · Địa điểm/Sân bay · Kỳ (tuần/tháng/năm) · Người thực hiện.
-- **Checklist 2 cột kết quả**: `Đạt / K.Đạt` (radio) + `Hành động khắc phục / Ghi chú` (text) — có nhóm cha (A/B) làm section header.
-- **Trường đo có ngưỡng**: ví dụ điện trở tiếp địa `< 4 Ohm`, thời gian chuyển đổi HA `... giây` → cần kiểu field `measure` (giá trị + đơn vị + tiêu chuẩn) chấm đạt tự động.
-- **Include mẫu con**: phiếu tháng gọi phiếu tuần, phiếu 6 tháng gọi phiếu tháng — tránh copy-paste.
-- **Footer chuẩn**: Đánh giá chung (textarea) + 2 khối chữ ký (Người thực hiện · Phụ trách/Giám sát).
-- **Biên bản dài hạn** thêm khối "Báo cáo tổng hợp": số sự cố, thời gian gián đoạn, availability (%), tồn tại, kiến nghị — kéo tự động từ dữ liệu vận hành thay vì gõ tay.
+- `dot_bao_duong` — thông tin đợt
+  - `ten`, `nam`, `ky` (1|2), `tu_ngay`, `den_ngay`, `mo_ta`, `trang_thai` (nhap, mo, dang_thuc_hien, dong, huy), `nguoi_tao`
+- `dot_bao_duong_hang_muc` — 1 dòng = (đợt × đơn vị × hệ thống)
+  - `dot_id`, `don_vi_id`, `he_thong_id`, `nguon` (kt_khoi_tao | don_vi_bo_sung), `bat_buoc` (bool), `ghi_chu_kt`
+  - Kết quả tổng hợp: `trang_thai` (chua_bat_dau, dang_lam, hoan_thanh, khong_thuc_hien), `ket_qua` (dat|khong_dat|khac), `ton_tai`, `kien_nghi`, `nguoi_thuc_hien`, `ngay_hoan_thanh`
+  - UNIQUE (`dot_id`, `he_thong_id`)
+- `dot_bao_duong_bien_ban` — link biên bản: `hang_muc_id`, `form_submission_id`
+- `dot_bao_duong_tep` — file đính kèm: `hang_muc_id`, `duong_dan`, `ten_goc`, `loai`, `nguoi_up`
+- `dot_bao_duong_su_co` — link sự cố phát hiện: `hang_muc_id`, `su_co_id` (hoặc `hong_hoc_id`)
 
-## Kế hoạch chỉnh lý (không đổi schema)
+RPC:
+- `dot_them_hang_muc_hang_loat(dot_id, don_vi_id, he_thong_ids[])` — Phòng KT thêm nhiều hệ thống một lúc.
+- `dot_bao_cao_tong_hop(dot_id)` — trả JSON: tổng số, theo đơn vị (tổng/hoàn thành/đạt/không đạt), top tồn tại.
 
-Toàn bộ tận dụng bảng có sẵn `form_template / form_template_version / form_section / form_field / form_check_item / form_template_include / form_submission*`. Chỉ chuẩn hoá **quy ước dữ liệu** + **UI/UX designer** + **template mẫu**.
+## Phân quyền
 
-### 1. Chuẩn hoá `form_template.code` & metadata
-- Quy ước mã: `PL-<HET>-<NN>` (VD `PL-KTAWOS-01`) — không tuỳ ý.
-- `nhom`: `kiem_tra_tuan | kiem_tra_thang | bao_duong_dinh_ky` để lọc đúng theo chu kỳ.
-- Thêm field JSON `meta.chu_ky` (`tuan | thang | quy | 6thang | nam`) và `meta.dia_diem` (`tai_tram | trong_nha | ca_hai`) — lưu trong `form_template.mo_ta_json` hiện có, không cần cột mới.
+- Phòng KT (`phong_kt`, `admin`): tạo đợt, khởi tạo danh mục cho mọi đơn vị, mở/đóng đợt, xem tất cả.
+- Phụ trách đơn vị / KTV (`phu_trach_dv`, `ktv`, `to_truong`): xem đợt, bổ sung hệ thống thuộc đơn vị mình, cập nhật kết quả, gắn biên bản/file/sự cố.
+- Readonly: chỉ xem.
 
-### 2. Định nghĩa 4 loại section chuẩn (mở rộng `form_section.kind` bằng convention)
-```text
-header       — 5 dòng metadata; sinh sẵn khi tạo template
-checklist    — bảng STT · Hạng mục · Nội dung · Kết quả · Ghi chú
-measure      — bảng có cột "Giá trị đo" + "Tiêu chuẩn" tự chấm Đạt
-calibration  — bảng nhiều cột (Cảm biến · Phương pháp · Thiết bị chuẩn · Kết quả)
-summary      — số liệu vận hành tự tính từ sự cố/bảo trì hệ thống
-signature    — 2+ khối chữ ký
-```
+## UI / luồng người dùng
 
-### 3. Chuẩn hoá `form_check_item` cho checklist
-Mỗi hàng bảng = 1 `form_check_item`:
-- `nhom` (A/B/…) = section con để render subheader gộp.
-- `hang_muc` + `noi_dung_chi_tiet` — hiện đang gộp vào 1 cột `noi_dung`, tách 2 field để hiển thị 2 cột như Word.
-- `kieu_ket_qua`: `dat_khong_dat | so_do | chon` (dùng enum `form_result_kind` sẵn có).
-- `don_vi`, `tieu_chuan_min`, `tieu_chuan_max`, `tieu_chuan_text` — chấm điểm tự động phía backend.
-- `ghi_chu_bat_buoc_khi_khong_dat = true` để bắt buộc mô tả khắc phục khi K.Đạt (fix một lỗ hổng chất lượng hay gặp).
+Route mới:
+- `/_app/bao-duong/dot` — danh sách đợt (badge trạng thái, tiến độ %).
+- `/_app/bao-duong/dot/new` — form tạo đợt (Phòng KT).
+- `/_app/bao-duong/dot/$id` — trang chi tiết đợt gồm:
+  - Header: tên đợt, kỳ, khoảng thời gian, trạng thái, KPI tiến độ.
+  - Tab **Danh mục**: bảng nhóm theo đơn vị, mỗi dòng là (hệ thống × đơn vị) với nguồn (KT/Đơn vị), bắt buộc, trạng thái, kết quả. Có: multi-select add hệ thống (KT), nút "Thêm hệ thống" (đơn vị – chỉ hệ thống của đơn vị mình).
+  - Tab **Kết quả**: click vào 1 hàng mở panel bên phải để cập nhật ket_qua/ton_tai/kien_nghi, gắn biên bản (chọn từ `form_submission` của hệ thống), upload file, link sự cố.
+  - Tab **Báo cáo**: dashboard tổng hợp (tỷ lệ hoàn thành theo đơn vị – bar chart; tỷ lệ Đạt/K.Đạt – donut; top hệ thống có tồn tại), nút "Xuất Word/PDF".
+- Sidebar: thêm mục "Đợt bảo dưỡng" trong nhóm Bảo dưỡng.
 
-### 4. Include mẫu con thay vì copy
-Dùng `form_template_include` sẵn có:
-- PL-KTAWOS-03 include PL-KTAWOS-01.
-- Biên bản 6 tháng include PL-KTAWOS-02 + PL-KTAWOS-03.
-Khi phiếu cha in ra, render đầy đủ bảng con; khi ký, chỉ ký 1 lần ở phiếu cha (chuẩn hoá `signature_scope = "root_only"`).
+## Xuất Word/PDF
 
-### 5. Section "summary" tự động
-Trong biên bản 6 tháng, phần 3 (Thống kê hoạt động) hiện đang gõ tay:
-- Số sự cố = `count(su_co WHERE he_thong_id = X AND thoi_gian BETWEEN kỳ)`.
-- Thời gian gián đoạn = `sum(su_co.thoi_gian_gian_doan)`.
-- Availability = `1 - downtime / period_hours`.
-Prefill trong Form Runner (giữ nút "sửa tay"), giảm sai số & giảm 5–10 phút/phiếu.
+Xuất Word `.docx` theo layout công ty dùng `docx` npm; xuất PDF dùng `print` browser (CSS `@media print`) cho tab Báo cáo. Cấu trúc báo cáo:
+1. Trang bìa: tên đợt, kỳ, năm, ngày ban hành.
+2. Phần I: Danh mục hệ thống bảo dưỡng theo đơn vị.
+3. Phần II: Kết quả thực hiện (bảng đánh giá Đạt/K.Đạt, tồn tại, kiến nghị).
+4. Phần III: Phụ lục biên bản đã thực hiện + sự cố phát hiện.
 
-### 6. UX Form Designer (`_app.admin.forms.$id`)
-- Palette section mới: `Header chuẩn`, `Checklist Đạt/K.Đạt`, `Bảng đo có ngưỡng`, `Calibration`, `Chữ ký kép`, `Include phiếu con`.
-- Nút "Tạo từ mẫu Word": paste bảng markdown/tsv → auto sinh `form_check_item`.
-- Preview song song: cột trái editor, cột phải render như Word (khớp `form-word-export`).
+## Kỹ thuật
 
-### 7. UX Form Runner
-- Bảng checklist sticky header, phím tắt `1/2` = Đạt/K.Đạt, `Tab` xuống hàng — giảm 40% thời gian nhập.
-- Ô "K.Đạt" bật đỏ + focus ô "Ghi chú" bắt buộc; đóng phiếu chặn nếu còn K.Đạt chưa có mô tả.
-- Ô đo hiển thị ngưỡng dưới input; tự Đạt/K.Đạt theo giá trị nhập.
-- Auto-save mỗi 15s (đã có bảng `form_submission` status `draft`).
+- Server functions trong `src/lib/mirats/dot-bao-duong.functions.ts` (list/get/create/updateHangMuc/addHangMucBulk/report/export) dùng `requireSupabaseAuth`.
+- File upload: bucket Storage `dot-bao-duong` với RLS theo đơn vị.
+- Realtime: subscribe kênh `dot_bao_duong_hang_muc` filter theo `dot_id` để KT thấy đơn vị cập nhật ngay.
+- Export Word: server function trả ArrayBuffer bằng `docx`, client tải xuống.
 
-### 8. Xuất Word / PDF theo đúng layout mẫu
-Cập nhật `form-word-export.functions.ts`:
-- Header 5 dòng in đậm, canh giữa.
-- Bảng bordered 5 cột giống Word (STT · Hạng mục · Nội dung · Kết quả · Ghi chú).
-- Section A/B in đậm span cả hàng.
-- Cuối phiếu 2 khối chữ ký (chèn ảnh `form_submission_signature` nếu có OTP đã ký).
+## Các bước triển khai
 
-### 9. Seed 4 template AWOS làm mẫu tham chiếu
-Tạo migration seed 4 template chuẩn (PL-KTAWOS-01..03 + 6 tháng) làm khuôn mẫu cho các hệ thống khác nhân bản. Không phá dữ liệu cũ.
-
-## Lộ trình đề xuất (mỗi bước 1 turn)
-
-1. **Bước 1** — Chuẩn hoá convention + tạo section palette mới trong Form Designer + kiểu field `measure có ngưỡng` + bắt buộc ghi chú khi K.Đạt.
-2. **Bước 2** — Seed 4 template AWOS làm mẫu tham chiếu, kiểm chứng include lồng nhau.
-3. **Bước 3** — Nâng cấp Form Runner (phím tắt, auto Đạt/K.Đạt theo ngưỡng, chặn submit khi thiếu khắc phục).
-4. **Bước 4** — Section "summary" tự tính từ sự cố/bảo trì cho biên bản dài hạn.
-5. **Bước 5** — Cập nhật xuất Word/PDF theo đúng layout mẫu + preview song song.
-
-Bạn duyệt kế hoạch này, hoặc muốn cắt/gộp bước nào thì báo mình bắt đầu ngay từ Bước 1.
+1. Migration schema + GRANT + RLS + RPC.
+2. Server functions + storage bucket.
+3. Route danh sách + tạo đợt.
+4. Route chi tiết: tab Danh mục (thêm hàng loạt, thêm bổ sung).
+5. Tab Kết quả: panel cập nhật, gắn biên bản/file/sự cố.
+6. Tab Báo cáo: dashboard + xuất Word/PDF.
+7. Sidebar + realtime + verify grants + smoke test Playwright (tạo đợt → KT add hệ thống → đơn vị cập nhật kết quả → xuất báo cáo).
