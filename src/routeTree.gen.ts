@@ -35,6 +35,7 @@ import { Route as AppTongQuanRouteImport } from './routes/_app.tong-quan'
 import { Route as AppTicketsRouteImport } from './routes/_app.tickets'
 import { Route as AppThongBaoRouteImport } from './routes/_app.thong-bao'
 import { Route as AppThietBiRouteImport } from './routes/_app.thiet-bi'
+import { Route as AppTepTinRouteImport } from './routes/_app.tep-tin'
 import { Route as AppSuCoRouteImport } from './routes/_app.su-co'
 import { Route as AppSapHetHanRouteImport } from './routes/_app.sap-het-han'
 import { Route as AppPhanQuyenRouteImport } from './routes/_app.phan-quyen'
@@ -250,6 +251,11 @@ const AppThongBaoRoute = AppThongBaoRouteImport.update({
 const AppThietBiRoute = AppThietBiRouteImport.update({
   id: '/thiet-bi',
   path: '/thiet-bi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTepTinRoute = AppTepTinRouteImport.update({
+  id: '/tep-tin',
+  path: '/tep-tin',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSuCoRoute = AppSuCoRouteImport.update({
@@ -725,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
   '/su-co': typeof AppSuCoRouteWithChildren
+  '/tep-tin': typeof AppTepTinRoute
   '/thiet-bi': typeof AppThietBiRouteWithChildren
   '/thong-bao': typeof AppThongBaoRoute
   '/tickets': typeof AppTicketsRouteWithChildren
@@ -834,6 +841,7 @@ export interface FileRoutesByTo {
   '/nhap-lieu': typeof AppNhapLieuRoute
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
+  '/tep-tin': typeof AppTepTinRoute
   '/thong-bao': typeof AppThongBaoRoute
   '/tickets': typeof AppTicketsRouteWithChildren
   '/tong-quan': typeof AppTongQuanRoute
@@ -947,6 +955,7 @@ export interface FileRoutesById {
   '/_app/phan-quyen': typeof AppPhanQuyenRoute
   '/_app/sap-het-han': typeof AppSapHetHanRoute
   '/_app/su-co': typeof AppSuCoRouteWithChildren
+  '/_app/tep-tin': typeof AppTepTinRoute
   '/_app/thiet-bi': typeof AppThietBiRouteWithChildren
   '/_app/thong-bao': typeof AppThongBaoRoute
   '/_app/tickets': typeof AppTicketsRouteWithChildren
@@ -1064,6 +1073,7 @@ export interface FileRouteTypes {
     | '/phan-quyen'
     | '/sap-het-han'
     | '/su-co'
+    | '/tep-tin'
     | '/thiet-bi'
     | '/thong-bao'
     | '/tickets'
@@ -1173,6 +1183,7 @@ export interface FileRouteTypes {
     | '/nhap-lieu'
     | '/phan-quyen'
     | '/sap-het-han'
+    | '/tep-tin'
     | '/thong-bao'
     | '/tickets'
     | '/tong-quan'
@@ -1285,6 +1296,7 @@ export interface FileRouteTypes {
     | '/_app/phan-quyen'
     | '/_app/sap-het-han'
     | '/_app/su-co'
+    | '/_app/tep-tin'
     | '/_app/thiet-bi'
     | '/_app/thong-bao'
     | '/_app/tickets'
@@ -1591,6 +1603,13 @@ declare module '@tanstack/react-router' {
       path: '/thiet-bi'
       fullPath: '/thiet-bi'
       preLoaderRoute: typeof AppThietBiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tep-tin': {
+      id: '/_app/tep-tin'
+      path: '/tep-tin'
+      fullPath: '/tep-tin'
+      preLoaderRoute: typeof AppTepTinRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/su-co': {
@@ -2379,6 +2398,7 @@ interface AppRouteChildren {
   AppPhanQuyenRoute: typeof AppPhanQuyenRoute
   AppSapHetHanRoute: typeof AppSapHetHanRoute
   AppSuCoRoute: typeof AppSuCoRouteWithChildren
+  AppTepTinRoute: typeof AppTepTinRoute
   AppThietBiRoute: typeof AppThietBiRouteWithChildren
   AppThongBaoRoute: typeof AppThongBaoRoute
   AppTicketsRoute: typeof AppTicketsRouteWithChildren
@@ -2436,6 +2456,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPhanQuyenRoute: AppPhanQuyenRoute,
   AppSapHetHanRoute: AppSapHetHanRoute,
   AppSuCoRoute: AppSuCoRouteWithChildren,
+  AppTepTinRoute: AppTepTinRoute,
   AppThietBiRoute: AppThietBiRouteWithChildren,
   AppThongBaoRoute: AppThongBaoRoute,
   AppTicketsRoute: AppTicketsRouteWithChildren,
