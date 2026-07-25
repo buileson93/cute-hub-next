@@ -797,14 +797,16 @@ function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
         const soon = r.days_left >= 0 && r.days_left <= 7;
         const tone = overdue ? "text-destructive" : soon ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground";
         const badge = r.loai === "giay_phep" ? "GP" : r.loai === "KIEM_DINH" ? "KĐ" : "HC";
+        const to = r.loai === "giay_phep" ? "/giay-phep" : r.loai === "KIEM_DINH" ? "/kiem-dinh" : "/giay-phep";
         return (
-          <li key={`${r.loai}-${r.ref_id}`} className="flex items-center gap-3 py-2">
+          <li key={`${r.loai}-${r.ref_id}`} className="group flex items-center gap-3 py-2 -mx-2 px-2 rounded-md transition-colors hover:bg-accent/40">
             <span className="w-8 rounded bg-secondary px-1 text-center text-[10px] font-semibold uppercase">{badge}</span>
-            <div className="min-w-0 flex-1 truncate text-sm">{r.ten}</div>
+            <Link to={to as never} className="min-w-0 flex-1 truncate text-sm hover:underline">{r.ten}</Link>
             <div className="text-[11px] text-muted-foreground">{new Date(r.ngay_het).toLocaleDateString("vi-VN")}</div>
             <div className={cn("w-24 text-right text-xs font-medium tabular-nums", tone)}>
               {overdue ? `${Math.abs(r.days_left)} ngày quá hạn` : `còn ${r.days_left} ngày`}
             </div>
+            <span className="text-[11px] text-primary opacity-0 transition-opacity group-hover:opacity-100">Mở →</span>
           </li>
         );
       })}
