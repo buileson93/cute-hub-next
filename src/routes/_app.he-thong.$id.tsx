@@ -616,6 +616,21 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
   const [openTpId, setOpenTpId] = useState<string | null>(null);
   const openTp = openTpId ? list.find((t) => t.id === openTpId) ?? null : null;
   const openDev = openTpId ? dangLap?.get(openTpId) ?? null : null;
+  const [tpQuery, setTpQuery] = useState("");
+  const filtered = useMemo(() => {
+    const q = tpQuery.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((tp) => {
+      const dev = dangLap?.get(tp.id);
+      return (
+        tp.ten?.toLowerCase().includes(q) ||
+        tp.loai_thiet_bi_yeu_cau?.toLowerCase().includes(q) ||
+        dev?.ma_thiet_bi?.toLowerCase().includes(q) ||
+        dev?.ten_thiet_bi?.toLowerCase().includes(q) ||
+        dev?.ma_serial?.toLowerCase().includes(q)
+      );
+    });
+  }, [list, dangLap, tpQuery]);
   return (
     <Card id="thanh-phan-card" className={open ? "min-h-[220px]" : ""}>
       <CardHeader>
@@ -641,8 +656,27 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
       {open && (
       <CardContent>
         {list.length === 0 && <p className="text-sm text-muted-foreground">Chưa có thành phần.</p>}
-        <div className={`grid gap-2 ${compact ? "sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" : "sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
-        {list.map((tp) => {
+        {list.length > 0 && (
+          <div className="mb-2 relative">
+            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={tpQuery}
+              onChange={(e) => setTpQuery(e.target.value)}
+              placeholder="Tìm theo tên thành phần, mã/serial tài sản, loại yêu cầu…"
+              className="h-8 pl-7 pr-7 text-xs"
+            />
+            {tpQuery && (
+              <button type="button" onClick={() => setTpQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        )}
+        <div className={`flex flex-col ${compact ? "gap-1" : "gap-1.5"}`}>
+        {filtered.length === 0 && list.length > 0 && (
+          <p className="text-xs text-muted-foreground">Không có thành phần khớp tìm kiếm.</p>
+        )}
+        {filtered.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
             <HoverCard key={tp.id} openDelay={120} closeDelay={80}>
@@ -650,12 +684,24 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
                 <button
                   type="button"
                   onClick={() => setOpenTpId(tp.id)}
-                  className="flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm hover:bg-primary/5"
+                  className="flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm hover:bg-primary/5"
                 >
               <Puzzle className="h-4 w-4 shrink-0 text-emerald-600" />
                   <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
+                  {tp.loai_thiet_bi_yeu_cau && (
+                    <span className="hidden truncate text-xs text-muted-foreground sm:inline">
+                      {tp.loai_thiet_bi_yeu_cau}
+                    </span>
+                  )}
                   {dev ? (
-                    <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
+                    <>
+                      <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
+                      {dev.ten_thiet_bi && (
+                        <span className="hidden max-w-[200px] truncate text-xs text-muted-foreground md:inline">
+                          {dev.ten_thiet_bi}
+                        </span>
+                      )}
+                    </>
                   ) : (
                     <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
                   )}
