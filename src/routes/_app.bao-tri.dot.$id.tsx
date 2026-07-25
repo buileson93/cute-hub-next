@@ -443,6 +443,40 @@ function DotDetailPage() {
         existingHans={hans ?? []}
         onDone={() => { qc.invalidateQueries({ queryKey: ["dot-hans", id] }); refetchAlerts(); }}
       />
+
+      <Dialog open={!!noteDialog?.open} onOpenChange={(o) => { if (!o) setNoteDialog(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {noteDialog?.action === "dot_hm_approve" ? "Duyệt & khoá hạng mục" : "Trả lại hạng mục cho đơn vị"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label>
+              {noteDialog?.action === "dot_hm_approve" ? "Ý kiến phê duyệt (tuỳ chọn)" : "Lý do trả lại"}
+              {noteDialog?.action === "dot_hm_reject" && <span className="text-rose-600"> *</span>}
+            </Label>
+            <Textarea
+              rows={4}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder={noteDialog?.action === "dot_hm_approve" ? "Nhận xét thêm cho hồ sơ…" : "Nêu rõ nội dung cần đơn vị chỉnh sửa/bổ sung"}
+              autoFocus
+            />
+            <p className="text-xs text-muted-foreground">Ghi chú sẽ hiển thị cho đơn vị và lưu vào nhật ký thao tác.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNoteDialog(null)}>Huỷ</Button>
+            <Button
+              onClick={submitNoteDialog}
+              disabled={workflowMut.isPending || (noteDialog?.action === "dot_hm_reject" && !noteText.trim())}
+              variant={noteDialog?.action === "dot_hm_reject" ? "destructive" : "default"}
+            >
+              {noteDialog?.action === "dot_hm_approve" ? "Duyệt & khoá" : "Trả lại đơn vị"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
