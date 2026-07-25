@@ -154,7 +154,7 @@ function DotDetailPage() {
         const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id });
         if (error) throw error;
       } else {
-        const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id, p_note: args.note ?? null });
+        const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id, p_note: args.note });
         if (error) throw error;
       }
     },
