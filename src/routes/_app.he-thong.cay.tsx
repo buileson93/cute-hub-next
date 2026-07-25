@@ -2335,10 +2335,16 @@ function MindNode({ data }: NodeProps<MindNodeType>) {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-      {data.canManage && data.kind !== "root" && (
+      {data.canManage && data.kind !== "root" && !(data.kind === "tp" && data.isViTri) && (
         <button
           className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-primary hover:text-primary-foreground hover:opacity-100"
-          title="Sửa tên & khai trường dữ liệu"
+          title={
+            data.kind === "tb" || data.kind === "tp"
+              ? "Sửa thông tin tài sản"
+              : data.kind === "ht"
+                ? "Sửa hệ thống"
+                : "Sửa tên & khai trường dữ liệu"
+          }
           onClick={(e) => { e.stopPropagation(); data.onOpenEditor?.(); }}
           onMouseDown={(e) => e.stopPropagation()}
         >
