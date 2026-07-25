@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, useNavigate, useLocation } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate, useLocation, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AppShell } from "@/components/mirats/AppShell";
 import { PageTransition } from "@/components/mirats/PageTransition";
@@ -18,6 +18,9 @@ export const Route = createFileRoute("/_app")({
 function AppLayout() {
   const nav = useNavigate();
   const location = useLocation();
+  // Chế độ nhúng: khi được mở trong iframe (Tác nghiệp nhanh của Sổ lý lịch), bỏ khung AppShell.
+  const search = useSearch({ strict: false }) as Record<string, unknown>;
+  const embed = search?.embed === "1" || search?.embed === 1 || search?.embed === true;
   const { loading, session, profile, roles } = useSession();
   useGlobalRealtime(!!session && !!profile?.active);
   useIdleLogout(!!session);
@@ -70,11 +73,19 @@ function AppLayout() {
 
   return (
     <ScopeProvider roles={roles} donViCode={profile?.don_vi ?? null}>
-      <AppShell>
-        <PageTransition>
-          <Outlet />
-        </PageTransition>
-      </AppShell>
+      {embed ? (
+        <div className="min-h-dvh bg-background">
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </div>
+      ) : (
+        <AppShell>
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </AppShell>
+      )}
     </ScopeProvider>
   );
 }
