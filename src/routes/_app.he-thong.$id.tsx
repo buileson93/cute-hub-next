@@ -112,50 +112,107 @@ function HeThongInner({
 
   const hasGp = Boolean(gpSo);
 
+  const parseD = (d: string) => { const t = Date.parse(d); return Number.isNaN(t) ? null : t; };
+  const firstEventTs = timeline.reduce<number | null>((a, it) => { const t = parseD(it.date); if (t == null) return a; return a == null ? t : Math.min(a, t); }, null);
+  const lastEventTs = timeline.reduce<number | null>((a, it) => { const t = parseD(it.date); if (t == null) return a; return a == null ? t : Math.max(a, t); }, null);
+  const suCoDates = suCo.map((e) => parseD(e.ngay_phat_hien || "")).filter((t): t is number => t != null).sort((a, b) => a - b);
+  const lastSuCoTs = suCoDates.length ? suCoDates[suCoDates.length - 1] : null;
+  const daysSinceIncident = lastSuCoTs != null ? Math.max(0, Math.round((Date.now() - lastSuCoTs) / 86_400_000)) : null;
+  const mtbfDays = suCoDates.length >= 2 ? Math.round((suCoDates[suCoDates.length - 1] - suCoDates[0]) / 86_400_000 / (suCoDates.length - 1)) : null;
+  const replacedDevices = new Set(hongHoc.map((e) => e.thiet_bi_hong).filter(Boolean));
+  const fmtVN = (t: number | null) => (t == null ? "—" : new Date(t).toLocaleDateString("vi-VN"));
+  const bookNo = id.slice(0, 8).toUpperCase();
+  const openYear = firstEventTs ? new Date(firstEventTs).getFullYear() : new Date().getFullYear();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi"><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
-        <div className="flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <Network className="h-5 w-5 text-primary" />
-            <h1 className="text-2xl font-semibold">{tenHt}</h1>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Sổ lý lịch hệ thống{donVi ? ` · ${donVi}${donViTen ? " — " + donViTen : ""}` : ""}
-          </p>
+        <div className="ml-auto text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          Quyển № <span className="font-mono text-foreground/80">{bookNo}</span> · Mở sổ {openYear}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <KpiCard icon={HardDrive} label="Tài sản con" value={String(devices.length)} />
-        <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} />
-        <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} />
-        <KpiCard icon={RefreshCw} label="Hỏng hóc / thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "text-orange-600" : undefined} />
-        <KpiCard icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} />
+      {/* ── BÌA SỔ ── */}
+      <div className="relative overflow-hidden rounded-lg border border-amber-900/20 bg-[linear-gradient(180deg,#f9f3e3_0%,#f4ead0_100%)] shadow-[0_10px_30px_-15px_rgba(120,80,20,0.35)] dark:border-amber-100/10 dark:bg-[linear-gradient(180deg,#2a2317_0%,#1f1a12_100%)]">
+        <div className="absolute inset-y-0 left-0 w-2 bg-[repeating-linear-gradient(180deg,#a67c2a_0_10px,#8a651e_10px_20px)]" />
+        <div className="absolute inset-y-0 left-2 w-px bg-amber-900/30" />
+        <div className="relative px-8 py-6 pl-10">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-amber-900/70 dark:text-amber-100/70">
+            <span className="rounded border border-amber-900/30 px-2 py-0.5">Hồ sơ khai thác</span>
+            <span>· MIRATS 2.0</span>
+            {donVi && <span>· {donVi}{donViTen ? ` — ${donViTen}` : ""}</span>}
+          </div>
+          <div className="mt-2 flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-amber-900/40 bg-amber-100/60 text-amber-900 shadow-inner dark:bg-amber-950/40 dark:text-amber-100">
+              <Network className="h-5 w-5" />
+            </div>
+            <h1 className="font-serif text-3xl leading-tight text-amber-950 dark:text-amber-50">{tenHt}</h1>
+          </div>
+          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-amber-900/80 dark:text-amber-100/70">
+            {maBravo && <span>Mã Bravo: <span className="font-mono">{maBravo}</span></span>}
+            <span>Trang mục lục: <span className="font-mono">{timeline.length}</span> mục</span>
+            {hasGp ? (
+              <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}</span>
+            ) : (
+              <span className="text-red-700/80 dark:text-red-300/80">Chưa có GPKT</span>
+            )}
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-5">
+            <BookStamp icon={HardDrive} label="Tài sản con" value={String(devices.length)} />
+            <BookStamp icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="emerald" />
+            <BookStamp icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "red" : "emerald"} />
+            <BookStamp icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "amber" : undefined} />
+            <BookStamp icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} tone="sky" />
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 rounded-md border border-amber-900/15 bg-amber-50/60 p-3 text-xs md:grid-cols-4 dark:border-amber-100/10 dark:bg-amber-950/30">
+            <StatLine label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
+            <StatLine label="Cập nhật gần nhất" value={fmtVN(lastEventTs)} />
+            <StatLine label="Ngày không sự cố" value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-700" : "text-emerald-700"} />
+            <StatLine label="Nhịp sự cố TB (MTBF)" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
-          <Card>
-            <CardHeader><CardTitle className="text-base">Thông tin hệ thống</CardTitle></CardHeader>
-            <CardContent className="space-y-3 text-sm">
+          <Card className="border-amber-900/15 bg-[linear-gradient(180deg,#fdfaf1_0%,#f7efdb_100%)] shadow-sm dark:border-amber-100/10 dark:bg-amber-950/20">
+            <CardHeader className="border-b border-dashed border-amber-900/20 pb-2">
+              <CardTitle className="font-serif text-base tracking-wide">
+                <span className="mr-2 text-amber-800/70 dark:text-amber-200/70">I.</span>Trang chính — Định danh
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-4 text-sm">
               <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
               <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
               
               <InfoRow icon={Building2} label="Đơn vị quản lý" value={`${donVi || "—"}${donViTen ? " — " + donViTen : ""}`} />
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
+              <div className="border-t border-dashed border-amber-900/20 pt-3">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
+                  <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
+                  <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} />
+                  <MicroStat label="Nhịp sự cố TB" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           <ThanhPhanCard heThongId={id} />
         </div>
 
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle className="text-base">Sổ lý lịch hệ thống</CardTitle></CardHeader>
-          <CardContent>
+        <Card className="lg:col-span-2 border-amber-900/15 bg-[linear-gradient(180deg,#fdfaf1_0%,#f9f2df_100%)] shadow-sm dark:border-amber-100/10 dark:bg-amber-950/20">
+          <CardHeader className="border-b border-dashed border-amber-900/20 pb-2">
+            <CardTitle className="font-serif text-base tracking-wide">
+              <span className="mr-2 text-amber-800/70 dark:text-amber-200/70">II.</span>Nhật ký khai thác
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
             <Tabs defaultValue="tl">
-              <TabsList className="flex flex-wrap h-auto">
+              <TabsList className="flex h-auto flex-wrap gap-1 bg-amber-100/40 dark:bg-amber-950/30">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
                 <TabsTrigger value="vt"><Cpu className="mr-1 h-3.5 w-3.5" />Thành phần hệ thống</TabsTrigger>
                 <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
@@ -414,6 +471,42 @@ function KpiCard({ icon: Icon, label, value, tone }: { icon: React.ComponentType
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function BookStamp({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: "red" | "emerald" | "amber" | "sky" }) {
+  const toneCls =
+    tone === "red" ? "text-red-700 border-red-800/30" :
+    tone === "emerald" ? "text-emerald-700 border-emerald-800/30" :
+    tone === "amber" ? "text-amber-800 border-amber-900/30" :
+    tone === "sky" ? "text-sky-700 border-sky-800/30" :
+    "text-amber-950 dark:text-amber-100 border-amber-900/30";
+  return (
+    <div className={`relative flex items-center gap-2 rounded-md border bg-amber-50/80 px-3 py-2 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6),0_1px_0_rgba(120,80,20,0.15)] dark:bg-amber-950/30 ${toneCls}`}>
+      <Icon className="h-4 w-4 opacity-80" />
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-wider opacity-70">{label}</div>
+        <div className="font-serif text-lg leading-none">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function StatLine({ label, value, tone }: { label: string; value: string; tone?: string }) {
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-wider text-amber-900/70 dark:text-amber-100/60">{label}</div>
+      <div className={`font-serif text-sm ${tone ?? "text-amber-950 dark:text-amber-100"}`}>{value}</div>
+    </div>
+  );
+}
+
+function MicroStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded border border-amber-900/15 bg-amber-50/70 px-2 py-1 dark:border-amber-100/10 dark:bg-amber-950/20">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-serif text-sm">{value}</div>
+    </div>
   );
 }
 
