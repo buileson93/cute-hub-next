@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -34,21 +34,6 @@ import { ghiBaoDuongFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
 import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 
-export const Route = createFileRoute("/_app/bao-tri/moi")({
-  head: () => ({
-    meta: [
-      { title: "Tạo phiếu bảo dưỡng — MIRATS 2.0" },
-      { name: "description", content: "Lập phiếu bảo dưỡng theo mẫu của từng hệ thống, ghi vào sổ lý lịch tài sản và hệ thống." },
-    ],
-  }),
-  validateSearch: (s: Record<string, unknown>): { heThong?: string; version?: string; congViec?: string } => ({
-    heThong: typeof s.heThong === "string" ? s.heThong : undefined,
-    version: typeof s.version === "string" ? s.version : undefined,
-    congViec: typeof s.congViec === "string" ? s.congViec : undefined,
-  }),
-  component: BaoTriMoiPage,
-});
-
 const LOAI_OPTIONS = ["Định kỳ", "Đột xuất", "Hiệu chuẩn", "Nâng cấp"];
 const TT_OPTIONS = ["Kế hoạch", "Đang thực hiện", "Hoàn thành", "Hoãn"];
 
@@ -67,15 +52,24 @@ type FieldRow = {
 
 
 
-function BaoTriMoiPage() {
-  const nav = useNavigate();
+export interface BaoTriMoiFormProps {
+  defaultHeThongId?: string;
+  defaultVersion?: string;
+  defaultCongViec?: string;
+  embedded?: boolean;
+  onDone?: () => void;
+}
+
+export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongViec, embedded, onDone }: BaoTriMoiFormProps) {
   const qc = useQueryClient();
   const { user, profile, hasRole } = useSession();
   const { data: taxo } = useDbTaxonomy();
 
   const canManage = hasRole("admin") || hasRole("phong_kt") || hasRole("ktv") || hasRole("to_truong");
 
-  const { heThong: heThongParam, version: versionParam, congViec: congViecParam } = Route.useSearch();
+  const heThongParam = defaultHeThongId;
+  const versionParam = defaultVersion;
+  void defaultCongViec;
   const [heThongId, setHeThongId] = useState(heThongParam ?? "");
   const [heThongTen, setHeThongTen] = useState("");
   const [templateId, setTemplateId] = useState("");
@@ -293,7 +287,7 @@ function BaoTriMoiPage() {
       setPreviewOpen(false);
       setMaBaseDraft(null);
       qc.invalidateQueries({ queryKey: ["operations_data"] });
-      nav({ to: "/bao-tri" });
+      if (onDone) onDone();
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -361,15 +355,19 @@ function BaoTriMoiPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-6 lg:px-12">
-      <FormPageHeader
-        backTo="/bao-tri"
-        backLabel="Quay lại"
-        icon={Wrench}
-        title="Tạo phiếu bảo dưỡng"
-        description="Chọn hệ thống để hiện các mẫu phiếu phù hợp. Khi lưu, phiếu được ghi vào sổ lý lịch của từng tài sản và của hệ thống."
-      />
-      <div className="mt-4" />
+    <div className={embedded ? "px-4 py-4" : "mx-auto max-w-3xl px-6 py-6 lg:px-12"}>
+      {!embedded && (
+        <>
+          <FormPageHeader
+            backTo="/bao-tri"
+            backLabel="Quay lại"
+            icon={Wrench}
+            title="Tạo phiếu bảo dưỡng"
+            description="Chọn hệ thống để hiện các mẫu phiếu phù hợp. Khi lưu, phiếu được ghi vào sổ lý lịch của từng tài sản và của hệ thống."
+          />
+          <div className="mt-4" />
+        </>
+      )}
 
 
       {/* 1. Hệ thống */}
