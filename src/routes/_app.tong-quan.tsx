@@ -705,7 +705,7 @@ function fmtRelative(iso: string): string {
   return new Date(iso).toLocaleDateString("vi-VN");
 }
 
-function HealthTile({ icon, label, value, hint, tone, loading }: {
+function HealthTile({ icon, label, value, hint, tone, loading, to }: {
   icon: React.ReactNode; label: string; value: string; hint?: string;
   tone: "default" | "ok" | "warn" | "danger"; loading: boolean; to?: string;
 }) {
@@ -715,8 +715,8 @@ function HealthTile({ icon, label, value, hint, tone, loading }: {
     warn: "text-amber-600 dark:text-amber-400",
     danger: "text-destructive",
   };
-  return (
-    <Card>
+  const inner = (
+    <Card className={cn(to && "cursor-pointer transition-shadow hover:shadow-md")}>
       <CardContent className="flex flex-col gap-1 p-3 transition-colors hover:bg-accent/40">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className={toneClasses[tone]}>{icon}</span>
@@ -728,6 +728,22 @@ function HealthTile({ icon, label, value, hint, tone, loading }: {
         {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
       </CardContent>
     </Card>
+  );
+  if (to) return <Link to={to as never} className="block">{inner}</Link>;
+  return inner;
+}
+
+function SectionHeader({ icon, title, to, more }: { icon: React.ReactNode; title: string; to?: string; more?: string }) {
+  return (
+    <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      {icon}
+      <span>{title}</span>
+      {to && more && (
+        <Link to={to as never} className="ml-auto normal-case text-[11px] font-normal text-primary hover:underline">
+          {more} →
+        </Link>
+      )}
+    </div>
   );
 }
 
