@@ -64,19 +64,18 @@ function afterColon(s: string, ...prefixes: string[]): string {
   return s.trim();
 }
 
-// Loại bỏ "rác" watermark ở cuối câu: các token 1-3 ký tự lẻ, chấm cuối thừa.
+// Loại bỏ "rác" watermark ở cuối câu (chỉ tokens ASCII ngắn, giữ nguyên
+// từ tiếng Việt có dấu và các đơn vị hợp lệ như km, Đ, B).
 function cleanTail(s: string): string {
   if (!s) return s;
-  let v = s.trim();
-  // bỏ tối đa 4 token lẻ (1-3 ký tự, không phải số/đơn vị) ở cuối
-  for (let i = 0; i < 4; i++) {
-    const m = v.match(/^(.*?)(?:\s+[A-Za-zÀ-ỹ.]{1,3})\s*[.,;]?\s*$/);
+  let v = s.trim().replace(/[–\-]\s*$/, "").trim();
+  for (let i = 0; i < 6; i++) {
+    // token ASCII 1-2 ký tự, hoặc dạng "M.", "T.k", cuối câu
+    const m = v.match(/^(.*?[A-Za-zÀ-ỹ0-9\)])[\s.,;:\-]+(?:[A-Za-z]\.?[A-Za-z]?|[A-Za-z]{1,2}\.?)\s*$/);
     if (!m) break;
-    const trimmed = m[1].trim();
-    if (!trimmed || trimmed.length < 5) break;
-    v = trimmed;
+    v = m[1].trim();
   }
-  return v.replace(/[\s.,;]+$/, "").trim();
+  return v.replace(/[\s,;:]+$/, "").trim();
 }
 
 // Bản đồ trạm/địa danh → mã đơn vị quản lý (khớp app_role/enum don_vi_code).
