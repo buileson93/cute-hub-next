@@ -792,9 +792,23 @@ function DanhMucThietBiPage() {
         help="Toàn bộ tài sản trong CSDL — gồm cả tài sản đang trong hệ thống khai thác và tài sản độc lập (vật tư dự phòng, công cụ dụng cụ, tài sản đo) chưa gán vào hệ thống nào."
         actions={
           canManage ? (
-            <Button size="sm" className="h-9 gap-1.5" onClick={openCreate}>
-              <Plus className="h-4 w-4" /> Thêm tài sản
-            </Button>
+            <div className="flex items-center gap-2">
+              <div className={cn(
+                "flex items-center gap-2 rounded-md border px-2.5 py-1",
+                editMode ? "border-primary/40 bg-primary/5" : "border-border bg-muted/30",
+              )}>
+                <Settings2 className={cn("h-3.5 w-3.5", editMode ? "text-primary" : "text-muted-foreground")} />
+                <Label htmlFor="edit-mode" className="cursor-pointer text-xs font-medium">
+                  Chế độ chỉnh sửa
+                </Label>
+                <Switch id="edit-mode" checked={editMode} onCheckedChange={setEditMode} />
+              </div>
+              {editOn && (
+                <Button size="sm" className="h-9 gap-1.5" onClick={openCreate}>
+                  <Plus className="h-4 w-4" /> Thêm tài sản
+                </Button>
+              )}
+            </div>
           ) : null
         }
       />
