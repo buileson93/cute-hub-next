@@ -105,6 +105,10 @@ function HeThongInner({
   const [nkPerson, setNkPerson] = useState<string>("all");
   const [nkRange, setNkRange] = useState<"all" | "3m" | "6m" | "12m">("all");
   const [nkLimit, setNkLimit] = useState(20);
+  // Chế độ xem gọn & thu gọn / mở rộng các card lớn
+  const [compact, setCompact] = useState(false);
+  const [nkOpen, setNkOpen] = useState(true);
+  const [tpOpen, setTpOpen] = useState(true);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
   const [thrOpen, setThrOpen] = useState(false);
   const thrKey = `hp-thresholds:${donViMa || "default"}`;
