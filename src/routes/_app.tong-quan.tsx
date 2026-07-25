@@ -7,7 +7,8 @@ import {
 } from "recharts";
 import {
   HardDrive, Activity, PauseCircle, AlertOctagon, CalendarClock, CalendarX,
-  BadgeAlert, FileWarning, RefreshCw, Loader2,
+  BadgeAlert, FileWarning, RefreshCw, Loader2, Flame, HeartPulse, ShieldCheck,
+  Gauge, Wrench, TrendingUp, TrendingDown, Repeat2, Radio, ClipboardCheck, ArrowRightLeft,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -59,7 +60,17 @@ interface Kpis {
 }
 interface SuCoByMonth { thang: string; muc_do: string; so_luong: number }
 interface AssetStatus { trang_thai_ma: string; ten: string; so_luong: number }
-interface TopHT { he_thong_id: string; ten_he_thong: string; so_su_co_mo: number }
+interface TopHT { he_thong_id: string; ten_he_thong: string; so_su_co_mo: number; mttr_h: number }
+interface Brief { su_co_khan: number; pm_hom_nay: number; pm_qua_han: number; han_7_ngay: number; sap_het_han_30: number }
+interface Health {
+  availability_pct: number | null; mtbf_h: number; mttr_h: number; mttr_prev_h: number;
+  compliance_pct: number | null; n_closed: number; n_closed_prev: number;
+  downtime_h: number; total_h: number; period_days: number;
+}
+interface HeatCell { dow: number; hour: number; so_luong: number }
+interface ExpiryRow { loai: string; ref_id: string; ten: string; ngay_het: string; days_left: number }
+interface TopTbLap { thiet_bi_id: string; ma: string; ten: string; so_lan: number; mttr_h: number }
+interface FeedRow { at: string; loai: string; tieu_de: string; ref_route: string; ref_id: string }
 
 const MUC_DO_COLORS: Record<string, string> = {
   nghiem_trong: "hsl(0 84% 60%)",
