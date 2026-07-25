@@ -240,6 +240,7 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
   );
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
