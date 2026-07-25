@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import type { LicenseRow } from "@/lib/mirats/db-licenses";
+import { saveGpktRecord } from "@/lib/mirats/gpkt-import.functions";
 
 interface Props {
   open: boolean;
@@ -50,6 +52,16 @@ async function fetchThietBiOptions(): Promise<{ id: string; ma_thiet_bi: string;
   return data ?? [];
 }
 
+async function fetchHeThongOptions(): Promise<{ id: string; ma: string | null; ten: string | null }[]> {
+  const { data, error } = await supabase
+    .from("dm_he_thong")
+    .select("id, ma, ten")
+    .order("ma", { ascending: true })
+    .limit(2000);
+  if (error) throw error;
+  return data ?? [];
+}
+
 /** Đọc chi tiết `giay_phep` để prefill (view v_giay_phep không có *_id thô). */
 async function fetchLicenseDetail(rowId: string) {
   const { data, error } = await supabase
@@ -64,6 +76,7 @@ async function fetchLicenseDetail(rowId: string) {
 interface FormState {
   maGiayPhep: string;
   thietBiId: string;
+  heThongId: string;
   loaiGiayPhepId: string;
   soGiayPhep: string;
   ngayCap: string;
@@ -74,7 +87,7 @@ interface FormState {
 }
 
 const EMPTY: FormState = {
-  maGiayPhep: "", thietBiId: "", loaiGiayPhepId: "", soGiayPhep: "",
+  maGiayPhep: "", thietBiId: "", heThongId: "", loaiGiayPhepId: "", soGiayPhep: "",
   ngayCap: "", ngayHetHan: "", noiCapId: "", fileUrl: "", ghiChu: "",
 };
 
@@ -82,10 +95,13 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
   const qc = useQueryClient();
   const isEdit = !!row;
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [nguon, setNguon] = useState<"giay_phep" | "gpkt">("giay_phep");
+  const saveGpkt = useServerFn(saveGpktRecord);
 
   const loaiOpts = useQuery({ queryKey: ["dm_loai_giay_phep_active"], queryFn: () => fetchOptions("dm_loai_giay_phep"), staleTime: 60_000 });
   const noiOpts = useQuery({ queryKey: ["dm_noi_cap_active"], queryFn: () => fetchOptions("dm_noi_cap"), staleTime: 60_000 });
   const tbOpts = useQuery({ queryKey: ["thiet_bi_options"], queryFn: fetchThietBiOptions, staleTime: 60_000, enabled: open });
+  const htOpts = useQuery({ queryKey: ["dm_he_thong_options"], queryFn: fetchHeThongOptions, staleTime: 60_000, enabled: open });
 
   const detail = useQuery({
     queryKey: ["giay_phep_detail", row?.rowId],
@@ -95,12 +111,14 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    if (!isEdit) { setForm(EMPTY); return; }
+    if (!isEdit) { setForm(EMPTY); setNguon("giay_phep"); return; }
+    if (row) setNguon(row.nguon);
     if (!detail.data) return;
     const d = detail.data;
     setForm({
       maGiayPhep: d.ma_giay_phep ?? "",
       thietBiId: d.thiet_bi_id ?? "",
+      heThongId: "",
       loaiGiayPhepId: d.loai_giay_phep_id ?? "",
       soGiayPhep: d.so_giay_phep ?? "",
       ngayCap: d.ngay_cap ?? "",
@@ -109,10 +127,31 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
       fileUrl: d.file_giay_phep ?? "",
       ghiChu: d.ghi_chu ?? "",
     });
-  }, [open, isEdit, detail.data]);
+  }, [open, isEdit, detail.data, row]);
 
   const save = useMutation({
     mutationFn: async () => {
+      if (nguon === "gpkt") {
+        if (!form.soGiayPhep.trim()) throw new Error("Số giấy phép bắt buộc");
+        if (!form.heThongId) throw new Error("Chưa chọn hệ thống");
+        await saveGpkt({
+          data: {
+            fields: {
+              gp_so: form.soGiayPhep.trim(),
+              gp_ngay: form.ngayCap || "",
+              gp_han: form.ngayHetHan || "",
+              gp_cu: "", ten_he_thong_theo_gp: "", nam_sx_gp: "", kieu_thiet_bi: "",
+              so_san_xuat: "", noi_san_xuat: "", muc_dich: "", pham_vi: "",
+              ma_dia_chi: "", dia_diem: "", thoi_gian: "", thanh_phan_theo_gp: "",
+              don_vi: "", tram: "",
+            },
+            he_thong_id: form.heThongId,
+            file_gpkt: form.fileUrl.trim() || null,
+            overwrite_id: null,
+          },
+        });
+        return;
+      }
       if (!form.maGiayPhep.trim()) throw new Error("Mã giấy phép bắt buộc");
       if (!form.thietBiId) throw new Error("Chưa chọn tài sản");
       const payload = {
@@ -148,6 +187,9 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
   const tbOptions = useMemo(() =>
     (tbOpts.data ?? []).map((t) => ({ value: t.id, label: `${t.ma_thiet_bi}${t.ten_thiet_bi ? " — " + t.ten_thiet_bi : ""}` })),
     [tbOpts.data]);
+  const htOptions = useMemo(() =>
+    (htOpts.data ?? []).map((h) => ({ value: h.id, label: `${h.ma ?? ""}${h.ten ? " — " + h.ten : ""}` })),
+    [htOpts.data]);
 
   const disabled = isEdit && row?.nguon === "gpkt";
 
@@ -159,7 +201,9 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
           <DialogDescription>
             {disabled
               ? "Giấy phép khai thác (GPKT) gắn hệ thống — hiện chưa hỗ trợ sửa trực tiếp trong dialog này."
-              : "Giấy phép gắn tài sản (bảng giay_phep). Ngưỡng cảnh báo mặc định 90 ngày trước hạn."}
+              : nguon === "gpkt"
+                ? "GPKT — Giấy phép khai thác gắn HỆ THỐNG (bảng giay_phep_khai_thac)."
+                : "Giấy phép gắn TÀI SẢN (bảng giay_phep). Ngưỡng cảnh báo mặc định 90 ngày trước hạn."}
           </DialogDescription>
         </DialogHeader>
 
@@ -169,6 +213,22 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {!isEdit && (
+              <div className="sm:col-span-2">
+                <Field label="Gán cho *">
+                  <div className="flex gap-2">
+                    <Button type="button" size="sm" variant={nguon === "giay_phep" ? "default" : "outline"} onClick={() => setNguon("giay_phep")}>
+                      Tài sản (thiết bị)
+                    </Button>
+                    <Button type="button" size="sm" variant={nguon === "gpkt" ? "default" : "outline"} onClick={() => setNguon("gpkt")}>
+                      GPKT — Hệ thống
+                    </Button>
+                  </div>
+                </Field>
+              </div>
+            )}
+            {nguon === "giay_phep" ? (
+              <>
             <Field label="Mã giấy phép *">
               <Input value={form.maGiayPhep} onChange={(e) => setForm({ ...form, maGiayPhep: e.target.value })} placeholder="GP_XXXXXX" />
             </Field>
@@ -181,15 +241,30 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
                 searchPlaceholder="Tìm mã/tên tài sản…"
               />
             </Field>
+              </>
+            ) : (
+              <div className="sm:col-span-2">
+                <Field label="Hệ thống *">
+                  <Combobox
+                    value={form.heThongId}
+                    onChange={(v) => setForm({ ...form, heThongId: v })}
+                    options={htOptions}
+                    placeholder="Chọn hệ thống…"
+                    searchPlaceholder="Tìm mã/tên hệ thống…"
+                  />
+                </Field>
+              </div>
+            )}
             <Field label="Loại giấy phép">
               <Combobox
                 value={form.loaiGiayPhepId}
                 onChange={(v) => setForm({ ...form, loaiGiayPhepId: v })}
                 options={(loaiOpts.data ?? []).map((o) => ({ value: o.id, label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}` }))}
                 placeholder="Chọn loại…"
+                disabled={nguon === "gpkt"}
               />
             </Field>
-            <Field label="Số giấy phép">
+            <Field label={nguon === "gpkt" ? "Số giấy phép *" : "Số giấy phép"}>
               <Input value={form.soGiayPhep} onChange={(e) => setForm({ ...form, soGiayPhep: e.target.value })} />
             </Field>
             <Field label="Ngày cấp">
@@ -204,6 +279,7 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
                 onChange={(v) => setForm({ ...form, noiCapId: v })}
                 options={(noiOpts.data ?? []).map((o) => ({ value: o.id, label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}` }))}
                 placeholder="Chọn nơi cấp…"
+                disabled={nguon === "gpkt"}
               />
             </Field>
             <Field label="Link file (tuỳ chọn)">
@@ -211,7 +287,7 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
             </Field>
             <div className="sm:col-span-2">
               <Field label="Ghi chú">
-                <Textarea rows={2} value={form.ghiChu} onChange={(e) => setForm({ ...form, ghiChu: e.target.value })} />
+                <Textarea rows={2} value={form.ghiChu} onChange={(e) => setForm({ ...form, ghiChu: e.target.value })} disabled={nguon === "gpkt"} />
               </Field>
             </div>
           </div>
