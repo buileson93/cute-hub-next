@@ -20,6 +20,10 @@ import {
   parseGpktPdf, checkGpktDuplicate, saveGpktRecord,
   type GpktParsedFields, type GpktDuplicate,
 } from "@/lib/mirats/gpkt-import.functions";
+import { extractPdfText } from "@/lib/mirats/gpkt-pdf-text";
+import { parseGpktText } from "@/lib/mirats/gpkt-regex-parser";
+  const [parseMethod, setParseMethod] = useState<"regex" | "ai" | null>(null);
+
 
 const BUCKET = "giay-phep-khai-thac";
 
@@ -86,7 +90,7 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
   // Reset khi đóng
   useEffect(() => {
     if (!open) {
-      setFile(null); setFields(EMPTY); setHeThongId(""); setDuplicates([]); setOverwriteId(null);
+      setFile(null); setFields(EMPTY); setHeThongId(""); setDuplicates([]); setOverwriteId(null); setParseMethod(null);
     }
   }, [open]);
 
@@ -101,14 +105,50 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
 
   const parseM = useMutation({
     mutationFn: async (f: File) => {
+      // Tầng-1: trích text trên trình duyệt + regex parser (nhanh, không tốn AI credit).
+      try {
+        const txt = await extractPdfText(f);
+        if (txt && txt.length > 200) {
+          const r = parseGpktText(txt);
+          // đạt >=8/17 trường và có số GP → dùng luôn kết quả regex
+          if (r.fields.gp_so && r.filledCount >= 8) {
+            return { fields: r.fields, method: "regex" as const, filled: r.filledCount };
+          }
+        }
+      } catch (e) {
+        console.warn("[GPKT] regex tầng-1 lỗi, fallback AI:", e);
+      }
+      // Tầng-2: AI (PDF scan/không có text-layer hoặc regex ra quá ít trường).
+      const base64 = await fileToBase64(f);
+      const fields = await parseGpktPdf({
+        data: { base64, filename: f.name, mime: f.type || "application/pdf" },
+      });
+      return { fields, method: "ai" as const, filled: 0 };
+    },
+    onSuccess: (r) => {
+      setFields(r.fields);
+      setParseMethod(r.method);
+      if (r.method === "regex") {
+        toast.success(`Bóc tách nhanh xong (${r.filled}/17 trường). Kiểm tra và bổ sung nếu cần.`);
+      } else {
+        toast.success("Đã bóc tách bằng AI. Kiểm tra và bổ sung nếu cần.");
+      }
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : String(e)),
+  });
+
+  // Nút "Bóc tách lại bằng AI" — bắt buộc gọi AI khi regex chưa đủ.
+  const reparseAiM = useMutation({
+    mutationFn: async (f: File) => {
       const base64 = await fileToBase64(f);
       return parseGpktPdf({
         data: { base64, filename: f.name, mime: f.type || "application/pdf" },
       });
     },
-    onSuccess: (d) => {
-      setFields(d);
-      toast.success("Đã bóc tách nội dung. Kiểm tra lại và bổ sung nếu cần.");
+    onSuccess: (fields) => {
+      setFields(fields);
+      setParseMethod("ai");
+      toast.success("Đã bóc tách lại bằng AI.");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : String(e)),
   });
@@ -173,12 +213,12 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            Nhập giấy phép khai thác từ PDF (AI hỗ trợ)
+            Nhập giấy phép khai thác từ PDF
           </DialogTitle>
           <DialogDescription>
-            Chọn file PDF giấy phép khai thác. AI sẽ bóc tách các trường; bạn kiểm tra,
-            gán hệ thống và lưu. Hệ thống sẽ cảnh báo nếu số GP đã tồn tại hoặc hệ thống
-            đã có GPKT còn hiệu lực.
+            Ưu tiên bóc tách nhanh bằng mẫu chuẩn GP-CHK (không tốn AI credit).
+            Nếu PDF là ảnh scan hoặc mẫu lạ, hệ thống tự chuyển sang AI. Bạn có thể
+            bấm "Bóc tách lại bằng AI" để kiểm tra chéo.
           </DialogDescription>
         </DialogHeader>
 
@@ -215,6 +255,15 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
           >
             {parseM.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
             Bóc tách lại
+          </Button>
+          <Button
+            variant="outline"
+            disabled={!file || reparseAiM.isPending}
+            onClick={() => file && reparseAiM.mutate(file)}
+            title="Ép dùng AI ngay cả khi Tầng-1 đã bóc được"
+          >
+            {reparseAiM.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
+            Bóc tách bằng AI
           </Button>
         </div>
 
@@ -313,8 +362,14 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
 
         <DialogFooter className="gap-2">
           <div className="mr-auto text-xs text-muted-foreground flex items-center gap-2">
-            {parseM.isPending && <><Loader2 className="h-3 w-3 animate-spin" /> Đang bóc tách bằng AI…</>}
-            {file && !parseM.isPending && <Badge variant="secondary">PDF: {(file.size / 1024).toFixed(0)} KB</Badge>}
+            {(parseM.isPending || reparseAiM.isPending) && <><Loader2 className="h-3 w-3 animate-spin" /> Đang bóc tách…</>}
+            {file && !parseM.isPending && !reparseAiM.isPending && (
+              <>
+                <Badge variant="secondary">PDF: {(file.size / 1024).toFixed(0)} KB</Badge>
+                {parseMethod === "regex" && <Badge variant="outline" className="border-emerald-500 text-emerald-700">Bóc tách nhanh</Badge>}
+                {parseMethod === "ai" && <Badge variant="outline" className="border-primary text-primary">AI</Badge>}
+              </>
+            )}
           </div>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
           <Button disabled={!canSave || saveM.isPending} onClick={() => saveM.mutate()}>
