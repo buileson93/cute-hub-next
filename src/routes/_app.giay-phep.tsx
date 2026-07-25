@@ -25,6 +25,7 @@ import { useSession } from "@/hooks/use-session";
 import { GiayPhepFormDialog } from "@/components/mirats/GiayPhepFormDialog";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { GpktImportDialog } from "@/components/mirats/GpktImportDialog";
+import { GpktBulkImportDialog } from "@/components/mirats/GpktBulkImportDialog";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
 
@@ -68,6 +69,7 @@ function GiayPhepPage() {
   const [editingRow, setEditingRow] = useState<LicenseRow | null>(null);
   const [viewerRow, setViewerRow] = useState<LicenseRow | null>(null);
   const [gpktOpen, setGpktOpen] = useState(false);
+  const [gpktBulkOpen, setGpktBulkOpen] = useState(false);
   const donViMap = useMemo(() => new Map(donVi.map((d) => [d.ma, d])), [donVi]);
   
   const [tab, setTab] = useState("current");
@@ -192,6 +194,9 @@ function GiayPhepPage() {
               <Button size="sm" variant="outline" onClick={() => setGpktOpen(true)}>
                 <Plus className="mr-1 h-4 w-4" /> Nhập GPKT từ PDF (AI)
               </Button>
+              <Button size="sm" variant="outline" onClick={() => setGpktBulkOpen(true)}>
+                <Plus className="mr-1 h-4 w-4" /> Nhập hàng loạt
+              </Button>
               <Button size="sm" onClick={() => { setEditingRow(null); setDialogOpen(true); }}>
                 <Plus className="mr-1 h-4 w-4" /> Thêm giấy phép
               </Button>
@@ -210,6 +215,7 @@ function GiayPhepPage() {
 
       <GiayPhepFormDialog open={dialogOpen} onOpenChange={setDialogOpen} row={editingRow} />
       <GpktImportDialog open={gpktOpen} onOpenChange={setGpktOpen} />
+      <GpktBulkImportDialog open={gpktBulkOpen} onOpenChange={setGpktBulkOpen} />
       <DocViewerDialog
         open={!!viewerRow}
         onOpenChange={(v) => { if (!v) setViewerRow(null); }}

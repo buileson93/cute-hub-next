@@ -21,9 +21,12 @@ import {
   type GpktParsedFields, type GpktDuplicate,
 } from "@/lib/mirats/gpkt-import.functions";
 import { extractPdfText } from "@/lib/mirats/gpkt-pdf-text";
-import { parseGpktText } from "@/lib/mirats/gpkt-regex-parser";
-  const [parseMethod, setParseMethod] = useState<"regex" | "ai" | null>(null);
-
+import {
+  parseGpktText, validateFields,
+  type FieldMeta, type FieldMetaMap,
+} from "@/lib/mirats/gpkt-regex-parser";
+import { GpktBulkImportDialog } from "@/components/mirats/GpktBulkImportDialog";
+import { cn } from "@/lib/utils";
 
 const BUCKET = "giay-phep-khai-thac";
 
@@ -84,13 +87,18 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
   const [heThongId, setHeThongId] = useState<string>("");
   const [duplicates, setDuplicates] = useState<GpktDuplicate[]>([]);
   const [overwriteId, setOverwriteId] = useState<string | null>(null);
+  const [parseMethod, setParseMethod] = useState<"regex" | "ai" | null>(null);
+  const [perField, setPerField] = useState<FieldMetaMap>(() => validateFields(EMPTY, "empty"));
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const htQ = useQuery({ queryKey: ["dm_he_thong_all"], queryFn: fetchHeThongOptions, staleTime: 60_000, enabled: open });
 
   // Reset khi đóng
   useEffect(() => {
     if (!open) {
-      setFile(null); setFields(EMPTY); setHeThongId(""); setDuplicates([]); setOverwriteId(null); setParseMethod(null);
+      setFile(null); setFields(EMPTY); setHeThongId("");
+      setDuplicates([]); setOverwriteId(null); setParseMethod(null);
+      setPerField(validateFields(EMPTY, "empty"));
     }
   }, [open]);
 
@@ -112,7 +120,7 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
           const r = parseGpktText(txt);
           // đạt >=8/17 trường và có số GP → dùng luôn kết quả regex
           if (r.fields.gp_so && r.filledCount >= 8) {
-            return { fields: r.fields, method: "regex" as const, filled: r.filledCount };
+            return { fields: r.fields, method: "regex" as const, filled: r.filledCount, perField: r.perField };
           }
         }
       } catch (e) {
@@ -123,11 +131,12 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
       const fields = await parseGpktPdf({
         data: { base64, filename: f.name, mime: f.type || "application/pdf" },
       });
-      return { fields, method: "ai" as const, filled: 0 };
+      return { fields, method: "ai" as const, filled: 0, perField: validateFields(fields, "ai") };
     },
     onSuccess: (r) => {
       setFields(r.fields);
       setParseMethod(r.method);
+      setPerField(r.perField);
       if (r.method === "regex") {
         toast.success(`Bóc tách nhanh xong (${r.filled}/17 trường). Kiểm tra và bổ sung nếu cần.`);
       } else {
@@ -148,10 +157,33 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
     onSuccess: (fields) => {
       setFields(fields);
       setParseMethod("ai");
+      setPerField(validateFields(fields, "ai"));
       toast.success("Đã bóc tách lại bằng AI.");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : String(e)),
   });
+
+  // Sửa tay 1 trường → tính lại meta cho trường đó, giữ nhãn "manual".
+  function updateField<K extends keyof GpktParsedFields>(k: K, v: string) {
+    const next = { ...fields, [k]: v };
+    setFields(next);
+    const rev = validateFields(next, "manual");
+    // giữ nguyên source của các trường không đổi để badge phản ánh đúng
+    setPerField((prev) => {
+      const out: FieldMetaMap = { ...prev };
+      (Object.keys(rev) as Array<keyof GpktParsedFields>).forEach((key) => {
+        if (key === k) out[key] = rev[key];
+        else out[key] = { ...prev[key], needsCheck: rev[key].needsCheck, reason: rev[key].reason };
+      });
+      return out;
+    });
+  }
+
+  // Tổng số trường bắt buộc/warn cần chú ý
+  const needsCheckCount = useMemo(
+    () => (Object.values(perField) as FieldMeta[]).filter((m) => m.needsCheck).length,
+    [perField],
+  );
 
   // Kiểm tra trùng khi gp_so hoặc he_thong_id đổi
   useEffect(() => {
@@ -208,6 +240,7 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
   );
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
@@ -305,21 +338,35 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
         )}
 
         {/* Form */}
+        {/* Bảng tóm tắt review */}
+        {parseMethod && (
+          <div className="rounded-md border bg-muted/30 p-2.5 text-xs flex items-center gap-3 flex-wrap">
+            <span className="font-medium">Review nhập liệu:</span>
+            {parseMethod === "regex" && <Badge variant="outline" className="border-emerald-500 text-emerald-700">Regex</Badge>}
+            {parseMethod === "ai" && <Badge variant="outline" className="border-primary text-primary">AI</Badge>}
+            <span className="text-muted-foreground">
+              {needsCheckCount === 0
+                ? "Tất cả trường hợp lệ."
+                : <><b className="text-amber-600">{needsCheckCount}</b> trường cần bạn kiểm tra (viền vàng).</>}
+            </span>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Field label="Số giấy phép *">
-            <Input value={fields.gp_so} onChange={(e) => setFields({ ...fields, gp_so: e.target.value })} placeholder="622/GP-CHK" />
+          <Field label="Số giấy phép *" meta={perField.gp_so}>
+            <Input value={fields.gp_so} onChange={(e) => updateField("gp_so", e.target.value)} placeholder="622/GP-CHK" className={cn(inputCn(perField.gp_so))} />
           </Field>
-          <Field label="Số GP cũ (thay thế)">
-            <Input value={fields.gp_cu} onChange={(e) => setFields({ ...fields, gp_cu: e.target.value })} />
+          <Field label="Số GP cũ (thay thế)" meta={perField.gp_cu}>
+            <Input value={fields.gp_cu} onChange={(e) => updateField("gp_cu", e.target.value)} className={cn(inputCn(perField.gp_cu))} />
           </Field>
-          <Field label="Ngày cấp">
-            <Input type="date" value={fields.gp_ngay} onChange={(e) => setFields({ ...fields, gp_ngay: e.target.value })} />
+          <Field label="Ngày cấp" meta={perField.gp_ngay}>
+            <Input type="date" value={fields.gp_ngay} onChange={(e) => updateField("gp_ngay", e.target.value)} className={cn(inputCn(perField.gp_ngay))} />
           </Field>
-          <Field label="Ngày hết hạn">
-            <Input type="date" value={fields.gp_han} onChange={(e) => setFields({ ...fields, gp_han: e.target.value })} />
+          <Field label="Ngày hết hạn" meta={perField.gp_han}>
+            <Input type="date" value={fields.gp_han} onChange={(e) => updateField("gp_han", e.target.value)} className={cn(inputCn(perField.gp_han))} />
           </Field>
-          <Field label="Tên hệ thống theo GP">
-            <Input value={fields.ten_he_thong_theo_gp} onChange={(e) => setFields({ ...fields, ten_he_thong_theo_gp: e.target.value })} />
+          <Field label="Tên hệ thống theo GP" meta={perField.ten_he_thong_theo_gp}>
+            <Input value={fields.ten_he_thong_theo_gp} onChange={(e) => updateField("ten_he_thong_theo_gp", e.target.value)} className={cn(inputCn(perField.ten_he_thong_theo_gp))} />
           </Field>
           <Field label="Gán hệ thống (CSDL) *">
             <Combobox
@@ -330,25 +377,49 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
               searchPlaceholder="Tìm hệ thống…"
             />
           </Field>
-          <Field label="Đơn vị"><Input value={fields.don_vi} onChange={(e) => setFields({ ...fields, don_vi: e.target.value })} /></Field>
-          <Field label="Trạm"><Input value={fields.tram} onChange={(e) => setFields({ ...fields, tram: e.target.value })} /></Field>
-          <Field label="Kiểu thiết bị"><Input value={fields.kieu_thiet_bi} onChange={(e) => setFields({ ...fields, kieu_thiet_bi: e.target.value })} /></Field>
-          <Field label="Số sản xuất"><Input value={fields.so_san_xuat} onChange={(e) => setFields({ ...fields, so_san_xuat: e.target.value })} /></Field>
-          <Field label="Nơi sản xuất"><Input value={fields.noi_san_xuat} onChange={(e) => setFields({ ...fields, noi_san_xuat: e.target.value })} /></Field>
-          <Field label="Năm SX"><Input value={fields.nam_sx_gp} onChange={(e) => setFields({ ...fields, nam_sx_gp: e.target.value })} /></Field>
-          <Field label="Địa điểm"><Input value={fields.dia_diem} onChange={(e) => setFields({ ...fields, dia_diem: e.target.value })} /></Field>
-          <Field label="Mã địa chỉ"><Input value={fields.ma_dia_chi} onChange={(e) => setFields({ ...fields, ma_dia_chi: e.target.value })} /></Field>
+          <Field label="Đơn vị" meta={perField.don_vi}>
+            <Input value={fields.don_vi} onChange={(e) => updateField("don_vi", e.target.value)} className={cn(inputCn(perField.don_vi))} />
+          </Field>
+          <Field label="Trạm" meta={perField.tram}>
+            <Input value={fields.tram} onChange={(e) => updateField("tram", e.target.value)} className={cn(inputCn(perField.tram))} />
+          </Field>
+          <Field label="Kiểu thiết bị" meta={perField.kieu_thiet_bi}>
+            <Input value={fields.kieu_thiet_bi} onChange={(e) => updateField("kieu_thiet_bi", e.target.value)} className={cn(inputCn(perField.kieu_thiet_bi))} />
+          </Field>
+          <Field label="Số sản xuất" meta={perField.so_san_xuat}>
+            <Input value={fields.so_san_xuat} onChange={(e) => updateField("so_san_xuat", e.target.value)} className={cn(inputCn(perField.so_san_xuat))} />
+          </Field>
+          <Field label="Nơi sản xuất" meta={perField.noi_san_xuat}>
+            <Input value={fields.noi_san_xuat} onChange={(e) => updateField("noi_san_xuat", e.target.value)} className={cn(inputCn(perField.noi_san_xuat))} />
+          </Field>
+          <Field label="Năm SX" meta={perField.nam_sx_gp}>
+            <Input value={fields.nam_sx_gp} onChange={(e) => updateField("nam_sx_gp", e.target.value)} className={cn(inputCn(perField.nam_sx_gp))} />
+          </Field>
+          <Field label="Địa điểm" meta={perField.dia_diem}>
+            <Input value={fields.dia_diem} onChange={(e) => updateField("dia_diem", e.target.value)} className={cn(inputCn(perField.dia_diem))} />
+          </Field>
+          <Field label="Mã địa chỉ" meta={perField.ma_dia_chi}>
+            <Input value={fields.ma_dia_chi} onChange={(e) => updateField("ma_dia_chi", e.target.value)} className={cn(inputCn(perField.ma_dia_chi))} />
+          </Field>
           <div className="sm:col-span-2">
-            <Field label="Mục đích"><Textarea rows={2} value={fields.muc_dich} onChange={(e) => setFields({ ...fields, muc_dich: e.target.value })} /></Field>
+            <Field label="Mục đích" meta={perField.muc_dich}>
+              <Textarea rows={2} value={fields.muc_dich} onChange={(e) => updateField("muc_dich", e.target.value)} className={cn(inputCn(perField.muc_dich))} />
+            </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="Phạm vi"><Textarea rows={2} value={fields.pham_vi} onChange={(e) => setFields({ ...fields, pham_vi: e.target.value })} /></Field>
+            <Field label="Phạm vi" meta={perField.pham_vi}>
+              <Textarea rows={2} value={fields.pham_vi} onChange={(e) => updateField("pham_vi", e.target.value)} className={cn(inputCn(perField.pham_vi))} />
+            </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="Thành phần theo GP"><Textarea rows={3} value={fields.thanh_phan_theo_gp} onChange={(e) => setFields({ ...fields, thanh_phan_theo_gp: e.target.value })} /></Field>
+            <Field label="Thành phần theo GP" meta={perField.thanh_phan_theo_gp}>
+              <Textarea rows={3} value={fields.thanh_phan_theo_gp} onChange={(e) => updateField("thanh_phan_theo_gp", e.target.value)} className={cn(inputCn(perField.thanh_phan_theo_gp))} />
+            </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="Thời gian khai thác"><Input value={fields.thoi_gian} onChange={(e) => setFields({ ...fields, thoi_gian: e.target.value })} /></Field>
+            <Field label="Thời gian khai thác" meta={perField.thoi_gian}>
+              <Input value={fields.thoi_gian} onChange={(e) => updateField("thoi_gian", e.target.value)} className={cn(inputCn(perField.thoi_gian))} />
+            </Field>
           </div>
         </div>
 
@@ -368,9 +439,15 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
                 <Badge variant="secondary">PDF: {(file.size / 1024).toFixed(0)} KB</Badge>
                 {parseMethod === "regex" && <Badge variant="outline" className="border-emerald-500 text-emerald-700">Bóc tách nhanh</Badge>}
                 {parseMethod === "ai" && <Badge variant="outline" className="border-primary text-primary">AI</Badge>}
+                {needsCheckCount > 0 && (
+                  <Badge variant="outline" className="border-amber-500 text-amber-700">Cần kiểm tra: {needsCheckCount}</Badge>
+                )}
               </>
             )}
           </div>
+          <Button variant="outline" onClick={() => { onOpenChange(false); setBulkOpen(true); }}>
+            Nhập nhiều PDF…
+          </Button>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
           <Button disabled={!canSave || saveM.isPending} onClick={() => saveM.mutate()}>
             {saveM.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -379,14 +456,40 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    <GpktBulkImportDialog open={bulkOpen} onOpenChange={setBulkOpen} />
+    </>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function inputCn(meta?: FieldMeta): string {
+  if (!meta) return "";
+  if (meta.needsCheck) return "border-amber-500 focus-visible:ring-amber-500";
+  if (meta.source === "manual") return "border-sky-400";
+  return "";
+}
+
+function Field({ label, meta, children }: { label: string; meta?: FieldMeta; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+        {meta && (
+          <span className="flex items-center gap-1">
+            {meta.source === "regex" && <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-emerald-500 text-emerald-700">regex</Badge>}
+            {meta.source === "ai" && <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-primary text-primary">AI</Badge>}
+            {meta.source === "manual" && <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-sky-400 text-sky-700">sửa tay</Badge>}
+            {meta.needsCheck && (
+              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-amber-500 text-amber-700" title={meta.reason ?? "Cần kiểm tra"}>
+                cần KT
+              </Badge>
+            )}
+          </span>
+        )}
+      </div>
       {children}
+      {meta?.needsCheck && meta.reason && (
+        <p className="text-[11px] text-amber-600">{meta.reason}</p>
+      )}
     </div>
   );
 }

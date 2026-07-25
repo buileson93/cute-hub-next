@@ -1,12 +1,21 @@
 // ============================================================================
-// Trích xuất text thô từ PDF ngay trên trình duyệt bằng pdfjs-dist.
-// Dùng làm bước Tầng-1 cho GPKT: có text sạch → regex parser hoạt động,
-// không cần gọi AI. Nếu PDF là ảnh scan hoặc thiếu text-layer thì trả về
-// chuỗi rỗng để caller quyết định fallback sang AI.
+// Trích xuất text từ PDF ngay trên trình duyệt bằng pdfjs-dist + tiền xử lý:
+//  · lọc watermark chữ chéo/dọc (theo góc xoay của transform matrix)
+//  · gộp fragment cùng dòng theo Y, sắp theo X, dán các mẩu bị xé
+//  · nối các dòng liền kề bị ngắt vụn (dòng trước không kết thúc câu và
+//    dòng sau bắt đầu bằng chữ thường / dấu tiếp diễn)
+//  · chuẩn hoá toạ độ WGS-84 (DMS → decimal) kèm ngay bên cạnh giá trị gốc
+//
+// `linesFromItems` và `normalizeWgs84` là pure functions — tái sử dụng được
+// trong Node/Vitest bằng cách nạp pdfjs "legacy" build.
 // ============================================================================
 import * as pdfjsLib from "pdfjs-dist";
 // eslint-disable-next-line import/no-unresolved
 import PdfWorker from "pdfjs-dist/build/pdf.worker.mjs?worker";
+import { linesFromItems, normalizeWgs84, type RawPdfItem } from "./gpkt-pdf-parse";
+
+export { linesFromItems, normalizeWgs84, isWatermarkItem } from "./gpkt-pdf-parse";
+export type { RawPdfItem } from "./gpkt-pdf-parse";
 
 let workerInitialized = false;
 function ensureWorker() {
@@ -23,31 +32,17 @@ export async function extractPdfText(file: File): Promise<string> {
     getDocument: (src: { data: ArrayBuffer }) => { promise: Promise<{
       numPages: number;
       getPage: (n: number) => Promise<{
-        getTextContent: () => Promise<{ items: Array<{ str?: string; transform?: number[] }> }>;
+        getTextContent: () => Promise<{ items: RawPdfItem[] }>;
       }>;
     }> };
   }).getDocument({ data: buf });
   const pdf = await loadingTask.promise;
-  const chunks: string[] = [];
-  const maxPages = Math.min(pdf.numPages, 6);
+  const pages: string[] = [];
+  const maxPages = Math.min(pdf.numPages, 8);
   for (let i = 1; i <= maxPages; i++) {
     const page = await pdf.getPage(i);
     const tc = await page.getTextContent();
-    // Gom theo Y để tạo "dòng", loại bỏ text xoay (watermark dọc).
-    const lines = new Map<number, string[]>();
-    for (const it of tc.items) {
-      const str = (it.str ?? "").trim();
-      if (!str) continue;
-      const t = it.transform ?? [1, 0, 0, 1, 0, 0];
-      if (Math.abs(t[1]) > 0.3) continue; // bỏ chữ xoay/watermark
-      const y = Math.round(t[5]);
-      const arr = lines.get(y) ?? [];
-      arr.push(str);
-      lines.set(y, arr);
-    }
-    const ys = Array.from(lines.keys()).sort((a, b) => b - a);
-    for (const y of ys) chunks.push((lines.get(y) ?? []).join(" "));
-    chunks.push("");
+    pages.push(linesFromItems(tc.items));
   }
-  return chunks.join("\n");
+  return normalizeWgs84(pages.join("\n\n"));
 }

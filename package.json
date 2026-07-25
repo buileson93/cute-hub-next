@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "apply:grants": "node scripts/apply-grants.mjs",
     "verify:grants": "node scripts/verify-grants.mjs",
-    "postmigrate": "node scripts/apply-grants.mjs && node scripts/verify-grants.mjs"
+    "postmigrate": "node scripts/apply-grants.mjs && node scripts/verify-grants.mjs",
+    "test:gpkt": "tsx scripts/test-gpkt-parser.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.5",
