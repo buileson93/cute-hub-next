@@ -80,35 +80,28 @@ export function ChecklistDesigner({
   const skipHistoryRef = useRef(false);
 
   const patch = useCallback((next: DesignerSection[]) => {
-    setHistory((h) => {
-      const nh = [...h, sections].slice(-50);
-      return nh;
-    });
+    setHistory((h) => [...h, sections].slice(-50));
     setFuture([]);
     onChange(next);
   }, [sections, onChange]);
 
   const undo = useCallback(() => {
-    setHistory((h) => {
-      if (h.length === 0) return h;
-      const prev = h[h.length - 1];
-      setFuture((f) => [sections, ...f].slice(0, 50));
-      skipHistoryRef.current = true;
-      onChange(prev);
-      return h.slice(0, -1);
-    });
-  }, [sections, onChange]);
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setFuture((f) => [sections, ...f].slice(0, 50));
+    setHistory((h) => h.slice(0, -1));
+    skipHistoryRef.current = true;
+    onChange(prev);
+  }, [history, sections, onChange]);
 
   const redo = useCallback(() => {
-    setFuture((f) => {
-      if (f.length === 0) return f;
-      const next = f[0];
-      setHistory((h) => [...h, sections].slice(-50));
-      skipHistoryRef.current = true;
-      onChange(next);
-      return f.slice(1);
-    });
-  }, [sections, onChange]);
+    if (future.length === 0) return;
+    const next = future[0];
+    setHistory((h) => [...h, sections].slice(-50));
+    setFuture((f) => f.slice(1));
+    skipHistoryRef.current = true;
+    onChange(next);
+  }, [future, sections, onChange]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
