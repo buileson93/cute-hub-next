@@ -1353,24 +1353,30 @@ function TabHeaderLink({ label, to, heThongId }: { label: string; to: "/bao-tri"
 }
 
 function QuickActionsBar({ heThongId }: { heThongId: string }) {
+  const qc = useQueryClient();
   const actions = useMemo(() => ([
-    { path: "/su-co/moi", label: "Sự cố kỹ thuật", icon: AlertTriangle, tone: "text-red-600" },
-    { path: "/bao-tri/moi", label: "Phiếu bảo dưỡng", icon: Wrench, tone: "text-emerald-600" },
-    { path: "/hong-hoc/moi", label: "Hỏng hóc", icon: RefreshCw, tone: "text-orange-600" },
-    { path: "/ban-giao/moi", label: "Bàn giao", icon: ArrowLeftRight, tone: "text-sky-600" },
-    { path: "/forms", label: "Biên bản", icon: FileText, tone: "text-violet-600" },
-    { path: "/van-de", label: "Vấn đề (RCA)", icon: Bug, tone: "text-amber-600" },
-    { path: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
-  ] as const), []);
-  const [openPath, setOpenPath] = useState<string | null>(null);
+    { key: "su-co", label: "Sự cố kỹ thuật", icon: AlertTriangle, tone: "text-red-600", native: true, path: "/su-co/moi" as const },
+    { key: "bao-tri", label: "Phiếu bảo dưỡng", icon: Wrench, tone: "text-emerald-600", native: true, path: "/bao-tri/moi" as const },
+    { key: "hong-hoc", label: "Hỏng hóc", icon: RefreshCw, tone: "text-orange-600", native: true, path: "/hong-hoc/moi" as const },
+    { key: "ban-giao", label: "Bàn giao", icon: ArrowLeftRight, tone: "text-sky-600", native: false, path: "/ban-giao/moi" as const },
+    { key: "forms", label: "Biên bản", icon: FileText, tone: "text-violet-600", native: false, path: "/forms" as const },
+    { key: "van-de", label: "Vấn đề (RCA)", icon: Bug, tone: "text-amber-600", native: false, path: "/van-de" as const },
+    { key: "kpi", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600", native: false, path: "/bao-tri/cong-viec" as const },
+  ]), []);
+  const [openKey, setOpenKey] = useState<string | null>(null);
   const [warmed, setWarmed] = useState<Record<string, boolean>>({});
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
   const urlFor = useCallback((p: string) => `${p}?he_thong=${encodeURIComponent(heThongId)}&embed=1`, [heThongId]);
-  const warm = useCallback((p: string) => { setWarmed((prev) => (prev[p] ? prev : { ...prev, [p]: true })); }, []);
-  const currentLabel = actions.find((a) => a.path === openPath)?.label ?? "Tác nghiệp nhanh";
+  const warm = useCallback((k: string) => { setWarmed((prev) => (prev[k] ? prev : { ...prev, [k]: true })); }, []);
+  const current = actions.find((a) => a.key === openKey) ?? null;
+  const currentLabel = current?.label ?? "Tác nghiệp nhanh";
+  const closeSheet = useCallback(() => {
+    setOpenKey(null);
+    qc.invalidateQueries({ queryKey: ["operations_data"] });
+  }, [qc]);
   return (
     <div className="no-print flex items-center justify-end">
-      <DropdownMenu onOpenChange={(v) => { if (v) actions.forEach((a) => warm(a.path)); }}>
+      <DropdownMenu onOpenChange={(v) => { if (v) actions.filter((a) => !a.native).forEach((a) => warm(a.key)); }}>
         <DropdownMenuTrigger asChild>
           <Button size="sm" className="h-8 gap-1.5">
             <Plus className="h-3.5 w-3.5" />
@@ -1383,45 +1389,62 @@ function QuickActionsBar({ heThongId }: { heThongId: string }) {
           <DropdownMenuSeparator />
           {actions.map((a) => (
             <DropdownMenuItem
-              key={a.path}
-              onMouseEnter={() => warm(a.path)}
-              onFocus={() => warm(a.path)}
-              onSelect={(e) => { e.preventDefault(); warm(a.path); setOpenPath(a.path); }}
+              key={a.key}
+              onMouseEnter={() => { if (!a.native) warm(a.key); }}
+              onFocus={() => { if (!a.native) warm(a.key); }}
+              onSelect={(e) => { e.preventDefault(); if (!a.native) warm(a.key); setOpenKey(a.key); }}
               className="flex items-center gap-2"
             >
               <a.icon className={`h-4 w-4 ${a.tone}`} />
               <span className="flex-1">{a.label}</span>
-              {loaded[a.path] ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <ChevronRight className="h-3.5 w-3.5 opacity-60" />}
+              {a.native ? (
+                <Badge variant="outline" className="h-4 gap-0.5 border-emerald-400/60 px-1 text-[9px] text-emerald-700">
+                  Nhanh
+                </Badge>
+              ) : loaded[a.key] ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              ) : (
+                <ChevronRight className="h-3.5 w-3.5 opacity-60" />
+              )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <Sheet open={!!openPath} onOpenChange={(v) => { if (!v) setOpenPath(null); }}>
+      <Sheet open={!!openKey} onOpenChange={(v) => { if (!v) closeSheet(); }}>
         <SheetContent side="right" className="w-full p-0 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl">
           <SheetHeader className="border-b px-4 py-3">
             <SheetTitle className="text-base">{currentLabel}</SheetTitle>
             <SheetDescription className="text-xs">
               Pre-fill cho hệ thống đang xem — thao tác xong đóng ngăn để về sổ lý lịch.{" "}
-              {openPath && (
-                <a href={openPath} target="_blank" rel="noreferrer" className="text-primary hover:underline">Mở tab mới</a>
+              {current && (
+                <a href={current.path} target="_blank" rel="noreferrer" className="text-primary hover:underline">Mở tab mới</a>
               )}
             </SheetDescription>
           </SheetHeader>
-          <div className="relative h-[calc(100dvh-64px)] w-full bg-background">
-            {actions.filter((a) => warmed[a.path]).map((a) => {
-              const active = a.path === openPath;
+          <div className="relative h-[calc(100dvh-64px)] w-full overflow-y-auto bg-background">
+            {current?.native && current.key === "su-co" && (
+              <SuCoMoiForm defaultHeThongId={heThongId} embedded onDone={closeSheet} />
+            )}
+            {current?.native && current.key === "bao-tri" && (
+              <BaoTriMoiForm defaultHeThongId={heThongId} embedded onDone={closeSheet} />
+            )}
+            {current?.native && current.key === "hong-hoc" && (
+              <HongHocMoiForm defaultHeThongId={heThongId} embedded onDone={closeSheet} />
+            )}
+            {actions.filter((a) => !a.native && warmed[a.key]).map((a) => {
+              const active = a.key === openKey;
               return (
                 <iframe
-                  key={a.path}
+                  key={a.key}
                   src={urlFor(a.path)}
                   title={a.label}
-                  onLoad={() => setLoaded((prev) => ({ ...prev, [a.path]: true }))}
+                  onLoad={() => setLoaded((prev) => ({ ...prev, [a.key]: true }))}
                   className="absolute inset-0 h-full w-full border-0 bg-background"
                   style={{ visibility: active ? "visible" : "hidden", pointerEvents: active ? "auto" : "none" }}
                 />
               );
             })}
-            {openPath && !loaded[openPath] && (
+            {current && !current.native && !loaded[current.key] && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-background/60 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" /> Đang mở {currentLabel}…
               </div>
