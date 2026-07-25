@@ -1290,6 +1290,16 @@ function SidebarLink({
 }
 
 type TimelineKind = "bt" | "sc" | "hh" | "bg";
+
+function SummaryStat({ label, value, tone, wide }: { label: string; value: string | number; tone?: string; wide?: boolean }) {
+  return (
+    <div className={`rounded-md bg-background px-2 py-1.5 ${wide ? "col-span-2 sm:col-span-2" : ""}`}>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className={`truncate text-sm font-semibold ${tone || ""}`}>{value}</div>
+    </div>
+  );
+}
+
 type TimelineItem = { kind: TimelineKind; date: string; title: string; label: string; desc: string; tag?: string; tb: string; person?: string; code?: string };
 
 const timelineMeta: Record<TimelineKind, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string; chip: string }> = {
