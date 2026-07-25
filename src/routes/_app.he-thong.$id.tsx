@@ -4,7 +4,7 @@ import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
-  Printer, Settings2,
+  Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -234,6 +234,11 @@ function HeThongInner({
       }`}</style>
       <div className="flex items-center gap-3 no-print">
         <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi"><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
+        <div className="text-xs text-muted-foreground truncate">
+          <Link to="/thiet-bi" className="hover:underline">Sổ lý lịch</Link>
+          <ChevronRight className="inline h-3 w-3 mx-1 opacity-60" />
+          <span className="text-foreground/80">{tenHt}</span>
+        </div>
         <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
           <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => window.print()}>
@@ -284,6 +289,11 @@ function HeThongInner({
         </CardContent>
       </Card>
 
+      {/* Thanh hành động nhanh — mở nhanh biểu mẫu tạo mới đã pre-fill hệ thống */}
+      {canManage && (
+        <QuickActionsBar heThongId={id} />
+      )}
+
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
           <Card className="lg:sticky lg:top-24">
@@ -316,6 +326,21 @@ function HeThongInner({
               </div>
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
               <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
+              <div className="border-t pt-3">
+                <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Liên kết chức năng</div>
+                <div className="grid gap-1.5">
+                  <SidebarLink to="/so-do" search={{ he_thong: id } as never} icon={Waypoints} label="Sơ đồ hệ thống" />
+                  <SidebarLink to="/he-thong/lien-ket" search={{ src: id } as never} icon={Link2} label="Liên kết hệ thống" />
+                  <SidebarLink to="/he-thong/thanh-phan" search={{ he_thong: id } as never} icon={Puzzle} label="Thành phần (dạng bảng)" />
+                  <SidebarLink to="/kiem-dinh" search={{ he_thong: id } as never} icon={ShieldCheck} label="Kiểm định & Hiệu chuẩn" />
+                  <SidebarLink to="/vat-tu" search={{ he_thong: id } as never} icon={HardDrive} label="Vật tư & Kho" />
+                  <SidebarLink to="/du-an" search={{ he_thong: id } as never} icon={FolderKanban} label="Dự án liên quan" />
+                  <SidebarLink to="/nhan" search={{ he_thong: id } as never} icon={QrCode} label="In nhãn QR" />
+                  {hasGp && (
+                    <SidebarLink to="/giay-phep" search={{ q: gpSo } as never} icon={FileText} label="Lịch sử giấy phép" />
+                  )}
+                </div>
+              </div>
               <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
@@ -357,12 +382,12 @@ function HeThongInner({
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
-                <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
-                <TabsTrigger value="sc">Sự cố ({suCo.length})</TabsTrigger>
-                <TabsTrigger value="hh">Thay thế ({hongHoc.length})</TabsTrigger>
-                <TabsTrigger value="bg">Bàn giao ({banGiao.length})</TabsTrigger>
-                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết</TabsTrigger>
-                {canManage && <TabsTrigger value="cd">Chỉnh sửa dữ liệu</TabsTrigger>}
+                <TabsTrigger value="bt"><Wrench className="mr-1 h-3.5 w-3.5" />Bảo dưỡng ({baoTri.length})</TabsTrigger>
+                <TabsTrigger value="sc"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
+                <TabsTrigger value="hh"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
+                <TabsTrigger value="bg"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
+                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết hệ thống</TabsTrigger>
+                {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký thay đổi</TabsTrigger>}
               </TabsList>
 
               <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
@@ -375,30 +400,34 @@ function HeThongInner({
               </TabsContent>
 
               <TabsContent value="bt" className="space-y-2">
+                <TabHeaderLink label="Bảo dưỡng" to="/bao-tri" heThongId={id} />
                 {baoTri.length === 0 && <p className="text-sm text-muted-foreground">Chưa có phiếu bảo dưỡng.</p>}
                 {baoTri.map((e) => (
-                  <EventRow key={e.ma_bao_tri} tb={e.thiet_bi} tenMap={tenMap} title={e.mo_ta_cong_viec || e.loai_bao_tri} date={e.ngay_bat_dau} label={e.loai_bao_tri} desc={e.ket_qua ?? ""} tag={e.trang_thai} />
+                  <EventRow key={e.ma_bao_tri} code={e.ma_bao_tri} detailKind="bt" tb={e.thiet_bi} tenMap={tenMap} title={e.mo_ta_cong_viec || e.loai_bao_tri} date={e.ngay_bat_dau} label={e.loai_bao_tri} desc={e.ket_qua ?? ""} tag={e.trang_thai} />
                 ))}
               </TabsContent>
 
               <TabsContent value="sc" className="space-y-2">
+                <TabHeaderLink label="Sự cố kỹ thuật" to="/su-co" heThongId={id} />
                 {suCo.length === 0 && <p className="text-sm text-muted-foreground">Không có sự cố ghi nhận.</p>}
                 {suCo.map((e) => (
-                  <EventRow key={e.ma_su_co} tb={e.thiet_bi} tenMap={tenMap} title={e.hien_tuong} date={e.ngay_phat_hien} label={e.muc_do || "Sự cố"} desc={e.bien_phap_xu_ly ?? e.nguyen_nhan ?? ""} tag={e.trang_thai} tone="bg-red-50 text-red-700" />
+                  <EventRow key={e.ma_su_co} code={e.ma_su_co} detailKind="sc" tb={e.thiet_bi} tenMap={tenMap} title={e.hien_tuong} date={e.ngay_phat_hien} label={e.muc_do || "Sự cố"} desc={e.bien_phap_xu_ly ?? e.nguyen_nhan ?? ""} tag={e.trang_thai} tone="bg-red-50 text-red-700" />
                 ))}
               </TabsContent>
 
               <TabsContent value="hh" className="space-y-2">
-                {hongHoc.length === 0 && <p className="text-sm text-muted-foreground">Chưa có ghi nhận hỏng hóc / thay thế.</p>}
+                <TabHeaderLink label="Hỏng hóc" to="/hong-hoc" heThongId={id} />
+                {hongHoc.length === 0 && <p className="text-sm text-muted-foreground">Chưa có ghi nhận hỏng hóc.</p>}
                 {hongHoc.map((e) => (
-                  <EventRow key={e.ma_hong_hoc} tb={e.thiet_bi_hong} tenMap={tenMap} title={e.mo_ta_hong_hoc || e.bo_phan_hong} date={e.ngay_hong} label={e.bo_phan_hong || "Hỏng hóc"} desc={e.phuong_an ?? ""} tag={e.trang_thai} tone="bg-orange-50 text-orange-700" />
+                  <EventRow key={e.ma_hong_hoc} code={e.ma_hong_hoc} detailKind="hh" tb={e.thiet_bi_hong} tenMap={tenMap} title={e.mo_ta_hong_hoc || e.bo_phan_hong} date={e.ngay_hong} label={e.bo_phan_hong || "Hỏng hóc"} desc={e.phuong_an ?? ""} tag={e.trang_thai} tone="bg-orange-50 text-orange-700" />
                 ))}
               </TabsContent>
 
               <TabsContent value="bg" className="space-y-2">
+                <TabHeaderLink label="Bàn giao" to="/ban-giao" heThongId={id} />
                 {banGiao.length === 0 && <p className="text-sm text-muted-foreground">Chưa có bản ghi bàn giao.</p>}
                 {banGiao.map((e) => (
-                  <EventRow key={e.ma_ban_giao} tb={e.thiet_bi} tenMap={tenMap} title={`${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`} date={e.ngay_nhan} label={e.loai_ban_giao || "Bàn giao"} desc={e.don_vi_nhan ?? ""} tag={e.trang_thai} tone="bg-sky-50 text-sky-700" />
+                  <EventRow key={e.ma_ban_giao} code={e.ma_ban_giao} tb={e.thiet_bi} tenMap={tenMap} title={`${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`} date={e.ngay_nhan} label={e.loai_ban_giao || "Bàn giao"} desc={e.don_vi_nhan ?? ""} tag={e.trang_thai} tone="bg-sky-50 text-sky-700" />
                 ))}
               </TabsContent>
 
@@ -454,10 +483,17 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
     <Card id="thanh-phan-card">
       <CardHeader>
         <CardTitle className="text-base flex items-center justify-between gap-2">
-          <span>Thành phần thuộc hệ thống ({list.length})</span>
-          <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
-            <Link to="/he-thong/cay">Quản lý</Link>
-          </Button>
+          <span>Thành phần hệ thống ({list.length})</span>
+          <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+              <Link to="/he-thong/thanh-phan" search={{ he_thong: heThongId } as never}>
+                <Puzzle className="mr-1 h-3 w-3" /> Xem dạng bảng
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+              <Link to="/he-thong/cay">Quản lý cây</Link>
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -1034,18 +1070,103 @@ function DeviceChip({ tb, tenMap }: { tb: string; tenMap: Map<string, string> })
   );
 }
 
-function EventRow({ title, date, label, desc, tag, tone, tb, tenMap }: { title: string; date: string; label: string; desc: string; tag?: string; tone?: string; tb: string; tenMap: Map<string, string> }) {
+function EventRow({ title, date, label, desc, tag, tone, tb, tenMap, code, detailKind }: { title: string; date: string; label: string; desc: string; tag?: string; tone?: string; tb: string; tenMap: Map<string, string>; code?: string; detailKind?: "bt" | "sc" | "hh" }) {
+  const detailLink = code && detailKind ? (
+    detailKind === "bt" ? (
+      <Link to="/bao-tri/$maBaoTri" params={{ maBaoTri: code }} className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
+        <span className="font-mono">{code}</span> <ExternalLink className="h-3 w-3" />
+      </Link>
+    ) : detailKind === "sc" ? (
+      <Link to="/su-co/$maSuCo" params={{ maSuCo: code }} className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
+        <span className="font-mono">{code}</span> <ExternalLink className="h-3 w-3" />
+      </Link>
+    ) : (
+      <Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: code }} className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
+        <span className="font-mono">{code}</span> <ExternalLink className="h-3 w-3" />
+      </Link>
+    )
+  ) : null;
   return (
     <div className="rounded-md border p-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="outline" className={tone}>{label}</Badge>
         {date && <span className="text-xs text-muted-foreground">{date}</span>}
         <DeviceChip tb={tb} tenMap={tenMap} />
-        {tag && <Badge variant="secondary" className="ml-auto">{tag}</Badge>}
+        {tag && <Badge variant="secondary">{tag}</Badge>}
+        {detailLink}
       </div>
       <div className="mt-1 font-medium">{title || "—"}</div>
       {desc && <div className="text-muted-foreground">{desc}</div>}
     </div>
+  );
+}
+
+function TabHeaderLink({ label, to, heThongId }: { label: string; to: "/bao-tri" | "/su-co" | "/hong-hoc" | "/ban-giao"; heThongId: string }) {
+  return (
+    <div className="mb-2 flex items-center justify-between rounded-md border bg-muted/30 px-3 py-1.5 text-xs">
+      <span className="text-muted-foreground">Danh sách {label} của hệ thống này</span>
+      <Link
+        to={to}
+        search={{ he_thong: heThongId } as never}
+        className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+      >
+        Xem tất cả trong menu {label}
+        <ExternalLink className="h-3 w-3" />
+      </Link>
+    </div>
+  );
+}
+
+function QuickActionsBar({ heThongId }: { heThongId: string }) {
+  const search = { he_thong: heThongId } as never;
+  const actions: { to: "/su-co/moi" | "/bao-tri/moi" | "/hong-hoc/moi" | "/ban-giao/moi" | "/forms" | "/van-de" | "/bao-tri/cong-viec"; label: string; icon: React.ComponentType<{ className?: string }>; tone: string }[] = [
+    { to: "/su-co/moi", label: "Sự cố kỹ thuật", icon: AlertTriangle, tone: "text-red-600" },
+    { to: "/bao-tri/moi", label: "Phiếu bảo dưỡng", icon: Wrench, tone: "text-emerald-600" },
+    { to: "/hong-hoc/moi", label: "Hỏng hóc", icon: RefreshCw, tone: "text-orange-600" },
+    { to: "/ban-giao/moi", label: "Bàn giao", icon: ArrowLeftRight, tone: "text-sky-600" },
+    { to: "/forms", label: "Biên bản", icon: FileText, tone: "text-violet-600" },
+    { to: "/van-de", label: "Vấn đề (RCA)", icon: Bug, tone: "text-amber-600" },
+    { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
+  ];
+  return (
+    <div className="no-print rounded-lg border bg-card p-2">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="px-2 text-xs font-medium text-muted-foreground">Tác nghiệp nhanh</span>
+        {actions.map((a) => (
+          <Button key={a.to} asChild size="sm" variant="outline" className="h-8 gap-1.5 text-xs">
+            <Link to={a.to} search={search}>
+              <Plus className="h-3.5 w-3.5" />
+              <a.icon className={`h-3.5 w-3.5 ${a.tone}`} />
+              {a.label}
+            </Link>
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SidebarLink({
+  to,
+  search,
+  icon: Icon,
+  label,
+}: {
+  to: "/so-do" | "/he-thong/lien-ket" | "/he-thong/thanh-phan" | "/kiem-dinh" | "/vat-tu" | "/du-an" | "/nhan" | "/giay-phep";
+  search?: never;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <Link
+      to={to}
+      search={search}
+      className="group flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs hover:bg-primary/5 hover:text-primary"
+    >
+      <Icon className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary" />
+      <span className="flex-1 truncate">{label}</span>
+      <ExternalLink className="h-3 w-3 opacity-0 transition group-hover:opacity-70" />
+    </Link>
   );
 }
 
