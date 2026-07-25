@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useMemo, useState } from "react";
 import {
-  Search, ExternalLink, CheckCircle2, AlertTriangle, Clock, Ban, Building2, ShieldCheck, CalendarClock, Plus, Pencil,
+  Search, ExternalLink, CheckCircle2, AlertTriangle, Clock, Ban, Building2, ShieldCheck, CalendarClock, Plus, Pencil, Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,7 @@ import { useScope } from "@/lib/mirats/scope";
 import { useLicensesData, type LicenseRow } from "@/lib/mirats/db-licenses";
 import { useSession } from "@/hooks/use-session";
 import { GiayPhepFormDialog } from "@/components/mirats/GiayPhepFormDialog";
+import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
 
@@ -64,6 +65,7 @@ function GiayPhepPage() {
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<LicenseRow | null>(null);
+  const [viewerRow, setViewerRow] = useState<LicenseRow | null>(null);
   const donViMap = useMemo(() => new Map(donVi.map((d) => [d.ma, d])), [donVi]);
   
   const [tab, setTab] = useState("current");
@@ -200,6 +202,12 @@ function GiayPhepPage() {
       </div>
 
       <GiayPhepFormDialog open={dialogOpen} onOpenChange={setDialogOpen} row={editingRow} />
+      <DocViewerDialog
+        open={!!viewerRow}
+        onOpenChange={(v) => { if (!v) setViewerRow(null); }}
+        url={viewerRow?.file ?? null}
+        fileName={viewerRow?.soGP ?? (viewerRow?.file ?? "").split("/").pop() ?? "tai-lieu"}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
@@ -377,7 +385,16 @@ function GiayPhepPage() {
                   {
                     key: "file", label: "File", align: "right",
                     value: (l) => l.file ?? "",
-                    cell: (l) => l.file ? <a href={l.file} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">Mở <ExternalLink className="h-3.5 w-3.5" /></a> : <span className="text-xs text-muted-foreground">—</span>,
+                    cell: (l) => l.file ? (
+                      <div className="inline-flex items-center gap-1">
+                        <Button variant="ghost" size="sm" className="h-7 gap-1 px-2" onClick={(e) => { e.stopPropagation(); setViewerRow(l); }}>
+                          <Eye className="h-3.5 w-3.5" /> Xem
+                        </Button>
+                        <Button asChild variant="ghost" size="sm" className="h-7 w-7 p-0" title="Mở tab mới">
+                          <a href={l.file} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}><ExternalLink className="h-3.5 w-3.5" /></a>
+                        </Button>
+                      </div>
+                    ) : <span className="text-xs text-muted-foreground">—</span>,
                   },
                   ...(canManage ? [{
                     key: "actions", label: "Thao tác", align: "right",

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Upload, Trash2, FileText, Loader2, Download, ExternalLink, Tag } from "lucide-react";
+import { Upload, Trash2, FileText, Loader2, Download, ExternalLink, Tag, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { storage } from "@/lib/storage";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
+import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -130,6 +131,7 @@ function useSignedUrl(bucket: string, path: string, expires = 3600) {
 
 function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: boolean; onDelete: () => void }) {
   const url = useSignedUrl(row.bucket, row.file_path);
+  const [viewerOpen, setViewerOpen] = useState(false);
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">
       <div className="flex min-w-0 items-center gap-3">
@@ -150,6 +152,7 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
       <div className="flex items-center gap-1">
         {url && (
           <>
+            <Button size="sm" variant="ghost" title="Xem" onClick={() => setViewerOpen(true)}><Eye className="h-4 w-4" /></Button>
             <Button asChild size="sm" variant="ghost"><a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a></Button>
             <Button asChild size="sm" variant="ghost"><a href={url} download={row.file_name}><Download className="h-4 w-4" /></a></Button>
           </>
@@ -160,6 +163,13 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
           </Button>
         )}
       </div>
+      <DocViewerDialog
+        open={viewerOpen}
+        onOpenChange={setViewerOpen}
+        url={url}
+        fileName={row.file_name}
+        mimeType={row.mime_type}
+      />
     </div>
   );
 }
