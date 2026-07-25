@@ -1139,6 +1139,30 @@ function QuickActionsBar({ heThongId }: { heThongId: string }) {
   );
 }
 
+function SidebarLink({
+  to,
+  search,
+  icon: Icon,
+  label,
+}: {
+  to: "/so-do" | "/he-thong/lien-ket" | "/he-thong/thanh-phan" | "/kiem-dinh" | "/vat-tu" | "/du-an" | "/nhan" | "/giay-phep";
+  search?: never;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <Link
+      to={to}
+      search={search}
+      className="group flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs hover:bg-primary/5 hover:text-primary"
+    >
+      <Icon className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary" />
+      <span className="flex-1 truncate">{label}</span>
+      <ExternalLink className="h-3 w-3 opacity-0 transition group-hover:opacity-70" />
+    </Link>
+  );
+}
+
 type TimelineKind = "bt" | "sc" | "hh" | "bg";
 type TimelineItem = { kind: TimelineKind; date: string; title: string; label: string; desc: string; tag?: string; tb: string };
 
