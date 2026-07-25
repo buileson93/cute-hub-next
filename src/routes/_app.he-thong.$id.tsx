@@ -287,7 +287,7 @@ function HeThongInner({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
-          <Card>
+          <Card className="lg:sticky lg:top-4">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Định danh &amp; chỉ số vận hành</CardTitle>
             </CardHeader>
@@ -339,13 +339,22 @@ function HeThongInner({
             months={chartMonths}
             onChangeMonths={setChartMonths}
           />
-          <Card>
+        </div>
+      </div>
+
+      {/* Nhật ký khai thác — full width + cuộn nội bộ để không phá layout khi dữ liệu dài */}
+      <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Nhật ký khai thác</CardTitle>
+            <CardTitle className="text-base flex items-center justify-between gap-2">
+              <span>Nhật ký khai thác</span>
+              <span className="text-xs font-normal text-muted-foreground">
+                {timeline.length + baoTri.length + suCo.length + hongHoc.length + banGiao.length} bản ghi
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="flex h-auto flex-wrap gap-1">
+              <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
                 <TabsTrigger value="vt"><Cpu className="mr-1 h-3.5 w-3.5" />Thành phần hệ thống</TabsTrigger>
                 <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
@@ -356,7 +365,8 @@ function HeThongInner({
                 {canManage && <TabsTrigger value="cd">Chỉnh sửa dữ liệu</TabsTrigger>}
               </TabsList>
 
-              <TabsContent value="tl" className="mt-4">
+              <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
+              <TabsContent value="tl">
                 {timeline.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Chưa có sự kiện lịch sử nào cho hệ thống này.</p>
                 ) : (
@@ -364,55 +374,54 @@ function HeThongInner({
                 )}
               </TabsContent>
 
-              <TabsContent value="vt" className="mt-4">
+              <TabsContent value="vt">
                 <ThanhPhanManager heThongId={id} canManage={canManage} />
               </TabsContent>
 
 
-              <TabsContent value="bt" className="mt-4 space-y-2">
+              <TabsContent value="bt" className="space-y-2">
                 {baoTri.length === 0 && <p className="text-sm text-muted-foreground">Chưa có phiếu bảo dưỡng.</p>}
                 {baoTri.map((e) => (
                   <EventRow key={e.ma_bao_tri} tb={e.thiet_bi} tenMap={tenMap} title={e.mo_ta_cong_viec || e.loai_bao_tri} date={e.ngay_bat_dau} label={e.loai_bao_tri} desc={e.ket_qua ?? ""} tag={e.trang_thai} />
                 ))}
               </TabsContent>
 
-              <TabsContent value="sc" className="mt-4 space-y-2">
+              <TabsContent value="sc" className="space-y-2">
                 {suCo.length === 0 && <p className="text-sm text-muted-foreground">Không có sự cố ghi nhận.</p>}
                 {suCo.map((e) => (
                   <EventRow key={e.ma_su_co} tb={e.thiet_bi} tenMap={tenMap} title={e.hien_tuong} date={e.ngay_phat_hien} label={e.muc_do || "Sự cố"} desc={e.bien_phap_xu_ly ?? e.nguyen_nhan ?? ""} tag={e.trang_thai} tone="bg-red-50 text-red-700" />
                 ))}
               </TabsContent>
 
-              <TabsContent value="hh" className="mt-4 space-y-2">
+              <TabsContent value="hh" className="space-y-2">
                 {hongHoc.length === 0 && <p className="text-sm text-muted-foreground">Chưa có ghi nhận hỏng hóc / thay thế.</p>}
                 {hongHoc.map((e) => (
                   <EventRow key={e.ma_hong_hoc} tb={e.thiet_bi_hong} tenMap={tenMap} title={e.mo_ta_hong_hoc || e.bo_phan_hong} date={e.ngay_hong} label={e.bo_phan_hong || "Hỏng hóc"} desc={e.phuong_an ?? ""} tag={e.trang_thai} tone="bg-orange-50 text-orange-700" />
                 ))}
               </TabsContent>
 
-              <TabsContent value="bg" className="mt-4 space-y-2">
+              <TabsContent value="bg" className="space-y-2">
                 {banGiao.length === 0 && <p className="text-sm text-muted-foreground">Chưa có bản ghi bàn giao.</p>}
                 {banGiao.map((e) => (
                   <EventRow key={e.ma_ban_giao} tb={e.thiet_bi} tenMap={tenMap} title={`${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`} date={e.ngay_nhan} label={e.loai_ban_giao || "Bàn giao"} desc={e.don_vi_nhan ?? ""} tag={e.trang_thai} tone="bg-sky-50 text-sky-700" />
                 ))}
               </TabsContent>
 
-              <TabsContent value="lk" className="mt-4">
+              <TabsContent value="lk">
                 <HeThongLienKetTab heThongId={id} />
               </TabsContent>
 
 
 
               {canManage && (
-                <TabsContent value="cd" className="mt-4">
+                <TabsContent value="cd">
                   <ChangeLogPanel entity="dm_he_thong" entityId={id} />
                 </TabsContent>
               )}
+              </div>
             </Tabs>
           </CardContent>
-          </Card>
-        </div>
-      </div>
+      </Card>
 
       {/* Thành phần hệ thống — full width để hiển thị rõ tên */}
       <ThanhPhanCard heThongId={id} />
