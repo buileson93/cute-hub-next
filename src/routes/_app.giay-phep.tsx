@@ -65,6 +65,7 @@ function GiayPhepPage() {
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<LicenseRow | null>(null);
+  const [viewerRow, setViewerRow] = useState<LicenseRow | null>(null);
   const donViMap = useMemo(() => new Map(donVi.map((d) => [d.ma, d])), [donVi]);
   
   const [tab, setTab] = useState("current");
@@ -201,6 +202,12 @@ function GiayPhepPage() {
       </div>
 
       <GiayPhepFormDialog open={dialogOpen} onOpenChange={setDialogOpen} row={editingRow} />
+      <DocViewerDialog
+        open={!!viewerRow}
+        onOpenChange={(v) => { if (!v) setViewerRow(null); }}
+        url={viewerRow?.file ?? null}
+        fileName={viewerRow?.so_giay_phep ? `${viewerRow.so_giay_phep}` : (viewerRow?.file ?? "").split("/").pop() ?? "tai-lieu"}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
