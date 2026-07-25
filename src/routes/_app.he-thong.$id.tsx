@@ -691,14 +691,14 @@ function KpiCard({ icon: Icon, label, value, tone, onClick }: { icon: React.Comp
 }
 
 function HealthBar({
-  hp, label, tone, uptime, mtbf, suCo30d, bt90d, onGoto, onConfigure,
-}: { hp: number; label: string; tone: string; uptime: number; mtbf: number | null; suCo30d: number; bt90d: number; onGoto: (t: string) => void; onConfigure?: () => void }) {
+  hp, label, tone, onConfigure,
+}: { hp: number; label: string; tone: string; onConfigure?: () => void }) {
   const pct = Math.max(0, Math.min(100, hp));
   return (
-    <div>
-      <div className="flex flex-wrap items-center gap-2 text-xs">
+    <div className="w-full max-w-xs">
+      <div className="flex items-center gap-1.5 text-xs">
         <HeartPulse className="h-3.5 w-3.5 text-primary" />
-        <span className="font-medium">Sức khỏe hệ thống</span>
+        <span className="font-medium">HP</span>
         <HoverCard openDelay={120} closeDelay={80}>
           <HoverCardTrigger asChild>
             <button type="button" className="text-muted-foreground hover:text-foreground" aria-label="Cách tính HP">
@@ -713,7 +713,7 @@ function HealthBar({
             <div>+15 có bảo dưỡng trong 90 ngày</div>
           </HoverCardContent>
         </HoverCard>
-        <div className={`ml-auto font-semibold ${tone}`}>{pct}/100 · {label}</div>
+        <div className={`ml-auto font-semibold ${tone}`}>{pct} · {label}</div>
         {onConfigure && (
           <button
             type="button"
@@ -722,7 +722,7 @@ function HealthBar({
             aria-label="Cấu hình ngưỡng HP"
             title="Cấu hình ngưỡng HP theo đơn vị"
           >
-            <Settings2 className="h-3 w-3" /> Ngưỡng
+            <Settings2 className="h-3 w-3" />
           </button>
         )}
       </div>
@@ -731,12 +731,6 @@ function HealthBar({
           className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 transition-[width] duration-500"
           style={{ width: `${pct}%` }}
         />
-      </div>
-      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <HpChip icon={Activity} label="Đang hoạt động" value={`${uptime}%`} tone={uptime >= 80 ? "text-emerald-600" : uptime >= 50 ? "text-amber-600" : "text-red-600"} />
-        <HpChip icon={Gauge} label="MTBF" value={mtbf == null ? "—" : `${mtbf} ngày`} />
-        <HpChip icon={AlertTriangle} label="Sự cố 30 ngày" value={String(suCo30d)} tone={suCo30d > 0 ? "text-red-600" : "text-emerald-600"} onClick={() => onGoto("sc")} />
-        <HpChip icon={Wrench} label="Bảo dưỡng 90 ngày" value={String(bt90d)} tone={bt90d > 0 ? "text-emerald-600" : "text-amber-600"} onClick={() => onGoto("bt")} />
       </div>
     </div>
   );
