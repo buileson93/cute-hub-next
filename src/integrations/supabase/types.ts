@@ -2317,13 +2317,63 @@ export type Database = {
           },
         ]
       }
+      dot_bao_duong_han: {
+        Row: {
+          created_at: string
+          don_vi_id: string
+          dot_id: string
+          han_ngay: string
+          id: string
+          mo_ta: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          don_vi_id: string
+          dot_id: string
+          han_ngay: string
+          id?: string
+          mo_ta?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          don_vi_id?: string
+          dot_id?: string
+          han_ngay?: string
+          id?: string
+          mo_ta?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dot_bao_duong_han_don_vi_id_fkey"
+            columns: ["don_vi_id"]
+            isOneToOne: false
+            referencedRelation: "dm_don_vi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dot_bao_duong_han_dot_id_fkey"
+            columns: ["dot_id"]
+            isOneToOne: false
+            referencedRelation: "dot_bao_duong"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dot_bao_duong_hang_muc: {
         Row: {
+          approval_note: string | null
+          approved_at: string | null
+          approved_by: string | null
           bat_buoc: boolean
           created_at: string
           don_vi_id: string
           dot_id: string
+          duyet_trang_thai: string
           ghi_chu_kt: string | null
+          han_hoan_thanh: string | null
           he_thong_id: string
           id: string
           ket_qua:
@@ -2333,16 +2383,23 @@ export type Database = {
           ngay_hoan_thanh: string | null
           nguoi_thuc_hien: string | null
           nguon: Database["public"]["Enums"]["dot_bao_duong_hm_nguon"]
+          submitted_at: string | null
+          submitted_by: string | null
           ton_tai: string | null
           trang_thai: Database["public"]["Enums"]["dot_bao_duong_hm_trang_thai"]
           updated_at: string
         }
         Insert: {
+          approval_note?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           bat_buoc?: boolean
           created_at?: string
           don_vi_id: string
           dot_id: string
+          duyet_trang_thai?: string
           ghi_chu_kt?: string | null
+          han_hoan_thanh?: string | null
           he_thong_id: string
           id?: string
           ket_qua?:
@@ -2352,16 +2409,23 @@ export type Database = {
           ngay_hoan_thanh?: string | null
           nguoi_thuc_hien?: string | null
           nguon?: Database["public"]["Enums"]["dot_bao_duong_hm_nguon"]
+          submitted_at?: string | null
+          submitted_by?: string | null
           ton_tai?: string | null
           trang_thai?: Database["public"]["Enums"]["dot_bao_duong_hm_trang_thai"]
           updated_at?: string
         }
         Update: {
+          approval_note?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           bat_buoc?: boolean
           created_at?: string
           don_vi_id?: string
           dot_id?: string
+          duyet_trang_thai?: string
           ghi_chu_kt?: string | null
+          han_hoan_thanh?: string | null
           he_thong_id?: string
           id?: string
           ket_qua?:
@@ -2371,6 +2435,8 @@ export type Database = {
           ngay_hoan_thanh?: string | null
           nguoi_thuc_hien?: string | null
           nguon?: Database["public"]["Enums"]["dot_bao_duong_hm_nguon"]
+          submitted_at?: string | null
+          submitted_by?: string | null
           ton_tai?: string | null
           trang_thai?: Database["public"]["Enums"]["dot_bao_duong_hm_trang_thai"]
           updated_at?: string
@@ -8162,6 +8228,32 @@ export type Database = {
         Returns: undefined
       }
       dot_bao_cao_tong_hop: { Args: { p_dot_id: string }; Returns: Json }
+      dot_bao_duong_canh_bao: {
+        Args: { p_dot_id: string; p_sap_han_ngay?: number }
+        Returns: {
+          cho_duyet: number
+          da_duyet: number
+          don_vi_id: string
+          don_vi_ma: string
+          don_vi_ten: string
+          han_ngay: string
+          hoan_thanh: number
+          muc_do: string
+          qua_han: number
+          sap_han: number
+          tong: number
+        }[]
+      }
+      dot_hm_approve: {
+        Args: { p_hang_muc_id: string; p_note?: string }
+        Returns: undefined
+      }
+      dot_hm_reject: {
+        Args: { p_hang_muc_id: string; p_note?: string }
+        Returns: undefined
+      }
+      dot_hm_submit: { Args: { p_hang_muc_id: string }; Returns: undefined }
+      dot_hm_unlock: { Args: { p_hang_muc_id: string }; Returns: undefined }
       dot_them_hang_muc_hang_loat: {
         Args: {
           p_don_vi_id: string
