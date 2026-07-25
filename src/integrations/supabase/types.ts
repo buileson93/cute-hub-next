@@ -14,18 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      _dbg_tmp: {
-        Row: {
-          msg: string | null
-        }
-        Insert: {
-          msg?: string | null
-        }
-        Update: {
-          msg?: string | null
-        }
-        Relationships: []
-      }
       access_request: {
         Row: {
           action: string
@@ -7555,6 +7543,7 @@ export type Database = {
         }
         Returns: Record<string, unknown>
       }
+      _try_date: { Args: { txt: string }; Returns: string }
       _validate_vi_tri_tuong_thich: {
         Args: { p_thanh_phan_id: string; p_vi_tri_id: string }
         Returns: undefined
@@ -7800,6 +7789,16 @@ export type Database = {
       current_jwt: { Args: never; Returns: Json }
       current_role: { Args: never; Returns: string }
       current_uid: { Args: never; Returns: string }
+      dashboard_activity_feed: {
+        Args: { p_don_vi_ids?: string[]; p_limit?: number }
+        Returns: {
+          at: string
+          loai: string
+          ref_id: string
+          ref_route: string
+          tieu_de: string
+        }[]
+      }
       dashboard_asset_status: {
         Args: { p_don_vi_ids?: string[] }
         Returns: {
@@ -7807,6 +7806,24 @@ export type Database = {
           ten: string
           trang_thai_ma: string
         }[]
+      }
+      dashboard_brief_today: {
+        Args: { p_don_vi_ids?: string[] }
+        Returns: Json
+      }
+      dashboard_expiry_timeline: {
+        Args: { p_days?: number; p_don_vi_ids?: string[] }
+        Returns: {
+          days_left: number
+          loai: string
+          ngay_het: string
+          ref_id: string
+          ten: string
+        }[]
+      }
+      dashboard_health: {
+        Args: { p_don_vi_ids?: string[]; p_from?: string; p_to?: string }
+        Returns: Json
       }
       dashboard_kpis: {
         Args: { p_don_vi_ids?: string[]; p_from?: string; p_to?: string }
@@ -7820,12 +7837,31 @@ export type Database = {
           thang: string
         }[]
       }
+      dashboard_su_co_heatmap: {
+        Args: { p_days?: number; p_don_vi_ids?: string[] }
+        Returns: {
+          dow: number
+          hour: number
+          so_luong: number
+        }[]
+      }
       dashboard_top_he_thong_su_co: {
         Args: { p_don_vi_ids?: string[]; p_limit?: number }
         Returns: {
           he_thong_id: string
+          mttr_h: number
           so_su_co_mo: number
           ten_he_thong: string
+        }[]
+      }
+      dashboard_top_thiet_bi_hong_lap: {
+        Args: { p_don_vi_ids?: string[]; p_limit?: number }
+        Returns: {
+          ma: string
+          mttr_h: number
+          so_lan: number
+          ten: string
+          thiet_bi_id: string
         }[]
       }
       dieu_chuyen: {
