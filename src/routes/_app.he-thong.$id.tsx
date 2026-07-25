@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
-  Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Cpu, Link2, Puzzle,
+  Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
   Printer, Settings2,
 } from "lucide-react";
@@ -27,7 +27,6 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useScope } from "@/lib/mirats/scope";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
 import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
-import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { HeThongLienKetTab } from "@/components/mirats/HeThongLienKetTab";
 import { useSession } from "@/hooks/use-session";
 import { useViTriChucNang, useThietBiDangLap } from "@/lib/mirats/he-thong-thanh-phan";
@@ -335,7 +334,11 @@ function HeThongInner({
             suCoByMonth={suCoByMonth}
             statusGroups={statusGroups}
             trend6={trend6}
-            onPickStatus={() => setTab("vt")}
+            onPickStatus={() => {
+              if (typeof document !== "undefined") {
+                document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }}
             months={chartMonths}
             onChangeMonths={setChartMonths}
           />
