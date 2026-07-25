@@ -15,6 +15,7 @@ import {
   Plus, Trash2, ChevronUp, ChevronDown, Copy, Type, AlignLeft, Hash,
   Calendar, Clock, CheckSquare, ListChecks, CircleDot, Star, Image as ImageIcon,
   PenLine, Paperclip, MapPin, GripVertical, HelpCircle, X, Info, Lightbulb,
+  MousePointerClick, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,10 +52,30 @@ const KINDS: KindOpt[] = [
   { value: "location",   label: "Vị trí",       desc: "Toạ độ GPS",                 example: "VD: Vị trí ghi nhận sự cố ngoài hiện trường",        Icon: MapPin },
 ];
 
+// MIME riêng để phân biệt: kéo 1 KIỂU TRƯỜNG mới từ palette
+// vs. kéo 1 CÂU HỎI đã có để sắp xếp lại.
+const MIME_NEW_KIND = "application/x-mirats-new-kind";
+const MIME_REORDER = "application/x-mirats-reorder-idx";
+
 function slug(s: string, i: number) {
   const base = s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
   return base || `cau_hoi_${i + 1}`;
+}
+
+function newFieldOfKind(kind: InspectorField["kind"], position: number): Field {
+  const k = KINDS.find((x) => x.value === kind) ?? KINDS[0];
+  return {
+    key: `cau_hoi_${position + 1}`,
+    label: `Câu hỏi mới (${k.label})`,
+    kind,
+    required: false, help_text: null, placeholder: null,
+    options: k.hasOptions ? ["Lựa chọn 1", "Lựa chọn 2"] : null,
+    unit: null, tieu_chuan: null, min_value: null, max_value: null,
+    col_span: 3, visible_if: null, columns: null, ratings: null,
+    formula: null, nhom: null, position,
+    required_if: null, constraint_formula: null, constraint_message: null,
+  };
 }
 
 function HelpDot({ children }: { children: React.ReactNode }) {
