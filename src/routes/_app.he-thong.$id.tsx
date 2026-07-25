@@ -146,6 +146,39 @@ function HeThongInner({
     return items.sort((a, b) => toKey(b.date) - toKey(a.date));
   }, [baoTri, suCo, hongHoc, banGiao]);
 
+  // Dữ liệu suy diễn cho bộ lọc / tóm tắt Nhật ký khai thác
+  const personOptions = useMemo(() => {
+    const s = new Set<string>();
+    for (const it of timeline) if (it.person) s.add(it.person);
+    return Array.from(s).sort((a, b) => a.localeCompare(b, "vi"));
+  }, [timeline]);
+  const kindCounts = useMemo(() => {
+    const c: Record<TimelineKind, number> = { bt: 0, sc: 0, hh: 0, bg: 0 };
+    for (const it of timeline) c[it.kind]++;
+    return c;
+  }, [timeline]);
+  const nkRangeMs = nkRange === "3m" ? 90 * 86_400_000 : nkRange === "6m" ? 180 * 86_400_000 : nkRange === "12m" ? 365 * 86_400_000 : null;
+  const filteredTimeline = useMemo(() => {
+    const q = nkQuery.trim().toLowerCase();
+    const cutoff = nkRangeMs ? Date.now() - nkRangeMs : null;
+    return timeline.filter((it) => {
+      if (nkKind !== "all" && it.kind !== nkKind) return false;
+      if (nkPerson !== "all" && (it.person || "") !== nkPerson) return false;
+      if (cutoff != null) {
+        const t = Date.parse(it.date);
+        if (Number.isNaN(t) || t < cutoff) return false;
+      }
+      if (q) {
+        const hay = `${it.title} ${it.desc} ${it.label} ${it.tag ?? ""} ${it.person ?? ""} ${it.code ?? ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [timeline, nkQuery, nkKind, nkPerson, nkRangeMs]);
+  useEffect(() => { setNkLimit(20); }, [nkQuery, nkKind, nkPerson, nkRange]);
+  const nkFirstTs = filteredTimeline.reduce<number | null>((a, it) => { const t = Date.parse(it.date); if (Number.isNaN(t)) return a; return a == null ? t : Math.min(a, t); }, null);
+  const nkLastTs = filteredTimeline.reduce<number | null>((a, it) => { const t = Date.parse(it.date); if (Number.isNaN(t)) return a; return a == null ? t : Math.max(a, t); }, null);
+
   const hasGp = Boolean(gpSo);
 
   const parseD = (d: string) => { const t = Date.parse(d); return Number.isNaN(t) ? null : t; };
