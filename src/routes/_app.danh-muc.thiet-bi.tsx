@@ -13,10 +13,10 @@
 // ============================================================================
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus,
+  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -51,6 +52,7 @@ import { DeviceMovementHistoryDialog } from "@/components/mirats/DeviceMovementH
 import { showUndoToast } from "@/components/mirats/UndoToast";
 import { useScope } from "@/lib/mirats/scope";
 import { useSession } from "@/hooks/use-session";
+import { useUserPref } from "@/hooks/use-user-pref";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 import { normalize } from "@/lib/mirats/global-search";
 import {
@@ -191,7 +193,13 @@ function DanhMucThietBiPage() {
   
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
+  const isAdmin = hasRole("admin");
+  // Chế độ chỉnh sửa: BẬT mới hiện nút "Thêm tài sản" và các nút xoá.
+  // Persist theo user để lần sau vào trang giữ nguyên lựa chọn.
+  const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-tb:edit-mode", false);
+  const editOn = canManage && editMode;
   const { submit, submitMany, hoanTac } = useCayRpc();
+  const qc = useQueryClient();
 
   const [exporting, setExporting] = useState(false);
 
@@ -332,6 +340,51 @@ function DanhMucThietBiPage() {
   const openDetail = useCallback((d: DbDevice) => { setDetailDevice(d); setDetailOpen(true); }, []);
   const openCreate = useCallback(() => { setFormDevice(null); setFormMode("create"); }, []);
   const openEdit = useCallback((d: DbDevice) => { setFormDevice(d); setFormMode("edit"); }, []);
+
+  // Xoá tài sản: 2 chế độ — "Ngừng khai thác" (giữ lịch sử) và "Xoá vĩnh viễn"
+  // (chỉ dùng cho bản ghi nhập nhầm, chưa phát sinh lịch sử; chỉ admin).
+  const [deleteTargets, setDeleteTargets] = useState<DbDevice[] | null>(null);
+  const [deleteKind, setDeleteKind] = useState<"retire" | "purge">("retire");
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteThanhLy, setDeleteThanhLy] = useState(false);
+  const closeDelete = useCallback(() => {
+    setDeleteTargets(null); setDeleteReason(""); setDeleteThanhLy(false); setDeleteKind("retire");
+  }, []);
+
+  const retireMut = useMutation({
+    mutationFn: async (mas: string[]) => {
+      const { data, error } = await supabase.rpc("ngung_khai_thac_thiet_bi", {
+        _mas: mas, _ly_do: deleteReason || undefined, _thanh_ly: deleteThanhLy,
+      });
+      if (error) throw error;
+      return data as { trang_thai: string };
+    },
+    onSuccess: (_d, mas) => {
+      qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
+      qc.invalidateQueries({ queryKey: ["change_log"] });
+      toast.success(`Đã ngừng khai thác ${mas.length} tài sản — lịch sử được giữ nguyên`);
+      closeDelete();
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không thực hiện được"),
+  });
+  const purgeMut = useMutation({
+    mutationFn: async (mas: string[]) => {
+      const { data, error } = await supabase.rpc("purge_thiet_bi", { _mas: mas });
+      if (error) throw error;
+      return data as { so_da_xoa: number | null; so_bo_qua: number | null };
+    },
+    onSuccess: (d) => {
+      qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
+      qc.invalidateQueries({ queryKey: ["change_log"] });
+      const daXoa = d?.so_da_xoa ?? 0;
+      const boQua = d?.so_bo_qua ?? 0;
+      if (daXoa > 0) toast.success(`Đã xoá vĩnh viễn ${daXoa} bản ghi${boQua ? ` — bỏ qua ${boQua} bản ghi đã có lịch sử` : ""}`);
+      else toast.error("Không xoá được: tài sản đã có lịch sử. Hãy dùng “Ngừng khai thác”.");
+      closeDelete();
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không xoá được"),
+  });
+  const deleteBusy = retireMut.isPending || purgeMut.isPending;
 
   const htName = (id: string | undefined, fallback: string) => (id && nameOv?.get(id)) || fallback;
   const tbName = useCallback(
@@ -638,10 +691,20 @@ function DanhMucThietBiPage() {
           >
             <PackageMinus className="h-3.5 w-3.5" />
           </Button>
+          {editOn && (
+            <Button
+              size="icon" variant="ghost"
+              className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }}
+              title="Xoá / Ngừng khai thác tài sản"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       ),
     } as StdColumn<DbDevice>] : []),
-  ], [nameOv, tbName, canManage, tagsByDevice, dacTinhById, tagSelected, openDetail]);
+  ], [nameOv, tbName, canManage, editOn, tagsByDevice, dacTinhById, tagSelected, openDetail]);
 
   // ---- Xuất .xlsx (theo bộ lọc hiện tại hoặc dòng đang chọn) ----
   // Ánh xạ khoá cột (giao diện) → trường CSDL + cách lấy giá trị, để file nạp lại được.
@@ -729,9 +792,23 @@ function DanhMucThietBiPage() {
         help="Toàn bộ tài sản trong CSDL — gồm cả tài sản đang trong hệ thống khai thác và tài sản độc lập (vật tư dự phòng, công cụ dụng cụ, tài sản đo) chưa gán vào hệ thống nào."
         actions={
           canManage ? (
-            <Button size="sm" className="h-9 gap-1.5" onClick={openCreate}>
-              <Plus className="h-4 w-4" /> Thêm tài sản
-            </Button>
+            <div className="flex items-center gap-2">
+              <div className={cn(
+                "flex items-center gap-2 rounded-md border px-2.5 py-1",
+                editMode ? "border-primary/40 bg-primary/5" : "border-border bg-muted/30",
+              )}>
+                <Settings2 className={cn("h-3.5 w-3.5", editMode ? "text-primary" : "text-muted-foreground")} />
+                <Label htmlFor="edit-mode" className="cursor-pointer text-xs font-medium">
+                  Chế độ chỉnh sửa
+                </Label>
+                <Switch id="edit-mode" checked={editMode} onCheckedChange={setEditMode} />
+              </div>
+              {editOn && (
+                <Button size="sm" className="h-9 gap-1.5" onClick={openCreate}>
+                  <Plus className="h-4 w-4" /> Thêm tài sản
+                </Button>
+              )}
+            </div>
           ) : null
         }
       />
@@ -898,6 +975,15 @@ function DanhMucThietBiPage() {
                     >
                       <PackageMinus className="h-3.5 w-3.5" /> Gỡ khỏi hệ thống
                     </Button>
+                    {editOn && (
+                      <Button
+                        size="sm" variant="outline"
+                        className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => { setDeleteTargets(selectedRows); setDeleteKind("retire"); }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Xoá / Ngừng khai thác
+                      </Button>
+                    )}
                   </>
                 )}
                 <Button
@@ -982,6 +1068,100 @@ function DanhMucThietBiPage() {
               }}
             >
               Gỡ khỏi hệ thống
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Xoá / Ngừng khai thác tài sản — chỉ mở khi bật Chế độ chỉnh sửa */}
+      <AlertDialog open={!!deleteTargets} onOpenChange={(o) => { if (!o) closeDelete(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xoá / Ngừng khai thác tài sản?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Đang thao tác trên <b>{deleteTargets?.length ?? 0}</b> tài sản. Chọn cách xử lý phù hợp bên dưới.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3">
+            <div className="grid gap-2">
+              <label className={cn(
+                "flex cursor-pointer gap-2 rounded-md border p-3 text-sm",
+                deleteKind === "retire" ? "border-primary/50 bg-primary/5" : "border-border",
+              )}>
+                <input
+                  type="radio" className="mt-0.5 h-4 w-4 accent-primary"
+                  checked={deleteKind === "retire"} onChange={() => setDeleteKind("retire")}
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <PackageX className="h-4 w-4 text-amber-600" /> Ngừng khai thác (khuyến nghị)
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Chuyển tài sản sang trạng thái ngừng/thanh lý. Toàn bộ lịch sử (sự cố, bảo dưỡng,
+                    hỏng hóc, bàn giao, kiểm kê) <b>được giữ nguyên</b> để tra cứu.
+                  </p>
+                </div>
+              </label>
+
+              <label className={cn(
+                "flex gap-2 rounded-md border p-3 text-sm",
+                !isAdmin ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                deleteKind === "purge" ? "border-destructive/50 bg-destructive/5" : "border-border",
+              )}>
+                <input
+                  type="radio" className="mt-0.5 h-4 w-4 accent-destructive"
+                  disabled={!isAdmin}
+                  checked={deleteKind === "purge"} onChange={() => setDeleteKind("purge")}
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 font-medium text-destructive">
+                    <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn {!isAdmin && <span className="text-[10px] font-normal text-muted-foreground">(chỉ admin)</span>}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Chỉ dành cho bản ghi <b>nhập nhầm</b>. Hệ thống sẽ tự bỏ qua các tài sản đã có
+                    lịch sử. <b>Không thể hoàn tác.</b>
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {deleteKind === "retire" && (
+              <>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox" className="h-4 w-4 accent-primary"
+                    checked={deleteThanhLy} onChange={(e) => setDeleteThanhLy(e.target.checked)}
+                  />
+                  Đây là <b>thanh lý / loại biên</b> (không phải ngừng tạm thời)
+                </label>
+                <div className="space-y-1">
+                  <Label htmlFor="ly-do-xoa">Lý do</Label>
+                  <Textarea
+                    id="ly-do-xoa" rows={2}
+                    value={deleteReason} onChange={(e) => setDeleteReason(e.target.value)}
+                    placeholder="VD: hết niên hạn, hư hỏng không sửa được…"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteBusy}>Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteBusy || !deleteTargets?.length}
+              className={deleteKind === "purge" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                const mas = (deleteTargets ?? []).map((d) => d.ma_thiet_bi);
+                if (!mas.length) return;
+                if (deleteKind === "purge") purgeMut.mutate(mas);
+                else retireMut.mutate(mas);
+              }}
+            >
+              {deleteBusy && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+              {deleteKind === "purge" ? "Xoá vĩnh viễn" : "Xác nhận ngừng"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
