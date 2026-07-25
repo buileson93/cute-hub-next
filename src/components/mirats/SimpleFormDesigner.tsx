@@ -15,6 +15,7 @@ import {
   Plus, Trash2, ChevronUp, ChevronDown, Copy, Type, AlignLeft, Hash,
   Calendar, Clock, CheckSquare, ListChecks, CircleDot, Star, Image as ImageIcon,
   PenLine, Paperclip, MapPin, GripVertical, HelpCircle, X, Info, Lightbulb,
+  MousePointerClick, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,10 +52,30 @@ const KINDS: KindOpt[] = [
   { value: "location",   label: "Vị trí",       desc: "Toạ độ GPS",                 example: "VD: Vị trí ghi nhận sự cố ngoài hiện trường",        Icon: MapPin },
 ];
 
+// MIME riêng để phân biệt: kéo 1 KIỂU TRƯỜNG mới từ palette
+// vs. kéo 1 CÂU HỎI đã có để sắp xếp lại.
+const MIME_NEW_KIND = "application/x-mirats-new-kind";
+const MIME_REORDER = "application/x-mirats-reorder-idx";
+
 function slug(s: string, i: number) {
   const base = s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
   return base || `cau_hoi_${i + 1}`;
+}
+
+function newFieldOfKind(kind: InspectorField["kind"], position: number): Field {
+  const k = KINDS.find((x) => x.value === kind) ?? KINDS[0];
+  return {
+    key: `cau_hoi_${position + 1}`,
+    label: `Câu hỏi mới (${k.label})`,
+    kind,
+    required: false, help_text: null, placeholder: null,
+    options: k.hasOptions ? ["Lựa chọn 1", "Lựa chọn 2"] : null,
+    unit: null, tieu_chuan: null, min_value: null, max_value: null,
+    col_span: 3, visible_if: null, columns: null, ratings: null,
+    formula: null, nhom: null, position,
+    required_if: null, constraint_formula: null, constraint_message: null,
+  };
 }
 
 function HelpDot({ children }: { children: React.ReactNode }) {
@@ -87,6 +108,10 @@ export function SimpleFormDesigner({
   });
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [overIdx, setOverIdx] = useState<number | null>(null);
+  // Đang kéo 1 KIỂU MỚI từ palette (kind.value) — để hiển thị drop slot.
+  const [dragKind, setDragKind] = useState<InspectorField["kind"] | null>(null);
+  // Slot đang hover khi kéo (index chèn 0..fields.length).
+  const [slotOver, setSlotOver] = useState<number | null>(null);
 
   const dismissGuide = () => {
     setShowGuide(false);
@@ -104,14 +129,7 @@ export function SimpleFormDesigner({
     const i = fields.length;
     onChange([
       ...fields,
-      {
-        key: `cau_hoi_${i + 1}`, label: "Câu hỏi mới", kind: "text",
-        required: false, help_text: null, placeholder: null, options: null,
-        unit: null, tieu_chuan: null, min_value: null, max_value: null,
-        col_span: 3, visible_if: null, columns: null, ratings: null,
-        formula: null, nhom: null, position: i,
-        required_if: null, constraint_formula: null, constraint_message: null,
-      },
+      newFieldOfKind("text", i),
     ]);
   };
   const remove = (i: number) => onChange(fields.filter((_, idx) => idx !== i));
@@ -138,9 +156,91 @@ export function SimpleFormDesigner({
     onChange(copy);
   };
 
+  // Chèn 1 câu hỏi kiểu `kind` vào vị trí `at` (0..fields.length).
+  const insertKindAt = (kind: InspectorField["kind"], at: number) => {
+    const clamped = Math.max(0, Math.min(at, fields.length));
+    const nf = newFieldOfKind(kind, clamped);
+    const copy = [...fields];
+    copy.splice(clamped, 0, nf);
+    onChange(copy.map((f, idx) => ({ ...f, position: idx })));
+  };
+
+  // Xử lý drop chung cho các slot chèn: có thể là kéo kiểu mới hoặc kéo reorder.
+  const handleSlotDrop = (at: number, e: React.DragEvent) => {
+    e.preventDefault();
+    const kind = e.dataTransfer.getData(MIME_NEW_KIND) as InspectorField["kind"] | "";
+    const reorderRaw = e.dataTransfer.getData(MIME_REORDER);
+    if (kind) {
+      insertKindAt(kind, at);
+    } else if (reorderRaw !== "") {
+      const from = Number(reorderRaw);
+      if (Number.isFinite(from)) {
+        // Khi kéo card #from vào slot at: nếu at > from, phải trừ 1 để bù việc splice.
+        const to = at > from ? at - 1 : at;
+        moveTo(from, to);
+      }
+    }
+    setDragIdx(null); setOverIdx(null); setDragKind(null); setSlotOver(null);
+  };
+
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="mx-auto max-w-2xl space-y-4 p-6">
+      <div className="mx-auto grid max-w-6xl gap-4 p-6 lg:grid-cols-[240px_minmax(0,1fr)]">
+        {/* ================= PALETTE ================= */}
+        <aside className="lg:sticky lg:top-4 lg:self-start">
+          <div className="rounded-lg border bg-card p-3 shadow-sm">
+            <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              Kiểu câu hỏi
+              <HelpDot>
+                Kéo một ô bên dưới thả vào biểu mẫu để thêm câu hỏi mới. Hoặc bấm để thêm vào cuối.
+              </HelpDot>
+            </div>
+            <div className="mb-2 flex items-center gap-1 rounded-md bg-muted/60 px-2 py-1 text-[10.5px] text-muted-foreground">
+              <MousePointerClick className="h-3 w-3" />
+              Kéo &amp; thả vào biểu mẫu
+            </div>
+            <ul className="grid grid-cols-2 gap-1.5 lg:grid-cols-1">
+              {KINDS.map((k) => {
+                const KI = k.Icon;
+                const active = dragKind === k.value;
+                return (
+                  <li key={k.value}>
+                    <button
+                      type="button"
+                      draggable
+                      onDragStart={(e) => {
+                        setDragKind(k.value);
+                        e.dataTransfer.effectAllowed = "copy";
+                        e.dataTransfer.setData(MIME_NEW_KIND, k.value);
+                        // Payload phụ để 1 số browser cho phép drag.
+                        e.dataTransfer.setData("text/plain", k.value);
+                      }}
+                      onDragEnd={() => { setDragKind(null); setSlotOver(null); }}
+                      onClick={() => insertKindAt(k.value, fields.length)}
+                      title={`${k.label} — ${k.desc}\nKéo hoặc bấm để thêm.\n${k.example}`}
+                      className={`group flex w-full cursor-grab items-center gap-2 rounded-md border bg-background px-2 py-1.5 text-left text-xs shadow-sm transition hover:border-primary hover:bg-primary/5 active:cursor-grabbing ${
+                        active ? "border-primary bg-primary/10 ring-1 ring-primary/40" : ""
+                      }`}
+                    >
+                      <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-primary/10 text-primary">
+                        <KI className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{k.label}</span>
+                        <span className="block truncate text-[10px] text-muted-foreground">{k.desc}</span>
+                      </span>
+                      <GripVertical className="h-3 w-3 text-muted-foreground opacity-0 transition group-hover:opacity-100" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </aside>
+
+        {/* ================= MAIN CANVAS ================= */}
+        <div className="space-y-4">
         {/* Hướng dẫn nhanh — có thể đóng, có thể mở lại */}
         {showGuide ? (
           <div className="relative rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
@@ -170,9 +270,9 @@ export function SimpleFormDesigner({
               </li>
             </ol>
             <div className="mt-2 rounded-md bg-background/60 p-2 text-xs text-muted-foreground">
-              <b className="text-foreground">Mẹo:</b> Kéo biểu tượng <GripVertical className="mx-0.5 inline h-3 w-3" />
-              bên trái mỗi thẻ để sắp xếp lại thứ tự. Bấm <Eye /> <i>Xem trước</i> ở đầu trang để điền
-              thử biểu mẫu.
+              <b className="text-foreground">Mẹo:</b> Kéo một <b>kiểu câu hỏi</b> ở bảng bên trái thả vào biểu mẫu để thêm nhanh.
+              Kéo biểu tượng <GripVertical className="mx-0.5 inline h-3 w-3" /> bên trái mỗi thẻ để sắp xếp lại thứ tự.
+              Bấm <Eye /> <i>Xem trước</i> ở đầu trang để điền thử.
             </div>
             <div className="mt-2 grid grid-cols-1 gap-1 text-[11px] sm:grid-cols-2">
               {KINDS.slice(0, 8).map((k) => (
@@ -212,23 +312,38 @@ export function SimpleFormDesigner({
           />
         </div>
 
-        {/* Danh sách câu hỏi */}
+        {/* Danh sách câu hỏi — có drop-slot giữa các thẻ */}
+        {/* Slot đầu tiên (chèn vào đầu) */}
+        <DropSlot
+          index={0}
+          active={dragKind !== null || dragIdx !== null}
+          hover={slotOver === 0}
+          onEnter={() => setSlotOver(0)}
+          onLeave={() => setSlotOver((v) => (v === 0 ? null : v))}
+          onDrop={(e) => handleSlotDrop(0, e)}
+        />
         {fields.map((f, i) => {
           const kind = KINDS.find((k) => k.value === f.kind) ?? KINDS[0];
           const Icon = kind.Icon;
           const isDragOver = overIdx === i && dragIdx !== null && dragIdx !== i;
           return (
+            <div key={i}>
             <div
-              key={i}
               onDragOver={(e) => {
-                if (dragIdx === null) return;
+                if (dragIdx === null && dragKind === null) return;
                 e.preventDefault();
                 if (overIdx !== i) setOverIdx(i);
               }}
               onDrop={(e) => {
                 e.preventDefault();
-                if (dragIdx !== null && dragIdx !== i) moveTo(dragIdx, i);
-                setDragIdx(null); setOverIdx(null);
+                const kindPayload = e.dataTransfer.getData(MIME_NEW_KIND) as InspectorField["kind"] | "";
+                if (kindPayload) {
+                  // Thả kiểu mới vào giữa thẻ ⇒ chèn TRƯỚC thẻ hiện tại.
+                  insertKindAt(kindPayload, i);
+                } else if (dragIdx !== null && dragIdx !== i) {
+                  moveTo(dragIdx, i);
+                }
+                setDragIdx(null); setOverIdx(null); setDragKind(null); setSlotOver(null);
               }}
               onDragLeave={() => { if (overIdx === i) setOverIdx(null); }}
               className={`group relative rounded-lg border bg-card p-4 shadow-sm transition hover:border-primary/40 ${
@@ -242,7 +357,7 @@ export function SimpleFormDesigner({
                   onDragStart={(e) => {
                     setDragIdx(i);
                     e.dataTransfer.effectAllowed = "move";
-                    // Firefox cần payload để bắt đầu drag.
+                    e.dataTransfer.setData(MIME_REORDER, String(i));
                     e.dataTransfer.setData("text/plain", String(i));
                   }}
                   onDragEnd={() => { setDragIdx(null); setOverIdx(null); }}
@@ -368,12 +483,28 @@ export function SimpleFormDesigner({
                 </HelpDot>
               </div>
             </div>
+            {/* Slot chèn NGAY SAU thẻ #i */}
+            <DropSlot
+              index={i + 1}
+              active={dragKind !== null || dragIdx !== null}
+              hover={slotOver === i + 1}
+              onEnter={() => setSlotOver(i + 1)}
+              onLeave={() => setSlotOver((v) => (v === i + 1 ? null : v))}
+              onDrop={(e) => handleSlotDrop(i + 1, e)}
+            />
+            </div>
           );
         })}
 
         {fields.length === 0 && (
-          <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-            Chưa có câu hỏi nào. Bấm nút bên dưới để thêm câu hỏi đầu tiên.
+          <div
+            onDragOver={(e) => { if (dragKind) { e.preventDefault(); setSlotOver(0); } }}
+            onDrop={(e) => handleSlotDrop(0, e)}
+            className={`rounded-lg border-2 border-dashed p-10 text-center text-sm transition ${
+              dragKind ? "border-primary bg-primary/5 text-primary" : "text-muted-foreground"
+            }`}
+          >
+            {dragKind ? "Thả vào đây để thêm câu hỏi đầu tiên." : "Chưa có câu hỏi nào. Kéo một kiểu ở bảng bên trái vào đây, hoặc bấm nút bên dưới."}
           </div>
         )}
 
@@ -383,14 +514,49 @@ export function SimpleFormDesigner({
           className="w-full border-dashed py-6 text-sm hover:border-primary hover:bg-primary/5"
         >
           <Plus className="mr-2 h-4 w-4" />
-          Thêm câu hỏi
+          Thêm câu hỏi (Chữ ngắn)
         </Button>
 
         <p className="pt-2 text-center text-[11px] text-muted-foreground">
           Cần cấu hình nâng cao (công thức, ẩn hiện có điều kiện, tiêu chuẩn…)? Chuyển sang chế độ <b>Nâng cao</b> ở đầu trang.
         </p>
+        </div>
       </div>
     </TooltipProvider>
+  );
+}
+
+// ============================================================================
+// DropSlot — khe nhỏ giữa các câu hỏi, chỉ nổi lên khi đang kéo.
+// ============================================================================
+function DropSlot({
+  active, hover, onEnter, onLeave, onDrop,
+}: {
+  index: number;
+  active: boolean;
+  hover: boolean;
+  onEnter: () => void;
+  onLeave: () => void;
+  onDrop: (e: React.DragEvent) => void;
+}) {
+  if (!active) return <div className="h-1" />;
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); onEnter(); }}
+      onDragLeave={onLeave}
+      onDrop={onDrop}
+      className={`relative my-1 rounded-md transition-all ${
+        hover
+          ? "h-12 border-2 border-dashed border-primary bg-primary/10"
+          : "h-2 border border-dashed border-primary/30 bg-primary/5"
+      }`}
+    >
+      {hover && (
+        <div className="absolute inset-0 grid place-items-center text-[11px] font-medium text-primary">
+          Thả vào đây để chèn
+        </div>
+      )}
+    </div>
   );
 }
 
