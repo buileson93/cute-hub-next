@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -35,22 +34,6 @@ import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
 import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
 
-export const Route = createFileRoute("/_app/su-co/moi")({
-  head: () => ({
-    meta: [
-      { title: "Báo cáo ban đầu sự cố — MIRATS 2.0" },
-      { name: "description", content: "Lập biên bản báo cáo ban đầu về sự cố kỹ thuật, ghi vào sổ lý lịch tài sản và hệ thống, xuất Word theo mẫu." },
-    ],
-  }),
-  validateSearch: (s: Record<string, unknown>): { heThong?: string; thietBi?: string; from?: string; voice?: string } => ({
-    heThong: typeof s.heThong === "string" ? s.heThong : undefined,
-    thietBi: typeof s.thietBi === "string" ? s.thietBi : undefined,
-    from: typeof s.from === "string" ? s.from : undefined,
-    voice: typeof s.voice === "string" ? s.voice : undefined,
-  }),
-  component: SuCoMoiPage,
-});
-
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
 const AH_OPTIONS = ["Không ảnh hưởng", "Ảnh hưởng một phần", "Có gián đoạn ĐHB"];
@@ -84,7 +67,16 @@ interface MountedAsset {
   device: DbDevice;
 }
 
-function SuCoMoiPage() {
+export interface SuCoMoiFormProps {
+  defaultHeThongId?: string;
+  defaultThietBi?: string;
+  defaultFrom?: string;
+  defaultVoice?: string;
+  embedded?: boolean;
+  onDone?: () => void;
+}
+
+export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, defaultVoice, embedded, onDone }: SuCoMoiFormProps) {
   const { profile } = useSession();
   const qc = useQueryClient();
   const { data: taxo } = useDbTaxonomy();
@@ -93,7 +85,10 @@ function SuCoMoiPage() {
 
   const [hienTuong, setHienTuong] = useState("");
   const [kinhGui, setKinhGui] = useState("Phòng An toàn - Chất lượng và An ninh.");
-  const { heThong: heThongParam, thietBi: thietBiParam, from: fromParam, voice: voiceParam } = Route.useSearch();
+  const heThongParam = defaultHeThongId;
+  const thietBiParam = defaultThietBi;
+  const fromParam = defaultFrom;
+  const voiceParam = defaultVoice;
   const [heThongDichVu, setHeThongDichVu] = useState("");
   const [heThongId, setHeThongId] = useState(heThongParam ?? "");
 
