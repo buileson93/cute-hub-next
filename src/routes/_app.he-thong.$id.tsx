@@ -287,7 +287,7 @@ function HeThongInner({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
-          <Card className="lg:sticky lg:top-4">
+          <Card className="lg:sticky lg:top-24">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Định danh &amp; chỉ số vận hành</CardTitle>
             </CardHeader>
@@ -339,11 +339,9 @@ function HeThongInner({
             months={chartMonths}
             onChangeMonths={setChartMonths}
           />
-        </div>
-      </div>
 
-      {/* Nhật ký khai thác — full width + cuộn nội bộ để không phá layout khi dữ liệu dài */}
-      <Card>
+          {/* Nhật ký khai thác — cuộn nội bộ để không phá layout khi dữ liệu dài */}
+          <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center justify-between gap-2">
               <span>Nhật ký khai thác</span>
@@ -356,7 +354,6 @@ function HeThongInner({
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
-                <TabsTrigger value="vt"><Cpu className="mr-1 h-3.5 w-3.5" />Thành phần hệ thống</TabsTrigger>
                 <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
                 <TabsTrigger value="sc">Sự cố ({suCo.length})</TabsTrigger>
                 <TabsTrigger value="hh">Thay thế ({hongHoc.length})</TabsTrigger>
@@ -373,11 +370,6 @@ function HeThongInner({
                   <Timeline items={timeline} tenMap={tenMap} />
                 )}
               </TabsContent>
-
-              <TabsContent value="vt">
-                <ThanhPhanManager heThongId={id} canManage={canManage} />
-              </TabsContent>
-
 
               <TabsContent value="bt" className="space-y-2">
                 {baoTri.length === 0 && <p className="text-sm text-muted-foreground">Chưa có phiếu bảo dưỡng.</p>}
@@ -421,10 +413,12 @@ function HeThongInner({
               </div>
             </Tabs>
           </CardContent>
-      </Card>
+          </Card>
 
-      {/* Thành phần hệ thống — full width để hiển thị rõ tên */}
-      <ThanhPhanCard heThongId={id} />
+          {/* Thành phần hệ thống — nằm trong cột phải để lấp khoảng trống cạnh cột định danh sticky */}
+          <ThanhPhanCard heThongId={id} />
+        </div>
+      </div>
 
       <ThresholdDialog
         open={thrOpen}
