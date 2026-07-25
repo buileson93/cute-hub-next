@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
+import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
