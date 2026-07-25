@@ -164,6 +164,27 @@ export function ThietBiFormDialog({
 
   const save = useMutation({
     mutationFn: async (d: FormValues) => {
+      // Cảnh báo mềm: trùng số serial vẫn cho lưu
+      const sn = (d.ma_serial ?? "").trim();
+      if (sn) {
+        const q = supabase
+          .from("thiet_bi")
+          .select("ma_thiet_bi, ten_thiet_bi")
+          .eq("ma_serial", sn)
+          .limit(3);
+        const { data: dups } = mode === "edit" && device?.id
+          ? await q.neq("id", device.id)
+          : await q;
+        if (dups && dups.length > 0) {
+          const list = dups
+            .map((r) => {
+              const row = r as { ma_thiet_bi: string; ten_thiet_bi: string | null };
+              return `${row.ma_thiet_bi}${row.ten_thiet_bi ? " · " + row.ten_thiet_bi : ""}`;
+            })
+            .join("; ");
+          toast.warning(`Trùng số serial "${sn}" với: ${list}`, { duration: 6000 });
+        }
+      }
       const payload: Record<string, unknown> = {
         ten_thiet_bi: d.ten_thiet_bi,
         ma_serial: d.ma_serial || null,
