@@ -104,6 +104,7 @@ import { Route as AppAdminBaoTriChinhSachRouteImport } from './routes/_app.admin
 import { Route as AppAdminAiRouteImport } from './routes/_app.admin.ai'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AppBaoTriDotIndexRouteImport } from './routes/_app.bao-tri.dot.index'
 import { Route as AppAdminFormsIndexRouteImport } from './routes/_app.admin.forms.index'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -599,6 +600,11 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppBaoTriDotIndexRoute = AppBaoTriDotIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBaoTriDotRoute,
+} as any)
 const AppAdminFormsIndexRoute = AppAdminFormsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -746,7 +752,7 @@ export interface FileRoutesByFullPath {
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
-  '/bao-tri/dot': typeof AppBaoTriDotRoute
+  '/bao-tri/dot': typeof AppBaoTriDotRouteWithChildren
   '/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/bao-tri/pm': typeof AppBaoTriPmRoute
   '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -799,6 +805,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms/': typeof AppAdminFormsIndexRoute
+  '/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRoutesByTo {
@@ -852,7 +859,6 @@ export interface FileRoutesByTo {
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
-  '/bao-tri/dot': typeof AppBaoTriDotRoute
   '/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/bao-tri/pm': typeof AppBaoTriPmRoute
   '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -905,6 +911,7 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms': typeof AppAdminFormsIndexRoute
+  '/bao-tri/dot': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRoutesById {
@@ -966,7 +973,7 @@ export interface FileRoutesById {
   '/_app/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/_app/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/_app/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
-  '/_app/bao-tri/dot': typeof AppBaoTriDotRoute
+  '/_app/bao-tri/dot': typeof AppBaoTriDotRouteWithChildren
   '/_app/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/_app/bao-tri/pm': typeof AppBaoTriPmRoute
   '/_app/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -1019,6 +1026,7 @@ export interface FileRoutesById {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/admin/forms/': typeof AppAdminFormsIndexRoute
+  '/_app/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/_app/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRouteTypes {
@@ -1133,6 +1141,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/admin/forms/'
+    | '/bao-tri/dot/'
     | '/admin/forms/$id/history'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1186,7 +1195,6 @@ export interface FileRouteTypes {
     | '/bao-cao/do-tin-cay'
     | '/bao-tri/$maBaoTri'
     | '/bao-tri/cong-viec'
-    | '/bao-tri/dot'
     | '/bao-tri/moi'
     | '/bao-tri/pm'
     | '/cai-dat/tai-khoan'
@@ -1239,6 +1247,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/admin/forms'
+    | '/bao-tri/dot'
     | '/admin/forms/$id/history'
   id:
     | '__root__'
@@ -1352,6 +1361,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/_app/admin/forms/'
+    | '/_app/bao-tri/dot/'
     | '/_app/admin/forms/$id/history'
   fileRoutesById: FileRoutesById
 }
@@ -2054,6 +2064,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/bao-tri/dot/': {
+      id: '/_app/bao-tri/dot/'
+      path: '/'
+      fullPath: '/bao-tri/dot/'
+      preLoaderRoute: typeof AppBaoTriDotIndexRouteImport
+      parentRoute: typeof AppBaoTriDotRoute
+    }
     '/_app/admin/forms/': {
       id: '/_app/admin/forms/'
       path: '/'
@@ -2181,10 +2198,22 @@ const AppBanGiaoRouteWithChildren = AppBanGiaoRoute._addFileChildren(
   AppBanGiaoRouteChildren,
 )
 
+interface AppBaoTriDotRouteChildren {
+  AppBaoTriDotIndexRoute: typeof AppBaoTriDotIndexRoute
+}
+
+const AppBaoTriDotRouteChildren: AppBaoTriDotRouteChildren = {
+  AppBaoTriDotIndexRoute: AppBaoTriDotIndexRoute,
+}
+
+const AppBaoTriDotRouteWithChildren = AppBaoTriDotRoute._addFileChildren(
+  AppBaoTriDotRouteChildren,
+)
+
 interface AppBaoTriRouteChildren {
   AppBaoTriMaBaoTriRoute: typeof AppBaoTriMaBaoTriRoute
   AppBaoTriCongViecRoute: typeof AppBaoTriCongViecRoute
-  AppBaoTriDotRoute: typeof AppBaoTriDotRoute
+  AppBaoTriDotRoute: typeof AppBaoTriDotRouteWithChildren
   AppBaoTriMoiRoute: typeof AppBaoTriMoiRoute
   AppBaoTriPmRoute: typeof AppBaoTriPmRoute
   AppBaoTriIndexRoute: typeof AppBaoTriIndexRoute
@@ -2193,7 +2222,7 @@ interface AppBaoTriRouteChildren {
 const AppBaoTriRouteChildren: AppBaoTriRouteChildren = {
   AppBaoTriMaBaoTriRoute: AppBaoTriMaBaoTriRoute,
   AppBaoTriCongViecRoute: AppBaoTriCongViecRoute,
-  AppBaoTriDotRoute: AppBaoTriDotRoute,
+  AppBaoTriDotRoute: AppBaoTriDotRouteWithChildren,
   AppBaoTriMoiRoute: AppBaoTriMoiRoute,
   AppBaoTriPmRoute: AppBaoTriPmRoute,
   AppBaoTriIndexRoute: AppBaoTriIndexRoute,
