@@ -128,74 +128,68 @@ function HeThongInner({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi"><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
-        <div className="ml-auto text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          Quyển № <span className="font-mono text-foreground/80">{bookNo}</span> · Mở sổ {openYear}
+        <div className="ml-auto text-xs text-muted-foreground">
+          Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
         </div>
       </div>
 
-      {/* ── BÌA SỔ ── */}
-      <div className="relative overflow-hidden rounded-lg border border-amber-900/20 bg-[linear-gradient(180deg,#f9f3e3_0%,#f4ead0_100%)] shadow-[0_10px_30px_-15px_rgba(120,80,20,0.35)] dark:border-amber-100/10 dark:bg-[linear-gradient(180deg,#2a2317_0%,#1f1a12_100%)]">
-        <div className="absolute inset-y-0 left-0 w-2 bg-[repeating-linear-gradient(180deg,#a67c2a_0_10px,#8a651e_10px_20px)]" />
-        <div className="absolute inset-y-0 left-2 w-px bg-amber-900/30" />
-        <div className="relative px-8 py-6 pl-10">
-          <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-amber-900/70 dark:text-amber-100/70">
-            <span className="rounded border border-amber-900/30 px-2 py-0.5">Hồ sơ khai thác</span>
-            <span>· MIRATS 2.0</span>
-            {donVi && <span>· {donVi}{donViTen ? ` — ${donViTen}` : ""}</span>}
-          </div>
-          <div className="mt-2 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-amber-900/40 bg-amber-100/60 text-amber-900 shadow-inner dark:bg-amber-950/40 dark:text-amber-100">
-              <Network className="h-5 w-5" />
+      {/* Header hệ thống */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
+                <Network className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="truncate text-xl font-semibold sm:text-2xl">{tenHt}</h1>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  {maBravo && <span>Mã Bravo: <span className="font-mono text-foreground/80">{maBravo}</span></span>}
+                  {donVi && <span>· {donVi}{donViTen ? ` — ${donViTen}` : ""}</span>}
+                  <span>· {timeline.length} sự kiện</span>
+                </div>
+              </div>
             </div>
-            <h1 className="font-serif text-3xl leading-tight text-amber-950 dark:text-amber-50">{tenHt}</h1>
+            <div className="shrink-0">
+              {hasGp ? (
+                <Badge variant="outline" className="gap-1 border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40">
+                  <ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="border-red-300 bg-red-50 text-red-700 dark:bg-red-950/40">Chưa có GPKT</Badge>
+              )}
+            </div>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-amber-900/80 dark:text-amber-100/70">
-            {maBravo && <span>Mã Bravo: <span className="font-mono">{maBravo}</span></span>}
-            <span>Trang mục lục: <span className="font-mono">{timeline.length}</span> mục</span>
-            {hasGp ? (
-              <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}</span>
-            ) : (
-              <span className="text-red-700/80 dark:text-red-300/80">Chưa có GPKT</span>
-            )}
-          </div>
+        </CardContent>
+      </Card>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-5">
-            <BookStamp icon={HardDrive} label="Tài sản con" value={String(devices.length)} />
-            <BookStamp icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="emerald" />
-            <BookStamp icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "red" : "emerald"} />
-            <BookStamp icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "amber" : undefined} />
-            <BookStamp icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} tone="sky" />
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3 rounded-md border border-amber-900/15 bg-amber-50/60 p-3 text-xs md:grid-cols-4 dark:border-amber-100/10 dark:bg-amber-950/30">
-            <StatLine label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
-            <StatLine label="Cập nhật gần nhất" value={fmtVN(lastEventTs)} />
-            <StatLine label="Ngày không sự cố" value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-700" : "text-emerald-700"} />
-            <StatLine label="Nhịp sự cố TB (MTBF)" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
-          </div>
-        </div>
+      {/* KPI hàng ngang */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <KpiCard icon={HardDrive} label="Tài sản con" value={String(devices.length)} />
+        <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} tone="text-emerald-600" />
+        <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} />
+        <KpiCard icon={RefreshCw} label="Thay thế" value={String(hongHoc.length)} tone={hongHoc.length > 0 ? "text-orange-600" : undefined} />
+        <KpiCard icon={ArrowLeftRight} label="Bàn giao" value={String(banGiao.length)} tone="text-sky-600" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
-          <Card className="border-amber-900/15 bg-[linear-gradient(180deg,#fdfaf1_0%,#f7efdb_100%)] shadow-sm dark:border-amber-100/10 dark:bg-amber-950/20">
-            <CardHeader className="border-b border-dashed border-amber-900/20 pb-2">
-              <CardTitle className="font-serif text-base tracking-wide">
-                <span className="mr-2 text-amber-800/70 dark:text-amber-200/70">I.</span>Trang chính — Định danh
-              </CardTitle>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Định danh &amp; chỉ số vận hành</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 pt-4 text-sm">
+            <CardContent className="space-y-3 text-sm">
               <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
               <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
-              
               <InfoRow icon={Building2} label="Đơn vị quản lý" value={`${donVi || "—"}${donViTen ? " — " + donViTen : ""}`} />
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
-              <div className="border-t border-dashed border-amber-900/20 pt-3">
+              <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
                   <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
+                  <MicroStat label="Ngày không sự cố" value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-600" : "text-emerald-600"} />
+                  <MicroStat label="Nhịp sự cố TB (MTBF)" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
                   <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} />
-                  <MicroStat label="Nhịp sự cố TB" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
                 </div>
               </div>
             </CardContent>
@@ -204,15 +198,13 @@ function HeThongInner({
           <ThanhPhanCard heThongId={id} />
         </div>
 
-        <Card className="lg:col-span-2 border-amber-900/15 bg-[linear-gradient(180deg,#fdfaf1_0%,#f9f2df_100%)] shadow-sm dark:border-amber-100/10 dark:bg-amber-950/20">
-          <CardHeader className="border-b border-dashed border-amber-900/20 pb-2">
-            <CardTitle className="font-serif text-base tracking-wide">
-              <span className="mr-2 text-amber-800/70 dark:text-amber-200/70">II.</span>Nhật ký khai thác
-            </CardTitle>
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Nhật ký khai thác</CardTitle>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent>
             <Tabs defaultValue="tl">
-              <TabsList className="flex h-auto flex-wrap gap-1 bg-amber-100/40 dark:bg-amber-950/30">
+              <TabsList className="flex h-auto flex-wrap gap-1">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
                 <TabsTrigger value="vt"><Cpu className="mr-1 h-3.5 w-3.5" />Thành phần hệ thống</TabsTrigger>
                 <TabsTrigger value="bt">Bảo dưỡng ({baoTri.length})</TabsTrigger>
