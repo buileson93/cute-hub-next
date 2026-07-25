@@ -261,3 +261,42 @@ function ItemRow({
     </div>
   );
 }
+
+function LiveStatusBadge({ status, hasValue }: { status: "dat" | "khong_dat" | null; hasValue: boolean }) {
+  if (!hasValue) {
+    return (
+      <Badge variant="outline" className="gap-1 text-[10px]">
+        <MinusCircle className="h-2.5 w-2.5" /> Chưa đo
+      </Badge>
+    );
+  }
+  if (status === "dat") {
+    return (
+      <Badge className="gap-1 border-emerald-500/40 bg-emerald-500/15 text-[10px] text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300">
+        <CheckCircle2 className="h-2.5 w-2.5" /> Trong ngưỡng
+      </Badge>
+    );
+  }
+  if (status === "khong_dat") {
+    return (
+      <Badge className="gap-1 border-rose-500/40 bg-rose-500/15 text-[10px] text-rose-700 hover:bg-rose-500/15 dark:text-rose-300">
+        <XCircle className="h-2.5 w-2.5" /> Ngoài ngưỡng
+      </Badge>
+    );
+  }
+  return null;
+}
+
+function KetQuaBadge({ value }: { value: KetQua }) {
+  const map: Record<KetQua, { cls: string; icon: typeof CheckCircle2 }> = {
+    dat: { cls: "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300", icon: CheckCircle2 },
+    khong_dat: { cls: "border-rose-500/40 bg-rose-500/15 text-rose-700 dark:text-rose-300", icon: XCircle },
+    khong_ap_dung: { cls: "border-muted bg-muted text-muted-foreground", icon: MinusCircle },
+  };
+  const { cls, icon: Icon } = map[value];
+  return (
+    <Badge className={cn("gap-1 text-[10px] hover:bg-transparent", cls)}>
+      <Icon className="h-2.5 w-2.5" /> {KET_QUA_LABEL[value]}
+    </Badge>
+  );
+}
