@@ -4,7 +4,7 @@ import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
-  Printer, Settings2,
+  Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
