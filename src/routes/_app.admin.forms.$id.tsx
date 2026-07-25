@@ -187,7 +187,7 @@ function FormEditor() {
   }, [fields, chkSections, tabAutoPicked]);
 
   const { data: taxo } = useQuery({
-    queryKey: ["db_taxonomy"],
+    queryKey: ["form-designer", "dm_he_thong-list"],
     enabled: canManage,
     queryFn: async () => {
       const { data, error } = await supabase.from("dm_he_thong")
