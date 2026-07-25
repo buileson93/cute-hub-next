@@ -286,6 +286,17 @@ function HeThongInner({
         </div>
         <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1"
+            onClick={() => setCompact((v) => !v)}
+            aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
+            title={compact ? "Xem đầy đủ" : "Xem gọn"}
+          >
+            {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
+            {compact ? "Đầy đủ" : "Gọn"}
+          </Button>
           <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => window.print()}>
             <Printer className="h-3.5 w-3.5" /> In / PDF
           </Button>
