@@ -42,7 +42,9 @@ export const r2GetUploadUrl = createServerFn({ method: "POST" })
     const { r2PresignPut, r2PublicUrl } = await import("./r2.server");
     const key = sanitizeKey(context.userId, data.key);
     const url = await r2PresignPut(key, data.contentType, data.expiresIn ?? 900);
-    return { key, url, publicUrl: r2PublicUrl(key), method: "PUT" as const };
+    // Chỉ trả publicUrl cho file "public/*". Các file khác phải xin presigned GET.
+    const publicUrl = isPrivateKey(key) ? null : r2PublicUrl(key);
+    return { key, url, publicUrl, method: "PUT" as const, isPrivate: isPrivateKey(key) };
   });
 
 export const r2GetDownloadUrl = createServerFn({ method: "POST" })
