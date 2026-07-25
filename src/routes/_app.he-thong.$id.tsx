@@ -21,6 +21,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
@@ -383,19 +391,7 @@ function HeThongInner({
               <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
               <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
               <div className="border-t pt-3">
-                <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Liên kết chức năng</div>
-                <div className="grid gap-1.5">
-                  <SidebarLink to="/so-do" search={{ he_thong: id } as never} icon={Waypoints} label="Sơ đồ hệ thống" />
-                  <SidebarLink to="/he-thong/lien-ket" search={{ src: id } as never} icon={Link2} label="Liên kết hệ thống" />
-                  <SidebarLink to="/he-thong/thanh-phan" search={{ he_thong: id } as never} icon={Puzzle} label="Thành phần (dạng bảng)" />
-                  <SidebarLink to="/kiem-dinh" search={{ he_thong: id } as never} icon={ShieldCheck} label="Kiểm định & Hiệu chuẩn" />
-                  <SidebarLink to="/vat-tu" search={{ he_thong: id } as never} icon={HardDrive} label="Vật tư & Kho" />
-                  <SidebarLink to="/du-an" search={{ he_thong: id } as never} icon={FolderKanban} label="Dự án liên quan" />
-                  <SidebarLink to="/nhan" search={{ he_thong: id } as never} icon={QrCode} label="In nhãn QR" />
-                  {hasGp && (
-                    <SidebarLink to="/giay-phep" search={{ q: gpSo } as never} icon={FileText} label="Lịch sử giấy phép" />
-                  )}
-                </div>
+                <FunctionLinksMenu heThongId={id} hasGp={hasGp} gpSo={gpSo} />
               </div>
               <div className="border-t pt-3">
                 <div className="grid grid-cols-2 gap-2 text-xs">
@@ -620,6 +616,21 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
   const [openTpId, setOpenTpId] = useState<string | null>(null);
   const openTp = openTpId ? list.find((t) => t.id === openTpId) ?? null : null;
   const openDev = openTpId ? dangLap?.get(openTpId) ?? null : null;
+  const [tpQuery, setTpQuery] = useState("");
+  const filtered = useMemo(() => {
+    const q = tpQuery.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((tp) => {
+      const dev = dangLap?.get(tp.id);
+      return (
+        tp.ten?.toLowerCase().includes(q) ||
+        tp.loai_thiet_bi_yeu_cau?.toLowerCase().includes(q) ||
+        dev?.ma_thiet_bi?.toLowerCase().includes(q) ||
+        dev?.ten_thiet_bi?.toLowerCase().includes(q) ||
+        dev?.ma_serial?.toLowerCase().includes(q)
+      );
+    });
+  }, [list, dangLap, tpQuery]);
   return (
     <Card id="thanh-phan-card" className={open ? "min-h-[220px]" : ""}>
       <CardHeader>
@@ -645,8 +656,27 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
       {open && (
       <CardContent>
         {list.length === 0 && <p className="text-sm text-muted-foreground">Chưa có thành phần.</p>}
-        <div className={`grid gap-2 ${compact ? "sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" : "sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
-        {list.map((tp) => {
+        {list.length > 0 && (
+          <div className="mb-2 relative">
+            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={tpQuery}
+              onChange={(e) => setTpQuery(e.target.value)}
+              placeholder="Tìm theo tên thành phần, mã/serial tài sản, loại yêu cầu…"
+              className="h-8 pl-7 pr-7 text-xs"
+            />
+            {tpQuery && (
+              <button type="button" onClick={() => setTpQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        )}
+        <div className={`flex flex-col ${compact ? "gap-1" : "gap-1.5"}`}>
+        {filtered.length === 0 && list.length > 0 && (
+          <p className="text-xs text-muted-foreground">Không có thành phần khớp tìm kiếm.</p>
+        )}
+        {filtered.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
             <HoverCard key={tp.id} openDelay={120} closeDelay={80}>
@@ -654,12 +684,24 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
                 <button
                   type="button"
                   onClick={() => setOpenTpId(tp.id)}
-                  className="flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm hover:bg-primary/5"
+                  className="flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm hover:bg-primary/5"
                 >
               <Puzzle className="h-4 w-4 shrink-0 text-emerald-600" />
                   <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
+                  {tp.loai_thiet_bi_yeu_cau && (
+                    <span className="hidden truncate text-xs text-muted-foreground sm:inline">
+                      {tp.loai_thiet_bi_yeu_cau}
+                    </span>
+                  )}
                   {dev ? (
-                    <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
+                    <>
+                      <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
+                      {dev.ten_thiet_bi && (
+                        <span className="hidden max-w-[200px] truncate text-xs text-muted-foreground md:inline">
+                          {dev.ten_thiet_bi}
+                        </span>
+                      )}
+                    </>
                   ) : (
                     <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
                   )}
@@ -1277,20 +1319,79 @@ function QuickActionsBar({ heThongId }: { heThongId: string }) {
     { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList, tone: "text-cyan-600" },
   ];
   return (
-    <div className="no-print rounded-lg border bg-card p-2">
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="px-2 text-xs font-medium text-muted-foreground">Tác nghiệp nhanh</span>
-        {actions.map((a) => (
-          <Button key={a.to} asChild size="sm" variant="outline" className="h-8 gap-1.5 text-xs">
-            <Link to={a.to} search={search}>
-              <Plus className="h-3.5 w-3.5" />
-              <a.icon className={`h-3.5 w-3.5 ${a.tone}`} />
-              {a.label}
-            </Link>
+    <div className="no-print flex items-center justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm" className="h-8 gap-1.5">
+            <Plus className="h-3.5 w-3.5" />
+            Tác nghiệp nhanh
+            <ChevronDown className="h-3.5 w-3.5 opacity-70" />
           </Button>
-        ))}
-      </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-64">
+          <DropdownMenuLabel className="text-xs">Tạo mới cho hệ thống này</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {actions.map((a) => (
+            <DropdownMenuItem key={a.to} asChild>
+              <Link to={a.to} search={search} className="flex items-center gap-2">
+                <a.icon className={`h-4 w-4 ${a.tone}`} />
+                <span className="flex-1">{a.label}</span>
+                <Plus className="h-3.5 w-3.5 opacity-60" />
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
+  );
+}
+
+function FunctionLinksMenu({ heThongId, hasGp, gpSo }: { heThongId: string; hasGp: boolean; gpSo: string }) {
+  const search = { he_thong: heThongId } as never;
+  const items: { to: "/so-do" | "/he-thong/lien-ket" | "/he-thong/thanh-phan" | "/kiem-dinh" | "/vat-tu" | "/du-an" | "/nhan"; label: string; icon: React.ComponentType<{ className?: string }>; sp?: never }[] = [
+    { to: "/so-do", label: "Sơ đồ hệ thống", icon: Waypoints },
+    { to: "/he-thong/lien-ket", label: "Liên kết hệ thống", icon: Link2, sp: { src: heThongId } as never },
+    { to: "/he-thong/thanh-phan", label: "Thành phần (dạng bảng)", icon: Puzzle },
+    { to: "/kiem-dinh", label: "Kiểm định & Hiệu chuẩn", icon: ShieldCheck },
+    { to: "/vat-tu", label: "Vật tư & Kho", icon: HardDrive },
+    { to: "/du-an", label: "Dự án liên quan", icon: FolderKanban },
+    { to: "/nhan", label: "In nhãn QR", icon: QrCode },
+  ];
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="h-8 w-full justify-between gap-2">
+          <span className="inline-flex items-center gap-2">
+            <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+            Liên kết chức năng
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64">
+        {items.map((it) => (
+          <DropdownMenuItem key={it.to} asChild>
+            <Link to={it.to} search={(it.sp ?? search) as never} className="flex items-center gap-2">
+              <it.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="flex-1">{it.label}</span>
+              <ExternalLink className="h-3 w-3 opacity-60" />
+            </Link>
+          </DropdownMenuItem>
+        ))}
+        {hasGp && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/giay-phep" search={{ q: gpSo } as never} className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="flex-1">Lịch sử giấy phép</span>
+                <ExternalLink className="h-3 w-3 opacity-60" />
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
