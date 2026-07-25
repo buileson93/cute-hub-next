@@ -425,6 +425,10 @@ function NewSubmission() {
               sections={checklistSections}
               values={checklist}
               onChange={setChecklist}
+              templateCode={t.code}
+              draftId={draftIdRef.current}
+              attachments={attachments}
+              onAttachmentsChange={setAttachments}
             />
           )}
         </CardContent>
