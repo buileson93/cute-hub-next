@@ -81,7 +81,20 @@ export async function saveChecklistDesigner(
   if (e1) throw e1;
   const idByMa = new Map((insSecs ?? []).map((r) => [r.ma_section as string, r.id as string]));
 
-  const itemRows: Array<Record<string, unknown>> = [];
+  type ItemRow = {
+    section_id: string;
+    template_id: string;
+    item_code: string;
+    ten: string;
+    huong_dan: string | null;
+    result_kind: ChecklistSection["items"][number]["result_kind"];
+    don_vi: string | null;
+    tieu_chuan: string | null;
+    tuy_chon: unknown;
+    bat_buoc: boolean;
+    position: number;
+  };
+  const itemRows: ItemRow[] = [];
   sections.forEach((s, si) => {
     const sid = idByMa.get(s.ma_section);
     if (!sid) return;
