@@ -146,6 +146,22 @@ function HeThongInner({
   const hongHoc = useMemo(() => ops.hongHoc.filter((e) => (e.thiet_bi_hong_id ? idSet.has(e.thiet_bi_hong_id) : maSet.has(e.thiet_bi_hong))), [ops.hongHoc, idSet, maSet]);
   const banGiao = useMemo(() => ops.banGiao.filter((e) => maSet.has(e.thiet_bi)), [ops.banGiao, maSet]);
 
+  // Biên bản (form_submission) liên kết trực tiếp với hệ thống này.
+  const { data: bienBanRows } = useQuery({
+    queryKey: ["he-thong-submissions", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("form_submission")
+        .select("id, tieu_de, template_code, status, submitted_at, created_at, ky_bao_cao, created_by")
+        .eq("he_thong_id", id)
+        .order("submitted_at", { ascending: false, nullsFirst: false })
+        .limit(200);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const bienBan = useMemo(() => bienBanRows ?? [], [bienBanRows]);
+
   
   const donVi = donViMa || devices[0]?.don_vi || "";
   const donViTenR = donViTen || devices[0]?._donViTen || "";
@@ -156,9 +172,20 @@ function HeThongInner({
     for (const e of suCo) items.push({ kind: "sc", date: e.ngay_phat_hien || "", title: e.hien_tuong || "Sự cố", label: e.muc_do || "Sự cố", desc: e.bien_phap_xu_ly ?? e.nguyen_nhan ?? "", tag: e.trang_thai, tb: e.thiet_bi, person: e.nguoi_bao_cao || (e.nguoi_xu_ly || [])[0] || "", code: e.ma_su_co });
     for (const e of hongHoc) items.push({ kind: "hh", date: e.ngay_hong || "", title: e.mo_ta_hong_hoc || e.bo_phan_hong || "Hỏng hóc / thay thế", label: e.bo_phan_hong || "Hỏng hóc", desc: e.phuong_an ?? "", tag: e.trang_thai, tb: e.thiet_bi_hong, person: (e.nguoi_thuc_hien || [])[0] || "", code: e.ma_hong_hoc });
     for (const e of banGiao) items.push({ kind: "bg", date: e.ngay_nhan || "", title: `${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`, label: e.loai_ban_giao || "Bàn giao", desc: e.don_vi_nhan ?? "", tag: e.trang_thai, tb: e.thiet_bi, person: e.nguoi_giao || "", code: e.ma_ban_giao });
+    for (const e of bienBan) items.push({
+      kind: "bb",
+      date: (e.submitted_at as string | null) || (e.created_at as string | null) || "",
+      title: e.tieu_de || e.template_code || "Biên bản",
+      label: e.template_code || "Biên bản",
+      desc: e.ky_bao_cao ? `Kỳ ${e.ky_bao_cao}` : "",
+      tag: e.status,
+      tb: "",
+      person: "",
+      code: e.id,
+    });
     const toKey = (d: string) => { const t = Date.parse(d); return Number.isNaN(t) ? -Infinity : t; };
     return items.sort((a, b) => toKey(b.date) - toKey(a.date));
-  }, [baoTri, suCo, hongHoc, banGiao]);
+  }, [baoTri, suCo, hongHoc, banGiao, bienBan]);
 
   // Dữ liệu suy diễn cho bộ lọc / tóm tắt Nhật ký khai thác
   const personOptions = useMemo(() => {
@@ -167,7 +194,7 @@ function HeThongInner({
     return Array.from(s).sort((a, b) => a.localeCompare(b, "vi"));
   }, [timeline]);
   const kindCounts = useMemo(() => {
-    const c: Record<TimelineKind, number> = { bt: 0, sc: 0, hh: 0, bg: 0 };
+    const c: Record<TimelineKind, number> = { bt: 0, sc: 0, hh: 0, bg: 0, bb: 0 };
     for (const it of timeline) c[it.kind]++;
     return c;
   }, [timeline]);
@@ -1419,7 +1446,7 @@ function SidebarLink({
   );
 }
 
-type TimelineKind = "bt" | "sc" | "hh" | "bg";
+type TimelineKind = "bt" | "sc" | "hh" | "bg" | "bb";
 
 function SummaryStat({ label, value, tone, wide }: { label: string; value: string | number; tone?: string; wide?: boolean }) {
   return (
@@ -1437,6 +1464,7 @@ const timelineMeta: Record<TimelineKind, { icon: React.ComponentType<{ className
   sc: { icon: AlertTriangle, name: "Sự cố", dot: "bg-red-500", chip: "bg-red-50 text-red-700" },
   hh: { icon: RefreshCw, name: "Hỏng hóc / thay thế", dot: "bg-orange-500", chip: "bg-orange-50 text-orange-700" },
   bg: { icon: ArrowLeftRight, name: "Bàn giao", dot: "bg-sky-500", chip: "bg-sky-50 text-sky-700" },
+  bb: { icon: ClipboardList, name: "Biên bản", dot: "bg-violet-500", chip: "bg-violet-50 text-violet-700" },
 };
 
 function Timeline({ items, tenMap, compact = false }: { items: TimelineItem[]; tenMap: Map<string, string>; compact?: boolean }) {
@@ -1461,10 +1489,18 @@ function Timeline({ items, tenMap, compact = false }: { items: TimelineItem[]; t
                 </span>
                 <Badge variant="outline" className={m.chip}>{m.name}</Badge>
                 {it.label && it.label !== m.name && <Badge variant="outline">{it.label}</Badge>}
-                <DeviceChip tb={it.tb} tenMap={tenMap} />
+                {it.tb && <DeviceChip tb={it.tb} tenMap={tenMap} />}
                 {it.tag && <Badge variant="secondary" className="ml-auto">{it.tag}</Badge>}
               </div>
-              <div className="mt-1 font-medium">{it.title || "—"}</div>
+              <div className="mt-1 font-medium">
+                {it.kind === "bb" && it.code ? (
+                  <Link to="/forms/submissions/$id" params={{ id: it.code }} className="text-primary hover:underline">
+                    {it.title || "—"}
+                  </Link>
+                ) : (
+                  it.title || "—"
+                )}
+              </div>
               {it.desc && !compact && <div className="mt-0.5 text-muted-foreground">{it.desc}</div>}
             </div>
           </li>

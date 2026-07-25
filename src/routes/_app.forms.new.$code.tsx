@@ -48,6 +48,9 @@ function NewSubmission() {
   const [kyBaoCao, setKyBaoCao] = useState("");
   const [selectedTb, setSelectedTb] = useState<string[]>([]);
   const [tbSearch, setTbSearch] = useState("");
+  const [heThongId, setHeThongId] = useState<string | null>(null);
+  const [heThongTouched, setHeThongTouched] = useState(false);
+  const [heThongSearch, setHeThongSearch] = useState("");
 
   const { data: template } = useQuery({
     queryKey: ["template-by-code", code],
@@ -81,13 +84,62 @@ function NewSubmission() {
     queryKey: ["thiet-bi-picker", tbSearch],
     enabled: !!session && template?.t.thiet_bi_mode !== "none",
     queryFn: async () => {
-      let q = supabase.from("thiet_bi").select("id,ma_thiet_bi,ten_thiet_bi,ma_serial")
+      let q = supabase.from("thiet_bi").select("id,ma_thiet_bi,ten_thiet_bi,ma_serial,he_thong_id")
         .order("ma_thiet_bi").limit(50);
       if (tbSearch.trim()) q = q.or(`ma_thiet_bi.ilike.%${tbSearch}%,ten_thiet_bi.ilike.%${tbSearch}%`);
       const { data } = await q;
       return data ?? [];
     },
   });
+
+  // Danh sách hệ thống để chọn hoặc suy ra từ tài sản. Nếu template có link
+  // form_template_he_thong thì ưu tiên các hệ thống đó.
+  const { data: templateHeThongIds } = useQuery({
+    queryKey: ["form-template-he-thong", template?.t.id],
+    enabled: !!template?.t.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("form_template_he_thong")
+        .select("he_thong_id")
+        .eq("template_id", template!.t.id);
+      return (data ?? []).map((r) => r.he_thong_id as string);
+    },
+  });
+
+  const { data: heThongList } = useQuery({
+    queryKey: ["he-thong-picker", heThongSearch, templateHeThongIds?.join(",") ?? ""],
+    enabled: !!session,
+    queryFn: async () => {
+      let q = supabase.from("dm_he_thong")
+        .select("id,ma,ten,don_vi_id")
+        .order("ma").limit(50);
+      if (templateHeThongIds && templateHeThongIds.length > 0) {
+        q = q.in("id", templateHeThongIds);
+      }
+      if (heThongSearch.trim()) {
+        q = q.or(`ma.ilike.%${heThongSearch}%,ten.ilike.%${heThongSearch}%`);
+      }
+      const { data } = await q;
+      return data ?? [];
+    },
+  });
+
+  // Tự động suy ra hệ thống từ các tài sản đã chọn (khi tất cả cùng 1 hệ thống)
+  // — chỉ áp dụng khi người dùng chưa tự chọn.
+  const derivedHt = useMemo(() => {
+    if (!thietBiList || selectedTb.length === 0) return null;
+    const set = new Set<string>();
+    for (const id of selectedTb) {
+      const tb = thietBiList.find((x) => x.id === id);
+      if (tb?.he_thong_id) set.add(tb.he_thong_id);
+    }
+    return set.size === 1 ? Array.from(set)[0] : null;
+  }, [thietBiList, selectedTb]);
+  const effectiveHeThongId = heThongTouched ? heThongId : (heThongId ?? derivedHt);
+  const heThongInfo = useMemo(
+    () => (effectiveHeThongId ? heThongList?.find((h) => h.id === effectiveHeThongId) ?? null : null),
+    [heThongList, effectiveHeThongId],
+  );
 
   // Lọc field hiển thị theo visible_if (đánh giá liên tục theo values).
   const visibleFields: CompiledField[] = useMemo(() => {
@@ -185,6 +237,7 @@ function NewSubmission() {
         tieu_de: tieuDe.trim() || template.t.ten,
         ky_bao_cao: kyBaoCao.trim() || null,
         thiet_bi_id: template.t.thiet_bi_mode === "single" && selectedTb[0] ? selectedTb[0] : null,
+        he_thong_id: effectiveHeThongId ?? null,
         submitted_at: status === "submitted" ? new Date().toISOString() : null,
       }).select("id").single();
       if (error) throw error;
@@ -263,6 +316,45 @@ function NewSubmission() {
           </CardContent>
         </Card>
       )}
+
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle className="text-base">Hệ thống liên kết</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Biên bản sẽ được lưu vào Sổ lý lịch của hệ thống này để phục vụ đánh giá về sau.
+            {derivedHt && !heThongTouched && (
+              <span className="ml-1 text-emerald-700">Tự động suy ra từ tài sản đã chọn.</span>
+            )}
+          </p>
+          {heThongInfo ? (
+            <div className="flex items-center justify-between rounded border bg-emerald-50/50 px-3 py-2 text-sm">
+              <div>
+                <span className="font-mono text-xs text-muted-foreground">{heThongInfo.ma}</span>
+                <span className="ml-2 font-medium">{heThongInfo.ten}</span>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => { setHeThongId(null); setHeThongTouched(true); }}>
+                Đổi
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Input placeholder="Tìm mã hoặc tên hệ thống…" value={heThongSearch} onChange={(e) => setHeThongSearch(e.target.value)} />
+              <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
+                {(heThongList ?? []).map((h) => (
+                  <button type="button" key={h.id}
+                    onClick={() => { setHeThongId(h.id); setHeThongTouched(true); }}
+                    className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition hover:bg-secondary">
+                    <span><span className="font-mono text-xs">{h.ma}</span> — {h.ten}</span>
+                  </button>
+                ))}
+                {(heThongList ?? []).length === 0 && <p className="p-2 text-xs text-muted-foreground">Không có hệ thống phù hợp.</p>}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader><CardTitle className="text-base">Nội dung biên bản</CardTitle></CardHeader>
