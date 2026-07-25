@@ -396,6 +396,7 @@ function FormEditor() {
           <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
             <TabsList className="h-8">
               <TabsTrigger value="design" className="h-6 text-xs"><LayoutGrid className="mr-1 h-3 w-3" />Thiết kế</TabsTrigger>
+              <TabsTrigger value="checklist" className="h-6 text-xs"><ListChecks className="mr-1 h-3 w-3" />Bảng kiểm</TabsTrigger>
               <TabsTrigger value="info" className="h-6 text-xs"><FileText className="mr-1 h-3 w-3" />Thông tin</TabsTrigger>
               <TabsTrigger value="includes" className="h-6 text-xs"><Link2 className="mr-1 h-3 w-3" />Version / Include</TabsTrigger>
             </TabsList>
@@ -422,10 +423,17 @@ function FormEditor() {
               ><Eye className="h-3 w-3" />Xem trước</button>
             </div>
           )}
-          <Button size="sm" onClick={() => saveM.mutate()} disabled={saveM.isPending || blocked}>
-            {saveM.isPending ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />}
-            Lưu {blocked && "(chặn)"}
-          </Button>
+          {tab === "checklist" ? (
+            <Button size="sm" onClick={saveChecklist} disabled={chkSaving || chkBlocked || !chkDirty}>
+              {chkSaving ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />}
+              Lưu bảng kiểm {chkBlocked && "(chặn)"}
+            </Button>
+          ) : (
+            <Button size="sm" onClick={() => saveM.mutate()} disabled={saveM.isPending || blocked}>
+              {saveM.isPending ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />}
+              Lưu {blocked && "(chặn)"}
+            </Button>
+          )}
 
         </div>
       </div>
@@ -457,6 +465,30 @@ function FormEditor() {
             fields={fields as unknown as ReadonlyArray<Record<string, unknown>>}
           />
         </div>
+      ) : tab === "checklist" ? (
+        chkSections === null ? (
+          <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
+        ) : (
+          <div className="flex min-h-0 flex-1 flex-col">
+            {chkIssues.length > 0 && (
+              <div className="max-h-24 overflow-y-auto border-b bg-amber-50/60 px-4 py-1.5 text-[11px] dark:bg-amber-950/20">
+                <ul className="space-y-0.5">
+                  {chkIssues.slice(0, 5).map((iss, k) => (
+                    <li key={k} className={iss.level === "error" ? "text-rose-700" : "text-amber-700"}>
+                      <AlertTriangle className="mr-1 inline h-3 w-3" />{iss.message}
+                    </li>
+                  ))}
+                  {chkIssues.length > 5 && <li className="text-muted-foreground">… {chkIssues.length - 5} mục nữa</li>}
+                </ul>
+              </div>
+            )}
+            <ChecklistDesigner
+              sections={chkSections}
+              onChange={(next) => { setChkSections(next); setChkDirty(true); }}
+              tplName={tpl.ten}
+            />
+          </div>
+        )
       ) : tab === "design" && mode === "simple" ? (
         <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20">
           <SimpleFormDesigner
