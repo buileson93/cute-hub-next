@@ -474,6 +474,42 @@ function KpiCard({ icon: Icon, label, value, tone }: { icon: React.ComponentType
   );
 }
 
+function BookStamp({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; tone?: "red" | "emerald" | "amber" | "sky" }) {
+  const toneCls =
+    tone === "red" ? "text-red-700 border-red-800/30" :
+    tone === "emerald" ? "text-emerald-700 border-emerald-800/30" :
+    tone === "amber" ? "text-amber-800 border-amber-900/30" :
+    tone === "sky" ? "text-sky-700 border-sky-800/30" :
+    "text-amber-950 dark:text-amber-100 border-amber-900/30";
+  return (
+    <div className={`relative flex items-center gap-2 rounded-md border bg-amber-50/80 px-3 py-2 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6),0_1px_0_rgba(120,80,20,0.15)] dark:bg-amber-950/30 ${toneCls}`}>
+      <Icon className="h-4 w-4 opacity-80" />
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-wider opacity-70">{label}</div>
+        <div className="font-serif text-lg leading-none">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function StatLine({ label, value, tone }: { label: string; value: string; tone?: string }) {
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-wider text-amber-900/70 dark:text-amber-100/60">{label}</div>
+      <div className={`font-serif text-sm ${tone ?? "text-amber-950 dark:text-amber-100"}`}>{value}</div>
+    </div>
+  );
+}
+
+function MicroStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded border border-amber-900/15 bg-amber-50/70 px-2 py-1 dark:border-amber-100/10 dark:bg-amber-950/20">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-serif text-sm">{value}</div>
+    </div>
+  );
+}
+
 function DeviceChip({ tb, tenMap }: { tb: string; tenMap: Map<string, string> }) {
   if (!tb) return null;
   return (
