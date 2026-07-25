@@ -614,6 +614,68 @@ function InfoLine({ icon: Icon, label, value }: { icon: React.ComponentType<{ cl
   );
 }
 
+function GpktBadge({ heThongId, gpSo, gpHan }: { heThongId: string; gpSo: string; gpHan: string }) {
+  const [open, setOpen] = useState(false);
+  const { data, isLoading } = useQuery({
+    queryKey: ["gpkt-file", heThongId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("giay_phep_khai_thac")
+        .select("file_gpkt, gp_so")
+        .eq("he_thong_id", heThongId)
+        .order("gp_ngay", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const url = data?.file_gpkt ?? null;
+  const fileName = `GPKT-${gpSo || data?.gp_so || heThongId.slice(0, 8)}.pdf`;
+  const label = (
+    <>
+      <ShieldCheck className="h-3.5 w-3.5" /> GPKT {gpSo}{gpHan ? ` · Hạn ${gpHan}` : ""}
+    </>
+  );
+  if (!url) {
+    return (
+      <Badge
+        variant="outline"
+        className="gap-1 border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40"
+        title={isLoading ? "Đang tải file GPKT…" : "Chưa đính kèm file PDF của GPKT"}
+      >
+        {label}
+      </Badge>
+    );
+  }
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="no-print inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 shadow-sm transition hover:bg-emerald-100 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 dark:bg-emerald-950/40"
+        title="Mở file PDF giấy phép khai thác"
+      >
+        {label}
+        <ExternalLink className="h-3 w-3 opacity-70" />
+      </button>
+      <DocViewerDialog open={open} onOpenChange={setOpen} url={url} fileName={fileName} mimeType="application/pdf" />
+    </>
+  );
+}
+
+function InfoLineOld({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="mt-0.5 h-3.5 w-3.5 text-muted-foreground" />
+      <div className="min-w-0 flex-1">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="text-sm">{value}</div>
+      </div>
+    </div>
+  );
+}
+
 function InfoRow({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
