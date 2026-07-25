@@ -1,13 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Cpu, Link2,
+  MapPin, Tag, Info, ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useScope } from "@/lib/mirats/scope";
@@ -17,6 +19,7 @@ import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { HeThongLienKetTab } from "@/components/mirats/HeThongLienKetTab";
 import { useSession } from "@/hooks/use-session";
 import { useViTriChucNang, useThietBiDangLap } from "@/lib/mirats/he-thong-thanh-phan";
+import { LyLichThanhPhanPanel } from "@/components/mirats/LyLichLayerPanel";
 
 export const Route = createFileRoute("/_app/he-thong/$id")({
   head: ({ params }) => ({
@@ -226,6 +229,9 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
   const { data: tps } = useViTriChucNang(heThongId);
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const list = tps ?? [];
+  const [openTpId, setOpenTpId] = useState<string | null>(null);
+  const openTp = openTpId ? list.find((t) => t.id === openTpId) ?? null : null;
+  const openDev = openTpId ? dangLap?.get(openTpId) ?? null : null;
   return (
     <Card>
       <CardHeader>
@@ -241,11 +247,11 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
         {list.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
-            <Link
+            <button
               key={tp.id}
-              to="/he-thong/cay"
-              search={{ tp: tp.id } as never}
-              className="flex items-center gap-2 rounded-md border px-2 py-1.5 text-sm hover:bg-primary/5"
+              type="button"
+              onClick={() => setOpenTpId(tp.id)}
+              className="flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm hover:bg-primary/5"
             >
               <Cpu className="h-4 w-4 shrink-0 text-foreground/60" />
               <span className="font-mono text-xs text-primary">{tp.ma_thanh_phan}</span>
@@ -256,11 +262,90 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
                 <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
               )}
               <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </Link>
+            </button>
           );
         })}
       </CardContent>
+
+      <Sheet open={!!openTpId} onOpenChange={(v) => { if (!v) setOpenTpId(null); }}>
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
+          {openTp && (
+            <>
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2 text-base">
+                  <Cpu className="h-4 w-4" />
+                  <span className="font-mono text-primary">{openTp.ma_thanh_phan}</span>
+                  <span className="truncate">— {openTp.ten}</span>
+                </SheetTitle>
+                <SheetDescription>Chi tiết thành phần hệ thống & sổ lý lịch.</SheetDescription>
+              </SheetHeader>
+
+              <div className="mt-4 space-y-4">
+                <div className="grid grid-cols-1 gap-2 rounded-md border p-3 text-sm">
+                  <InfoLine icon={Tag} label="Loại yêu cầu" value={openTp.loai_thiet_bi_yeu_cau || "—"} />
+                  <InfoLine icon={Info} label="Bắt buộc" value={openTp.bat_buoc ? "Có" : "Không"} />
+                  <InfoLine icon={Info} label="Trạng thái" value={
+                    <Badge variant={openTp.trang_thai === "ngung" ? "secondary" : "default"}>
+                      {openTp.trang_thai === "ngung" ? "Ngừng" : "Đang khai thác"}
+                    </Badge>
+                  } />
+                  {openTp.mo_ta && <InfoLine icon={FileText} label="Mô tả" value={<span className="whitespace-pre-wrap">{openTp.mo_ta}</span>} />}
+                  {(openTp.hieu_luc_tu || openTp.hieu_luc_den) && (
+                    <InfoLine icon={Clock} label="Hiệu lực" value={`${openTp.hieu_luc_tu || "—"} → ${openTp.hieu_luc_den || "hiện tại"}`} />
+                  )}
+                </div>
+
+                <div className="rounded-md border p-3 text-sm">
+                  <div className="mb-2 flex items-center gap-2 font-semibold">
+                    <HardDrive className="h-4 w-4" /> Tài sản đang lắp
+                  </div>
+                  {openDev ? (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="font-mono">{openDev.ma_thiet_bi}</Badge>
+                        <span className="font-medium">{openDev.ten_thiet_bi || "—"}</span>
+                      </div>
+                      {openDev.ma_serial && (
+                        <div className="text-xs text-muted-foreground">Serial: <span className="font-mono">{openDev.ma_serial}</span></div>
+                      )}
+                      <div className="text-xs text-muted-foreground">Lắp từ: {openDev.tu_ngay || "—"}</div>
+                      <div className="pt-2">
+                        <Button asChild size="sm" variant="outline">
+                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: openDev.ma_thiet_bi }}>
+                            <ExternalLink className="mr-1 h-3.5 w-3.5" /> Mở sổ lý lịch tài sản
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Chưa có tài sản lắp vào vị trí này (đang chờ thay thế).</p>
+                  )}
+                </div>
+
+                <div className="rounded-md border p-3">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                    <Clock className="h-4 w-4" /> Sổ lý lịch thành phần
+                  </div>
+                  <LyLichThanhPhanPanel thanhPhanId={openTp.id} empty="Chưa có sự kiện nào cho thành phần này." />
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </Card>
+  );
+}
+
+function InfoLine({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="mt-0.5 h-3.5 w-3.5 text-muted-foreground" />
+      <div className="min-w-0 flex-1">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="text-sm">{value}</div>
+      </div>
+    </div>
   );
 }
 
