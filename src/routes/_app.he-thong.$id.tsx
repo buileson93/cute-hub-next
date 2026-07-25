@@ -5,7 +5,7 @@ import {
   Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
   Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
-  Search, X, Filter,
+  Search, X, Filter, ChevronDown, ChevronUp, Minimize2, Maximize2,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -105,6 +105,10 @@ function HeThongInner({
   const [nkPerson, setNkPerson] = useState<string>("all");
   const [nkRange, setNkRange] = useState<"all" | "3m" | "6m" | "12m">("all");
   const [nkLimit, setNkLimit] = useState(20);
+  // Chế độ xem gọn & thu gọn / mở rộng các card lớn
+  const [compact, setCompact] = useState(false);
+  const [nkOpen, setNkOpen] = useState(true);
+  const [tpOpen, setTpOpen] = useState(true);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
   const [thrOpen, setThrOpen] = useState(false);
   const thrKey = `hp-thresholds:${donViMa || "default"}`;
@@ -282,6 +286,17 @@ function HeThongInner({
         </div>
         <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1"
+            onClick={() => setCompact((v) => !v)}
+            aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
+            title={compact ? "Xem đầy đủ" : "Xem gọn"}
+          >
+            {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
+            {compact ? "Đầy đủ" : "Gọn"}
+          </Button>
           <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => window.print()}>
             <Printer className="h-3.5 w-3.5" /> In / PDF
           </Button>
@@ -410,17 +425,55 @@ function HeThongInner({
           />
 
           {/* Nhật ký khai thác — cuộn nội bộ để không phá layout khi dữ liệu dài */}
-          <Card>
+          <Card className={nkOpen ? "flex min-h-[420px] flex-col" : ""}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center justify-between gap-2">
               <span>Nhật ký khai thác</span>
-              <span className="text-xs font-normal text-muted-foreground">
-                {timeline.length + baoTri.length + suCo.length + hongHoc.length + banGiao.length} bản ghi
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-normal text-muted-foreground">
+                  {timeline.length + baoTri.length + suCo.length + hongHoc.length + banGiao.length} bản ghi
+                </span>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setNkOpen((v) => !v)} aria-label={nkOpen ? "Thu gọn nhật ký" : "Mở rộng nhật ký"} title={nkOpen ? "Thu gọn" : "Mở rộng"}>
+                  {nkOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          {nkOpen && (
+          <CardContent className="flex-1">
+            {/* Bộ lọc nhanh luôn hiển thị */}
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border bg-background p-2">
+              <div className="relative min-w-[220px] flex-1">
+                <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <Input value={nkQuery} onChange={(e) => { setNkQuery(e.target.value); if (e.target.value) setTab("tl"); }} placeholder="Lọc nhanh nhật ký theo từ khoá, mã, người tạo…" className="h-8 pl-7 pr-7 text-xs" />
+                {nkQuery && (
+                  <button type="button" onClick={() => setNkQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <Select value={nkRange} onValueChange={(v) => { setNkRange(v as typeof nkRange); if (v !== "all") setTab("tl"); }}>
+                <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Thời gian" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Mọi thời gian</SelectItem>
+                  <SelectItem value="3m">3 tháng gần đây</SelectItem>
+                  <SelectItem value="6m">6 tháng gần đây</SelectItem>
+                  <SelectItem value="12m">12 tháng gần đây</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={nkKind} onValueChange={(v) => { setNkKind(v as typeof nkKind); if (v !== "all") setTab("tl"); }}>
+                <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Loại" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả loại</SelectItem>
+                  <SelectItem value="bt">Bảo dưỡng</SelectItem>
+                  <SelectItem value="sc">Sự cố kỹ thuật</SelectItem>
+                  <SelectItem value="hh">Hỏng hóc</SelectItem>
+                  <SelectItem value="bg">Bàn giao</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             {/* Tóm tắt nhanh toàn bộ nhật ký */}
+            {!compact && (
             <div className="mb-3 grid grid-cols-2 gap-2 rounded-md border bg-muted/30 p-2 text-xs sm:grid-cols-6">
               <SummaryStat label="Tổng sự kiện" value={timeline.length} />
               <SummaryStat label="Khoảng thời gian" value={firstEventTs && lastEventTs ? `${fmtVN(firstEventTs)} → ${fmtVN(lastEventTs)}` : "—"} wide />
@@ -429,6 +482,7 @@ function HeThongInner({
               <SummaryStat label="Hỏng hóc" value={kindCounts.hh} tone="text-orange-700" />
               <SummaryStat label="Bàn giao" value={kindCounts.bg} tone="text-sky-700" />
             </div>
+            )}
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
                 <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
@@ -446,46 +500,13 @@ function HeThongInner({
                   <p className="text-sm text-muted-foreground">Chưa có sự kiện lịch sử nào cho hệ thống này.</p>
                 ) : (
                   <>
-                    {/* Bộ lọc */}
+                    {/* Lọc bổ sung theo người tạo */}
                     <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border bg-background p-2">
-                      <div className="relative min-w-[220px] flex-1">
-                        <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          value={nkQuery}
-                          onChange={(e) => setNkQuery(e.target.value)}
-                          placeholder="Tìm theo tiêu đề, mô tả, mã, người tạo…"
-                          className="h-8 pl-7 pr-7 text-xs"
-                        />
-                        {nkQuery && (
-                          <button type="button" onClick={() => setNkQuery("")} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:bg-muted" aria-label="Xoá tìm kiếm">
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </div>
-                      <Select value={nkKind} onValueChange={(v) => setNkKind(v as typeof nkKind)}>
-                        <SelectTrigger className="h-8 w-[140px] text-xs"><SelectValue placeholder="Loại sự kiện" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Tất cả loại</SelectItem>
-                          <SelectItem value="bt">Bảo dưỡng</SelectItem>
-                          <SelectItem value="sc">Sự cố kỹ thuật</SelectItem>
-                          <SelectItem value="hh">Hỏng hóc</SelectItem>
-                          <SelectItem value="bg">Bàn giao</SelectItem>
-                        </SelectContent>
-                      </Select>
                       <Select value={nkPerson} onValueChange={setNkPerson}>
                         <SelectTrigger className="h-8 w-[180px] text-xs"><SelectValue placeholder="Người tạo" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Mọi người tạo</SelectItem>
                           {personOptions.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <Select value={nkRange} onValueChange={(v) => setNkRange(v as typeof nkRange)}>
-                        <SelectTrigger className="h-8 w-[130px] text-xs"><SelectValue placeholder="Thời gian" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Mọi thời gian</SelectItem>
-                          <SelectItem value="3m">3 tháng gần đây</SelectItem>
-                          <SelectItem value="6m">6 tháng gần đây</SelectItem>
-                          <SelectItem value="12m">12 tháng gần đây</SelectItem>
                         </SelectContent>
                       </Select>
                       {(nkQuery || nkKind !== "all" || nkPerson !== "all" || nkRange !== "all") && (
@@ -504,7 +525,7 @@ function HeThongInner({
                       <p className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">Không tìm thấy sự kiện phù hợp với bộ lọc.</p>
                     ) : (
                       <>
-                        <Timeline items={filteredTimeline.slice(0, nkLimit)} tenMap={tenMap} />
+                        <Timeline items={filteredTimeline.slice(0, nkLimit)} tenMap={tenMap} compact={compact} />
                         {filteredTimeline.length > nkLimit && (
                           <div className="mt-3 flex justify-center print:hidden">
                             <Button variant="outline" size="sm" onClick={() => setNkLimit((n) => n + 20)}>
@@ -564,10 +585,11 @@ function HeThongInner({
               </div>
             </Tabs>
           </CardContent>
+          )}
           </Card>
 
-          {/* Thành phần hệ thống — nằm trong cột phải để lấp khoảng trống cạnh cột định danh sticky */}
-          <ThanhPhanCard heThongId={id} />
+          {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
+          <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} />
         </div>
       </div>
 
@@ -591,7 +613,7 @@ function HeThongInner({
   );
 }
 
-function ThanhPhanCard({ heThongId }: { heThongId: string }) {
+function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { heThongId: string; open?: boolean; onToggle?: () => void; compact?: boolean }) {
   const { data: tps } = useViTriChucNang(heThongId);
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const list = tps ?? [];
@@ -599,7 +621,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
   const openTp = openTpId ? list.find((t) => t.id === openTpId) ?? null : null;
   const openDev = openTpId ? dangLap?.get(openTpId) ?? null : null;
   return (
-    <Card id="thanh-phan-card">
+    <Card id="thanh-phan-card" className={open ? "min-h-[220px]" : ""}>
       <CardHeader>
         <CardTitle className="text-base flex items-center justify-between gap-2">
           <span>Thành phần hệ thống ({list.length})</span>
@@ -612,12 +634,18 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
             <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
               <Link to="/he-thong/cay">Quản lý cây</Link>
             </Button>
+            {onToggle && (
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onToggle} aria-label={open ? "Thu gọn thành phần" : "Mở rộng thành phần"} title={open ? "Thu gọn" : "Mở rộng"}>
+                {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            )}
           </div>
         </CardTitle>
       </CardHeader>
+      {open && (
       <CardContent>
         {list.length === 0 && <p className="text-sm text-muted-foreground">Chưa có thành phần.</p>}
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className={`grid gap-2 ${compact ? "sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" : "sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
         {list.map((tp) => {
           const dev = dangLap?.get(tp.id);
           return (
@@ -683,6 +711,7 @@ function ThanhPhanCard({ heThongId }: { heThongId: string }) {
         })}
         </div>
       </CardContent>
+      )}
 
       <Sheet open={!!openTpId} onOpenChange={(v) => { if (!v) setOpenTpId(null); }}>
         <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
@@ -1309,18 +1338,22 @@ const timelineMeta: Record<TimelineKind, { icon: React.ComponentType<{ className
   bg: { icon: ArrowLeftRight, name: "Bàn giao", dot: "bg-sky-500", chip: "bg-sky-50 text-sky-700" },
 };
 
-function Timeline({ items, tenMap }: { items: TimelineItem[]; tenMap: Map<string, string> }) {
+function Timeline({ items, tenMap, compact = false }: { items: TimelineItem[]; tenMap: Map<string, string>; compact?: boolean }) {
   return (
-    <ol className="relative ml-2 border-l border-border pl-6">
+    <ol className={`relative ml-2 border-l border-border pl-6 ${compact ? "space-y-2" : ""}`}>
       {items.map((it, i) => {
         const m = timelineMeta[it.kind];
         const Icon = m.icon;
         return (
-          <li key={`${it.kind}-${i}`} className="relative mb-5 last:mb-0">
-            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-white" />
+          <li
+            key={`${it.kind}-${i}`}
+            className={`relative ${compact ? "mb-2" : "mb-5"} last:mb-0`}
+            style={{ contentVisibility: "auto", containIntrinsicSize: compact ? "60px" : "96px" }}
+          >
+            <span className={`absolute ${compact ? "-left-[27px] h-5 w-5" : "-left-[31px] h-6 w-6"} flex items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
+              <Icon className={compact ? "h-3 w-3 text-white" : "h-3.5 w-3.5 text-white"} />
             </span>
-            <div className="rounded-md border p-3 text-sm">
+            <div className={`rounded-md border ${compact ? "p-2 text-xs" : "p-3 text-sm"}`}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
                   {it.date ? new Date(it.date).toLocaleDateString("vi-VN") : "Chưa rõ ngày"}
@@ -1331,7 +1364,7 @@ function Timeline({ items, tenMap }: { items: TimelineItem[]; tenMap: Map<string
                 {it.tag && <Badge variant="secondary" className="ml-auto">{it.tag}</Badge>}
               </div>
               <div className="mt-1 font-medium">{it.title || "—"}</div>
-              {it.desc && <div className="mt-0.5 text-muted-foreground">{it.desc}</div>}
+              {it.desc && !compact && <div className="mt-0.5 text-muted-foreground">{it.desc}</div>}
             </div>
           </li>
         );
