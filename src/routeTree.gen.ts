@@ -88,6 +88,7 @@ import { Route as AppDanhMucDacTinhRouteImport } from './routes/_app.danh-muc.da
 import { Route as AppCaiDatTaiKhoanRouteImport } from './routes/_app.cai-dat.tai-khoan'
 import { Route as AppBaoTriPmRouteImport } from './routes/_app.bao-tri.pm'
 import { Route as AppBaoTriMoiRouteImport } from './routes/_app.bao-tri.moi'
+import { Route as AppBaoTriDotRouteImport } from './routes/_app.bao-tri.dot'
 import { Route as AppBaoTriCongViecRouteImport } from './routes/_app.bao-tri.cong-viec'
 import { Route as AppBaoTriMaBaoTriRouteImport } from './routes/_app.bao-tri.$maBaoTri'
 import { Route as AppBaoCaoDoTinCayRouteImport } from './routes/_app.bao-cao.do-tin-cay'
@@ -103,6 +104,7 @@ import { Route as AppAdminBaoTriChinhSachRouteImport } from './routes/_app.admin
 import { Route as AppAdminAiRouteImport } from './routes/_app.admin.ai'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AppBaoTriDotIndexRouteImport } from './routes/_app.bao-tri.dot.index'
 import { Route as AppAdminFormsIndexRouteImport } from './routes/_app.admin.forms.index'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -117,6 +119,7 @@ import { Route as ApiPublicHooksCanhBaoHetHanRouteImport } from './routes/api/pu
 import { Route as ApiPublicHooksBootstrapAdminRouteImport } from './routes/api/public/hooks/bootstrap-admin'
 import { Route as AppFormsSubmissionsIdRouteImport } from './routes/_app.forms.submissions.$id'
 import { Route as AppFormsNewCodeRouteImport } from './routes/_app.forms.new.$code'
+import { Route as AppBaoTriDotIdRouteImport } from './routes/_app.bao-tri.dot.$id'
 import { Route as AppAdminFormsIdRouteImport } from './routes/_app.admin.forms.$id'
 import { Route as AppAdminFormsIdHistoryRouteImport } from './routes/_app.admin.forms.$id.history'
 
@@ -517,6 +520,11 @@ const AppBaoTriMoiRoute = AppBaoTriMoiRouteImport.update({
   path: '/moi',
   getParentRoute: () => AppBaoTriRoute,
 } as any)
+const AppBaoTriDotRoute = AppBaoTriDotRouteImport.update({
+  id: '/dot',
+  path: '/dot',
+  getParentRoute: () => AppBaoTriRoute,
+} as any)
 const AppBaoTriCongViecRoute = AppBaoTriCongViecRouteImport.update({
   id: '/cong-viec',
   path: '/cong-viec',
@@ -592,6 +600,11 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppBaoTriDotIndexRoute = AppBaoTriDotIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBaoTriDotRoute,
 } as any)
 const AppAdminFormsIndexRoute = AppAdminFormsIndexRouteImport.update({
   id: '/',
@@ -672,6 +685,11 @@ const AppFormsNewCodeRoute = AppFormsNewCodeRouteImport.update({
   path: '/new/$code',
   getParentRoute: () => AppFormsRoute,
 } as any)
+const AppBaoTriDotIdRoute = AppBaoTriDotIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppBaoTriDotRoute,
+} as any)
 const AppAdminFormsIdRoute = AppAdminFormsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -740,6 +758,7 @@ export interface FileRoutesByFullPath {
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/bao-tri/dot': typeof AppBaoTriDotRouteWithChildren
   '/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/bao-tri/pm': typeof AppBaoTriPmRoute
   '/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -778,6 +797,7 @@ export interface FileRoutesByFullPath {
   '/su-co/': typeof AppSuCoIndexRoute
   '/thiet-bi/': typeof AppThietBiIndexRoute
   '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
@@ -792,6 +812,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms/': typeof AppAdminFormsIndexRoute
+  '/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRoutesByTo {
@@ -883,6 +904,7 @@ export interface FileRoutesByTo {
   '/su-co': typeof AppSuCoIndexRoute
   '/thiet-bi': typeof AppThietBiIndexRoute
   '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
@@ -897,6 +919,7 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms': typeof AppAdminFormsIndexRoute
+  '/bao-tri/dot': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRoutesById {
@@ -958,6 +981,7 @@ export interface FileRoutesById {
   '/_app/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/_app/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
   '/_app/bao-tri/cong-viec': typeof AppBaoTriCongViecRoute
+  '/_app/bao-tri/dot': typeof AppBaoTriDotRouteWithChildren
   '/_app/bao-tri/moi': typeof AppBaoTriMoiRoute
   '/_app/bao-tri/pm': typeof AppBaoTriPmRoute
   '/_app/cai-dat/tai-khoan': typeof AppCaiDatTaiKhoanRoute
@@ -996,6 +1020,7 @@ export interface FileRoutesById {
   '/_app/su-co/': typeof AppSuCoIndexRoute
   '/_app/thiet-bi/': typeof AppThietBiIndexRoute
   '/_app/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
+  '/_app/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/_app/forms/new/$code': typeof AppFormsNewCodeRoute
   '/_app/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
@@ -1010,6 +1035,7 @@ export interface FileRoutesById {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/admin/forms/': typeof AppAdminFormsIndexRoute
+  '/_app/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/_app/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
 }
 export interface FileRouteTypes {
@@ -1071,6 +1097,7 @@ export interface FileRouteTypes {
     | '/bao-cao/do-tin-cay'
     | '/bao-tri/$maBaoTri'
     | '/bao-tri/cong-viec'
+    | '/bao-tri/dot'
     | '/bao-tri/moi'
     | '/bao-tri/pm'
     | '/cai-dat/tai-khoan'
@@ -1109,6 +1136,7 @@ export interface FileRouteTypes {
     | '/su-co/'
     | '/thiet-bi/'
     | '/admin/forms/$id'
+    | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
     | '/api/public/hooks/bootstrap-admin'
@@ -1123,6 +1151,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/admin/forms/'
+    | '/bao-tri/dot/'
     | '/admin/forms/$id/history'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1214,6 +1243,7 @@ export interface FileRouteTypes {
     | '/su-co'
     | '/thiet-bi'
     | '/admin/forms/$id'
+    | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
     | '/api/public/hooks/bootstrap-admin'
@@ -1228,6 +1258,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/admin/forms'
+    | '/bao-tri/dot'
     | '/admin/forms/$id/history'
   id:
     | '__root__'
@@ -1288,6 +1319,7 @@ export interface FileRouteTypes {
     | '/_app/bao-cao/do-tin-cay'
     | '/_app/bao-tri/$maBaoTri'
     | '/_app/bao-tri/cong-viec'
+    | '/_app/bao-tri/dot'
     | '/_app/bao-tri/moi'
     | '/_app/bao-tri/pm'
     | '/_app/cai-dat/tai-khoan'
@@ -1326,6 +1358,7 @@ export interface FileRouteTypes {
     | '/_app/su-co/'
     | '/_app/thiet-bi/'
     | '/_app/admin/forms/$id'
+    | '/_app/bao-tri/dot/$id'
     | '/_app/forms/new/$code'
     | '/_app/forms/submissions/$id'
     | '/api/public/hooks/bootstrap-admin'
@@ -1340,6 +1373,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/_app/admin/forms/'
+    | '/_app/bao-tri/dot/'
     | '/_app/admin/forms/$id/history'
   fileRoutesById: FileRoutesById
 }
@@ -1930,6 +1964,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBaoTriMoiRouteImport
       parentRoute: typeof AppBaoTriRoute
     }
+    '/_app/bao-tri/dot': {
+      id: '/_app/bao-tri/dot'
+      path: '/dot'
+      fullPath: '/bao-tri/dot'
+      preLoaderRoute: typeof AppBaoTriDotRouteImport
+      parentRoute: typeof AppBaoTriRoute
+    }
     '/_app/bao-tri/cong-viec': {
       id: '/_app/bao-tri/cong-viec'
       path: '/cong-viec'
@@ -2035,6 +2076,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/bao-tri/dot/': {
+      id: '/_app/bao-tri/dot/'
+      path: '/'
+      fullPath: '/bao-tri/dot/'
+      preLoaderRoute: typeof AppBaoTriDotIndexRouteImport
+      parentRoute: typeof AppBaoTriDotRoute
+    }
     '/_app/admin/forms/': {
       id: '/_app/admin/forms/'
       path: '/'
@@ -2133,6 +2181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFormsNewCodeRouteImport
       parentRoute: typeof AppFormsRoute
     }
+    '/_app/bao-tri/dot/$id': {
+      id: '/_app/bao-tri/dot/$id'
+      path: '/$id'
+      fullPath: '/bao-tri/dot/$id'
+      preLoaderRoute: typeof AppBaoTriDotIdRouteImport
+      parentRoute: typeof AppBaoTriDotRoute
+    }
     '/_app/admin/forms/$id': {
       id: '/_app/admin/forms/$id'
       path: '/$id'
@@ -2162,9 +2217,24 @@ const AppBanGiaoRouteWithChildren = AppBanGiaoRoute._addFileChildren(
   AppBanGiaoRouteChildren,
 )
 
+interface AppBaoTriDotRouteChildren {
+  AppBaoTriDotIdRoute: typeof AppBaoTriDotIdRoute
+  AppBaoTriDotIndexRoute: typeof AppBaoTriDotIndexRoute
+}
+
+const AppBaoTriDotRouteChildren: AppBaoTriDotRouteChildren = {
+  AppBaoTriDotIdRoute: AppBaoTriDotIdRoute,
+  AppBaoTriDotIndexRoute: AppBaoTriDotIndexRoute,
+}
+
+const AppBaoTriDotRouteWithChildren = AppBaoTriDotRoute._addFileChildren(
+  AppBaoTriDotRouteChildren,
+)
+
 interface AppBaoTriRouteChildren {
   AppBaoTriMaBaoTriRoute: typeof AppBaoTriMaBaoTriRoute
   AppBaoTriCongViecRoute: typeof AppBaoTriCongViecRoute
+  AppBaoTriDotRoute: typeof AppBaoTriDotRouteWithChildren
   AppBaoTriMoiRoute: typeof AppBaoTriMoiRoute
   AppBaoTriPmRoute: typeof AppBaoTriPmRoute
   AppBaoTriIndexRoute: typeof AppBaoTriIndexRoute
@@ -2173,6 +2243,7 @@ interface AppBaoTriRouteChildren {
 const AppBaoTriRouteChildren: AppBaoTriRouteChildren = {
   AppBaoTriMaBaoTriRoute: AppBaoTriMaBaoTriRoute,
   AppBaoTriCongViecRoute: AppBaoTriCongViecRoute,
+  AppBaoTriDotRoute: AppBaoTriDotRouteWithChildren,
   AppBaoTriMoiRoute: AppBaoTriMoiRoute,
   AppBaoTriPmRoute: AppBaoTriPmRoute,
   AppBaoTriIndexRoute: AppBaoTriIndexRoute,
