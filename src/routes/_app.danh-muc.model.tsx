@@ -403,13 +403,46 @@ function ModelCatalogPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm mẫu, số model, nhà sản xuất…" className="pl-8" />
         </div>
         <Combobox
-          className="w-full sm:w-56"
+          className="w-full sm:w-48"
+          value={nsxFilter || "__all__"}
+          onChange={(v) => setNsxFilter(v === "__all__" ? "" : v)}
+          placeholder="Tất cả NSX"
+          searchPlaceholder="Tìm nhà sản xuất…"
+          options={[{ value: "__all__", label: `Tất cả NSX (${all.length})` }, ...nsxOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+        />
+        <Combobox
+          className="w-full sm:w-48"
           value={loaiFilter || "__all__"}
           onChange={(v) => setLoaiFilter(v === "__all__" ? "" : v)}
           placeholder="Tất cả chủng loại"
           searchPlaceholder="Tìm chủng loại…"
-          options={[{ value: "__all__", label: "Tất cả chủng loại" }, ...loaiOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+          options={[{ value: "__all__", label: `Tất cả chủng loại (${afterNsx.length})` }, ...loaiOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
         />
+        <Combobox
+          className="w-full sm:w-48"
+          value={tenFilter || "__all__"}
+          onChange={(v) => setTenFilter(v === "__all__" ? "" : v)}
+          placeholder="Tất cả tên mẫu"
+          searchPlaceholder="Tìm tên mẫu…"
+          options={[{ value: "__all__", label: `Tất cả tên mẫu (${afterLoai.length})` }, ...tenOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+        />
+        <Combobox
+          className="w-full sm:w-44"
+          value={pnFilter || "__all__"}
+          onChange={(v) => setPnFilter(v === "__all__" ? "" : v)}
+          placeholder="Tất cả P/N"
+          searchPlaceholder="Tìm P/N…"
+          options={[{ value: "__all__", label: `Tất cả P/N (${afterTen.length})` }, ...pnOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+        />
+        {(nsxFilter || loaiFilter || tenFilter || pnFilter) && (
+          <Button
+            variant="ghost" size="sm" className="h-9 gap-1 text-muted-foreground"
+            onClick={() => { setNsxFilter(""); setLoaiFilter(""); setTenFilter(""); setPnFilter(""); }}
+            title="Bỏ tất cả filter"
+          >
+            <X className="h-3.5 w-3.5" /> Bỏ filter
+          </Button>
+        )}
         {(thieuLoaiCount > 0 || filterParam === "thieu-loai") && (
           <Button
             variant={filterParam === "thieu-loai" ? "default" : "outline"}
