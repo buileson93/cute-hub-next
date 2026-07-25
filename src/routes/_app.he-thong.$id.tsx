@@ -1338,18 +1338,22 @@ const timelineMeta: Record<TimelineKind, { icon: React.ComponentType<{ className
   bg: { icon: ArrowLeftRight, name: "Bàn giao", dot: "bg-sky-500", chip: "bg-sky-50 text-sky-700" },
 };
 
-function Timeline({ items, tenMap }: { items: TimelineItem[]; tenMap: Map<string, string> }) {
+function Timeline({ items, tenMap, compact = false }: { items: TimelineItem[]; tenMap: Map<string, string>; compact?: boolean }) {
   return (
-    <ol className="relative ml-2 border-l border-border pl-6">
+    <ol className={`relative ml-2 border-l border-border pl-6 ${compact ? "space-y-2" : ""}`}>
       {items.map((it, i) => {
         const m = timelineMeta[it.kind];
         const Icon = m.icon;
         return (
-          <li key={`${it.kind}-${i}`} className="relative mb-5 last:mb-0">
-            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-white" />
+          <li
+            key={`${it.kind}-${i}`}
+            className={`relative ${compact ? "mb-2" : "mb-5"} last:mb-0`}
+            style={{ contentVisibility: "auto", containIntrinsicSize: compact ? "60px" : "96px" }}
+          >
+            <span className={`absolute ${compact ? "-left-[27px] h-5 w-5" : "-left-[31px] h-6 w-6"} flex items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
+              <Icon className={compact ? "h-3 w-3 text-white" : "h-3.5 w-3.5 text-white"} />
             </span>
-            <div className="rounded-md border p-3 text-sm">
+            <div className={`rounded-md border ${compact ? "p-2 text-xs" : "p-3 text-sm"}`}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
                   {it.date ? new Date(it.date).toLocaleDateString("vi-VN") : "Chưa rõ ngày"}
@@ -1360,7 +1364,7 @@ function Timeline({ items, tenMap }: { items: TimelineItem[]; tenMap: Map<string
                 {it.tag && <Badge variant="secondary" className="ml-auto">{it.tag}</Badge>}
               </div>
               <div className="mt-1 font-medium">{it.title || "—"}</div>
-              {it.desc && <div className="mt-0.5 text-muted-foreground">{it.desc}</div>}
+              {it.desc && !compact && <div className="mt-0.5 text-muted-foreground">{it.desc}</div>}
             </div>
           </li>
         );
