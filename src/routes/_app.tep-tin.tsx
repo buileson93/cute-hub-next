@@ -58,8 +58,22 @@ function FilesPage() {
   const [status, setStatus] = useState<string>("all");
   const [failed, setFailed] = useState<{ id: string; file: File; error: string }[]>([]);
   const [sessions, setSessions] = useState<ResumableSession[]>([]);
+  const [mismatchFor, setMismatchFor] = useState<string | null>(null);
   const refreshSessions = () => setSessions(listResumableSessions());
   useEffect(() => { refreshSessions(); }, []);
+
+  // Trong lúc upload, poll localStorage để cập nhật % của phiên đang chạy trong panel "Có thể tiếp tục".
+  useEffect(() => {
+    if (!progress) return;
+    const id = window.setInterval(refreshSessions, 800);
+    return () => window.clearInterval(id);
+  }, [progress]);
+  // Đồng bộ giữa các tab.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => { if (e.key === "r2:resumable-sessions:v1") refreshSessions(); };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const q = useQuery({
     queryKey: ["r2-my-files"],
@@ -142,17 +156,27 @@ function FilesPage() {
 
   const handleResumeSelect = async (files: FileList | null) => {
     const target = resumeTargetRef.current;
-    resumeTargetRef.current = null;
     if (!files?.length || !target) return;
     const f = files[0];
     if (fileFingerprint(f) !== target.fingerprint) {
-      toast.error("File bạn chọn không khớp phiên đang chờ (tên/kích thước/thời gian sửa khác).");
+      // Giữ target để user bấm "Tải lại" chọn đúng file mà không mất phiên.
+      setMismatchFor(target.fingerprint);
+      toast.error(`File "${f.name}" không khớp phiên "${target.fileName}". Bấm "Tải lại" để chọn đúng file.`);
       return;
     }
+    resumeTargetRef.current = null;
+    setMismatchFor(null);
     await uploadOne(f);
   };
 
   const askResume = (s: ResumableSession) => {
+    resumeTargetRef.current = s;
+    setMismatchFor(null);
+    resumeInputRef.current?.click();
+  };
+
+  // "Tải lại": mở lại picker cho đúng phiên hiện tại (dùng khi vừa chọn nhầm file).
+  const reloadResume = (s: ResumableSession) => {
     resumeTargetRef.current = s;
     resumeInputRef.current?.click();
   };
@@ -210,18 +234,37 @@ function FilesPage() {
               Các phiên upload nhiều phần đang dở dang. Chọn lại đúng file để tiếp tục phần còn thiếu (không upload lại từ đầu).
             </p>
             {sessions.map((s) => (
-              <div key={s.fingerprint} className="flex items-center gap-3 rounded-md border p-2">
-                <div className="text-muted-foreground"><UploadCloud className="h-4 w-4" /></div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{s.fileName}</div>
-                  <div className="text-xs text-muted-foreground truncate">{s.key} · {fmtBytes(s.fileSize)}</div>
+              <div key={s.fingerprint} className="rounded-md border p-2 space-y-1.5">
+                <div className="flex items-center gap-3">
+                  <div className="text-muted-foreground"><UploadCloud className="h-4 w-4" /></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{s.fileName}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {s.key} · {fmtBytes(s.uploadedBytes ?? 0)} / {fmtBytes(s.fileSize)}
+                    </div>
+                  </div>
+                  <span className="text-xs tabular-nums w-10 text-right">{s.percent ?? 0}%</span>
+                  <Button size="sm" variant="secondary" onClick={() => askResume(s)}>
+                    <PlayCircle className="h-4 w-4 mr-1" />Tiếp tục
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={mismatchFor === s.fingerprint ? "default" : "outline"}
+                    onClick={() => reloadResume(s)}
+                    title="Chọn lại file nếu vừa chọn nhầm"
+                  >
+                    <RotateCw className="h-4 w-4 mr-1" />Tải lại
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => cancelResumable(s)}>
+                    <XCircle className="h-4 w-4 mr-1 text-destructive" />Huỷ
+                  </Button>
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => askResume(s)}>
-                  <PlayCircle className="h-4 w-4 mr-1" />Tiếp tục
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => cancelResumable(s)}>
-                  <XCircle className="h-4 w-4 mr-1 text-destructive" />Huỷ
-                </Button>
+                <Progress value={s.percent ?? 0} className="h-1.5" />
+                {mismatchFor === s.fingerprint && (
+                  <div className="text-xs text-destructive">
+                    File vừa chọn không khớp phiên. Bấm <strong>Tải lại</strong> để chọn đúng "{s.fileName}" ({fmtBytes(s.fileSize)}).
+                  </div>
+                )}
               </div>
             ))}
             <input ref={resumeInputRef} type="file" className="hidden" onChange={(e) => { handleResumeSelect(e.target.files); e.currentTarget.value = ""; }} />
