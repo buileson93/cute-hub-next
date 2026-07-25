@@ -26,6 +26,9 @@ import { validateForm } from "@/lib/mirats/form-visibility";
 import { FormFieldRuntime, useGridRows } from "@/components/mirats/FormFieldRuntime";
 import { uploadSignatureDataUrl, type FormAttachment } from "@/lib/mirats/form-attachments";
 import type { SignatureSlot } from "@/components/mirats/MultiSignatureFlow";
+import { ChecklistRenderer } from "@/components/mirats/ChecklistRenderer";
+import { fetchCompiledSectionsForTemplate, isChecklistTemplate } from "@/lib/mirats/checklist-repo";
+import { buildItemResults, findChecklistError, type ItemInput } from "@/lib/mirats/checklist";
 
 export const Route = createFileRoute("/_app/forms/new/$code")({
   head: () => ({ meta: [{ title: "Lập biên bản mới — MIRATS" }] }),
@@ -45,6 +48,7 @@ function NewSubmission() {
   const draftIdRef = useRef<string>(makeDraftId());
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [attachments, setAttachments] = useState<Record<string, FormAttachment[]>>({});
+  const [checklist, setChecklist] = useState<Record<string, ItemInput>>({});
   const [tieuDe, setTieuDe] = useState("");
   const [kyBaoCao, setKyBaoCao] = useState("");
   const [selectedTb, setSelectedTb] = useState<string[]>([]);
@@ -70,6 +74,16 @@ function NewSubmission() {
       return { t, fields };
     },
   });
+
+  // Mẫu dạng bảng kiểm (form_check_item + form_section). Ưu tiên bản đã biên
+  // dịch của version PUBLISHED, fallback đọc trực tiếp từ mẫu.
+  const { data: checklistData } = useQuery({
+    queryKey: ["template-checklist", template?.t.id],
+    enabled: !!template?.t.id,
+    queryFn: async () => fetchCompiledSectionsForTemplate(template!.t.id),
+  });
+  const checklistSections = checklistData?.sections ?? [];
+  const isChecklist = isChecklistTemplate(checklistSections);
 
   const { data: donVi } = useQuery({
     queryKey: ["my-don-vi", profile?.don_vi],
@@ -161,6 +175,10 @@ function NewSubmission() {
         if (errs.length > 0) {
           throw new Error(errs.map((e) => `• ${e.message}`).join("\n"));
         }
+        if (isChecklist) {
+          const cErr = findChecklistError(checklistSections, checklist);
+          if (cErr) throw new Error(cErr);
+        }
         if (template.t.thiet_bi_mode === "single" && selectedTb.length !== 1)
           throw new Error("Cần chọn đúng 1 tài sản");
         if (template.t.thiet_bi_mode === "multi" && selectedTb.length === 0)
@@ -247,6 +265,17 @@ function NewSubmission() {
       if (template.t.thiet_bi_mode === "multi" && selectedTb.length > 0) {
         const arr = selectedTb.map((tid) => ({ submission_id: ins.id, thiet_bi_id: tid }));
         await supabase.from("form_submission_thiet_bi").insert(arr);
+      }
+
+      // Lưu kết quả bảng kiểm (nếu mẫu dạng checklist).
+      if (isChecklist) {
+        const rows = buildItemResults(ins.id as string, checklistSections, checklist);
+        if (rows.length > 0) {
+          const { error: rErr } = await supabase
+            .from("form_submission_item_result")
+            .insert(rows as never);
+          if (rErr) throw rErr;
+        }
       }
       return ins.id as string;
     },
@@ -366,7 +395,7 @@ function NewSubmission() {
       <Card>
         <CardHeader><CardTitle className="text-base">Nội dung biên bản</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          {rows.length === 0 && (
+          {rows.length === 0 && !isChecklist && (
             <p className="text-sm text-muted-foreground">Mẫu này chưa có trường dữ liệu.</p>
           )}
           {rows.map((rowFields, ri) => (
@@ -391,6 +420,13 @@ function NewSubmission() {
               })}
             </div>
           ))}
+          {isChecklist && (
+            <ChecklistRenderer
+              sections={checklistSections}
+              values={checklist}
+              onChange={setChecklist}
+            />
+          )}
         </CardContent>
       </Card>
 
