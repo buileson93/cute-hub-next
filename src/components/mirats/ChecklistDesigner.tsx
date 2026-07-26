@@ -482,6 +482,60 @@ function ItemInspector({
         />
       </div>
 
+      <div className="rounded-md border border-primary/30 bg-primary/5 p-2">
+        <p className="mb-2 text-[11px] font-semibold uppercase text-primary">
+          Chỉ số đánh giá (CSDL lâu dài)
+        </p>
+        <div className="space-y-2">
+          <div>
+            <Label className="text-xs">Mã chỉ số (metric_key)</Label>
+            <Input
+              className="font-mono text-xs"
+              value={item.metric_key ?? ""}
+              onChange={(e) => onPatchItem({ metric_key: e.target.value.trim() || null })}
+              placeholder="vd: awos.visibility_range, radar.vswr"
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Chuẩn hoá xuyên mẫu để cùng 1 chỉ số ở nhiều phiếu gộp được thống kê chung.
+            </p>
+          </div>
+          {item.result_kind === "so" && (
+            <div>
+              <Label className="text-xs">Phép so sánh ngưỡng</Label>
+              <Select
+                value={item.nguong_op ?? "between"}
+                onValueChange={(v) => onPatchItem({ nguong_op: v as NonNullable<DesignerItem["nguong_op"]> })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="between">Trong khoảng [min, max]</SelectItem>
+                  <SelectItem value="ge">Lớn hơn/bằng min (≥)</SelectItem>
+                  <SelectItem value="le">Nhỏ hơn/bằng max (≤)</SelectItem>
+                  <SelectItem value="eq">Bằng đúng min (=)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div>
+            <Label className="text-xs">Chu kỳ chuẩn</Label>
+            <Select
+              value={item.chu_ky ?? "_none"}
+              onValueChange={(v) => onPatchItem({ chu_ky: v === "_none" ? null : (v as NonNullable<DesignerItem["chu_ky"]>) })}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_none">— Không quy định —</SelectItem>
+                <SelectItem value="hang_ngay">Hàng ngày</SelectItem>
+                <SelectItem value="hang_tuan">Hàng tuần</SelectItem>
+                <SelectItem value="hang_thang">Hàng tháng</SelectItem>
+                <SelectItem value="quy">Hàng quý</SelectItem>
+                <SelectItem value="nam">Hàng năm</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="flex items-center gap-2">
         <Switch checked={!!item.bat_buoc} onCheckedChange={(v) => onPatchItem({ bat_buoc: v })} />
         <Label className="text-xs">Bắt buộc</Label>

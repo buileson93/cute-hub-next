@@ -2915,11 +2915,16 @@ export type Database = {
       form_check_item: {
         Row: {
           bat_buoc: boolean
+          chu_ky: string | null
           created_at: string
           don_vi: string | null
           huong_dan: string | null
           id: string
           item_code: string
+          metric_key: string | null
+          nguong_max: number | null
+          nguong_min: number | null
+          nguong_op: string | null
           position: number
           result_kind: Database["public"]["Enums"]["form_result_kind"]
           section_id: string
@@ -2931,11 +2936,16 @@ export type Database = {
         }
         Insert: {
           bat_buoc?: boolean
+          chu_ky?: string | null
           created_at?: string
           don_vi?: string | null
           huong_dan?: string | null
           id?: string
           item_code: string
+          metric_key?: string | null
+          nguong_max?: number | null
+          nguong_min?: number | null
+          nguong_op?: string | null
           position?: number
           result_kind?: Database["public"]["Enums"]["form_result_kind"]
           section_id: string
@@ -2947,11 +2957,16 @@ export type Database = {
         }
         Update: {
           bat_buoc?: boolean
+          chu_ky?: string | null
           created_at?: string
           don_vi?: string | null
           huong_dan?: string | null
           id?: string
           item_code?: string
+          metric_key?: string | null
+          nguong_max?: number | null
+          nguong_min?: number | null
+          nguong_op?: string | null
           position?: number
           result_kind?: Database["public"]["Enums"]["form_result_kind"]
           section_id?: string
@@ -3322,59 +3337,89 @@ export type Database = {
       }
       form_submission_item_result: {
         Row: {
+          auto_ket_qua: boolean
           created_at: string
           don_vi: string | null
+          don_vi_id: string | null
           ghi_chu: string | null
           gia_tri_so: number | null
           gia_tri_text: string | null
           hanh_dong: string | null
+          he_thong_id: string | null
           id: string
           item_code: string
           ket_qua: Database["public"]["Enums"]["form_ket_qua"] | null
+          metric_key: string | null
+          nguong_max: number | null
+          nguong_min: number | null
+          nguong_op: string | null
           position: number
           result_kind: Database["public"]["Enums"]["form_result_kind"]
           section_code: string
           section_ten: string | null
           submission_id: string
+          submitted_at: string | null
           ten: string
+          thanh_phan_id: string | null
+          thiet_bi_id: string | null
           tieu_chuan: string | null
           updated_at: string
         }
         Insert: {
+          auto_ket_qua?: boolean
           created_at?: string
           don_vi?: string | null
+          don_vi_id?: string | null
           ghi_chu?: string | null
           gia_tri_so?: number | null
           gia_tri_text?: string | null
           hanh_dong?: string | null
+          he_thong_id?: string | null
           id?: string
           item_code: string
           ket_qua?: Database["public"]["Enums"]["form_ket_qua"] | null
+          metric_key?: string | null
+          nguong_max?: number | null
+          nguong_min?: number | null
+          nguong_op?: string | null
           position?: number
           result_kind: Database["public"]["Enums"]["form_result_kind"]
           section_code: string
           section_ten?: string | null
           submission_id: string
+          submitted_at?: string | null
           ten: string
+          thanh_phan_id?: string | null
+          thiet_bi_id?: string | null
           tieu_chuan?: string | null
           updated_at?: string
         }
         Update: {
+          auto_ket_qua?: boolean
           created_at?: string
           don_vi?: string | null
+          don_vi_id?: string | null
           ghi_chu?: string | null
           gia_tri_so?: number | null
           gia_tri_text?: string | null
           hanh_dong?: string | null
+          he_thong_id?: string | null
           id?: string
           item_code?: string
           ket_qua?: Database["public"]["Enums"]["form_ket_qua"] | null
+          metric_key?: string | null
+          nguong_max?: number | null
+          nguong_min?: number | null
+          nguong_op?: string | null
           position?: number
           result_kind?: Database["public"]["Enums"]["form_result_kind"]
           section_code?: string
           section_ten?: string | null
           submission_id?: string
+          submitted_at?: string | null
           ten?: string
+          thanh_phan_id?: string | null
+          thiet_bi_id?: string | null
           tieu_chuan?: string | null
           updated_at?: string
         }
@@ -3385,6 +3430,48 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "form_submission"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_he_thong_fk"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_he_thong_fk"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "v_do_thi_toan_canh"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thanh_phan_fk"
+            columns: ["thanh_phan_id"]
+            isOneToOne: false
+            referencedRelation: "he_thong_thanh_phan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "mv_asset_anomaly"
+            referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_thiet_bi_dac_tinh"
+            referencedColumns: ["thiet_bi_id"]
           },
         ]
       }
@@ -7717,6 +7804,85 @@ export type Database = {
         }
         Relationships: []
       }
+      v_metric_timeseries: {
+        Row: {
+          auto_ket_qua: boolean | null
+          don_vi: string | null
+          don_vi_id: string | null
+          gia_tri_so: number | null
+          gia_tri_text: string | null
+          he_thong_id: string | null
+          id: string | null
+          item_code: string | null
+          ket_qua: Database["public"]["Enums"]["form_ket_qua"] | null
+          metric_key: string | null
+          nguong_max: number | null
+          nguong_min: number | null
+          nguong_op: string | null
+          result_kind: Database["public"]["Enums"]["form_result_kind"] | null
+          section_code: string | null
+          status: Database["public"]["Enums"]["form_submission_status"] | null
+          submission_id: string | null
+          template_code: string | null
+          template_version: number | null
+          ten: string | null
+          thanh_phan_id: string | null
+          thiet_bi_id: string | null
+          thoi_diem: string | null
+          tieu_chuan: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_submission_item_result_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "form_submission"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_he_thong_fk"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_he_thong_fk"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "v_do_thi_toan_canh"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thanh_phan_fk"
+            columns: ["thanh_phan_id"]
+            isOneToOne: false
+            referencedRelation: "he_thong_thanh_phan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "mv_asset_anomaly"
+            referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_thiet_bi_dac_tinh"
+            referencedColumns: ["thiet_bi_id"]
+          },
+        ]
+      }
       v_nsx_stats: {
         Row: {
           ma: string | null
@@ -8616,6 +8782,24 @@ export type Database = {
           p_ly_do?: string
         }
         Returns: Json
+      }
+      metric_summary: {
+        Args: {
+          _from?: string
+          _he_thong_id?: string
+          _metric_key: string
+          _to?: string
+        }
+        Returns: {
+          gt_avg: number
+          gt_max: number
+          gt_min: number
+          gt_p95: number
+          n_dat: number
+          n_khong_dat: number
+          n_samples: number
+          pct_dat: number
+        }[]
       }
       ngung_khai_thac_thiet_bi: {
         Args: { _ly_do?: string; _mas: string[]; _thanh_ly?: boolean }

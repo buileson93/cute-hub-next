@@ -93,6 +93,11 @@ export async function saveChecklistDesigner(
     tuy_chon: import("@/integrations/supabase/types").Json;
     bat_buoc: boolean;
     position: number;
+    metric_key: string | null;
+    nguong_min: number | null;
+    nguong_max: number | null;
+    nguong_op: string | null;
+    chu_ky: string | null;
   };
   const itemRows: ItemRow[] = [];
   sections.forEach((s, si) => {
@@ -115,6 +120,11 @@ export async function saveChecklistDesigner(
         }) ?? null) as import("@/integrations/supabase/types").Json,
         bat_buoc: !!it.bat_buoc,
         position: si * 1000 + ii,
+        metric_key: it.metric_key ?? null,
+        nguong_min: it.nguong_min ?? (it.options.tieu_chuan_min ?? null),
+        nguong_max: it.nguong_max ?? (it.options.tieu_chuan_max ?? null),
+        nguong_op: it.nguong_op ?? null,
+        chu_ky: it.chu_ky ?? null,
       });
     });
   });
