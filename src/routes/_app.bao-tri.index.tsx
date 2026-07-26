@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_app/bao-tri/")({
   head: () => ({
     meta: [
       { title: "Bảo dưỡng — MIRATS 2.0" },
-      { name: "description", content: "M4 — Phiếu bảo dưỡng, lịch PM định kỳ và checklist hạng mục." },
+      { name: "description", content: "M4 — Phiếu bảo dưỡng, lịch PM định kỳ và bảng kiểm bảo dưỡng hạng mục." },
       { property: "og:title", content: "Bảo dưỡng — MIRATS 2.0" },
       { property: "og:description", content: "Số hoá phiếu bảo dưỡng và quản lý kế hoạch bảo dưỡng định kỳ." },
     ],
