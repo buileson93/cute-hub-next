@@ -45,6 +45,11 @@ export type RawItemRow = {
   tuy_chon?: unknown;
   bat_buoc?: boolean | null;
   position?: number | null;
+  metric_key?: string | null;
+  nguong_min?: number | null;
+  nguong_max?: number | null;
+  nguong_op?: string | null;
+  chu_ky?: string | null;
 };
 
 /** Mapper THUẦN: gộp raw section + item rows → cây ChecklistSection[]. */
@@ -66,6 +71,11 @@ export function buildSections(
       bat_buoc: r.bat_buoc ?? false,
       position: typeof r.position === "number" ? r.position : 0,
       options,
+      metric_key: r.metric_key ?? null,
+      nguong_min: r.nguong_min ?? null,
+      nguong_max: r.nguong_max ?? null,
+      nguong_op: (r.nguong_op as ChecklistItem["nguong_op"]) ?? null,
+      chu_ky: (r.chu_ky as ChecklistItem["chu_ky"]) ?? null,
     };
     const list = bySection.get(r.section_id) ?? [];
     list.push(item);
