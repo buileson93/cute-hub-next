@@ -8996,6 +8996,22 @@ export type Database = {
           so_phieu_tao: number
         }[]
       }
+      thanh_phan_kpi: { Args: { _tp_id: string }; Returns: Json }
+      thanh_phan_tai_san_history: {
+        Args: { _tp_id: string }
+        Returns: {
+          dang_lap: boolean
+          den_ngay: string
+          gan_id: string
+          ghi_chu: string
+          ly_do: string
+          ma_serial: string
+          ma_thiet_bi: string
+          ten_thiet_bi: string
+          thiet_bi_id: string
+          tu_ngay: string
+        }[]
+      }
       thao_linh_kien: {
         Args: { p_ghi_chu?: string; p_khe_id: string; p_ly_do?: string }
         Returns: undefined
