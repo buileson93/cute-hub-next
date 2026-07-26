@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_app/bao-tri/")({
   head: () => ({
     meta: [
       { title: "Bảo dưỡng — MIRATS 2.0" },
-      { name: "description", content: "M4 — Phiếu bảo dưỡng, lịch PM định kỳ và checklist hạng mục." },
+      { name: "description", content: "M4 — Phiếu bảo dưỡng, lịch PM định kỳ và bảng kiểm bảo dưỡng hạng mục." },
       { property: "og:title", content: "Bảo dưỡng — MIRATS 2.0" },
       { property: "og:description", content: "Số hoá phiếu bảo dưỡng và quản lý kế hoạch bảo dưỡng định kỳ." },
     ],
@@ -127,7 +127,7 @@ function BaoTriPage() {
       <PageHeader
         icon={Wrench}
         title="Bảo dưỡng"
-        help="Lập phiếu bảo dưỡng, lên lịch bảo dưỡng định kỳ và kiểm tra theo checklist hạng mục."
+        help="Lập phiếu bảo dưỡng, lên lịch bảo dưỡng định kỳ và kiểm tra theo bảng kiểm bảo dưỡng hạng mục."
         actions={
           <Button asChild>
             <Link to="/bao-tri/moi"><Wrench className="mr-2 h-4 w-4" />Tạo phiếu bảo dưỡng</Link>

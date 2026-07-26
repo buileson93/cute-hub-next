@@ -479,7 +479,7 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
 
             {isChecklist ? (
               <div className="space-y-3 border-t pt-3">
-                <p className="text-xs font-medium uppercase text-muted-foreground">Bảng kiểm theo mẫu</p>
+                <p className="text-xs font-medium uppercase text-muted-foreground">Bảng kiểm bảo dưỡng theo mẫu</p>
                 <ChecklistRenderer
                   sections={sections ?? []}
                   values={chkValues}
