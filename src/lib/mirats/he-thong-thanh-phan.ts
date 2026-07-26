@@ -940,3 +940,57 @@ export function useVaiTroThietBi(thietBiId: string | null) {
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// SỔ LÝ LỊCH THÀNH PHẦN — KPI + lịch sử tài sản đã gắn.
+// Đọc từ 2 RPC `thanh_phan_kpi` và `thanh_phan_tai_san_history` (SECURITY INVOKER).
+// ---------------------------------------------------------------------------
+export interface ThanhPhanKpi {
+  so_su_co_12m: number;
+  so_su_co_mo: number;
+  so_bao_tri_12m: number;
+  so_hong_hoc: number;
+  so_gan_tong: number;
+  so_gan_active: number;
+  mtbf_days: number | null;
+  mttr_hours: number | null;
+  ti_le_dat: number | null;
+  su_co_by_month: Array<{ thang: string; so_su_co: number }>;
+}
+
+export function useThanhPhanKpi(thanhPhanId: string | null) {
+  return useQuery({
+    queryKey: ["thanh-phan-kpi", thanhPhanId],
+    enabled: Boolean(thanhPhanId),
+    queryFn: async (): Promise<ThanhPhanKpi> => {
+      const { data, error } = await (supabase.rpc as any)("thanh_phan_kpi", { _tp_id: thanhPhanId });
+      if (error) throw error;
+      return (data ?? {}) as ThanhPhanKpi;
+    },
+  });
+}
+
+export interface ThanhPhanTaiSanHistoryRow {
+  gan_id: string;
+  thiet_bi_id: string;
+  ma_thiet_bi: string;
+  ten_thiet_bi: string | null;
+  ma_serial: string | null;
+  tu_ngay: string | null;
+  den_ngay: string | null;
+  ly_do: string | null;
+  ghi_chu: string | null;
+  dang_lap: boolean;
+}
+
+export function useThanhPhanTaiSanHistory(thanhPhanId: string | null) {
+  return useQuery({
+    queryKey: ["thanh-phan-tai-san-history", thanhPhanId],
+    enabled: Boolean(thanhPhanId),
+    queryFn: async (): Promise<ThanhPhanTaiSanHistoryRow[]> => {
+      const { data, error } = await (supabase.rpc as any)("thanh_phan_tai_san_history", { _tp_id: thanhPhanId });
+      if (error) throw error;
+      return (data ?? []) as ThanhPhanTaiSanHistoryRow[];
+    },
+  });
+}
