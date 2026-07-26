@@ -127,7 +127,7 @@ function BaoTriPage() {
       <PageHeader
         icon={Wrench}
         title="Bảo dưỡng"
-        help="Lập phiếu bảo dưỡng, lên lịch bảo dưỡng định kỳ và kiểm tra theo checklist hạng mục."
+        help="Lập phiếu bảo dưỡng, lên lịch bảo dưỡng định kỳ và kiểm tra theo bảng kiểm bảo dưỡng hạng mục."
         actions={
           <Button asChild>
             <Link to="/bao-tri/moi"><Wrench className="mr-2 h-4 w-4" />Tạo phiếu bảo dưỡng</Link>
