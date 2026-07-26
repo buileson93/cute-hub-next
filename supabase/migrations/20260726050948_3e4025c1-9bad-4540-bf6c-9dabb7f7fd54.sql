@@ -1,0 +1,1 @@
+ALTER VIEW public.v_metric_timeseries SET (security_invoker = on);
