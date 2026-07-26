@@ -124,6 +124,7 @@ import { Route as AppFormsSubmissionsIdRouteImport } from './routes/_app.forms.s
 import { Route as AppFormsNewCodeRouteImport } from './routes/_app.forms.new.$code'
 import { Route as AppBaoTriDotIdRouteImport } from './routes/_app.bao-tri.dot.$id'
 import { Route as AppAdminFormsIdRouteImport } from './routes/_app.admin.forms.$id'
+import { Route as AppHeThongIdThanhPhanTpIdRouteImport } from './routes/_app.he-thong.$id.thanh-phan.$tpId'
 import { Route as AppAdminFormsIdHistoryRouteImport } from './routes/_app.admin.forms.$id.history'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -713,6 +714,12 @@ const AppAdminFormsIdRoute = AppAdminFormsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppAdminFormsRoute,
 } as any)
+const AppHeThongIdThanhPhanTpIdRoute =
+  AppHeThongIdThanhPhanTpIdRouteImport.update({
+    id: '/thanh-phan/$tpId',
+    path: '/thanh-phan/$tpId',
+    getParentRoute: () => AppHeThongIdRoute,
+  } as any)
 const AppAdminFormsIdHistoryRoute = AppAdminFormsIdHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -792,7 +799,7 @@ export interface FileRoutesByFullPath {
   '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
-  '/he-thong/$id': typeof AppHeThongIdRoute
+  '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
@@ -835,6 +842,7 @@ export interface FileRoutesByFullPath {
   '/admin/forms/': typeof AppAdminFormsIndexRoute
   '/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
+  '/he-thong/$id/thanh-phan/$tpId': typeof AppHeThongIdThanhPhanTpIdRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
@@ -902,7 +910,7 @@ export interface FileRoutesByTo {
   '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
-  '/he-thong/$id': typeof AppHeThongIdRoute
+  '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
@@ -945,6 +953,7 @@ export interface FileRoutesByTo {
   '/admin/forms': typeof AppAdminFormsIndexRoute
   '/bao-tri/dot': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
+  '/he-thong/$id/thanh-phan/$tpId': typeof AppHeThongIdThanhPhanTpIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1021,7 +1030,7 @@ export interface FileRoutesById {
   '/_app/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/_app/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/_app/du-an/$id': typeof AppDuAnIdRoute
-  '/_app/he-thong/$id': typeof AppHeThongIdRoute
+  '/_app/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/_app/he-thong/cay': typeof AppHeThongCayRoute
   '/_app/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/_app/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
@@ -1064,6 +1073,7 @@ export interface FileRoutesById {
   '/_app/admin/forms/': typeof AppAdminFormsIndexRoute
   '/_app/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/_app/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
+  '/_app/he-thong/$id/thanh-phan/$tpId': typeof AppHeThongIdThanhPhanTpIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1183,6 +1193,7 @@ export interface FileRouteTypes {
     | '/admin/forms/'
     | '/bao-tri/dot/'
     | '/admin/forms/$id/history'
+    | '/he-thong/$id/thanh-phan/$tpId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
@@ -1293,6 +1304,7 @@ export interface FileRouteTypes {
     | '/admin/forms'
     | '/bao-tri/dot'
     | '/admin/forms/$id/history'
+    | '/he-thong/$id/thanh-phan/$tpId'
   id:
     | '__root__'
     | '/_app'
@@ -1411,6 +1423,7 @@ export interface FileRouteTypes {
     | '/_app/admin/forms/'
     | '/_app/bao-tri/dot/'
     | '/_app/admin/forms/$id/history'
+    | '/_app/he-thong/$id/thanh-phan/$tpId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -2253,6 +2266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminFormsIdRouteImport
       parentRoute: typeof AppAdminFormsRoute
     }
+    '/_app/he-thong/$id/thanh-phan/$tpId': {
+      id: '/_app/he-thong/$id/thanh-phan/$tpId'
+      path: '/thanh-phan/$tpId'
+      fullPath: '/he-thong/$id/thanh-phan/$tpId'
+      preLoaderRoute: typeof AppHeThongIdThanhPhanTpIdRouteImport
+      parentRoute: typeof AppHeThongIdRoute
+    }
     '/_app/admin/forms/$id/history': {
       id: '/_app/admin/forms/$id/history'
       path: '/history'
@@ -2422,6 +2442,18 @@ const AppAdminFormsRouteWithChildren = AppAdminFormsRoute._addFileChildren(
   AppAdminFormsRouteChildren,
 )
 
+interface AppHeThongIdRouteChildren {
+  AppHeThongIdThanhPhanTpIdRoute: typeof AppHeThongIdThanhPhanTpIdRoute
+}
+
+const AppHeThongIdRouteChildren: AppHeThongIdRouteChildren = {
+  AppHeThongIdThanhPhanTpIdRoute: AppHeThongIdThanhPhanTpIdRoute,
+}
+
+const AppHeThongIdRouteWithChildren = AppHeThongIdRoute._addFileChildren(
+  AppHeThongIdRouteChildren,
+)
+
 interface AppRouteChildren {
   AppBanGiaoRoute: typeof AppBanGiaoRouteWithChildren
   AppBaoTriRoute: typeof AppBaoTriRouteWithChildren
@@ -2470,7 +2502,7 @@ interface AppRouteChildren {
   AppDanhMucThietBiRoute: typeof AppDanhMucThietBiRoute
   AppDanhMucViTriRoute: typeof AppDanhMucViTriRoute
   AppDuAnIdRoute: typeof AppDuAnIdRoute
-  AppHeThongIdRoute: typeof AppHeThongIdRoute
+  AppHeThongIdRoute: typeof AppHeThongIdRouteWithChildren
   AppHeThongCayRoute: typeof AppHeThongCayRoute
   AppHeThongLienKetRoute: typeof AppHeThongLienKetRoute
   AppHeThongThanhPhanRoute: typeof AppHeThongThanhPhanRoute
@@ -2529,7 +2561,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDanhMucThietBiRoute: AppDanhMucThietBiRoute,
   AppDanhMucViTriRoute: AppDanhMucViTriRoute,
   AppDuAnIdRoute: AppDuAnIdRoute,
-  AppHeThongIdRoute: AppHeThongIdRoute,
+  AppHeThongIdRoute: AppHeThongIdRouteWithChildren,
   AppHeThongCayRoute: AppHeThongCayRoute,
   AppHeThongLienKetRoute: AppHeThongLienKetRoute,
   AppHeThongThanhPhanRoute: AppHeThongThanhPhanRoute,
