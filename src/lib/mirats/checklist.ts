@@ -49,6 +49,15 @@ export type ChecklistItem = {
   tuy_chon: string[] | null;
   bat_buoc: boolean;
   position: number;
+  /** Mã chỉ số chuẩn hoá xuyên template (VD "awos.visibility_range"). */
+  metric_key?: string | null;
+  /** Ngưỡng số học snapshot cho tự chấm Đạt/K.Đạt. */
+  nguong_min?: number | null;
+  nguong_max?: number | null;
+  /** Phép so sánh: between (mặc định) | ge | le | eq. */
+  nguong_op?: "between" | "ge" | "le" | "eq" | null;
+  /** Chu kỳ kiểm tra chuẩn: hang_ngay | hang_tuan | hang_thang | quy | nam. */
+  chu_ky?: "hang_ngay" | "hang_tuan" | "hang_thang" | "quy" | "nam" | null;
   /**
    * Tuỳ chọn nâng cao (bảng chuẩn phiếu bảo dưỡng). Không đổi schema DB:
    * ánh xạ vào cột `tuy_chon` (JSONB) qua checklist-item-options.
