@@ -130,7 +130,7 @@ export function MultiSignatureFlow({
         );
       })}
       {signers.length === 0 && (
-        <p className="text-xs text-muted-foreground">Chưa cấu hình người ký. Vào Thiết kế mẫu, thêm cột (key/label) cho trường chữ ký để bật quy trình ký nhiều người.</p>
+        <p className="text-xs text-muted-foreground">Chưa cấu hình người ký. Vào Thiết kế mẫu → tab Biểu mẫu tự do, thêm cột (key/label) cho trường chữ ký để bật quy trình ký nhiều người.</p>
       )}
     </div>
   );
