@@ -859,7 +859,7 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { 
                   <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
                     <Clock className="h-4 w-4" /> Sổ lý lịch thành phần
                     <Button asChild size="sm" variant="outline" className="ml-auto gap-1">
-                      <Link to="/he-thong/$id/thanh-phan/$tpId" params={{ id, tpId: openTp.id }}>
+                      <Link to="/he-thong/$id/thanh-phan/$tpId" params={{ id: heThongId, tpId: openTp.id }}>
                         <ExternalLink className="h-3.5 w-3.5" /> Mở sổ chi tiết
                       </Link>
                     </Button>
