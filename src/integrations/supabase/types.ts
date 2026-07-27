@@ -8111,6 +8111,7 @@ export type Database = {
       _backup_allowed_table: { Args: { p_table: string }; Returns: boolean }
       _cay_apply: { Args: { _id: string }; Returns: Json }
       _danh_muc_merge_ref_map: { Args: never; Returns: Json }
+      _dbd_object_allowed: { Args: { _name: string }; Returns: boolean }
       _debug_test_insert: { Args: never; Returns: string }
       _dong_gan_lk: {
         Args: {
