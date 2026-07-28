@@ -419,7 +419,24 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               hideBelow: "lg",
               defaultHidden: true,
             },
-            { key: "viTri", label: "Vị trí lắp đặt", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", filter: "text", value: (r) => r.viTri, hideBelow: "lg" },
+            {
+              key: "viTri",
+              label: "Vị trí lắp đặt",
+              minW: "min-w-[180px]",
+              cellClassName: "max-w-[220px]",
+              filter: "text",
+              value: (r) => r.viTri,
+              hideBelow: "lg",
+              cell: (r) =>
+                editMode && allowEdit ? (
+                  <InlineViTriEdit
+                    row={r}
+                    onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })}
+                  />
+                ) : (
+                  <span title={r.viTri} className="line-clamp-2 break-words text-sm">{r.viTri || "—"}</span>
+                ),
+            },
             { key: "loai", label: "Loại yêu cầu", minW: "min-w-[150px]", cellClassName: "max-w-[180px]", filter: "cat", value: (r) => r.loaiYeuCau, hideBelow: "xl" },
             {
               key: "trangThai",
