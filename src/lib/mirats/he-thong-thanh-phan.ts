@@ -1060,7 +1060,7 @@ export function useMultiRoleMap() {
         supabase
           .from("gan_chuc_nang")
           .select(
-            "thiet_bi_id, thanh_phan_id, thiet_bi:thiet_bi_id(ma_thiet_bi, serial), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
+            "thiet_bi_id, thanh_phan_id, thiet_bi(ma_thiet_bi, serial), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
           )
           .is("den_ngay", null)
           .range(from, to),
