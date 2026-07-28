@@ -24,6 +24,9 @@ import { normalize } from "@/lib/mirats/global-search";
 import { exportBaoCaoBanDauToWord } from "@/lib/incident-report-word.functions";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import { parseIncidentText, type ParsedIncident } from "@/lib/ai/incident-parse.functions";
+import { parseIncidentByRules } from "@/lib/ai/incident-parse-rules";
+import { detectSuCoAnomalies, anomalyFieldSet, type Anomaly } from "@/lib/mirats/su-co-anomalies";
+import { AlertTriangle, ClipboardPaste } from "lucide-react";
 import { popVoiceDraft } from "@/lib/mirats/voice-recognition";
 import { buildSuCoPayload } from "@/lib/mirats/ghi-payload";
 import { ghiSuCoFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
@@ -144,6 +147,52 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   const [aiNote, setAiNote] = useState<string | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
   const parseFn = useServerFn(parseIncidentText);
+
+  // Anomaly detection — chạy client-side, không chặn lưu, chỉ highlight.
+  const anomalies: Anomaly[] = useMemo(
+    () =>
+      detectSuCoAnomalies({
+        thoiGianBatDau,
+        thoiGianKetThuc,
+        phanLoai,
+        anhHuongDhb,
+        heThongId,
+        selectedTpCount: selectedTpIds.size,
+        mountedAssetsCount: mounted.length,
+      }),
+    [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, mounted],
+  );
+  const anomalyFields = useMemo(() => anomalyFieldSet(anomalies), [anomalies]);
+  const ring = (field: string) =>
+    anomalyFields.has(field) ? "ring-1 ring-amber-400 focus-visible:ring-amber-400" : "";
+
+  /**
+   * Dán báo cáo → chạy deterministic parser trước; chỉ escalate AI khi confidence < 0.7.
+   * Ưu điểm: nhanh, không tốn quota, và người dùng thấy ngay các trường parser suy được.
+   */
+  async function handlePasteReport() {
+    let text = "";
+    try { text = (await navigator.clipboard.readText()).trim(); } catch { /* fallback */ }
+    if (!text) {
+      const ta = prompt("Dán nội dung báo cáo sự cố (7 mục) vào đây:");
+      if (!ta) return;
+      text = ta.trim();
+    }
+    if (text.length < 20) { toast.error("Nội dung quá ngắn — không đủ để bóc tách."); return; }
+    const local = parseIncidentByRules(text);
+    if (local.confidence >= 0.7) {
+      applyParsed(local.parsed as unknown as ParsedIncident);
+      toast.success(`Đã bóc tách bằng parser cục bộ · độ tin cậy ${(local.confidence * 100).toFixed(0)}%`);
+      return;
+    }
+    // Điền tạm phần deterministic rồi đề nghị chạy AI để bổ sung.
+    applyParsed(local.parsed as unknown as ParsedIncident);
+    setAiText(text);
+    setAiOpen(true);
+    toast.info(
+      `Parser cục bộ chỉ đạt ${(local.confidence * 100).toFixed(0)}% — hãy chạy AI để bổ sung các trường còn thiếu.`,
+    );
+  }
 
   // ============================================================
   // MỚI: Thành phần hệ thống bị ảnh hưởng — nguồn chính (mục 2)
@@ -501,6 +550,24 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
         </p>
       )}
 
+      {anomalies.length > 0 && (
+        <div className="rounded-md border border-amber-300/60 bg-amber-50/70 px-3 py-2 text-xs dark:bg-amber-950/30">
+          <div className="mb-1 flex items-center gap-1.5 font-semibold text-amber-900 dark:text-amber-200">
+            <AlertTriangle className="h-3.5 w-3.5" /> Cảnh báo logic ({anomalies.length})
+          </div>
+          <ul className="ml-4 list-disc space-y-0.5 text-amber-900/90 dark:text-amber-100/90">
+            {anomalies.map((a) => (
+              <li key={a.code}>
+                <span className={a.severity === "error" ? "font-semibold text-red-700 dark:text-red-300" : ""}>
+                  {a.message}
+                </span>
+                {a.hint && <span className="text-amber-800/80 dark:text-amber-200/70"> — {a.hint}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* 1. Thông tin chung */}
       <Card>
         <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle></CardHeader>
@@ -599,11 +666,15 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1">
               <Label className="block h-4 text-xs font-medium leading-4">Thời gian bắt đầu</Label>
-              <Input type="datetime-local" value={thoiGianBatDau} onChange={(e) => setThoiGianBatDau(e.target.value)} />
+              <Input type="datetime-local" value={thoiGianBatDau}
+                onChange={(e) => setThoiGianBatDau(e.target.value)}
+                className={ring("thoi_gian_bat_dau")} />
             </div>
             <div className="space-y-1">
               <Label className="block h-4 text-xs font-medium leading-4">Thời gian kết thúc</Label>
-              <Input type="datetime-local" value={thoiGianKetThuc} onChange={(e) => setThoiGianKetThuc(e.target.value)} />
+              <Input type="datetime-local" value={thoiGianKetThuc}
+                onChange={(e) => setThoiGianKetThuc(e.target.value)}
+                className={ring("thoi_gian_ket_thuc")} />
             </div>
             <div className="space-y-1">
               <Label className="block h-4 text-xs font-medium leading-4">Ngày phát hiện</Label>
@@ -674,7 +745,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
           <div>
             <Label className="mb-1 block text-xs font-medium">Ảnh hưởng ĐHB</Label>
             <Select value={anhHuongDhb} onValueChange={setAnhHuongDhb}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger className={ring("anh_huong_dhb")}><SelectValue /></SelectTrigger>
               <SelectContent>
                 {AH_OPTIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
               </SelectContent>
@@ -682,7 +753,8 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
           </div>
           <div className="md:col-span-2">
             <Label className="mb-1 block text-xs font-medium">Phân loại sự cố (A/B/C/D/E)</Label>
-            <RadioGroup value={phanLoai} onValueChange={setPhanLoai} className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            <RadioGroup value={phanLoai} onValueChange={setPhanLoai}
+              className={`grid grid-cols-2 gap-2 sm:grid-cols-5 ${anomalyFields.has("phan_loai") ? "rounded-md ring-1 ring-amber-400 p-1" : ""}`}>
               {PHAN_LOAI.map((p) => {
                 const on = phanLoai === p;
                 return (
@@ -761,6 +833,11 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
         className="fixed bottom-6 right-6 z-40 gap-2 rounded-full shadow-lg">
         <Bot className="h-4 w-4" /> AI hỗ trợ nhập liệu
         <Badge variant="outline" className="ml-0.5 border-primary-foreground/40 text-[10px] text-primary-foreground">Beta</Badge>
+      </Button>
+
+      <Button type="button" variant="secondary" onClick={handlePasteReport}
+        className="fixed bottom-6 right-56 z-40 gap-2 rounded-full shadow-lg">
+        <ClipboardPaste className="h-4 w-4" /> Dán báo cáo
       </Button>
 
       <Sheet open={aiOpen} onOpenChange={setAiOpen}>
