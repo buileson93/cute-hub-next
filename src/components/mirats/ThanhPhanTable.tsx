@@ -890,10 +890,6 @@ function InlineTextEdit({
   );
 }
 
-function InlineTaiSanEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
-  return <InlineTaiSanEditInner row={row} onChanged={onChanged} />;
-}
-
 // ---- Sửa nhanh VỊ TRÍ LẮP ĐẶT của thành phần (edit mode, dạng bảng) ----
 function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
   const [saving, setSaving] = useState(false);
@@ -951,7 +947,7 @@ function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () 
   );
 }
 
-function InlineTaiSanEditInner({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
+function InlineTaiSanEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
   const { data: dsThietBi = [], isLoading } = useThietBiChon();
   const lapMut = useLapThietBi(row.heThongId);
   const [pending, setPending] = useState<string>("");
