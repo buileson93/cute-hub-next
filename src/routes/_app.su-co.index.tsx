@@ -401,9 +401,12 @@ function SuCoPage() {
         title="Sự cố kỹ thuật"
         help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng. Xuất báo cáo ban đầu / tuần / tháng khi cần."
         actions={
-          <Button asChild size="sm">
-            <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
-          </Button>
+          <div className="flex gap-2">
+            <WeeklyReportImportDialog />
+            <Button asChild size="sm">
+              <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
+            </Button>
+          </div>
         }
       />
 
