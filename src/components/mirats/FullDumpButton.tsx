@@ -81,7 +81,7 @@ export function FullDumpButton() {
       const tick = () => setPct(Math.min(99, Math.round((++done / totalSteps) * 100)));
 
       // 1) Dữ liệu từng bảng
-      for (const t of manifest.tables) {
+      for (const t of manifest.tables as { name: string; rows: number }[]) {
         if (cancelRef.current) throw new Error("Đã dừng theo yêu cầu");
         setMsg(`Bảng ${t.name} (${t.rows} dòng)`);
         const rows: any[] = [];
@@ -109,7 +109,7 @@ export function FullDumpButton() {
 
       // 3) Tệp trong Lovable Cloud Storage
       const byBucket = new Map<string, string[]>();
-      for (const f of manifest.storage) {
+      for (const f of manifest.storage as { bucket: string; path: string; size: number }[]) {
         if (!byBucket.has(f.bucket)) byBucket.set(f.bucket, []);
         byBucket.get(f.bucket)!.push(f.path);
       }
@@ -134,7 +134,7 @@ export function FullDumpButton() {
       }
 
       // 4) Tệp trong Cloudflare R2
-      const r2keys = manifest.r2.map((r) => r.key);
+      const r2keys = (manifest.r2 as { key: string }[]).map((r) => r.key);
       for (let i = 0; i < r2keys.length; i += 50) {
         if (cancelRef.current) throw new Error("Đã dừng theo yêu cầu");
         const batch = r2keys.slice(i, i + 50);

@@ -30,7 +30,8 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<DumpManifest> => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = sbAdminTyped as any;
     const { createAdminStorage } = await import("@/lib/storage/server");
 
     const { data: tblRows, error } = await supabaseAdmin.rpc("admin_list_backup_tables");
@@ -101,15 +102,16 @@ export const fullDumpTableChunk = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = sbAdminTyped as any;
     const { data: allowed } = await supabaseAdmin.rpc("admin_list_backup_tables");
     if (!(allowed ?? []).some((r: any) => r.table_name === data.table)) throw new Error("Bảng không hợp lệ");
-    const { data: rows, error } = await supabaseAdmin
+    const { data: rows, error } = await (supabaseAdmin as any)
       .from(data.table)
       .select("*")
       .range(data.offset, data.offset + data.limit - 1);
     if (error) throw new Error(`Lỗi đọc bảng ${data.table}: ${error.message}`);
-    return { rows: rows ?? [] };
+    return { rows: (rows ?? []) as any[] };
   });
 
 /** Danh sách tài khoản (auth.users) — không chứa mật khẩu */
@@ -117,7 +119,8 @@ export const fullDumpAuthUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = sbAdminTyped as any;
     const out: any[] = [];
     for (let page = 1; page <= 50; page++) {
       const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
@@ -147,7 +150,8 @@ export const fullDumpFileUrls = createServerFn({ method: "POST" })
 
     if (data.source === "storage") {
       if (!data.bucket) throw new Error("Thiếu bucket");
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = sbAdminTyped as any;
       const { createAdminStorage } = await import("@/lib/storage/server");
       const { data: signed } = await createAdminStorage(supabaseAdmin)
         .from(data.bucket)
