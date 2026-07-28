@@ -24,7 +24,6 @@ export const createSuCo = defineTool({
     bien_phap_xu_ly: z.string().optional(),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  needsApproval: true,
   handler: async (input, ctx) => {
     const auth = requireAuth(ctx); if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("agent_add_su_co", {
@@ -60,7 +59,6 @@ export const createBaoTri = defineTool({
     ket_qua: z.string().optional(),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  needsApproval: true,
   handler: async (input, ctx) => {
     const auth = requireAuth(ctx); if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("agent_add_bao_tri", {
@@ -94,7 +92,6 @@ export const createHongHoc = defineTool({
     thiet_bi_thay_the: z.string().optional().describe("Tên/mã tài sản dùng thay thế"),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  needsApproval: true,
   handler: async (input, ctx) => {
     const auth = requireAuth(ctx); if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("agent_add_hong_hoc", {
@@ -124,7 +121,6 @@ export const ghiKiemKe = defineTool({
     ghi_chu: z.string().optional(),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  needsApproval: true,
   handler: async (input, ctx) => {
     const auth = requireAuth(ctx); if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("ghi_kiem_ke", {
@@ -149,7 +145,6 @@ export const closeVanDe = defineTool({
     ghi_chu: z.string().optional(),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  needsApproval: true,
   handler: async ({ id, ghi_chu }, ctx) => {
     const auth = requireAuth(ctx); if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("dong_van_de", {
