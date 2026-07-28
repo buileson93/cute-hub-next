@@ -21,7 +21,6 @@ const formSchema = z.object({
     .max(200, "Tên tài sản tối đa 200 ký tự"),
   ma_thiet_bi: z.string().trim().max(80, "Mã tài sản tối đa 80 ký tự").optional(),
   ma_serial: z.string().trim().max(120, "Số serial tối đa 120 ký tự").optional(),
-  loai_thiet_bi_id: z.string().optional(),
   model_id: z.string().optional(),
   trang_thai_id: z.string().optional(),
   he_thong_id: z.string().optional(),
@@ -70,7 +69,6 @@ export function ThietBiFormDialog({
   const qc = useQueryClient();
 
   // Prefetch options song song để select mở nhanh
-  useQuery(loadOpts("dm_loai_thiet_bi"));
   useQuery(loadOpts("dm_model"));
   useQuery(loadOpts("dm_trang_thai_thiet_bi"));
   useQuery(loadOpts("dm_he_thong"));
@@ -85,7 +83,6 @@ export function ThietBiFormDialog({
       ten_thiet_bi: device?.ten ?? "",
       ma_thiet_bi: device?.ma_thiet_bi ?? "",
       ma_serial: device?.serial ?? "",
-      loai_thiet_bi_id: device?._loaiTbId ?? "",
       model_id: device?._modelId ?? "",
       trang_thai_id: extra?.trang_thai_id ?? "",
       he_thong_id: device?._htId ?? "",
@@ -118,18 +115,11 @@ export function ThietBiFormDialog({
       },
       { key: "ma_serial", type: "text", label: "Số serial (S/N)", placeholder: "SN-xxxx" },
       {
-        key: "loai_thiet_bi_id",
-        type: "select",
-        label: "Chủng loại",
-        placeholder: "Chọn chủng loại",
-        emptyOptionLabel: "— Không chọn —",
-        loadOptions: loadOpts("dm_loai_thiet_bi"),
-      },
-      {
         key: "model_id",
         type: "select",
         label: "Model",
         placeholder: "Chọn model",
+        help: "Chủng loại của tài sản được kế thừa từ model",
         emptyOptionLabel: "— Không chọn —",
         loadOptions: loadOpts("dm_model"),
       },
@@ -185,10 +175,20 @@ export function ThietBiFormDialog({
           toast.warning(`Trùng số serial "${sn}" với: ${list}`, { duration: 6000 });
         }
       }
+      // Chủng loại kế thừa từ model — tra cứu khi có model_id
+      let inheritedLoaiId: string | null = null;
+      if (d.model_id) {
+        const { data: m } = await supabase
+          .from("dm_model")
+          .select("loai_thiet_bi_id")
+          .eq("id", d.model_id)
+          .maybeSingle();
+        inheritedLoaiId = (m as { loai_thiet_bi_id?: string | null } | null)?.loai_thiet_bi_id ?? null;
+      }
       const payload: Record<string, unknown> = {
         ten_thiet_bi: d.ten_thiet_bi,
         ma_serial: d.ma_serial || null,
-        loai_thiet_bi_id: d.loai_thiet_bi_id || null,
+        loai_thiet_bi_id: inheritedLoaiId,
         model_id: d.model_id || null,
         trang_thai_id: d.trang_thai_id || null,
         he_thong_id: d.he_thong_id || null,
