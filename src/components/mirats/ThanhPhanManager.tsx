@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import {
   Plus, Pencil, PowerOff, HardDrive, PackageOpen, Wrench, ArrowRightLeft, CircleSlash, Cpu, History, ChevronDown, RefreshCw, Trash2, ArrowUp, ArrowDown,
 } from "lucide-react";
+import { ChevronRight, Layers } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +37,11 @@ import {
   rankEligibleDevices,
   type ViTriChucNang, type ThietBiDangLap,
 } from "@/lib/mirats/he-thong-thanh-phan";
+import {
+  buildThanhPhanTree, flattenThanhPhanTree, isDescendantOf, useMultiRoleMap,
+  type ThanhPhanNode,
+} from "@/lib/mirats/he-thong-thanh-phan";
+import { colorForThietBi } from "@/lib/mirats/multi-role-color";
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { sinhMaThanhPhanDuyNhat, nhanDienLoiTrungThietBi } from "@/lib/mirats/ma-thiet-bi";
 import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
