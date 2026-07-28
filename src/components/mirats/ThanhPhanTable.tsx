@@ -460,20 +460,30 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 editMode && allowEdit ? (
                   <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })} />
                 ) : r.daLap ? (
-                  <Link
-                    to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: r.thietBiMa }}
-                    className="group flex items-start gap-1.5 rounded-sm hover:bg-primary/5 -mx-1 px-1 py-0.5"
-                    title="Mở sổ lý lịch tài sản"
-                  >
-                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
-                        {r.thietBiTen || "—"}
-                      </span>
-                      <CodeBadge code={r.thietBiMa} className="w-fit" />
-                    </div>
-                    <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                  </Link>
+                  (() => {
+                    const mr = multiRoleMap?.byMa.get(r.thietBiMa);
+                    return (
+                      <div className="flex items-start gap-1.5">
+                        <Link
+                          to="/thiet-bi/$maThietBi"
+                          params={{ maThietBi: r.thietBiMa }}
+                          className="group flex min-w-0 flex-1 items-start gap-1.5 rounded-sm hover:bg-primary/5 -mx-1 px-1 py-0.5"
+                          title="Mở sổ lý lịch tài sản"
+                        >
+                          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                            <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
+                              {r.thietBiTen || "—"}
+                            </span>
+                            <CodeBadge code={r.thietBiMa} className="w-fit" />
+                          </div>
+                          <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                        </Link>
+                        {mr && (
+                          <MultiRoleBadge info={mr} currentThanhPhanId={r.id} compact side="left" />
+                        )}
+                      </div>
+                    );
+                  })()
                 ) : (
                   <span className="text-xs italic text-muted-foreground">Chưa lắp tài sản</span>
                 ),
