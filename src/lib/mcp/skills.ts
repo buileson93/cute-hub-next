@@ -177,6 +177,57 @@ Agent phải:
 - \`create_su_co\`, \`create_bao_tri\`, \`create_hong_hoc\`.
 - \`create_kiem_ke_ghi\`, \`close_van_de\`.
 `,
+
+  su_co_import: `# Nhập liệu Sự cố kỹ thuật (7 mục chuẩn TTBDKT)
+
+## Cấu trúc gốc (báo cáo TTBDKT)
+1. **Đơn vị báo cáo** (VD: Trung tâm BĐKT ...)
+2. **Hệ thống/thiết bị/đường truyền** → \`he_thong_goi_y\`
+3. **Mô tả sự cố** (thời gian UTC + hiện tượng) → \`tom_tat\` + \`thoi_gian_bat_dau\`
+4. **Nguyên nhân** → \`nguyen_nhan\`
+5. **Thiết bị/đường truyền thay thế** → \`tinh_hinh_hien_tai\`
+6. **Xử lý** → \`bien_phap_xu_ly\`
+7. **Đánh giá ảnh hưởng** → \`anh_huong_dhb\`
+8. **Đề xuất** (tuỳ chọn) → nối vào \`ket_qua_khac_phuc\`
+
+## INVARIANTS
+- Thời gian trong báo cáo mặc định giờ **Z (UTC)**. Lưu nguyên số giờ vào ISO local, KHÔNG cộng offset.
+- "Mất số liệu > 5 phút" hoặc "báo mất nguồn" = sự cố thật (không phải cảnh báo).
+- Sự cố PHẢI gắn với ít nhất 1 **thành phần hệ thống** (không gắn trực tiếp tài sản).
+- Nếu văn bản nói "Không ảnh hưởng đến điều hành bay" → \`phan_loai\` không được vượt C.
+
+## Suy luận mức độ
+| Từ khoá | anh_huong_dhb | phan_loai |
+|---|---|---|
+| "không ảnh hưởng ĐHB" | Không ảnh hưởng | D-E |
+| "hoạt động dự phòng bình thường" | Không ảnh hưởng | D |
+| "ảnh hưởng một phần / gián đoạn ngắn" | Ảnh hưởng một phần | C |
+| "dừng điều hành bay / mất an toàn" | Có gián đoạn ĐHB | A-B |
+
+## ANOMALY_RULES (agent tự cảnh báo)
+- \`end_before_start\` – thời gian kết thúc trước bắt đầu.
+- \`impact_mismatch\` – mô tả nói "ảnh hưởng" nhưng chọn "Không ảnh hưởng".
+- \`no_component\` – không match được thành phần → yêu cầu user chọn thủ công.
+- \`downtime_gt_24h\` – downtime > 24h nhưng phân loại D/E → cảnh báo nâng cấp.
+- \`replacement_but_no_bien_phap\` – có thiết bị dự phòng mà biện pháp xử lý rỗng.
+
+## Ví dụ (gold-standard)
+**Input:**
+\`\`\`
+2. Sensor trần mây trạm 35
+3. Lúc 04h00-04:05 UTC ngày 21/07/2026 Quan trắc phản ánh mất số liệu trần mây trạm 35.
+4. Treo port COM converter Moxa trạm trần mây 35.
+5. Số liệu trần mây trạm 17 hoạt động bình thường.
+6. Ca trực tiến hành reset converter Moxa trạm trần mây 35.
+7. Không ảnh hưởng đến điều hành bay.
+\`\`\`
+**Kỳ vọng:**
+- \`he_thong_goi_y\` = "Sensor trần mây trạm 35"
+- \`thoi_gian_bat_dau\` = "2026-07-21T04:00"
+- \`nguyen_nhan\` = "Treo port COM converter Moxa trạm trần mây 35"
+- \`bien_phap_xu_ly\` = "Ca trực tiến hành reset converter Moxa..."
+- \`anh_huong_dhb\` = "Không ảnh hưởng", \`phan_loai\` = "D" hoặc "E"
+`,
 };
 
 type SkillTopic = keyof typeof SKILLS;
