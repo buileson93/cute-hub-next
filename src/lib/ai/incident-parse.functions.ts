@@ -3,6 +3,7 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { buildAiModel, type AiRuntimeConfig } from "@/lib/ai/gateway.server";
+import { parseIncidentByRules } from "@/lib/ai/incident-parse-rules";
 
 const inputSchema = z.object({
   text: z.string().min(10, "Nội dung quá ngắn để phân tích"),
@@ -87,6 +88,14 @@ export const parseIncidentText = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data, context }): Promise<ParsedIncident> => {
+    // Tầng 1 — deterministic parser. Đa số báo cáo TTBDKT theo 7 mục cố định,
+    // khỏi cần AI (nhanh, ổn định, 0 credit).
+    const ruleRes = parseIncidentByRules(data.text);
+    if (ruleRes.confidence >= 0.7) {
+      return ruleRes.parsed;
+    }
+
+    // Tầng 2 — AI fallback khi parser không đủ tự tin.
     const { data: cfgRow, error: cfgErr } = await context.supabase
       .from("ai_config")
       .select("*")
@@ -94,19 +103,25 @@ export const parseIncidentText = createServerFn({ method: "POST" })
       .maybeSingle();
     if (cfgErr) throw new Error(cfgErr.message);
     const cfg = cfgRow as unknown as AiRuntimeConfig | null;
-    if (!cfg || !cfg.enabled) throw new Error("Tính năng AI đang tắt");
+    if (!cfg || !cfg.enabled) {
+      // AI tắt: trả kết quả parser (dù thấp) — user vẫn có gì đó để chỉnh.
+      return ruleRes.parsed;
+    }
 
     const model = buildAiModel(cfg);
 
     const { text } = await generateText({
       model,
       system: SYSTEM,
-      prompt: `Văn bản sự cố cần bóc tách:\n\n"""\n${data.text}\n"""`,
+      prompt: `Văn bản sự cố cần bóc tách:\n\n"""\n${data.text}\n"""\n\nGợi ý từ parser (có thể sai, hãy sửa lại theo văn bản gốc):\n${JSON.stringify(ruleRes.parsed)}`,
       maxOutputTokens: Math.min(cfg.max_tokens || 4096, 4096),
     });
 
     const obj = extractJson(text);
-    if (!obj) throw new Error("AI không trả về dữ liệu hợp lệ, vui lòng thử lại");
+    if (!obj) {
+      // AI hỏng: vẫn trả kết quả parser để user không mất công gõ lại.
+      return ruleRes.parsed;
+    }
 
     const dhb = asStr(obj.anh_huong_dhb);
     const validDhb = ["Không ảnh hưởng", "Ảnh hưởng một phần", "Có gián đoạn ĐHB"];
