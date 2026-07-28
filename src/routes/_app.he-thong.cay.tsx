@@ -4698,12 +4698,15 @@ function TableView({
                             closeDelay={100}
                             contentClassName="p-0"
                             trigger={
-                              <button className="text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tb!.ma_thiet_bi } })}>
-                                {tbLabel(r.tb)}
-                              </button>
+                              <span className="inline-flex items-center gap-1">
+                                <button className="text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tb!.ma_thiet_bi } })}>
+                                  {tbLabel(r.tb)}
+                                </button>
+                                <MultiRoleBadge info={multiRoleMap?.byMa.get(r.tb!.ma_thiet_bi)} compact />
+                              </span>
                             }
                           >
-                            <DeviceHoverContent d={r.tb as unknown as DbDevice} name={tbLabel(r.tb!)} />
+                            <DeviceHoverContent d={r.tb as unknown as DbDevice} name={tbLabel(r.tb!)} multiRole={multiRoleMap?.byMa.get(r.tb!.ma_thiet_bi)} />
                           </CenterHoverCard>
                         ) : r.tp ? (
                           <span className="text-muted-foreground">{tbLabel(r.tb!)}</span>
@@ -4720,13 +4723,16 @@ function TableView({
                             closeDelay={100}
                             contentClassName="p-0"
                             trigger={
-                              <button className="flex items-center gap-1 text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tp!.ma_thiet_bi } })}>
-                                <Puzzle className="h-3.5 w-3.5 text-emerald-600" />
-                                {tbLabel(r.tp)}
-                              </button>
+                              <span className="inline-flex items-center gap-1">
+                                <button className="flex items-center gap-1 text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tp!.ma_thiet_bi } })}>
+                                  <Puzzle className="h-3.5 w-3.5 text-emerald-600" />
+                                  {tbLabel(r.tp)}
+                                </button>
+                                <MultiRoleBadge info={multiRoleMap?.byMa.get(r.tp!.ma_thiet_bi)} compact />
+                              </span>
                             }
                           >
-                            <DeviceHoverContent d={r.tp as unknown as DbDevice} name={tbLabel(r.tp!)} isComponent />
+                            <DeviceHoverContent d={r.tp as unknown as DbDevice} name={tbLabel(r.tp!)} isComponent multiRole={multiRoleMap?.byMa.get(r.tp!.ma_thiet_bi)} />
                           </CenterHoverCard>
                         ) : (
                           <span className="text-muted-foreground">—</span>
