@@ -677,15 +677,18 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               sticky: true,
               value: (r) => r.ten,
               cell: (r) => (
-                <Link
-                  to="/thiet-bi/$maThietBi"
-                  params={{ maThietBi: r.ma }}
-                  className="group flex items-start gap-1 hover:text-primary"
-                >
-                  <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug group-hover:underline">{r.ten || "—"}</span>
-                  <AnomalyBadge score={Number(r.anomalyScore) || 0} count90d={Number(r.soSuCo90n) || 0} className="shrink-0" />
-                  <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-                </Link>
+                <div className="flex items-start gap-1.5">
+                  <Link
+                    to="/thiet-bi/$maThietBi"
+                    params={{ maThietBi: r.ma }}
+                    className="group flex flex-1 items-start gap-1 hover:text-primary"
+                  >
+                    <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug group-hover:underline">{r.ten || "—"}</span>
+                    <AnomalyBadge score={Number(r.anomalyScore) || 0} count90d={Number(r.soSuCo90n) || 0} className="shrink-0" />
+                    <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </Link>
+                  <MultiRoleBadge info={multiRoleMap?.byMa.get(r.ma)} compact side="left" />
+                </div>
               ),
             },
             {
