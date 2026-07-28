@@ -54,8 +54,10 @@ export function VisionImageHint({ onApplyDescription, onApplyCategory, onApplyKe
         if (f.size > 5 * 1024 * 1024) { toast.error(`${f.name}: quá 5MB`); continue; }
         const ext = (f.name.split(".").pop() || "jpg").toLowerCase();
         const path = `${uid}/${crypto.randomUUID()}.${ext}`;
-        const { error } = await supabase.storage.from("su-co-images").upload(path, f, {
-          contentType: f.type, upsert: false,
+        const { compressForUpload } = await import("@/lib/storage/compress");
+        const c = await compressForUpload(f);
+        const { error } = await supabase.storage.from("su-co-images").upload(path, c.blob, {
+          contentType: c.contentType, upsert: false,
         });
         if (error) { toast.error(`Lỗi tải ${f.name}: ${error.message}`); continue; }
         uploaded.push({ path, previewUrl: URL.createObjectURL(f), name: f.name });
