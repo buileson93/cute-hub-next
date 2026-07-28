@@ -52,6 +52,22 @@ const TECH_COL_SET = new Set<string>(TECH_COLS);
 const TECH_OFFSET = TECH_COLS.length;
 const ACTION_VALUES = ["create", "update", "skip", "delete"] as const;
 
+/** Tên sheet AI_RULES ẩn — JSON một dòng ở A1 để AI agent parse trực tiếp. */
+export const AI_RULES_SHEET = "③ AI_RULES";
+
+/** Các "block header" bắt buộc phải xuất hiện trên sheet ① Hướng dẫn (skill card). */
+export const GUIDE_BLOCKS = [
+  "# ROLE",
+  "# INVARIANTS",
+  "# WORKFLOW",
+  "# LAYER_MAP",
+  "# FIELD_HINTS",
+  "# ANOMALY_RULES",
+  "# SELF_CHECK",
+  "# EXAMPLES",
+  "# ERROR_RECOVERY",
+] as const;
+
 const TECH_NOTE: Record<TechColKey, string> = {
   _record_id: "Kỹ thuật — id bản ghi CSDL. KHÔNG sửa/xóa: dùng để nhập lại đúng dòng (cập nhật, không nhân bản).",
   _row_version: "Kỹ thuật — phiên bản dòng (updated_at) lúc xuất. Dùng phát hiện xung đột khi nhập lại. KHÔNG sửa.",
