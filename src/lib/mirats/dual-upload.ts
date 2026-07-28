@@ -16,6 +16,8 @@ export type DualUploadInput = {
   supabase: { bucket: string; path: string; upsert?: boolean; contentType?: string };
   /** Khoá gợi ý trên R2 (dạng "uploads/2025-…/tên"). */
   r2: { keyHint: string };
+  /** Bỏ qua nén ảnh/PDF (mặc định: nén phía trình duyệt để tiết kiệm dung lượng). */
+  skipCompress?: boolean;
 };
 
 export type DualUploadResult = {
@@ -27,26 +29,25 @@ export type DualUploadResult = {
   errors: { side: "supabase" | "r2"; message: string }[];
 };
 
-async function uploadToSupabase(input: DualUploadInput) {
+async function uploadToSupabase(input: DualUploadInput, body: Blob, ct: string) {
   const { bucket, path, upsert = true, contentType } = input.supabase;
   const { data, error } = await supabase.storage
     .from(bucket)
-    .upload(path, input.file, { upsert, contentType: contentType ?? input.file.type });
+    .upload(path, body, { upsert, contentType: contentType ?? ct });
   if (error) throw error;
   const pub = supabase.storage.from(bucket).getPublicUrl(data?.path ?? path);
   return { path: data?.path ?? path, publicUrl: pub.data.publicUrl };
 }
 
-async function uploadToR2(input: DualUploadInput) {
+async function uploadToR2(input: DualUploadInput, body: Blob, ct: string) {
   // Import động để tránh kéo server-fn stub vào loader không cần R2.
   const { r2GetUploadUrl, r2MarkReady } = await import("./r2.functions");
-  const ct = input.file.type || "application/octet-stream";
   const info = await r2GetUploadUrl({
-    data: { key: input.r2.keyHint, contentType: ct, size: input.file.size, originalName: input.file.name },
+    data: { key: input.r2.keyHint, contentType: ct, size: body.size, originalName: input.file.name },
   });
-  const putRes = await fetch(info.url, { method: "PUT", headers: { "Content-Type": ct }, body: input.file });
+  const putRes = await fetch(info.url, { method: "PUT", headers: { "Content-Type": ct }, body });
   if (!putRes.ok) throw new Error(`R2 PUT ${putRes.status}: ${await putRes.text().catch(() => putRes.statusText)}`);
-  await r2MarkReady({ data: { key: info.key, size: input.file.size } });
+  await r2MarkReady({ data: { key: info.key, size: body.size } });
   return { key: info.key };
 }
 
@@ -60,17 +61,28 @@ export async function dualUpload(input: DualUploadInput): Promise<DualUploadResu
   const shouldUploadSupabase = config.primary === "supabase" || config.dualWrite;
   const shouldUploadR2 = config.primary === "r2" || config.dualWrite;
 
+  // Nén ảnh/PDF MỘT LẦN, dùng chung cho cả hai backend.
+  let body: Blob = input.file;
+  let ct = input.file.type || "application/octet-stream";
+  if (!input.skipCompress && typeof window !== "undefined") {
+    try {
+      const { compressForUpload } = await import("@/lib/storage/compress");
+      const c = await compressForUpload(input.file);
+      if (c.blob.size < input.file.size) { body = c.blob; ct = c.contentType; }
+    } catch { /* upload nguyên bản nếu nén lỗi */ }
+  }
+
   const jobs: Promise<void>[] = [];
   if (shouldUploadSupabase) {
     jobs.push(
-      uploadToSupabase(input)
+      uploadToSupabase(input, body, ct)
         .then((r) => { supabaseUrl = r.publicUrl; supabasePath = r.path; })
         .catch((e: any) => { errors.push({ side: "supabase", message: e?.message ?? String(e) }); }),
     );
   }
   if (shouldUploadR2) {
     jobs.push(
-      uploadToR2(input)
+      uploadToR2(input, body, ct)
         .then((r) => { r2Key = r.key; })
         .catch((e: any) => { errors.push({ side: "r2", message: e?.message ?? String(e) }); }),
     );
