@@ -239,7 +239,7 @@ export const getSkillCard = defineTool({
     "Trả về skill card (markdown) giúp agent hiểu nghiệp vụ, cấu trúc dữ liệu, luồng làm việc và luật cảnh báo MIRATS. Gọi TRƯỚC khi tra cứu/ghi để tránh nhầm khái niệm.",
   inputSchema: {
     topic: z
-      .enum(["overview", "data_model", "workflows", "glossary", "anomaly_rules", "tools_index"])
+      .enum(["overview", "data_model", "workflows", "glossary", "anomaly_rules", "tools_index", "su_co_import"])
       .default("overview")
       .describe("Chủ đề skill card"),
   },
