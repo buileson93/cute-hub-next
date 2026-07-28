@@ -717,6 +717,11 @@ export async function buildAllInOneWorkbook(
   }
 
   // Điền bảng tổng quan ở sheet Hướng dẫn (kèm số dòng thực xuất, tô màu theo nhóm).
+  // ---- # LAYER_MAP (bảng thứ tự lớp) ----
+  const layerMapTitle = guide.addRow(["# LAYER_MAP — thứ tự lớp & khoá upsert"]);
+  guide.mergeCells(`A${layerMapTitle.number}:D${layerMapTitle.number}`);
+  layerMapTitle.getCell(1).font = { bold: true, size: 12, color: { argb: "FF1E3A8A" } };
+  layerMapTitle.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFDBEAFE" } };
   ALLINONE_LAYERS.forEach((layer, i) => {
     const gs = GROUP_STYLE[layer.group];
     const row = guide.addRow([i + 1, layer.sheet, layer.desc, withData ? guideCounts[i] : 0]);
@@ -769,6 +774,128 @@ export async function buildAllInOneWorkbook(
     r.getCell(1).font = { color: { argb: "FF334155" } };
     r.getCell(1).alignment = { wrapText: true };
   });
+
+  // ==========================================================================
+  // SKILL CARD cho AI AGENT — các block chuẩn hoá để agent định vị bằng string
+  // match. Mỗi block bắt đầu bằng "# <TÊN>". Xem thêm sheet ③ AI_RULES (JSON).
+  // ==========================================================================
+  const CURRENT_YEAR = new Date().getFullYear();
+  const addBlock = (title: string, lines: string[]) => {
+    guide.addRow([]);
+    const t = guide.addRow([title]);
+    guide.mergeCells(`A${t.number}:D${t.number}`);
+    t.getCell(1).font = { bold: true, size: 12, color: { argb: "FF1E3A8A" } };
+    t.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFDBEAFE" } };
+    for (const line of lines) {
+      const r = guide.addRow([line]);
+      guide.mergeCells(`A${r.number}:D${r.number}`);
+      r.getCell(1).font = { color: { argb: "FF334155" } };
+      r.getCell(1).alignment = { wrapText: true };
+    }
+  };
+
+  addBlock("# ROLE", [
+    "Bạn là nhân viên kỹ thuật khai lý lịch thiết bị VATM. Chỉ ghi số liệu có nguồn.",
+    "Không đoán, không bịa. Thiếu dữ kiện → để trống hoặc hỏi lại người phụ trách.",
+    "Ưu tiên trích dẫn nguồn (datasheet chính hãng, hồ sơ nghiệm thu, hoá đơn).",
+  ]);
+  addBlock("# INVARIANTS", [
+    "• 'ma' là KHOÁ upsert: giữ nguyên → cập nhật, để trống → tạo mới, đổi mã → tạo bản trùng.",
+    "• Cha trước, con sau: điền sheet theo đúng thứ tự 1 → N; con chỉ dùng ref đã có ở cha.",
+    "• Idempotent: chạy lại cùng file không nhân bản; _record_id/_row_version giữ liên kết dòng.",
+    "• Mọi ref phải trỏ giá trị có thật ở sheet cha hoặc snapshot đi kèm.",
+  ]);
+  addBlock("# WORKFLOW", [
+    "1) Đọc sheet _MIRATS_META (phiên bản, scope) + ③ AI_RULES (JSON hints & luật).",
+    "2) Quét dữ liệu hiện có ở các sheet cha để làm baseline (mã, tên, model, giá).",
+    "3) Điền lần lượt các sheet 1 → N; chỉ dùng ref đã tồn tại.",
+    "4) Chạy # SELF_CHECK cho từng dòng trước khi coi là hoàn tất.",
+    "5) Đối chiếu # ANOMALY_RULES; nếu warn → thêm ghi chú, nếu block → sửa hoặc bỏ dòng.",
+    "6) Đặt _action = create/update/skip/delete cho từng dòng theo hành động thực tế.",
+  ]);
+  addBlock("# FIELD_HINTS", [
+    "Tra cứu chi tiết trong sheet ③ AI_RULES → field_hints[<bảng>][<key>] = {type, required, ref?, min?, max?}.",
+    "Ô 'ma_serial' để trống nếu chưa có — không bịa số serial.",
+    `Năm sản xuất chấp nhận: 1980 .. ${CURRENT_YEAR + 1}. Ngoài khoảng → cảnh báo year_out_of_range.`,
+    "Ngày định dạng dd/mm/yyyy hoặc yyyy-mm-dd; ngày bảo hành ≥ ngày đưa vào sử dụng.",
+  ]);
+  addBlock("# ANOMALY_RULES", [
+    "Luật cảnh báo bất hợp lý — agent PHẢI tự kiểm trước khi ghi. Chi tiết ở ③ AI_RULES.anomaly_rules.",
+    "block: duplicate_ma, ref_missing, enum_invalid, orphan_component, date_future, year_vs_ngay_dua_vao.",
+    "warn: sn_dup, year_out_of_range, model_mismatch, price_outlier, lifespan_outlier.",
+    "So sánh outlier dùng baseline snapshot đi kèm (khi withData=true); mẫu trống → bỏ qua, log 'no baseline'.",
+  ]);
+  addBlock("# SELF_CHECK", [
+    "[ ] Đã có 'ma' hoặc chấp nhận tạo mới có kiểm soát?",
+    "[ ] Mọi ref đều tồn tại ở sheet cha / baseline?",
+    "[ ] Trường bắt buộc đã điền đủ (ô nền vàng ở header)?",
+    "[ ] Định dạng đúng (số, ngày, enum) và không có ký tự lạ?",
+    "[ ] Đã đối chiếu # ANOMALY_RULES, không còn block; các warn đã có ghi chú?",
+    "[ ] _action phản ánh đúng ý định (create/update/skip/delete)?",
+  ]);
+  addBlock("# EXAMPLES", [
+    "Tạo mới tài sản (sheet Tài sản):",
+    "  _action=create · ma=<để trống hoặc mã mới> · ten_thiet_bi='Máy VHF A' · he_thong='HT-001' · model='MDL-XYZ' · nam_san_xuat=2024",
+    "Cập nhật tài sản đã có:",
+    "  _action=update · giữ nguyên _record_id/ma · chỉ sửa các cột thay đổi · ô để trống = giữ nguyên giá trị cũ.",
+  ]);
+  addBlock("# ERROR_RECOVERY", [
+    "• ref_missing → khai giá trị đó ở sheet cha trước (cùng file), rồi tham chiếu bằng 'ma'.",
+    "• duplicate_ma → giữ 1 dòng gốc; các dòng khác đổi _action=skip hoặc dùng mã khác.",
+    "• enum_invalid → xem danh sách hợp lệ ở ③ AI_RULES.enums; chọn giá trị đúng.",
+    "• sn_dup (warn) → xác minh với hồ sơ; nếu đúng là 2 tài sản khác nhau, đổi ma_serial cho đúng.",
+    "• year_vs_ngay_dua_vao → điều chỉnh nam_san_xuat ≤ năm của ngay_dua_vao_su_dung.",
+  ]);
+
+  // ---- Sheet ③ AI_RULES (ẩn) — JSON machine-readable ----
+  const layersMeta = ALLINONE_LAYERS.map((l) => {
+    const ent = entOf(l);
+    const refs = Array.from(new Set(ent.fields.filter((f) => f.kind === "ref" && f.ref).map((f) => f.ref!.table)));
+    const required = ent.fields.filter((f) => f.required).map((f) => f.key);
+    return { sheet: l.sheet, entity: ent.table, key: "ma", refs, required };
+  });
+  const fieldHints: Record<string, Record<string, { type: string; required?: boolean; ref?: string; min?: number; max?: number }>> = {};
+  for (const l of ALLINONE_LAYERS) {
+    const ent = entOf(l);
+    const h: Record<string, { type: string; required?: boolean; ref?: string; min?: number; max?: number }> = {};
+    for (const f of ent.fields) {
+      const hint: { type: string; required?: boolean; ref?: string; min?: number; max?: number } = {
+        type: f.kind, required: !!f.required,
+      };
+      if (f.kind === "ref" && f.ref) hint.ref = f.ref.table;
+      if (f.key === "nam_san_xuat" || f.key === "nam_dua_vao_khai_thac") {
+        hint.min = 1980; hint.max = CURRENT_YEAR + 1;
+      }
+      h[f.key] = hint;
+    }
+    fieldHints[ent.table] = h;
+  }
+  const anomalyRules = [
+    { id: "duplicate_ma", severity: "block", scope: "*", explain: "Trùng 'ma' trong cùng sheet" },
+    { id: "ref_missing", severity: "block", scope: "*", explain: "Giá trị ref không tồn tại ở sheet cha; gợi ý khớp gần đúng (Levenshtein ≤ 2)" },
+    { id: "enum_invalid", severity: "block", scope: "*", explain: "Giá trị ngoài enum cho phép" },
+    { id: "orphan_component", severity: "block", scope: "he_thong_thanh_phan", explain: "Thành phần thiếu he_thong cha" },
+    { id: "date_future", severity: "block", scope: "thiet_bi", explain: "ngay_bao_hanh_den < ngay_dua_vao_su_dung" },
+    { id: "year_vs_ngay_dua_vao", severity: "block", scope: "thiet_bi", explain: "nam_san_xuat > year(ngay_dua_vao_su_dung)" },
+    { id: "sn_dup", severity: "warn", scope: "thiet_bi", explain: "ma_serial trùng trong file — cảnh báo, không chặn" },
+    { id: "year_out_of_range", severity: "warn", scope: "thiet_bi", explain: `nam_san_xuat < 1980 hoặc > ${CURRENT_YEAR + 1}` },
+    { id: "model_mismatch", severity: "warn", scope: "thiet_bi", explain: "Cùng model nhưng khác NSX/chủng loại so với baseline snapshot" },
+    { id: "price_outlier", severity: "warn", scope: "thiet_bi", explain: "gia_tri lệch > 3× median cùng model (dựa baseline)" },
+    { id: "lifespan_outlier", severity: "warn", scope: "thiet_bi", explain: "nien_han_su_dung lệch > 50% median cùng chủng loại (dựa baseline)" },
+  ];
+  const aiRules = {
+    schema_version: SCHEMA_VERSION,
+    generated_at: meta.generated_at,
+    baseline_available: !!withData,
+    layers: layersMeta,
+    field_hints: fieldHints,
+    anomaly_rules: anomalyRules,
+    enums: { _action: [...ACTION_VALUES] },
+  };
+  const aiWs = wb.addWorksheet(AI_RULES_SHEET);
+  aiWs.getCell("A1").value = JSON.stringify(aiRules);
+  aiWs.getColumn(1).width = 120;
+  aiWs.state = "hidden";
 
   guide.views = [{ state: "frozen", ySplit: gHeadIdx }];
 
