@@ -65,6 +65,17 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const { data: loaiList = [] } = useLoaiThietBi();
   const loaiTen = useMemo(() => new Map(loaiList.map((l) => [l.id, l.ten])), [loaiList]);
+  const { data: multiRoleMap } = useMultiRoleMap();
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const toggleCollapse = (id: string) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const tree = useMemo(() => buildThanhPhanTree(viTri), [viTri]);
+  const flat = useMemo(() => flattenThanhPhanTree(tree, collapsed), [tree, collapsed]);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ViTriChucNang | null>(null);
