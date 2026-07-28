@@ -39,7 +39,8 @@
                 "workflows",
                 "glossary",
                 "anomaly_rules",
-                "tools_index"
+                "tools_index",
+                "su_co_import"
               ]
             }
           }
