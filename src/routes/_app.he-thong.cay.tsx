@@ -4249,6 +4249,7 @@ function TableView({
   bulkSaving?: boolean;
 }) {
   const nav = useNavigate();
+  const { data: multiRoleMap } = useMultiRoleMap();
   type Row = {
     plId: PhanLoaiId; plTen: string; lvId: LinhVucId; nhMa: string; nh: string; ht: string; htMa: string;
     tb?: ThietBi; tp?: ThietBi;
