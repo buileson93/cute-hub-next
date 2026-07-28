@@ -35,6 +35,7 @@ import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import type { SuCo } from "@/lib/mirats/types";
 import { OPEN_STATES, isOpenState, canManageSuCoState, canFinalize } from "@/lib/mirats/su-co-state";
 import { useSession } from "@/hooks/use-session";
+import { WeeklyReportImportDialog } from "@/components/mirats/WeeklyReportImportDialog";
 
 export const Route = createFileRoute("/_app/su-co/")({
   head: () => ({
