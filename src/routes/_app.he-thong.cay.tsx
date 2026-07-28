@@ -38,7 +38,9 @@ import {
   type DbDevice, type DbTaxonomy,
 } from "@/lib/mirats/db-taxonomy";
 
-import { useAllViTriChucNang, useXoaViTri, useXoaViTriForce, useDoiThuTuViTri, type ViTriChucNangTree } from "@/lib/mirats/he-thong-thanh-phan";
+import { useAllViTriChucNang, useXoaViTri, useXoaViTriForce, useDoiThuTuViTri, useMultiRoleMap, type ViTriChucNangTree, type MultiRoleInfo } from "@/lib/mirats/he-thong-thanh-phan";
+import { colorForThietBi } from "@/lib/mirats/multi-role-color";
+import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { useMyPermissions } from "@/hooks/use-permissions";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
