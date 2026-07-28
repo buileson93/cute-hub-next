@@ -404,6 +404,9 @@ function SuCoPage() {
         actions={
           <div className="flex gap-2">
             <WeeklyReportImportDialog />
+            <Button asChild size="sm" variant="outline">
+              <Link to="/su-co/import-history">Lịch sử nhập</Link>
+            </Button>
             <Button asChild size="sm">
               <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
             </Button>
