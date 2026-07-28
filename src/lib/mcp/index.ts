@@ -17,6 +17,28 @@ import {
   listDanhMuc,
   listNotifications,
 } from "./tools";
+import { getSkillCard, listSkillTopics } from "./skills";
+import {
+  getHeThongLyLich,
+  getThanhPhanLyLich,
+  listThanhPhanByHeThong,
+  listDotBaoDuong,
+  getDotBaoDuong,
+  listBaoTri,
+  listSuCo,
+  listHongHoc,
+  listVanDe,
+  listGiayPhepByHeThong,
+  listKhoGiaoDich,
+  metricTimeseries,
+} from "./tools-domains";
+import {
+  createSuCo,
+  createBaoTri,
+  createHongHoc,
+  ghiKiemKe,
+  closeVanDe,
+} from "./tools-write";
 
 const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
@@ -25,13 +47,16 @@ export default defineMcp({
   title: "MIRATS AI",
   version: "0.2.0",
   instructions:
-    "Trợ lý dữ liệu MIRATS. Cung cấp bộ tool chỉ-đọc để tra cứu & thống kê TOÀN BỘ dữ liệu hệ thống: tài sản, giấy phép, biểu mẫu, ticket, dự án, sơ đồ, danh mục, thông báo. Dùng `describe_schema` để hiểu cấu trúc, `run_select_query`/`list_table`/`count_by` cho truy vấn tuỳ ý (RLS áp dụng theo quyền user). Ưu tiên tool chuyên dụng khi phù hợp. Luôn trả lời tiếng Việt và chỉ dùng dữ liệu từ tool, không đoán số liệu.",
+    "Trợ lý MIRATS – quản lý tài sản kỹ thuật VATM. GỌI `get_skill_card` TRƯỚC để hiểu cấu trúc 4 lớp (hệ thống → thành phần → tài sản → linh kiện), enums, luồng bảo dưỡng/sự cố/GPKT và luật cảnh báo. Có bộ tool chuyên dụng cho: sổ lý lịch hệ thống & thành phần, đợt bảo dưỡng lớn, sự cố, hỏng hóc, vấn đề, GPKT, kho, metric_timeseries. Có tool GHI (create_su_co / create_bao_tri / create_hong_hoc / create_kiem_ke_ghi / close_van_de) – LUÔN tóm tắt và xin phép user trước khi gọi. RLS chạy theo quyền user hiện tại. Trả lời tiếng Việt, chỉ dùng dữ liệu tool trả về.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
   tools: [
-    // Tra cứu / thống kê tổng quát trên toàn bộ dữ liệu
+    // Skill cards
+    getSkillCard,
+    listSkillTopics,
+    // Tra cứu / thống kê tổng quát
     searchGlobal,
     describeSchema,
     runSelectQuery,
@@ -39,17 +64,38 @@ export default defineMcp({
     getRow,
     countBy,
     dashboardStats,
+    // Hệ thống & thành phần
+    getHeThongLyLich,
+    getThanhPhanLyLich,
+    listThanhPhanByHeThong,
+    metricTimeseries,
     // Tài sản
     listThietBi,
     getThietBi,
     countThietBiByTrangThai,
     // Giấy phép & biểu mẫu
     listGiayPhepSapHetHan,
+    listGiayPhepByHeThong,
     listFormSubmissions,
+    // Bảo trì / Đợt / Sự cố / Hỏng hóc / Vấn đề
+    listBaoTri,
+    listDotBaoDuong,
+    getDotBaoDuong,
+    listSuCo,
+    listHongHoc,
+    listVanDe,
+    // Kho
+    listKhoGiaoDich,
     // Vận hành khác
     listTickets,
     listDuAn,
     listDanhMuc,
     listNotifications,
+    // Ghi tác nghiệp (agent cần xin phép user trước)
+    createSuCo,
+    createBaoTri,
+    createHongHoc,
+    ghiKiemKe,
+    closeVanDe,
   ],
 });

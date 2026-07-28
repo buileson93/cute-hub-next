@@ -17,6 +17,52 @@
     },
     "tools": [
       {
+        "name": "get_skill_card",
+        "title": "Sổ tay kỹ năng MIRATS",
+        "description": "Trả về skill card (markdown) giúp agent hiểu nghiệp vụ, cấu trúc dữ liệu, luồng làm việc và luật cảnh báo MIRATS. Gọi TRƯỚC khi tra cứu/ghi để tránh nhầm khái niệm.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topic": {
+              "default": "overview",
+              "description": "Chủ đề skill card",
+              "type": "string",
+              "enum": [
+                "overview",
+                "data_model",
+                "workflows",
+                "glossary",
+                "anomaly_rules",
+                "tools_index"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_skill_topics",
+        "title": "Danh sách chủ đề skill",
+        "description": "Trả về danh sách các topic có thể truyền vào get_skill_card.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
         "name": "search_global",
         "title": "Tìm kiếm toàn hệ thống",
         "description": "Tìm nhanh tài sản, giấy phép, biểu mẫu theo từ khoá (không dấu vẫn được).",
@@ -397,6 +443,124 @@
         "outputSchema": null
       },
       {
+        "name": "get_he_thong_ly_lich",
+        "title": "Sổ lý lịch hệ thống",
+        "description": "Snapshot toàn diện 1 hệ thống: thông tin, thành phần con, GPKT hiện hành, sự cố 30 ngày.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "required": [
+            "he_thong_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_thanh_phan_ly_lich",
+        "title": "Sổ lý lịch thành phần",
+        "description": "KPI (MTBF/MTTR/tỉ lệ đạt) và lịch sử tài sản gắn-tháo của 1 thành phần hệ thống.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "thanh_phan_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "required": [
+            "thanh_phan_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_thanh_phan_by_he_thong",
+        "title": "Danh sách thành phần theo hệ thống",
+        "description": "Liệt kê thành phần (vị trí chức năng) của một hệ thống kỹ thuật.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "limit": {
+              "default": 100,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          "required": [
+            "he_thong_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "metric_timeseries",
+        "title": "Chuỗi thời gian chỉ số vận hành",
+        "description": "Đọc v_metric_timeseries: chỉ số bảo dưỡng (metric_key) của hệ thống theo thời gian.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "metric_key": {
+              "type": "string"
+            },
+            "tu_ngay": {
+              "type": "string"
+            },
+            "den_ngay": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 200,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
         "name": "list_thiet_bi",
         "title": "Danh sách tài sản",
         "description": "Liệt kê tài sản theo bộ lọc (trạng thái, đơn vị, hệ thống, từ khoá).",
@@ -508,6 +672,31 @@
         "outputSchema": null
       },
       {
+        "name": "list_giay_phep_by_he_thong",
+        "title": "GPKT theo hệ thống",
+        "description": "Danh sách giấy phép khai thác của một hệ thống.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "required": [
+            "he_thong_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
         "name": "list_form_submissions",
         "title": "Danh sách biểu mẫu",
         "description": "Liệt kê biên bản/biểu mẫu đã nộp, lọc theo trạng thái/tài sản/loại.",
@@ -543,6 +732,232 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_bao_tri",
+        "title": "Danh sách phiếu bảo trì",
+        "description": "Phiếu bảo dưỡng, lọc theo hệ thống/đơn vị/khoảng ngày.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "don_vi_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "tu_ngay": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_dot_bao_duong",
+        "title": "Danh sách đợt bảo dưỡng lớn",
+        "description": "Đợt bảo dưỡng lớn theo năm/đơn vị/trạng thái.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "nam": {
+              "type": "integer",
+              "minimum": 2000,
+              "maximum": 2100
+            },
+            "don_vi_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "trang_thai": {
+              "type": "string",
+              "enum": [
+                "nhap",
+                "mo",
+                "dang_thuc_hien",
+                "dong",
+                "huy"
+              ]
+            },
+            "limit": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_dot_bao_duong",
+        "title": "Chi tiết đợt bảo dưỡng",
+        "description": "Chi tiết đợt kèm tiến độ hạng mục (số dat/khong_dat/con lai).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_su_co",
+        "title": "Danh sách sự cố",
+        "description": "Sự cố kỹ thuật lọc theo trạng thái/mức độ/hệ thống/khoảng ngày.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "trang_thai": {
+              "type": "string"
+            },
+            "muc_do": {
+              "type": "string"
+            },
+            "he_thong_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "tu_ngay": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_hong_hoc",
+        "title": "Danh sách hỏng hóc",
+        "description": "Hỏng hóc tài sản, lọc theo tài sản/khoảng ngày.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "thiet_bi_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "tu_ngay": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_van_de",
+        "title": "Danh sách vấn đề tồn đọng",
+        "description": "Vấn đề tồn đọng phát sinh từ sự cố/hỏng hóc; lọc theo trạng thái.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "trang_thai": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_kho_giao_dich",
+        "title": "Giao dịch kho",
+        "description": "Lịch sử nhập/xuất/điều chuyển kho.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "kho_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "limit": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
             }
           }
         },
@@ -670,6 +1085,243 @@
               "maximum": 50
             }
           }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_su_co",
+        "title": "Tạo sự cố",
+        "description": "Tạo bản ghi sự cố mới. BẮT BUỘC hệ thống và hiện tượng. Trước khi gọi, hãy TÓM TẮT nội dung cho user duyệt.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Tên hoặc mã hệ thống (bắt buộc)"
+            },
+            "hien_tuong": {
+              "type": "string",
+              "minLength": 3,
+              "description": "Hiện tượng sự cố (bắt buộc)"
+            },
+            "thiet_bi": {
+              "description": "Tên/mã tài sản liên quan",
+              "type": "string"
+            },
+            "don_vi": {
+              "description": "Mã đơn vị (CRA/CLA/PBA/PCA/THO/PLK)",
+              "type": "string"
+            },
+            "muc_do": {
+              "type": "string",
+              "enum": [
+                "nhe",
+                "trung_binh",
+                "nghiem_trong"
+              ]
+            },
+            "ngay_phat_hien": {
+              "description": "YYYY-MM-DD",
+              "type": "string"
+            },
+            "nguoi_bao_cao": {
+              "type": "string"
+            },
+            "nguyen_nhan": {
+              "type": "string"
+            },
+            "bien_phap_xu_ly": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "he_thong",
+            "hien_tuong"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_bao_tri",
+        "title": "Tạo phiếu bảo trì",
+        "description": "Tạo phiếu bảo trì. BẮT BUỘC hệ thống và mô tả công việc. Tóm tắt cho user trước khi gọi.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "he_thong": {
+              "type": "string",
+              "minLength": 2
+            },
+            "mo_ta_cong_viec": {
+              "type": "string",
+              "minLength": 3
+            },
+            "thiet_bi": {
+              "type": "string"
+            },
+            "don_vi": {
+              "type": "string"
+            },
+            "loai_bao_tri": {
+              "type": "string",
+              "enum": [
+                "dinh_ky",
+                "dot_xuat",
+                "khac"
+              ]
+            },
+            "ke_hoach": {
+              "type": "string"
+            },
+            "ngay_bat_dau": {
+              "type": "string"
+            },
+            "ngay_hoan_thanh": {
+              "type": "string"
+            },
+            "ket_qua": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "he_thong",
+            "mo_ta_cong_viec"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_hong_hoc",
+        "title": "Tạo bản ghi hỏng hóc",
+        "description": "Ghi nhận hỏng hóc của một tài sản. BẮT BUỘC tài sản và mô tả. Tóm tắt cho user trước khi gọi.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "thiet_bi_hong": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Tên/mã tài sản bị hỏng"
+            },
+            "mo_ta_hong_hoc": {
+              "type": "string",
+              "minLength": 3
+            },
+            "su_co": {
+              "description": "Mã sự cố liên quan",
+              "type": "string"
+            },
+            "ngay_hong": {
+              "type": "string"
+            },
+            "bo_phan_hong": {
+              "type": "string"
+            },
+            "phuong_an": {
+              "type": "string"
+            },
+            "thiet_bi_thay_the": {
+              "description": "Tên/mã tài sản dùng thay thế",
+              "type": "string"
+            }
+          },
+          "required": [
+            "thiet_bi_hong",
+            "mo_ta_hong_hoc"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_kiem_ke_ghi",
+        "title": "Ghi nhận kiểm kê tài sản",
+        "description": "Ghi kiểm kê cho 1 tài sản: tình trạng, GPS, ảnh, ghi chú.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "thiet_bi_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "tinh_trang": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nguoi_kiem": {
+              "type": "string"
+            },
+            "vi_tri_gps": {
+              "type": "string"
+            },
+            "anh_url": {
+              "type": "string"
+            },
+            "ghi_chu": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "thiet_bi_id",
+            "tinh_trang"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "close_van_de",
+        "title": "Đóng vấn đề tồn đọng",
+        "description": "Đóng 1 vấn đề (van_de) với ghi chú lý do đóng.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "ghi_chu": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ]
         },
         "outputSchema": null
       }
