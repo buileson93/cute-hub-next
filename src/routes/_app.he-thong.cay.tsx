@@ -3833,7 +3833,8 @@ function TreeView({
                       : deviceChips(d.tb);
                     return (
                     <div key={d.tb.ma_thiet_bi} className="space-y-1">
-                      <div id={`row-tb-${d.tb.ma_thiet_bi}`}>
+                      <div id={`row-tb-${d.tb.ma_thiet_bi}`} className="flex items-start gap-1.5">
+                        <div className="min-w-0 flex-1">
                         <Disclosure
                           icon={tpTen ? Plug : Cpu} label={primaryLabel}
                           donViMa={(d.tb.don_vi ?? "").trim() || null} chips={chips}
@@ -3847,20 +3848,29 @@ function TreeView({
                           devPlTargets={plTargets.filter((t) => t.plId !== (d.tb._pl ?? ""))}
                           onMoveDeviceToPl={(toPlId, toPlLabel) =>
                             onMoveDevice({ deviceMa: d.tb.ma_thiet_bi, label: tbLabel(d.tb), toPlId, toPlLabel })}
-                          hover={<DeviceHoverContent d={d.tb} name={tbLabel(d.tb)} />}
+                          hover={<DeviceHoverContent d={d.tb} name={tbLabel(d.tb)} multiRole={multiRoleMap?.byMa.get(d.tb.ma_thiet_bi)} />}
                         />
+                        </div>
+                        {multiRoleMap?.byMa.get(d.tb.ma_thiet_bi) && (
+                          <div className="pt-1.5 pr-1"><MultiRoleBadge info={multiRoleMap.byMa.get(d.tb.ma_thiet_bi)} compact side="left" /></div>
+                        )}
                       </div>
 
                       {d.children.map((c) => (
-                        <div key={c.ma_thiet_bi} id={`row-tp-${c.ma_thiet_bi}`}>
+                        <div key={c.ma_thiet_bi} id={`row-tp-${c.ma_thiet_bi}`} className="flex items-start gap-1.5">
+                          <div className="min-w-0 flex-1">
                           <Disclosure
                             icon={Puzzle} label={tbLabel(c)} depth={depth + 1}
                             tone="bg-emerald-500/5" donViMa={(c.don_vi ?? "").trim() || null} chips={deviceChips(c)}
                             canManage={canManage} onEdit={() => onOpenEditor("tb", c.ma_thiet_bi)}
                             onRecord={() => onRecord("tp", c.ma_thiet_bi, tbLabel(c))}
                             onRename={(t) => onRename("tp", c.ma_thiet_bi, t)}
-                            hover={<DeviceHoverContent d={c} name={tbLabel(c)} isComponent />}
+                            hover={<DeviceHoverContent d={c} name={tbLabel(c)} isComponent multiRole={multiRoleMap?.byMa.get(c.ma_thiet_bi)} />}
                           />
+                          </div>
+                          {multiRoleMap?.byMa.get(c.ma_thiet_bi) && (
+                            <div className="pt-1.5 pr-1"><MultiRoleBadge info={multiRoleMap.byMa.get(c.ma_thiet_bi)} compact side="left" /></div>
+                          )}
                         </div>
                       ))}
                     </div>
