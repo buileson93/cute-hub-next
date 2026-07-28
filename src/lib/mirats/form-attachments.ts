@@ -43,22 +43,46 @@ export async function uploadAttachment(
     draftId: string;
     fieldKey: string;
     onProgress?: (pct: number) => void;
+    /** Bỏ qua nén ảnh/PDF (mặc định: nén để tiết kiệm dung lượng). */
+    skipCompress?: boolean;
   },
 ): Promise<FormAttachment> {
   if (file.size > 15 * 1024 * 1024) {
     throw new Error(`Tệp "${file.name}" vượt quá 15MB.`);
   }
-  const path = makeAttachmentPath({ ...opts, fileName: file.name });
+
+  // Nén ảnh/PDF phía trình duyệt TRƯỚC khi upload để tiết kiệm dung lượng
+  // (áp dụng cho ảnh bằng chứng bảo dưỡng, sự cố, hỏng hóc...).
+  let payload: Blob = file;
+  let contentType = file.type || "application/octet-stream";
+  let outName = file.name;
+  let outSize = file.size;
+  if (!opts.skipCompress) {
+    try {
+      const { compressForUpload } = await import("@/lib/storage/compress");
+      const c = await compressForUpload(file);
+      if (c.blob.size < file.size) {
+        payload = c.blob;
+        contentType = c.contentType;
+        outSize = c.blob.size;
+        // Đổi đuôi tệp cho khớp định dạng đã nén (vd: .jpg -> .webp).
+        if (c.contentType === "image/webp" && !/\.webp$/i.test(outName)) {
+          outName = outName.replace(/\.[a-zA-Z0-9]{1,6}$/, "") + ".webp";
+        }
+      }
+    } catch {
+      // Nén lỗi → upload nguyên bản.
+    }
+  }
+  const path = makeAttachmentPath({ ...opts, fileName: outName });
 
   // Ưu tiên signed-upload-URL + XHR để có tiến độ upload thật.
   const { data: signed, error: signErr } = await supabase.storage
     .from(BUCKET).createSignedUploadUrl(path);
   if (signErr || !signed) {
-    // Fallback: upload trực tiếp (không có progress). Nén ảnh/PDF trước khi lên.
-    const { compressForUpload } = await import("@/lib/storage/compress");
-    const c = await compressForUpload(file);
-    const { error } = await supabase.storage.from(BUCKET).upload(path, c.blob, {
-      cacheControl: "3600", contentType: c.contentType, upsert: false,
+    // Fallback: upload trực tiếp (không có progress).
+    const { error } = await supabase.storage.from(BUCKET).upload(path, payload, {
+      cacheControl: "3600", contentType, upsert: false,
     });
     if (error) throw new Error(error.message);
     opts.onProgress?.(100);
@@ -66,7 +90,7 @@ export async function uploadAttachment(
     await new Promise<void>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", signed.signedUrl, true);
-      xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+      xhr.setRequestHeader("Content-Type", contentType);
       xhr.setRequestHeader("x-upsert", "false");
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) opts.onProgress?.(Math.round((e.loaded / e.total) * 100));
@@ -74,13 +98,13 @@ export async function uploadAttachment(
       xhr.onload = () => xhr.status >= 200 && xhr.status < 300
         ? resolve() : reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
       xhr.onerror = () => reject(new Error("Lỗi mạng khi upload"));
-      xhr.send(file);
+      xhr.send(payload);
     });
   }
 
   return {
-    path, name: file.name, size: file.size,
-    type: file.type || "application/octet-stream",
+    path, name: outName, size: outSize,
+    type: contentType,
     uploaded_at: new Date().toISOString(),
   };
 }
