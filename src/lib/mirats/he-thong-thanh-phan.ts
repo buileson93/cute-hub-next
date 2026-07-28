@@ -1049,7 +1049,7 @@ export function useMultiRoleMap() {
       const rows = await fetchAllRows<{
         thiet_bi_id: string;
         thanh_phan_id: string;
-        thiet_bi: { ma_thiet_bi: string; serial: string | null } | null;
+        thiet_bi: { ma_thiet_bi: string; ma_serial: string | null } | null;
         he_thong_thanh_phan: {
           ma_thanh_phan: string;
           ten: string;
@@ -1060,7 +1060,7 @@ export function useMultiRoleMap() {
         supabase
           .from("gan_chuc_nang")
           .select(
-            "thiet_bi_id, thanh_phan_id, thiet_bi(ma_thiet_bi, serial), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
+            "thiet_bi_id, thanh_phan_id, thiet_bi(ma_thiet_bi, ma_serial), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
           )
           .is("den_ngay", null)
           .range(from, to),
@@ -1071,7 +1071,7 @@ export function useMultiRoleMap() {
           count: 0,
           thiet_bi_id: r.thiet_bi_id,
           ma_thiet_bi: r.thiet_bi?.ma_thiet_bi ?? "",
-          ma_serial: r.thiet_bi?.serial ?? null,
+          ma_serial: r.thiet_bi?.ma_serial ?? null,
           roles: [],
         };
         info.count += 1;
