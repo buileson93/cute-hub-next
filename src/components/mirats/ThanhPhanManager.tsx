@@ -536,10 +536,13 @@ function ViTriFormDialog({
   const [hlTu, setHlTu] = useState(target?.hieu_luc_tu ?? "");
   const [hlDen, setHlDen] = useState(target?.hieu_luc_den ?? "");
 
-  const chaOptions = useMemo(
-    () => viTriList.filter((v) => v.id !== target?.id).map((v) => ({ value: v.id, label: `${v.ma_thanh_phan} · ${v.ten}` })),
-    [viTriList, target],
-  );
+  const chaOptions = useMemo(() => {
+    // Chặn vòng lặp: không cho chọn chính nó hoặc bất kỳ hậu duệ nào.
+    const list = target
+      ? viTriList.filter((v) => v.id !== target.id && !isDescendantOf(viTriList, v.id, target.id))
+      : viTriList;
+    return list.map((v) => ({ value: v.id, label: `${v.ma_thanh_phan} · ${v.ten}` }));
+  }, [viTriList, target]);
   const loaiOptions = useMemo(() => loaiList.map((l) => ({ value: l.id, label: l.ten })), [loaiList]);
 
   const submit = async () => {
