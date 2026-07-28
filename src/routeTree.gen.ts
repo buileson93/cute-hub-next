@@ -65,6 +65,7 @@ import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
 import { Route as AppThietBiMaThietBiRouteImport } from './routes/_app.thiet-bi.$maThietBi'
 import { Route as AppSuCoMoiRouteImport } from './routes/_app.su-co.moi'
+import { Route as AppSuCoImportHistoryRouteImport } from './routes/_app.su-co.import-history'
 import { Route as AppSuCoMaSuCoRouteImport } from './routes/_app.su-co.$maSuCo'
 import { Route as AppSoDoIdRouteImport } from './routes/_app.so-do.$id'
 import { Route as AppQuanTriNguoiDungRouteImport } from './routes/_app.quan-tri.nguoi-dung'
@@ -407,6 +408,11 @@ const AppThietBiMaThietBiRoute = AppThietBiMaThietBiRouteImport.update({
 const AppSuCoMoiRoute = AppSuCoMoiRouteImport.update({
   id: '/moi',
   path: '/moi',
+  getParentRoute: () => AppSuCoRoute,
+} as any)
+const AppSuCoImportHistoryRoute = AppSuCoImportHistoryRouteImport.update({
+  id: '/import-history',
+  path: '/import-history',
   getParentRoute: () => AppSuCoRoute,
 } as any)
 const AppSuCoMaSuCoRoute = AppSuCoMaSuCoRouteImport.update({
@@ -810,6 +816,7 @@ export interface FileRoutesByFullPath {
   '/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
   '/so-do/$id': typeof AppSoDoIdRoute
   '/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
+  '/su-co/import-history': typeof AppSuCoImportHistoryRoute
   '/su-co/moi': typeof AppSuCoMoiRoute
   '/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
   '/tickets/$id': typeof AppTicketsIdRoute
@@ -921,6 +928,7 @@ export interface FileRoutesByTo {
   '/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
   '/so-do/$id': typeof AppSoDoIdRoute
   '/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
+  '/su-co/import-history': typeof AppSuCoImportHistoryRoute
   '/su-co/moi': typeof AppSuCoMoiRoute
   '/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
   '/tickets/$id': typeof AppTicketsIdRoute
@@ -1041,6 +1049,7 @@ export interface FileRoutesById {
   '/_app/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
   '/_app/so-do/$id': typeof AppSoDoIdRoute
   '/_app/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
+  '/_app/su-co/import-history': typeof AppSuCoImportHistoryRoute
   '/_app/su-co/moi': typeof AppSuCoMoiRoute
   '/_app/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
   '/_app/tickets/$id': typeof AppTicketsIdRoute
@@ -1161,6 +1170,7 @@ export interface FileRouteTypes {
     | '/quan-tri/nguoi-dung'
     | '/so-do/$id'
     | '/su-co/$maSuCo'
+    | '/su-co/import-history'
     | '/su-co/moi'
     | '/thiet-bi/$maThietBi'
     | '/tickets/$id'
@@ -1272,6 +1282,7 @@ export interface FileRouteTypes {
     | '/quan-tri/nguoi-dung'
     | '/so-do/$id'
     | '/su-co/$maSuCo'
+    | '/su-co/import-history'
     | '/su-co/moi'
     | '/thiet-bi/$maThietBi'
     | '/tickets/$id'
@@ -1391,6 +1402,7 @@ export interface FileRouteTypes {
     | '/_app/quan-tri/nguoi-dung'
     | '/_app/so-do/$id'
     | '/_app/su-co/$maSuCo'
+    | '/_app/su-co/import-history'
     | '/_app/su-co/moi'
     | '/_app/thiet-bi/$maThietBi'
     | '/_app/tickets/$id'
@@ -1851,6 +1863,13 @@ declare module '@tanstack/react-router' {
       path: '/moi'
       fullPath: '/su-co/moi'
       preLoaderRoute: typeof AppSuCoMoiRouteImport
+      parentRoute: typeof AppSuCoRoute
+    }
+    '/_app/su-co/import-history': {
+      id: '/_app/su-co/import-history'
+      path: '/import-history'
+      fullPath: '/su-co/import-history'
+      preLoaderRoute: typeof AppSuCoImportHistoryRouteImport
       parentRoute: typeof AppSuCoRoute
     }
     '/_app/su-co/$maSuCo': {
@@ -2377,12 +2396,14 @@ const AppMessagesRouteWithChildren = AppMessagesRoute._addFileChildren(
 
 interface AppSuCoRouteChildren {
   AppSuCoMaSuCoRoute: typeof AppSuCoMaSuCoRoute
+  AppSuCoImportHistoryRoute: typeof AppSuCoImportHistoryRoute
   AppSuCoMoiRoute: typeof AppSuCoMoiRoute
   AppSuCoIndexRoute: typeof AppSuCoIndexRoute
 }
 
 const AppSuCoRouteChildren: AppSuCoRouteChildren = {
   AppSuCoMaSuCoRoute: AppSuCoMaSuCoRoute,
+  AppSuCoImportHistoryRoute: AppSuCoImportHistoryRoute,
   AppSuCoMoiRoute: AppSuCoMoiRoute,
   AppSuCoIndexRoute: AppSuCoIndexRoute,
 }
