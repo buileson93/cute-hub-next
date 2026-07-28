@@ -14,9 +14,9 @@
  */
 
 export interface CompressOptions {
-  /** Cạnh dài tối đa (px) khi resize ảnh. Mặc định 2400. */
+  /** Cạnh dài tối đa (px) khi resize ảnh. Mặc định 3200 (giữ chất lượng). */
   maxDim?: number;
-  /** Chất lượng WebP 0..1. Mặc định 0.82. */
+  /** Chất lượng WebP 0..1. Mặc định 0.92 (gần như không nhìn thấy khác biệt). */
   quality?: number;
   /** Bỏ qua nén (upload nguyên bản). */
   skip?: boolean;
@@ -33,10 +33,13 @@ export interface CompressResult {
 
 const IMAGE_COMPRESSIBLE = new Set([
   "image/jpeg", "image/jpg", "image/png", "image/webp",
-  "image/bmp", "image/tiff", "image/x-png",
+  "image/bmp", "image/tiff", "image/x-png", "image/x-ms-bmp",
 ]);
-// Giữ nguyên: vector, GIF động, AVIF (đã tối ưu), HEIC (khó decode).
-const IMAGE_KEEP = new Set(["image/svg+xml", "image/gif", "image/avif", "image/heic", "image/heif"]);
+// Giữ nguyên: vector, GIF động, AVIF (đã tối ưu), HEIC (trình duyệt không decode được).
+const IMAGE_KEEP = new Set([
+  "image/svg+xml", "image/gif", "image/avif",
+  "image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence",
+]);
 
 function inferType(input: Blob | File): string {
   if (input.type) return input.type;
@@ -45,6 +48,12 @@ function inferType(input: Blob | File): string {
   if (name.endsWith(".png")) return "image/png";
   if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
   if (name.endsWith(".webp")) return "image/webp";
+  if (name.endsWith(".bmp")) return "image/bmp";
+  if (name.endsWith(".tif") || name.endsWith(".tiff")) return "image/tiff";
+  if (name.endsWith(".heic") || name.endsWith(".heif")) return "image/heic";
+  if (name.endsWith(".gif")) return "image/gif";
+  if (name.endsWith(".avif")) return "image/avif";
+  if (name.endsWith(".svg")) return "image/svg+xml";
   return "application/octet-stream";
 }
 
@@ -61,9 +70,15 @@ async function compressImage(file: Blob, maxDim: number, quality: number): Promi
     if (!ctx) return null;
     ctx.drawImage(bmp, 0, 0, w, h);
     bmp.close?.();
-    return await new Promise<Blob | null>((resolve) => {
+    // Thử WebP chất lượng cao trước; nếu trình duyệt không hỗ trợ, thử JPEG.
+    const webp = await new Promise<Blob | null>((resolve) => {
       canvas.toBlob((b) => resolve(b), "image/webp", quality);
     });
+    if (webp && webp.size > 0 && webp.type === "image/webp") return webp;
+    const jpeg = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), "image/jpeg", Math.min(0.95, quality + 0.03));
+    });
+    return jpeg;
   } catch {
     return null;
   }
@@ -103,11 +118,12 @@ export async function compressForUpload(
     return { blob: file, contentType: type, originalSize, newSize: originalSize, compressed: false, kind: "image" };
   }
   if (IMAGE_COMPRESSIBLE.has(type)) {
-    const maxDim = opts.maxDim ?? 2400;
-    const quality = opts.quality ?? 0.82;
+    const maxDim = opts.maxDim ?? 3200;
+    const quality = opts.quality ?? 0.92;
     const out = await compressImage(file, maxDim, quality);
     if (out && out.size > 0 && out.size < originalSize) {
-      return { blob: out, contentType: "image/webp", originalSize, newSize: out.size, compressed: true, kind: "image" };
+      const ct = out.type || "image/webp";
+      return { blob: out, contentType: ct, originalSize, newSize: out.size, compressed: true, kind: "image" };
     }
     return { blob: file, contentType: type, originalSize, newSize: originalSize, compressed: false, kind: "image" };
   }
@@ -129,4 +145,46 @@ export function formatSavings(r: CompressResult): string {
   const pct = Math.round((1 - r.newSize / r.originalSize) * 100);
   const kb = (n: number) => (n / 1024).toFixed(0);
   return `${kb(r.originalSize)} KB → ${kb(r.newSize)} KB (−${pct}%)`;
+}
+
+/**
+ * SHA-256 hex của một Blob — dùng để dedup nội dung (content-addressed storage).
+ * Trình duyệt hiện đại đều có `crypto.subtle`. Trả về "" nếu không khả dụng.
+ */
+export async function sha256Hex(blob: Blob): Promise<string> {
+  try {
+    const subtle = globalThis.crypto?.subtle;
+    if (!subtle) return "";
+    const buf = await blob.arrayBuffer();
+    const digest = await subtle.digest("SHA-256", buf);
+    const bytes = new Uint8Array(digest);
+    let s = "";
+    for (let i = 0; i < bytes.length; i++) s += bytes[i].toString(16).padStart(2, "0");
+    return s;
+  } catch {
+    return "";
+  }
+}
+
+/** Chạy tối đa `limit` job song song, giữ nguyên thứ tự kết quả. */
+export async function runQueue<T, R>(
+  items: T[],
+  limit: number,
+  worker: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let cursor = 0;
+  const n = Math.max(1, Math.min(limit, items.length || 1));
+  const runners: Promise<void>[] = [];
+  for (let k = 0; k < n; k++) {
+    runners.push((async () => {
+      while (true) {
+        const i = cursor++;
+        if (i >= items.length) return;
+        results[i] = await worker(items[i], i);
+      }
+    })());
+  }
+  await Promise.all(runners);
+  return results;
 }
