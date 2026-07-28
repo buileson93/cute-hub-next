@@ -16,6 +16,10 @@ export interface UploadOptions {
   upsert?: boolean;
   contentType?: string;
   cacheControl?: string;
+  /** Bỏ qua nén ảnh/PDF (mặc định: nén). */
+  skipCompress?: boolean;
+  /** Tuỳ chỉnh nén — xem `compressForUpload`. */
+  compress?: { maxDim?: number; quality?: number };
 }
 
 export interface ListOptions {
@@ -103,7 +107,21 @@ export function createSupabaseStorageAdapter(client: SupabaseLikeStorage): Stora
       const b = client.storage.from(bucket);
       return {
         async upload(path, file, options) {
-          const r = await b.upload(path, file as unknown, options);
+          let payload: unknown = file;
+          let opts = options;
+          const isBrowser = typeof window !== "undefined";
+          const isBlob = typeof Blob !== "undefined" && file instanceof Blob;
+          if (isBrowser && isBlob && !options?.skipCompress) {
+            try {
+              const { compressForUpload } = await import("./compress");
+              const r = await compressForUpload(file as Blob, options?.compress);
+              payload = r.blob;
+              opts = { ...options, contentType: options?.contentType ?? r.contentType };
+            } catch {
+              // Nén lỗi → upload nguyên bản.
+            }
+          }
+          const r = await b.upload(path, payload, opts);
           return { data: r.data as { path: string } | null, error: r.error as Error | null };
         },
         async remove(paths) {
