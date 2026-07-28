@@ -47,20 +47,54 @@ const EMPTY: ParsedIncident = {
   phan_loai: "E",
 };
 
-/**
- * Tách 7 mục theo số thứ tự đầu dòng: `1.`, `2.` ... (chấp nhận ` `, `\t`, `-` phía trước).
- */
-function splitSections(text: string): Record<number, string> {
-  const out: Record<number, string> = {};
+/** Vai trò của một mục (routing theo header keyword). */
+type SectionRole =
+  | "don_vi" | "he_thong" | "mo_ta" | "nguyen_nhan"
+  | "thay_the" | "xu_ly" | "danh_gia" | "de_xuat" | "unknown";
+
+interface Section { raw: string; body: string; role: SectionRole; header: string; num: number }
+
+/** Bỏ prefix header đầu content: "Mô tả sự cố: ...". */
+function stripHeader(s: string): { header: string; body: string } {
+  const m = s.match(/^\s*([^:\n]{2,80}?)\s*:\s*/);
+  if (!m) return { header: "", body: s.trim() };
+  return { header: m[1].trim(), body: s.slice(m[0].length).trim() };
+}
+
+/** Suy vai trò từ header text (không lệ thuộc số thứ tự). */
+function classifyRole(header: string, body: string): SectionRole {
+  const s = (header + " " + body).toLowerCase();
+  if (/nguy[êe]n\s*nh[âa]n/.test(header.toLowerCase())) return "nguyen_nhan";
+  if (/x[ửu]\s*l[ýy]/.test(header.toLowerCase())) return "xu_ly";
+  if (/thay\s*th[ếe]|d[ựu]\s*ph[òo]ng|đ[ườu]ng\s*truy[ềe]n\s*thay/.test(header.toLowerCase())) return "thay_the";
+  if (/đánh\s*giá|danh gia|ảnh\s*hưởng|anh huong/.test(header.toLowerCase())) return "danh_gia";
+  if (/đề\s*xuất|de xuat|kiến\s*nghị/.test(header.toLowerCase())) return "de_xuat";
+  if (/mô\s*t[ảa]|mo ta|di[ễe]n\s*bi[ếe]n|s[ựu]\s*c[ốo]/.test(header.toLowerCase())) return "mo_ta";
+  if (/h[ệe]\s*th[ốo]ng|thi[ếe]t\s*b[ịi]|đ[ườu]ng\s*truy[ềe]n/.test(header.toLowerCase())) return "he_thong";
+  if (/b[áa]o\s*c[áa]o|ttbdkt|trung\s*t[âa]m/.test(header.toLowerCase())) return "don_vi";
+  // fallback theo body
+  if (/\b(reset|thay|khắc phục|kiểm tra|sửa chữa)\b/i.test(s) && /\b(ca trực|đã|tiến hành)\b/i.test(s)) return "xu_ly";
+  return "unknown";
+}
+
+/** Tách các mục "1. ...", "2. ..." rồi phân vai trò theo header. */
+function splitSections(text: string): Section[] {
   const normalized = text.replace(/\r\n?/g, "\n");
-  // Regex bắt "<số>." đầu dòng, capture nội dung tới trước mục kế tiếp hoặc EOF.
+  const out: Section[] = [];
   const re = /^\s*(\d{1,2})[\.\)]\s*([\s\S]*?)(?=^\s*\d{1,2}[\.\)]\s|\Z)/gm;
   let m: RegExpExecArray | null;
   while ((m = re.exec(normalized)) !== null) {
-    const n = Number.parseInt(m[1], 10);
-    if (n >= 1 && n <= 12) out[n] = m[2].trim();
+    const num = Number.parseInt(m[1], 10);
+    const raw = m[2].trim();
+    const { header, body } = stripHeader(raw);
+    const role = classifyRole(header, body);
+    out.push({ raw, body, role, header, num });
   }
   return out;
+}
+
+function pick(sections: Section[], role: SectionRole): string {
+  return sections.find((s) => s.role === role)?.body ?? "";
 }
 
 /**
@@ -106,8 +140,9 @@ function shortSymptom(desc: string, systemHint: string): string {
   if (!desc) return systemHint ? `Sự cố ${systemHint}` : "";
   // Bỏ đoạn thời gian dài kiểu "Từ 02h45 đến 09h00 ngày dd/mm/yyyy"
   let s = desc.replace(/(Từ|Lúc|từ|lúc)\s+\d{1,2}[h:]\d{0,2}[^\n\.]{0,80}?ngày\s+\d{1,2}[\/-]\d{1,2}[\/-]\d{4}[\.:]?\s*/g, "");
-  // Lấy câu đầu
-  s = s.split(/[\.\n]/)[0].trim();
+  // Lấy câu đầu — chỉ ngắt tại "chấm + khoảng trắng" (tránh cắt "120.45MHz").
+  s = s.split(/(?:\.\s|\n)/)[0].trim();
+  s = s.replace(/\.$/, "").trim();
   if (s.length > 140) s = s.slice(0, 140) + "…";
   return s || (systemHint ? `Sự cố ${systemHint}` : "");
 }
@@ -121,16 +156,16 @@ export function parseIncidentByRules(input: string): RuleParseResult {
   const text = (input ?? "").trim();
   if (!text) return { parsed, confidence: 0, matched_sections: 0, notes: ["Rỗng"] };
 
-  const sec = splitSections(text);
-  const matched = Object.keys(sec).length;
+  const sections = splitSections(text);
+  const matched = sections.length;
 
-  const systemHint = (sec[2] ?? "").split("\n")[0].trim();
-  const desc3 = sec[3] ?? "";
-  const cause4 = sec[4] ?? "";
-  const backup5 = sec[5] ?? "";
-  const handle6 = sec[6] ?? "";
-  const impact7 = sec[7] ?? "";
-  const propose8 = sec[8] ?? "";
+  const systemHint = pick(sections, "he_thong").split("\n")[0].trim();
+  const desc3 = pick(sections, "mo_ta");
+  const cause4 = pick(sections, "nguyen_nhan");
+  const backup5 = pick(sections, "thay_the");
+  const handle6 = pick(sections, "xu_ly");
+  const impact7 = pick(sections, "danh_gia");
+  const propose8 = pick(sections, "de_xuat");
 
   parsed.he_thong_goi_y = systemHint;
   parsed.thiet_bi_goi_y = systemHint ? [systemHint] : [];
@@ -139,14 +174,16 @@ export function parseIncidentByRules(input: string): RuleParseResult {
   parsed.nguyen_nhan = cause4 || extractCauseInline(desc3);
   parsed.bien_phap_xu_ly = handle6;
   parsed.tinh_hinh_hien_tai = backup5;
-  parsed.ket_qua_khac_phuc = [handle6, propose8].filter(Boolean).join("\n\n").trim();
+  parsed.ket_qua_khac_phuc = [impact7, propose8].filter(Boolean).join("\n\n").trim();
   parsed.anh_huong_dhb = classifyImpact(impact7);
   parsed.phan_loai = classifyLevel(desc3, parsed.anh_huong_dhb);
   parsed.hien_tuong = shortSymptom(desc3, systemHint);
   parsed.dia_diem = extractLocation(systemHint + " " + desc3);
 
-  // Confidence heuristic: 6-7 mục khớp → cao; thiếu mục 3 hoặc thời gian → hạ.
-  let conf = Math.min(1, matched / 7);
+  // Confidence: đếm số role trọng yếu match (không tính số mục thô).
+  const critical: SectionRole[] = ["he_thong", "mo_ta", "xu_ly", "danh_gia"];
+  const criticalHit = critical.filter((r) => sections.some((s) => s.role === r)).length;
+  let conf = 0.4 + 0.15 * criticalHit; // 4/4 = 1.0
   if (!desc3) conf -= 0.3;
   if (!parsed.thoi_gian_bat_dau) { conf -= 0.15; notes.push("Không suy được thời gian bắt đầu"); }
   if (!systemHint) { conf -= 0.2; notes.push("Không xác định được hệ thống"); }
