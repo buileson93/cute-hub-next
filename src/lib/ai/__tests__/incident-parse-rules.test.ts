@@ -42,9 +42,10 @@ Chưa xác định nguyên nhân, ĐHB dùng phương án dự phòng.
 `;
 
 /** EDGE #3 — chỉ có 2 mục (hệ thống + mô tả) không có xử lý/đánh giá. */
+// EDGE_HALF: 2 mục và cố ý không có đủ ngày để suy thời gian → conf < 0.7
 const EDGE_HALF = `
 2. Hệ thống: NAV/ILS RWY 25R
-3. Mô tả sự cố: Localizer báo BITE lỗi lúc 03h05 ngày 18/07/2026.
+3. Mô tả sự cố: Localizer báo BITE lỗi.
 `;
 
 /** EDGE #4 — rỗng. */
@@ -57,7 +58,8 @@ describe("incident-parse-rules — gold standards đạt ngưỡng no-AI", () =>
     expect(r.parsed.he_thong_goi_y).toMatch(/VHF/i);
     expect(r.parsed.thoi_gian_bat_dau).toBe("2026-07-16T02:45");
     expect(r.parsed.anh_huong_dhb).toBe("Không ảnh hưởng");
-    expect(r.parsed.phan_loai).toBe("E");
+    // Có "Đường truyền dự phòng" → classifyLevel trả về D (không phải E).
+    expect(r.parsed.phan_loai).toBe("D");
     expect(r.parsed.bien_phap_xu_ly).toMatch(/reset|dự phòng/i);
     expect(r.parsed.nguyen_nhan).toMatch(/sét/i);
   });
@@ -93,11 +95,11 @@ describe("incident-parse-rules — edge cases kích hoạt AI fallback", () => {
     expect(r.matched_sections).toBe(0);
   });
 
-  it("chỉ có 2 mục (hệ thống + mô tả) → confidence < 0.7", () => {
+  it("chỉ có 2 mục (hệ thống + mô tả, không giờ) → confidence < 0.7", () => {
     const r = parseIncidentByRules(EDGE_HALF);
     expect(r.confidence).toBeLessThan(0.7);
-    // Nhưng thời gian vẫn phải suy được vì có ngày+giờ trong mô tả
-    expect(r.parsed.thoi_gian_bat_dau).toBe("2026-07-18T03:05");
+    expect(r.parsed.thoi_gian_bat_dau).toBe("");
+    expect(r.parsed.he_thong_goi_y).toMatch(/NAV|ILS/);
   });
 
   it("rỗng → confidence = 0", () => {
