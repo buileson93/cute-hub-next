@@ -182,17 +182,46 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
         </div>
       ) : (
         <div className="space-y-2">
-          {viTri.map((v) => {
+          {flat.map((v) => {
             const tb = dangLap?.get(v.id);
             const ngung = v.trang_thai === "ngung";
+            const mr = tb ? multiRoleMap?.get(tb.thiet_bi_id) : undefined;
+            const isMulti = !!mr && mr.count >= 2;
+            const col = isMulti ? colorForThietBi(tb!.thiet_bi_id) : null;
+            const hasChildren = v.children.length > 0;
+            const isCollapsed = collapsed.has(v.id);
             return (
               <Card key={v.id} className={ngung ? "opacity-60" : ""}>
-                <CardContent className="flex flex-wrap items-center gap-x-3 gap-y-2 p-3">
-                  <Cpu className="h-4 w-4 shrink-0 text-primary" />
+                <CardContent
+                  className="flex flex-wrap items-center gap-x-3 gap-y-2 p-3"
+                  style={{ paddingLeft: 12 + v.depth * 18 }}
+                >
+                  {hasChildren ? (
+                    <Button
+                      size="sm" variant="ghost"
+                      className="h-6 w-6 shrink-0 p-0"
+                      onClick={() => toggleCollapse(v.id)}
+                      title={isCollapsed ? "Mở nhánh" : "Thu nhánh"}
+                    >
+                      <ChevronRight className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "" : "rotate-90"}`} />
+                    </Button>
+                  ) : (
+                    <span className="inline-block h-6 w-6 shrink-0" aria-hidden />
+                  )}
+                  {v.depth === 0 ? (
+                    <Cpu className="h-4 w-4 shrink-0 text-primary" />
+                  ) : (
+                    <Layers className="h-4 w-4 shrink-0 text-muted-foreground" title="Thành phần con" />
+                  )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs text-muted-foreground">{v.ma_thanh_phan}</span>
                       <span className="font-medium">{v.ten}</span>
+                      {hasChildren && (
+                        <Badge variant="outline" className="text-[10px]" title="Số thành phần con">
+                          {v.children.length} con
+                        </Badge>
+                      )}
                       {ngung && <Badge variant="outline" className="border-muted-foreground/40">Đã ngừng</Badge>}
                       {!ngung && v.bat_buoc && <Badge variant="secondary">Bắt buộc</Badge>}
                     </div>
@@ -201,14 +230,70 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                     )}
                   </div>
 
-                  {/* Ô "tài sản đang lắp" — CHỈ-ĐỌC */}
+                  {/* Ô "tài sản đang lắp" — CHỈ-ĐỌC (highlight nếu đa vai trò) */}
                   <div className="ml-auto flex items-center gap-2">
                     {tb ? (
-                      <Badge variant="outline" className="gap-1 font-normal">
-                        <HardDrive className="h-3 w-3" />
-                        <span className="font-mono">{tb.ma_thiet_bi}</span>
-                        {tb.ma_serial && <span className="text-muted-foreground">· SN {tb.ma_serial}</span>}
-                      </Badge>
+                      isMulti ? (
+                        <HoverCard openDelay={100}>
+                          <HoverCardTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="gap-1 font-normal cursor-help"
+                              style={{
+                                backgroundColor: col!.bg,
+                                borderColor: col!.border,
+                                color: col!.text,
+                              }}
+                            >
+                              <span
+                                className="inline-block h-2 w-2 rounded-full"
+                                style={{ backgroundColor: col!.dot }}
+                                aria-hidden
+                              />
+                              <HardDrive className="h-3 w-3" />
+                              <span className="font-mono">{tb.ma_thiet_bi}</span>
+                              {tb.ma_serial && <span className="opacity-70">· SN {tb.ma_serial}</span>}
+                              <span className="ml-1 rounded px-1 text-[10px] font-semibold" style={{ backgroundColor: col!.border, color: "white" }}>
+                                ×{mr!.count}
+                              </span>
+                            </Badge>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80 p-3 text-xs" side="left">
+                            <div className="mb-2 flex items-center gap-2 font-medium">
+                              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: col!.dot }} />
+                              Tài sản đa vai trò ({mr!.count})
+                            </div>
+                            <div className="mb-1 font-mono text-[11px] text-muted-foreground">
+                              {tb.ma_thiet_bi}{tb.ma_serial ? ` · SN ${tb.ma_serial}` : ""}
+                            </div>
+                            <ul className="space-y-1.5">
+                              {mr!.roles.map((r) => {
+                                const here = r.thanh_phan_id === v.id;
+                                return (
+                                  <li key={r.thanh_phan_id} className={here ? "rounded bg-muted/60 px-1.5 py-1" : ""}>
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="font-medium">{r.ten_thanh_phan}</span>
+                                      {here && <span className="text-[10px] text-primary">(vai trò này)</span>}
+                                    </div>
+                                    <div className="text-[11px] text-muted-foreground">
+                                      {r.ma_thanh_phan}
+                                      {r.ten_he_thong && (
+                                        <> · <Link to="/he-thong/$id" params={{ id: r.he_thong_id }} className="text-primary hover:underline">{r.ten_he_thong}</Link></>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </HoverCardContent>
+                        </HoverCard>
+                      ) : (
+                        <Badge variant="outline" className="gap-1 font-normal">
+                          <HardDrive className="h-3 w-3" />
+                          <span className="font-mono">{tb.ma_thiet_bi}</span>
+                          {tb.ma_serial && <span className="text-muted-foreground">· SN {tb.ma_serial}</span>}
+                        </Badge>
+                      )
                     ) : (
                       <Badge variant="outline" className="gap-1 border-amber-400 text-amber-600">
                         <CircleSlash className="h-3 w-3" /> Chưa gán tài sản
