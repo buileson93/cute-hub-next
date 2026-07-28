@@ -426,6 +426,20 @@ function ChangeDeviceForm({
           emptyText="Không tìm thấy tài sản"
         />
       )}
+      {(() => {
+        const picked = chon ? all.find((d) => d.id === chon) : null;
+        if (!picked || picked.he_thong_id) return null;
+        return (
+          <div className="flex items-start gap-2 rounded-md border border-sky-200 bg-sky-50/70 p-2 text-xs text-sky-900 dark:border-sky-900/40 dark:bg-sky-900/10 dark:text-sky-100">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>
+              Tài sản <b>{picked.ma_thiet_bi}</b> chưa có hệ thống mặc định.
+              Khi lắp, hệ thống sẽ <b>tự điền</b> hệ thống của thành phần
+              &ldquo;{viTri.ten}&rdquo; vào tài sản này.
+            </span>
+          </div>
+        );
+      })()}
       <p className="text-xs text-muted-foreground">
         Có thể chọn mọi tài sản. Tài sản đúng phân loại và đang rảnh được ưu tiên lên đầu.
         Nếu chọn tài sản đang lắp nơi khác, hệ thống sẽ hỏi bạn <b>giữ nguyên</b> (gán thêm
