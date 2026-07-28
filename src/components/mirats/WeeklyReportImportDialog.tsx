@@ -69,6 +69,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
   const [incidents, setIncidents] = useState<IncidentDraft[]>([]);
   const [hongs, setHongs] = useState<HongHocDraft[]>([]);
   const [pasteText, setPasteText] = useState("");
+  const [fileMeta, setFileMeta] = useState<{ name: string; size: number } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { profile } = useSession();
   const qc = useQueryClient();
@@ -87,6 +88,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
 
   async function runFile(file: File) {
     setBusy(true);
+    setFileMeta({ name: file.name, size: file.size });
     try {
       const buf = await file.arrayBuffer();
       const p = await parseWeeklyReportDocx(buf);
@@ -134,7 +136,30 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
       const chosenInc = incidents.filter((r) => r.selected);
       const chosenHH = hongs.filter((r) => r.selected);
       let created = 0;
+      let createdInc = 0;
+      let createdHH = 0;
       const nguoiBc = profile?.ho_ten || profile?.email || "";
+
+      const logImport = async (status: string, err?: string) => {
+        await supabase.from("weekly_report_import").insert({
+          don_vi: parsed?.header.don_vi ?? null,
+          so_van_ban: parsed?.header.so_van_ban ?? null,
+          ngay_ky: parsed?.header.ngay_ky ?? null,
+          tuan_tu_ngay: parsed?.header.tuan_tu_ngay ?? null,
+          tuan_den_ngay: parsed?.header.tuan_den_ngay ?? null,
+          tieu_de: parsed?.header.tieu_de ?? null,
+          file_name: fileMeta?.name ?? null,
+          file_size: fileMeta?.size ?? null,
+          n_incidents_detected: incidents.length,
+          n_hong_hoc_detected: hongs.length,
+          n_incidents_created: createdInc,
+          n_hong_hoc_created: createdHH,
+          status,
+          error_message: err ?? null,
+          created_by: profile?.id ?? null,
+          created_by_name: nguoiBc || null,
+        } as never);
+      };
 
       // 1) Sự cố (draft)
       if (chosenInc.length) {
@@ -170,8 +195,8 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
           };
         });
         const { error } = await supabase.from("su_co").insert(rows as never);
-        if (error) throw new Error(`Lỗi tạo sự cố: ${error.message}`);
-        created += rows.length;
+        if (error) { await logImport("failed", `Lỗi tạo sự cố: ${error.message}`); throw new Error(`Lỗi tạo sự cố: ${error.message}`); }
+        created += rows.length; createdInc = rows.length;
       }
 
       // 2) Hỏng-tồn (hong_hoc)
@@ -187,17 +212,19 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
           nguoi_thuc_hien: nguoiBc ? [nguoiBc] : [],
         }));
         const { error } = await supabase.from("hong_hoc").insert(rows as never);
-        if (error) throw new Error(`Lỗi tạo hỏng hóc: ${error.message}`);
-        created += rows.length;
+        if (error) { await logImport("failed", `Lỗi tạo hỏng hóc: ${error.message}`); throw new Error(`Lỗi tạo hỏng hóc: ${error.message}`); }
+        created += rows.length; createdHH = rows.length;
       }
 
+      await logImport("success");
       return created;
     },
     onSuccess: (n) => {
       toast.success(`Đã tạo ${n} bản ghi nháp — hãy bổ sung chi tiết trong danh sách`);
       qc.invalidateQueries({ queryKey: ["operations_data"] });
+      qc.invalidateQueries({ queryKey: ["weekly_report_import"] });
       setOpen(false);
-      setParsed(null); setIncidents([]); setHongs([]); setPasteText("");
+      setParsed(null); setIncidents([]); setHongs([]); setPasteText(""); setFileMeta(null);
       onImported?.();
     },
     onError: (e: Error) => toast.error(e.message),
