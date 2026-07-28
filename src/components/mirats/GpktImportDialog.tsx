@@ -207,8 +207,10 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
       // Upload file trước
       const safe = file.name.replace(/[^\w.\-]+/g, "_");
       const path = `${new Date().getFullYear()}/${Date.now()}_${safe}`;
-      const up = await supabase.storage.from(BUCKET).upload(path, file, {
-        contentType: file.type || "application/pdf",
+      const { compressForUpload } = await import("@/lib/storage/compress");
+      const c = await compressForUpload(file);
+      const up = await supabase.storage.from(BUCKET).upload(path, c.blob, {
+        contentType: c.contentType || "application/pdf",
         upsert: false,
       });
       if (up.error) throw new Error("Tải PDF thất bại: " + up.error.message);
