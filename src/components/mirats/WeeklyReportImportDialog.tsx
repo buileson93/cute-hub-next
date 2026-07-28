@@ -28,6 +28,7 @@ import {
   type WeeklyHongHocRow,
   type HeThongCandidate,
 } from "@/lib/mirats/weekly-report-parser";
+import { classifyWeeklyReportFile, classifyTextForWeeklyReport, type DetectResult } from "@/lib/mirats/weekly-report-detector";
 
 interface Props { trigger?: React.ReactNode; onImported?: () => void }
 
@@ -90,6 +91,19 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
     setBusy(true);
     setFileMeta({ name: file.name, size: file.size });
     try {
+      // Bước 1: Nhận diện xem có phải "báo cáo tuần sự cố" không.
+      const detect = await classifyWeeklyReportFile(file);
+      if (detect.verdict === "reject") {
+        toast.error(`Bỏ qua file "${file.name}": ${detect.reason}`);
+        return;
+      }
+      if (detect.verdict === "suspect") {
+        const ok = window.confirm(
+          `File "${file.name}" không chắc là báo cáo tuần sự cố ` +
+          `(score ${Math.round(detect.score * 100)}%): ${detect.reason}.\n\nVẫn tiếp tục phân tích?`
+        );
+        if (!ok) return;
+      }
       const buf = await file.arrayBuffer();
       const p = await parseWeeklyReportDocx(buf);
       applyParsed(p);
@@ -101,6 +115,17 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
 
   function runText() {
     if (!pasteText.trim()) { toast.error("Chưa có nội dung dán"); return; }
+    const detect = classifyTextForWeeklyReport(pasteText);
+    if (detect.verdict === "reject") {
+      toast.error(`Nội dung không phải báo cáo tuần: ${detect.reason}`);
+      return;
+    }
+    if (detect.verdict === "suspect") {
+      const ok = window.confirm(
+        `Nội dung dán có vẻ không phải báo cáo tuần (score ${Math.round(detect.score * 100)}%). Vẫn phân tích?`
+      );
+      if (!ok) return;
+    }
     setBusy(true);
     try {
       const p = parseWeeklyReportText(pasteText);
