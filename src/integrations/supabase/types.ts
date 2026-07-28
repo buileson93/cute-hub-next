@@ -7329,6 +7329,75 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_report_import: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          created_by_name: string | null
+          details: Json
+          don_vi: string | null
+          don_vi_ma: string | null
+          error_message: string | null
+          file_name: string | null
+          file_size: number | null
+          id: string
+          n_hong_hoc_created: number
+          n_hong_hoc_detected: number
+          n_incidents_created: number
+          n_incidents_detected: number
+          ngay_ky: string | null
+          so_van_ban: string | null
+          status: string
+          tieu_de: string | null
+          tuan_den_ngay: string | null
+          tuan_tu_ngay: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string | null
+          details?: Json
+          don_vi?: string | null
+          don_vi_ma?: string | null
+          error_message?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          n_hong_hoc_created?: number
+          n_hong_hoc_detected?: number
+          n_incidents_created?: number
+          n_incidents_detected?: number
+          ngay_ky?: string | null
+          so_van_ban?: string | null
+          status?: string
+          tieu_de?: string | null
+          tuan_den_ngay?: string | null
+          tuan_tu_ngay?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string | null
+          details?: Json
+          don_vi?: string | null
+          don_vi_ma?: string | null
+          error_message?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          n_hong_hoc_created?: number
+          n_hong_hoc_detected?: number
+          n_incidents_created?: number
+          n_incidents_detected?: number
+          ngay_ky?: string | null
+          so_van_ban?: string | null
+          status?: string
+          tieu_de?: string | null
+          tuan_den_ngay?: string | null
+          tuan_tu_ngay?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       mv_asset_anomaly: {
