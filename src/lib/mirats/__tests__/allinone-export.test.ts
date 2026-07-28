@@ -41,6 +41,8 @@ import {
   TECH_COLS,
   META_SHEET,
   SCHEMA_VERSION,
+  AI_RULES_SHEET,
+  GUIDE_BLOCKS,
 } from "@/lib/mirats/allinone-template";
 
 function fakeFile(buf: ArrayBuffer): File {
@@ -100,6 +102,43 @@ describe("buildAllInOneWorkbook — mẫu TRỐNG", () => {
   it("không có dòng dữ liệu ở mẫu trống", async () => {
     const parsed = await parseAllInOneXlsx(await toFile((await buildAllInOneWorkbook({ withData: false })).wb));
     for (const p of parsed) expect(p.rows).toHaveLength(0);
+  });
+});
+
+describe("Sheet ① Hướng dẫn — skill card cho AI agent", () => {
+  it("chứa đủ 9 block header (# ROLE, # INVARIANTS, ...)", async () => {
+    const { wb } = await buildAllInOneWorkbook({ withData: false });
+    const ws = wb.getWorksheet("① Hướng dẫn")!;
+    const text: string[] = [];
+    ws.eachRow((row) => {
+      row.eachCell((c) => { const v = c.value; if (typeof v === "string") text.push(v); });
+    });
+    const joined = text.join("\n");
+    for (const block of GUIDE_BLOCKS) expect(joined).toContain(block);
+  });
+});
+
+describe("Sheet ③ AI_RULES — JSON machine-readable", () => {
+  it("tồn tại, ẩn, A1 parse được JSON hợp lệ", async () => {
+    const { wb } = await buildAllInOneWorkbook({ withData: false });
+    const ws = wb.getWorksheet(AI_RULES_SHEET)!;
+    expect(ws).toBeDefined();
+    expect(ws.state).toBe("hidden");
+    const raw = ws.getCell("A1").value as string;
+    const j = JSON.parse(raw);
+    expect(j.schema_version).toBe(SCHEMA_VERSION);
+    expect(j.baseline_available).toBe(false);
+    expect(Array.isArray(j.anomaly_rules)).toBe(true);
+    expect(j.anomaly_rules.length).toBeGreaterThanOrEqual(10);
+    const layerEntities = new Set(j.layers.map((l: { entity: string }) => l.entity));
+    for (const ent of Object.keys(j.field_hints)) expect(layerEntities.has(ent)).toBe(true);
+    expect(j.enums._action).toContain("create");
+  });
+
+  it("withData=true → baseline_available=true", async () => {
+    const { wb } = await buildAllInOneWorkbook({ withData: true });
+    const raw = wb.getWorksheet(AI_RULES_SHEET)!.getCell("A1").value as string;
+    expect(JSON.parse(raw).baseline_available).toBe(true);
   });
 });
 
