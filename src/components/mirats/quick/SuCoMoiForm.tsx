@@ -147,25 +147,6 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   const [aiNote, setAiNote] = useState<string | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
   const parseFn = useServerFn(parseIncidentText);
-
-  // Anomaly detection — chạy client-side, không chặn lưu, chỉ highlight.
-  const anomalies: Anomaly[] = useMemo(
-    () =>
-      detectSuCoAnomalies({
-        thoiGianBatDau,
-        thoiGianKetThuc,
-        phanLoai,
-        anhHuongDhb,
-        heThongId,
-        selectedTpCount: selectedTpIds.size,
-        mountedAssetsCount: mounted.length,
-      }),
-    [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, mounted],
-  );
-  const anomalyFields = useMemo(() => anomalyFieldSet(anomalies), [anomalies]);
-  const ring = (field: string) =>
-    anomalyFields.has(field) ? "ring-1 ring-amber-400 focus-visible:ring-amber-400" : "";
-
   /**
    * Dán báo cáo → chạy deterministic parser trước; chỉ escalate AI khi confidence < 0.7.
    * Ưu điểm: nhanh, không tốn quota, và người dùng thấy ngay các trường parser suy được.
@@ -512,6 +493,24 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   });
 
   const daDong = !!thoiGianKetThuc;
+
+  // Anomaly detection — chạy client-side, không chặn lưu, chỉ highlight.
+  const anomalies: Anomaly[] = useMemo(
+    () =>
+      detectSuCoAnomalies({
+        thoiGianBatDau,
+        thoiGianKetThuc,
+        phanLoai,
+        anhHuongDhb,
+        heThongId,
+        selectedTpCount: selectedTpIds.size,
+        mountedAssetsCount: mounted.length,
+      }),
+    [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, mounted],
+  );
+  const anomalyFields = useMemo(() => anomalyFieldSet(anomalies), [anomalies]);
+  const ring = (field: string) =>
+    anomalyFields.has(field) ? "ring-1 ring-amber-400 focus-visible:ring-amber-400" : "";
 
   return (
     <div className={embedded ? "space-y-3 p-4 pb-28" : "mx-auto max-w-5xl space-y-3 pb-28"}>
