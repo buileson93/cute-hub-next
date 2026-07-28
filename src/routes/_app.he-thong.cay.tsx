@@ -3700,6 +3700,7 @@ function TreeView({
   const toggle = (id: string) => setOpen((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   // Chi tiết một thành phần hệ thống (mở khi bấm vào hàng thành phần).
   const [chiTietTp, setChiTietTp] = useState<{ viTri: ViTriChucNangTree; heThongId: string } | null>(null);
+  const { data: multiRoleMap } = useMultiRoleMap();
 
   const moveTargets = useMemo<MoveTarget[]>(() => {
     const out: MoveTarget[] = [];
