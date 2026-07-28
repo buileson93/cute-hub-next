@@ -320,12 +320,12 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                       )}
                       <span className="flex items-center">
                         <Button size="sm" variant="ghost" title="Lên trên"
-                          disabled={doiThuTuMut.isPending || viTri.indexOf(v) === 0}
+                          disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === 0}
                           onClick={() => onMove(v, -1)}>
                           <ArrowUp className="h-3.5 w-3.5" />
                         </Button>
                         <Button size="sm" variant="ghost" title="Xuống dưới"
-                          disabled={doiThuTuMut.isPending || viTri.indexOf(v) === viTri.length - 1}
+                          disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === viTri.length - 1}
                           onClick={() => onMove(v, 1)}>
                           <ArrowDown className="h-3.5 w-3.5" />
                         </Button>
