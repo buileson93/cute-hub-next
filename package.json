@@ -85,6 +85,7 @@
     "jspdf-autotable": "^5.0.8",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
+    "mammoth": "^1.12.0",
     "motion": "^12.42.2",
     "papaparse": "^5.5.4",
     "pdf-lib": "^1.17.1",

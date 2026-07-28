@@ -35,6 +35,7 @@ import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import type { SuCo } from "@/lib/mirats/types";
 import { OPEN_STATES, isOpenState, canManageSuCoState, canFinalize } from "@/lib/mirats/su-co-state";
 import { useSession } from "@/hooks/use-session";
+import { WeeklyReportImportDialog } from "@/components/mirats/WeeklyReportImportDialog";
 
 export const Route = createFileRoute("/_app/su-co/")({
   head: () => ({
@@ -401,9 +402,12 @@ function SuCoPage() {
         title="Sự cố kỹ thuật"
         help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng. Xuất báo cáo ban đầu / tuần / tháng khi cần."
         actions={
-          <Button asChild size="sm">
-            <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
-          </Button>
+          <div className="flex gap-2">
+            <WeeklyReportImportDialog />
+            <Button asChild size="sm">
+              <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
+            </Button>
+          </div>
         }
       />
 
