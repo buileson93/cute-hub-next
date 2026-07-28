@@ -19,6 +19,8 @@ import { normalize } from "@/lib/mirats/global-search";
 import { useSession } from "@/hooks/use-session";
 import { canWrite } from "@/lib/mirats/quyen";
 import { useThietBiChon, useLapThietBi } from "@/lib/mirats/he-thong-thanh-phan";
+import { useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
+import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 
