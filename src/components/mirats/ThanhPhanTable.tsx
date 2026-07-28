@@ -419,7 +419,24 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               hideBelow: "lg",
               defaultHidden: true,
             },
-            { key: "viTri", label: "Vị trí lắp đặt", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", filter: "text", value: (r) => r.viTri, hideBelow: "lg" },
+            {
+              key: "viTri",
+              label: "Vị trí lắp đặt",
+              minW: "min-w-[180px]",
+              cellClassName: "max-w-[220px]",
+              filter: "text",
+              value: (r) => r.viTri,
+              hideBelow: "lg",
+              cell: (r) =>
+                editMode && allowEdit ? (
+                  <InlineViTriEdit
+                    row={r}
+                    onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })}
+                  />
+                ) : (
+                  <span title={r.viTri} className="line-clamp-2 break-words text-sm">{r.viTri || "—"}</span>
+                ),
+            },
             { key: "loai", label: "Loại yêu cầu", minW: "min-w-[150px]", cellClassName: "max-w-[180px]", filter: "cat", value: (r) => r.loaiYeuCau, hideBelow: "xl" },
             {
               key: "trangThai",
@@ -870,6 +887,63 @@ function InlineTextEdit({
         </>
       )}
     </div>
+  );
+}
+
+// ---- Sửa nhanh VỊ TRÍ LẮP ĐẶT của thành phần (edit mode, dạng bảng) ----
+function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
+  const [saving, setSaving] = useState(false);
+  const { data: dsViTri = [], isLoading } = useQuery({
+    queryKey: ["dm-vi-tri-picker"],
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("dm_vi_tri")
+        .select("id, ma, ten")
+        .eq("active", true)
+        .is("merged_into", null)
+        .order("thu_tu");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const options = useMemo(
+    () => [
+      { value: "", label: "— Không xác định —" },
+      ...dsViTri.map((v) => ({ value: v.id, label: `${v.ma} · ${v.ten}` })),
+    ],
+    [dsViTri],
+  );
+
+  async function save(v: string) {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("he_thong_thanh_phan")
+        .update({ vi_tri_id: v ? v : null })
+        .eq("id", row.id);
+      if (error) throw error;
+      toast.success("Đã cập nhật vị trí lắp đặt");
+      onChanged();
+    } catch (e) {
+      toast.error((e as Error).message || "Không lưu được vị trí");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Combobox
+      options={options}
+      value={row.viTriId ?? ""}
+      onChange={(v) => void save(v)}
+      placeholder={isLoading ? "Đang tải…" : saving ? "Đang lưu…" : "Chọn vị trí…"}
+      searchPlaceholder="Tìm mã / tên vị trí…"
+      emptyText="Không có vị trí phù hợp"
+      className="h-7 w-[190px] text-xs"
+    />
   );
 }
 
