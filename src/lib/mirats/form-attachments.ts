@@ -54,9 +54,11 @@ export async function uploadAttachment(
   const { data: signed, error: signErr } = await supabase.storage
     .from(BUCKET).createSignedUploadUrl(path);
   if (signErr || !signed) {
-    // Fallback: upload trực tiếp (không có progress).
-    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: "3600", contentType: file.type || undefined, upsert: false,
+    // Fallback: upload trực tiếp (không có progress). Nén ảnh/PDF trước khi lên.
+    const { compressForUpload } = await import("@/lib/storage/compress");
+    const c = await compressForUpload(file);
+    const { error } = await supabase.storage.from(BUCKET).upload(path, c.blob, {
+      cacheControl: "3600", contentType: c.contentType, upsert: false,
     });
     if (error) throw new Error(error.message);
     opts.onProgress?.(100);
