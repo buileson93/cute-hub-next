@@ -21,6 +21,13 @@ export const Route = createFileRoute("/_app/su-co/import-history")({
   component: ImportHistoryPage,
 });
 
+function formatDT(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
 interface Row {
   id: string;
   don_vi: string | null;
