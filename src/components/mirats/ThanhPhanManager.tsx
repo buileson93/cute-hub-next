@@ -211,7 +211,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {v.depth === 0 ? (
                     <Cpu className="h-4 w-4 shrink-0 text-primary" />
                   ) : (
-                    <Layers className="h-4 w-4 shrink-0 text-muted-foreground" title="Thành phần con" />
+                    <span title="Thành phần con" className="shrink-0"><Layers className="h-4 w-4 text-muted-foreground" /></span>
                   )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
