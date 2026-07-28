@@ -136,6 +136,7 @@ export type ThanhPhanTableProps = {
 export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-phan-toan-cuc", externalEditMode }: ThanhPhanTableProps) {
   const { data: rows = [], isLoading, error } = useThanhPhanRows();
   const { data: taiSanRows = [], isLoading: loadingTS, error: errorTS } = useTaiSanRows();
+  const { data: multiRoleMap } = useMultiRoleMap();
   const [q, setQ] = useState("");
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">("thanh-phan:view-mode", "component");
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
