@@ -5,14 +5,55 @@
 // ============================================================================
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload, X, FileText, Image as ImageIcon } from "lucide-react";
+import { Loader2, Upload, X, FileText, Image as ImageIcon, Check, Copy as CopyIcon, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   type FormAttachment,
+  type UploadStatus,
   removeAttachment,
   signedUrl,
   uploadAttachment,
 } from "@/lib/mirats/form-attachments";
+import { runQueue } from "@/lib/storage/compress";
+
+const CONCURRENCY = 3;
+
+type Row = {
+  key: string;
+  name: string;
+  size: number;
+  status: UploadStatus;
+};
+
+function labelOf(s: UploadStatus): string {
+  switch (s.phase) {
+    case "queued": return "Đang chờ";
+    case "hashing": return "Kiểm tra trùng";
+    case "compressing": return "Đang nén";
+    case "dedup": return "Trùng nội dung – bỏ qua";
+    case "uploading": return `Tải lên ${s.progress ?? 0}%`;
+    case "done": return "Hoàn tất";
+    case "error": return `Lỗi: ${s.message ?? ""}`;
+  }
+}
+
+function pctOf(s: UploadStatus): number {
+  switch (s.phase) {
+    case "queued": return 0;
+    case "compressing": return 10;
+    case "hashing": return 25;
+    case "uploading": return 35 + Math.round(((s.progress ?? 0) * 60) / 100);
+    case "dedup":
+    case "done": return 100;
+    case "error": return 100;
+  }
+}
+
+function colorOf(s: UploadStatus): string {
+  if (s.phase === "error") return "bg-rose-500";
+  if (s.phase === "done" || s.phase === "dedup") return "bg-emerald-500";
+  return "bg-primary";
+}
 
 export function PhotoUpload({
   value,
@@ -36,7 +77,7 @@ export function PhotoUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [urls, setUrls] = useState<Record<string, string>>({});
-  const [progress, setProgress] = useState<Array<{ name: string; pct: number }>>([]);
+  const [rows, setRows] = useState<Row[]>([]);
 
   // Sign preview URL cho các attachment ảnh.
   useEffect(() => {
@@ -65,31 +106,40 @@ export function PhotoUpload({
     }
     setBusy(true);
     const arr = Array.from(files);
-    setProgress(arr.map((f) => ({ name: f.name, pct: 0 })));
-    const next: FormAttachment[] = [...value];
-    for (let i = 0; i < arr.length; i++) {
-      const file = arr[i];
+    const initRows: Row[] = arr.map((f, i) => ({
+      key: `${Date.now()}-${i}-${f.name}`,
+      name: f.name,
+      size: f.size,
+      status: { phase: "queued" },
+    }));
+    setRows(initRows);
+
+    const results = await runQueue(arr, CONCURRENCY, async (file, i) => {
       if (photoOnly && !file.type.startsWith("image/")) {
-        toast.error(`"${file.name}" không phải ảnh — bỏ qua.`);
-        continue;
+        setRows((prev) => prev.map((r, k) => k === i
+          ? { ...r, status: { phase: "error", message: "Không phải ảnh" } }
+          : r));
+        return null;
       }
       try {
         const att = await uploadAttachment(file, {
           templateCode, draftId, fieldKey,
-          onProgress: (pct) => setProgress((prev) => {
-            const copy = prev.slice();
-            copy[i] = { name: file.name, pct };
-            return copy;
-          }),
+          onStatus: (st) => setRows((prev) => prev.map((r, k) => k === i ? { ...r, status: st } : r)),
         });
-        next.push(att);
+        if (att.dedup) toast.success(`"${file.name}" đã tồn tại — dùng lại bản cũ.`);
+        return att;
       } catch (e) {
         toast.error(`Upload thất bại: ${(e as Error).message}`);
+        return null;
       }
-    }
+    });
+
+    const next: FormAttachment[] = [...value];
+    for (const r of results) if (r) next.push(r);
     onChange(next);
     setBusy(false);
-    setProgress([]);
+    // Giữ danh sách trạng thái vài giây để người dùng thấy tổng kết, rồi tự xoá.
+    setTimeout(() => setRows([]), 4000);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -117,18 +167,28 @@ export function PhotoUpload({
         {photoOnly ? "Thêm ảnh" : "Thêm tệp"} ({value.length}/{maxFiles})
       </Button>
 
-      {progress.length > 0 && (
-        <div className="space-y-1">
-          {progress.map((p, i) => (
-            <div key={i} className="text-[11px]">
-              <div className="flex justify-between text-muted-foreground">
-                <span className="truncate">{p.name}</span><span>{p.pct}%</span>
+      {rows.length > 0 && (
+        <div className="space-y-1.5 rounded-md border bg-muted/20 p-2">
+          {rows.map((r) => {
+            const pct = pctOf(r.status);
+            const savings = r.status.compressedSize && r.status.compressedSize < r.size
+              ? ` · ${Math.round((1 - r.status.compressedSize / r.size) * 100)}% nhỏ hơn`
+              : "";
+            return (
+              <div key={r.key} className="text-[11px]">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  {r.status.phase === "done" && <Check className="h-3 w-3 text-emerald-600" />}
+                  {r.status.phase === "dedup" && <CopyIcon className="h-3 w-3 text-emerald-600" />}
+                  {r.status.phase === "error" && <AlertCircle className="h-3 w-3 text-rose-600" />}
+                  <span className="truncate flex-1">{r.name}</span>
+                  <span className="tabular-nums">{labelOf(r.status)}{savings}</span>
+                </div>
+                <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-muted">
+                  <div className={`h-full ${colorOf(r.status)} transition-all`} style={{ width: `${pct}%` }} />
+                </div>
               </div>
-              <div className="h-1.5 overflow-hidden rounded bg-muted">
-                <div className="h-full bg-primary transition-all" style={{ width: `${p.pct}%` }} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
