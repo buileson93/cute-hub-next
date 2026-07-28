@@ -38,7 +38,9 @@ import {
   type DbDevice, type DbTaxonomy,
 } from "@/lib/mirats/db-taxonomy";
 
-import { useAllViTriChucNang, useXoaViTri, useXoaViTriForce, useDoiThuTuViTri, type ViTriChucNangTree } from "@/lib/mirats/he-thong-thanh-phan";
+import { useAllViTriChucNang, useXoaViTri, useXoaViTriForce, useDoiThuTuViTri, useMultiRoleMap, type ViTriChucNangTree, type MultiRoleInfo } from "@/lib/mirats/he-thong-thanh-phan";
+import { colorForThietBi } from "@/lib/mirats/multi-role-color";
+import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { useMyPermissions } from "@/hooks/use-permissions";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
@@ -2969,7 +2971,7 @@ function HoverField({ label, value }: { label: string; value: React.ReactNode })
 }
 
 /** Nội dung thẻ hover cho một tài sản / thành phần — gom theo 3 lớp cho nhất quán. */
-function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: string; isComponent?: boolean }) {
+function DeviceHoverContent({ d, name, isComponent, multiRole }: { d: DbDevice; name: string; isComponent?: boolean; multiRole?: MultiRoleInfo }) {
   const tt = (d.trang_thai ?? "").trim();
   const imp = (d.muc_do_quan_trong ?? "").trim();
   // LỚP 1 — Tài sản vật lý (định danh máy cụ thể).
@@ -2993,6 +2995,7 @@ function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: strin
   push(ctxRows, "Vị trí", d._viTriTen || d.vi_tri);
   push(ctxRows, "Đơn vị quản lý", d._donViTen || d.don_vi);
   const empty = tbRows.length === 0 && ctxRows.length === 0;
+  const mrCol = multiRole ? colorForThietBi(multiRole.thiet_bi_id) : null;
   return (
     <>
       <div className="border-b bg-muted/40 px-3 py-2">
@@ -3002,6 +3005,29 @@ function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: strin
         </div>
         <div className="mt-0.5 pl-5"><CodeBadge code={d.ma_thiet_bi} title={`Mã tài sản: ${d.ma_thiet_bi}`} /></div>
       </div>
+      {multiRole && mrCol && (
+        <div
+          className="border-b px-3 py-2 text-[11px]"
+          style={{ backgroundColor: mrCol.bg, color: mrCol.text }}
+        >
+          <div className="mb-1 flex items-center gap-1.5 font-semibold">
+            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: mrCol.dot }} />
+            Tài sản đa vai trò · ×{multiRole.count}
+          </div>
+          <div className="mb-1 leading-snug opacity-90">
+            Cùng một thiết bị vật lý đang đảm nhận {multiRole.count} vai trò
+            "thành phần hệ thống" ở các hệ thống khác nhau.
+          </div>
+          <ul className="space-y-0.5">
+            {multiRole.roles.map((r) => (
+              <li key={r.thanh_phan_id} className="truncate">
+                • <span className="font-medium">{r.ten_thanh_phan}</span>
+                {r.ten_he_thong && <span className="opacity-80"> · {r.ten_he_thong}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {(tt || imp) && (
         <div className="flex flex-wrap gap-1 px-3 pt-2">
           {tt && <span className={cn("rounded border px-1.5 py-0.5 text-[10px] font-medium", statusTone(tt))}>{tt}</span>}
@@ -3674,6 +3700,7 @@ function TreeView({
   const toggle = (id: string) => setOpen((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   // Chi tiết một thành phần hệ thống (mở khi bấm vào hàng thành phần).
   const [chiTietTp, setChiTietTp] = useState<{ viTri: ViTriChucNangTree; heThongId: string } | null>(null);
+  const { data: multiRoleMap } = useMultiRoleMap();
 
   const moveTargets = useMemo<MoveTarget[]>(() => {
     const out: MoveTarget[] = [];
@@ -3806,7 +3833,8 @@ function TreeView({
                       : deviceChips(d.tb);
                     return (
                     <div key={d.tb.ma_thiet_bi} className="space-y-1">
-                      <div id={`row-tb-${d.tb.ma_thiet_bi}`}>
+                      <div id={`row-tb-${d.tb.ma_thiet_bi}`} className="flex items-start gap-1.5">
+                        <div className="min-w-0 flex-1">
                         <Disclosure
                           icon={tpTen ? Plug : Cpu} label={primaryLabel}
                           donViMa={(d.tb.don_vi ?? "").trim() || null} chips={chips}
@@ -3820,20 +3848,29 @@ function TreeView({
                           devPlTargets={plTargets.filter((t) => t.plId !== (d.tb._pl ?? ""))}
                           onMoveDeviceToPl={(toPlId, toPlLabel) =>
                             onMoveDevice({ deviceMa: d.tb.ma_thiet_bi, label: tbLabel(d.tb), toPlId, toPlLabel })}
-                          hover={<DeviceHoverContent d={d.tb} name={tbLabel(d.tb)} />}
+                          hover={<DeviceHoverContent d={d.tb} name={tbLabel(d.tb)} multiRole={multiRoleMap?.byMa.get(d.tb.ma_thiet_bi)} />}
                         />
+                        </div>
+                        {multiRoleMap?.byMa.get(d.tb.ma_thiet_bi) && (
+                          <div className="pt-1.5 pr-1"><MultiRoleBadge info={multiRoleMap.byMa.get(d.tb.ma_thiet_bi)} compact side="left" /></div>
+                        )}
                       </div>
 
                       {d.children.map((c) => (
-                        <div key={c.ma_thiet_bi} id={`row-tp-${c.ma_thiet_bi}`}>
+                        <div key={c.ma_thiet_bi} id={`row-tp-${c.ma_thiet_bi}`} className="flex items-start gap-1.5">
+                          <div className="min-w-0 flex-1">
                           <Disclosure
                             icon={Puzzle} label={tbLabel(c)} depth={depth + 1}
                             tone="bg-emerald-500/5" donViMa={(c.don_vi ?? "").trim() || null} chips={deviceChips(c)}
                             canManage={canManage} onEdit={() => onOpenEditor("tb", c.ma_thiet_bi)}
                             onRecord={() => onRecord("tp", c.ma_thiet_bi, tbLabel(c))}
                             onRename={(t) => onRename("tp", c.ma_thiet_bi, t)}
-                            hover={<DeviceHoverContent d={c} name={tbLabel(c)} isComponent />}
+                            hover={<DeviceHoverContent d={c} name={tbLabel(c)} isComponent multiRole={multiRoleMap?.byMa.get(c.ma_thiet_bi)} />}
                           />
+                          </div>
+                          {multiRoleMap?.byMa.get(c.ma_thiet_bi) && (
+                            <div className="pt-1.5 pr-1"><MultiRoleBadge info={multiRoleMap.byMa.get(c.ma_thiet_bi)} compact side="left" /></div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -4212,6 +4249,7 @@ function TableView({
   bulkSaving?: boolean;
 }) {
   const nav = useNavigate();
+  const { data: multiRoleMap } = useMultiRoleMap();
   type Row = {
     plId: PhanLoaiId; plTen: string; lvId: LinhVucId; nhMa: string; nh: string; ht: string; htMa: string;
     tb?: ThietBi; tp?: ThietBi;
@@ -4660,12 +4698,15 @@ function TableView({
                             closeDelay={100}
                             contentClassName="p-0"
                             trigger={
-                              <button className="text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tb!.ma_thiet_bi } })}>
-                                {tbLabel(r.tb)}
-                              </button>
+                              <span className="inline-flex items-center gap-1">
+                                <button className="text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tb!.ma_thiet_bi } })}>
+                                  {tbLabel(r.tb)}
+                                </button>
+                                <MultiRoleBadge info={multiRoleMap?.byMa.get(r.tb!.ma_thiet_bi)} compact />
+                              </span>
                             }
                           >
-                            <DeviceHoverContent d={r.tb as unknown as DbDevice} name={tbLabel(r.tb!)} />
+                            <DeviceHoverContent d={r.tb as unknown as DbDevice} name={tbLabel(r.tb!)} multiRole={multiRoleMap?.byMa.get(r.tb!.ma_thiet_bi)} />
                           </CenterHoverCard>
                         ) : r.tp ? (
                           <span className="text-muted-foreground">{tbLabel(r.tb!)}</span>
@@ -4682,13 +4723,16 @@ function TableView({
                             closeDelay={100}
                             contentClassName="p-0"
                             trigger={
-                              <button className="flex items-center gap-1 text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tp!.ma_thiet_bi } })}>
-                                <Puzzle className="h-3.5 w-3.5 text-emerald-600" />
-                                {tbLabel(r.tp)}
-                              </button>
+                              <span className="inline-flex items-center gap-1">
+                                <button className="flex items-center gap-1 text-left hover:underline" onClick={() => nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: r.tp!.ma_thiet_bi } })}>
+                                  <Puzzle className="h-3.5 w-3.5 text-emerald-600" />
+                                  {tbLabel(r.tp)}
+                                </button>
+                                <MultiRoleBadge info={multiRoleMap?.byMa.get(r.tp!.ma_thiet_bi)} compact />
+                              </span>
                             }
                           >
-                            <DeviceHoverContent d={r.tp as unknown as DbDevice} name={tbLabel(r.tp!)} isComponent />
+                            <DeviceHoverContent d={r.tp as unknown as DbDevice} name={tbLabel(r.tp!)} isComponent multiRole={multiRoleMap?.byMa.get(r.tp!.ma_thiet_bi)} />
                           </CenterHoverCard>
                         ) : (
                           <span className="text-muted-foreground">—</span>

@@ -185,7 +185,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           {flat.map((v) => {
             const tb = dangLap?.get(v.id);
             const ngung = v.trang_thai === "ngung";
-            const mr = tb ? multiRoleMap?.get(tb.thiet_bi_id) : undefined;
+            const mr = tb ? multiRoleMap?.byId.get(tb.thiet_bi_id) : undefined;
             const isMulti = !!mr && mr.count >= 2;
             const col = isMulti ? colorForThietBi(tb!.thiet_bi_id) : null;
             const hasChildren = v.children.length > 0;

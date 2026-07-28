@@ -1019,6 +1019,9 @@ export function isDescendantOf<T extends { id: string; thanh_phan_cha: string | 
 // ---------------------------------------------------------------------------
 export interface MultiRoleInfo {
   count: number;                     // tổng vai trò hiện hành của tài sản
+  thiet_bi_id: string;
+  ma_thiet_bi: string;
+  ma_serial: string | null;
   roles: Array<{                    // danh sách vai trò để popover
     thanh_phan_id: string;
     ma_thanh_phan: string;
@@ -1029,17 +1032,24 @@ export interface MultiRoleInfo {
 }
 
 /**
- * Toàn cục: bản đồ `thiet_bi_id → MultiRoleInfo`. Chỉ chứa tài sản có count ≥ 2.
- * Đọc `gan_chuc_nang` hiệu lực + JOIN thành phần/hệ thống. Cache 60s.
+ * Toàn cục: bản đồ tài sản đa vai trò (count ≥ 2), truy vấn được theo cả
+ * `thiet_bi_id` (byId) lẫn `ma_thiet_bi` (byMa) để dùng cho mọi UI (cây,
+ * bảng, ngăn chi tiết). Đọc `gan_chuc_nang` hiệu lực + JOIN thiết bị,
+ * thành phần và hệ thống. Cache 60s.
  */
+export interface MultiRoleMap {
+  byId: Map<string, MultiRoleInfo>;
+  byMa: Map<string, MultiRoleInfo>;
+}
 export function useMultiRoleMap() {
   return useQuery({
     queryKey: ["thiet-bi-multi-role"] as const,
     staleTime: 60_000,
-    queryFn: async (): Promise<Map<string, MultiRoleInfo>> => {
+    queryFn: async (): Promise<MultiRoleMap> => {
       const rows = await fetchAllRows<{
         thiet_bi_id: string;
         thanh_phan_id: string;
+        thiet_bi: { ma_thiet_bi: string; ma_serial: string | null } | null;
         he_thong_thanh_phan: {
           ma_thanh_phan: string;
           ten: string;
@@ -1050,15 +1060,22 @@ export function useMultiRoleMap() {
         supabase
           .from("gan_chuc_nang")
           .select(
-            "thiet_bi_id, thanh_phan_id, he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
+            "thiet_bi_id, thanh_phan_id, thiet_bi(ma_thiet_bi, ma_serial), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
           )
           .is("den_ngay", null)
           .range(from, to),
       );
       const acc = new Map<string, MultiRoleInfo>();
       for (const r of rows) {
-        const info = acc.get(r.thiet_bi_id) ?? { count: 0, roles: [] };
+        const info = acc.get(r.thiet_bi_id) ?? {
+          count: 0,
+          thiet_bi_id: r.thiet_bi_id,
+          ma_thiet_bi: r.thiet_bi?.ma_thiet_bi ?? "",
+          ma_serial: r.thiet_bi?.ma_serial ?? null,
+          roles: [],
+        };
         info.count += 1;
+        if (!info.ma_thiet_bi && r.thiet_bi?.ma_thiet_bi) info.ma_thiet_bi = r.thiet_bi.ma_thiet_bi;
         if (r.he_thong_thanh_phan) {
           info.roles.push({
             thanh_phan_id: r.thanh_phan_id,
@@ -1070,10 +1087,16 @@ export function useMultiRoleMap() {
         }
         acc.set(r.thiet_bi_id, info);
       }
-      // Giữ chỉ những tài sản đa vai để giảm re-render.
-      const multi = new Map<string, MultiRoleInfo>();
-      acc.forEach((v, k) => { if (v.count >= 2) multi.set(k, v); });
-      return multi;
+      // Giữ chỉ những tài sản đa vai để giảm re-render, đánh chỉ mục 2 chiều.
+      const byId = new Map<string, MultiRoleInfo>();
+      const byMa = new Map<string, MultiRoleInfo>();
+      acc.forEach((v, k) => {
+        if (v.count >= 2) {
+          byId.set(k, v);
+          if (v.ma_thiet_bi) byMa.set(v.ma_thiet_bi, v);
+        }
+      });
+      return { byId, byMa };
     },
   });
 }

@@ -19,6 +19,8 @@ import { normalize } from "@/lib/mirats/global-search";
 import { useSession } from "@/hooks/use-session";
 import { canWrite } from "@/lib/mirats/quyen";
 import { useThietBiChon, useLapThietBi } from "@/lib/mirats/he-thong-thanh-phan";
+import { useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
+import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 
@@ -134,6 +136,7 @@ export type ThanhPhanTableProps = {
 export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-phan-toan-cuc", externalEditMode }: ThanhPhanTableProps) {
   const { data: rows = [], isLoading, error } = useThanhPhanRows();
   const { data: taiSanRows = [], isLoading: loadingTS, error: errorTS } = useTaiSanRows();
+  const { data: multiRoleMap } = useMultiRoleMap();
   const [q, setQ] = useState("");
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">("thanh-phan:view-mode", "component");
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
@@ -457,20 +460,30 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 editMode && allowEdit ? (
                   <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })} />
                 ) : r.daLap ? (
-                  <Link
-                    to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: r.thietBiMa }}
-                    className="group flex items-start gap-1.5 rounded-sm hover:bg-primary/5 -mx-1 px-1 py-0.5"
-                    title="Mở sổ lý lịch tài sản"
-                  >
-                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
-                        {r.thietBiTen || "—"}
-                      </span>
-                      <CodeBadge code={r.thietBiMa} className="w-fit" />
-                    </div>
-                    <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                  </Link>
+                  (() => {
+                    const mr = multiRoleMap?.byMa.get(r.thietBiMa);
+                    return (
+                      <div className="flex items-start gap-1.5">
+                        <Link
+                          to="/thiet-bi/$maThietBi"
+                          params={{ maThietBi: r.thietBiMa }}
+                          className="group flex min-w-0 flex-1 items-start gap-1.5 rounded-sm hover:bg-primary/5 -mx-1 px-1 py-0.5"
+                          title="Mở sổ lý lịch tài sản"
+                        >
+                          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                            <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
+                              {r.thietBiTen || "—"}
+                            </span>
+                            <CodeBadge code={r.thietBiMa} className="w-fit" />
+                          </div>
+                          <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                        </Link>
+                        {mr && (
+                          <MultiRoleBadge info={mr} currentThanhPhanId={r.id} compact side="left" />
+                        )}
+                      </div>
+                    );
+                  })()
                 ) : (
                   <span className="text-xs italic text-muted-foreground">Chưa lắp tài sản</span>
                 ),
@@ -664,15 +677,18 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               sticky: true,
               value: (r) => r.ten,
               cell: (r) => (
-                <Link
-                  to="/thiet-bi/$maThietBi"
-                  params={{ maThietBi: r.ma }}
-                  className="group flex items-start gap-1 hover:text-primary"
-                >
-                  <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug group-hover:underline">{r.ten || "—"}</span>
-                  <AnomalyBadge score={Number(r.anomalyScore) || 0} count90d={Number(r.soSuCo90n) || 0} className="shrink-0" />
-                  <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-                </Link>
+                <div className="flex items-start gap-1.5">
+                  <Link
+                    to="/thiet-bi/$maThietBi"
+                    params={{ maThietBi: r.ma }}
+                    className="group flex flex-1 items-start gap-1 hover:text-primary"
+                  >
+                    <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug group-hover:underline">{r.ten || "—"}</span>
+                    <AnomalyBadge score={Number(r.anomalyScore) || 0} count90d={Number(r.soSuCo90n) || 0} className="shrink-0" />
+                    <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </Link>
+                  <MultiRoleBadge info={multiRoleMap?.byMa.get(r.ma)} compact side="left" />
+                </div>
               ),
             },
             {
