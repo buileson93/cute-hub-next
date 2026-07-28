@@ -157,7 +157,7 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
   const capPhatMut = useCapPhatThietBi();
   const capPhatKyMut = useCapPhatVoiChuKy();
   const { data: latestHandover } = useLatestHandover(tb.id);
-  const { data: vaiTro } = useVaiTroThietBi(tb.id);
+  const { data: vaiTroList = [] } = useVaiTroThietBi(tb.id);
   const donViOptions = useMemo(
     () => (taxo?.donViList ?? []).map((d) => ({ id: d.id, ten: `${d.ma}${d.ten ? " — " + d.ten : ""}` })),
     [taxo],
@@ -340,13 +340,24 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
                   ? <Link to="/danh-muc/he-thong" className="inline-flex items-center gap-1 text-primary hover:underline">{sysName}<ExternalLink className="h-3 w-3" /></Link>
                   : "—"
               } />
-              <InfoRow icon={Layers} label="Đang đảm nhận" value={
-                vaiTro
-                  ? <span className="inline-flex flex-col">
-                      <span className="font-medium">{vaiTro.ten_thanh_phan}</span>
-                      <span className="text-xs text-muted-foreground">{vaiTro.ma_thanh_phan}{vaiTro.ten_he_thong ? ` · ${vaiTro.ten_he_thong}` : ""}</span>
+              <InfoRow icon={Layers} label={vaiTroList.length >= 2 ? `Đang đảm nhận (${vaiTroList.length} vai trò)` : "Đang đảm nhận"} value={
+                vaiTroList.length === 0
+                  ? <span className="text-muted-foreground">Chưa lắp vào thành phần nào</span>
+                  : (
+                    <span className="inline-flex flex-col gap-1">
+                      {vaiTroList.map((r) => (
+                        <span key={r.gan_id} className="inline-flex flex-col">
+                          <span className="font-medium">{r.ten_thanh_phan}</span>
+                          <span className="text-xs text-muted-foreground">{r.ma_thanh_phan}{r.ten_he_thong ? ` · ${r.ten_he_thong}` : ""}</span>
+                        </span>
+                      ))}
+                      {vaiTroList.length >= 2 && (
+                        <span className="mt-0.5 inline-flex items-center gap-1 rounded border border-amber-400/50 bg-amber-50 px-1.5 py-0.5 text-[11px] text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                          ⚠ Đa vai trò — tài sản này phục vụ song song {vaiTroList.length} thành phần
+                        </span>
+                      )}
                     </span>
-                  : <span className="text-muted-foreground">Chưa lắp vào thành phần nào</span>
+                  )
               } />
               <InfoRow icon={MapPin} label="Vị trí lắp đặt" value={
                 tb.vi_tri

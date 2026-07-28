@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import {
   Plus, Pencil, PowerOff, HardDrive, PackageOpen, Wrench, ArrowRightLeft, CircleSlash, Cpu, History, ChevronDown, RefreshCw, Trash2, ArrowUp, ArrowDown,
 } from "lucide-react";
+import { ChevronRight, Layers } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +37,11 @@ import {
   rankEligibleDevices,
   type ViTriChucNang, type ThietBiDangLap,
 } from "@/lib/mirats/he-thong-thanh-phan";
+import {
+  buildThanhPhanTree, flattenThanhPhanTree, isDescendantOf, useMultiRoleMap,
+  type ThanhPhanNode,
+} from "@/lib/mirats/he-thong-thanh-phan";
+import { colorForThietBi } from "@/lib/mirats/multi-role-color";
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { sinhMaThanhPhanDuyNhat, nhanDienLoiTrungThietBi } from "@/lib/mirats/ma-thiet-bi";
 import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
@@ -57,6 +65,17 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const { data: loaiList = [] } = useLoaiThietBi();
   const loaiTen = useMemo(() => new Map(loaiList.map((l) => [l.id, l.ten])), [loaiList]);
+  const { data: multiRoleMap } = useMultiRoleMap();
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const toggleCollapse = (id: string) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const tree = useMemo(() => buildThanhPhanTree(viTri), [viTri]);
+  const flat = useMemo(() => flattenThanhPhanTree(tree, collapsed), [tree, collapsed]);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ViTriChucNang | null>(null);
@@ -163,17 +182,46 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
         </div>
       ) : (
         <div className="space-y-2">
-          {viTri.map((v) => {
+          {flat.map((v) => {
             const tb = dangLap?.get(v.id);
             const ngung = v.trang_thai === "ngung";
+            const mr = tb ? multiRoleMap?.get(tb.thiet_bi_id) : undefined;
+            const isMulti = !!mr && mr.count >= 2;
+            const col = isMulti ? colorForThietBi(tb!.thiet_bi_id) : null;
+            const hasChildren = v.children.length > 0;
+            const isCollapsed = collapsed.has(v.id);
             return (
               <Card key={v.id} className={ngung ? "opacity-60" : ""}>
-                <CardContent className="flex flex-wrap items-center gap-x-3 gap-y-2 p-3">
-                  <Cpu className="h-4 w-4 shrink-0 text-primary" />
+                <CardContent
+                  className="flex flex-wrap items-center gap-x-3 gap-y-2 p-3"
+                  style={{ paddingLeft: 12 + v.depth * 18 }}
+                >
+                  {hasChildren ? (
+                    <Button
+                      size="sm" variant="ghost"
+                      className="h-6 w-6 shrink-0 p-0"
+                      onClick={() => toggleCollapse(v.id)}
+                      title={isCollapsed ? "Mở nhánh" : "Thu nhánh"}
+                    >
+                      <ChevronRight className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "" : "rotate-90"}`} />
+                    </Button>
+                  ) : (
+                    <span className="inline-block h-6 w-6 shrink-0" aria-hidden />
+                  )}
+                  {v.depth === 0 ? (
+                    <Cpu className="h-4 w-4 shrink-0 text-primary" />
+                  ) : (
+                    <span title="Thành phần con" className="shrink-0"><Layers className="h-4 w-4 text-muted-foreground" /></span>
+                  )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs text-muted-foreground">{v.ma_thanh_phan}</span>
                       <span className="font-medium">{v.ten}</span>
+                      {hasChildren && (
+                        <Badge variant="outline" className="text-[10px]" title="Số thành phần con">
+                          {v.children.length} con
+                        </Badge>
+                      )}
                       {ngung && <Badge variant="outline" className="border-muted-foreground/40">Đã ngừng</Badge>}
                       {!ngung && v.bat_buoc && <Badge variant="secondary">Bắt buộc</Badge>}
                     </div>
@@ -182,14 +230,70 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                     )}
                   </div>
 
-                  {/* Ô "tài sản đang lắp" — CHỈ-ĐỌC */}
+                  {/* Ô "tài sản đang lắp" — CHỈ-ĐỌC (highlight nếu đa vai trò) */}
                   <div className="ml-auto flex items-center gap-2">
                     {tb ? (
-                      <Badge variant="outline" className="gap-1 font-normal">
-                        <HardDrive className="h-3 w-3" />
-                        <span className="font-mono">{tb.ma_thiet_bi}</span>
-                        {tb.ma_serial && <span className="text-muted-foreground">· SN {tb.ma_serial}</span>}
-                      </Badge>
+                      isMulti ? (
+                        <HoverCard openDelay={100}>
+                          <HoverCardTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="gap-1 font-normal cursor-help"
+                              style={{
+                                backgroundColor: col!.bg,
+                                borderColor: col!.border,
+                                color: col!.text,
+                              }}
+                            >
+                              <span
+                                className="inline-block h-2 w-2 rounded-full"
+                                style={{ backgroundColor: col!.dot }}
+                                aria-hidden
+                              />
+                              <HardDrive className="h-3 w-3" />
+                              <span className="font-mono">{tb.ma_thiet_bi}</span>
+                              {tb.ma_serial && <span className="opacity-70">· SN {tb.ma_serial}</span>}
+                              <span className="ml-1 rounded px-1 text-[10px] font-semibold" style={{ backgroundColor: col!.border, color: "white" }}>
+                                ×{mr!.count}
+                              </span>
+                            </Badge>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80 p-3 text-xs" side="left">
+                            <div className="mb-2 flex items-center gap-2 font-medium">
+                              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: col!.dot }} />
+                              Tài sản đa vai trò ({mr!.count})
+                            </div>
+                            <div className="mb-1 font-mono text-[11px] text-muted-foreground">
+                              {tb.ma_thiet_bi}{tb.ma_serial ? ` · SN ${tb.ma_serial}` : ""}
+                            </div>
+                            <ul className="space-y-1.5">
+                              {mr!.roles.map((r) => {
+                                const here = r.thanh_phan_id === v.id;
+                                return (
+                                  <li key={r.thanh_phan_id} className={here ? "rounded bg-muted/60 px-1.5 py-1" : ""}>
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="font-medium">{r.ten_thanh_phan}</span>
+                                      {here && <span className="text-[10px] text-primary">(vai trò này)</span>}
+                                    </div>
+                                    <div className="text-[11px] text-muted-foreground">
+                                      {r.ma_thanh_phan}
+                                      {r.ten_he_thong && (
+                                        <> · <Link to="/he-thong/$id" params={{ id: r.he_thong_id }} className="text-primary hover:underline">{r.ten_he_thong}</Link></>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </HoverCardContent>
+                        </HoverCard>
+                      ) : (
+                        <Badge variant="outline" className="gap-1 font-normal">
+                          <HardDrive className="h-3 w-3" />
+                          <span className="font-mono">{tb.ma_thiet_bi}</span>
+                          {tb.ma_serial && <span className="text-muted-foreground">· SN {tb.ma_serial}</span>}
+                        </Badge>
+                      )
                     ) : (
                       <Badge variant="outline" className="gap-1 border-amber-400 text-amber-600">
                         <CircleSlash className="h-3 w-3" /> Chưa gán tài sản
@@ -216,12 +320,12 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                       )}
                       <span className="flex items-center">
                         <Button size="sm" variant="ghost" title="Lên trên"
-                          disabled={doiThuTuMut.isPending || viTri.indexOf(v) === 0}
+                          disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === 0}
                           onClick={() => onMove(v, -1)}>
                           <ArrowUp className="h-3.5 w-3.5" />
                         </Button>
                         <Button size="sm" variant="ghost" title="Xuống dưới"
-                          disabled={doiThuTuMut.isPending || viTri.indexOf(v) === viTri.length - 1}
+                          disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === viTri.length - 1}
                           onClick={() => onMove(v, 1)}>
                           <ArrowDown className="h-3.5 w-3.5" />
                         </Button>
@@ -432,10 +536,13 @@ function ViTriFormDialog({
   const [hlTu, setHlTu] = useState(target?.hieu_luc_tu ?? "");
   const [hlDen, setHlDen] = useState(target?.hieu_luc_den ?? "");
 
-  const chaOptions = useMemo(
-    () => viTriList.filter((v) => v.id !== target?.id).map((v) => ({ value: v.id, label: `${v.ma_thanh_phan} · ${v.ten}` })),
-    [viTriList, target],
-  );
+  const chaOptions = useMemo(() => {
+    // Chặn vòng lặp: không cho chọn chính nó hoặc bất kỳ hậu duệ nào.
+    const list = target
+      ? viTriList.filter((v) => v.id !== target.id && !isDescendantOf(viTriList, v.id, target.id))
+      : viTriList;
+    return list.map((v) => ({ value: v.id, label: `${v.ma_thanh_phan} · ${v.ten}` }));
+  }, [viTriList, target]);
   const loaiOptions = useMemo(() => loaiList.map((l) => ({ value: l.id, label: l.ten })), [loaiList]);
 
   const submit = async () => {
