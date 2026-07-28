@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   HardDrive, Clock, PackageOpen, Wrench, ArrowRightLeft, History, X,
-  Pencil, Plug, Settings2, Save, RefreshCw, ExternalLink,
+  Pencil, Plug, Settings2, Save, RefreshCw, ExternalLink, Info,
 } from "lucide-react";
 import {
   Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,
