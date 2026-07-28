@@ -103,8 +103,9 @@ function LoaiChip({ loaiId, ten }: { loaiId: string | null | undefined; ten: str
 
 /** LỚP 2 — Thành phần hệ thống: tài sản đang lắp vào vai trò nào (kế thừa vị trí/trạng thái). */
 function ThanhPhanSection({ device }: { device: DbDevice }) {
-  const { data: vaiTro, isLoading } = useVaiTroThietBi(device.id);
-  const installed = !!device._htId;
+  const { data: vaiTroList = [], isLoading } = useVaiTroThietBi(device.id);
+  const installed = vaiTroList.length > 0 || !!device._htId;
+  const multi = vaiTroList.length >= 2;
   return (
     <section className="space-y-2">
       <LayerSectionHeader layer="tp" />
@@ -116,15 +117,27 @@ function ThanhPhanSection({ device }: { device: DbDevice }) {
         <p className="text-sm text-muted-foreground">Đang tải…</p>
       ) : (
         <div className="space-y-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5">
-          <SummaryRow label="Đang đảm nhận">
-            {vaiTro ? (
-              <>
-                <span className="font-medium">{vaiTro.ten_thanh_phan}</span>
-                {vaiTro.ma_thanh_phan && (
-                  <span className="ml-1.5 font-mono text-[11px] font-normal text-muted-foreground">{vaiTro.ma_thanh_phan}</span>
+          <SummaryRow label={multi ? `Đang đảm nhận (${vaiTroList.length} vai trò)` : "Đang đảm nhận"}>
+            {vaiTroList.length === 0 ? "—" : (
+              <div className="flex flex-col gap-1">
+                {vaiTroList.map((r) => (
+                  <div key={r.gan_id} className="flex flex-wrap items-baseline gap-1.5">
+                    <span className="font-medium">{r.ten_thanh_phan}</span>
+                    {r.ma_thanh_phan && (
+                      <span className="font-mono text-[11px] font-normal text-muted-foreground">{r.ma_thanh_phan}</span>
+                    )}
+                    {r.ten_he_thong && (
+                      <span className="text-[11px] text-muted-foreground">· {r.ten_he_thong}</span>
+                    )}
+                  </div>
+                ))}
+                {multi && (
+                  <div className="mt-1 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-[11px] text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                    Tài sản đang đảm nhận đồng thời {vaiTroList.length} vai trò trong các hệ thống khác nhau.
+                  </div>
                 )}
-              </>
-            ) : "—"}
+              </div>
+            )}
           </SummaryRow>
           <SummaryRow label="Vị trí">{device._viTriTen || device.vi_tri || "—"}</SummaryRow>
           <SummaryRow label="Trạng thái">
