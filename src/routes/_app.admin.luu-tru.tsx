@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
+import { FullDumpButton } from "@/components/mirats/FullDumpButton";
 import {
   useStorageConfig, useSaveStorageConfig,
   DEFAULT_STORAGE_CONFIG, type StoragePrimary,
@@ -141,6 +142,19 @@ function Content() {
               <p>Trong giai đoạn thử nghiệm, khuyến nghị: <strong>primary = Lovable Cloud</strong> + <strong>dual-write = Bật</strong>. Khi đủ tin cậy, chuyển primary sang R2 và có thể tắt dual-write để tiết kiệm.</p>
             </div>
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Dump toàn bộ dữ liệu</CardTitle>
+              <CardDescription>
+                Tải 100% dữ liệu về một thư mục trên máy: toàn bộ bảng CSDL, lược đồ, danh sách tài khoản và mọi tệp
+                đính kèm/hình ảnh ở cả Lovable Cloud Storage lẫn Cloudflare R2. Chỉ tài khoản Admin thực hiện được.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FullDumpButton />
+            </CardContent>
+          </Card>
         </>
       )}
     </div>
