@@ -78,7 +78,7 @@ async function compressPdf(file: Blob): Promise<Blob | null> {
     doc.setTitle(""); doc.setAuthor(""); doc.setSubject("");
     doc.setKeywords([]); doc.setProducer(""); doc.setCreator("");
     const bytes = await doc.save({ useObjectStreams: true, addDefaultPage: false });
-    return new Blob([bytes], { type: "application/pdf" });
+    return new Blob([bytes.buffer as ArrayBuffer], { type: "application/pdf" });
   } catch {
     return null;
   }
