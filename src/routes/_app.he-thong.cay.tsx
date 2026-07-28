@@ -2971,7 +2971,7 @@ function HoverField({ label, value }: { label: string; value: React.ReactNode })
 }
 
 /** Nội dung thẻ hover cho một tài sản / thành phần — gom theo 3 lớp cho nhất quán. */
-function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: string; isComponent?: boolean }) {
+function DeviceHoverContent({ d, name, isComponent, multiRole }: { d: DbDevice; name: string; isComponent?: boolean; multiRole?: MultiRoleInfo }) {
   const tt = (d.trang_thai ?? "").trim();
   const imp = (d.muc_do_quan_trong ?? "").trim();
   // LỚP 1 — Tài sản vật lý (định danh máy cụ thể).
@@ -2995,6 +2995,7 @@ function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: strin
   push(ctxRows, "Vị trí", d._viTriTen || d.vi_tri);
   push(ctxRows, "Đơn vị quản lý", d._donViTen || d.don_vi);
   const empty = tbRows.length === 0 && ctxRows.length === 0;
+  const mrCol = multiRole ? colorForThietBi(multiRole.thiet_bi_id) : null;
   return (
     <>
       <div className="border-b bg-muted/40 px-3 py-2">
@@ -3004,6 +3005,29 @@ function DeviceHoverContent({ d, name, isComponent }: { d: DbDevice; name: strin
         </div>
         <div className="mt-0.5 pl-5"><CodeBadge code={d.ma_thiet_bi} title={`Mã tài sản: ${d.ma_thiet_bi}`} /></div>
       </div>
+      {multiRole && mrCol && (
+        <div
+          className="border-b px-3 py-2 text-[11px]"
+          style={{ backgroundColor: mrCol.bg, color: mrCol.text }}
+        >
+          <div className="mb-1 flex items-center gap-1.5 font-semibold">
+            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: mrCol.dot }} />
+            Tài sản đa vai trò · ×{multiRole.count}
+          </div>
+          <div className="mb-1 leading-snug opacity-90">
+            Cùng một thiết bị vật lý đang đảm nhận {multiRole.count} vai trò
+            "thành phần hệ thống" ở các hệ thống khác nhau.
+          </div>
+          <ul className="space-y-0.5">
+            {multiRole.roles.map((r) => (
+              <li key={r.thanh_phan_id} className="truncate">
+                • <span className="font-medium">{r.ten_thanh_phan}</span>
+                {r.ten_he_thong && <span className="opacity-80"> · {r.ten_he_thong}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {(tt || imp) && (
         <div className="flex flex-wrap gap-1 px-3 pt-2">
           {tt && <span className={cn("rounded border px-1.5 py-0.5 text-[10px] font-medium", statusTone(tt))}>{tt}</span>}
