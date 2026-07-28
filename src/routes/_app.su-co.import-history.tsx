@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { FileText, ArrowLeft, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,7 +106,7 @@ function ImportHistoryPage() {
                     return (
                       <TableRow key={r.id}>
                         <TableCell className="whitespace-nowrap text-xs">
-                          {format(new Date(r.created_at), "dd/MM/yyyy HH:mm")}
+                          {formatDT(r.created_at)}
                         </TableCell>
                         <TableCell className="font-mono text-xs">{r.so_van_ban ?? "—"}</TableCell>
                         <TableCell className="text-xs">{r.don_vi ?? "—"}</TableCell>
