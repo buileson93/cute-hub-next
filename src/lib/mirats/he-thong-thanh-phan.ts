@@ -98,6 +98,8 @@ export interface ThietBiRanh {
   don_vi_quan_ly_id: string | null;
   trang_thai_ma: string | null;
   trang_thai_ten: string | null;
+  /** Hệ thống mặc định của tài sản (null nếu chưa gán). Khi lắp, trigger sẽ tự điền hệ thống của thành phần đích. */
+  he_thong_id: string | null;
   /** Số vị trí chức năng tài sản này đang đảm trách (0 = chưa lắp ở đâu). */
   soLanLap: number;
   /** Một vị trí đang lắp làm ví dụ hiển thị (null nếu chưa lắp). */
@@ -181,12 +183,12 @@ export function useThietBiRanh() {
         ),
         fetchAllRows<{
           id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null;
-          loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null;
+          loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null; he_thong_id: string | null;
           dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
         }>((from, to) =>
           supabase
             .from("thiet_bi")
-            .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
+            .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
             .order("ma_thiet_bi")
             .range(from, to),
         ),
@@ -204,6 +206,7 @@ export function useThietBiRanh() {
         .map((r) => ({
           id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
           loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
+          he_thong_id: r.he_thong_id,
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
           soLanLap: busyCount.get(r.id) ?? 0,
@@ -237,12 +240,12 @@ export function useThietBiChon() {
         ),
         fetchAllRows<{
           id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null;
-          loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null;
+          loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null; he_thong_id: string | null;
           dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
         }>((from, to) =>
           supabase
             .from("thiet_bi")
-            .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
+            .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
             .order("ma_thiet_bi")
             .range(from, to),
         ),
@@ -260,6 +263,7 @@ export function useThietBiChon() {
         .map((r) => ({
           id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
           loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
+          he_thong_id: r.he_thong_id,
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
           soLanLap: busyCount.get(r.id) ?? 0,
