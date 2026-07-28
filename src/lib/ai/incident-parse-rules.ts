@@ -81,14 +81,24 @@ function classifyRole(header: string, body: string): SectionRole {
 function splitSections(text: string): Section[] {
   const normalized = text.replace(/\r\n?/g, "\n");
   const out: Section[] = [];
-  const re = /^\s*(\d{1,2})[\.\)]\s*([\s\S]*?)(?=^\s*\d{1,2}[\.\)]\s|\Z)/gm;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(normalized)) !== null) {
-    const num = Number.parseInt(m[1], 10);
-    const raw = m[2].trim();
+  // Tìm mọi mốc header "N. ...", cắt theo cặp [i, i+1]. Cách này an toàn với mục
+  // cuối cùng (regex JS không hỗ trợ \Z; dùng end-of-string thay thế).
+  const headerRe = /^\s*(\d{1,2})[\.\)]\s*/gm;
+  const marks: { num: number; start: number; bodyStart: number }[] = [];
+  let hm: RegExpExecArray | null;
+  while ((hm = headerRe.exec(normalized)) !== null) {
+    marks.push({
+      num: Number.parseInt(hm[1], 10),
+      start: hm.index,
+      bodyStart: hm.index + hm[0].length,
+    });
+  }
+  for (let i = 0; i < marks.length; i++) {
+    const end = i + 1 < marks.length ? marks[i + 1].start : normalized.length;
+    const raw = normalized.slice(marks[i].bodyStart, end).trim();
     const { header, body } = stripHeader(raw);
     const role = classifyRole(header, body);
-    out.push({ raw, body, role, header, num });
+    out.push({ raw, body, role, header, num: marks[i].num });
   }
   return out;
 }
