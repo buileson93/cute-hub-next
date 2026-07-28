@@ -903,12 +903,15 @@ export interface VaiTroThietBi {
   ly_do: string;
 }
 
-/** Vai trò (thành phần + hệ thống) mà một tài sản đang đảm nhận, hoặc null. */
+/**
+ * TẤT CẢ vai trò hiện hành của một tài sản (nhiều vai trò song song).
+ * Trả mảng rỗng khi chưa lắp ở đâu; giao diện tự chọn cách hiển thị.
+ */
 export function useVaiTroThietBi(thietBiId: string | null) {
   return useQuery({
     queryKey: ["vai-tro-thiet-bi", thietBiId],
     enabled: Boolean(thietBiId),
-    queryFn: async (): Promise<VaiTroThietBi | null> => {
+    queryFn: async (): Promise<VaiTroThietBi[]> => {
       const { data, error } = await supabase
         .from("gan_chuc_nang")
         .select(
@@ -916,27 +919,161 @@ export function useVaiTroThietBi(thietBiId: string | null) {
         )
         .eq("thiet_bi_id", thietBiId!)
         .is("den_ngay", null)
-        .maybeSingle();
+        .order("tu_ngay", { ascending: true });
       if (error) throw error;
-      if (!data) return null;
-      const tp = (data as unknown as {
+      const rows = (data ?? []) as unknown as Array<{
         id: string; thanh_phan_id: string; tu_ngay: string; ly_do: string;
         he_thong_thanh_phan: {
           ma_thanh_phan: string; ten: string; he_thong_id: string;
           dm_he_thong: { ten: string } | null;
         } | null;
-      });
-      if (!tp.he_thong_thanh_phan) return null;
-      return {
-        gan_id: tp.id,
-        thanh_phan_id: tp.thanh_phan_id,
-        ma_thanh_phan: tp.he_thong_thanh_phan.ma_thanh_phan,
-        ten_thanh_phan: tp.he_thong_thanh_phan.ten,
-        he_thong_id: tp.he_thong_thanh_phan.he_thong_id,
-        ten_he_thong: tp.he_thong_thanh_phan.dm_he_thong?.ten ?? "",
-        tu_ngay: tp.tu_ngay,
-        ly_do: tp.ly_do,
-      };
+      }>;
+      return rows
+        .filter((r) => !!r.he_thong_thanh_phan)
+        .map((r) => ({
+          gan_id: r.id,
+          thanh_phan_id: r.thanh_phan_id,
+          ma_thanh_phan: r.he_thong_thanh_phan!.ma_thanh_phan,
+          ten_thanh_phan: r.he_thong_thanh_phan!.ten,
+          he_thong_id: r.he_thong_thanh_phan!.he_thong_id,
+          ten_he_thong: r.he_thong_thanh_phan!.dm_he_thong?.ten ?? "",
+          tu_ngay: r.tu_ngay,
+          ly_do: r.ly_do,
+        }));
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// TIỆN ÍCH CÂY: build cây thành phần theo `thanh_phan_cha`.
+// Trả về danh sách gốc + children đệ quy + độ sâu; ổn định thứ tự theo
+// `thu_tu` rồi `ma_thanh_phan` (giữ đúng thứ tự sắp xếp gốc từ query).
+// ---------------------------------------------------------------------------
+export type ThanhPhanNode<T extends { id: string; thanh_phan_cha: string | null }> = T & {
+  depth: number;
+  children: ThanhPhanNode<T>[];
+};
+
+export function buildThanhPhanTree<T extends { id: string; thanh_phan_cha: string | null }>(
+  rows: T[],
+): ThanhPhanNode<T>[] {
+  const byId = new Map<string, ThanhPhanNode<T>>();
+  for (const r of rows) byId.set(r.id, { ...r, depth: 0, children: [] });
+  const roots: ThanhPhanNode<T>[] = [];
+  for (const r of rows) {
+    const node = byId.get(r.id)!;
+    const parent = r.thanh_phan_cha ? byId.get(r.thanh_phan_cha) : null;
+    if (parent && parent.id !== r.id) parent.children.push(node);
+    else roots.push(node);
+  }
+  const setDepth = (n: ThanhPhanNode<T>, d: number) => {
+    n.depth = d;
+    for (const c of n.children) setDepth(c, d + 1);
+  };
+  for (const r of roots) setDepth(r, 0);
+  return roots;
+}
+
+/** Flatten cây theo thứ tự DFS để render bảng phẳng nhưng vẫn có depth. */
+export function flattenThanhPhanTree<T extends { id: string; thanh_phan_cha: string | null }>(
+  roots: ThanhPhanNode<T>[],
+  collapsed?: Set<string>,
+): ThanhPhanNode<T>[] {
+  const out: ThanhPhanNode<T>[] = [];
+  const walk = (n: ThanhPhanNode<T>) => {
+    out.push(n);
+    if (collapsed?.has(n.id)) return;
+    for (const c of n.children) walk(c);
+  };
+  for (const r of roots) walk(r);
+  return out;
+}
+
+/** Chặn vòng lặp khi chọn thành phần cha (không tự làm cha, không xuống dòng con). */
+export function isDescendantOf<T extends { id: string; thanh_phan_cha: string | null }>(
+  rows: T[],
+  candidateAncestor: string,
+  nodeId: string,
+): boolean {
+  if (candidateAncestor === nodeId) return true;
+  const childrenOf = new Map<string, string[]>();
+  for (const r of rows) {
+    if (!r.thanh_phan_cha) continue;
+    const arr = childrenOf.get(r.thanh_phan_cha) ?? [];
+    arr.push(r.id);
+    childrenOf.set(r.thanh_phan_cha, arr);
+  }
+  const stack = [nodeId];
+  while (stack.length) {
+    const cur = stack.pop()!;
+    if (cur === candidateAncestor) return true;
+    const children = childrenOf.get(cur) ?? [];
+    stack.push(...children);
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// MULTI-ROLE MAP: tra cứu nhanh tài sản nào đang giữ ≥2 vai trò song song
+// (dùng để tô màu / hiện badge trong cây/bảng thành phần).
+// ---------------------------------------------------------------------------
+export interface MultiRoleInfo {
+  count: number;                     // tổng vai trò hiện hành của tài sản
+  roles: Array<{                    // danh sách vai trò để popover
+    thanh_phan_id: string;
+    ma_thanh_phan: string;
+    ten_thanh_phan: string;
+    he_thong_id: string;
+    ten_he_thong: string;
+  }>;
+}
+
+/**
+ * Toàn cục: bản đồ `thiet_bi_id → MultiRoleInfo`. Chỉ chứa tài sản có count ≥ 2.
+ * Đọc `gan_chuc_nang` hiệu lực + JOIN thành phần/hệ thống. Cache 60s.
+ */
+export function useMultiRoleMap() {
+  return useQuery({
+    queryKey: ["thiet-bi-multi-role"] as const,
+    staleTime: 60_000,
+    queryFn: async (): Promise<Map<string, MultiRoleInfo>> => {
+      const rows = await fetchAllRows<{
+        thiet_bi_id: string;
+        thanh_phan_id: string;
+        he_thong_thanh_phan: {
+          ma_thanh_phan: string;
+          ten: string;
+          he_thong_id: string;
+          dm_he_thong: { ten: string | null } | null;
+        } | null;
+      }>((from, to) =>
+        supabase
+          .from("gan_chuc_nang")
+          .select(
+            "thiet_bi_id, thanh_phan_id, he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(ten))",
+          )
+          .is("den_ngay", null)
+          .range(from, to),
+      );
+      const acc = new Map<string, MultiRoleInfo>();
+      for (const r of rows) {
+        const info = acc.get(r.thiet_bi_id) ?? { count: 0, roles: [] };
+        info.count += 1;
+        if (r.he_thong_thanh_phan) {
+          info.roles.push({
+            thanh_phan_id: r.thanh_phan_id,
+            ma_thanh_phan: r.he_thong_thanh_phan.ma_thanh_phan,
+            ten_thanh_phan: r.he_thong_thanh_phan.ten,
+            he_thong_id: r.he_thong_thanh_phan.he_thong_id,
+            ten_he_thong: r.he_thong_thanh_phan.dm_he_thong?.ten ?? "",
+          });
+        }
+        acc.set(r.thiet_bi_id, info);
+      }
+      // Giữ chỉ những tài sản đa vai để giảm re-render.
+      const multi = new Map<string, MultiRoleInfo>();
+      acc.forEach((v, k) => { if (v.count >= 2) multi.set(k, v); });
+      return multi;
     },
   });
 }
