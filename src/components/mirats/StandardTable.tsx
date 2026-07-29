@@ -189,6 +189,39 @@ export function StandardTable<T>({
     useColumnWidths(tableKey);
   const resizeRef = useRef<{ key: string; startX: number; startW: number } | null>(null);
   const [resizingKey, setResizingKey] = useState<string | null>(null);
+  const tableRef = useRef<HTMLTableElement | null>(null);
+
+  // Tự căn độ rộng mọi cột theo nội dung thực tế đang hiển thị.
+  // Đo bằng scrollWidth của tiêu đề + toàn bộ ô trong cột (cộng padding an toàn).
+  const autoFitWidths = useCallback(() => {
+    const table = tableRef.current;
+    if (!table) return;
+    const offset = selectable ? 1 : 0;
+    const next: Record<string, number> = {};
+    shownCols.forEach((c, idx) => {
+      const colIdx = idx + offset;
+      let max = 0;
+      // Tiêu đề
+      const th = table.querySelector<HTMLTableCellElement>(
+        `thead tr > th:nth-child(${colIdx + 1})`,
+      );
+      if (th) {
+        const inner = th.firstElementChild as HTMLElement | null;
+        max = Math.max(max, (inner?.scrollWidth ?? th.scrollWidth) + 40); // chừa chỗ cho filter/sort/handle
+      }
+      // Các ô body
+      const cells = table.querySelectorAll<HTMLTableCellElement>(
+        `tbody tr > td:nth-child(${colIdx + 1})`,
+      );
+      cells.forEach((td) => {
+        max = Math.max(max, td.scrollWidth + 16);
+      });
+      if (max > 0) next[c.key] = Math.max(80, Math.min(600, Math.round(max)));
+    });
+    // Ghi từng cột (giữ debounce persist trong hook).
+    Object.entries(next).forEach(([k, w]) => setColWidth(k, w));
+  }, [selectable, shownCols, setColWidth]);
+
   const onResizeStart = useCallback((key: string, e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
