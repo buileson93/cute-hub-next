@@ -61,7 +61,10 @@ export function Combobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverContent
+        className="w-[--radix-popover-trigger-width] min-w-[220px] p-0"
+        align="start"
+      >
         <Command shouldFilter={!allowCustom}>
           <CommandInput
             placeholder={searchPlaceholder}
@@ -76,14 +79,15 @@ export function Combobox({
                 !options.some((o) => normalize(o.label) === normalize(query)) && (
                   <CommandItem
                     value={`__custom__ ${query}`}
+                    className="items-center gap-2 text-sm"
                     onSelect={() => {
                       onChange(query.trim());
                       setOpen(false);
                       setQuery("");
                     }}
                   >
-                    <Check className="mr-2 h-4 w-4 opacity-0" />
-                    <span className="truncate">
+                    <Check className="h-4 w-4 shrink-0 opacity-0" />
+                    <span className="min-w-0 flex-1 truncate text-left">
                       Dùng: <span className="font-medium">{query.trim()}</span>
                     </span>
                   </CommandItem>
@@ -101,15 +105,18 @@ export function Combobox({
                 <CommandItem
                   key={o.value}
                   value={`${o.label} ${o.hint ?? ""}`}
+                  className="items-center gap-2 text-sm"
                   onSelect={() => {
                     onChange(o.value);
                     setOpen(false);
                     setQuery("");
                   }}
                 >
-                  <Check className={cn("mr-2 h-4 w-4", value === o.value ? "opacity-100" : "opacity-0")} />
-                  <span className="min-w-0 flex-1 truncate">{o.label}</span>
-                  {o.hint && <span className="ml-2 shrink-0 text-xs text-muted-foreground">{o.hint}</span>}
+                  <Check className={cn("h-4 w-4 shrink-0", value === o.value ? "opacity-100" : "opacity-0")} />
+                  <span className="min-w-0 flex-1 truncate text-left">{o.label}</span>
+                  {o.hint && (
+                    <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{o.hint}</span>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>
