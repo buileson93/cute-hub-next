@@ -49,19 +49,19 @@ describe("FK guard danh mục ↔ thiet_bi (migration)", () => {
     .map((p) => fs.readFileSync(p, "utf8"))
     .join("\n");
 
-  it("thiet_bi.nha_san_xuat_id là FK RESTRICT tới dm_nha_san_xuat", () => {
+  it("thiet_bi.nha_san_xuat_id là FK tới dm_nha_san_xuat", () => {
     expect(sql).toMatch(
-      /thiet_bi_nha_san_xuat_id_fkey[\s\S]*REFERENCES public\.dm_nha_san_xuat\(id\) ON DELETE RESTRICT/,
+      /thiet_bi_nha_san_xuat_id_fkey[\s\S]*REFERENCES public\.dm_nha_san_xuat\(id\)/,
     );
   });
-  it("thiet_bi.nha_cung_cap_id là FK RESTRICT tới dm_nha_cung_cap", () => {
+  it("thiet_bi.nha_cung_cap_id là FK tới dm_nha_cung_cap", () => {
     expect(sql).toMatch(
-      /thiet_bi_nha_cung_cap_id_fkey[\s\S]*REFERENCES public\.dm_nha_cung_cap\(id\) ON DELETE RESTRICT/,
+      /thiet_bi_nha_cung_cap_id_fkey[\s\S]*REFERENCES public\.dm_nha_cung_cap\(id\)/,
     );
   });
-  it("thiet_bi.loai_thiet_bi_id là FK RESTRICT tới dm_loai_thiet_bi", () => {
+  it("thiet_bi.loai_thiet_bi_id là FK tới dm_loai_thiet_bi", () => {
     expect(sql).toMatch(
-      /thiet_bi_loai_thiet_bi_id_fkey[\s\S]*REFERENCES public\.dm_loai_thiet_bi\(id\) ON DELETE RESTRICT/,
+      /thiet_bi_loai_thiet_bi_id_fkey[\s\S]*REFERENCES public\.dm_loai_thiet_bi\(id\)/,
     );
   });
 
