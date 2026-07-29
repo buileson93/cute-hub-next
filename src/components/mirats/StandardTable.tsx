@@ -458,6 +458,8 @@ export function StandardTable<T>({
                   <button className="text-primary hover:underline"
                     onClick={() => setHidden([])}>Tất cả</button>
                   <button className="text-primary hover:underline"
+                    onClick={resetAllWidths} title="Đặt lại độ rộng mọi cột">Độ rộng</button>
+                  <button className="text-primary hover:underline"
                     onClick={reset}>Mặc định</button>
                 </div>
               </div>
