@@ -12,7 +12,7 @@
 // Dùng generic <T> nên mọi trang chỉ cần khai cột (key/label/value/cell).
 // ============================================================================
 
-import { Fragment, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Filter, SlidersHorizontal, GripVertical, ArrowLeftRight, ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ import { TableExportDialog } from "@/components/mirats/TableExportDialog";
 import { normalize } from "@/lib/mirats/global-search";
 
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+import { useColumnWidths } from "@/lib/mirats/use-column-widths";
 import { tongSoTrang } from "@/lib/mirats/ui/list-controls";
 import type { UseListControlsReturn } from "@/lib/mirats/ui/use-list-controls";
 import { cn } from "@/lib/utils";
@@ -182,6 +183,37 @@ export function StandardTable<T>({
 
   const { order, hidden, setOrder, toggle, setHidden, reset, isHidden } =
     useColumnPrefs(tableKey, allKeys, defaultHidden);
+
+  // Độ rộng cột tuỳ chỉnh (kéo mép phải tiêu đề cột để đổi).
+  const { widths: colWidths, setWidth: setColWidth, resetWidth: resetColWidth, resetAll: resetAllWidths, MIN_W: MIN_COL_W } =
+    useColumnWidths(tableKey);
+  const resizeRef = useRef<{ key: string; startX: number; startW: number } | null>(null);
+  const [resizingKey, setResizingKey] = useState<string | null>(null);
+  const onResizeStart = useCallback((key: string, e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const th = (e.currentTarget.parentElement as HTMLElement | null);
+    const startW = colWidths[key] ?? th?.getBoundingClientRect().width ?? 120;
+    resizeRef.current = { key, startX: e.clientX, startW };
+    setResizingKey(key);
+    const onMove = (ev: MouseEvent) => {
+      const r = resizeRef.current;
+      if (!r) return;
+      setColWidth(r.key, r.startW + (ev.clientX - r.startX));
+    };
+    const onUp = () => {
+      resizeRef.current = null;
+      setResizingKey(null);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }, [colWidths, setColWidth]);
 
   // Cột hiển thị theo đúng thứ tự đã lưu. `hideBelow` KHÔNG ép ẩn khi user đã chọn hiện.
   const shownCols = useMemo(
@@ -426,6 +458,8 @@ export function StandardTable<T>({
                   <button className="text-primary hover:underline"
                     onClick={() => setHidden([])}>Tất cả</button>
                   <button className="text-primary hover:underline"
+                    onClick={resetAllWidths} title="Đặt lại độ rộng mọi cột">Độ rộng</button>
+                  <button className="text-primary hover:underline"
                     onClick={reset}>Mặc định</button>
                 </div>
               </div>
@@ -491,6 +525,13 @@ export function StandardTable<T>({
           </div>
         )}
         <table className="w-full caption-bottom text-sm">
+          <colgroup>
+            {selectable && <col style={{ width: 40 }} />}
+            {shownCols.map((c) => {
+              const w = colWidths[c.key];
+              return <col key={c.key} style={w ? { width: w } : undefined} />;
+            })}
+          </colgroup>
           <TableHeader>
             <TableRow className="[&>th]:bg-card">
               {selectable && (
@@ -506,6 +547,7 @@ export function StandardTable<T>({
               {shownCols.map((c) => {
                 const canSort = !reorder && sortableKey(c);
                 const sortActive = sort?.key === c.key;
+                const wPx = colWidths[c.key];
                 return (
                 <TableHead
                   key={c.key}
@@ -515,16 +557,18 @@ export function StandardTable<T>({
                   onDrop={reorder ? () => onDrop(c.key) : undefined}
                   onDragEnd={reorder ? () => { setDragKey(null); setOverKey(null); } : undefined}
                   className={cn(
-                    "sticky top-0 z-20 border-r border-border/50 last:border-r-0 shadow-[inset_0_-1px_0_hsl(var(--border))]",
+                    "sticky top-0 z-20 border-r border-border/50 last:border-r-0 shadow-[inset_0_-1px_0_hsl(var(--border))] relative group/th",
                     (c.sticky || c.key === firstKey) && c.sticky && "left-0 z-30",
-                    c.minW,
+                    !wPx && c.minW,
                     alignClass(c.align),
                     sortActive && "bg-primary/5",
                     c.inherited && "bg-amber-500/[0.06] border-l-2 border-l-amber-500/50",
                     reorder && "cursor-grab select-none",
                     reorder && overKey === c.key && dragKey !== c.key && "bg-primary/10",
                     reorder && dragKey === c.key && "opacity-50",
+                    resizingKey === c.key && "bg-primary/10",
                   )}
+                  style={wPx ? { width: wPx, minWidth: MIN_COL_W } : undefined}
                 >
                   <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                     {reorder && <GripVertical className="h-3 w-3 shrink-0 text-muted-foreground/50" />}
@@ -560,6 +604,23 @@ export function StandardTable<T>({
                       />
                     )}
                   </div>
+                  {/* Tay cầm kéo mép phải để đổi độ rộng cột. Bấm đúp để đặt lại. */}
+                  <div
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label={`Đổi độ rộng cột ${c.label}`}
+                    onMouseDown={(e) => onResizeStart(c.key, e)}
+                    onDoubleClick={(e) => { e.stopPropagation(); resetColWidth(c.key); }}
+                    onDragStart={(e) => e.preventDefault()}
+                    draggable={false}
+                    className={cn(
+                      "absolute right-0 top-0 z-30 h-full w-1.5 cursor-col-resize select-none",
+                      "opacity-0 hover:opacity-100 group-hover/th:opacity-60",
+                      "bg-primary/60 transition-opacity",
+                      resizingKey === c.key && "opacity-100",
+                    )}
+                    title="Kéo để đổi độ rộng — bấm đúp để đặt lại"
+                  />
                 </TableHead>
                 );
               })}
