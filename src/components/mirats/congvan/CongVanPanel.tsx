@@ -10,6 +10,7 @@ import { CongVanTree } from "./CongVanTree";
 import { CongVanSheet } from "./CongVanSheet";
 import { useCongVanData } from "./use-cong-van";
 import { LOAI_META, type CongVanRow, cvMoc } from "./types";
+import { buildGraph } from "./chains";
 
 export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boolean }) {
   const { congVans, links, teps, isLoading, error, refresh } = useCongVanData(duAnId);
@@ -36,6 +37,8 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
     );
   }, [congVans]);
 
+  const soLuong = useMemo(() => buildGraph(congVans, links).chains.length, [congVans, links]);
+
   const openNew = () => { setEditing(null); setOpen(true); };
   const openCv = (cv: CongVanRow) => { setEditing(cv); setOpen(true); };
 
@@ -59,6 +62,7 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
           </SelectContent>
         </Select>
         <Badge variant="outline" className="text-[11px]">{filtered.length} công văn</Badge>
+        <Badge variant="outline" className="text-[11px]">{soLuong} luồng liên kết</Badge>
         {quaHan.length > 0 && (
           <Badge variant="outline" className="border-rose-200 bg-rose-50 text-[11px] text-rose-700">
             <AlertTriangle className="mr-1 h-3 w-3" />{quaHan.length} quá hạn phúc đáp
