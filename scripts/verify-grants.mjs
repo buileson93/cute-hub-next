@@ -75,6 +75,26 @@ for (const r of rows) {
 
 console.log(`\n${pass} ok · ${fail ? RED : ""}${fail} thiếu quyền${RESET} · ${missing} chưa tồn tại (tổng ${CHECKS.length})`);
 
+// ── Materialized views phải luôn có dữ liệu sau deploy ─────────────────────
+const REQUIRED_MVS = ["mv_asset_anomaly", "mv_dashboard_overview"];
+let mvFail = 0;
+try {
+  const mvOut = execSync(
+    `psql -Atqc "select matviewname || '|' || ispopulated from pg_matviews where schemaname = 'public'"`,
+    { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 15_000 },
+  ).trim();
+  const state = new Map(
+    mvOut ? mvOut.split("\n").map((l) => { const [n, p] = l.split("|"); return [n, p === "t" || p === "true"]; }) : [],
+  );
+  for (const mv of REQUIRED_MVS) {
+    if (!state.has(mv)) { console.log(`${YLW}○ MISSING${RESET} ${DIM}MVIEW ${mv}${RESET}`); continue; }
+    if (state.get(mv)) { console.log(`${GRN}✓ MVIEW${RESET}   ${mv} đã có dữ liệu`); }
+    else { console.log(`${RED}✗ MVIEW${RESET}   ${mv} chưa được nạp dữ liệu`); mvFail++; }
+  }
+} catch (e) {
+  console.log(`${YLW}⚠ Không kiểm tra được materialized view:${RESET} ${e.message.split("\n")[0]}`);
+}
+
 if (ddlTriggerState === "A" || ddlTriggerState === "O") {
   console.log(
     `\n${YLW}⚠ mirats_auto_public_grants đang bật (${ddlTriggerState}).${RESET} ` +
@@ -83,8 +103,17 @@ if (ddlTriggerState === "A" || ddlTriggerState === "O") {
   console.log(`${DIM}Khuyến nghị: thay bằng baseline/postmigrate + audit nhẹ, hoặc cần owner postgres/Lovable Cloud để drop trigger.${RESET}`);
 }
 
-if (fail) {
-  console.log(`\n${YLW}Fix:${RESET} chạy \`bun run apply:grants\` (hoặc psql -f scripts/grants-baseline.sql)`);
+if (mvFail) {
+  console.log(
+    `\n${YLW}Fix:${RESET} chạy \`psql -c "REFRESH MATERIALIZED VIEW public.<ten_mv>;"\` ` +
+    "(hoặc RPC refresh_mv_asset_anomaly) rồi verify lại.",
+  );
+}
+
+if (fail || mvFail) {
+  if (fail) {
+    console.log(`\n${YLW}Fix:${RESET} chạy \`bun run apply:grants\` (hoặc psql -f scripts/grants-baseline.sql)`);
+  }
   for (const c of failures.slice(0, 10)) {
     const stmt = c.kind === "table"
       ? `GRANT ${c.priv} ON ${c.name} TO ${c.role};`

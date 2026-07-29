@@ -1084,7 +1084,8 @@ function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () 
       options={options}
       value={row.viTriId ?? ""}
       onChange={(v) => void save(v)}
-      placeholder={isLoading ? "Đang tải…" : saving ? "Đang lưu…" : "Chọn vị trí…"}
+      loading={isLoading}
+      placeholder={saving ? "Đang lưu…" : "Chọn vị trí…"}
       searchPlaceholder="Tìm mã / tên vị trí…"
       emptyText="Không có vị trí phù hợp"
       className="h-8 w-[200px] text-sm"

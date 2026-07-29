@@ -12,6 +12,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface ComboOption {
   value: string;
@@ -28,6 +29,8 @@ interface ComboboxProps {
   emptyText?: string;
   /** Cho phép nhập giá trị tự do (không có trong danh sách). */
   allowCustom?: boolean;
+  /** Đang tải danh sách lựa chọn — hiện skeleton thay vì ô rỗng nhấp nháy. */
+  loading?: boolean;
   className?: string;
 }
 
@@ -40,6 +43,7 @@ export function Combobox({
   searchPlaceholder = "Tìm kiếm…",
   emptyText = "Không có kết quả",
   allowCustom = false,
+  loading = false,
   className,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
@@ -47,6 +51,16 @@ export function Combobox({
 
   const selected = options.find((o) => o.value === value);
   const displayLabel = selected?.label ?? (value || "");
+
+  if (loading) {
+    return (
+      <Skeleton
+        aria-busy="true"
+        aria-label="Đang tải danh sách"
+        className={cn("h-9 w-full rounded-md", className)}
+      />
+    );
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
