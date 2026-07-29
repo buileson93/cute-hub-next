@@ -31,6 +31,7 @@ import { TableExportDialog } from "@/components/mirats/TableExportDialog";
 import { normalize } from "@/lib/mirats/global-search";
 
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+import { useColumnWidths } from "@/lib/mirats/use-column-widths";
 import { tongSoTrang } from "@/lib/mirats/ui/list-controls";
 import type { UseListControlsReturn } from "@/lib/mirats/ui/use-list-controls";
 import { cn } from "@/lib/utils";
