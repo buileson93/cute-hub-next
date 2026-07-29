@@ -111,7 +111,9 @@ if (mvFail) {
 }
 
 if (fail || mvFail) {
-  console.log(`\n${YLW}Fix:${RESET} chạy \`bun run apply:grants\` (hoặc psql -f scripts/grants-baseline.sql)`);
+  if (fail) {
+    console.log(`\n${YLW}Fix:${RESET} chạy \`bun run apply:grants\` (hoặc psql -f scripts/grants-baseline.sql)`);
+  }
   for (const c of failures.slice(0, 10)) {
     const stmt = c.kind === "table"
       ? `GRANT ${c.priv} ON ${c.name} TO ${c.role};`
