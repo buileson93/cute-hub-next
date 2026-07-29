@@ -10,7 +10,7 @@
 // tên người thực hiện để hiển thị "ai làm, lúc nào, trước/sau".
 // ============================================================================
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 export type MovementAction = "gan" | "chuyen" | "go";
 

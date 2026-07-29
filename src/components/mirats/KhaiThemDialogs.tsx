@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Combobox } from "@/components/mirats/Combobox";
 import { SchemaDialog, type SchemaField } from "@/components/mirats/SchemaDialog";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useLuuViTri, useViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { sinhMaThanhPhanDuyNhat } from "@/lib/mirats/ma-thiet-bi";
 import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";

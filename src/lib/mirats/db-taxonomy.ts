@@ -16,7 +16,7 @@
 // ============================================================================
 
 import { useQuery, type QueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { fetchAllRows } from "@/lib/mirats/paginate";
 import type { ThietBi } from "@/lib/mirats/types";
 

@@ -4,7 +4,7 @@
 // v_sap_het_han loai='chung_chi'); không thêm nguồn dữ liệu.
 // ============================================================================
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { fetchAllRows } from "./paginate";
 import type { CheDoKdHc, LoaiChungNhan } from "@/lib/mirats/kiem-dinh";
 import { chungChiMoiNhat, trangThaiHetHan } from "@/lib/mirats/kiem-dinh";

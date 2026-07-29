@@ -11,7 +11,7 @@
 // Nhờ đó không còn cảnh "đăng nhập xong thì bị đá ra" vì đọc phải timestamp
 // cũ của phiên trước.
 import { useEffect, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { dangXuatMem } from "@/lib/mirats/auth/soft-signout";
 import {
   ACTIVITY_STORAGE_KEY,

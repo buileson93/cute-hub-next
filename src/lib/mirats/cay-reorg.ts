@@ -9,7 +9,7 @@
 // ============================================================================
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 
 // Bảng/RPC mới chưa có trong types sinh tự động → dùng lớp bọc lỏng kiểu.

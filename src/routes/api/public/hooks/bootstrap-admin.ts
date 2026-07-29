@@ -44,7 +44,7 @@ export const Route = createFileRoute("/api/public/hooks/bootstrap-admin")({
             return Response.json({ error: "email + password required" }, { status: 400 });
           }
 
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
           const { count } = await supabaseAdmin
             .from("user_roles")

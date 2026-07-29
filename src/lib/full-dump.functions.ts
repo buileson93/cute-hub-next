@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 /**
  * Dump toàn bộ CSDL + tệp (Lovable Cloud Storage & Cloudflare R2) ra MỘT THƯ MỤC
@@ -30,7 +30,7 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<DumpManifest> => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/backend/admin.server");
     const supabaseAdmin = sbAdminTyped as any;
     const { createAdminStorage } = await import("@/lib/storage/server");
 
@@ -102,7 +102,7 @@ export const fullDumpTableChunk = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/backend/admin.server");
     const supabaseAdmin = sbAdminTyped as any;
     const { data: allowed } = await supabaseAdmin.rpc("admin_list_backup_tables");
     if (!(allowed ?? []).some((r: any) => r.table_name === data.table)) throw new Error("Bảng không hợp lệ");
@@ -119,7 +119,7 @@ export const fullDumpAuthUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/backend/admin.server");
     const supabaseAdmin = sbAdminTyped as any;
     const out: any[] = [];
     for (let page = 1; page <= 50; page++) {
@@ -150,7 +150,7 @@ export const fullDumpFileUrls = createServerFn({ method: "POST" })
 
     if (data.source === "storage") {
       if (!data.bucket) throw new Error("Thiếu bucket");
-      const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/supabase/client.server");
+      const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/backend/admin.server");
     const supabaseAdmin = sbAdminTyped as any;
       const { createAdminStorage } = await import("@/lib/storage/server");
       const { data: signed } = await createAdminStorage(supabaseAdmin)

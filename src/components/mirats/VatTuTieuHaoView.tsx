@@ -5,7 +5,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Package } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { fmtVND } from "@/lib/mirats/format";
 
 type LienKetCot = "lien_ket_cong_viec_id" | "lien_ket_su_co_id" | "lien_ket_hong_hoc_id";

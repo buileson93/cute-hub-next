@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 /**
  * Returns a fresh realtime channel for `topic`, first removing any stale

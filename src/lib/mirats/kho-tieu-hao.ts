@@ -10,7 +10,7 @@
  * chạm Supabase. Nơi gọi (form UI) truyền builder result vào
  * `supabase.rpc("kho_xuat", args)`.
  */
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 export interface DongTieuHao {
   vat_tu_id: string;

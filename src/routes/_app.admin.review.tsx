@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   ShieldCheck, Loader2, RefreshCw, AlertTriangle, CheckCircle2, Copy, Fingerprint,
   Link2Off, FileWarning, GitCompareArrows, Timer, ExternalLink,

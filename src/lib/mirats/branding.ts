@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import fullDefault from "@/assets/vatm-mirats-full.svg.asset.json";
-import compactDefault from "@/assets/vatm-mirats-compact.svg.asset.json";
+import { supabase } from "@/integrations/backend/client";
+import emblem from "@/assets/vatm-emblem.png";
 
 /**
  * Thương hiệu (logo) đọc từ bảng app_cai_dat.
@@ -45,8 +44,8 @@ async function fetchBranding(): Promise<BrandingSettings> {
   const full = map.get(LOGO_FULL_KEY);
   const compact = map.get(LOGO_COMPACT_KEY);
   return {
-    logoFull: full || fullDefault.url,
-    logoCompact: compact || compactDefault.url,
+    logoFull: full || emblem,
+    logoCompact: compact || emblem,
     hasCustomFull: !!full,
     hasCustomCompact: !!compact,
   };

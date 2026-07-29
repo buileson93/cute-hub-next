@@ -27,7 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { fmtDowntime } from "@/lib/mirats/format";
 import { mttr as computeMttr, formatKpiValue } from "@/lib/mirats/reliability";
 import { useScope } from "@/lib/mirats/scope";

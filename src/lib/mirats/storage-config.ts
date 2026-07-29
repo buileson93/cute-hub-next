@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 /**
  * Cấu hình lớp lưu trữ tệp cho toàn hệ thống.
@@ -14,14 +14,39 @@ import { supabase } from "@/integrations/supabase/client";
 export const STORAGE_CONFIG_KEY = "storage.config";
 
 export type StoragePrimary = "supabase" | "r2";
+/** Chế độ lưu trữ hiển thị cho admin: chỉ Cloud, chỉ R2, hoặc ghi cả hai. */
+export type StorageMode = "cloud" | "r2" | "dual";
+
 export type StorageConfig = {
   primary: StoragePrimary;
   dualWrite: boolean;
+  /**
+   * Khi backend đang chọn bị lỗi, tự động ghi tạm sang backend còn lại thay vì
+   * để tệp không được ghi vào đâu cả (kèm cảnh báo cho người dùng).
+   */
+  autoFallback: boolean;
 };
 
 export const DEFAULT_STORAGE_CONFIG: StorageConfig = {
   primary: "supabase",
   dualWrite: true,
+  autoFallback: true,
+};
+
+export function toMode(cfg: StorageConfig): StorageMode {
+  if (cfg.dualWrite) return "dual";
+  return cfg.primary === "r2" ? "r2" : "cloud";
+}
+
+export function fromMode(mode: StorageMode, autoFallback: boolean): StorageConfig {
+  if (mode === "dual") return { primary: "supabase", dualWrite: true, autoFallback };
+  return { primary: mode === "r2" ? "r2" : "supabase", dualWrite: false, autoFallback };
+}
+
+export const MODE_LABEL: Record<StorageMode, string> = {
+  cloud: "Chỉ dùng Lovable Cloud",
+  r2: "Chỉ dùng Cloudflare R2",
+  dual: "Ghi song song cả hai",
 };
 
 function parse(raw: string | null | undefined): StorageConfig {
@@ -31,11 +56,13 @@ function parse(raw: string | null | undefined): StorageConfig {
     return {
       primary: j.primary === "r2" ? "r2" : "supabase",
       dualWrite: j.dualWrite !== false,
+      autoFallback: j.autoFallback !== false,
     };
   } catch {
     return DEFAULT_STORAGE_CONFIG;
   }
 }
+
 
 export async function fetchStorageConfig(): Promise<StorageConfig> {
   const { data } = await supabase

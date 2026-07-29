@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { z } from "zod";
 
 // ---------- Category & expiry policy ----------
@@ -61,7 +61,7 @@ async function assertAccess(supabase: any, userId: string, key: string, action: 
 
 async function logAccess(entry: { user_id: string|null; key: string; action: string; category?: string|null; expires_in?: number|null; ok?: boolean; reason?: string|null }) {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_access_log").insert({
       user_id: entry.user_id, key: entry.key, action: entry.action,
       category: entry.category ?? null, expires_in: entry.expires_in ?? null,
@@ -84,7 +84,7 @@ export const r2GetUploadUrl = createServerFn({ method: "POST" })
       throw err;
     }
     const url = await r2PresignPut(key, data.contentType, expiresIn);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file").upsert({
       user_id: context.userId, key,
       size: data.size ?? null, content_type: data.contentType ?? null,
@@ -123,7 +123,7 @@ export const r2DeleteObject = createServerFn({ method: "POST" })
       throw err;
     }
     await r2Delete(data.key);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file").delete().eq("key", data.key);
     await logAccess({ user_id: context.userId, key: data.key, action: "delete", ok: true });
     return { ok: true };
@@ -133,7 +133,7 @@ export const r2MarkReady = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ key: z.string().min(1).max(1024), size: z.number().int().nonnegative().optional() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file")
       .update({ status: "ready", expires_at: null, size: data.size ?? null, updated_at: new Date().toISOString() })
       .eq("key", data.key).eq("user_id", context.userId);
@@ -170,7 +170,7 @@ export const r2MultipartInit = createServerFn({ method: "POST" })
     await assertAccess(context.supabase, context.userId, key, "put");
     const uploadId = await r2MultipartCreate(key, data.contentType);
     const category = categorize(data.originalName || key, data.contentType);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file").upsert({
       user_id: context.userId, key, size: data.size ?? null, content_type: data.contentType ?? null,
       category, original_name: data.originalName ?? null, status: "temp",
@@ -200,7 +200,7 @@ export const r2MultipartFinish = createServerFn({ method: "POST" })
     const { r2MultipartComplete } = await import("./r2.server");
     await assertAccess(context.supabase, context.userId, data.key, "put");
     await r2MultipartComplete(data.key, data.uploadId, data.parts);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file")
       .update({ status: "ready", expires_at: null, size: data.size ?? null, updated_at: new Date().toISOString() })
       .eq("key", data.key).eq("user_id", context.userId);
@@ -215,7 +215,7 @@ export const r2MultipartCancel = createServerFn({ method: "POST" })
     const { r2MultipartAbort } = await import("./r2.server");
     await assertAccess(context.supabase, context.userId, data.key, "delete");
     await r2MultipartAbort(data.key, data.uploadId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file").delete().eq("key", data.key).eq("user_id", context.userId);
     await logAccess({ user_id: context.userId, key: data.key, action: "mp_abort", ok: true });
     return { ok: true };
@@ -248,11 +248,20 @@ export const r2ListMyFiles = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+/**
+ * Kiểm tra sức khoẻ R2. KHÔNG ném lỗi: khi R2 chưa cấu hình / sai thông số,
+ * trả về { ok: false, error } để giao diện hiển thị cảnh báo thay vì trắng màn hình.
+ */
 export const r2Ping = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
-    const { getR2Bucket, r2Head } = await import("./r2.server");
-    const bucket = getR2Bucket();
-    const probe = await r2Head("__ping__");
-    return { ok: true, bucket, probeExists: probe.exists };
+    try {
+      const { getR2Bucket, r2Head } = await import("./r2.server");
+      const bucket = await getR2Bucket();
+      const probe = await r2Head("__ping__");
+      return { ok: true as const, bucket, probeExists: probe.exists };
+    } catch (err: any) {
+      return { ok: false as const, bucket: null, probeExists: false, error: err?.message ?? String(err) };
+    }
   });
+

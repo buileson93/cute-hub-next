@@ -31,7 +31,6 @@ import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
 import { useScope } from "@/lib/mirats/scope";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { isOpenState } from "@/lib/mirats/su-co-state";
-import { DailyBrief } from "@/components/mirats/DailyBrief";
 
 
 export const Route = createFileRoute("/_app/")({
@@ -322,7 +321,6 @@ function Dashboard() {
         </h1>
       </header>
 
-      <DailyBrief />
 
 
 

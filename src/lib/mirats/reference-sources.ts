@@ -8,7 +8,7 @@
 // ============================================================================
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { ComboOption } from "@/components/mirats/Combobox";
 
 /** Các bảng danh mục có thể liên kết. `value`/`label` đều dùng cột `ten`. */

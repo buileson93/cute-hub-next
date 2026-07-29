@@ -3,7 +3,7 @@
  * Chỉ đọc; ghi/sửa dùng admin UI riêng qua supabase-js.
  */
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { DinhNghiaTruong, LoaiTruong } from "./registry";
 
 interface RawRow {

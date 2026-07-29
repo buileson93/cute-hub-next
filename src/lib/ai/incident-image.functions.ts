@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { generateText } from "ai";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { buildAiModel, type AiRuntimeConfig } from "@/lib/ai/gateway.server";
 
 // GĐ3-05 — Vision Image Hint

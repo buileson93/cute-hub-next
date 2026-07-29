@@ -7,7 +7,7 @@
  *   import { storage } from "@/lib/storage";
  *   const { data, error } = await storage.from("avatars").upload(path, file, { upsert: true });
  */
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { createSupabaseStorageAdapter } from "./adapter";
 
 export type {

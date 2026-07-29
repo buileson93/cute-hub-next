@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/mirats/Combobox";
 import { LayerSectionHeader } from "@/lib/mirats/layer-vocab";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   useThietBiChon, useLapThietBi, useThaoThietBi, useThayTheThietBi, useDieuChuyen,
   useLyLichViTri, useLuuViTri, useThietBiDangLap, rankChonDevices, type ViTriChucNangTree,

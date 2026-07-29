@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Combobox } from "@/components/mirats/Combobox";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   useViTriChucNang, useThietBiDangLap, useThietBiRanh,
   useLuuViTri, useNgungViTri, useXoaViTri, useXoaViTriForce, useDemLichSuThanhPhan, useDoiThuTuViTri,

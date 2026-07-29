@@ -3,7 +3,7 @@
 // Trả về số lượng theo `NavBadgeKey`; 0 nghĩa là ẩn badge.
 // ============================================================================
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { DEFAULT_NGAY_SAP_HET_HAN } from "@/lib/mirats/han-canh-bao";
 import type { NavBadgeKey } from "@/lib/mirats/nav/nav-config";
 

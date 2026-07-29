@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, LifeBuoy } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
+import { rpcErrorToast } from "@/lib/mirats/rpc-error";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useScope } from "@/lib/mirats/scope";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
@@ -214,7 +215,7 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
       void created;
       if (onDone) onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => { const t = rpcErrorToast(e); toast.error(t.title, { description: t.description, duration: t.description ? 15000 : 5000 }); },
   });
 
   if (!canManageHongHoc(roles)) {

@@ -53,7 +53,7 @@ function matchDonVi(sub: Sub, donViId: string | null): boolean {
 }
 
 export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promise<SendResult & { subscribers: number }> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
   const admin = supabaseAdmin as unknown as SupabaseClient;
   const res: SendResult = { ok: 0, failed: 0, errors: [] };
 

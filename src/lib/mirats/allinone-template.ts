@@ -24,7 +24,7 @@
 
 import ExcelJS from "exceljs";
 import { unzipSync, zipSync } from "fflate";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   findEntity, fieldMap, noAccent, compactFields, type EntityDef, type FieldDef,
 } from "@/lib/mirats/import-config";

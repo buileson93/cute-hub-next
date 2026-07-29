@@ -14,7 +14,7 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { compileField, type CompiledField } from "@/lib/mirats/form-schema";
 import { buildSections, type RawSectionRow, type RawItemRow } from "@/lib/mirats/checklist-repo";
 import {

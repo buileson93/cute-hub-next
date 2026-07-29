@@ -9,7 +9,7 @@ import {
   Loader2, FileText, Upload, AlertTriangle, CheckCircle2, X,
   Sparkles, Copy,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";

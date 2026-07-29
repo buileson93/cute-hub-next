@@ -2,7 +2,7 @@
 // (đặc biệt permission denied 42501). Dùng supabaseAdmin để bypass RLS và
 // đảm bảo log luôn ghi được — kể cả khi phiên user đã hỏng.
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 interface LogInput {
   reason: string;
@@ -16,7 +16,7 @@ export const logThanhPhanInsertFailure = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: LogInput) => d)
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("audit_log").insert({
       user_id: context.userId,
       action: "insert_failed",

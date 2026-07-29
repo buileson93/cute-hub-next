@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/public/hooks/canh-bao-het-han")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
           const { supabaseAdmin } = await import(
-            "@/integrations/supabase/client.server"
+            "@/integrations/backend/admin.server"
           );
           const { data, error } = await supabaseAdmin.rpc(
             "sinh_canh_bao_het_han",

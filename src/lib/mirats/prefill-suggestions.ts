@@ -1,6 +1,6 @@
 // Ambient prefill sources for incident (and PM) forms.
 // Client-side helpers backed by Supabase (RLS applies as caller).
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 export interface KipTrucRow { ho_ten: string; chuc_vu: string; nang_dinh: string }
 

@@ -9,8 +9,9 @@
 //      lịch + form_submission + vật tư tiêu hao đều nằm trong 1 transaction
 //      phía DB.
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { VatTuTieuHao } from "@/lib/mirats/ghi-nghiep-vu";
+import { throwRpcError } from "@/lib/mirats/rpc-error";
 
 function toVatTuJson(dsVT?: VatTuTieuHao[]) {
   return (dsVT ?? []).map((v) => ({
@@ -30,13 +31,14 @@ export async function ghiSuCoAtomic(args: {
   ngay_phat_hien?: string;
   vatTu?: VatTuTieuHao[];
 }) {
-  const { data, error } = await supabase.rpc("ghi_su_co_atomic" as never, {
+  const __payload = {
     p_thiet_bi_id: args.thiet_bi_id,
     p_hien_tuong: args.hien_tuong,
     p_ngay_phat_hien: args.ngay_phat_hien ?? null,
     p_vat_tu: toVatTuJson(args.vatTu),
-  } as never);
-  if (error) throw error;
+  };
+  const { data, error } = await supabase.rpc("ghi_su_co_atomic" as never, __payload as never);
+  if (error) throwRpcError("ghi_su_co_atomic", __payload, error);
   const id = data as unknown as string;
   const readBack = await supabase.from("su_co").select("*").eq("id", id).single();
   if (readBack.error) throw readBack.error;
@@ -49,13 +51,14 @@ export async function ghiBaoDuongAtomic(args: {
   ngay_bat_dau?: string;
   vatTu?: VatTuTieuHao[];
 }) {
-  const { data, error } = await supabase.rpc("ghi_bao_duong_atomic" as never, {
+  const __payload = {
     p_thiet_bi_id: args.thiet_bi_id,
     p_mo_ta: args.mo_ta,
     p_ngay_bat_dau: args.ngay_bat_dau ?? null,
     p_vat_tu: toVatTuJson(args.vatTu),
-  } as never);
-  if (error) throw error;
+  };
+  const { data, error } = await supabase.rpc("ghi_bao_duong_atomic" as never, __payload as never);
+  if (error) throwRpcError("ghi_bao_duong_atomic", __payload, error);
   const id = data as unknown as string;
   const readBack = await supabase.from("bao_tri").select("*").eq("id", id).single();
   if (readBack.error) throw readBack.error;
@@ -68,13 +71,14 @@ export async function ghiHongHocAtomic(args: {
   ngay_hong?: string;
   vatTu?: VatTuTieuHao[];
 }) {
-  const { data, error } = await supabase.rpc("ghi_hong_hoc_atomic" as never, {
+  const __payload = {
     p_thiet_bi_id: args.thiet_bi_id,
     p_mo_ta_hong_hoc: args.mo_ta_hong_hoc,
     p_ngay_hong: args.ngay_hong ?? null,
     p_vat_tu: toVatTuJson(args.vatTu),
-  } as never);
-  if (error) throw error;
+  };
+  const { data, error } = await supabase.rpc("ghi_hong_hoc_atomic" as never, __payload as never);
+  if (error) throwRpcError("ghi_hong_hoc_atomic", __payload, error);
   const id = data as unknown as string;
   const readBack = await supabase.from("hong_hoc").select("*").eq("id", id).single();
   if (readBack.error) throw readBack.error;
@@ -92,10 +96,11 @@ export interface GhiSuCoFullResult {
 }
 
 export async function ghiSuCoFull(payload: Record<string, unknown>): Promise<GhiSuCoFullResult> {
-  const { data, error } = await supabase.rpc("ghi_su_co_atomic" as never, {
+  const __payload = {
     p_payload: payload,
-  } as never);
-  if (error) throw error;
+  };
+  const { data, error } = await supabase.rpc("ghi_su_co_atomic" as never, __payload as never);
+  if (error) throwRpcError("ghi_su_co_atomic", __payload, error);
   const r = data as { ids: string[]; ma_nhom_bc: string };
   // Đọc lại các bản ghi vừa tạo (readback) — chỉ để chắc chắn có mặt.
   if (r?.ids?.length) {
@@ -113,10 +118,11 @@ export interface GhiBaoDuongFullResult {
 export async function ghiBaoDuongFull(
   payload: Record<string, unknown>,
 ): Promise<GhiBaoDuongFullResult> {
-  const { data, error } = await supabase.rpc("ghi_bao_duong_atomic" as never, {
+  const __payload = {
     p_payload: payload,
-  } as never);
-  if (error) throw error;
+  };
+  const { data, error } = await supabase.rpc("ghi_bao_duong_atomic" as never, __payload as never);
+  if (error) throwRpcError("ghi_bao_duong_atomic", __payload, error);
   const r = data as { submission_id: string; bao_tri_ids: string[] };
   if (r?.bao_tri_ids?.length) {
     const rb = await supabase.from("bao_tri").select("id").in("id", r.bao_tri_ids);
@@ -133,10 +139,11 @@ export interface GhiHongHocFullResult {
 export async function ghiHongHocFull(
   payload: Record<string, unknown>,
 ): Promise<GhiHongHocFullResult> {
-  const { data, error } = await supabase.rpc("ghi_hong_hoc_atomic" as never, {
+  const __payload = {
     p_payload: payload,
-  } as never);
-  if (error) throw error;
+  };
+  const { data, error } = await supabase.rpc("ghi_hong_hoc_atomic" as never, __payload as never);
+  if (error) throwRpcError("ghi_hong_hoc_atomic", __payload, error);
   const r = data as { ids: string[]; ma_hong_hoc: string };
   if (r?.ids?.length) {
     const rb = await supabase.from("hong_hoc").select("id").in("id", r.ids);

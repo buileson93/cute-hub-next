@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { GiayPhep } from "@/lib/mirats/types";
 
 /** Một dòng của read model hợp nhất v_giay_phep. */

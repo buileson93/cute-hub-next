@@ -86,7 +86,7 @@ export async function buildReliabilityMessage(admin: SupabaseClient, type: Repor
 }
 
 export async function runReliabilityReport(type: ReportType): Promise<{ subscribers: number; sent: number; failed: number }> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
   const admin = supabaseAdmin as unknown as SupabaseClient;
 
   const { data: subsRaw } = await admin.from("telegram_subscriber").select("id,chat_id,ten,cac_loai,active").eq("active", true);

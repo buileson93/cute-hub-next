@@ -13,8 +13,7 @@ import {
 } from "@/components/mirats/ProductTour";
 import { UserAvatar } from "@/components/mirats/UserAvatar";
 import { useBranding } from "@/lib/mirats/branding";
-import vatmMark from "@/assets/vatm-mark-square.svg.asset.json";
-import vatmLogoFull from "@/assets/vatm-mirats-full-v2.svg.asset.json";
+import vatmLogoFullSrc from "@/assets/vatm-emblem.png";
 import { cn } from "@/lib/utils";
 import { GlobalSearch } from "@/components/mirats/GlobalSearch";
 import { TzClock } from "@/components/mirats/TzClock";
@@ -28,7 +27,7 @@ import { useRouteTracker } from "@/hooks/use-route-tracker";
 // DensityToggle đã chuyển vào trang Cài đặt tài khoản
 import { NotificationBell } from "@/components/mirats/NotificationBell";
 import { CommandPalette } from "@/components/mirats/CommandPalette";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession, type AppRole } from "@/hooks/use-session";
 import { useQueryClient } from "@tanstack/react-query";
 import { resetUserPrefs } from "@/hooks/use-user-pref";
@@ -75,7 +74,7 @@ const BADGE_BY_ROUTE: Record<string, NavBadgeKey> = (() => {
 
 function BrandMark({ className }: { className?: string }) {
   const { data } = useBranding();
-  const src = data?.logoCompact || vatmLogoFull.url;
+  const src = data?.logoCompact || vatmLogoFullSrc;
   return (
     <img
       src={src}
@@ -616,7 +615,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             aria-hidden="true"
             className="pointer-events-none absolute left-full top-1/2 z-[70] ml-6 flex -translate-y-1/2 items-center rounded-3xl border border-border/60 bg-popover/95 px-10 py-8 opacity-0 scale-75 shadow-2xl ring-1 ring-black/5 backdrop-blur-md transition-all duration-[var(--duration-slow)] ease-out group-hover:opacity-100 group-hover:scale-100 group-hover:delay-[2000ms]"
           >
-            <img src={vatmLogoFull.url} alt="" aria-hidden="true" draggable={false} className="h-40 w-auto object-contain md:h-56 lg:h-72" />
+            <img src={vatmLogoFullSrc} alt="" aria-hidden="true" draggable={false} className="h-40 w-auto object-contain md:h-56 lg:h-72" />
           </span>
         </a>
 
@@ -709,7 +708,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               className="hidden shrink-0 items-center md:flex"
             >
               <img
-                src={vatmLogoFull.url}
+                src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
                 draggable={false}
                 className="h-9 w-auto object-contain transition-transform duration-[var(--duration-base)] hover:scale-105"

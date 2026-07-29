@@ -4,7 +4,7 @@
  * Mục tiêu: khi supabase trả lỗi phiên hết hạn, xoá session + cache và
  * đưa về /auth một lần duy nhất, không tạo vòng lặp redirect.
  */
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { laLoiHetPhien } from "./access";
 
 let dangDangXuat = false;

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { fmtFieldValue } from "@/lib/mirats/bao-tri-form";
 import { compileField, parseCompiledSchema, resolveSubmissionFields } from "@/lib/mirats/form-schema";
 import { buildChecklistWordSections, CHECKLIST_WORD_HEADERS } from "@/lib/mirats/form-word";

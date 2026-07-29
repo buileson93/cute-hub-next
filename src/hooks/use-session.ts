@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 export type AppRole = "admin" | "phong_kt" | "phu_trach_dv" | "ktv" | "readonly" | "quan_ly_du_an" | "to_truong";
 

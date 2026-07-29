@@ -121,7 +121,7 @@ describe("cong-viec-state — KPI theo đơn vị", () => {
 });
 
 // --- Mô phỏng mutation invalidation (không reload) ---
-vi.mock("@/integrations/supabase/client", () => ({
+vi.mock("@/integrations/backend/client", () => ({
   supabase: { rpc: vi.fn(async () => ({ data: null, error: null })) },
 }));
 

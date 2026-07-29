@@ -20,7 +20,7 @@ import { DeviceMovementHistoryList } from "@/components/mirats/DeviceMovementHis
 import { LayerSectionHeader } from "@/lib/mirats/layer-vocab";
 import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { storage } from "@/lib/storage";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { sortDacTinh, type DacTinh } from "@/lib/mirats/dac-tinh";
 import { MauChip } from "@/components/mirats/MauChip";

@@ -12,7 +12,7 @@
 // ============================================================================
 
 import ExcelJS from "exceljs";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { entityById, fieldMap, type FieldDef } from "@/lib/mirats/import-config";
 
 /** Header nhập liệu → bảng danh mục dùng để đổ dropdown. */

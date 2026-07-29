@@ -16,7 +16,7 @@ export const Route = createFileRoute("/api/public/qa-reset-test-passwords")({
         if (!expected || secret !== expected) {
           return new Response("Forbidden", { status: 403 });
         }
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
         const newPw = "ZZ_Test_2026!";
         const results: Array<{ email: string; ok: boolean; error?: string }> = [];
         // Danh sách cứng cho an toàn — chỉ đúng 6 tk QA + admin gốc nếu cần

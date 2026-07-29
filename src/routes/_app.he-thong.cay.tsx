@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { useMemo, useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 
 import {
-  ReactFlow, ReactFlowProvider, Background, Controls, MiniMap, Panel, useReactFlow,
+  ReactFlow, ReactFlowProvider, Controls, MiniMap, Panel, useReactFlow,
   useNodesState, useEdgesState,
-  Handle, Position, MarkerType,
+  Handle, Position,
   type Node, type Edge, type NodeTypes, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -27,7 +27,7 @@ import { nhanDienLoiTrungThietBi } from "@/lib/mirats/ma-thiet-bi";
 import { useSession } from "@/hooks/use-session";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRealtimeTaxonomy } from "@/hooks/use-realtime-taxonomy";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import type { ThietBi, SuKienThietBi } from "@/lib/mirats/types";
 import { htSysMa, parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
@@ -91,6 +91,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SlidersHorizontal, Filter, Tags } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
   validateSearch: (search: Record<string, unknown>): { editTb?: string } => ({
@@ -2121,32 +2122,91 @@ type MindData = {
 };
 type MindNodeType = Node<MindData, "mind">;
 
+// Phong cách "thanh mảnh" kiểu mindmap NotebookLM: viền mảnh, nền gần như
+// trong suốt, phân cấp thể hiện bằng màu viền + chấm màu thay vì mảng nền đậm.
 const KIND_STYLE: Record<MindKind, string> = {
-  root: "border-primary bg-primary text-primary-foreground shadow-md",
-  pl: "border-rose-500/40 bg-rose-500/5",
-  lv: "border-primary/40 bg-primary/5",
-  nh: "border-violet-500/40 bg-violet-500/5",
-  ht: "border-blue-500/40 bg-blue-500/5",
-  tb: "border-border bg-card",
-  tp: "border-emerald-500/40 bg-emerald-500/5",
-  vtg: "border-sky-500/40 bg-sky-500/5",
-  vt: "border-sky-500/30 bg-sky-500/[0.03]",
+  root: "border-primary/60 bg-primary/10 text-foreground",
+  pl: "border-rose-500/30 bg-card/70",
+  lv: "border-primary/30 bg-card/70",
+  nh: "border-violet-500/30 bg-card/70",
+  ht: "border-blue-500/30 bg-card/70",
+  tb: "border-border bg-card/70",
+  tp: "border-emerald-500/30 bg-card/70",
+  vtg: "border-sky-500/30 bg-card/70",
+  vt: "border-sky-500/25 bg-card/70",
+};
+// Chấm màu nhỏ đầu node — dấu hiệu cấp bậc thay cho nền màu.
+const KIND_DOT: Record<MindKind, string> = {
+  root: "bg-primary",
+  pl: "bg-rose-500",
+  lv: "bg-primary",
+  nh: "bg-violet-500",
+  ht: "bg-blue-500",
+  tb: "bg-muted-foreground",
+  tp: "bg-emerald-500",
+  vtg: "bg-sky-500",
+  vt: "bg-sky-400",
 };
 const KIND_ICON: Record<MindKind, React.ComponentType<{ className?: string }>> = {
   root: Building2, pl: Boxes, lv: Layers, nh: FolderTree, ht: Network, tb: Cpu, tp: Puzzle, vtg: Plug, vt: MapPin,
 };
-// Bề rộng node theo cấp: nhóm phân loại gọn hơn, node nội dung rộng thoáng để dễ đọc.
-const KIND_WIDTH: Record<MindKind, string> = {
-  root: "w-[200px]",
-  pl: "w-[190px]",
-  lv: "w-[190px]",
-  nh: "w-[210px]",
-  ht: "w-[250px]",
-  tb: "w-[240px]",
-  tp: "w-[230px]",
-  vtg: "w-[200px]",
-  vt: "w-[250px]",
+// Bề rộng node theo cấp (px) — dùng chung cho CSS và thuật toán bố trí cột.
+const KIND_W: Record<MindKind, number> = {
+  root: 260, pl: 248, lv: 248, nh: 268, ht: 320, tb: 308, tp: 300, vtg: 264, vt: 320,
 };
+const KIND_H: Record<MindKind, number> = {
+  root: 32, pl: 32, lv: 32, nh: 32, ht: 32, tb: 32, tp: 32, vtg: 32, vt: 32,
+};
+const KIND_WIDTH: Record<MindKind, string> = {
+  root: "w-[260px]",
+  pl: "w-[248px]",
+  lv: "w-[248px]",
+  nh: "w-[268px]",
+  ht: "w-[320px]",
+  tb: "w-[308px]",
+  tp: "w-[300px]",
+  vtg: "w-[264px]",
+  vt: "w-[320px]",
+};
+
+function TruncatedNodeLabel({ label }: { label: string }) {
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const [truncated, setTruncated] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => setTruncated(el.scrollWidth > el.clientWidth + 1);
+    update();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
+    ro?.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [label]);
+
+  const text = (
+    <span
+      ref={ref}
+      className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium"
+      title={truncated ? undefined : label}
+    >
+      {label}
+    </span>
+  );
+
+  if (!truncated) return text;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{text}</TooltipTrigger>
+      <TooltipContent side="top" align="center" className="max-w-80 break-words leading-snug">
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 function MindNode({ data }: NodeProps<MindNodeType>) {
   const [editing, setEditing] = useState(false);
@@ -2180,180 +2240,203 @@ function MindNode({ data }: NodeProps<MindNodeType>) {
     );
   }
 
+  const actionButtonClass = "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-accent-foreground";
+  const isPositionNode = data.kind === "vt" || (data.kind === "tp" && data.isViTri);
+  const hasToolbar = Boolean(
+    (isPositionNode && data.onOpenEditor) ||
+    (data.kind === "ht" && (data.onIncident || data.onMaint || data.onHistory || (data.canManage && data.onMove && (data.moveTargets?.length ?? 0) > 0))) ||
+    ((data.kind === "tb" || data.kind === "tp") && data.onRecord) ||
+    (data.canManage && data.kind !== "root" && !(data.kind === "tp" && data.isViTri)),
+  );
+
   return (
     <div
       onDoubleClick={(e) => { e.stopPropagation(); startInline(); }}
       className={cn(
-        "group flex cursor-pointer items-start gap-2 rounded-lg border px-3 py-2 text-xs transition-all hover:brightness-95",
+        "group relative flex h-8 cursor-pointer items-center text-[11px] leading-none transition-all animate-fade-in",
         KIND_WIDTH[data.kind],
-        KIND_STYLE[data.kind],
-        data.tone,
-        data.dim && "opacity-25 saturate-50",
-        data.active && "z-10 ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg",
-        data.hit && "z-10 ring-2 ring-amber-500 ring-offset-2 ring-offset-background shadow-lg animate-pulse",
       )}
     >
-      <Handle type="target" position={Position.Left} className="!h-1.5 !w-1.5 !border-0 !bg-muted-foreground/40" />
-      {data.collapsible && (
-        <span
-          className={cn(
-            "flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded border transition-colors hover:brightness-110",
-            data.expanded ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/40 bg-background text-muted-foreground",
-          )}
-          title={data.expanded ? "Thu nhỏ" : "Mở rộng"}
-          onClick={(e) => { e.stopPropagation(); data.toggle?.(); }}
-        >
-          {data.expanded ? <Minus className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
-        </span>
+      <div
+        className={cn(
+          "relative flex h-full w-full items-center gap-1.5 overflow-hidden rounded-md border border-l-2 px-2 pr-2 backdrop-blur-[1px] transition-all hover:border-primary/60 hover:shadow-sm",
+        KIND_STYLE[data.kind],
+        data.tone,
+        data.dim && "opacity-20 saturate-0",
+        data.active && "z-10 border-primary ring-1 ring-primary/60",
+        data.hit && "z-10 border-amber-500 ring-1 ring-amber-500 animate-pulse",
       )}
-      <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-      <div className="min-w-0 flex-1">
-        {data.code && <CodeBadge code={data.code} className="mr-1" title={data.maThietBi ? `Mã tài sản: ${data.code}` : `Mã: ${data.code}`} />}
-        <span className="font-medium leading-tight [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden break-words">{data.label}</span>
-        {data.donViMa && data.kind !== "tb" && data.kind !== "tp" && (
-          <Badge
-            variant="outline"
-            className="ml-1 inline-flex shrink-0 gap-0.5 border-amber-500/30 bg-amber-500/10 px-1 py-0 align-middle text-[9px] font-medium text-amber-600"
-            title={`Đơn vị: ${data.donViMa}`}
+    >
+        <Handle type="target" position={Position.Left} className="!h-1 !w-1 !border-0 !bg-muted-foreground/30" />
+        {data.collapsible ? (
+          <span
+            className={cn(
+              "flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border text-[9px] transition-colors",
+              data.expanded ? "border-primary/50 bg-primary/15 text-primary" : "border-muted-foreground/30 bg-background text-muted-foreground",
+            )}
+            title={data.expanded ? "Thu nhỏ" : "Mở rộng"}
+            onClick={(e) => { e.stopPropagation(); data.toggle?.(); }}
           >
-            <Building2 className="h-2.5 w-2.5 shrink-0" />
-            {data.donViMa}
+            {data.expanded ? <Minus className="h-2.5 w-2.5" /> : <Plus className="h-2.5 w-2.5" />}
+          </span>
+        ) : (
+          <span className={cn("h-1.5 w-1.5 shrink-0 rounded-sm", KIND_DOT[data.kind])} />
+        )}
+        <Icon className="h-3 w-3 shrink-0 opacity-60" />
+
+        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+          {data.code && <CodeBadge code={data.code} title={data.maThietBi ? `Mã tài sản: ${data.code}` : `Mã: ${data.code}`} />}
+          <TruncatedNodeLabel label={data.label} />
+          {data.donViMa && data.kind !== "tb" && data.kind !== "tp" && (
+            <Badge
+              variant="outline"
+              className="inline-flex max-w-[68px] shrink-0 gap-0.5 truncate border-amber-500/30 bg-amber-500/10 px-1 py-0 text-[9px] font-medium text-amber-600"
+              title={`Đơn vị: ${data.donViMa}`}
+            >
+              <Building2 className="h-2.5 w-2.5 shrink-0" />
+              <span className="min-w-0 truncate">{data.donViMa}</span>
+            </Badge>
+          )}
+          {data.loaiTb && (data.kind === "tb" || data.kind === "tp") && (
+            <Badge
+              variant="outline"
+              className="inline-flex max-w-[72px] shrink-0 truncate border-violet-500/30 bg-violet-500/10 px-1 py-0 text-[9px] font-medium text-violet-600"
+              title={`Chủng loại: ${data.loaiTb}`}
+            >
+              <span className="min-w-0 truncate">{data.loaiTb}</span>
+            </Badge>
+          )}
+        </div>
+        {typeof data.count === "number" && (
+          <Badge variant={data.kind === "root" ? "secondary" : "outline"} className="ml-auto shrink-0 text-[10px]">
+            {data.count.toLocaleString("vi-VN")}
           </Badge>
         )}
-        {data.loaiTb && (data.kind === "tb" || data.kind === "tp") && (
+        {isPositionNode && data.devLabel && (
           <Badge
             variant="outline"
-            className="ml-1 inline-flex shrink-0 border-violet-500/30 bg-violet-500/10 px-1 py-0 align-middle text-[9px] font-medium text-violet-600"
-            title={`Chủng loại: ${data.loaiTb}`}
+            className={cn(
+              "ml-auto max-w-[96px] shrink-0 truncate text-[9px]",
+              data.assignState === "assigned"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+                : data.assignState === "stopped"
+                  ? "border-border bg-muted text-muted-foreground"
+                  : "border-amber-500/30 bg-amber-500/10 text-amber-600",
+            )}
+            title={data.devLabel}
           >
-            {data.loaiTb}
+            {data.devLabel}
           </Badge>
         )}
+        <Handle type="source" position={Position.Right} className="!h-1.5 !w-1.5 !border-0 !bg-muted-foreground/40" />
       </div>
-      {typeof data.count === "number" && (
-        <Badge variant={data.kind === "root" ? "secondary" : "outline"} className="ml-auto shrink-0 text-[10px]">
-          {data.count.toLocaleString("vi-VN")}
-        </Badge>
-      )}
-      {(data.kind === "vt" || (data.kind === "tp" && data.isViTri)) && data.devLabel && (
-        <Badge
-          variant="outline"
-          className={cn(
-            "ml-auto max-w-[120px] shrink-0 truncate text-[9px]",
-            data.assignState === "assigned"
-              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
-              : data.assignState === "stopped"
-                ? "border-border bg-muted text-muted-foreground"
-                : "border-amber-500/30 bg-amber-500/10 text-amber-600",
-          )}
-          title={data.devLabel}
-        >
-          {data.devLabel}
-        </Badge>
-      )}
-      {(data.kind === "vt" || (data.kind === "tp" && data.isViTri)) && data.onOpenEditor && (
-        <button
-          className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-emerald-600 hover:text-white hover:opacity-100"
-          title="Mở tài sản đang lắp"
-          onClick={(e) => { e.stopPropagation(); data.onOpenEditor?.(); }}
-        >
-          <Eye className="h-3.5 w-3.5" />
-        </button>
-      )}
-      {data.kind === "ht" && data.onIncident && (
-        <button
-          className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-amber-600 hover:text-white hover:opacity-100"
-          title="Tạo sự cố cho hệ thống này"
-          onClick={(e) => { e.stopPropagation(); data.onIncident?.(); }}
-        >
-          <AlertTriangle className="h-3.5 w-3.5" />
-        </button>
-      )}
-      {data.kind === "ht" && data.onMaint && (
-        <button
-          className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-emerald-600 hover:text-white hover:opacity-100"
-          title="Tạo phiếu bảo dưỡng cho hệ thống này"
-          onClick={(e) => { e.stopPropagation(); data.onMaint?.(); }}
-        >
-          <Wrench className="h-3.5 w-3.5" />
-        </button>
-      )}
-      {data.kind === "ht" && data.onHistory && (
-        <button
-          className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-blue-600 hover:text-white hover:opacity-100"
-          title="Lý lịch hệ thống (bảo dưỡng · sự cố · thay thế)"
-          onClick={(e) => { e.stopPropagation(); data.onHistory?.(); }}
-        >
-          <History className="h-3.5 w-3.5" />
-        </button>
-      )}
-      {(data.kind === "tb" || data.kind === "tp") && data.onRecord && (
-        <button
-          className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-blue-600 hover:text-white hover:opacity-100"
-          title="Sổ lý lịch tài sản"
-          onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }}
-        >
-          <History className="h-3.5 w-3.5" />
-        </button>
-      )}
-      {data.kind === "ht" && data.canManage && data.onMove && (data.moveTargets?.length ?? 0) > 0 && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+
+      {hasToolbar && (
+        <div className="pointer-events-none absolute left-[calc(100%+4px)] top-1/2 z-20 flex -translate-y-1/2 items-center gap-0.5 rounded-md border bg-popover/95 px-1 py-0.5 opacity-0 shadow-sm backdrop-blur transition-opacity group-hover:pointer-events-auto group-hover:opacity-100">
+          {isPositionNode && data.onOpenEditor && (
             <button
-              className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-violet-600 hover:text-white hover:opacity-100"
-              title="Di chuyển hệ thống sang Phân loại / Lĩnh vực khác"
-              onClick={(e) => e.stopPropagation()}
+              className={actionButtonClass}
+              title="Mở tài sản đang lắp"
+              onClick={(e) => { e.stopPropagation(); data.onOpenEditor?.(); }}
+            >
+              <Eye className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {data.kind === "ht" && data.onIncident && (
+            <button
+              className={actionButtonClass}
+              title="Tạo sự cố cho hệ thống này"
+              onClick={(e) => { e.stopPropagation(); data.onIncident?.(); }}
+            >
+              <AlertTriangle className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {data.kind === "ht" && data.onMaint && (
+            <button
+              className={actionButtonClass}
+              title="Tạo phiếu bảo dưỡng cho hệ thống này"
+              onClick={(e) => { e.stopPropagation(); data.onMaint?.(); }}
+            >
+              <Wrench className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {data.kind === "ht" && data.onHistory && (
+            <button
+              className={actionButtonClass}
+              title="Lý lịch hệ thống (bảo dưỡng · sự cố · thay thế)"
+              onClick={(e) => { e.stopPropagation(); data.onHistory?.(); }}
+            >
+              <History className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {(data.kind === "tb" || data.kind === "tp") && data.onRecord && (
+            <button
+              className={actionButtonClass}
+              title="Sổ lý lịch tài sản"
+              onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }}
+            >
+              <History className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {data.kind === "ht" && data.canManage && data.onMove && (data.moveTargets?.length ?? 0) > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={actionButtonClass}
+                  title="Di chuyển hệ thống sang Phân loại / Lĩnh vực khác"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <ArrowRightLeft className="h-3.5 w-3.5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="max-h-96 w-64 overflow-auto">
+                <DropdownMenuLabel className="truncate">Di chuyển “{data.label}” sang…</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {(() => {
+                  const byPl = new Map<string, { plLabel: string; items: MoveTarget[] }>();
+                  for (const t of data.moveTargets ?? []) {
+                    let e = byPl.get(t.plId);
+                    if (!e) { e = { plLabel: t.plLabel, items: [] }; byPl.set(t.plId, e); }
+                    e.items.push(t);
+                  }
+                  return [...byPl.values()].map((g) => (
+                    <DropdownMenuSub key={g.plLabel}>
+                      <DropdownMenuSubTrigger className="truncate">{g.plLabel}</DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="max-h-80 overflow-auto">
+                        {g.items.map((t) => (
+                          <DropdownMenuItem
+                            key={`${t.plId}:${t.lvId}:${t.nhKey}`}
+                            onClick={(e) => { e.stopPropagation(); data.onMove?.(t.plId, t.lvId, t.nhKey, t.nhLabel); }}
+                          >
+                            {t.lvLabel} · {t.nhLabel}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  ));
+                })()}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {data.canManage && data.kind !== "root" && !(data.kind === "tp" && data.isViTri) && (
+            <button
+              className={actionButtonClass}
+              title={
+                data.kind === "tb" || data.kind === "tp"
+                  ? "Sửa thông tin tài sản"
+                  : data.kind === "ht"
+                    ? "Sửa hệ thống"
+                    : "Sửa tên & khai trường dữ liệu"
+              }
+              onClick={(e) => { e.stopPropagation(); data.onOpenEditor?.(); }}
               onMouseDown={(e) => e.stopPropagation()}
             >
-              <ArrowRightLeft className="h-3.5 w-3.5" />
+              <Pencil className="h-3.5 w-3.5" />
             </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="max-h-96 w-64 overflow-auto">
-            <DropdownMenuLabel className="truncate">Di chuyển “{data.label}” sang…</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {(() => {
-              const byPl = new Map<string, { plLabel: string; items: MoveTarget[] }>();
-              for (const t of data.moveTargets ?? []) {
-                let e = byPl.get(t.plId);
-                if (!e) { e = { plLabel: t.plLabel, items: [] }; byPl.set(t.plId, e); }
-                e.items.push(t);
-              }
-              return [...byPl.values()].map((g) => (
-                <DropdownMenuSub key={g.plLabel}>
-                  <DropdownMenuSubTrigger className="truncate">{g.plLabel}</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="max-h-80 overflow-auto">
-                    {g.items.map((t) => (
-                      <DropdownMenuItem
-                        key={`${t.plId}:${t.lvId}:${t.nhKey}`}
-                        onClick={(e) => { e.stopPropagation(); data.onMove?.(t.plId, t.lvId, t.nhKey, t.nhLabel); }}
-                      >
-                        {t.lvLabel} · {t.nhLabel}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-              ));
-            })()}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+        </div>
       )}
-      {data.canManage && data.kind !== "root" && !(data.kind === "tp" && data.isViTri) && (
-        <button
-          className="ml-1 shrink-0 rounded border border-border/60 bg-background/70 p-1 text-muted-foreground opacity-80 transition-all hover:bg-primary hover:text-primary-foreground hover:opacity-100"
-          title={
-            data.kind === "tb" || data.kind === "tp"
-              ? "Sửa thông tin tài sản"
-              : data.kind === "ht"
-                ? "Sửa hệ thống"
-                : "Sửa tên & khai trường dữ liệu"
-          }
-          onClick={(e) => { e.stopPropagation(); data.onOpenEditor?.(); }}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </button>
-      )}
-      <Handle type="source" position={Position.Right} className="!h-1.5 !w-1.5 !border-0 !bg-muted-foreground/40" />
     </div>
   );
 }
@@ -2361,7 +2444,7 @@ function MindNode({ data }: NodeProps<MindNodeType>) {
 function LayerNode({ data }: NodeProps) {
   const d = data as { label: string };
   return (
-    <div className="pointer-events-none select-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+    <div className="pointer-events-none select-none px-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
       {d.label}
     </div>
   );
@@ -2375,10 +2458,12 @@ type Raw = {
   kind: MindKind;
   data: MindData;
   children: Raw[];
+  parent?: Raw;
   x?: number;
   y?: number;
   h?: number;
   center?: number;
+  depth?: number;
 };
 
 function MindMap({
@@ -2404,21 +2489,27 @@ function MindMap({
   onMoveGroup: (req: MoveGroupReq) => void;
   onMoveDevice: (req: MoveDeviceReq) => void;
 }) {
-  const { fitView, getIntersectingNodes } = useReactFlow();
+  const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
   const nav = useNavigate();
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(["root", "root-stopped"]));
   const [hitId, setHitId] = useState<string | null>(null);
   // Nhánh đang tập trung: node vừa mở/tương tác → làm mờ các nhánh khác, viền sáng node này.
   const [activeId, setActiveId] = useState<string | null>(null);
 
+  // Node vừa được mở → sau khi bố trí lại, đưa nhánh đó vào tầm nhìn.
+  const justOpenedRef = useRef<string | null>(null);
+  const fitSeqRef = useRef(0);
+
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) { next.delete(id); justOpenedRef.current = null; }
+      else { next.add(id); justOpenedRef.current = id; }
       return next;
     });
     setActiveId(id === "root" ? null : id);
   }, []);
+
   const collapseAll = useCallback(() => setExpanded(new Set(["root", "root-stopped"])), []);
 
   useEffect(() => {
@@ -2457,21 +2548,15 @@ function MindMap({
   }, [tree, plMind, nhMind]);
 
   const { nodes, edges } = useMemo(() => {
-    const COL = [0, 360, 760, 1180, 1620, 2080, 2560];
-    // Ước lượng chiều cao node để tránh chồng lấn khi tên dài phải xuống dòng.
-    // Số ký tự vừa 1 dòng phụ thuộc bề rộng từng cấp node (px-3 + icon + badge).
-    const CHARS_PER_LINE: Record<MindKind, number> = {
-      root: 22, pl: 20, lv: 20, nh: 23, ht: 30, tb: 28, tp: 26, vtg: 22, vt: 26,
-    };
-    const estHeight = (kind: MindKind, label: string, code?: string) => {
-      const cpl = CHARS_PER_LINE[kind] ?? 24;
-      const len = (label?.length ?? 0) + (code ? code.length + 1 : 0);
-      const lines = Math.min(3, Math.max(1, Math.ceil(len / cpl)));
-      // padding (16) + nội dung (dòng * line-height 15, tối thiểu 22 cho hàng nút)
-      return 16 + Math.max(22, lines * 15);
-    };
+    // Khoảng hở ngang giữa hai cột (mép phải cột trước → mép trái cột sau).
+    // Vị trí X của từng cột được tính từ bề rộng THỰC của node rộng nhất trong
+    // cột đó (xem bước "đo cột" bên dưới) nên node không bao giờ đè cột kế bên.
+    const COL_GAP = 96;
+    // Chiều cao node được cố định theo CSS để thuật toán layout dùng đúng kích thước render thực tế.
+    const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
     // Khoảng cách dọc tối thiểu giữa hai node liền kề (mép–mép).
-    const ROW_GAP = 22;
+    const ROW_GAP = 16;
+
 
     // Tách nhánh "Dừng khai thác" ra khỏi cây chính để hiển thị song song
     // (cùng tầng) với gốc "Toàn hệ thống", thay vì lồng bên trong.
@@ -2679,9 +2764,12 @@ function MindMap({
       n.center = (n.center ?? 0) + dy;
       for (const c of n.children) shiftSubtree(c, dy);
     };
-    const place = (n: Raw, depth: number) => {
-      n.x = COL[Math.min(depth, COL.length - 1)];
-      n.h = estHeight(n.kind, n.data.label, n.data.code);
+    const allRaw: Raw[] = [];
+    const place = (n: Raw, depth: number, parent?: Raw) => {
+      n.depth = depth;
+      n.parent = parent;
+      n.h = estHeight(n.kind);
+      allRaw.push(n);
       if (n.children.length === 0) {
         n.y = cursor;
         n.center = cursor + n.h / 2;
@@ -2689,7 +2777,7 @@ function MindMap({
         return;
       }
       const top = cursor;
-      for (const c of n.children) place(c, depth + 1);
+      for (const c of n.children) place(c, depth + 1, n);
       const firstMid = n.children[0].center ?? 0;
       const lastMid = n.children[n.children.length - 1].center ?? 0;
       let center = (firstMid + lastMid) / 2;
@@ -2712,6 +2800,50 @@ function MindMap({
     // Nhánh "Dừng khai thác" đặt ngay bên dưới, cùng cột gốc (cùng tầng).
     cursor += ROW_GAP * 2;
     place(stoppedRoot, 0);
+
+    // ── Đo cột: X của mỗi cấp = tổng bề rộng thực của các cấp trước + khoảng hở.
+    const maxDepth = allRaw.reduce((m, n) => Math.max(m, n.depth ?? 0), 0);
+    const colW: number[] = Array.from({ length: maxDepth + 1 }, () => 0);
+    for (const n of allRaw) {
+      const d = n.depth ?? 0;
+      colW[d] = Math.max(colW[d], KIND_W[n.kind] ?? 200);
+    }
+    const COL: number[] = [];
+    for (let d = 0; d <= maxDepth; d++) COL[d] = d === 0 ? 0 : COL[d - 1] + colW[d - 1] + COL_GAP;
+    for (const n of allRaw) n.x = COL[n.depth ?? 0] ?? 0;
+
+    // ── Quét khử chồng lấn theo từng cột (đảm bảo cứng, kể cả giữa hai cây gốc):
+    // sắp xếp theo y rồi đẩy xuống node nào lấn vào khoảng ROW_GAP của node trên.
+    const byCol = new Map<number, Raw[]>();
+    for (const n of allRaw) {
+      const d = n.depth ?? 0;
+      const arr = byCol.get(d) ?? [];
+      arr.push(n);
+      byCol.set(d, arr);
+    }
+    const relaxColumns = () => {
+      let moved = false;
+      const depths = [...byCol.keys()].sort((a, b) => a - b);
+      for (const d of depths) {
+        const arr = byCol.get(d) ?? [];
+        arr.sort((a, b) => (a.y ?? 0) - (b.y ?? 0));
+        for (let i = 1; i < arr.length; i++) {
+          const prev = arr[i - 1];
+          const cur = arr[i];
+          const minY = (prev.y ?? 0) + (prev.h ?? 0) + ROW_GAP;
+          const overlap = minY - (cur.y ?? 0);
+          if (overlap > 0) {
+            shiftSubtree(cur, overlap);
+            moved = true;
+          }
+        }
+      }
+      return moved;
+    };
+    for (let pass = 0; pass < Math.max(4, maxDepth + 2); pass++) {
+      if (!relaxColumns()) break;
+    }
+
 
 
     // Tính tập node thuộc nhánh đang tập trung: tổ tiên + chính nó + toàn bộ con cháu.
@@ -2750,9 +2882,8 @@ function MindMap({
       for (const c of n.children) {
         const edgeDim = activeBranch ? !(activeBranch.has(n.id) && activeBranch.has(c.id)) : false;
         edges.push({
-          id: `${n.id}->${c.id}`, source: n.id, target: c.id, type: "smoothstep",
-          markerEnd: { type: MarkerType.ArrowClosed, width: 12, height: 12, color: "var(--muted-foreground)" },
-          style: { strokeWidth: 1.5, stroke: "var(--border)", opacity: edgeDim ? 0.15 : 1 },
+          id: `${n.id}->${c.id}`, source: n.id, target: c.id, type: "bezier",
+          style: { strokeWidth: 1, stroke: "var(--border)", opacity: edgeDim ? 0.12 : 0.75 },
         });
         walk(c);
       }
@@ -2767,10 +2898,12 @@ function MindMap({
       ? ["Toàn hệ thống", "Đơn vị", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"]
       : ["Toàn hệ thống", "Phân loại", "Nhóm hệ thống", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"];
 
-    const layerNodes: Node[] = layerLabels.map((label, i) => ({
-      id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -80 },
-      data: { label }, selectable: false, draggable: false, focusable: false,
-    }));
+    const layerNodes: Node[] = layerLabels
+      .filter((_, i) => COL[i] !== undefined)
+      .map((label, i) => ({
+        id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -64 },
+        data: { label }, selectable: false, draggable: false, focusable: false,
+      }));
 
     return { nodes: [...layerNodes, ...nodes], edges };
   }, [tree, expanded, hitId, activeId, scopeText, posByHt, plMind, nhMind, htMind, tbMind, canManage, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, moveTargets, toggle, onIncident, onMaint]);
@@ -2786,6 +2919,63 @@ function MindMap({
     const id = setTimeout(() => fitView({ padding: 0.15, duration: 300 }), 60);
     return () => clearTimeout(id);
   }, [nodes.length, fitView]);
+
+  // Sau khi mở một node: CHỈ pan (giữ nguyên mức zoom hiện tại) để nhánh vừa bung
+  // lọt vào tầm nhìn. Không bao giờ zoom-out.
+  useLayoutEffect(() => {
+    const opened = justOpenedRef.current;
+    if (!opened) return;
+    justOpenedRef.current = null;
+    const seq = ++fitSeqRef.current;
+    const childMap = new Map<string, string[]>();
+    for (const e of edges) {
+      const arr = childMap.get(e.source) ?? [];
+      arr.push(e.target);
+      childMap.set(e.source, arr);
+    }
+    const ids = new Set<string>([opened]);
+    const queue = [...(childMap.get(opened) ?? [])];
+    while (queue.length) {
+      const id = queue.shift();
+      if (!id || ids.has(id)) continue;
+      ids.add(id);
+      queue.push(...(childMap.get(id) ?? []));
+    }
+    const targets = nodes.filter((n) => ids.has(n.id));
+    if (!targets.length) return;
+    const t = setTimeout(() => {
+      if (seq !== fitSeqRef.current) return;
+      const el = document.querySelector(".react-flow__viewport")?.parentElement as HTMLElement | null;
+      if (!el) return;
+      const vw = el.clientWidth;
+      const vh = el.clientHeight;
+      const { x, y, zoom } = getViewport();
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const n of targets) {
+        const w = (n as { width?: number }).width ?? KIND_W[(n.data as { kind?: MindKind }).kind ?? "ht"] ?? 200;
+        const h = (n as { height?: number }).height ?? 30;
+        minX = Math.min(minX, n.position.x);
+        minY = Math.min(minY, n.position.y);
+        maxX = Math.max(maxX, n.position.x + w);
+        maxY = Math.max(maxY, n.position.y + h);
+      }
+      const PAD = 48;
+      // toạ độ màn hình của bbox với viewport hiện tại
+      let nx = x, ny = y;
+      const left = minX * zoom + nx, right = maxX * zoom + nx;
+      const top = minY * zoom + ny, bottom = maxY * zoom + ny;
+      if (right > vw - PAD) nx -= right - (vw - PAD);
+      if (minX * zoom + nx < PAD) nx = PAD - minX * zoom;
+      if (bottom > vh - PAD) ny -= bottom - (vh - PAD);
+      if (minY * zoom + ny < PAD) ny = PAD - minY * zoom;
+      if (nx !== x || ny !== y) void setViewport({ x: nx, y: ny, zoom }, { duration: 380 });
+      void left; void top;
+    }, 40);
+    return () => clearTimeout(t);
+  }, [nodes, edges, getViewport, setViewport]);
+
+
+
 
   // Khi kéo node cha, các node con phải đi theo (giữ nguyên khoảng cách).
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
@@ -2838,8 +3028,9 @@ function MindMap({
 
 
   return (
-    <Card className="overflow-hidden">
-      <div className="h-[72vh] min-h-[480px] w-full">
+    <TooltipProvider delayDuration={180} skipDelayDuration={100}>
+      <Card className="overflow-hidden">
+        <div className="h-[72vh] min-h-[480px] w-full">
         <ReactFlow
           nodes={rfNodes} edges={edges} nodeTypes={nodeTypes} fitView minZoom={0.05} maxZoom={1.5}
           onNodesChange={onNodesChange}
@@ -2945,7 +3136,6 @@ function MindMap({
           }}
           proOptions={{ hideAttribution: true }}
         >
-          <Background gap={20} />
           <Controls showInteractive={false} />
           <MiniMap pannable zoomable className="!hidden sm:!block" />
           <Panel position="top-left">
@@ -2953,9 +3143,10 @@ function MindMap({
               <Button size="sm" variant="outline" className="h-6 px-2 text-[11px]" onClick={collapseAll}>Thu gọn tất cả</Button>
             </div>
           </Panel>
-        </ReactFlow>
-      </div>
-    </Card>
+          </ReactFlow>
+        </div>
+      </Card>
+    </TooltipProvider>
   );
 }
 

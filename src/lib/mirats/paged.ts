@@ -19,7 +19,7 @@
 //   // data.rows: trang hiện tại; data.total: tổng dòng (planned count)
 // ============================================================================
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 export type FilterOp = "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "ilike" | "is_null" | "not_null";
 export interface Filter {

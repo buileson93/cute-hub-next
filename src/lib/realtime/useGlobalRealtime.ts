@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { freshChannel } from "@/lib/realtime/channel";
 import {
   PAGED_TABLE_TO_KEYS,

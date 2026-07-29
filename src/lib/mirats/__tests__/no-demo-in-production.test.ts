@@ -68,7 +68,7 @@ describe("cổng dữ liệu: detector hoạt động đúng", () => {
     }
     const ok = [
       `import { fmtVND } from "@/lib/mirats/metrics";`,
-      `import { supabase } from "@/integrations/supabase/client";`,
+      `import { supabase } from "@/integrations/backend/client";`,
       `import data from "@/lib/other/database";`,
     ];
     for (const line of ok) {

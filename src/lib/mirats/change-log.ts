@@ -4,7 +4,7 @@
 // nên nhập liệu hàng loạt tự động xuất hiện ở đây kèm đúng các trường đã thay đổi.
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { THIET_BI_PHYS_GROUPS, HE_THONG_PHYS_GROUPS } from "./editable-columns";
 
 // ---- Nhãn cột thân thiện ----

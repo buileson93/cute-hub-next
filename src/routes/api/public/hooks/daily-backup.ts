@@ -28,7 +28,7 @@ export const Route = createFileRoute("/api/public/hooks/daily-backup")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
           const { performBackup } = await import("@/lib/backup.server");
 
           // đích: luôn có bộ nhớ nội bộ, thêm gdrive/s3 nếu đã kết nối

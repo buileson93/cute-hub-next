@@ -3,7 +3,7 @@
 // Bucket là PRIVATE, dùng signed URL (TTL 1h) để hiển thị.
 // Đường dẫn: <template_code>/<yyyy>/<draftId>/<field_key>/<uuid>.<ext>
 // ============================================================================
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 const BUCKET = "form-attachments";
 

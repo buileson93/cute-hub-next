@@ -226,6 +226,14 @@
 
 
 /* React Flow: bỏ viền chọn/focus để sơ đồ tư duy gọn gàng */
+.react-flow__node {
+  transition: transform var(--duration-slow) var(--ease-emphasized), opacity var(--duration-base) var(--ease-standard), filter var(--duration-base) var(--ease-standard);
+}
+
+.react-flow__node.dragging {
+  transition: none;
+}
+
 .react-flow__node.selected,
 .react-flow__node:focus,
 .react-flow__node:focus-visible,

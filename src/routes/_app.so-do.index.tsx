@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Waypoints, Plus, Trash2, Building2, Clock, Loader2, Network, Check, ChevronsUpDown,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useScope } from "@/lib/mirats/scope";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

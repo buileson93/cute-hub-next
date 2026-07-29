@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { z } from "zod";
 import { LogIn, Loader2, ScanFace, UserPlus } from "lucide-react";
 import { startAuthentication, browserSupportsWebAuthn } from "@simplewebauthn/browser";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import vatmLogoFull from "@/assets/vatm-mirats-full-v2.svg.asset.json";
+import vatmLogoFullSrc from "@/assets/vatm-emblem.png";
 import { getAuthenticationOptions, verifyAuthentication } from "@/lib/passkey.functions";
 import { AtcTowerScene } from "@/components/mirats/AtcTowerScene";
 import { markActivityNow } from "@/lib/mirats/auth/activity";
@@ -181,7 +181,7 @@ function AuthPage() {
               className="mb-8"
             >
               <img
-                src={vatmLogoFull.url}
+                src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
                 className="h-auto w-full max-w-[560px] object-contain"
               />

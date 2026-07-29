@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "@/hooks/use-session";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   listBackups, getBackupDownloadUrl, deleteBackup, restoreFromBackup,
   restoreFromUpload, getCloudStatus,

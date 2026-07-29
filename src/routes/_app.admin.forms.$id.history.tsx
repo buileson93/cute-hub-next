@@ -10,7 +10,7 @@ import { Loader2, ArrowLeft, History, Undo2, ShieldAlert, Lock, Eye, Download } 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { persistDesigner, downloadBundleJson, type DesignerBundle } from "@/lib/mirats/form-designer-io";
 

@@ -27,7 +27,7 @@ function makeBuilder(table: string) {
   };
 }
 
-vi.mock("@/integrations/supabase/client", () => ({
+vi.mock("@/integrations/backend/client", () => ({
   supabase: { from: (t: string) => makeBuilder(t) },
 }));
 

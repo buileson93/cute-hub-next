@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { createHmac, randomInt, timingSafeEqual } from "crypto";
 import type { Database } from "@/integrations/supabase/types";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 /**
  * Password-reset flow with:
@@ -80,7 +80,7 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
       .parse(raw),
   )
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const ip = clientIp();
     const userAgent = getRequestHeader("user-agent")?.slice(0, 200) ?? null;
 
@@ -178,7 +178,7 @@ export const finalizePasswordReset = createServerFn({ method: "POST" })
     if (context.userId !== data.userId) {
       return { ok: false as const, error: "forbidden" };
     }
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const ip = clientIp();
     const userAgent = getRequestHeader("user-agent")?.slice(0, 200) ?? null;
 

@@ -48,7 +48,7 @@ export const Route = createFileRoute("/api/backup-run")({
           ? body.dich
           : ["storage"];
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
         const { performBackup } = await import("@/lib/backup.server");
 
         const { data: prof } = await supabaseAdmin

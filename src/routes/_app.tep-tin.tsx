@@ -6,7 +6,7 @@ import {
   useR2InspectResumable,
   listResumableSessions, cleanupExpiredSessions, fileFingerprint, type ResumableSession,
 } from "@/lib/mirats/r2-client";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
