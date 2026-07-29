@@ -335,8 +335,12 @@ export function AtcTowerScene() {
               }}
             >
               <div className="relative" style={{ transform: "rotate(-4deg)" }}>
-                {/* Thân máy bay — vệt sáng mảnh (kho assets không có ảnh máy bay riêng). */}
-                <div className="h-[3px] w-full rounded-full bg-white/70 shadow-[0_0_10px_rgba(255,255,255,0.6)]" />
+                <img
+                  src={jetPhoto}
+                  alt=""
+                  className="w-full drop-shadow-[0_10px_18px_rgba(0,0,0,0.5)]"
+                  style={{ filter: "brightness(0.94) contrast(1.05)" }}
+                />
 
                 {/* Contrail — mảnh, mờ dần, dao động nhẹ tự nhiên */}
                 <motion.div
