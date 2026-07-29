@@ -523,6 +523,13 @@ export function StandardTable<T>({
           </div>
         )}
         <table className="w-full caption-bottom text-sm">
+          <colgroup>
+            {selectable && <col style={{ width: 40 }} />}
+            {shownCols.map((c) => {
+              const w = colWidths[c.key];
+              return <col key={c.key} style={w ? { width: w } : undefined} />;
+            })}
+          </colgroup>
           <TableHeader>
             <TableRow className="[&>th]:bg-card">
               {selectable && (
@@ -538,6 +545,7 @@ export function StandardTable<T>({
               {shownCols.map((c) => {
                 const canSort = !reorder && sortableKey(c);
                 const sortActive = sort?.key === c.key;
+                const wPx = colWidths[c.key];
                 return (
                 <TableHead
                   key={c.key}
@@ -547,16 +555,18 @@ export function StandardTable<T>({
                   onDrop={reorder ? () => onDrop(c.key) : undefined}
                   onDragEnd={reorder ? () => { setDragKey(null); setOverKey(null); } : undefined}
                   className={cn(
-                    "sticky top-0 z-20 border-r border-border/50 last:border-r-0 shadow-[inset_0_-1px_0_hsl(var(--border))]",
+                    "sticky top-0 z-20 border-r border-border/50 last:border-r-0 shadow-[inset_0_-1px_0_hsl(var(--border))] relative group/th",
                     (c.sticky || c.key === firstKey) && c.sticky && "left-0 z-30",
-                    c.minW,
+                    !wPx && c.minW,
                     alignClass(c.align),
                     sortActive && "bg-primary/5",
                     c.inherited && "bg-amber-500/[0.06] border-l-2 border-l-amber-500/50",
                     reorder && "cursor-grab select-none",
                     reorder && overKey === c.key && dragKey !== c.key && "bg-primary/10",
                     reorder && dragKey === c.key && "opacity-50",
+                    resizingKey === c.key && "bg-primary/10",
                   )}
+                  style={wPx ? { width: wPx, minWidth: MIN_COL_W } : undefined}
                 >
                   <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                     {reorder && <GripVertical className="h-3 w-3 shrink-0 text-muted-foreground/50" />}
@@ -592,6 +602,23 @@ export function StandardTable<T>({
                       />
                     )}
                   </div>
+                  {/* Tay cầm kéo mép phải để đổi độ rộng cột. Bấm đúp để đặt lại. */}
+                  <div
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label={`Đổi độ rộng cột ${c.label}`}
+                    onMouseDown={(e) => onResizeStart(c.key, e)}
+                    onDoubleClick={(e) => { e.stopPropagation(); resetColWidth(c.key); }}
+                    onDragStart={(e) => e.preventDefault()}
+                    draggable={false}
+                    className={cn(
+                      "absolute right-0 top-0 z-30 h-full w-1.5 cursor-col-resize select-none",
+                      "opacity-0 hover:opacity-100 group-hover/th:opacity-60",
+                      "bg-primary/60 transition-opacity",
+                      resizingKey === c.key && "opacity-100",
+                    )}
+                    title="Kéo để đổi độ rộng — bấm đúp để đặt lại"
+                  />
                 </TableHead>
                 );
               })}
