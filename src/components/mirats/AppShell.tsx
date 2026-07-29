@@ -13,7 +13,10 @@ import {
 } from "@/components/mirats/ProductTour";
 import { UserAvatar } from "@/components/mirats/UserAvatar";
 import { useBranding } from "@/lib/mirats/branding";
-import vatmLogoFullSrc from "@/assets/vatm-emblem.png";
+import vatmMark from "@/assets/vatm-mark-square.svg.asset.json";
+import vatmLogoFull from "@/assets/vatm-mirats-full-v2.svg.asset.json";
+const vatmLogoFullSrc = vatmLogoFull.url;
+const vatmMarkSrc = vatmMark.url;
 import { cn } from "@/lib/utils";
 import { GlobalSearch } from "@/components/mirats/GlobalSearch";
 import { TzClock } from "@/components/mirats/TzClock";
@@ -74,7 +77,7 @@ const BADGE_BY_ROUTE: Record<string, NavBadgeKey> = (() => {
 
 function BrandMark({ className }: { className?: string }) {
   const { data } = useBranding();
-  const src = data?.logoCompact || vatmLogoFullSrc;
+  const src = data?.logoCompact || vatmMarkSrc;
   return (
     <img
       src={src}
