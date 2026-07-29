@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useReducedMotion } from "motion/react";
-import towerPhotoSrc from "@/assets/atc-tower-real.jpg";
-import twrInteriorSrc from "@/assets/auth-hero.jpg";
+import towerAsset from "@/assets/atc-tower-phucat.jpg.asset.json";
+import jetAsset from "@/assets/fighter-jet.png.asset.json";
+import twrInteriorAsset from "@/assets/twr-interior.jpg.asset.json";
 
 
-const towerPhoto = towerPhotoSrc;
-const twrInteriorPhoto = twrInteriorSrc;
+const towerPhoto = towerAsset.url;
+const jetPhoto = jetAsset.url;
+const twrInteriorPhoto = twrInteriorAsset.url;
 
 
 
