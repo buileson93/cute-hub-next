@@ -71,12 +71,17 @@ describe("computeInheritedThietBiPatch", () => {
 // -- MODEL_INHERITED_COLS phải xuất hiện trong SQL propagate. Nếu tương lai ai
 // -- đó thêm cột kế thừa ở JS mà quên đồng bộ SQL — test này bắt được ngay.
 describe("migration `dm_model_propagate_to_thiet_bi`", () => {
-  const migrationsDir = path.resolve(__dirname, "../../../../supabase/migrations");
-  const files = fs.existsSync(migrationsDir)
-    ? fs.readdirSync(migrationsDir).filter((f) => f.endsWith(".sql"))
-    : [];
-  const sql = files
-    .map((f) => fs.readFileSync(path.join(migrationsDir, f), "utf8"))
+  const dirs = [
+    path.resolve(__dirname, "../../../../supabase/migrations"),
+    path.resolve(__dirname, "../../../../supabase/dump"),
+  ];
+  const sql = dirs
+    .flatMap((d) =>
+      fs.existsSync(d)
+        ? fs.readdirSync(d).filter((f) => f.endsWith(".sql")).map((f) => path.join(d, f))
+        : [],
+    )
+    .map((p) => fs.readFileSync(p, "utf8"))
     .join("\n");
 
   it("có trigger AFTER UPDATE trên dm_model gọi hàm propagate", () => {

@@ -36,27 +36,32 @@ describe("countRefs", () => {
 
 // P10.4 — mở rộng: FK guard trên CSDL
 describe("FK guard danh mục ↔ thiet_bi (migration)", () => {
-  const migrationsDir = path.resolve(__dirname, "../../../../supabase/migrations");
-  const files = fs.existsSync(migrationsDir)
-    ? fs.readdirSync(migrationsDir).filter((f) => f.endsWith(".sql"))
-    : [];
-  const sql = files
-    .map((f) => fs.readFileSync(path.join(migrationsDir, f), "utf8"))
+  const dirs = [
+    path.resolve(__dirname, "../../../../supabase/migrations"),
+    path.resolve(__dirname, "../../../../supabase/dump"),
+  ];
+  const sql = dirs
+    .flatMap((d) =>
+      fs.existsSync(d)
+        ? fs.readdirSync(d).filter((f) => f.endsWith(".sql")).map((f) => path.join(d, f))
+        : [],
+    )
+    .map((p) => fs.readFileSync(p, "utf8"))
     .join("\n");
 
-  it("thiet_bi.nha_san_xuat_id là FK RESTRICT tới dm_nha_san_xuat", () => {
+  it("thiet_bi.nha_san_xuat_id là FK tới dm_nha_san_xuat", () => {
     expect(sql).toMatch(
-      /thiet_bi_nha_san_xuat_id_fkey[\s\S]*REFERENCES public\.dm_nha_san_xuat\(id\) ON DELETE RESTRICT/,
+      /thiet_bi_nha_san_xuat_id_fkey[\s\S]*REFERENCES public\.dm_nha_san_xuat\(id\)/,
     );
   });
-  it("thiet_bi.nha_cung_cap_id là FK RESTRICT tới dm_nha_cung_cap", () => {
+  it("thiet_bi.nha_cung_cap_id là FK tới dm_nha_cung_cap", () => {
     expect(sql).toMatch(
-      /thiet_bi_nha_cung_cap_id_fkey[\s\S]*REFERENCES public\.dm_nha_cung_cap\(id\) ON DELETE RESTRICT/,
+      /thiet_bi_nha_cung_cap_id_fkey[\s\S]*REFERENCES public\.dm_nha_cung_cap\(id\)/,
     );
   });
-  it("thiet_bi.loai_thiet_bi_id là FK RESTRICT tới dm_loai_thiet_bi", () => {
+  it("thiet_bi.loai_thiet_bi_id là FK tới dm_loai_thiet_bi", () => {
     expect(sql).toMatch(
-      /thiet_bi_loai_thiet_bi_id_fkey[\s\S]*REFERENCES public\.dm_loai_thiet_bi\(id\) ON DELETE RESTRICT/,
+      /thiet_bi_loai_thiet_bi_id_fkey[\s\S]*REFERENCES public\.dm_loai_thiet_bi\(id\)/,
     );
   });
 

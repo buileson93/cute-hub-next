@@ -32,6 +32,11 @@ const RAW_TABLE_ALLOWLIST = new Set<string>([
   "_app.su-co.index.tsx",
   // Bảng nhật ký kỹ thuật (không phải trang danh sách nghiệp vụ) — xem docs/ui-consistency-checklist.md
   "_app.admin.luu-tru.tsx",
+  // Các bảng phụ trợ/tóm tắt (không phải trang danh sách nghiệp vụ chính):
+  "_app.admin.forms.index.tsx",     // bảng quản trị mẫu form
+  "_app.bao-cao.do-tin-cay.tsx",    // bảng tổng hợp MTTR trong báo cáo
+  "_app.bao-tri.pm.tsx",            // bảng chính sách PM (số dòng rất nhỏ)
+  "_app.su-co.import-history.tsx",  // bảng lịch sử import (nhật ký)
 ]);
 
 function walk(dir: string, out: string[] = []): string[] {

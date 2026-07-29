@@ -34,7 +34,7 @@ afterEach(() => cleanup());
 describe("NotificationBell", () => {
   it("hiển thị badge đúng số chưa đọc", () => {
     render(<NotificationBell />);
-    expect(screen.getByLabelText("Thông báo")).toBeTruthy();
+    expect(screen.getByLabelText(/^Thông báo/)).toBeTruthy();
     expect(screen.getByText("3")).toBeTruthy();
   });
 

@@ -31,7 +31,7 @@ async function buildWorkbook(): Promise<ArrayBuffer> {
 
   // Sheet cuối: Tài sản — dùng KEY làm header (kiểm ánh xạ theo key).
   const thietBi = findEntity("thiet_bi")!;
-  const sLast = wb.addWorksheet("11. Tài sản");
+  const sLast = wb.addWorksheet("12. Tài sản");
   sLast.addRow(thietBi.fields.map((f) => f.key));
   const tbRow = thietBi.fields.map((f) => {
     if (f.key === "ma_thiet_bi") return "TB1";
@@ -50,7 +50,7 @@ describe("parseAllInOneXlsx — round-trip nhiều sheet", () => {
     const parsed = await parseAllInOneXlsx(fakeFile(await buildWorkbook()));
     // Chỉ 2 sheet tồn tại trong file → parse trả về đúng 2 lớp, theo thứ tự lớp.
     const sheets = parsed.map((p) => p.layer.sheet);
-    expect(sheets).toEqual(["1. Phân loại", "11. Tài sản"]);
+    expect(sheets).toEqual(["1. Phân loại", "12. Tài sản"]);
   });
 
   it("ánh xạ header theo NHÃN → key; cột lạ vào unmapped", async () => {
@@ -75,8 +75,11 @@ describe("parseAllInOneXlsx — round-trip nhiều sheet", () => {
     expect(tb.rows[0]).toEqual({ ma_thiet_bi: "TB1", ten_thiet_bi: "Máy A", he_thong: "HT-01" });
   });
 
-  it("ALLINONE_LAYERS ổn định (11 lớp, kết thúc bằng Tài sản)", () => {
-    expect(ALLINONE_LAYERS).toHaveLength(11);
-    expect(ALLINONE_LAYERS[ALLINONE_LAYERS.length - 1].entity).toBe("thiet_bi");
+  it("ALLINONE_LAYERS ổn định (17 lớp; Tài sản trước các lớp vận hành)", () => {
+    expect(ALLINONE_LAYERS).toHaveLength(17);
+    const idxTB = ALLINONE_LAYERS.findIndex((l) => l.entity === "thiet_bi");
+    expect(idxTB).toBeGreaterThan(-1);
+    // Các lớp vận hành phải nằm sau Tài sản.
+    expect(ALLINONE_LAYERS.findIndex((l) => l.entity === "bao_tri")).toBeGreaterThan(idxTB);
   });
 });
