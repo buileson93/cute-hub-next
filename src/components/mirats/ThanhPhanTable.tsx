@@ -1087,7 +1087,7 @@ function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () 
       placeholder={isLoading ? "Đang tải…" : saving ? "Đang lưu…" : "Chọn vị trí…"}
       searchPlaceholder="Tìm mã / tên vị trí…"
       emptyText="Không có vị trí phù hợp"
-      className="h-7 w-[190px] text-xs"
+      className="h-8 w-[200px] text-sm"
     />
   );
 }
