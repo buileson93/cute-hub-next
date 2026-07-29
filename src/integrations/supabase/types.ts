@@ -2669,6 +2669,179 @@ export type Database = {
           },
         ]
       }
+      du_an_cong_van: {
+        Row: {
+          attrs: Json
+          can_cu_text: string | null
+          co_quan_ban_hanh: string | null
+          co_quan_nhan: string | null
+          created_at: string
+          du_an_id: string
+          ghi_chu: string | null
+          han_phuc_dap: string | null
+          id: string
+          loai: Database["public"]["Enums"]["cong_van_loai"]
+          ngay_ban_hanh: string | null
+          ngay_tiep_nhan: string | null
+          nguoi_tao_id: string
+          parent_id: string | null
+          so_cong_van: string
+          trang_thai: Database["public"]["Enums"]["cong_van_trang_thai"]
+          trich_yeu: string | null
+          updated_at: string
+        }
+        Insert: {
+          attrs?: Json
+          can_cu_text?: string | null
+          co_quan_ban_hanh?: string | null
+          co_quan_nhan?: string | null
+          created_at?: string
+          du_an_id: string
+          ghi_chu?: string | null
+          han_phuc_dap?: string | null
+          id?: string
+          loai?: Database["public"]["Enums"]["cong_van_loai"]
+          ngay_ban_hanh?: string | null
+          ngay_tiep_nhan?: string | null
+          nguoi_tao_id?: string
+          parent_id?: string | null
+          so_cong_van: string
+          trang_thai?: Database["public"]["Enums"]["cong_van_trang_thai"]
+          trich_yeu?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attrs?: Json
+          can_cu_text?: string | null
+          co_quan_ban_hanh?: string | null
+          co_quan_nhan?: string | null
+          created_at?: string
+          du_an_id?: string
+          ghi_chu?: string | null
+          han_phuc_dap?: string | null
+          id?: string
+          loai?: Database["public"]["Enums"]["cong_van_loai"]
+          ngay_ban_hanh?: string | null
+          ngay_tiep_nhan?: string | null
+          nguoi_tao_id?: string
+          parent_id?: string | null
+          so_cong_van?: string
+          trang_thai?: Database["public"]["Enums"]["cong_van_trang_thai"]
+          trich_yeu?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_cong_van_du_an_id_fkey"
+            columns: ["du_an_id"]
+            isOneToOne: false
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "du_an_cong_van_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_van"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      du_an_cong_van_lien_ket: {
+        Row: {
+          created_at: string
+          den_id: string
+          ghi_chu: string | null
+          id: string
+          loai: Database["public"]["Enums"]["cong_van_lien_ket_loai"]
+          tu_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          den_id: string
+          ghi_chu?: string | null
+          id?: string
+          loai?: Database["public"]["Enums"]["cong_van_lien_ket_loai"]
+          tu_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          den_id?: string
+          ghi_chu?: string | null
+          id?: string
+          loai?: Database["public"]["Enums"]["cong_van_lien_ket_loai"]
+          tu_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_cong_van_lien_ket_den_id_fkey"
+            columns: ["den_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_van"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "du_an_cong_van_lien_ket_tu_id_fkey"
+            columns: ["tu_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_van"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      du_an_cong_van_tep: {
+        Row: {
+          bucket: string
+          cong_van_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          kich_thuoc: number | null
+          mime_type: string | null
+          mo_ta: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          bucket?: string
+          cong_van_id: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          kich_thuoc?: number | null
+          mime_type?: string | null
+          mo_ta?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          bucket?: string
+          cong_van_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          kich_thuoc?: number | null
+          mime_type?: string | null
+          mo_ta?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_cong_van_tep_cong_van_id_fkey"
+            columns: ["cong_van_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_van"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       du_an_cong_viec: {
         Row: {
           created_at: string
@@ -9478,6 +9651,22 @@ export type Database = {
         | "rejected"
         | "cancelled"
         | "applied_failed"
+      cong_van_lien_ket_loai: "tra_loi" | "can_cu" | "lien_quan" | "dinh_kem"
+      cong_van_loai:
+        | "den"
+        | "di"
+        | "to_trinh"
+        | "bao_cao"
+        | "quyet_dinh"
+        | "khac"
+      cong_van_trang_thai:
+        | "moi"
+        | "dang_xu_ly"
+        | "cho_duyet"
+        | "da_duyet"
+        | "da_phat_hanh"
+        | "hoan_tat"
+        | "huy"
       cong_viec_trang_thai:
         | "chua_bat_dau"
         | "dang_lam"
@@ -9718,6 +9907,17 @@ export const Constants = {
         "rejected",
         "cancelled",
         "applied_failed",
+      ],
+      cong_van_lien_ket_loai: ["tra_loi", "can_cu", "lien_quan", "dinh_kem"],
+      cong_van_loai: ["den", "di", "to_trinh", "bao_cao", "quyet_dinh", "khac"],
+      cong_van_trang_thai: [
+        "moi",
+        "dang_xu_ly",
+        "cho_duyet",
+        "da_duyet",
+        "da_phat_hanh",
+        "hoan_tat",
+        "huy",
       ],
       cong_viec_trang_thai: [
         "chua_bat_dau",

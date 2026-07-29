@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   ArrowLeft, Plus, Loader2, Calendar as CalendarIcon, GanttChart, KanbanSquare,
-  ListTree, Users, User as UserIcon, CheckCircle2, Clock, AlertTriangle,
+  ListTree, Users, User as UserIcon, CheckCircle2, Clock, AlertTriangle, Mails,
   Pencil, Trash2, Save,
 } from "lucide-react";
 import "@/vendor/frappe-gantt.css";
@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
+import { CongVanPanel } from "@/components/mirats/congvan/CongVanPanel";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
@@ -200,6 +201,7 @@ function DuAnDetailPage() {
             <TabsTrigger value="kanban"><KanbanSquare className="h-4 w-4 mr-1.5" />Kanban</TabsTrigger>
             <TabsTrigger value="gantt"><GanttChart className="h-4 w-4 mr-1.5" />Gantt</TabsTrigger>
             <TabsTrigger value="list"><ListTree className="h-4 w-4 mr-1.5" />Danh sách</TabsTrigger>
+            <TabsTrigger value="cong-van"><Mails className="h-4 w-4 mr-1.5" />Công văn</TabsTrigger>
           </TabsList>
 
           <TabsContent value="kanban" className="mt-3">
@@ -232,6 +234,10 @@ function DuAnDetailPage() {
                 else { toast.success("Đã xoá mốc"); qc.invalidateQueries({ queryKey: ["du-an-moc", id] }); qc.invalidateQueries({ queryKey: ["du-an-cv", id] }); }
               }}
             />
+          </TabsContent>
+
+          <TabsContent value="cong-van" className="mt-3">
+            <CongVanPanel duAnId={id} canEdit={isManager} />
           </TabsContent>
         </Tabs>
       </div>
