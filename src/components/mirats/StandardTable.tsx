@@ -497,6 +497,8 @@ export function StandardTable<T>({
                   <button className="text-primary hover:underline"
                     onClick={() => setHidden([])}>Tất cả</button>
                   <button className="text-primary hover:underline"
+                    onClick={autoFitWidths} title="Tự căn theo nội dung đang hiển thị">Tự căn</button>
+                  <button className="text-primary hover:underline"
                     onClick={resetAllWidths} title="Đặt lại độ rộng mọi cột">Độ rộng</button>
                   <button className="text-primary hover:underline"
                     onClick={reset}>Mặc định</button>
@@ -563,7 +565,7 @@ export function StandardTable<T>({
             <div className="h-full w-1/3 animate-[indeterminate_1.2s_ease-in-out_infinite] bg-primary/70 motion-reduce:animate-pulse" />
           </div>
         )}
-        <table className="w-full caption-bottom text-sm">
+        <table ref={tableRef} className="w-full caption-bottom text-sm">
           <colgroup>
             {selectable && <col style={{ width: 40 }} />}
             {shownCols.map((c) => {
