@@ -23,7 +23,9 @@ vi.mock("@/integrations/backend/client", () => ({
   supabase: {
     from: (table: string) => ({
       select: () => ({
-        order: () => Promise.resolve({ data: store[table] ?? [], error: null }),
+        order: () => ({
+          range: () => Promise.resolve({ data: store[table] ?? [], error: null }),
+        }),
       }),
     }),
   },
