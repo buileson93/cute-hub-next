@@ -12,7 +12,7 @@
 // Dùng generic <T> nên mọi trang chỉ cần khai cột (key/label/value/cell).
 // ============================================================================
 
-import { Fragment, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Filter, SlidersHorizontal, GripVertical, ArrowLeftRight, ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
