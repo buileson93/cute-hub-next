@@ -1056,7 +1056,7 @@ function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () 
   const options = useMemo(
     () => [
       { value: "", label: "— Không xác định —" },
-      ...dsViTri.map((v) => ({ value: v.id, label: `${v.ma} · ${v.ten}` })),
+      ...dsViTri.map((v) => ({ value: v.id, label: v.ten, hint: v.ma })),
     ],
     [dsViTri],
   );
