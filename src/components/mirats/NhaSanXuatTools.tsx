@@ -16,7 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 import { useSession } from "@/hooks/use-session";
 import { toCsv, parseCsv, noAccent } from "@/lib/mirats/import-config";

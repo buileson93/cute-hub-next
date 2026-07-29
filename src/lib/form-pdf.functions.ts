@@ -5,7 +5,7 @@
 // ============================================================================
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { compileField, parseCompiledSchema, resolveSubmissionFields } from "@/lib/mirats/form-schema";
 import { renderSubmissionPdf, type PdfInput, type PdfSignatureRow } from "@/lib/mirats/pdf-render.server";
 import { signSubmission } from "@/lib/form-signing.functions";
@@ -95,7 +95,7 @@ export const exportSubmissionPdf = createServerFn({ method: "POST" })
     // Lưu vào bucket form-pdf để trang /verify có thể phát hành signed URL.
     let stored = false;
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
       const key = `submissions/${sub.id}.pdf`;
       const { error: upErr } = await supabaseAdmin.storage
         .from("form-pdf")

@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { fetchStorageConfig, type StorageConfig } from "./storage-config";
 import { toast } from "sonner";
 
@@ -89,17 +89,46 @@ export async function dualUpload(input: DualUploadInput): Promise<DualUploadResu
   }
   await Promise.all(jobs);
 
-  // Nếu primary lỗi mà bên còn lại thành công, promote bên còn lại như primary tạm thời.
-  const primaryOk =
-    (config.primary === "supabase" && supabaseUrl) ||
-    (config.primary === "r2" && r2Key);
-  if (!primaryOk) {
-    const primaryErr = errors.find((e) => e.side === config.primary);
-    if (primaryErr && !config.dualWrite) throw new Error(primaryErr.message);
-    if (primaryErr) toast.error(`Backend chính (${config.primary}) lỗi: ${primaryErr.message}. Đang dùng bản sao còn lại.`);
+  const okOn = (side: "supabase" | "r2") => (side === "supabase" ? !!supabaseUrl : !!r2Key);
+  const label = (side: "supabase" | "r2") => (side === "supabase" ? "Lovable Cloud" : "Cloudflare R2");
+  const other: "supabase" | "r2" = config.primary === "supabase" ? "r2" : "supabase";
+  const primaryErr = errors.find((e) => e.side === config.primary);
+
+  if (!okOn(config.primary)) {
+    // Chế độ chỉ-một-backend: thử ghi tạm sang bên còn lại để KHÔNG mất tệp.
+    if (!config.dualWrite && config.autoFallback) {
+      try {
+        if (other === "supabase") {
+          const r = await uploadToSupabase(input, body, ct);
+          supabaseUrl = r.publicUrl; supabasePath = r.path;
+        } else {
+          const r = await uploadToR2(input, body, ct);
+          r2Key = r.key;
+        }
+        toast.warning(
+          `${label(config.primary)} đang lỗi — tệp đã được ghi tạm sang ${label(other)}. ` +
+            `Vào Quản trị → Lưu trữ tệp để tắt ${label(config.primary)} cho tới khi khắc phục.`,
+        );
+      } catch (e: any) {
+        errors.push({ side: other, message: e?.message ?? String(e) });
+      }
+    }
+
+    if (!supabaseUrl && !r2Key) {
+      const detail = errors.map((e) => `${label(e.side)}: ${e.message}`).join(" | ");
+      toast.error(
+        `Chưa ghi được tệp vào bất kỳ kho lưu trữ nào (${detail}). ` +
+          `Hãy vào Quản trị → Lưu trữ tệp và chuyển sang kho còn hoạt động để tiếp tục làm việc.`,
+      );
+      throw new Error(`Không ghi được tệp vào kho lưu trữ nào. ${detail}`);
+    }
+    if (primaryErr && config.dualWrite) {
+      toast.error(`Backend chính (${label(config.primary)}) lỗi: ${primaryErr.message}. Đang dùng bản sao còn lại.`);
+    }
   } else if (errors.length) {
-    for (const e of errors) toast.warning(`Dual-write: ${e.side} lỗi — ${e.message}`);
+    for (const e of errors) toast.warning(`Ghi song song: ${label(e.side)} lỗi — ${e.message}`);
   }
 
   return { primary: config.primary, supabaseUrl, supabasePath, r2Key, config, errors };
+
 }

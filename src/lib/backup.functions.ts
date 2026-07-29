@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 const BUCKET = "database-backups";
 
@@ -36,7 +36,7 @@ export const runBackup = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { performBackup } = await import("@/lib/backup.server");
 
     const { data: prof } = await supabaseAdmin
@@ -64,7 +64,7 @@ export const listBackups = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data, error } = await supabaseAdmin
       .from("backup_lich_su")
       .select("*")
@@ -80,7 +80,7 @@ export const getBackupDownloadUrl = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: rec, error } = await supabaseAdmin
       .from("backup_lich_su")
       .select("file_path")
@@ -101,7 +101,7 @@ export const deleteBackup = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: rec } = await supabaseAdmin
       .from("backup_lich_su")
       .select("file_path")
@@ -122,7 +122,7 @@ export const restoreFromBackup = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: rec, error } = await supabaseAdmin
       .from("backup_lich_su")
       .select("file_path")

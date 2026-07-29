@@ -7,7 +7,7 @@
 //   • persistDesigner   — ghi tpl + fields + links vào DB (cả Designer &
 //                         History dùng chung → không lệch logic).
 // ============================================================================
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { InspectorField } from "@/components/mirats/FieldInspector";
 
 export type DesignerField = InspectorField & { id?: string; position: number };

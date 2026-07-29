@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { rpcErrorToast } from "@/lib/mirats/rpc-error";
 import { Loader2, Save, Search, Wrench, FileText, CheckCircle2 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { usePersistentCollapse } from "@/hooks/use-persistent-collapse";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { normalize } from "@/lib/mirats/global-search";
@@ -289,7 +290,7 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       qc.invalidateQueries({ queryKey: ["operations_data"] });
       if (onDone) onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => { const t = rpcErrorToast(e); toast.error(t.title, { description: t.description, duration: t.description ? 15000 : 5000 }); },
   });
 
   if (!canManage) {

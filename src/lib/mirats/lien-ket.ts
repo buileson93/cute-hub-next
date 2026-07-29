@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { DoThiRow, Lop, Huong, TrangThaiLienKet } from "./system-graph";
 
 export interface LoaiLienKet {

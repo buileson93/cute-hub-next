@@ -88,7 +88,7 @@ export function linkGoogleMaps(vi_do: number, kinh_do: number): string {
  * Gọi RPC `thoi_gian_may_chu`; nếu lỗi thì lùi về giờ máy để không chặn luồng.
  */
 export async function layThoiGianMayChu(): Promise<string> {
-  const { supabase } = await import("@/integrations/supabase/client");
+  const { supabase } = await import("@/integrations/backend/client");
   try {
     const { data, error } = await supabase.rpc("thoi_gian_may_chu");
     if (error || !data) throw error ?? new Error("no data");

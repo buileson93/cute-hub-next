@@ -6,7 +6,7 @@
 // ============================================================================
 import * as React from "react";
 import { Plus, ShieldCheck, Loader2, Pencil, Trash2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

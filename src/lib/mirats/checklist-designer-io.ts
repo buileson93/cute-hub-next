@@ -3,7 +3,7 @@
 // Chiến lược: xoá toàn bộ section của template (cascade xoá item) rồi chèn lại.
 // Đơn giản, tránh diff phức tạp; UI đã có xác nhận & autosave gate.
 // ============================================================================
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { ChecklistSection } from "@/lib/mirats/checklist";
 import { serializeItemOptions, type ChecklistItemOptions } from "@/lib/mirats/checklist-item-options";
 

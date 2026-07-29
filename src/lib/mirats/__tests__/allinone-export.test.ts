@@ -14,7 +14,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // --- Mock dữ liệu theo bảng (điền lại trong beforeEach) ---
 const store: Record<string, Array<Record<string, unknown>>> = {};
 
-vi.mock("@/integrations/supabase/client", () => {
+vi.mock("@/integrations/backend/client", () => {
   // Chuỗi truy vấn giả: .from(t).select(...).limit(...)/.in(...) đều resolve {data}.
   const makeChain = (table: string) => {
     const result = { data: store[table] ?? [], error: null };

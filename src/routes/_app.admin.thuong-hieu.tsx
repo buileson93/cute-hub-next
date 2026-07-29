@@ -5,7 +5,7 @@ import { ImageUp, Loader2, RotateCcw, ShieldAlert, Info, CheckCircle2 } from "lu
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
 import {

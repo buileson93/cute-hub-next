@@ -6,7 +6,7 @@
 //   • Hàm fetch dùng supabase client — dùng trong hook/loader.
 // ============================================================================
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type {
   ChecklistItem,
   ChecklistSection,

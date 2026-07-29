@@ -9,7 +9,7 @@
 // ============================================================================
 
 import { useMutation, useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 /** Kích thước trang tiêu chuẩn cho các danh sách phân trang server-side. */
 export const KHO_PAGE_SIZE = 200;

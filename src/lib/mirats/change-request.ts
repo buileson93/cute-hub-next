@@ -4,7 +4,7 @@
 // (hoặc dispatch tương đương trong RPC `approve_change_request` do admin gọi).
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 export type ChangeRequestLoai =
   | "cay.delete_node"

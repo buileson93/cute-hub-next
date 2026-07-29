@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid } from "lucide-react";
+import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download } from "lucide-react";
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { StandardTable } from "@/components/mirats/StandardTable";
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useRealtimeTaxonomy } from "@/hooks/use-realtime-taxonomy";
 import { normalize } from "@/lib/mirats/global-search";
 import { useSession } from "@/hooks/use-session";
@@ -21,6 +21,9 @@ import { canWrite } from "@/lib/mirats/quyen";
 import { useThietBiChon, useLapThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
 import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
+import { BulkActionButton } from "@/components/mirats/BulkActionButton";
+import { TableExportDialog } from "@/components/mirats/TableExportDialog";
+
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 
@@ -124,6 +127,45 @@ export function useThanhPhanRows() {
   });
 }
 
+// ---- Tiện ích thao tác hàng loạt trên dòng đã chọn ----
+function csvCell(v: unknown): string {
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+async function copyCodes(codes: string[]) {
+  const text = codes.filter(Boolean).join("\n");
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success(`Đã sao chép ${codes.length} mã.`);
+  } catch {
+    toast.error("Trình duyệt không cho phép sao chép.");
+  }
+}
+
+/** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
+const LY_DO_KHOA =
+  "Vai trò của bạn chỉ được xem: cần quyền sửa dữ liệu Hệ thống kỹ thuật (Admin / Phòng KT / Phụ trách đơn vị) để đổi trạng thái hàng loạt.";
+
+/** Nội dung hộp thoại xác nhận đổi trạng thái hàng loạt. */
+function MoTaXacNhan({ rows, tt }: { rows: readonly { ma: string }[]; tt: string }) {
+  return (
+    <>
+      <div>
+        Sẽ đặt trạng thái <b>{tt}</b> cho <b>{rows.length}</b> thành phần đã chọn
+        (bao gồm cả dòng ở các trang khác). Thao tác này ghi trực tiếp vào dữ liệu.
+      </div>
+      <div className="max-h-24 overflow-auto rounded bg-muted/50 p-2 font-mono text-[11px]">
+        {rows.slice(0, 30).map((r) => r.ma).join(", ")}
+        {rows.length > 30 ? ` … (+${rows.length - 30})` : ""}
+      </div>
+    </>
+  );
+}
+
+
+
+
 export type ThanhPhanTableProps = {
   /** Ẩn khối header (tiêu đề + mô tả) khi nhúng vào trang khác */
   hideHeader?: boolean;
@@ -148,6 +190,24 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   useRealtimeTaxonomy();
   const { roles } = useSession();
   const allowEdit = canWrite("he_thong", roles);
+  const [bulkBusy, setBulkBusy] = useState(false);
+
+  async function bulkTrangThai(ids: string[], trangThai: "hoat_dong" | "ngung", clear: () => void) {
+    if (ids.length === 0) return;
+    setBulkBusy(true);
+    const { error: e } = await supabase
+      .from("he_thong_thanh_phan")
+      .update({ trang_thai: trangThai })
+      .in("id", ids);
+    setBulkBusy(false);
+    if (e) {
+      toast.error(e.message || "Không cập nhật được trạng thái hàng loạt.");
+      return;
+    }
+    toast.success(`Đã đặt ${ids.length} thành phần → ${TT_LABEL[trangThai]}.`);
+    clear();
+    qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
+  }
 
   async function saveField(id: string, field: "ten" | "trang_thai", value: string) {
     const payload = (field === "ten" ? { ten: value } : { trang_thai: value }) as {
@@ -331,6 +391,62 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           emptyText="Không có thành phần hệ thống phù hợp."
           countUnit="thành phần"
           maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
+          selectable
+          bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
+            <>
+              <BulkActionButton
+                label="Đặt Hoạt động"
+                icon={<Check className="h-3.5 w-3.5" />}
+                duocPhep={allowEdit}
+                lyDoKhoa={LY_DO_KHOA}
+                busy={bulkBusy}
+                xacNhan={{
+                  tieuDe: "Đặt trạng thái Hoạt động?",
+                  moTa: <MoTaXacNhan rows={selectedRows} tt="Hoạt động" />,
+                  nutXacNhan: "Đặt Hoạt động",
+                }}
+                onRun={() => bulkTrangThai(selectedRows.map((r) => r.id), "hoat_dong", clear)}
+              />
+              <BulkActionButton
+                label="Đặt Đã ngừng"
+                icon={<XCircle className="h-3.5 w-3.5" />}
+                duocPhep={allowEdit}
+                lyDoKhoa={LY_DO_KHOA}
+                busy={bulkBusy}
+                xacNhan={{
+                  tieuDe: "Đặt trạng thái Đã ngừng?",
+                  moTa: <MoTaXacNhan rows={selectedRows} tt="Đã ngừng" />,
+                  nutXacNhan: "Đặt Đã ngừng",
+                  nguyHiem: true,
+                }}
+                onRun={() => bulkTrangThai(selectedRows.map((r) => r.id), "ngung", clear)}
+              />
+              <BulkActionButton
+                label="Sao chép mã"
+                icon={<Copy className="h-3.5 w-3.5" />}
+                xacNhan={{
+                  tieuDe: "Sao chép mã các dòng đã chọn?",
+                  moTa: <>Sẽ chép <b>{selectedRows.length}</b> mã thành phần vào bộ nhớ tạm.</>,
+                  nutXacNhan: "Sao chép",
+                }}
+                onRun={() => copyCodes(selectedRows.map((r) => r.ma))}
+              />
+              <TableExportDialog<ThanhPhanRow>
+                ten="thanh-phan"
+                countUnit="thành phần"
+                visibleColumns={visibleColumns}
+                allColumns={allColumns}
+                rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
+                trigger={
+                  <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs">
+                    <Download className="h-3.5 w-3.5" /> Xuất CSV…
+                  </Button>
+                }
+              />
+              <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clear}>Bỏ chọn</Button>
+            </>
+          )}
+
           toolbarLeft={
             <div className="flex items-center gap-2">
               <div className="relative">
@@ -610,6 +726,35 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           emptyText="Không có tài sản phù hợp."
           countUnit="tài sản"
           maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
+          selectable
+          bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
+            <>
+              <BulkActionButton
+                label="Sao chép mã"
+                icon={<Copy className="h-3.5 w-3.5" />}
+                xacNhan={{
+                  tieuDe: "Sao chép mã các tài sản đã chọn?",
+                  moTa: <>Sẽ chép <b>{selectedRows.length}</b> mã tài sản vào bộ nhớ tạm.</>,
+                  nutXacNhan: "Sao chép",
+                }}
+                onRun={() => copyCodes(selectedRows.map((r) => r.ma))}
+              />
+              <TableExportDialog<TaiSanRow>
+                ten="tai-san"
+                countUnit="tài sản"
+                visibleColumns={visibleColumns}
+                allColumns={allColumns}
+                rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
+                trigger={
+                  <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs">
+                    <Download className="h-3.5 w-3.5" /> Xuất CSV…
+                  </Button>
+                }
+              />
+              <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clear}>Bỏ chọn</Button>
+            </>
+          )}
+
           toolbarLeft={
             <div className="flex items-center gap-2">
               <div className="relative">

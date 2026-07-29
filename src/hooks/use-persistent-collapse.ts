@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 
 // GĐ1-03 — nhớ trạng thái đóng/mở của Collapsible per-form.

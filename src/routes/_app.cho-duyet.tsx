@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Ban, RefreshCw, ShieldAlert, AlertTriangle } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

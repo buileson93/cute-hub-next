@@ -19,7 +19,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
 } from "recharts";
 import { useScope } from "@/lib/mirats/scope";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 

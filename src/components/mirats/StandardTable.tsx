@@ -27,7 +27,9 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
   DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import { TableExportDialog } from "@/components/mirats/TableExportDialog";
 import { normalize } from "@/lib/mirats/global-search";
+
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { tongSoTrang } from "@/lib/mirats/ui/list-controls";
 import type { UseListControlsReturn } from "@/lib/mirats/ui/use-list-controls";
@@ -76,15 +78,24 @@ export type ExportContext<T> = {
 };
 
 export type BulkContext<T> = {
-  /** Các dòng đang được tích chọn. */
+  /** Các dòng đang được tích chọn (GIỮ nguyên khi chuyển trang / đổi lọc). */
   selectedRows: T[];
   /** Id các dòng đang chọn. */
   selectedIds: string[];
   /** Các cột ĐANG bật (đúng thứ tự) — để xuất đúng cài đặt cột. */
   visibleColumns: StdColumn<T>[];
+  /** Toàn bộ cột khai báo (kể cả cột đang ẩn) — cho hộp thoại xuất. */
+  allColumns: StdColumn<T>[];
+  /** Toàn bộ dòng sau khi lọc/sắp xếp (mọi trang). */
+  filteredRows: T[];
+  /** Các dòng của trang đang xem. */
+  pageRows: T[];
   /** Bỏ chọn tất cả. */
   clear: () => void;
+  /** Chọn toàn bộ dòng sau lọc (mọi trang). */
+  selectAllFiltered: () => void;
 };
+
 
 type Props<T> = {
   tableKey: string;
@@ -109,6 +120,11 @@ type Props<T> = {
   selectable?: boolean;
   /** Thanh hành động hàng loạt hiện ra khi có dòng được chọn. */
   bulkActions?: (ctx: BulkContext<T>) => ReactNode;
+  /** Tên gợi ý cho file CSV khi xuất (mặc định lấy theo tableKey). */
+  exportName?: string;
+  /** Ẩn nút "Xuất CSV" mặc định trên thanh công cụ. */
+  hideExport?: boolean;
+
   /** Cờ trạng thái ngoài (loading / lỗi) — dùng khi nguồn dữ liệu bất đồng bộ. */
   trangThai?: { dangTai?: boolean; loi?: string | null };
   /** Slot tuỳ chỉnh khi rỗng (thay `emptyText`). */
@@ -137,7 +153,7 @@ export function StandardTable<T>({
   tableKey, columns, rows, getRowId, editMode = false, hideReorderToggle = false,
   toolbarLeft, toolbarRight, onRowClick, emptyText = "Không có dữ liệu phù hợp.",
   maxHeightClass = "h-[calc(100vh-16rem)] min-h-[320px]", rowClassName, countUnit = "dòng",
-  requireFilterToShow = true, selectable = false, bulkActions,
+  requireFilterToShow = true, selectable = false, bulkActions, exportName, hideExport = false,
   trangThai, emptyContent, loadingContent, errorContent, pagination, clientPagination,
 }: Props<T>) {
 
@@ -269,21 +285,28 @@ export function StandardTable<T>({
   }, [fullDisplay, clientPagination]);
 
   // ---- Tích chọn dòng (bulk) ----
+  // Lựa chọn được GIỮ khi chuyển trang / đổi bộ lọc: chỉ loại bỏ những id không
+  // còn tồn tại trong nguồn dữ liệu. Mọi bulk action luôn chạy đúng tập đã tick.
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const rowById = useMemo(() => {
+    const m = new Map<string, T>();
+    for (const r of rows) m.set(getRowId(r), r);
+    return m;
+  }, [rows, getRowId]);
   const displayIds = useMemo(() => display.map((r) => getRowId(r)), [display, getRowId]);
-  // Bỏ chọn những dòng không còn hiển thị (do lọc/đổi dữ liệu).
   useEffect(() => {
     if (!selectable) return;
     setSelected((prev) => {
       if (prev.size === 0) return prev;
-      const valid = new Set(displayIds);
-      const next = new Set([...prev].filter((id) => valid.has(id)));
+      const next = new Set([...prev].filter((id) => rowById.has(id)));
       return next.size === prev.size ? prev : next;
     });
-  }, [selectable, displayIds]);
+  }, [selectable, rowById]);
   const selectedRows = useMemo(
-    () => (selectable ? display.filter((r) => selected.has(getRowId(r))) : []),
-    [selectable, display, selected, getRowId],
+    () => (selectable
+      ? [...selected].map((id) => rowById.get(id)).filter((r): r is T => r !== undefined)
+      : []),
+    [selectable, selected, rowById],
   );
   const allSelected = displayIds.length > 0 && displayIds.every((id) => selected.has(id));
   const someSelected = selected.size > 0 && !allSelected;
@@ -292,10 +315,23 @@ export function StandardTable<T>({
     n.has(id) ? n.delete(id) : n.add(id);
     return n;
   });
-  const toggleAll = () => setSelected((prev) => (
-    displayIds.every((id) => prev.has(id)) ? new Set() : new Set(displayIds)
-  ));
+  // Checkbox đầu bảng: chọn/bỏ chọn các dòng của TRANG hiện tại (không đụng trang khác).
+  const toggleAll = () => setSelected((prev) => {
+    const n = new Set(prev);
+    if (displayIds.every((id) => n.has(id))) displayIds.forEach((id) => n.delete(id));
+    else displayIds.forEach((id) => n.add(id));
+    return n;
+  });
+  const selectAllFiltered = useCallback(
+    () => setSelected(new Set(fullDisplay.map((r) => getRowId(r)))),
+    [fullDisplay, getRowId],
+  );
   const clearSel = useCallback(() => setSelected(new Set()), []);
+  const soNgoaiTrang = useMemo(
+    () => selectedRows.filter((r) => !displayIds.includes(getRowId(r))).length,
+    [selectedRows, displayIds, getRowId],
+  );
+
 
   const toggleCat = (key: string, v: string) => setCatFilters((prev) => {
     const next = new Set(prev[key] ?? []);
@@ -355,6 +391,16 @@ export function StandardTable<T>({
           {typeof toolbarRight === "function"
             ? toolbarRight({ visibleRows: display, visibleColumns: shownCols })
             : toolbarRight}
+          {!hideExport && (
+            <TableExportDialog<T>
+              ten={exportName ?? tableKey.replace(/[:/]/g, "-")}
+              visibleColumns={shownCols}
+              allColumns={columns}
+              countUnit={countUnit}
+              rowsByScope={{ selected: selectedRows, filtered: fullDisplay, page: display }}
+            />
+          )}
+
           {!hideReorderToggle && !editMode && (
             <Button
               variant={internalEdit ? "default" : "outline"}
@@ -413,13 +459,26 @@ export function StandardTable<T>({
       {selectable && selected.size > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/40 bg-primary/5 px-3 py-2 text-sm">
           <Badge className="gap-1">{selected.size}</Badge>
-          <span className="text-muted-foreground">đã chọn</span>
+          <span className="text-muted-foreground">
+            đã chọn
+            {soNgoaiTrang > 0 && ` (${soNgoaiTrang} dòng ở trang khác)`}
+          </span>
+          {fullDisplay.length > selected.size && (
+            <button className="text-xs text-primary hover:underline" onClick={selectAllFiltered}>
+              Chọn tất cả {fullDisplay.length.toLocaleString("vi-VN")} {countUnit} sau lọc
+            </button>
+          )}
           <button className="text-xs text-primary hover:underline" onClick={clearSel}>Bỏ chọn</button>
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            {bulkActions?.({ selectedRows, selectedIds: [...selected], visibleColumns: shownCols, clear: clearSel })}
+            {bulkActions?.({
+              selectedRows, selectedIds: [...selected], visibleColumns: shownCols,
+              allColumns: columns, filteredRows: fullDisplay, pageRows: display,
+              clear: clearSel, selectAllFiltered,
+            })}
           </div>
         </div>
       )}
+
 
       <Card className={cn("relative min-h-0 overflow-auto", maxHeightClass)}>
         {trangThai?.dangTai && (

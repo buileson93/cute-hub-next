@@ -12,7 +12,7 @@ import type {
   RegistrationResponseJSON,
   AuthenticationResponseJSON,
 } from "@simplewebauthn/server";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 const RP_NAME = "MIRATS 2.0";
 const REG_COOKIE = "wa_reg_challenge";
@@ -65,7 +65,7 @@ export const getRegistrationOptions = createServerFn({ method: "POST" })
       ((context.claims as Record<string, unknown> | undefined)?.email as string) ||
       "user";
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: existing } = await supabaseAdmin
       .from("webauthn_credentials")
       .select("credential_id, transports")
@@ -127,7 +127,7 @@ export const verifyRegistration = createServerFn({ method: "POST" })
       verification.registrationInfo;
     const userId = context.userId as string;
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { error } = await supabaseAdmin.from("webauthn_credentials").insert({
       user_id: userId,
       credential_id: credential.id,
@@ -174,7 +174,7 @@ export const verifyAuthentication = createServerFn({ method: "POST" })
       return { success: false as const, error: "Phiên đăng nhập đã hết hạn." };
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: cred } = await supabaseAdmin
       .from("webauthn_credentials")
       .select("*")

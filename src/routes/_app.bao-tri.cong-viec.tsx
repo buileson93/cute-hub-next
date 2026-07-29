@@ -19,7 +19,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useSession } from "@/hooks/use-session";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   useCongViecBaoTri, useKpiBaoTri, useSinhPhieuDinhKy, useHoanThanhPhieu, useCapNhatPhieu,
   hieuLucPhieu, UU_TIEN_META,

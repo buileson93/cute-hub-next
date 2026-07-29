@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Download, Upload, Copy, AlertTriangle, Info } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   parseDacTinhCell,

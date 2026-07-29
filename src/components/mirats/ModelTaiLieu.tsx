@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, Trash2, FileText, Loader2, Download, ExternalLink, Tag, Eye } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";

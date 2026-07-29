@@ -3,7 +3,7 @@
 //   `e instanceof Error === false` khiến toast rơi về fallback vô nghĩa.
 // - Khi 42501 (permission denied) và không có phiên → phiên đã hết → soft signout
 //   để user login lại thay vì loop "Lưu thất bại".
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { dangXuatMem } from "@/lib/mirats/auth/soft-signout";
 
 interface LoiCoTruongMessage {

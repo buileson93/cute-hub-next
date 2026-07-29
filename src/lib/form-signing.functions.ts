@@ -10,7 +10,7 @@
 // ============================================================================
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import * as ed from "@noble/ed25519";
 import { sha512 } from "@noble/hashes/sha2.js";
 import { canonicalize, hashPayload, type SignablePayload } from "@/lib/mirats/sig-canonical";
@@ -40,7 +40,7 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 /** Sinh (hoặc lấy) cặp khoá Ed25519 hoạt động. Placeholder từ migration sẽ bị thay. */
-async function getActiveKey(admin: Awaited<ReturnType<typeof import("@/integrations/supabase/client.server").supabaseAdmin.from>> extends never ? never : any) {
+async function getActiveKey(admin: Awaited<ReturnType<typeof import("@/integrations/backend/admin.server").supabaseAdmin.from>> extends never ? never : any) {
   const { data: rows, error } = await admin
     .from("system_signing_key")
     .select("*")
@@ -80,7 +80,7 @@ export const ensureSigningKey = createServerFn({ method: "POST" })
       .from("user_roles").select("role").eq("user_id", context.userId);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin");
     if (!isAdmin) throw new Error("Chỉ admin mới được sinh khoá ký.");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const key = await getActiveKey(supabaseAdmin);
     return { key_id: key.id as string, public_key_b64: key.public_key_b64 as string, alg: key.alg as string };
   });
@@ -120,7 +120,7 @@ async function performSign(
   const { data: prof } = await userSupabase
     .from("profiles").select("ho_ten").eq("id", userId).maybeSingle();
 
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
   const key = await getActiveKey(supabaseAdmin);
   const { payload, sub } = await buildSignablePayload(supabaseAdmin, submission_id);
 
@@ -222,7 +222,7 @@ export const requestSignOtp = createServerFn({ method: "POST" })
       .from("user_roles").select("role").eq("user_id", context.userId);
     if (!(roles ?? []).length) throw new Error("Tài khoản không có vai trò để ký.");
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     // Lấy chat Telegram của user
     const { data: subs } = await supabaseAdmin
@@ -290,7 +290,7 @@ export const signSubmissionWithOtp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => SignWithOtpInput.parse(data))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: rows } = await supabaseAdmin
       .from("form_sign_otp")
       .select("*")
@@ -333,7 +333,7 @@ const VerifyInput = z.object({ submission_id: z.string().uuid() });
 export const verifySubmission = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => VerifyInput.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     const { data: sigs } = await supabaseAdmin
       .from("form_submission_signature")

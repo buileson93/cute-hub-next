@@ -30,7 +30,7 @@ import { ImageCropDialog } from "@/components/mirats/ImageCropDialog";
 import { ModelDacTinhIODialog } from "@/components/mirats/ModelDacTinhIODialog";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
 import { normalize } from "@/lib/mirats/global-search";

@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { Loader2, Sparkles, Trash2, Upload, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

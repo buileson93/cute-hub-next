@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import {
   buildBaoCaoLyLichThietBi,
   buildBaoCaoBaoDuongKy,

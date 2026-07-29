@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { DEFAULT_NGAY_SAP_HET_HAN } from "./han-canh-bao";
 
 export type ExpiringLoai = "bao_hanh" | "giay_phep";

@@ -30,6 +30,8 @@ const RAW_TABLE_ALLOWLIST = new Set<string>([
   "_app.ban-giao.tsx",
   "_app.giay-phep.tsx",
   "_app.su-co.index.tsx",
+  // Bảng nhật ký kỹ thuật (không phải trang danh sách nghiệp vụ) — xem docs/ui-consistency-checklist.md
+  "_app.admin.luu-tru.tsx",
 ]);
 
 function walk(dir: string, out: string[] = []): string[] {

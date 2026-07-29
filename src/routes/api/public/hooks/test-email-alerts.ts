@@ -13,7 +13,7 @@ export const Route = createFileRoute('/api/public/hooks/test-email-alerts')({
           const body = await request.json().catch(() => ({}))
           const to = (body?.to as string) || 'buileson93@gmail.com'
 
-          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { supabaseAdmin } = await import('@/integrations/backend/admin.server')
           const { sendTemplateEmail } = await import('@/lib/email-templates/send-email')
 
           const items: Array<{

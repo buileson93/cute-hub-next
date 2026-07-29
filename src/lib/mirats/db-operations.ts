@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import type { SuCo, BaoTri, HongHocThayThe, BanGiao } from "@/lib/mirats/types";
 import { fetchAllRows } from "./paginate";
 import { usePagedQuery, sel as pagedSel, type Filter as PagedFilter, type Sort as PagedSort, type TsSearch as PagedSearch } from "./paged";

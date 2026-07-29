@@ -14,7 +14,7 @@ import {
   CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem,
   CommandList, CommandSeparator,
 } from "@/components/ui/command";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession, type AppRole } from "@/hooks/use-session";
 import { getAiPublicConfig } from "@/lib/ai/config.functions";
 import { askMiratsAi } from "@/lib/mirats/ask-ai";

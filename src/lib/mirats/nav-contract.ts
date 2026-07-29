@@ -214,6 +214,7 @@ export const workspaces: Workspace[] = [
           { to: "/admin/ai", label: "Cấu hình AI", icon: Sparkles, roles: ADMIN_ONLY },
           { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
          { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
+          { to: "/admin/supabase-ngoai", label: "Kết nối Supabase ngoài", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
 
         ],
       },
@@ -261,6 +262,7 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/admin/bao-tri-chinh-sach": { crumb: "Hệ thống", title: "Chính sách bảo dưỡng" },
   "/admin/thuong-hieu": { crumb: "Hệ thống", title: "Thương hiệu & Logo" },
   "/admin/luu-tru": { crumb: "Hệ thống", title: "Lưu trữ tệp — Cloud & R2" },
+  "/admin/supabase-ngoai": { crumb: "Hệ thống", title: "Kết nối Supabase ngoài" },
 
 
   "/cai-dat/tai-khoan": { crumb: "Cá nhân", title: "Tài khoản của tôi" },

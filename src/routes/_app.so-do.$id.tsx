@@ -18,7 +18,7 @@ import {
   Images, ImageOff, Spline, Check, StickyNote, Square, Circle, Diamond, Palette, Shapes,
   Link2, GitFork, Waypoints, MapPin, Activity, Boxes, Undo2, Redo2, ImageDown, LayoutGrid,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
 import { useIsMobile } from "@/hooks/use-mobile";

@@ -9,7 +9,7 @@ import {
   Sparkles, X, Plus, Loader2, Send, Trash2, MessageSquareText, Wrench,
   MessagesSquare,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

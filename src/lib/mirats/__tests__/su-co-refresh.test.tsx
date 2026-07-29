@@ -19,7 +19,7 @@ const store: Record<string, unknown[]> = {
   ban_giao: [],
 };
 
-vi.mock("@/integrations/supabase/client", () => ({
+vi.mock("@/integrations/backend/client", () => ({
   supabase: {
     from: (table: string) => ({
       select: () => ({

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/api/public/hooks/r2-cleanup")({
         if (!apiKey || !expected || apiKey !== expected) {
           return new Response("Unauthorized", { status: 401 });
         }
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
         const { r2Delete, r2MultipartAbort } = await import("@/lib/mirats/r2.server");
 
         // Lấy các file temp quá hạn

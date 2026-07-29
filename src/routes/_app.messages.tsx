@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { freshChannel } from "@/lib/realtime/channel";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";

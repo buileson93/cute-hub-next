@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 // ============================================================================
 // cay-delete.ts — Xoá tài sản AN TOÀN từ cây Hệ thống tài sản.

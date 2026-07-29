@@ -13,7 +13,7 @@ import { fmtDowntime } from "@/lib/mirats/format";
 import { mttr as computeMttr, mtbf as computeMtbf, formatKpiValue } from "@/lib/mirats/reliability";
 import { useScope } from "@/lib/mirats/scope";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { VatTuTieuHaoView } from "@/components/mirats/VatTuTieuHaoView";
 import { VatTuTieuHaoInline } from "@/components/mirats/VatTuTieuHaoInline";
 import { useSession } from "@/hooks/use-session";

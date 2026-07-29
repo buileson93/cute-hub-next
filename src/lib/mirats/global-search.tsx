@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { HardDrive, ShieldCheck, FileText, BookOpen } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useDbTaxonomy, useSystemNameOverrides } from "@/lib/mirats/db-taxonomy";
 
 /**

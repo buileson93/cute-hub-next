@@ -4977,6 +4977,45 @@ export type Database = {
           },
         ]
       }
+      luu_tru_health_log: {
+        Row: {
+          backend: string
+          checked_by: string | null
+          created_at: string
+          detail: Json | null
+          error_code: string | null
+          id: string
+          latency_ms: number | null
+          message: string | null
+          nguon: string
+          ok: boolean
+        }
+        Insert: {
+          backend: string
+          checked_by?: string | null
+          created_at?: string
+          detail?: Json | null
+          error_code?: string | null
+          id?: string
+          latency_ms?: number | null
+          message?: string | null
+          nguon?: string
+          ok: boolean
+        }
+        Update: {
+          backend?: string
+          checked_by?: string | null
+          created_at?: string
+          detail?: Json | null
+          error_code?: string | null
+          id?: string
+          latency_ms?: number | null
+          message?: string | null
+          nguon?: string
+          ok?: boolean
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           conversation_id: string
@@ -5346,6 +5385,51 @@ export type Database = {
           reason?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      r2_cau_hinh: {
+        Row: {
+          access_key_id: string | null
+          account_id: string | null
+          bucket_name: string | null
+          created_at: string
+          enabled: boolean
+          endpoint: string | null
+          id: number
+          key_prefix: string | null
+          public_base_url: string | null
+          secret_access_key: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          access_key_id?: string | null
+          account_id?: string | null
+          bucket_name?: string | null
+          created_at?: string
+          enabled?: boolean
+          endpoint?: string | null
+          id?: number
+          key_prefix?: string | null
+          public_base_url?: string | null
+          secret_access_key?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          access_key_id?: string | null
+          account_id?: string | null
+          bucket_name?: string | null
+          created_at?: string
+          enabled?: boolean
+          endpoint?: string | null
+          id?: number
+          key_prefix?: string | null
+          public_base_url?: string | null
+          secret_access_key?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -5751,6 +5835,154 @@ export type Database = {
           tu_trang_thai?: string | null
         }
         Relationships: []
+      }
+      supabase_ngoai: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          ghi_chu: string | null
+          id: string
+          kich_hoat: boolean
+          kiem_tra_ket_qua: Json | null
+          kiem_tra_luc: string | null
+          publishable_key: string
+          service_role_key: string | null
+          ten: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          ghi_chu?: string | null
+          id?: string
+          kich_hoat?: boolean
+          kiem_tra_ket_qua?: Json | null
+          kiem_tra_luc?: string | null
+          publishable_key: string
+          service_role_key?: string | null
+          ten: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          ghi_chu?: string | null
+          id?: string
+          kich_hoat?: boolean
+          kiem_tra_ket_qua?: Json | null
+          kiem_tra_luc?: string | null
+          publishable_key?: string
+          service_role_key?: string | null
+          ten?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      supabase_ngoai_job: {
+        Row: {
+          bat_dau: string
+          che_do: string
+          created_at: string
+          created_by: string | null
+          da_chuyen: number
+          id: string
+          ket_thuc: string | null
+          loi: string | null
+          ngoai_id: string
+          nhat_ky: Json
+          tong_dong: number
+          trang_thai: string
+          updated_at: string
+        }
+        Insert: {
+          bat_dau?: string
+          che_do?: string
+          created_at?: string
+          created_by?: string | null
+          da_chuyen?: number
+          id?: string
+          ket_thuc?: string | null
+          loi?: string | null
+          ngoai_id: string
+          nhat_ky?: Json
+          tong_dong?: number
+          trang_thai?: string
+          updated_at?: string
+        }
+        Update: {
+          bat_dau?: string
+          che_do?: string
+          created_at?: string
+          created_by?: string | null
+          da_chuyen?: number
+          id?: string
+          ket_thuc?: string | null
+          loi?: string | null
+          ngoai_id?: string
+          nhat_ky?: Json
+          tong_dong?: number
+          trang_thai?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supabase_ngoai_job_ngoai_id_fkey"
+            columns: ["ngoai_id"]
+            isOneToOne: false
+            referencedRelation: "supabase_ngoai"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supabase_ngoai_job_bang: {
+        Row: {
+          da_chuyen: number
+          dich_dong_truoc: number | null
+          id: string
+          job_id: string
+          loi: string | null
+          offset_tiep: number
+          ten_bang: string
+          tong_dong: number
+          trang_thai: string
+          updated_at: string
+        }
+        Insert: {
+          da_chuyen?: number
+          dich_dong_truoc?: number | null
+          id?: string
+          job_id: string
+          loi?: string | null
+          offset_tiep?: number
+          ten_bang: string
+          tong_dong?: number
+          trang_thai?: string
+          updated_at?: string
+        }
+        Update: {
+          da_chuyen?: number
+          dich_dong_truoc?: number | null
+          id?: string
+          job_id?: string
+          loi?: string | null
+          offset_tiep?: number
+          ten_bang?: string
+          tong_dong?: number
+          trang_thai?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supabase_ngoai_job_bang_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "supabase_ngoai_job"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       system_signing_key: {
         Row: {
@@ -8280,6 +8512,10 @@ export type Database = {
       }
       admin_reset_sequences: { Args: never; Returns: number }
       admin_restore_database: { Args: { payload: Json }; Returns: Json }
+      admin_restore_table: {
+        Args: { p_rows: Json; p_table: string; p_truncate?: boolean }
+        Returns: Json
+      }
       admin_rollback_audit: { Args: { _audit_id: string }; Returns: Json }
       admin_set_audit_retention: { Args: { _days: number }; Returns: number }
       agent_add_bao_tri: {
@@ -8647,6 +8883,28 @@ export type Database = {
       }
       get_user_don_vi_id: { Args: { _user_id: string }; Returns: string }
       get_user_don_vi_ma: { Args: { _user_id: string }; Returns: string }
+      ghi_bao_duong_atomic:
+        | { Args: { p_payload: Json }; Returns: Json }
+        | {
+            Args: {
+              p_mo_ta: string
+              p_ngay_bat_dau?: string
+              p_thiet_bi_id: string
+              p_vat_tu?: Json
+            }
+            Returns: string
+          }
+      ghi_hong_hoc_atomic:
+        | { Args: { p_payload: Json }; Returns: Json }
+        | {
+            Args: {
+              p_mo_ta_hong_hoc: string
+              p_ngay_hong?: string
+              p_thiet_bi_id: string
+              p_vat_tu?: Json
+            }
+            Returns: string
+          }
       ghi_kiem_ke: {
         Args: {
           _anh_url?: string
@@ -8677,6 +8935,17 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      ghi_su_co_atomic:
+        | { Args: { p_payload: Json }; Returns: Json }
+        | {
+            Args: {
+              p_hien_tuong: string
+              p_ngay_phat_hien?: string
+              p_thiet_bi_id: string
+              p_vat_tu?: Json
+            }
+            Returns: string
+          }
       global_search: {
         Args: { _limit?: number; _q: string }
         Returns: {
@@ -8871,6 +9140,8 @@ export type Database = {
           pct_dat: number
         }[]
       }
+      mirats_ddl_dong_bo: { Args: never; Returns: string[] }
+      mirats_schema_snapshot: { Args: never; Returns: Json }
       ngung_khai_thac_thiet_bi: {
         Args: { _ly_do?: string; _mas: string[]; _thanh_ly?: boolean }
         Returns: Json

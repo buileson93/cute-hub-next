@@ -59,7 +59,7 @@ import {
   useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   sortDacTinh, matchFilter, type DacTinh, type CheDoLoc,
 } from "@/lib/mirats/dac-tinh";

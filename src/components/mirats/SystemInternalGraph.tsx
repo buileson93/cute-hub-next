@@ -29,7 +29,7 @@ import {
   type KheNode, type KheLink,
 } from "@/lib/mirats/lien-ket";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { Link } from "@tanstack/react-router";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

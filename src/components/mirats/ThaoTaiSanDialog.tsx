@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/mirats/Combobox";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useThaoTaiSan, useThietBiDangLap } from "@/lib/mirats/he-thong-thanh-phan";
 
 export interface ThaoTaiSanTarget {

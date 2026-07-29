@@ -4,7 +4,7 @@
 // vật lý chỉ cần một mã ổn định, không đổi khi di chuyển / đổi tên.
 // Dùng bảng chữ Crockford base32 (bỏ I, O, U, L để tránh nhầm mắt/1/0).
 // ============================================================================
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 const ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"; // 32 ký tự, không I/O/U/L
 

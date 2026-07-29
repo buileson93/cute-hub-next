@@ -11,7 +11,7 @@
 // ============================================================================
 
 import ExcelJS from "exceljs";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sb = supabase as any;

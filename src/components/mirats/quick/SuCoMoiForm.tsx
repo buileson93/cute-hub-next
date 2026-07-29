@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
+import { rpcErrorToast } from "@/lib/mirats/rpc-error";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { normalize } from "@/lib/mirats/global-search";
@@ -352,7 +353,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       setAiOpen(false);
       toast.success("AI đã bóc tách xong — hãy kiểm tra lại trước khi lưu");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => { const t = rpcErrorToast(e); toast.error(t.title, { description: t.description, duration: t.description ? 15000 : 5000 }); },
   });
 
   // GĐ3-03 — Voice handoff: khi tới từ /q/:ma với voice=1, nạp transcript và tự bóc tách.
@@ -475,7 +476,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       setMaNhomDraft(null);
       qc.invalidateQueries({ queryKey: ["operations_data"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => { const t = rpcErrorToast(e); toast.error(t.title, { description: t.description, duration: t.description ? 15000 : 5000 }); },
   });
 
   const exportM = useMutation({
@@ -489,7 +490,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       URL.revokeObjectURL(url);
       toast.success("Đã xuất Word");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => { const t = rpcErrorToast(e); toast.error(t.title, { description: t.description, duration: t.description ? 15000 : 5000 }); },
   });
 
   const daDong = !!thoiGianKetThuc;

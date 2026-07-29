@@ -147,6 +147,23 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    // Đồng bộ nguồn dữ liệu (Lovable Cloud hay Supabase ngoài do quản trị chọn).
+    void (async () => {
+      try {
+        const [{ getActiveBackend }, rt] = await Promise.all([
+          import("@/lib/supabase-ngoai.functions"),
+          import("@/lib/backend/runtime-source"),
+        ]);
+        const active = await getActiveBackend();
+        if (rt.writeBackendOverride(active)) rt.applyBackendOverrideAndReload(active);
+      } catch {
+        /* không đồng bộ được → giữ nguyên nguồn hiện tại */
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+
     // Task 35 — bắt lỗi hết phiên global để đăng xuất mềm, không vòng redirect.
     let cleanup: (() => void) | undefined;
     void import("@/lib/mirats/auth/soft-signout").then((m) => {

@@ -25,7 +25,7 @@ import {
   RotateCcw, Crosshair, ImageDown, FileDown, PanelRightClose, PanelRightOpen,
   Bookmark, BookmarkCheck, Info, Keyboard, Home, Undo2, Redo2, FileText, StickyNote,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";

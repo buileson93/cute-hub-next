@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 const ROLES = ["admin", "phong_kt", "phu_trach_dv", "ktv", "readonly", "quan_ly_du_an", "to_truong"] as const;
 const DON_VI = ["CRA", "CLA", "THO", "PCA", "PBA", "PLK"] as const;
@@ -16,7 +16,7 @@ export const listUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     const [{ data: profiles }, { data: roles }, { data: authList }] = await Promise.all([
       supabaseAdmin.from("profiles").select("id,email,ho_ten,don_vi,active,created_at").order("created_at", { ascending: false }),
@@ -56,7 +56,7 @@ export const createUser = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     const { data: created, error: authErr } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
@@ -102,7 +102,7 @@ export const updateUser = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     await supabaseAdmin.from("profiles").update({
       ho_ten: data.ho_ten,
@@ -137,7 +137,7 @@ export const setUserActive = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     if (data.user_id === context.userId) throw new Error("Không thể tự khoá tài khoản của chính mình");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     await supabaseAdmin.from("profiles").update({ active: data.active }).eq("id", data.user_id);
     await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
@@ -164,7 +164,7 @@ export const resetUserPassword = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
       password: data.password,
@@ -185,7 +185,7 @@ export const listAudit = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     const { data } = await supabaseAdmin
       .from("audit_log")

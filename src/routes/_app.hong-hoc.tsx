@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { fmtVND } from "@/lib/mirats/format";
 import { useScope } from "@/lib/mirats/scope";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { canManageHongHoc, canCompleteHongHoc, isHongHocOpen, normalizePhuongAn } from "@/lib/mirats/hong-hoc-state";
 import type { HongHocThayThe } from "@/lib/mirats/types";

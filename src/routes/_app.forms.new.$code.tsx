@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { compileField, compileSchema, type CompiledField, type RawFieldRow } from "@/lib/mirats/form-schema";
 import { evalVisible } from "@/lib/mirats/form-visibility";
