@@ -189,6 +189,8 @@ export function StandardTable<T>({
     useColumnWidths(tableKey);
   const resizeRef = useRef<{ key: string; startX: number; startW: number } | null>(null);
   const [resizingKey, setResizingKey] = useState<string | null>(null);
+  const tableRef = useRef<HTMLTableElement | null>(null);
+
   const onResizeStart = useCallback((key: string, e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -224,6 +226,43 @@ export function StandardTable<T>({
     }),
     [order, colMap, isHidden],
   );
+
+  // Tự căn độ rộng mọi cột theo nội dung thực tế đang hiển thị.
+  // Đo scrollWidth của tiêu đề + các ô body (cộng padding an toàn cho filter/sort/handle).
+  const autoFitWidths = useCallback(() => {
+    const table = tableRef.current;
+    if (!table) return;
+    const offset = selectable ? 1 : 0;
+    // Xoá style width tạm thời để đo đúng nội dung tự nhiên.
+    const tempClear = (el: HTMLElement) => {
+      const prev = el.style.width;
+      el.style.width = "auto";
+      return () => { el.style.width = prev; };
+    };
+    const cols = Array.from(table.querySelectorAll<HTMLTableColElement>("colgroup > col"));
+    const restores = cols.map(tempClear);
+    const next: Record<string, number> = {};
+    shownCols.forEach((c, idx) => {
+      const colIdx = idx + offset;
+      let max = 0;
+      const th = table.querySelector<HTMLTableCellElement>(
+        `thead tr > th:nth-child(${colIdx + 1})`,
+      );
+      if (th) {
+        const inner = th.firstElementChild as HTMLElement | null;
+        max = Math.max(max, (inner?.scrollWidth ?? th.scrollWidth) + 40);
+      }
+      const cells = table.querySelectorAll<HTMLTableCellElement>(
+        `tbody tr > td:nth-child(${colIdx + 1})`,
+      );
+      cells.forEach((td) => {
+        max = Math.max(max, td.scrollWidth + 16);
+      });
+      if (max > 0) next[c.key] = Math.max(80, Math.min(600, Math.round(max)));
+    });
+    restores.forEach((fn) => fn());
+    Object.entries(next).forEach(([k, w]) => setColWidth(k, w));
+  }, [selectable, shownCols, setColWidth]);
 
   // Bộ lọc.
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
@@ -458,6 +497,8 @@ export function StandardTable<T>({
                   <button className="text-primary hover:underline"
                     onClick={() => setHidden([])}>Tất cả</button>
                   <button className="text-primary hover:underline"
+                    onClick={autoFitWidths} title="Tự căn theo nội dung đang hiển thị">Tự căn</button>
+                  <button className="text-primary hover:underline"
                     onClick={resetAllWidths} title="Đặt lại độ rộng mọi cột">Độ rộng</button>
                   <button className="text-primary hover:underline"
                     onClick={reset}>Mặc định</button>
@@ -524,7 +565,7 @@ export function StandardTable<T>({
             <div className="h-full w-1/3 animate-[indeterminate_1.2s_ease-in-out_infinite] bg-primary/70 motion-reduce:animate-pulse" />
           </div>
         )}
-        <table className="w-full caption-bottom text-sm">
+        <table ref={tableRef} className="w-full caption-bottom text-sm">
           <colgroup>
             {selectable && <col style={{ width: 40 }} />}
             {shownCols.map((c) => {
