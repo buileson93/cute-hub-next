@@ -184,6 +184,37 @@ export function StandardTable<T>({
   const { order, hidden, setOrder, toggle, setHidden, reset, isHidden } =
     useColumnPrefs(tableKey, allKeys, defaultHidden);
 
+  // Độ rộng cột tuỳ chỉnh (kéo mép phải tiêu đề cột để đổi).
+  const { widths: colWidths, setWidth: setColWidth, resetWidth: resetColWidth, resetAll: resetAllWidths, MIN_W: MIN_COL_W } =
+    useColumnWidths(tableKey);
+  const resizeRef = useRef<{ key: string; startX: number; startW: number } | null>(null);
+  const [resizingKey, setResizingKey] = useState<string | null>(null);
+  const onResizeStart = useCallback((key: string, e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const th = (e.currentTarget.parentElement as HTMLElement | null);
+    const startW = colWidths[key] ?? th?.getBoundingClientRect().width ?? 120;
+    resizeRef.current = { key, startX: e.clientX, startW };
+    setResizingKey(key);
+    const onMove = (ev: MouseEvent) => {
+      const r = resizeRef.current;
+      if (!r) return;
+      setColWidth(r.key, r.startW + (ev.clientX - r.startX));
+    };
+    const onUp = () => {
+      resizeRef.current = null;
+      setResizingKey(null);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }, [colWidths, setColWidth]);
+
   // Cột hiển thị theo đúng thứ tự đã lưu. `hideBelow` KHÔNG ép ẩn khi user đã chọn hiện.
   const shownCols = useMemo(
     () => order.map((k) => colMap.get(k)).filter((c): c is StdColumn<T> => {
