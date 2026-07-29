@@ -47,9 +47,15 @@ describe("All-in-one — cấu trúc lớp", () => {
     });
   });
 
-  it("thứ tự chuẩn: Tài sản là lớp CUỐI, danh mục gốc ở ĐẦU", () => {
+  it("thứ tự chuẩn: Tài sản trước các lớp vận hành, danh mục gốc ở ĐẦU", () => {
     const tables = ALLINONE_LAYERS.map(layerTable);
-    expect(tables[tables.length - 1]).toBe("thiet_bi");
+    const idxTB = tables.indexOf("thiet_bi");
+    expect(idxTB).toBeGreaterThan(-1);
+    // Các bảng vận hành (nếu có mặt) phải nằm SAU Tài sản.
+    for (const t of ["bao_tri", "chung_chi_thiet_bi", "vat_tu", "nhan_vien"]) {
+      const i = tables.indexOf(t);
+      if (i >= 0) expect(i).toBeGreaterThan(idxTB);
+    }
     // Hệ thống phải trước Tài sản; Mẫu trước Tài sản.
     expect(tables.indexOf("dm_he_thong")).toBeLessThan(tables.indexOf("thiet_bi"));
     expect(tables.indexOf("dm_model")).toBeLessThan(tables.indexOf("thiet_bi"));
