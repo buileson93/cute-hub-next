@@ -1,52 +1,41 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Activity, Clock, TrendingUp, Download, ExternalLink, FileText, Bookmark, Link2, Trash2, Save, FileSpreadsheet } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import {
+  Activity, Clock, TrendingUp, Download, FileText, Bookmark, Link2, Trash2, Save, FileSpreadsheet,
+} from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { PageHeader } from "@/components/mirats/PageHeader";
-import { AnnotationManager, mapAnnotationsToBuckets, LOAI_META, type Annotation } from "@/components/mirats/AnnotationManager";
+import { AnnotationManager, LOAI_META } from "@/components/mirats/AnnotationManager";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-
-
 import {
-  ResponsiveContainer,
-  ComposedChart,
-  Bar,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  ReferenceLine,
+  ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, Legend,
+  CartesianGrid, PieChart, Pie, Cell, ReferenceLine,
 } from "recharts";
 
+import {
+  DeltaBadge, DOW_LONG, DOW_SHORT, SEVERITY_COLORS, SAVED_KEY, delta, fmtMtbf, fmtMttr, isoDate,
+  type Bucket, type SavedFilter,
+} from "@/components/mirats/bao-cao/reliability-core";
+import { useReliabilityData } from "@/components/mirats/bao-cao/use-reliability-data";
+import { SuCoDrillDialog } from "@/components/mirats/bao-cao/SuCoDrillDialog";
+import {
+  exportReliabilityCsv, exportReliabilityExcel, exportReliabilityPdf,
+  type ExportContext,
+} from "@/components/mirats/bao-cao/reliability-export";
 
-
-type SearchState = { from?: string; to?: string; bucket?: "day" | "week" | "month" };
+type SearchState = { from?: string; to?: string; bucket?: Bucket };
 
 export const Route = createFileRoute("/_app/bao-cao/do-tin-cay")({
   validateSearch: (raw: Record<string, unknown>): SearchState => {
@@ -69,24 +58,6 @@ export const Route = createFileRoute("/_app/bao-cao/do-tin-cay")({
   component: DoTinCayPage,
 });
 
-
-type Row = {
-  he_thong_id: string;
-  ma: string | null;
-  ten: string | null;
-  so_su_co: number;
-  so_dong: number;
-  mttr_phut: number | null;
-  mtbf_gio: number | null;
-};
-
-function isoDate(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
-
-type SavedFilter = { id: string; name: string; from: string; to: string; bucket: "day" | "week" | "month" };
-const SAVED_KEY = "mirats:reliability-filters";
-
 function DoTinCayPage() {
   const { session } = useSession();
   const search = Route.useSearch();
@@ -95,29 +66,28 @@ function DoTinCayPage() {
   const ago = new Date(today.getTime() - 90 * 86400_000);
   const from = search.from ?? isoDate(ago);
   const to = search.to ?? isoDate(today);
-  const bucket: "day" | "week" | "month" = search.bucket ?? "day";
+  const bucket: Bucket = search.bucket ?? "day";
   const setFrom = (v: string) => navigate({ search: (p: SearchState) => ({ ...p, from: v }), replace: true });
   const setTo = (v: string) => navigate({ search: (p: SearchState) => ({ ...p, to: v }), replace: true });
-  const setBucket = (v: "day" | "week" | "month") =>
+  const setBucket = (v: Bucket) =>
     navigate({ search: (p: SearchState) => ({ ...p, bucket: v }), replace: true });
 
-
+  // ---- Bộ lọc đã lưu (localStorage) ----------------------------------------
   const [savedFilters, setSavedFilters] = useState<SavedFilter[]>([]);
   useEffect(() => {
     try {
       const raw = localStorage.getItem(SAVED_KEY);
       if (raw) setSavedFilters(JSON.parse(raw));
-    } catch {}
+    } catch { /* bỏ qua dữ liệu hỏng */ }
   }, []);
   const persistSaved = (list: SavedFilter[]) => {
     setSavedFilters(list);
-    try { localStorage.setItem(SAVED_KEY, JSON.stringify(list)); } catch {}
+    try { localStorage.setItem(SAVED_KEY, JSON.stringify(list)); } catch { /* quota */ }
   };
   const saveCurrentFilter = () => {
     const name = window.prompt("Tên bộ lọc:", `${from} → ${to} (${bucket})`)?.trim();
     if (!name) return;
-    const item: SavedFilter = { id: crypto.randomUUID(), name, from, to, bucket };
-    persistSaved([item, ...savedFilters].slice(0, 20));
+    persistSaved([{ id: crypto.randomUUID(), name, from, to, bucket }, ...savedFilters].slice(0, 20));
     toast.success("Đã lưu bộ lọc");
   };
   const applySaved = (f: SavedFilter) => {
@@ -137,499 +107,40 @@ function DoTinCayPage() {
     }
   };
 
+  // ---- Drill-down state ----------------------------------------------------
   const [drill, setDrill] = useState<{ id: string; name: string } | null>(null);
   const [heatDrill, setHeatDrill] = useState<{ dow: number; hour: number } | null>(null);
-
-  const heatDrillQ = useQuery({
-    enabled: !!session && !!heatDrill,
-    queryKey: ["reliability-heat-drill", heatDrill?.dow, heatDrill?.hour, from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("su_co")
-        .select("ma_su_co, hien_tuong, ngay_phat_hien, trang_thai, muc_do, he_thong_id")
-        .gte("ngay_phat_hien", new Date(from + "T00:00:00").toISOString())
-        .lte("ngay_phat_hien", new Date(to + "T23:59:59.999").toISOString())
-        .order("ngay_phat_hien", { ascending: false })
-        .limit(1000);
-      if (error) throw error;
-      const d = heatDrill!;
-      return (data ?? []).filter((r) => {
-        if (!r.ngay_phat_hien) return false;
-        const dt = new Date(r.ngay_phat_hien);
-        return dt.getDay() === d.dow && dt.getHours() === d.hour;
-      }).slice(0, 200);
-    },
-  });
   const [sevDrill, setSevDrill] = useState<string | null>(null);
-
-  const sevDrillQ = useQuery({
-    enabled: !!session && !!sevDrill,
-    queryKey: ["reliability-sev-drill", sevDrill, from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("su_co")
-        .select("ma_su_co, hien_tuong, ngay_phat_hien, trang_thai, muc_do, he_thong_id")
-        .eq("muc_do", sevDrill!)
-        .gte("ngay_phat_hien", new Date(from + "T00:00:00").toISOString())
-        .lte("ngay_phat_hien", new Date(to + "T23:59:59.999").toISOString())
-        .order("ngay_phat_hien", { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
   const [trendDrill, setTrendDrill] = useState<{ from: string; to: string; label: string } | null>(null);
 
-  const trendDrillQ = useQuery({
-    enabled: !!session && !!trendDrill,
-    queryKey: ["reliability-trend-drill", trendDrill?.from, trendDrill?.to],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("su_co")
-        .select("ma_su_co, hien_tuong, ngay_phat_hien, trang_thai, muc_do, he_thong_id")
-        .gte("ngay_phat_hien", trendDrill!.from)
-        .lt("ngay_phat_hien", trendDrill!.to)
-        .order("ngay_phat_hien", { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return data ?? [];
-    },
+  const d = useReliabilityData({
+    enabled: !!session, from, to, bucket, drill, heatDrill, sevDrill, trendDrill,
   });
+  const {
+    q, prevQ, prevRange, trendQ, trendData, annotationsQ, annotationsMapped,
+    heatmapQ, heatmap, severityQ, topMttr, paretoData, paretoVital, totals, prevTotals,
+    drillQ, heatDrillQ, sevDrillQ, trendDrillQ,
+  } = d;
 
-  const drillQ = useQuery({
-    enabled: !!session && !!drill,
-    queryKey: ["reliability-drill", drill?.id, from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("su_co")
-        .select("ma_su_co, hien_tuong, ngay_phat_hien, trang_thai, muc_do, thiet_bi")
-        .eq("he_thong_id", drill!.id)
-        .gte("ngay_phat_hien", new Date(from + "T00:00:00").toISOString())
-        .lte("ngay_phat_hien", new Date(to + "T23:59:59.999").toISOString())
-        .order("ngay_phat_hien", { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const q = useQuery({
-    enabled: !!session,
-    queryKey: ["reliability", from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("rpc_reliability_by_system", {
-        _from: new Date(from + "T00:00:00").toISOString(),
-        _to: new Date(to + "T23:59:59.999").toISOString(),
-      });
-      if (error) throw error;
-      return (data ?? []) as Row[];
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const prevRange = useMemo(() => {
-    const start = new Date(from + "T00:00:00");
-    const end = new Date(to + "T00:00:00");
-    const days = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400_000) + 1);
-    const prevEnd = new Date(start.getTime() - 86400_000);
-    const prevStart = new Date(prevEnd.getTime() - (days - 1) * 86400_000);
-    return { from: isoDate(prevStart), to: isoDate(prevEnd) };
-  }, [from, to]);
-
-  const prevQ = useQuery({
-    enabled: !!session,
-    queryKey: ["reliability", prevRange.from, prevRange.to],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("rpc_reliability_by_system", {
-        _from: new Date(prevRange.from + "T00:00:00").toISOString(),
-        _to: new Date(prevRange.to + "T23:59:59.999").toISOString(),
-      });
-      if (error) throw error;
-      return (data ?? []) as Row[];
-    },
-    refetchOnWindowFocus: false,
-  });
-
-
-  const trendQ = useQuery({
-    enabled: !!session,
-    queryKey: ["reliability-trend", from, to, bucket],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("rpc_reliability_trend", {
-        _from: new Date(from + "T00:00:00").toISOString(),
-        _to: new Date(to + "T23:59:59.999").toISOString(),
-        _bucket: bucket,
-      });
-      if (error) throw error;
-      return (data ?? []) as Array<{
-        bucket_start: string;
-        so_su_co: number;
-        so_dong: number;
-        mttr_phut: number | null;
-      }>;
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const trendData = useMemo(() => {
-    return (trendQ.data ?? []).map((r) => {
-      const d = new Date(r.bucket_start);
-      const label =
-        bucket === "month"
-          ? `${d.getMonth() + 1}/${d.getFullYear()}`
-          : bucket === "week"
-          ? `T${Math.ceil(d.getDate() / 7)} ${d.getMonth() + 1}/${d.getFullYear()}`
-          : `${d.getDate()}/${d.getMonth() + 1}`;
-      return {
-        label,
-        bucket_start: r.bucket_start,
-        so_su_co: r.so_su_co,
-        so_dong: r.so_dong,
-        mttr_gio: r.mttr_phut != null ? Number((r.mttr_phut / 60).toFixed(2)) : null,
-      };
-    });
-  }, [trendQ.data, bucket]);
-
-  // GĐ6-14: ghi chú/mốc sự kiện. Query theo khoảng [from, to] để không kéo
-  // toàn bộ lịch sử; refetch khi khoảng thay đổi. RLS đã lo phần quyền.
-  const annotationsQ = useQuery({
-    enabled: !!session,
-    queryKey: ["reliability-annotations", from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("bao_cao_annotation")
-        .select("*")
-        .gte("thoi_diem", new Date(from + "T00:00:00").toISOString())
-        .lte("thoi_diem", new Date(to + "T23:59:59.999").toISOString())
-        .order("thoi_diem", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as Annotation[];
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const annotationsMapped = useMemo(
-    () => mapAnnotationsToBuckets(annotationsQ.data ?? [], trendData),
-    [annotationsQ.data, trendData],
-  );
-
-
-  const heatmapQ = useQuery({
-    enabled: !!session,
-    queryKey: ["reliability-heatmap", from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("rpc_incident_heatmap", {
-        _from: new Date(from + "T00:00:00").toISOString(),
-        _to: new Date(to + "T23:59:59.999").toISOString(),
-      });
-      if (error) throw error;
-      return (data ?? []) as Array<{ dow: number; hour: number; so_su_co: number }>;
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const heatmap = useMemo(() => {
-    const grid: number[][] = Array.from({ length: 7 }, () => Array(24).fill(0));
-    let max = 0;
-    let total = 0;
-    for (const r of heatmapQ.data ?? []) {
-      if (r.dow >= 0 && r.dow < 7 && r.hour >= 0 && r.hour < 24) {
-        grid[r.dow][r.hour] = r.so_su_co;
-        if (r.so_su_co > max) max = r.so_su_co;
-        total += r.so_su_co;
-      }
-    }
-    return { grid, max, total };
-  }, [heatmapQ.data]);
-
-  const severityQ = useQuery({
-    enabled: !!session,
-    queryKey: ["reliability-severity", from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("rpc_incident_by_severity", {
-        _from: new Date(from + "T00:00:00").toISOString(),
-        _to: new Date(to + "T23:59:59.999").toISOString(),
-      });
-      if (error) throw error;
-      return (data ?? []) as Array<{ muc_do: string; so_su_co: number; so_dong: number }>;
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const SEVERITY_COLORS = [
-    "hsl(var(--destructive))",
-    "hsl(var(--primary))",
-    "hsl(var(--chart-3, 32 95% 55%))",
-    "hsl(var(--muted-foreground))",
-    "hsl(var(--chart-5, 262 60% 60%))",
-  ];
-
-  const topMttr = useMemo(() => {
-    return [...(q.data ?? [])]
-      .filter((r) => r.mttr_phut != null && r.so_dong > 0)
-      .sort((a, b) => (b.mttr_phut ?? 0) - (a.mttr_phut ?? 0))
-      .slice(0, 5);
-  }, [q.data]);
-
-  const paretoData = useMemo(() => {
-    const rows = [...(q.data ?? [])]
-      .filter((r) => (r.so_su_co ?? 0) > 0)
-      .sort((a, b) => (b.so_su_co ?? 0) - (a.so_su_co ?? 0))
-      .slice(0, 15);
-    const total = rows.reduce((a, r) => a + (r.so_su_co ?? 0), 0);
-    let cum = 0;
-    return rows.map((r) => {
-      cum += r.so_su_co ?? 0;
-      const shortName = (r.ten ?? r.ma ?? "—").length > 22
-        ? (r.ten ?? r.ma ?? "—").slice(0, 20) + "…"
-        : (r.ten ?? r.ma ?? "—");
-      return {
-        he_thong_id: r.he_thong_id,
-        name: shortName,
-        fullName: r.ten ?? r.ma ?? "—",
-        so_su_co: r.so_su_co,
-        cum_pct: total > 0 ? Number(((cum / total) * 100).toFixed(1)) : 0,
-      };
-    });
-  }, [q.data]);
-
-  const paretoVital = useMemo(() => {
-    const idx = paretoData.findIndex((r) => r.cum_pct >= 80);
-    return idx === -1 ? paretoData.length : idx + 1;
-  }, [paretoData]);
-
-
-
-
-
-
-  const computeTotals = (rows: Row[]) => {
-    const totalIncidents = rows.reduce((a, r) => a + (r.so_su_co ?? 0), 0);
-    const totalClosed = rows.reduce((a, r) => a + (r.so_dong ?? 0), 0);
-    const weightedMttr =
-      rows.reduce((a, r) => a + (r.mttr_phut ?? 0) * (r.so_dong ?? 0), 0) /
-      Math.max(totalClosed, 1);
-    return { totalIncidents, totalClosed, weightedMttr };
-  };
-  const totals = useMemo(() => computeTotals(q.data ?? []), [q.data]);
-  const prevTotals = useMemo(() => computeTotals(prevQ.data ?? []), [prevQ.data]);
-
-  const delta = (cur: number, prev: number) => {
-    if (!Number.isFinite(cur) || !Number.isFinite(prev)) return null;
-    if (prev === 0) return cur === 0 ? { pct: 0, diff: 0 } : { pct: null as number | null, diff: cur };
-    return { pct: ((cur - prev) / prev) * 100, diff: cur - prev };
-  };
-  // For incidents/MTTR, giảm là tốt (xanh); Đã đóng, tăng là tốt.
-  const DeltaBadge = ({ d, lowerIsBetter = true }: { d: ReturnType<typeof delta>; lowerIsBetter?: boolean }) => {
-    if (!d || (d.diff === 0)) return <span className="text-xs text-muted-foreground">= kỳ trước</span>;
-    const up = d.diff > 0;
-    const good = lowerIsBetter ? !up : up;
-    const cls = good ? "text-emerald-600" : "text-destructive";
-    const sign = up ? "▲" : "▼";
-    const pct = d.pct == null ? "mới" : `${Math.abs(d.pct).toFixed(1)}%`;
-    return <span className={`text-xs font-medium ${cls}`}>{sign} {pct} vs kỳ trước</span>;
-  };
-
-
-  const fmtMttr = (m: number | null | undefined) => {
-    if (m == null || !Number.isFinite(m)) return "—";
-    if (m < 60) return `${m.toFixed(1)} phút`;
-    const h = m / 60;
-    if (h < 48) return `${h.toFixed(1)} giờ`;
-    return `${(h / 24).toFixed(1)} ngày`;
-  };
-  const fmtMtbf = (h: number | null | undefined) => {
-    if (h == null || !Number.isFinite(h)) return "—";
-    if (h < 48) return `${h.toFixed(1)} giờ`;
-    return `${(h / 24).toFixed(1)} ngày`;
-  };
-
-  const exportCsv = () => {
-    const rows = q.data ?? [];
-    if (!rows.length) {
-      toast.info("Không có dữ liệu để xuất");
-      return;
-    }
-    const header = ["Mã HT", "Tên hệ thống", "Số sự cố", "Đã đóng", "MTTR (phút)", "MTBF (giờ)"];
-    const lines = [
-      header.join(","),
-      ...rows.map((r) =>
-        [
-          JSON.stringify(r.ma ?? ""),
-          JSON.stringify(r.ten ?? ""),
-          r.so_su_co,
-          r.so_dong,
-          r.mttr_phut ?? "",
-          r.mtbf_gio ?? "",
-        ].join(",")
-      ),
-    ];
-    const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `do-tin-cay_${from}_${to}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
+  // ---- Xuất báo cáo --------------------------------------------------------
   const [pdfExporting, setPdfExporting] = useState(false);
+  const exportCtx = (): ExportContext => ({
+    from, to, bucket,
+    rows: q.data ?? [],
+    totals,
+    trendData,
+    heatmapGrid: heatmap.grid,
+    severity: severityQ.data ?? [],
+    paretoData,
+    paretoVital,
+    topMttr,
+  });
   const exportPdf = async () => {
-    if (!q.data?.length) {
-      toast.info("Không có dữ liệu để xuất");
-      return;
-    }
-    const root = document.querySelector<HTMLElement>("[data-print-root]");
-    if (!root) {
-      toast.error("Không tìm thấy vùng in");
-      return;
-    }
     setPdfExporting(true);
-    const tId = toast.loading("Đang tạo PDF…");
-    try {
-      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
-        import("jspdf"),
-        import("html2canvas"),
-      ]);
-      // Ẩn các thành phần không cần in
-      root.classList.add("pdf-exporting");
-      // Đợi 1 frame để layout ổn định
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
-      const canvas = await html2canvas(root, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        windowWidth: root.scrollWidth,
-      });
-      root.classList.remove("pdf-exporting");
-
-      const pdf = new jsPDF({ orientation: "p", unit: "pt", format: "a4" });
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 24;
-      const imgW = pageW - margin * 2;
-      const imgH = (canvas.height * imgW) / canvas.width;
-
-      // Tiêu đề trang đầu
-      pdf.setFontSize(14);
-      pdf.text("Bao cao do tin cay he thong", margin, margin);
-      pdf.setFontSize(10);
-      pdf.text(`Tu ${from} den ${to}  |  Bucket: ${bucket}  |  Xuat: ${new Date().toLocaleString("vi-VN")}`, margin, margin + 14);
-
-      const topOffset = margin + 24;
-      const availH = pageH - topOffset - margin;
-
-      if (imgH <= availH) {
-        pdf.addImage(canvas.toDataURL("image/jpeg", 0.9), "JPEG", margin, topOffset, imgW, imgH);
-      } else {
-        // Chia thành nhiều trang: cắt theo chiều dọc canvas
-        const pageCanvasH = Math.floor((availH * canvas.width) / imgW);
-        let yOffset = 0;
-        let first = true;
-        while (yOffset < canvas.height) {
-          const sliceH = Math.min(pageCanvasH, canvas.height - yOffset);
-          const tmp = document.createElement("canvas");
-          tmp.width = canvas.width;
-          tmp.height = sliceH;
-          const ctx = tmp.getContext("2d");
-          if (!ctx) break;
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, tmp.width, tmp.height);
-          ctx.drawImage(canvas, 0, yOffset, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-          if (!first) pdf.addPage();
-          first = false;
-          const sliceImgH = (sliceH * imgW) / canvas.width;
-          pdf.addImage(tmp.toDataURL("image/jpeg", 0.9), "JPEG", margin, first ? topOffset : margin, imgW, sliceImgH);
-          yOffset += sliceH;
-        }
-      }
-
-      pdf.save(`do-tin-cay_${from}_${to}.pdf`);
-      toast.success("Đã xuất PDF", { id: tId });
-    } catch (e) {
-      console.error(e);
-      toast.error("Không xuất được PDF", { id: tId });
-    } finally {
-      setPdfExporting(false);
-    }
+    try { await exportReliabilityPdf(exportCtx()); } finally { setPdfExporting(false); }
   };
 
-  const exportExcel = async () => {
-    const rows = q.data ?? [];
-    if (!rows.length) {
-      toast.info("Không có dữ liệu để xuất");
-      return;
-    }
-    try {
-      const XLSX = await import("xlsx");
-      const wb = XLSX.utils.book_new();
-
-      // 1) Tổng quan
-      const overview = [
-        ["Báo cáo độ tin cậy hệ thống"],
-        ["Từ ngày", from],
-        ["Đến ngày", to],
-        ["Bucket", bucket],
-        ["Xuất lúc", new Date().toLocaleString("vi-VN")],
-        [],
-        ["Tổng sự cố", totals.totalIncidents],
-        ["Đã đóng", totals.totalClosed],
-        ["MTTR bình quân (phút)", Number.isFinite(totals.weightedMttr) ? Number(totals.weightedMttr.toFixed(2)) : 0],
-        ["Số hệ thống", rows.length],
-        ["Pareto: hệ thống trọng yếu (~80%)", `${paretoVital}/${paretoData.length}`],
-      ];
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(overview), "Tổng quan");
-
-      // 2) Theo hệ thống
-      const bySys = [
-        ["Mã HT", "Tên hệ thống", "Số sự cố", "Đã đóng", "MTTR (phút)", "MTBF (giờ)"],
-        ...rows.map((r) => [r.ma ?? "", r.ten ?? "", r.so_su_co, r.so_dong, r.mttr_phut ?? "", r.mtbf_gio ?? ""]),
-      ];
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bySys), "Theo hệ thống");
-
-      // 3) Xu hướng
-      const trend = [
-        ["Mốc", "Bắt đầu", "Số sự cố", "Đã đóng", "MTTR (giờ)"],
-        ...trendData.map((r) => [r.label, r.bucket_start, r.so_su_co, r.so_dong, r.mttr_gio ?? ""]),
-      ];
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(trend), "Xu hướng");
-
-      // 4) Heatmap 7x24
-      const dowNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-      const heatHeader = ["Thứ \\ Giờ", ...Array.from({ length: 24 }, (_, h) => `${h}h`)];
-      const heatRows = heatmap.grid.map((row, dow) => [dowNames[dow], ...row]);
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([heatHeader, ...heatRows]), "Heatmap giờ×thứ");
-
-      // 5) Mức độ
-      const sev = [
-        ["Mức độ", "Số sự cố", "Đã đóng"],
-        ...(severityQ.data ?? []).map((r) => [r.muc_do, r.so_su_co, r.so_dong]),
-      ];
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sev), "Mức độ");
-
-      // 6) Pareto
-      const pareto = [
-        ["Hệ thống", "Số sự cố", "Luỹ kế %"],
-        ...paretoData.map((r) => [r.fullName, r.so_su_co, r.cum_pct]),
-      ];
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(pareto), "Pareto");
-
-      // 7) Top MTTR
-      const top = [
-        ["Mã HT", "Tên hệ thống", "Đã đóng", "MTTR (phút)"],
-        ...topMttr.map((r) => [r.ma ?? "", r.ten ?? "", r.so_dong, r.mttr_phut ?? ""]),
-      ];
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(top), "Top MTTR");
-
-      XLSX.writeFile(wb, `do-tin-cay_${from}_${to}.xlsx`);
-      toast.success("Đã xuất Excel");
-    } catch (e) {
-      console.error(e);
-      toast.error("Không xuất được Excel");
-    }
-  };
-
+  const bucketLabel = bucket === "day" ? "ngày" : bucket === "week" ? "tuần" : "tháng";
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-3 sm:p-4" data-print-root>
@@ -645,6 +156,7 @@ function DoTinCayPage() {
         }
         [data-print-root].pdf-exporting [data-print-hide] { display: none !important; }
       `}</style>
+
       <PageHeader
         icon={Activity}
         title="Độ tin cậy hệ thống"
@@ -696,13 +208,7 @@ function DoTinCayPage() {
                           {f.from} → {f.to} · {f.bucket}
                         </div>
                       </button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 shrink-0"
-                        onClick={() => removeSaved(f.id)}
-                        title="Xoá"
-                      >
+                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => removeSaved(f.id)} title="Xoá">
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -711,10 +217,10 @@ function DoTinCayPage() {
               </DropdownMenuContent>
             </DropdownMenu>
             <Separator orientation="vertical" className="mx-1 hidden h-9 self-end sm:block" />
-            <Button variant="outline" size="sm" onClick={exportCsv} disabled={!q.data?.length}>
+            <Button variant="outline" size="sm" onClick={() => exportReliabilityCsv(exportCtx())} disabled={!q.data?.length}>
               <Download className="mr-1.5 h-4 w-4" /> Xuất CSV
             </Button>
-            <Button variant="outline" size="sm" onClick={exportExcel} disabled={!q.data?.length}>
+            <Button variant="outline" size="sm" onClick={() => exportReliabilityExcel(exportCtx())} disabled={!q.data?.length}>
               <FileSpreadsheet className="mr-1.5 h-4 w-4" /> Xuất Excel
             </Button>
             <Button variant="outline" size="sm" onClick={exportPdf} disabled={!q.data?.length || pdfExporting}>
@@ -723,8 +229,6 @@ function DoTinCayPage() {
           </div>
         }
       />
-
-
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Card>
@@ -777,13 +281,12 @@ function DoTinCayPage() {
         </Card>
       </div>
 
-
       <Card>
         <CardHeader className="flex flex-col items-start justify-between gap-3 space-y-0 sm:flex-row">
           <div>
             <CardTitle className="text-base">Xu hướng sự cố theo thời gian</CardTitle>
             <CardDescription>
-              Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng {bucket === "day" ? "ngày" : bucket === "week" ? "tuần" : "tháng"}.
+              Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng {bucketLabel}.
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -792,7 +295,7 @@ function DoTinCayPage() {
               isLoading={annotationsQ.isLoading}
               onChanged={() => annotationsQ.refetch()}
             />
-            <Tabs value={bucket} onValueChange={(v) => setBucket(v as "day" | "week" | "month")}>
+            <Tabs value={bucket} onValueChange={(v) => setBucket(v as Bucket)}>
               <TabsList>
                 <TabsTrigger value="day">Ngày</TabsTrigger>
                 <TabsTrigger value="week">Tuần</TabsTrigger>
@@ -816,10 +319,7 @@ function DoTinCayPage() {
                   <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
                   <Tooltip
                     contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                    formatter={(value: number | string, name: string) => {
-                      if (name === "MTTR (giờ)") return [value ?? "—", name];
-                      return [value, name];
-                    }}
+                    formatter={(value: number | string, name: string) => [value ?? "—", name]}
                   />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
                   <Bar
@@ -829,8 +329,8 @@ function DoTinCayPage() {
                     fill="hsl(var(--primary))"
                     radius={[3, 3, 0, 0]}
                     cursor="pointer"
-                    onClick={(d) => {
-                      const p = d as unknown as { payload?: { bucket_start?: string; label?: string } };
+                    onClick={(payloadItem) => {
+                      const p = payloadItem as unknown as { payload?: { bucket_start?: string; label?: string } };
                       const start = p?.payload?.bucket_start;
                       if (!start) return;
                       const s = new Date(start);
@@ -888,7 +388,7 @@ function DoTinCayPage() {
                     <div key={h} className="w-6 text-center tabular-nums">{h}</div>
                   ))}
                 </div>
-                {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((label, dow) => (
+                {DOW_SHORT.map((label, dow) => (
                   <div key={dow} className="flex items-center">
                     <div className="w-10 shrink-0 text-xs text-muted-foreground">{label}</div>
                     {Array.from({ length: 24 }).map((_, h) => {
@@ -916,11 +416,7 @@ function DoTinCayPage() {
                 <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
                   <span>Ít</span>
                   {[0.15, 0.35, 0.55, 0.75, 0.9].map((a) => (
-                    <div
-                      key={a}
-                      className="h-3 w-6 rounded-sm border border-border/40"
-                      style={{ backgroundColor: `hsl(var(--primary) / ${a})` }}
-                    />
+                    <div key={a} className="h-3 w-6 rounded-sm border border-border/40" style={{ backgroundColor: `hsl(var(--primary) / ${a})` }} />
                   ))}
                   <span>Nhiều</span>
                 </div>
@@ -992,8 +488,8 @@ function DoTinCayPage() {
                       outerRadius={80}
                       paddingAngle={2}
                       cursor="pointer"
-                      onClick={(d: unknown) => {
-                        const p = d as { muc_do?: string; payload?: { muc_do?: string } };
+                      onClick={(payloadItem: unknown) => {
+                        const p = payloadItem as { muc_do?: string; payload?: { muc_do?: string } };
                         const key = p?.muc_do ?? p?.payload?.muc_do;
                         if (key) setSevDrill(key);
                       }}
@@ -1031,22 +527,9 @@ function DoTinCayPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={paretoData} margin={{ top: 8, right: 16, left: 0, bottom: 56 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    interval={0}
-                    angle={-35}
-                    textAnchor="end"
-                    height={60}
-                  />
+                  <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-35} textAnchor="end" height={60} />
                   <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    domain={[0, 100]}
-                    tick={{ fontSize: 11 }}
-                    tickFormatter={(v) => `${v}%`}
-                  />
+                  <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
                   <Tooltip
                     contentStyle={{ fontSize: 12, borderRadius: 8 }}
                     labelFormatter={(_, payload) => (payload?.[0]?.payload as { fullName?: string })?.fullName ?? ""}
@@ -1062,22 +545,14 @@ function DoTinCayPage() {
                     fill="hsl(var(--primary))"
                     radius={[3, 3, 0, 0]}
                     cursor="pointer"
-                    onClick={(d) => {
-                      const p = d as unknown as { payload?: { he_thong_id?: string; fullName?: string } };
+                    onClick={(payloadItem) => {
+                      const p = payloadItem as unknown as { payload?: { he_thong_id?: string; fullName?: string } };
                       if (p?.payload?.he_thong_id) {
                         setDrill({ id: p.payload.he_thong_id, name: p.payload.fullName ?? "" });
                       }
                     }}
                   />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="cum_pct"
-                    name="Luỹ kế"
-                    stroke="hsl(var(--destructive))"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
+                  <Line yAxisId="right" type="monotone" dataKey="cum_pct" name="Luỹ kế" stroke="hsl(var(--destructive))" strokeWidth={2} dot={{ r: 3 }} />
                   <ReferenceLine
                     yAxisId="right"
                     y={80}
@@ -1093,8 +568,6 @@ function DoTinCayPage() {
       </Card>
 
       <Card>
-
-
         <CardHeader>
           <CardTitle className="text-base">Chi tiết theo hệ thống</CardTitle>
           <CardDescription>
@@ -1104,15 +577,10 @@ function DoTinCayPage() {
         <CardContent className="p-0">
           {q.isLoading ? (
             <div className="space-y-2 p-4">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-9 w-full" />
-              ))}
+              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
             </div>
           ) : !q.data?.length ? (
-            <EmptyState
-              title="Không có sự cố"
-              description="Không có sự cố nào trong khoảng thời gian đã chọn."
-            />
+            <EmptyState title="Không có sự cố" description="Không có sự cố nào trong khoảng thời gian đã chọn." />
           ) : (
             <Table>
               <TableHeader>
@@ -1146,225 +614,46 @@ function DoTinCayPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={!!drill} onOpenChange={(o) => !o && setDrill(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Sự cố của: {drill?.name || "—"}</DialogTitle>
-            <DialogDescription>
-              Từ {from} đến {to} · tối đa 200 bản ghi gần nhất.
-            </DialogDescription>
-          </DialogHeader>
-          {drillQ.isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-            </div>
-          ) : !drillQ.data?.length ? (
-            <EmptyState title="Không có sự cố" description="Hệ thống này không có sự cố trong khoảng thời gian đã chọn." />
-          ) : (
-            <div className="max-h-[60vh] overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-28">Mã SC</TableHead>
-                    <TableHead>Tiêu đề</TableHead>
-                    <TableHead className="w-40">Phát hiện</TableHead>
-                    <TableHead className="w-24">Mức</TableHead>
-                    <TableHead className="w-28">Trạng thái</TableHead>
-                    <TableHead className="w-10" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {drillQ.data.map((s) => (
-                    <TableRow key={s.ma_su_co}>
-                      <TableCell className="font-mono text-xs">{s.ma_su_co}</TableCell>
-                      <TableCell className="max-w-[24rem] truncate">{s.hien_tuong ?? "—"}</TableCell>
-                      <TableCell className="font-mono text-xs tabular-nums">
-                        {s.ngay_phat_hien ? new Date(s.ngay_phat_hien).toLocaleString("vi-VN") : "—"}
-                      </TableCell>
-                      <TableCell><Badge variant="outline">{s.muc_do ?? "—"}</Badge></TableCell>
-                      <TableCell><Badge variant="secondary">{s.trang_thai ?? "—"}</Badge></TableCell>
-                      <TableCell>
-                        <Link
-                          to="/su-co/$maSuCo"
-                          params={{ maSuCo: s.ma_su_co }}
-                          className="inline-flex items-center text-primary hover:underline"
-                          onClick={() => setDrill(null)}
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <SuCoDrillDialog
+        open={!!drill}
+        onClose={() => setDrill(null)}
+        title={`Sự cố của: ${drill?.name || "—"}`}
+        description={`Từ ${from} đến ${to} · tối đa 200 bản ghi gần nhất.`}
+        rows={drillQ.data}
+        isLoading={drillQ.isLoading}
+        emptyDescription="Hệ thống này không có sự cố trong khoảng thời gian đã chọn."
+      />
 
-      <Dialog open={!!heatDrill} onOpenChange={(o) => !o && setHeatDrill(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>
-              Sự cố lúc {heatDrill?.hour}:00 — {["Chủ nhật","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"][heatDrill?.dow ?? 0]}
-            </DialogTitle>
-            <DialogDescription>
-              Từ {from} đến {to} · tối đa 200 bản ghi trong khung giờ này.
-            </DialogDescription>
-          </DialogHeader>
-          {heatDrillQ.isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-            </div>
-          ) : !heatDrillQ.data?.length ? (
-            <EmptyState title="Không có sự cố" description="Không có sự cố trong khung giờ này." />
-          ) : (
-            <div className="max-h-[60vh] overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-28">Mã SC</TableHead>
-                    <TableHead>Hiện tượng</TableHead>
-                    <TableHead className="w-40">Phát hiện</TableHead>
-                    <TableHead className="w-24">Mức</TableHead>
-                    <TableHead className="w-28">Trạng thái</TableHead>
-                    <TableHead className="w-10" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {heatDrillQ.data.map((s) => (
-                    <TableRow key={s.ma_su_co}>
-                      <TableCell className="font-mono text-xs">{s.ma_su_co}</TableCell>
-                      <TableCell className="max-w-[24rem] truncate">{s.hien_tuong ?? "—"}</TableCell>
-                      <TableCell className="font-mono text-xs tabular-nums">
-                        {s.ngay_phat_hien ? new Date(s.ngay_phat_hien).toLocaleString("vi-VN") : "—"}
-                      </TableCell>
-                      <TableCell><Badge variant="outline">{s.muc_do ?? "—"}</Badge></TableCell>
-                      <TableCell><Badge variant="secondary">{s.trang_thai ?? "—"}</Badge></TableCell>
-                      <TableCell>
-                        <Link
-                          to="/su-co/$maSuCo"
-                          params={{ maSuCo: s.ma_su_co }}
-                          className="inline-flex items-center text-primary hover:underline"
-                          onClick={() => setHeatDrill(null)}
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <SuCoDrillDialog
+        open={!!heatDrill}
+        onClose={() => setHeatDrill(null)}
+        title={`Sự cố lúc ${heatDrill?.hour ?? 0}:00 — ${DOW_LONG[heatDrill?.dow ?? 0]}`}
+        description={`Từ ${from} đến ${to} · tối đa 200 bản ghi trong khung giờ này.`}
+        rows={heatDrillQ.data}
+        isLoading={heatDrillQ.isLoading}
+        emptyDescription="Không có sự cố trong khung giờ này."
+      />
 
-      <Dialog open={!!sevDrill} onOpenChange={(o) => !o && setSevDrill(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Sự cố mức: {sevDrill ?? "—"}</DialogTitle>
-            <DialogDescription>Từ {from} đến {to} · tối đa 200 bản ghi gần nhất.</DialogDescription>
-          </DialogHeader>
-          {sevDrillQ.isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-            </div>
-          ) : !sevDrillQ.data?.length ? (
-            <EmptyState title="Không có sự cố" description="Không có sự cố mức này trong khoảng đã chọn." />
-          ) : (
-            <div className="max-h-[60vh] overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-28">Mã SC</TableHead>
-                    <TableHead>Hiện tượng</TableHead>
-                    <TableHead className="w-40">Phát hiện</TableHead>
-                    <TableHead className="w-28">Trạng thái</TableHead>
-                    <TableHead className="w-10" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sevDrillQ.data.map((s) => (
-                    <TableRow key={s.ma_su_co}>
-                      <TableCell className="font-mono text-xs">{s.ma_su_co}</TableCell>
-                      <TableCell className="max-w-[24rem] truncate">{s.hien_tuong ?? "—"}</TableCell>
-                      <TableCell className="font-mono text-xs tabular-nums">
-                        {s.ngay_phat_hien ? new Date(s.ngay_phat_hien).toLocaleString("vi-VN") : "—"}
-                      </TableCell>
-                      <TableCell><Badge variant="secondary">{s.trang_thai ?? "—"}</Badge></TableCell>
-                      <TableCell>
-                        <Link
-                          to="/su-co/$maSuCo"
-                          params={{ maSuCo: s.ma_su_co }}
-                          className="inline-flex items-center text-primary hover:underline"
-                          onClick={() => setSevDrill(null)}
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <SuCoDrillDialog
+        open={!!sevDrill}
+        onClose={() => setSevDrill(null)}
+        title={`Sự cố mức: ${sevDrill ?? "—"}`}
+        description={`Từ ${from} đến ${to} · tối đa 200 bản ghi gần nhất.`}
+        rows={sevDrillQ.data}
+        isLoading={sevDrillQ.isLoading}
+        showMucDo={false}
+        emptyDescription="Không có sự cố mức này trong khoảng đã chọn."
+      />
 
-      <Dialog open={!!trendDrill} onOpenChange={(o) => !o && setTrendDrill(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Sự cố trong {bucket === "day" ? "ngày" : bucket === "week" ? "tuần" : "tháng"}: {trendDrill?.label ?? "—"}</DialogTitle>
-            <DialogDescription>Tối đa 200 bản ghi gần nhất trong khoảng đã chọn.</DialogDescription>
-          </DialogHeader>
-          {trendDrillQ.isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
-            </div>
-          ) : !trendDrillQ.data?.length ? (
-            <EmptyState title="Không có sự cố" description="Không có sự cố trong khoảng thời gian này." />
-          ) : (
-            <div className="max-h-[60vh] overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-28">Mã SC</TableHead>
-                    <TableHead>Hiện tượng</TableHead>
-                    <TableHead className="w-40">Phát hiện</TableHead>
-                    <TableHead className="w-24">Mức</TableHead>
-                    <TableHead className="w-28">Trạng thái</TableHead>
-                    <TableHead className="w-10" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {trendDrillQ.data.map((s) => (
-                    <TableRow key={s.ma_su_co}>
-                      <TableCell className="font-mono text-xs">{s.ma_su_co}</TableCell>
-                      <TableCell className="max-w-[24rem] truncate">{s.hien_tuong ?? "—"}</TableCell>
-                      <TableCell className="font-mono text-xs tabular-nums">
-                        {s.ngay_phat_hien ? new Date(s.ngay_phat_hien).toLocaleString("vi-VN") : "—"}
-                      </TableCell>
-                      <TableCell><Badge variant="outline">{s.muc_do ?? "—"}</Badge></TableCell>
-                      <TableCell><Badge variant="secondary">{s.trang_thai ?? "—"}</Badge></TableCell>
-                      <TableCell>
-                        <Link
-                          to="/su-co/$maSuCo"
-                          params={{ maSuCo: s.ma_su_co }}
-                          className="inline-flex items-center text-primary hover:underline"
-                          onClick={() => setTrendDrill(null)}
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <SuCoDrillDialog
+        open={!!trendDrill}
+        onClose={() => setTrendDrill(null)}
+        title={`Sự cố trong ${bucketLabel}: ${trendDrill?.label ?? "—"}`}
+        description="Tối đa 200 bản ghi gần nhất trong khoảng đã chọn."
+        rows={trendDrillQ.data}
+        isLoading={trendDrillQ.isLoading}
+        emptyDescription="Không có sự cố trong khoảng thời gian này."
+      />
     </div>
   );
 }
