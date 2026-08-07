@@ -51,13 +51,13 @@ export function BanQuyenCapPhatDialog({
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  banQuyen: BanQuyenRow | null;
+  banQuyen: BanQuyenRow | null; initialDeviceId?: string | null;
   canManage: boolean;
 }) {
   const qc = useQueryClient();
   const { data: capPhat = [], isLoading } = useCapPhatList(banQuyen?.id ?? null);
   const { data: tbOptions = [], isLoading: loadingTb } = useThietBiOptions();
-  const [thietBiId, setThietBiId] = useState("");
+  const [thietBiId, setThietBiId] = useState(initialDeviceId || "");
   const [nguoiCai, setNguoiCai] = useState("");
 
   const dangDung = capPhat.filter((c) => !c.ngay_thu_hoi);
