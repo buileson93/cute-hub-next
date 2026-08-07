@@ -158,7 +158,7 @@ export function BanQuyenFormDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={mode === "create" ? "Thêm bản quyền phần mềm" : "Sửa bản quyền phần mềm"}
-      description="Theo dõi bản quyền phần mềm gắn với máy tính/máy chủ: số ghế, thời hạn và chi phí."
+      description="Quản lý chi tiết bản quyền: máy tính đang cài những gì, bản quyền đã gán và chưa gán thiết bị."
       fields={fields}
       schema={schema}
       defaultValues={defaultValues}

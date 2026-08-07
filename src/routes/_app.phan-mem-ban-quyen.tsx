@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_app/phan-mem-ban-quyen")({
       {
         name: "description",
         content:
-          "Quản lý bản quyền phần mềm cho máy tính/máy chủ: số ghế, thời hạn, chi phí và cấp phát theo tài sản.",
+          "Quản lý bản quyền phần mềm: máy tính đang cài những gì, bản quyền đã gán và chưa gán thiết bị.",
       },
       { property: "og:title", content: "Bản quyền phần mềm — MIRATS 2.0" },
       { property: "og:description", content: "Theo dõi seats, hạn bản quyền và cấp phát phần mềm cho tài sản CNTT." },
