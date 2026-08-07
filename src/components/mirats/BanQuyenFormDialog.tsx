@@ -91,9 +91,13 @@ export function BanQuyenFormDialog({
     },
     { key: "so_ghe", type: "number", label: "Số ghế (seats)", help: "Bỏ trống = không giới hạn số máy cài", min: 1, step: 1 },
     { key: "license_key", type: "textarea", label: "License key / mã kích hoạt", placeholder: "XXXXX-XXXXX-…", colSpan: 2 },
+    
+    // Group: Thời hạn
     { key: "ngay_mua", type: "date", label: "Ngày mua" },
     { key: "ngay_het_han", type: "date", label: "Ngày hết hạn", help: "Bỏ trống với bản quyền vĩnh viễn" },
     { key: "ngay_bat_dau", type: "date", label: "Ngày bắt đầu hiệu lực" },
+    
+    // Group: Tài chính & Đơn vị
     { key: "gia_tri", type: "number", label: "Giá trị (VND)", min: 0, step: 1000 },
     { key: "so_hop_dong", type: "text", label: "Số hợp đồng", placeholder: "HĐ số…" },
     {
