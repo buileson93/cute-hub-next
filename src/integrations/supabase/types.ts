@@ -1520,6 +1520,39 @@ export type Database = {
           },
         ]
       }
+      dm_loai_ban_quyen: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          ma: string
+          mo_ta: string | null
+          ten: string
+          thu_tu: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          ma: string
+          mo_ta?: string | null
+          ten: string
+          thu_tu?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          ma?: string
+          mo_ta?: string | null
+          ten?: string
+          thu_tu?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dm_loai_giay_phep: {
         Row: {
           active: boolean
@@ -1632,6 +1665,7 @@ export type Database = {
           created_at: string
           deactivated_at: string | null
           id: string
+          la_may_tinh: boolean
           ma: string
           mau: string | null
           merged_into: string | null
@@ -1645,6 +1679,7 @@ export type Database = {
           created_at?: string
           deactivated_at?: string | null
           id?: string
+          la_may_tinh?: boolean
           ma: string
           mau?: string | null
           merged_into?: string | null
@@ -1658,6 +1693,7 @@ export type Database = {
           created_at?: string
           deactivated_at?: string | null
           id?: string
+          la_may_tinh?: boolean
           ma?: string
           mau?: string | null
           merged_into?: string | null
@@ -5397,6 +5433,212 @@ export type Database = {
         }
         Relationships: []
       }
+      phan_mem_ban_quyen: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          don_vi_id: string | null
+          ghi_chu: string | null
+          gia_tri: number | null
+          id: string
+          license_key: string | null
+          loai_ban_quyen_id: string | null
+          ma_ban_quyen: string
+          ngay_bat_dau: string | null
+          ngay_het_han: string | null
+          ngay_mua: string | null
+          nha_cung_cap_id: string | null
+          nha_phat_hanh: string | null
+          phien_ban: string | null
+          so_ghe: number | null
+          so_hop_dong: string | null
+          ten_phan_mem: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          don_vi_id?: string | null
+          ghi_chu?: string | null
+          gia_tri?: number | null
+          id?: string
+          license_key?: string | null
+          loai_ban_quyen_id?: string | null
+          ma_ban_quyen: string
+          ngay_bat_dau?: string | null
+          ngay_het_han?: string | null
+          ngay_mua?: string | null
+          nha_cung_cap_id?: string | null
+          nha_phat_hanh?: string | null
+          phien_ban?: string | null
+          so_ghe?: number | null
+          so_hop_dong?: string | null
+          ten_phan_mem: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          don_vi_id?: string | null
+          ghi_chu?: string | null
+          gia_tri?: number | null
+          id?: string
+          license_key?: string | null
+          loai_ban_quyen_id?: string | null
+          ma_ban_quyen?: string
+          ngay_bat_dau?: string | null
+          ngay_het_han?: string | null
+          ngay_mua?: string | null
+          nha_cung_cap_id?: string | null
+          nha_phat_hanh?: string | null
+          phien_ban?: string | null
+          so_ghe?: number | null
+          so_hop_dong?: string | null
+          ten_phan_mem?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phan_mem_ban_quyen_don_vi_id_fkey"
+            columns: ["don_vi_id"]
+            isOneToOne: false
+            referencedRelation: "dm_don_vi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phan_mem_ban_quyen_loai_ban_quyen_id_fkey"
+            columns: ["loai_ban_quyen_id"]
+            isOneToOne: false
+            referencedRelation: "dm_loai_ban_quyen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phan_mem_ban_quyen_nha_cung_cap_id_fkey"
+            columns: ["nha_cung_cap_id"]
+            isOneToOne: false
+            referencedRelation: "dm_nha_cung_cap"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phan_mem_ban_quyen_cap_phat: {
+        Row: {
+          ban_quyen_id: string
+          created_at: string
+          created_by: string | null
+          ghi_chu: string | null
+          id: string
+          ngay_cai_dat: string
+          ngay_thu_hoi: string | null
+          nguoi_cai: string | null
+          thiet_bi_id: string
+          updated_at: string
+        }
+        Insert: {
+          ban_quyen_id: string
+          created_at?: string
+          created_by?: string | null
+          ghi_chu?: string | null
+          id?: string
+          ngay_cai_dat?: string
+          ngay_thu_hoi?: string | null
+          nguoi_cai?: string | null
+          thiet_bi_id: string
+          updated_at?: string
+        }
+        Update: {
+          ban_quyen_id?: string
+          created_at?: string
+          created_by?: string | null
+          ghi_chu?: string | null
+          id?: string
+          ngay_cai_dat?: string
+          ngay_thu_hoi?: string | null
+          nguoi_cai?: string | null
+          thiet_bi_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phan_mem_ban_quyen_cap_phat_ban_quyen_id_fkey"
+            columns: ["ban_quyen_id"]
+            isOneToOne: false
+            referencedRelation: "phan_mem_ban_quyen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phan_mem_ban_quyen_cap_phat_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "mv_asset_anomaly"
+            referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "phan_mem_ban_quyen_cap_phat_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phan_mem_ban_quyen_cap_phat_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_thiet_bi_dac_tinh"
+            referencedColumns: ["thiet_bi_id"]
+          },
+        ]
+      }
+      phan_mem_ban_quyen_tep: {
+        Row: {
+          ban_quyen_id: string
+          created_at: string
+          created_by: string | null
+          duong_dan: string
+          ghi_chu: string | null
+          id: string
+          kich_thuoc: number | null
+          mime_type: string | null
+          storage_provider: string
+          ten_tep: string
+          updated_at: string
+        }
+        Insert: {
+          ban_quyen_id: string
+          created_at?: string
+          created_by?: string | null
+          duong_dan: string
+          ghi_chu?: string | null
+          id?: string
+          kich_thuoc?: number | null
+          mime_type?: string | null
+          storage_provider?: string
+          ten_tep: string
+          updated_at?: string
+        }
+        Update: {
+          ban_quyen_id?: string
+          created_at?: string
+          created_by?: string | null
+          duong_dan?: string
+          ghi_chu?: string | null
+          id?: string
+          kich_thuoc?: number | null
+          mime_type?: string | null
+          storage_provider?: string
+          ten_tep?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phan_mem_ban_quyen_tep_ban_quyen_id_fkey"
+            columns: ["ban_quyen_id"]
+            isOneToOne: false
+            referencedRelation: "phan_mem_ban_quyen"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pm_cong_viec: {
         Row: {
           bao_tri_id: string | null
@@ -8755,6 +8997,17 @@ export type Database = {
         Returns: string
       }
       backup_schema_json: { Args: never; Returns: Json }
+      ban_quyen_tong_hop: {
+        Args: never
+        Returns: {
+          da_het_han: number
+          ghe_da_dung: number
+          sap_het_han: number
+          tong_ban_quyen: number
+          tong_ghe: number
+          tong_gia_tri: number
+        }[]
+      }
       can_access_du_an: {
         Args: { _du_an_id: string; _user: string }
         Returns: boolean
