@@ -4,8 +4,8 @@
 // ============================================================================
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { createFileRoute } from "@tanstack/react-router";
-import { KeyRound, Plus, Pencil, Laptop, AlertTriangle, Clock, Wallet, ShieldCheck, PieChart, Info } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { KeyRound, Plus, Pencil, Laptop, AlertTriangle, Clock, Wallet, ShieldCheck, PieChart, Info, ExternalLink } from "lucide-react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
-  useBanQuyenList, STATUS_CLASS, STATUS_LABEL, dinhDangTien, type BanQuyenRow,
+  useBanQuyenList, useBanQuyenTongHop, STATUS_CLASS, STATUS_LABEL, dinhDangTien, type BanQuyenRow,
 } from "@/lib/mirats/ban-quyen";
 
 export const Route = createFileRoute("/_app/phan-mem-ban-quyen")({
@@ -39,13 +39,17 @@ export const Route = createFileRoute("/_app/phan-mem-ban-quyen")({
 
 function BanQuyenPage() {
   const { hasRole } = useSession();
+  const navigate = useNavigate();
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const { data: rows = [], isLoading } = useBanQuyenList();
+  const { data: kpiData, isLoading: loadingKpi } = useBanQuyenTongHop();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<BanQuyenRow | null>(null);
   const [capPhatRow, setCapPhatRow] = useState<BanQuyenRow | null>(null);
 
   const kpi = useMemo(() => {
+    if (kpiData) return kpiData;
+    // Fallback client-side calculation if RPC is missing or loading
     let expiring = 0;
     let expired = 0;
     let valid = 0;
@@ -63,7 +67,7 @@ function BanQuyenPage() {
     }
     const utilization = ghe > 0 ? (gheDung / ghe) * 100 : 0;
     return { total: rows.length, expiring, expired, valid, ghe, gheDung, chiPhi, utilization };
-  }, [rows]);
+  }, [rows, kpiData]);
 
   const columns: StdColumn<BanQuyenRow>[] = [
     {
@@ -182,6 +186,19 @@ function BanQuyenPage() {
       cell: (r) => (
         <div className="inline-flex items-center gap-1">
           <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 rounded-full hover:bg-secondary"
+            title="Chi tiết"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate({ to: "/phan-mem-ban-quyen/$ma", params: { ma: r.ma_ban_quyen } });
+            }}
+          >
+            <ExternalLink className="h-3.5 w-3.5 text-primary" />
+          </Button>
+
+          <Button
             variant="outline"
             size="sm"
             className="h-7 gap-1 px-2 text-xs font-semibold hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all"
@@ -285,6 +302,7 @@ function BanQuyenPage() {
               tableKey="phan_mem_ban_quyen_visual"
               rows={rows}
               getRowId={(r) => r.id}
+              onRowClick={(r) => navigate({ to: "/phan-mem-ban-quyen/$ma", params: { ma: r.ma_ban_quyen } })}
               requireFilterToShow={false}
               autoFit={true}
               emptyContent={

@@ -143,8 +143,12 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { useBanQuyenAlertScanner } from "@/lib/mirats/ban-quyen-alerts";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  
+  useBanQuyenAlertScanner();
 
   useEffect(() => {
     // Đồng bộ nguồn dữ liệu (Lovable Cloud hay Supabase ngoài do quản trị chọn).
