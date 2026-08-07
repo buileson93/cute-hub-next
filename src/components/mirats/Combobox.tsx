@@ -32,6 +32,8 @@ interface ComboboxProps {
   /** Đang tải danh sách lựa chọn — hiện skeleton thay vì ô rỗng nhấp nháy. */
   loading?: boolean;
   className?: string;
+  /** Callback khi người dùng nhập vào ô tìm kiếm (dùng để search server-side). */
+  onSearchChange?: (value: string) => void;
 }
 
 /** Ô chọn có tìm kiếm, dùng chung cho báo cáo (đơn vị / hệ thống / vị trí…). */
@@ -45,6 +47,7 @@ export function Combobox({
   allowCustom = false,
   loading = false,
   className,
+  onSearchChange,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -83,7 +86,10 @@ export function Combobox({
           <CommandInput
             placeholder={searchPlaceholder}
             value={query}
-            onValueChange={setQuery}
+            onValueChange={(v) => {
+              setQuery(v);
+              onSearchChange?.(v);
+            }}
           />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>

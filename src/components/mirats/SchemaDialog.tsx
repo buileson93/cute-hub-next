@@ -47,7 +47,7 @@ type Common = {
 };
 
 export type SchemaField =
-  | (Common & { type: "text" | "textarea" | "date"; placeholder?: string; colSpan?: 1 | 2 })
+  | (Common & { type: "text" | "textarea" | "date" | "password"; placeholder?: string; colSpan?: 1 | 2 })
   | (Common & {
       type: "number";
       placeholder?: string;
@@ -110,7 +110,7 @@ function coerceForParse(fields: SchemaField[], values: Record<string, unknown>) 
       const raw = draft[f.key];
       if (raw === "" || raw == null) draft[f.key] = undefined;
       else draft[f.key] = Number(raw);
-    } else if (f.type === "text" || f.type === "textarea" || f.type === "date") {
+    } else if (f.type === "text" || f.type === "textarea" || f.type === "date" || f.type === "password") {
       if (typeof draft[f.key] === "string") {
         draft[f.key] = (draft[f.key] as string).trim();
       }
@@ -282,13 +282,13 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               </p>
             ) : null;
 
-            if (f.type === "text" || f.type === "date") {
+            if (f.type === "text" || f.type === "date" || f.type === "password") {
               return (
                 <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
                   {labelNode}
                   <Input
                     id={`sd-${f.key}`}
-                    type={f.type === "date" ? "date" : "text"}
+                    type={f.type === "date" ? "date" : f.type === "password" ? "password" : "text"}
                     value={(values[f.key] as string) ?? ""}
                     placeholder={f.placeholder}
                     disabled={f.disabled}

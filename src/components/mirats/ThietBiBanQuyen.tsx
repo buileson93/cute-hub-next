@@ -1,19 +1,19 @@
 import { ShieldCheck, Laptop, Calendar, User, History, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useThietBiBanQuyenList } from "@/lib/mirats/ban-quyen-thiet-bi";
+import { useCapPhatListUnified } from "@/lib/mirats/ban-quyen";
 import { STATUS_CLASS, STATUS_LABEL, trangThaiBanQuyen } from "@/lib/mirats/ban-quyen";
 import { useState } from "react";
 import { BanQuyenCapPhatDialog } from "./BanQuyenCapPhatDialog";
 
 export function ThietBiBanQuyen({ thietBiId, canManage }: { thietBiId: string; canManage?: boolean }) {
-  const { data = [], isLoading } = useThietBiBanQuyenList(thietBiId);
+  const { data = [], isLoading } = useCapPhatListUnified({ thietBiId });
   const [showAssign, setShowAssign] = useState(false);
 
   if (isLoading) return <div className="p-4 text-sm text-muted-foreground">Đang tải danh sách bản quyền...</div>;
 
-  const current = data.filter(r => !r.ngay_thu_hoi);
-  const history = data.filter(r => !!r.ngay_thu_hoi);
+  const current = data.filter((r: any) => !r.ngay_thu_hoi);
+  const history = data.filter((r: any) => !!r.ngay_thu_hoi);
 
   return (
     <div className="space-y-6">
@@ -38,11 +38,12 @@ export function ThietBiBanQuyen({ thietBiId, canManage }: { thietBiId: string; c
         <div className="grid gap-4 sm:grid-cols-2">
           {current.map((item: any) => {
             const status = trangThaiBanQuyen(item.ngayHetHan);
+            const tenPhanMem = item.tenPhanMem || item.tenThietBi; // Fix tenThietBi being software name in redundant hook
             return (
               <div key={item.id} className="group relative overflow-hidden rounded-xl border bg-card p-4 transition-all hover:shadow-md">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
-                    <h4 className="font-bold text-primary group-hover:text-primary/80">{item.tenThietBi}</h4>
+                    <h4 className="font-bold text-primary group-hover:text-primary/80">{tenPhanMem}</h4>
                     <p className="text-xs text-muted-foreground">Phiên bản: {item.phienBan || "N/A"}</p>
                   </div>
                   <Badge variant="outline" className={STATUS_CLASS[status]}>
@@ -81,7 +82,7 @@ export function ThietBiBanQuyen({ thietBiId, canManage }: { thietBiId: string; c
             {history.map((item: any) => (
               <div key={item.id} className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/30 border opacity-70">
                 <div className="flex items-center gap-3">
-                  <span className="font-medium">{item.tenThietBi}</span>
+                  <span className="font-medium">{item.tenPhanMem || item.tenThietBi}</span>
                   <span className="text-muted-foreground">Thu hồi: {new Date(item.ngay_thu_hoi).toLocaleDateString("vi-VN")}</span>
                 </div>
                 <Badge variant="secondary" className="text-[10px]">Đã thu hồi</Badge>

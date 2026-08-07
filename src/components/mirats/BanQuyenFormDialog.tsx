@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/backend/client";
 import type { BanQuyenRow } from "@/lib/mirats/ban-quyen";
 
 const schema = z.object({
-  ma_ban_quyen: z.string().trim().min(2, "Mã bản quyền tối thiểu 2 ký tự").max(60),
+  ma_ban_quyen: z.string().trim().max(60).optional(),
   ten_phan_mem: z.string().trim().min(2, "Tên phần mềm tối thiểu 2 ký tự").max(200),
   nha_phat_hanh: z.string().trim().max(160).optional(),
   phien_ban: z.string().trim().max(60).optional(),
@@ -77,7 +77,7 @@ export function BanQuyenFormDialog({
   );
 
   const fields: SchemaField[] = [
-    { key: "ma_ban_quyen", type: "text", label: "Mã bản quyền", required: true, placeholder: "VD: BQ-WIN11-PRO-01" },
+    { key: "ma_ban_quyen", type: "text", label: "Mã bản quyền", required: false, placeholder: "Bỏ trống để tự sinh (BQ_XXXXXXXX)", help: "Mã định danh duy nhất trong hệ thống" },
     { key: "ten_phan_mem", type: "text", label: "Tên phần mềm", required: true, placeholder: "VD: Windows 11 Pro" },
     { key: "nha_phat_hanh", type: "text", label: "Nhà phát hành", placeholder: "Microsoft, Autodesk…" },
     { key: "phien_ban", type: "text", label: "Phiên bản", placeholder: "2024, 11 Pro…" },
@@ -90,7 +90,7 @@ export function BanQuyenFormDialog({
       loadOptions: loadOpts("dm_loai_ban_quyen"),
     },
     { key: "so_ghe", type: "number", label: "Số ghế (seats)", help: "Bỏ trống = không giới hạn số máy cài", min: 1, step: 1 },
-    { key: "license_key", type: "textarea", label: "License key / mã kích hoạt", placeholder: "XXXXX-XXXXX-…", colSpan: 2 },
+    { key: "license_key", type: "password", label: "License key / mã kích hoạt", placeholder: "••••••••••••", colSpan: 2, help: "Thông tin này được ẩn để bảo mật. Chỉ người quản lý mới có quyền xem." },
     
     // Group: Thời hạn
     { key: "ngay_mua", type: "date", label: "Ngày mua" },
@@ -119,8 +119,8 @@ export function BanQuyenFormDialog({
 
   const save = useMutation({
     mutationFn: async (v: Values) => {
-      const payload = {
-        ma_ban_quyen: v.ma_ban_quyen,
+      const payload: any = {
+        ma_ban_quyen: v.ma_ban_quyen || undefined,
         ten_phan_mem: v.ten_phan_mem,
         nha_phat_hanh: v.nha_phat_hanh || null,
         phien_ban: v.phien_ban || null,
