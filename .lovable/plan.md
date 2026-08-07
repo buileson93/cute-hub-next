@@ -1,28 +1,31 @@
-# Plan - Visual Text Edits & License Management UI Request
+# Plan - Correcting Text Edits & Redesigning License Management UI
 
-The user wants to rename a "language selector" UI element to a specific request string: "tôi muốn lên kế hoạch để có giao diện về quản lý bản quyền phần mềm , UI UX trực quan đồng bồ với kiểu UI UX hiện tại của trang web".
+The user rejected the previous text edit and now wants to redesign the Software License Management UI to be more visual, intuitive (UX/UI), and consistent with the rest of the website's features.
 
 ## Analysis
-
-- The literal string "language selector" does not exist in the code.
-- The user is likely referring to the `TzClock` component or a navigation item because it uses a globe icon (`Globe2`) or because they perceive the timezone selector as a language selector.
-- Given the nature of the request, they are effectively using this "text change" to signal a new feature request or to update a placeholder they *think* is a language selector.
-- I will search for the string "Chọn ngôn ngữ" or similar Vietnamese terms just in case.
-- If still not found, I will target the `aria-label="Chọn múi giờ"` in `src/components/mirats/TzClock.tsx` as it's the most "selector-like" thing with a globe icon on the top bar.
-- Wait, I'll check `src/routes/_app.admin.ai.tsx` as well, as AI configurations often have language options.
+- The user corrected my previous misunderstanding: they *don't* want to change the "language selector" to that long string. They want to *design* the License Management UI properly.
+- I already implemented a basic version of Software License Management (route `/phan-mem-ban-quyen`, tables, and simple forms).
+- The user wants something more "visual" and "intuitive", matching the high-quality dashboard and list views of the rest of the site (e.g., using stats cards, charts, and clear relationships).
 
 ## Proposed Changes
 
-### UI Components
+### 1. Revert `src/components/mirats/TzClock.tsx`
+- Revert the `aria-label` and `DropdownMenuLabel` to their original meaningful values ("Chọn múi giờ" and "Múi giờ hiển thị").
 
-#### `src/components/mirats/TzClock.tsx`
-- Change `aria-label="Chọn múi giờ"` to the requested string.
-- Change the `DropdownMenuLabel` text from "Múi giờ hiển thị" to the requested string.
+### 2. Enhance Software License Management UI (`src/routes/_app.phan-mem-ban-quyen.tsx`)
+- Add **Stats Cards** at the top: Total Licenses, Total Value, Seats Used vs Available, Expiring Soon (30 days).
+- Add a **Pie Chart** or horizontal progress bars showing seat utilization by license.
+- Improve the **StandardTable** configuration:
+  - Add status badges (Active, Expired, Warning).
+  - Add formatting for currency (VNĐ).
+  - Add a quick action button to "Assign License" (Cap phat) directly from the row.
+- Ensure the overall layout uses the same pattern as `src/routes/_app.tong-quan.tsx` or `src/routes/_app.danh-muc.model.tsx`.
+
+### 3. Update License Management Components
+- `BanQuyenFormDialog.tsx`: Improve the form layout to be multi-column if needed, with better validation.
+- `BanQuyenCapPhatDialog.tsx`: Add a "Search Asset" feature that shows basic asset info (Model, SN) to make assignment intuitive.
 
 ## Verification Plan
-
-### Automated Tests
-- None.
-
-### Manual Verification
-- Check the topbar clock selector tooltips and labels.
+- Manually check the `/phan-mem-ban-quyen` route for the new visual elements.
+- Verify the `TzClock` labels are back to normal.
+- Check responsiveness of the new dashboard elements.
