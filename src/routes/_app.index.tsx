@@ -317,7 +317,7 @@ function Dashboard() {
       {/* Editorial hero */}
       <header className="border-b border-border pb-5 sm:pb-8">
         <h1 className="text-3xl font-light tracking-tight sm:text-4xl lg:text-6xl">
-          <span className="font-bold">Overview</span>
+          <span className="font-bold">Execute esta instrucao no projeto: lên kế hoạch để quản lý phần mềm bản quyền cho các tài sản liên quan tới máy tính</span>
         </h1>
       </header>
 
