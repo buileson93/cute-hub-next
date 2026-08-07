@@ -9714,6 +9714,10 @@ export type Database = {
       run_audit_daily_digest: { Args: never; Returns: number }
       run_audit_retention: { Args: never; Returns: number }
       sinh_canh_bao_het_han: { Args: never; Returns: Json }
+      storage_don_vi_allowed: {
+        Args: { _bucket: string; _name: string }
+        Returns: boolean
+      }
       su_co_check_transition: {
         Args: { _den: string; _tu: string }
         Returns: boolean
