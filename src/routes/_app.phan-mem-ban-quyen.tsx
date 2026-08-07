@@ -115,10 +115,9 @@ function BanQuyenPage() {
             <Progress 
               value={pct} 
               className="h-1.5" 
-              indicatorClassName={cn(
-                "h-full w-full flex-1 transition-all duration-300",
-                pct >= 95 ? "bg-red-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500"
-              )}
+              indicatorClassName={
+                (pct >= 95 ? "bg-red-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500")
+              }
             />
             {r.deviceSummary && r.deviceSummary.length > 0 && (
               <div className="flex flex-wrap gap-1 pt-1">
