@@ -163,3 +163,51 @@ export function useCapPhatList(banQuyenId: string | null) {
     },
   });
 }
+
+/**
+ * Hook gộp để lấy danh sách cấp phát theo Bản quyền ID hoặc Thiết bị ID.
+ */
+export function useCapPhatListUnified({ 
+  banQuyenId, 
+  thietBiId 
+}: { 
+  banQuyenId?: string | null; 
+  thietBiId?: string | null; 
+}) {
+  return useQuery({
+    queryKey: ["ban_quyen", "cap-phat-list-unified", { banQuyenId, thietBiId }],
+    queryFn: async () => {
+      let query = supabase
+        .from("phan_mem_ban_quyen_cap_phat")
+        .select(`
+          id,
+          ban_quyen_id,
+          thiet_bi_id,
+          ngay_cai_dat,
+          nguoi_cai,
+          ngay_thu_hoi,
+          ghi_chu,
+          thiet_bi(ma_thiet_bi, ten_thiet_bi),
+          phan_mem_ban_quyen(ten_phan_mem, phien_ban, license_key, ngay_het_han, ma_ban_quyen)
+        `);
+
+      if (banQuyenId) query = query.eq("ban_quyen_id", banQuyenId);
+      if (thietBiId) query = query.eq("thiet_bi_id", thietBiId);
+
+      const { data, error } = await query.order("ngay_cai_dat", { ascending: false });
+      if (error) throw error;
+      
+      return (data || []).map((r: any) => ({
+        ...r,
+        maThietBi: r.thiet_bi?.ma_thiet_bi,
+        tenThietBi: r.thiet_bi?.ten_thiet_bi,
+        tenPhanMem: r.phan_mem_ban_quyen?.ten_phan_mem,
+        phienBan: r.phan_mem_ban_quyen?.phien_ban,
+        licenseKey: r.phan_mem_ban_quyen?.license_key,
+        ngayHetHan: r.phan_mem_ban_quyen?.ngay_het_han,
+        maBanQuyen: r.phan_mem_ban_quyen?.ma_ban_quyen,
+      }));
+    },
+    enabled: !!banQuyenId || !!thietBiId,
+  });
+}
