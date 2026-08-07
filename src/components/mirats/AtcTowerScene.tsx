@@ -259,7 +259,7 @@ export function AtcTowerScene() {
               "radial-gradient(closest-side, rgba(255,183,80,0.55), rgba(255,143,0,0) 70%)",
             filter: "blur(6px)",
           }}
-          animate={{ opacity: [0.55, 0.95, 0.55] }}
+          animate={mounted ? { opacity: [0.55, 0.95, 0.55] } : { opacity: 0.55 }}
           transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
@@ -276,7 +276,7 @@ export function AtcTowerScene() {
             background: "#ff5a3a",
             boxShadow: "0 0 16px 5px rgba(255,90,58,0.55)",
           }}
-          animate={{ opacity: [1, 0.15, 1] }}
+          animate={mounted ? { opacity: [1, 0.15, 1] } : { opacity: 1 }}
           transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
@@ -290,13 +290,13 @@ export function AtcTowerScene() {
           <motion.div
             className="absolute h-24 w-[60%] rounded-full bg-white/10 blur-3xl"
             style={{ top: "22%", left: "-20%" }}
-            animate={{ x: ["0%", "180%"] }}
+            animate={mounted ? { x: ["0%", "180%"] } : { x: "0%" }}
             transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
           />
           <motion.div
             className="absolute h-16 w-[40%] rounded-full bg-white/8 blur-2xl"
             style={{ top: "38%", left: "-20%" }}
-            animate={{ x: ["0%", "200%"] }}
+            animate={mounted ? { x: ["0%", "200%"] } : { x: "0%" }}
             transition={{ duration: 80, repeat: Infinity, ease: "linear", delay: -20 }}
           />
         </motion.div>
