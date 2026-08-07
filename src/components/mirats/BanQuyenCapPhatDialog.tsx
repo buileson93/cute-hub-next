@@ -16,30 +16,49 @@ import { Combobox } from "@/components/mirats/Combobox";
 import { supabase } from "@/integrations/backend/client";
 import { useCapPhatList, type BanQuyenRow } from "@/lib/mirats/ban-quyen";
 
-function useThietBiOptions() {
+function useThietBiOptions(search: string = "") {
   return useQuery({
-    queryKey: ["ban_quyen", "thiet-bi-options"],
+    queryKey: ["ban_quyen", "thiet-bi-options", search],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("thiet_bi")
-        .select("id, ma_thiet_bi, ten_thiet_bi, dm_loai_thiet_bi(ten, la_may_tinh)")
+        .select("id, ma_thiet_bi, ten_thiet_bi, dm_loai_thiet_bi!inner(ten, la_may_tinh)")
+        .eq("dm_loai_thiet_bi.la_may_tinh", true)
         .order("ten_thiet_bi")
-        .limit(2000);
+        .limit(100);
+
+      if (search) {
+        query = query.or(`ten_thiet_bi.ilike.%${search}%,ma_thiet_bi.ilike.%${search}%`);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
-      type Raw = {
-        id: string;
-        ma_thiet_bi: string;
-        ten_thiet_bi: string | null;
-        dm_loai_thiet_bi: { ten: string; la_may_tinh: boolean } | null;
-      };
-      const rows = (data ?? []) as unknown as Raw[];
-      const may = rows.filter((r) => r.dm_loai_thiet_bi?.la_may_tinh);
-      const source = may.length > 0 ? may : rows;
-      return source.map((r) => ({
+      
+      return (data ?? []).map((r) => ({
         value: r.id,
         label: `${r.ten_thiet_bi ?? r.ma_thiet_bi} · ${r.ma_thiet_bi}`,
       }));
     },
+  });
+}
+
+function useBanQuyenOptions() {
+  return useQuery({
+    queryKey: ["ban_quyen", "options-available"],
+    queryFn: async () => {
+      // Tạm thời lấy danh sách bản quyền, trigger DB sẽ chặn nếu hết ghế
+      const { data, error } = await supabase
+        .from("phan_mem_ban_quyen")
+        .select("id, ten_phan_mem, ma_ban_quyen, so_ghe")
+        .order("ten_phan_mem");
+      
+      if (error) throw error;
+      return (data ?? []).map(r => ({
+        value: r.id,
+        label: `${r.ten_phan_mem} (${r.ma_ban_quyen})`,
+        so_ghe: r.so_ghe
+      }));
+    }
   });
 }
 
@@ -57,22 +76,25 @@ export function BanQuyenCapPhatDialog({
   initialDeviceId?: string | null;
 }) {
   const qc = useQueryClient();
+  const [search, setSearch] = useState("");
   const { data: capPhat = [], isLoading } = useCapPhatList(banQuyen?.id ?? null);
-  const { data: tbOptions = [], isLoading: loadingTb } = useThietBiOptions();
+  const { data: tbOptions = [], isLoading: loadingTb } = useThietBiOptions(search);
+  const { data: bqOptions = [] } = useBanQuyenOptions();
+  
+  const [selectedBqId, setSelectedBqId] = useState(banQuyen?.id || "");
   const [thietBiId, setThietBiId] = useState(initialDeviceId || "");
   const [nguoiCai, setNguoiCai] = useState("");
 
+  const activeBq = banQuyen || bqOptions.find(o => o.value === selectedBqId);
   const dangDung = capPhat.filter((c) => !c.ngay_thu_hoi);
-  const conLai = banQuyen?.so_ghe == null ? null : banQuyen.so_ghe - dangDung.length;
+  const conLai = activeBq?.so_ghe == null ? null : (activeBq as any).so_ghe - dangDung.length;
 
   const capPhatMut = useMutation({
     mutationFn: async () => {
-      if (!banQuyen || !thietBiId) throw new Error("Chưa chọn tài sản");
+      const bqId = banQuyen?.id || selectedBqId;
+      if (!bqId || !thietBiId) throw new Error("Chưa chọn tài sản hoặc bản quyền");
       const { error } = await supabase.from("phan_mem_ban_quyen_cap_phat").insert({
-        ban_quyen_id: banQuyen.id,
-        thiet_bi_id: thietBiId,
-        nguoi_cai: nguoiCai || null,
-      });
+        ban_quyen_id: bqId,
       if (error) throw error;
     },
     onSuccess: () => {
