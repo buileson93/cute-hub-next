@@ -33,6 +33,7 @@ export type BanQuyenRow = {
   gheConLai: number | null;
   soNgayConLai: number | null;
   status: BanQuyenStatus;
+  deviceSummary?: string[];
 };
 
 /** Số ngày còn lại tới hạn (âm = đã quá hạn). null khi không có hạn. */

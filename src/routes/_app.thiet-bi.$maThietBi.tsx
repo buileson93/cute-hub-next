@@ -421,6 +421,7 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
                 <TabsTrigger value="hh">Thay thế ({hongHoc.length})</TabsTrigger>
                 <TabsTrigger value="bg">Bàn giao ({banGiao.length})</TabsTrigger>
                 <TabsTrigger value="capphat"><PackageCheck className="mr-1 h-3.5 w-3.5" />Cấp phát</TabsTrigger>
+                <TabsTrigger value="banquyen"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Phần mềm</TabsTrigger>
                 <TabsTrigger value="tep"><Paperclip className="mr-1 h-3.5 w-3.5" />Tệp đính kèm</TabsTrigger>
                 <TabsTrigger value="all"><Table2 className="mr-1 h-3.5 w-3.5" />Toàn bộ trường</TabsTrigger>
                 {canEdit && <TabsTrigger value="cd"><PencilLine className="mr-1 h-3.5 w-3.5" />Lịch sử thay đổi</TabsTrigger>}
@@ -515,6 +516,10 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
 
               <TabsContent value="tep" className="mt-4">
                 <ThietBiTepDinhKem maThietBi={ma} />
+              </TabsContent>
+
+              <TabsContent value="banquyen" className="mt-4">
+                <ThietBiBanQuyen thietBiId={tb.id} canManage={canManage} />
               </TabsContent>
 
               <TabsContent value="all" className="mt-4">

@@ -48,11 +48,13 @@ export function BanQuyenCapPhatDialog({
   onOpenChange,
   banQuyen,
   canManage,
+  initialDeviceId,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  banQuyen: BanQuyenRow | null; initialDeviceId?: string | null;
+  banQuyen: BanQuyenRow | null;
   canManage: boolean;
+  initialDeviceId?: string | null;
 }) {
   const qc = useQueryClient();
   const { data: capPhat = [], isLoading } = useCapPhatList(banQuyen?.id ?? null);
