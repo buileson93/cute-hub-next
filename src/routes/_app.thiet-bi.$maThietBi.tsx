@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThietBiTepDinhKem } from "@/components/mirats/ThietBiTepDinhKem";
+import { ThietBiBanQuyen } from "@/components/mirats/ThietBiBanQuyen";
 import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice, giayPhepLabelByTen } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
