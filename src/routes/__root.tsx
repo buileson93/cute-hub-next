@@ -143,15 +143,13 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { useBanQuyenAlertScanner } from "@/lib/mirats/ban-quyen-alerts";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { useBanQuyenAlertScanner } = (function() {
-    try { return require("@/lib/mirats/ban-quyen-alerts"); } catch(e) { return { useBanQuyenAlertScanner: () => {} }; }
-  })();
   
-  // Chúng ta sẽ import động hoặc sử dụng trực tiếp nếu module đã sẵn sàng
-  // Vì đây là file gốc, hãy cẩn thận với build
-  
+  useBanQuyenAlertScanner();
+
   useEffect(() => {
     // Đồng bộ nguồn dữ liệu (Lovable Cloud hay Supabase ngoài do quản trị chọn).
     void (async () => {
