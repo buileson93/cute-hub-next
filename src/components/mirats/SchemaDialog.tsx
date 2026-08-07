@@ -46,21 +46,23 @@ type Common = {
 };
 
 export type SchemaField =
-  | (Common & { type: "text" | "textarea" | "date"; placeholder?: string })
+  | (Common & { type: "text" | "textarea" | "date"; placeholder?: string; colSpan?: 1 | 2 })
   | (Common & {
       type: "number";
       placeholder?: string;
       min?: number;
       max?: number;
       step?: number;
+      colSpan?: 1 | 2;
     })
-  | (Common & { type: "switch" })
+  | (Common & { type: "switch"; colSpan?: 1 | 2 })
   | (Common & {
       type: "select" | "combobox";
       placeholder?: string;
       options?: SchemaOption[];
       /** Cho phép bỏ chọn — hiện 1 SelectItem "trống" trên đầu. */
       emptyOptionLabel?: string;
+      colSpan?: 1 | 2;
       loadOptions?: {
         queryKey: unknown[];
         queryFn: (values: Record<string, unknown>) => Promise<SchemaOption[]>;
@@ -245,7 +247,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
           {fields.map((f) => {
             const err = errors[f.key] || asyncErr[f.key];
             const req = "required" in f && f.required;
@@ -281,7 +283,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
 
             if (f.type === "text" || f.type === "date") {
               return (
-                <div key={f.key} className="space-y-1">
+                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
                   {labelNode}
                   <Input
                     id={`sd-${f.key}`}
@@ -299,7 +301,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
             }
             if (f.type === "number") {
               return (
-                <div key={f.key} className="space-y-1">
+                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
                   {labelNode}
                   <Input
                     id={`sd-${f.key}`}
@@ -320,7 +322,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
             }
             if (f.type === "textarea") {
               return (
-                <div key={f.key} className="space-y-1">
+                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
                   {labelNode}
                   <Textarea
                     id={`sd-${f.key}`}
@@ -338,7 +340,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
             }
             if (f.type === "switch") {
               return (
-                <label key={f.key} className="flex items-center gap-2 text-sm">
+                <label key={f.key} className={cn("flex items-center gap-2 text-sm pt-4", f.colSpan === 2 ? "md:col-span-2" : "")}>
                   <Switch
                     id={`sd-${f.key}`}
                     checked={Boolean(values[f.key])}
@@ -391,7 +393,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                 </Select>
               );
             return (
-              <div key={selectField.key} className="space-y-1">
+              <div key={selectField.key} className={cn("space-y-1", selectField.colSpan === 2 ? "md:col-span-2" : "")}>
                 {labelNode}
                 {selectField.loadOptions && (
                   <AsyncOptions
