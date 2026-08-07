@@ -139,13 +139,22 @@ export function BanQuyenFormDialog({
       if (row) {
         const { error } = await supabase.from("phan_mem_ban_quyen").update(payload).eq("id", row.id);
         if (error) throw error;
+        await import("@/lib/mirats/ban-quyen-detail").then(m => 
+          m.logBanQuyenAudit(row.id, "UPDATE", `Cập nhật thông tin bản quyền ${v.ten_phan_mem}`)
+        );
       } else {
-        const { error } = await supabase.from("phan_mem_ban_quyen").insert(payload);
+        const { data, error } = await supabase.from("phan_mem_ban_quyen").insert(payload).select("id").single();
         if (error) throw error;
+        if (data) {
+          await import("@/lib/mirats/ban-quyen-detail").then(m => 
+            m.logBanQuyenAudit(data.id, "CREATE", `Tạo mới bản quyền ${v.ten_phan_mem}`)
+          );
+        }
       }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ban_quyen"] });
+      qc.invalidateQueries({ queryKey: ["ban_quyen", "detail"] });
       toast.success(mode === "create" ? "Đã thêm bản quyền" : "Đã cập nhật bản quyền");
       onOpenChange(false);
     },

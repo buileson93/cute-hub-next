@@ -98,9 +98,13 @@ export function BanQuyenCapPhatDialog({
         nguoi_cai: nguoiCai || null,
       });
       if (error) throw error;
+      await import("@/lib/mirats/ban-quyen-detail").then(m => 
+        m.logBanQuyenAudit(bqId, "ASSIGN", `Cấp phát bản quyền cho thiết bị ID: ${thietBiId}`)
+      );
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ban_quyen"] });
+      qc.invalidateQueries({ queryKey: ["ban_quyen", "cap-phat-list-unified"] });
       setThietBiId("");
       setNguoiCai("");
       toast.success("Đã cấp phát bản quyền cho tài sản");
@@ -110,14 +114,22 @@ export function BanQuyenCapPhatDialog({
 
   const thuHoiMut = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("phan_mem_ban_quyen_cap_phat")
         .update({ ngay_thu_hoi: new Date().toISOString().slice(0, 10) })
-        .eq("id", id);
+        .eq("id", id)
+        .select("ban_quyen_id, thiet_bi_id")
+        .single();
       if (error) throw error;
+      if (data) {
+        await import("@/lib/mirats/ban-quyen-detail").then(m => 
+          m.logBanQuyenAudit(data.ban_quyen_id, "REVOKE", `Thu hồi bản quyền từ thiết bị ID: ${data.thiet_bi_id}`)
+        );
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ban_quyen"] });
+      qc.invalidateQueries({ queryKey: ["ban_quyen", "cap-phat-list-unified"] });
       toast.success("Đã thu hồi ghế bản quyền");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không thu hồi được"),

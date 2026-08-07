@@ -129,6 +129,56 @@ export function useBanQuyenList() {
   });
 }
 
+export function useBanQuyenTongHop(donViIds?: string[]) {
+  return useQuery({
+    queryKey: ["ban_quyen", "tong_hop", donViIds],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("ban_quyen_tong_hop" as any, {
+        p_don_vi_ids: donViIds || null
+      });
+      if (error) throw error;
+      const res = data as any;
+      return {
+        ...res,
+        utilization: res.ghe > 0 ? (res.gheDung / res.ghe) * 100 : 0
+      };
+    }
+  });
+}
+
+
+export function useBanQuyenDetail(maBanQuyen: string | null) {
+  return useQuery({
+    queryKey: ["ban_quyen", "detail", maBanQuyen],
+    enabled: !!maBanQuyen,
+    queryFn: async (): Promise<BanQuyenRow | null> => {
+      const { data, error } = await supabase
+        .from("phan_mem_ban_quyen")
+        .select(
+          "id, ma_ban_quyen, ten_phan_mem, nha_phat_hanh, phien_ban, loai_ban_quyen_id, license_key, so_ghe, ngay_mua, ngay_bat_dau, ngay_het_han, gia_tri, so_hop_dong, don_vi_id, nha_cung_cap_id, ghi_chu, dm_loai_ban_quyen(ten), dm_don_vi(ten), dm_nha_cung_cap(ten), phan_mem_ban_quyen_cap_phat(id, ngay_thu_hoi, thiet_bi(ma_thiet_bi))",
+        )
+        .eq("ma_ban_quyen", maBanQuyen!)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      const r = data as unknown as RawRow;
+      const daDung = (r.phan_mem_ban_quyen_cap_phat ?? []).filter((c) => !c.ngay_thu_hoi).length;
+      return {
+        ...r,
+        loaiTen: r.dm_loai_ban_quyen?.ten ?? null,
+        donViTen: r.dm_don_vi?.ten ?? null,
+        nccTen: r.dm_nha_cung_cap?.ten ?? null,
+        gheDaDung: daDung,
+        deviceSummary: (r.phan_mem_ban_quyen_cap_phat ?? []).filter(c => !c.ngay_thu_hoi).map(c => (c as any).thiet_bi?.ma_thiet_bi).filter(Boolean),
+        gheConLai: gheConLai(r.so_ghe, daDung),
+        soNgayConLai: soNgayConLai(r.ngay_het_han),
+        status: trangThaiBanQuyen(r.ngay_het_han),
+      } satisfies BanQuyenRow;
+    },
+  });
+}
+
+
 export type CapPhatRow = {
   id: string;
   ban_quyen_id: string;

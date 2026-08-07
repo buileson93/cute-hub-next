@@ -71,6 +71,7 @@ import { Route as AppSuCoImportHistoryRouteImport } from './routes/_app.su-co.im
 import { Route as AppSuCoMaSuCoRouteImport } from './routes/_app.su-co.$maSuCo'
 import { Route as AppSoDoIdRouteImport } from './routes/_app.so-do.$id'
 import { Route as AppQuanTriNguoiDungRouteImport } from './routes/_app.quan-tri.nguoi-dung'
+import { Route as AppPhanMemBanQuyenMaRouteImport } from './routes/_app.phan-mem-ban-quyen.$ma'
 import { Route as AppMessagesConvIdRouteImport } from './routes/_app.messages.$convId'
 import { Route as AppHongHocMoiRouteImport } from './routes/_app.hong-hoc.moi'
 import { Route as AppHongHocMaHongHocRouteImport } from './routes/_app.hong-hoc.$maHongHoc'
@@ -442,6 +443,11 @@ const AppQuanTriNguoiDungRoute = AppQuanTriNguoiDungRouteImport.update({
   path: '/quan-tri/nguoi-dung',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPhanMemBanQuyenMaRoute = AppPhanMemBanQuyenMaRouteImport.update({
+  id: '/$ma',
+  path: '/$ma',
+  getParentRoute: () => AppPhanMemBanQuyenRoute,
+} as any)
 const AppMessagesConvIdRoute = AppMessagesConvIdRouteImport.update({
   id: '/$convId',
   path: '/$convId',
@@ -765,7 +771,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof AppMessagesRouteWithChildren
   '/nhan': typeof AppNhanRoute
   '/nhap-lieu': typeof AppNhapLieuRoute
-  '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRoute
+  '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRouteWithChildren
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
   '/su-co': typeof AppSuCoRouteWithChildren
@@ -827,6 +833,7 @@ export interface FileRoutesByFullPath {
   '/hong-hoc/$maHongHoc': typeof AppHongHocMaHongHocRoute
   '/hong-hoc/moi': typeof AppHongHocMoiRoute
   '/messages/$convId': typeof AppMessagesConvIdRoute
+  '/phan-mem-ban-quyen/$ma': typeof AppPhanMemBanQuyenMaRoute
   '/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
   '/so-do/$id': typeof AppSoDoIdRoute
   '/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
@@ -882,7 +889,7 @@ export interface FileRoutesByTo {
   '/kiem-ke': typeof AppKiemKeRoute
   '/nhan': typeof AppNhanRoute
   '/nhap-lieu': typeof AppNhapLieuRoute
-  '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRoute
+  '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRouteWithChildren
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
   '/tep-tin': typeof AppTepTinRoute
@@ -941,6 +948,7 @@ export interface FileRoutesByTo {
   '/hong-hoc/$maHongHoc': typeof AppHongHocMaHongHocRoute
   '/hong-hoc/moi': typeof AppHongHocMoiRoute
   '/messages/$convId': typeof AppMessagesConvIdRoute
+  '/phan-mem-ban-quyen/$ma': typeof AppPhanMemBanQuyenMaRoute
   '/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
   '/so-do/$id': typeof AppSoDoIdRoute
   '/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
@@ -1001,7 +1009,7 @@ export interface FileRoutesById {
   '/_app/messages': typeof AppMessagesRouteWithChildren
   '/_app/nhan': typeof AppNhanRoute
   '/_app/nhap-lieu': typeof AppNhapLieuRoute
-  '/_app/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRoute
+  '/_app/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRouteWithChildren
   '/_app/phan-quyen': typeof AppPhanQuyenRoute
   '/_app/sap-het-han': typeof AppSapHetHanRoute
   '/_app/su-co': typeof AppSuCoRouteWithChildren
@@ -1064,6 +1072,7 @@ export interface FileRoutesById {
   '/_app/hong-hoc/$maHongHoc': typeof AppHongHocMaHongHocRoute
   '/_app/hong-hoc/moi': typeof AppHongHocMoiRoute
   '/_app/messages/$convId': typeof AppMessagesConvIdRoute
+  '/_app/phan-mem-ban-quyen/$ma': typeof AppPhanMemBanQuyenMaRoute
   '/_app/quan-tri/nguoi-dung': typeof AppQuanTriNguoiDungRoute
   '/_app/so-do/$id': typeof AppSoDoIdRoute
   '/_app/su-co/$maSuCo': typeof AppSuCoMaSuCoRoute
@@ -1187,6 +1196,7 @@ export interface FileRouteTypes {
     | '/hong-hoc/$maHongHoc'
     | '/hong-hoc/moi'
     | '/messages/$convId'
+    | '/phan-mem-ban-quyen/$ma'
     | '/quan-tri/nguoi-dung'
     | '/so-do/$id'
     | '/su-co/$maSuCo'
@@ -1301,6 +1311,7 @@ export interface FileRouteTypes {
     | '/hong-hoc/$maHongHoc'
     | '/hong-hoc/moi'
     | '/messages/$convId'
+    | '/phan-mem-ban-quyen/$ma'
     | '/quan-tri/nguoi-dung'
     | '/so-do/$id'
     | '/su-co/$maSuCo'
@@ -1423,6 +1434,7 @@ export interface FileRouteTypes {
     | '/_app/hong-hoc/$maHongHoc'
     | '/_app/hong-hoc/moi'
     | '/_app/messages/$convId'
+    | '/_app/phan-mem-ban-quyen/$ma'
     | '/_app/quan-tri/nguoi-dung'
     | '/_app/so-do/$id'
     | '/_app/su-co/$maSuCo'
@@ -1931,6 +1943,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppQuanTriNguoiDungRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/phan-mem-ban-quyen/$ma': {
+      id: '/_app/phan-mem-ban-quyen/$ma'
+      path: '/$ma'
+      fullPath: '/phan-mem-ban-quyen/$ma'
+      preLoaderRoute: typeof AppPhanMemBanQuyenMaRouteImport
+      parentRoute: typeof AppPhanMemBanQuyenRoute
+    }
     '/_app/messages/$convId': {
       id: '/_app/messages/$convId'
       path: '/$convId'
@@ -2432,6 +2451,17 @@ const AppMessagesRouteWithChildren = AppMessagesRoute._addFileChildren(
   AppMessagesRouteChildren,
 )
 
+interface AppPhanMemBanQuyenRouteChildren {
+  AppPhanMemBanQuyenMaRoute: typeof AppPhanMemBanQuyenMaRoute
+}
+
+const AppPhanMemBanQuyenRouteChildren: AppPhanMemBanQuyenRouteChildren = {
+  AppPhanMemBanQuyenMaRoute: AppPhanMemBanQuyenMaRoute,
+}
+
+const AppPhanMemBanQuyenRouteWithChildren =
+  AppPhanMemBanQuyenRoute._addFileChildren(AppPhanMemBanQuyenRouteChildren)
+
 interface AppSuCoRouteChildren {
   AppSuCoMaSuCoRoute: typeof AppSuCoMaSuCoRoute
   AppSuCoImportHistoryRoute: typeof AppSuCoImportHistoryRoute
@@ -2525,7 +2555,7 @@ interface AppRouteChildren {
   AppMessagesRoute: typeof AppMessagesRouteWithChildren
   AppNhanRoute: typeof AppNhanRoute
   AppNhapLieuRoute: typeof AppNhapLieuRoute
-  AppPhanMemBanQuyenRoute: typeof AppPhanMemBanQuyenRoute
+  AppPhanMemBanQuyenRoute: typeof AppPhanMemBanQuyenRouteWithChildren
   AppPhanQuyenRoute: typeof AppPhanQuyenRoute
   AppSapHetHanRoute: typeof AppSapHetHanRoute
   AppSuCoRoute: typeof AppSuCoRouteWithChildren
@@ -2585,7 +2615,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMessagesRoute: AppMessagesRouteWithChildren,
   AppNhanRoute: AppNhanRoute,
   AppNhapLieuRoute: AppNhapLieuRoute,
-  AppPhanMemBanQuyenRoute: AppPhanMemBanQuyenRoute,
+  AppPhanMemBanQuyenRoute: AppPhanMemBanQuyenRouteWithChildren,
   AppPhanQuyenRoute: AppPhanQuyenRoute,
   AppSapHetHanRoute: AppSapHetHanRoute,
   AppSuCoRoute: AppSuCoRouteWithChildren,
