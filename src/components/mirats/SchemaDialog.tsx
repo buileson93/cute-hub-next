@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
+import { cn } from "@/lib/utils";
 
 export type SchemaOption = { value: string; label: string };
 
