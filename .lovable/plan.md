@@ -4,25 +4,25 @@ The user wants to rename a "language selector" UI element to a specific request 
 
 ## Analysis
 
-- The string "language selector" does not exist literally in the codebase.
-- The most likely candidate is a placeholder or a generic selector in a component like `TzClock.tsx` or a navigation item that the user perceives as a language selector (perhaps due to the `Globe2` icon or `language: "en"` in Gantt chart).
-- However, since the user is explicitly asking to "lên kế hoạch để có giao diện về quản lý bản quyền phần mềm", and I *just* implemented that feature in the previous turn, it's possible they are responding to a prompt or label they saw earlier or in a different version.
-- Re-reading the prompt: "Change text from 'language selector' to 'tôi muốn lên kế hoạch...'".
-- If I cannot find "language selector", I will check for any "translation" or "locale" related text.
+- The literal string "language selector" does not exist in the code.
+- The user is likely referring to the `TzClock` component or a navigation item because it uses a globe icon (`Globe2`) or because they perceive the timezone selector as a language selector.
+- Given the nature of the request, they are effectively using this "text change" to signal a new feature request or to update a placeholder they *think* is a language selector.
+- I will search for the string "Chọn ngôn ngữ" or similar Vietnamese terms just in case.
+- If still not found, I will target the `aria-label="Chọn múi giờ"` in `src/components/mirats/TzClock.tsx` as it's the most "selector-like" thing with a globe icon on the top bar.
+- Wait, I'll check `src/routes/_app.admin.ai.tsx` as well, as AI configurations often have language options.
 
 ## Proposed Changes
 
 ### UI Components
 
 #### `src/components/mirats/TzClock.tsx`
-- The `Globe2` icon is often used for language selectors. The label "Múi giờ hiển thị" might be what they mean, or the `aria-label="Chọn múi giờ"`.
-- However, the user request is very specific. They want to *plan* the license management interface. But the instruction is to *change the text*.
-
-### Investigation
-- I will check `src/routes/_app.tsx` for any topbar items.
-- I will check `src/components/mirats/AppShell.tsx` for any topbar icons.
+- Change `aria-label="Chọn múi giờ"` to the requested string.
+- Change the `DropdownMenuLabel` text from "Múi giờ hiển thị" to the requested string.
 
 ## Verification Plan
 
+### Automated Tests
+- None.
+
 ### Manual Verification
-- Verify the text change in the UI once the target is identified.
+- Check the topbar clock selector tooltips and labels.
