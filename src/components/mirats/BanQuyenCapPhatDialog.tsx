@@ -48,16 +48,18 @@ export function BanQuyenCapPhatDialog({
   onOpenChange,
   banQuyen,
   canManage,
+  initialDeviceId,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   banQuyen: BanQuyenRow | null;
   canManage: boolean;
+  initialDeviceId?: string | null;
 }) {
   const qc = useQueryClient();
   const { data: capPhat = [], isLoading } = useCapPhatList(banQuyen?.id ?? null);
   const { data: tbOptions = [], isLoading: loadingTb } = useThietBiOptions();
-  const [thietBiId, setThietBiId] = useState("");
+  const [thietBiId, setThietBiId] = useState(initialDeviceId || "");
   const [nguoiCai, setNguoiCai] = useState("");
 
   const dangDung = capPhat.filter((c) => !c.ngay_thu_hoi);
