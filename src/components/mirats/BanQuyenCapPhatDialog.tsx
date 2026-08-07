@@ -46,7 +46,6 @@ function useBanQuyenOptions() {
   return useQuery({
     queryKey: ["ban_quyen", "options-available"],
     queryFn: async () => {
-      // Tạm thời lấy danh sách bản quyền, trigger DB sẽ chặn nếu hết ghế
       const { data, error } = await supabase
         .from("phan_mem_ban_quyen")
         .select("id, ten_phan_mem, ma_ban_quyen, so_ghe")
@@ -95,6 +94,9 @@ export function BanQuyenCapPhatDialog({
       if (!bqId || !thietBiId) throw new Error("Chưa chọn tài sản hoặc bản quyền");
       const { error } = await supabase.from("phan_mem_ban_quyen_cap_phat").insert({
         ban_quyen_id: bqId,
+        thiet_bi_id: thietBiId,
+        nguoi_cai: nguoiCai || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -127,17 +129,33 @@ export function BanQuyenCapPhatDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Laptop className="h-4 w-4" />
-            Cấp phát: {banQuyen?.ten_phan_mem ?? "—"}
+            Cấp phát: {activeBq ? (activeBq as any).ten_phan_mem || (activeBq as any).label : "Chọn bản quyền"}
           </DialogTitle>
           <DialogDescription>
-            {banQuyen?.so_ghe == null
-              ? "Bản quyền không giới hạn số ghế."
-              : `Đã dùng ${dangDung.length}/${banQuyen.so_ghe} ghế — còn lại ${conLai}.`}
+            {activeBq ? (
+              (activeBq as any).so_ghe == null
+                ? "Bản quyền không giới hạn số ghế."
+                : `Đã dùng ${dangDung.length}/${(activeBq as any).so_ghe} ghế — còn lại ${conLai}.`
+            ) : (
+              "Vui lòng chọn bản quyền phần mềm để cấp phát cho thiết bị."
+            )}
           </DialogDescription>
         </DialogHeader>
 
         {canManage && (
-          <div className="flex flex-col gap-3 rounded-xl border-2 border-primary/10 bg-primary/5 p-4 transition-all hover:border-primary/20">
+          <div className="flex flex-col gap-4 rounded-xl border-2 border-primary/10 bg-primary/5 p-4 transition-all hover:border-primary/20">
+            {!banQuyen && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-primary/70 ml-1">Bản quyền phần mềm</label>
+                <Combobox
+                  className="w-full"
+                  value={selectedBqId}
+                  onChange={setSelectedBqId}
+                  options={bqOptions}
+                  placeholder="Chọn bản quyền phần mềm..."
+                />
+              </div>
+            )}
             <div className="flex flex-col gap-3 md:flex-row md:items-end">
               <div className="flex-1 space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-primary/70 ml-1">Tài sản (Máy tính/Máy chủ)</label>
@@ -147,7 +165,8 @@ export function BanQuyenCapPhatDialog({
                   onChange={setThietBiId}
                   options={tbOptions}
                   loading={loadingTb}
-                  placeholder="Chọn tài sản để cấp phát..."
+                  onSearchChange={setSearch}
+                  placeholder="Chọn tài sản..."
                   searchPlaceholder="Tìm theo tên hoặc mã tài sản…"
                 />
               </div>
