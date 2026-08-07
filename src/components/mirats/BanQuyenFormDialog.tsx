@@ -119,7 +119,7 @@ export function BanQuyenFormDialog({
 
   const save = useMutation({
     mutationFn: async (v: Values) => {
-      const payload = {
+      const payload: any = {
         ma_ban_quyen: v.ma_ban_quyen || undefined,
         ten_phan_mem: v.ten_phan_mem,
         nha_phat_hanh: v.nha_phat_hanh || null,
