@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-secondary lg:flex"
-          aria-label="tôi muốn lên kế hoạch để có giao diện về quản lý bản quyền phần mềm , UI UX trực quan đồng bồ với kiểu UI UX hiện tại của trang web"
+          aria-label="Chọn múi giờ"
         >
           <Clock className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={2} />
           <span className="font-mono tabular-nums">
@@ -62,7 +62,7 @@ export function TzClock() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-          <Globe2 className="h-3.5 w-3.5" /> tôi muốn lên kế hoạch để có giao diện về quản lý bản quyền phần mềm , UI UX trực quan đồng bồ với kiểu UI UX hiện tại của trang web
+          <Globe2 className="h-3.5 w-3.5" /> Múi giờ hiển thị
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {(["UTC", "VN"] as TzMode[]).map((m) => (
