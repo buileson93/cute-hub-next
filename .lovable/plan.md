@@ -1,21 +1,28 @@
-# Plan - Visual Text Edits
+# Plan - Visual Text Edits & License Management UI Request
 
-The user wants to rename a "language selector" UI element to "đã có giao diện trên web để kiểm tra chưa có dạng bảng".
+The user wants to rename a "language selector" UI element to a specific request string: "tôi muốn lên kế hoạch để có giao diện về quản lý bản quyền phần mềm , UI UX trực quan đồng bồ với kiểu UI UX hiện tại của trang web".
+
+## Analysis
+
+- The string "language selector" does not exist literally in the codebase.
+- The most likely candidate is a placeholder or a generic selector in a component like `TzClock.tsx` or a navigation item that the user perceives as a language selector (perhaps due to the `Globe2` icon or `language: "en"` in Gantt chart).
+- However, since the user is explicitly asking to "lên kế hoạch để có giao diện về quản lý bản quyền phần mềm", and I *just* implemented that feature in the previous turn, it's possible they are responding to a prompt or label they saw earlier or in a different version.
+- Re-reading the prompt: "Change text from 'language selector' to 'tôi muốn lên kế hoạch...'".
+- If I cannot find "language selector", I will check for any "translation" or "locale" related text.
 
 ## Proposed Changes
 
 ### UI Components
 
 #### `src/components/mirats/TzClock.tsx`
-- The `aria-label` currently says "Chọn múi giờ" and the tooltip in `AppShell` (where it's likely used or similar patterns exist) might be the target.
-- However, since "language selector" wasn't found in code or DOM, I will add a fallback logic to search for any component that might be acting as a placeholder or generic selector that the user perceives as a "language selector".
-- Actually, looking at common patterns, if I can't find the exact string "language selector", it might be a comment or a very specific piece of text I missed.
-- Wait, I'll do one more targeted search for the exact string in the whole project again, including hidden files or just case-insensitive.
+- The `Globe2` icon is often used for language selectors. The label "Múi giờ hiển thị" might be what they mean, or the `aria-label="Chọn múi giờ"`.
+- However, the user request is very specific. They want to *plan* the license management interface. But the instruction is to *change the text*.
+
+### Investigation
+- I will check `src/routes/_app.tsx` for any topbar items.
+- I will check `src/components/mirats/AppShell.tsx` for any topbar icons.
 
 ## Verification Plan
 
-### Automated Tests
-- None applicable for a simple text change, but will verify via Playwright if I can locate the element.
-
 ### Manual Verification
-- Check the UI for the updated text.
+- Verify the text change in the UI once the target is identified.
