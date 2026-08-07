@@ -116,9 +116,20 @@ function BanQuyenPage() {
               value={pct} 
               className="h-1.5" 
               indicatorClassName={cn(
+                "h-full w-full flex-1 transition-all duration-300",
                 pct >= 95 ? "bg-red-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500"
               )}
             />
+            {r.deviceSummary && r.deviceSummary.length > 0 && (
+              <div className="flex flex-wrap gap-1 pt-1">
+                {r.deviceSummary.slice(0, 2).map(ma => (
+                  <Badge key={ma} variant="outline" className="text-[9px] px-1 py-0 h-4 font-mono bg-muted/30">{ma}</Badge>
+                ))}
+                {r.deviceSummary.length > 2 && (
+                  <span className="text-[9px] text-muted-foreground font-medium">+{r.deviceSummary.length - 2}</span>
+                )}
+              </div>
+            )}
           </div>
         );
       },
