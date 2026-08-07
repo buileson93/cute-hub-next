@@ -93,9 +93,10 @@ export function ThietBiBanQuyen({ thietBiId, canManage }: { thietBiId: string; c
 
       {showAssign && (
         <BanQuyenCapPhatDialog 
-          banQuyenId={null} 
+          banQuyen={null} 
           open={showAssign} 
           onOpenChange={setShowAssign}
+          canManage={canManage ?? false}
           initialDeviceId={thietBiId} 
         />
       )}
