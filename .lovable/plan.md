@@ -1,100 +1,46 @@
-## Mục tiêu
-Nâng cấp MCP server `mirats-mcp` (hiện có 16 tool đọc gộp trong 1 file) để:
-1. **Phủ toàn bộ chức năng nghiệp vụ** của web (bảo trì, đợt bảo dưỡng lớn, sự cố, hỏng hóc, thành phần hệ thống, sổ lý lịch, kho, r2, thông báo email...).
-2. **Cho phép ghi có kiểm soát** (create/update giới hạn) — hiện tại chỉ đọc, agent không tác nghiệp được.
-3. **Giúp AI agent hiểu schema & nghiệp vụ** qua "skill card" (giống pattern đã làm cho template AllInOne XLSX).
+# Quản lý phần mềm bản quyền (Software License Management)
 
-## Phạm vi
+Mục tiêu: theo dõi giấy phép phần mềm (OS, Office, SCADA/AWOS client, antivirus, CAD, phần mềm chuyên dụng…) gắn với các tài sản CNTT (máy tính, server, laptop, thiết bị có máy tính nhúng). Không thay đổi UI hiện có — chỉ bổ sung dữ liệu, logic và màn hình mới độc lập.
 
-### A. Tái cấu trúc thư mục
-```
-src/lib/mcp/
-├── index.ts
-├── _shared/            # supabase client, guards, formatters
-│   ├── client.ts       # supabaseForUser(ctx) + supabaseAnon()
-│   ├── guards.ts       # requireAuth, requireRole, requireDonVi
-│   └── format.ts       # toMcpText, paginate, safeJson
-├── skills/             # skill card đọc-được cho AI
-│   ├── overview.md     # giới thiệu MIRATS, thuật ngữ
-│   ├── data-model.md   # bản đồ dữ liệu 4 lớp (hệ thống → thành phần → tài sản → linh kiện)
-│   ├── workflows.md    # 8 luồng nghiệp vụ chính
-│   └── glossary.md     # từ điển: GPKT, đợt BD, HP, MTBF...
-└── tools/
-    ├── index.ts        # barrel
-    ├── skill/          # get_skill_card, list_workflows
-    ├── read/           # 16 tool hiện tại (tách file)
-    ├── he-thong/       # list/get hệ thống, thành phần, KPI
-    ├── tai-san/        # list/get tài sản, gán/tháo, lịch sử
-    ├── bao-tri/        # phiếu BD, đợt BD lớn, hạng mục
-    ├── su-co/          # sự cố, hỏng hóc, van_de
-    ├── giay-phep/      # GPKT, giấy phép tài sản, sắp hết hạn
-    ├── kho/            # nhập/xuất, cấp phát, kiểm kê
-    ├── du-an/          # dự án + công việc + mốc
-    ├── thong-bao/      # notifications, email queue, telegram
-    └── write/          # create_su_co, create_bao_tri, create_hong_hoc,
-                        # update_ket_qua_bang_kiem, close_van_de (needsApproval)
-```
+## Phạm vi nghiệp vụ
 
-### B. Skill card cho AI (mới)
-Bổ sung tool `get_skill_card({ topic })` trả về markdown skill để agent tra cứu trước khi thao tác:
-- `overview` — MIRATS là gì, ai dùng, 6 vai trò (admin, phong_kt, phu_trach_dv, ktv, quan_ly_du_an, to_truong)
-- `data_model` — Cây 4 lớp: `dm_he_thong → he_thong_thanh_phan → thiet_bi → linh_kien`. Liên kết `giay_phep_khai_thac ↔ dm_he_thong`. Ma trận enums.
-- `workflows.bao_tri` — quy trình phiếu BD: `form_template → form_submission → form_submission_item_result → v_metric_timeseries`
-- `workflows.dot_bao_duong` — 2 đợt/năm: `dot_bao_duong → dot_bao_duong_hang_muc → biên bản → phê duyệt`
-- `workflows.su_co` — sự cố → van_de → đóng
-- `workflows.gpkt` — nhập PDF → dedup → gán hệ thống → cảnh báo hết hạn
-- `glossary` — từ khóa nghiệp vụ (HP, MTBF, MTTR, TPHT, GPKT, đơn vị PBA/CRA/CLA...)
-- `anomaly_rules` — luật cảnh báo bất hợp lý (đồng bộ với AI_RULES của template XLSX)
+- Một **bản quyền phần mềm** có: tên phần mềm, nhà cung cấp/nhà phát hành, phiên bản, loại bản quyền (vĩnh viễn / thuê bao / OEM / volume / open-source), số key/serial, số ghế (seats) tổng, ngày mua, ngày bắt đầu, ngày hết hạn, giá trị, số hợp đồng/hóa đơn, đơn vị sở hữu, ghi chú, tệp đính kèm (PDF hợp đồng/chứng chỉ).
+- Một bản quyền **cấp phát (assign)** cho nhiều tài sản máy tính; mỗi lần cấp phát ghi: tài sản, ngày cài đặt, người cài, ngày thu hồi, trạng thái.
+- **Số ghế còn lại** = tổng seats − số cấp phát đang hiệu lực; chặn cấp vượt seats (trừ loại unlimited).
+- **Cảnh báo**: sắp hết hạn (mặc định 60/30/7 ngày), hết ghế, key trùng, tài sản CNTT chưa có OS/antivirus hợp lệ.
 
-Nội dung skill viết bằng tiếng Việt, tối ưu để LLM hiểu ngữ cảnh nghiệp vụ MIRATS mà không cần đoán.
+## Dữ liệu (migration mới)
 
-### C. Tool nghiệp vụ mới (chỉ liệt kê, chi tiết trong code)
+1. `dm_loai_ban_quyen` — danh mục loại bản quyền (vinh_vien, thue_bao, oem, volume, open_source, dung_thu).
+2. `phan_mem_ban_quyen` — bản ghi bản quyền (các trường ở trên; `so_ghe int null` = không giới hạn; `don_vi_id` FK `dm_don_vi`; `nha_cung_cap_id` FK `dm_nha_cung_cap`; mã tự sinh `BQ_XXXXXXXX`).
+3. `phan_mem_ban_quyen_cap_phat` — cấp phát tới `thiet_bi` (unique một tài sản/một bản quyền khi còn hiệu lực).
+4. `phan_mem_ban_quyen_tep` — tệp đính kèm (dùng lại adapter lưu trữ R2/Cloud hiện có).
+5. Trigger kiểm tra vượt seats, trigger `updated_at`, RLS + GRANT theo đúng chuẩn dự án (đọc theo đơn vị, ghi theo quyền quản lý thiết bị, admin toàn quyền).
+6. RPC `ban_quyen_tong_hop()` — thống kê: sắp hết hạn, ghế đã dùng/còn, chi phí theo đơn vị.
 
-**Đọc chuyên sâu**
-- `get_he_thong_ly_lich(id)` — snapshot toàn diện: thông tin, KPI 12m, GPKT hiện hành, thành phần con, sự cố 30 ngày
-- `get_thanh_phan_ly_lich(tpId)` — dùng RPC `thanh_phan_kpi` + `thanh_phan_tai_san_history` đã có
-- `list_dot_bao_duong({ nam, don_vi })` + `get_dot_bao_duong(id)` với tiến độ hạng mục
-- `list_bao_tri`, `get_bao_tri(id)` kèm items và ảnh
-- `list_su_co({ trang_thai, muc_do, tu_ngay })` + `get_su_co(id)` + `list_hong_hoc`
-- `list_van_de({ trang_thai })`, `get_van_de(id)`
-- `list_giay_phep_by_he_thong(he_thong_id)`
-- `list_kho_giao_dich`, `list_cap_phat`, `list_kiem_ke`
-- `list_du_an_cong_viec({ du_an_id })`
-- `list_chung_chi_thiet_bi({ sap_het_han })`
-- `metric_timeseries({ he_thong_id, metric_key, from, to })` — dùng view `v_metric_timeseries`
+## Nhận diện “tài sản liên quan máy tính”
 
-**Ghi có kiểm soát (needsApproval)**
-- `create_su_co` — dùng RPC `agent_add_su_co`
-- `create_bao_tri` — RPC `agent_add_bao_tri`
-- `create_hong_hoc` — RPC `agent_add_hong_hoc`
-- `create_kiem_ke_ghi` — RPC `ghi_kiem_ke`
-- `close_van_de` — RPC `dong_van_de`
-- `update_thong_bao_read({ ids })`
+Không sửa dữ liệu tài sản: nhận diện bằng cờ trên danh mục chủng loại — thêm cột `la_may_tinh boolean default false` cho `dm_loai_thiet_bi`, admin đánh dấu các chủng loại (PC, laptop, server, workstation, industrial PC). Danh sách chọn tài sản khi cấp phát lọc theo cờ này (vẫn cho phép bỏ lọc).
 
-Mọi tool ghi đều gắn `annotations.destructiveHint = false, readOnlyHint = false` và `needsApproval: true`.
+## Màn hình mới (không đụng UI cũ)
 
-### D. Bảo mật & RLS
-- Tool ghi bắt buộc `ctx.isAuthenticated()`, forward token qua `supabaseForUser(ctx)` (đã có pattern trong `src/lib/mcp/index.ts`).
-- Tool đọc dùng cùng pattern; RLS chạy như user thật, không mở `service_role`.
-- `run_select_query` giữ nguyên (đã dùng RPC `ai_run_select` chỉ SELECT).
-- Không thêm tool phá dữ liệu (delete/purge).
+- `/phan-mem-ban-quyen` — danh sách dùng `StandardTable` sẵn có: phần mềm, loại, seats dùng/tổng, hết hạn (badge màu), đơn vị, đính kèm.
+- `/phan-mem-ban-quyen/$ma` — chi tiết: thông tin bản quyền, tab Cấp phát (thêm/thu hồi), tab Tệp (DocViewerDialog sẵn có), tab Lịch sử.
+- Dialog thêm/sửa dùng `SchemaDialog`; chọn tài sản dùng `Combobox`.
+- Thêm 1 mục menu trong nhóm Danh mục/Tài sản của sidebar (chỉ thêm entry, không đổi layout).
 
-### E. Manifest & kiểm thử
-1. Sau mỗi tập tool: chạy `app_mcp_server--extract_mcp_manifest` để cập nhật `.lovable/mcp/manifest.json`.
-2. Smoke: gọi `get_skill_card('overview')`, `list_dot_bao_duong`, `create_su_co` (approval) qua Claude/ChatGPT.
-3. Verify không rò lộ token (`ctx.getToken()` không log).
+## Cảnh báo & tích hợp
 
-## Kết quả kỳ vọng
-- Tool count: ~35–40 (từ 16), chia theo domain nghiệp vụ.
-- Agent bên ngoài (Claude/ChatGPT) đọc `get_skill_card` là hiểu ngay: cấu trúc 4 lớp dữ liệu, thuật ngữ VATM, workflow, luật cảnh báo.
-- Agent có thể ghi tác nghiệp cơ bản (sự cố / bảo trì / hỏng hóc) với chốt phê duyệt từ user cuối.
-- Toàn bộ đi qua RLS, không dùng service key.
+- Nối vào cơ chế cảnh báo hết hạn hiện có (`canh_bao_het_han_log` + email/Telegram) với nguồn mới `phan_mem_ban_quyen`.
+- Thẻ “Bản quyền sắp hết hạn” chỉ hiện trong trang mới, không sửa dashboard.
 
-## Thứ tự triển khai
-1. Tách file `tools/index.ts` (388 dòng) thành thư mục domain + `_shared/`.
-2. Viết skill card `.md` + tool `get_skill_card`.
-3. Thêm tool đọc theo từng domain (hệ thống → tài sản → bảo trì → sự cố → giấy phép → kho → dự án → thông báo).
-4. Thêm tool ghi (needsApproval) mapping vào RPC `agent_add_*`, `ghi_kiem_ke`, `dong_van_de`.
-5. Extract manifest, smoke test qua Playwright vào endpoint `/mcp`.
+## Kỹ thuật
 
-Không thay đổi UI, không đụng `service_role`, không xóa tool cũ (giữ tương thích).
+- Logic thuần trong `src/lib/mirats/ban-quyen.ts` (tính seats, trạng thái hết hạn) + unit test vitest.
+- Truy vấn qua client Supabase hiện có; tệp qua `src/lib/storage`.
+- Quyền: module `ban_quyen` trong `role_permission`, dùng `PermGate` cho nút ghi, `use-can-download` cho tệp.
+
+## Ngoài phạm vi
+
+- Không quét/khám phá phần mềm cài đặt tự động trên máy trạm.
+- Không thay đổi bất kỳ màn hình hiện có nào.
