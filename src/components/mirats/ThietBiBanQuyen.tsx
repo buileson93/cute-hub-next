@@ -1,19 +1,19 @@
 import { ShieldCheck, Laptop, Calendar, User, History, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useThietBiBanQuyenList } from "@/lib/mirats/ban-quyen-thiet-bi";
+import { useCapPhatListUnified } from "@/lib/mirats/ban-quyen";
 import { STATUS_CLASS, STATUS_LABEL, trangThaiBanQuyen } from "@/lib/mirats/ban-quyen";
 import { useState } from "react";
 import { BanQuyenCapPhatDialog } from "./BanQuyenCapPhatDialog";
 
 export function ThietBiBanQuyen({ thietBiId, canManage }: { thietBiId: string; canManage?: boolean }) {
-  const { data = [], isLoading } = useThietBiBanQuyenList(thietBiId);
+  const { data = [], isLoading } = useCapPhatListUnified({ thietBiId });
   const [showAssign, setShowAssign] = useState(false);
 
   if (isLoading) return <div className="p-4 text-sm text-muted-foreground">Đang tải danh sách bản quyền...</div>;
 
-  const current = data.filter(r => !r.ngay_thu_hoi);
-  const history = data.filter(r => !!r.ngay_thu_hoi);
+  const current = data.filter((r: any) => !r.ngay_thu_hoi);
+  const history = data.filter((r: any) => !!r.ngay_thu_hoi);
 
   return (
     <div className="space-y-6">
