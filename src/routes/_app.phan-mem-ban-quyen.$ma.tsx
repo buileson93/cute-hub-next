@@ -37,7 +37,13 @@ import {
 import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { logBanQuyenAudit, useBanQuyenTep, useBanQuyenAudit } from "@/lib/mirats/ban-quyen-detail";
+import { 
+  logBanQuyenAudit, 
+  useBanQuyenTep, 
+  useBanQuyenAudit, 
+  useUploadBanQuyenTep,
+  type BanQuyenTep
+} from "@/lib/mirats/ban-quyen-detail";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { BanQuyenFormDialog } from "@/components/mirats/BanQuyenFormDialog";
 import { BanQuyenCapPhatDialog } from "@/components/mirats/BanQuyenCapPhatDialog";
@@ -63,6 +69,7 @@ function BanQuyenDetailView() {
   const { data: capPhats = [] } = useCapPhatListUnified({ banQuyenId: bq?.id || "" });
   const { data: teps = [] } = useBanQuyenTep(bq?.id || "");
   const { data: logs = [] } = useBanQuyenAudit(bq?.id || "");
+  const upFile = useUploadBanQuyenTep(bq?.id || "");
   
   const [showKey, setShowKey] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -287,9 +294,21 @@ function BanQuyenDetailView() {
                 <CardDescription className="text-xs">Hợp đồng, chứng nhận bản quyền, hướng dẫn sử dụng.</CardDescription>
               </div>
               {canManage && (
-                <Button size="sm" variant="outline">
-                  <Plus className="mr-2 h-4 w-4" /> Tải lên tài liệu
-                </Button>
+                <div className="relative">
+                  <Button size="sm" variant="outline" className="relative overflow-hidden">
+                    <Plus className="mr-2 h-4 w-4" /> Tải lên tài liệu
+                    <input 
+                      type="file" 
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const loai = prompt("Nhập loại tài liệu (VD: Hợp đồng, Chứng nhận...):", "Tài liệu");
+                        if (loai) await upFile.mutateAsync({ file, loai });
+                      }}
+                    />
+                  </Button>
+                </div>
               )}
             </CardHeader>
             <CardContent className="p-0">
@@ -326,10 +345,24 @@ function BanQuyenDetailView() {
                           <Eye className="h-3.5 w-3.5" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7" title="Tải xuống" asChild>
-                          <a href={r.url} download={r.ten_tep}><Download className="h-3.5 w-3.5" /></a>
+                          <a href={r.url} download={r.ten_tep} target="_blank" rel="noreferrer"><Download className="h-3.5 w-3.5" /></a>
                         </Button>
                         {canManage && (
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Xóa">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-7 w-7 text-destructive" 
+                            title="Xóa"
+                            onClick={async () => {
+                              if (!confirm("Xóa tệp này?")) return;
+                              const { error } = await supabase.from("phan_mem_ban_quyen_tep" as any).delete().eq("id", r.id);
+                              if (error) toast.error(error.message);
+                              else {
+                                toast.success("Đã xóa tệp");
+                                refetch();
+                              }
+                            }}
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         )}
@@ -368,7 +401,7 @@ function BanQuyenDetailView() {
                     ) 
                   },
                   { key: "detail", label: "Chi tiết", value: (r: any) => r.detail || "—" },
-                  { key: "user_id", label: "Người thực hiện", value: (r: any) => r.user_id || "—" },
+                  { key: "user_id", label: "Người thực hiện", value: (r: any) => r.user?.email || r.user_id || "System" },
                 ]}
               />
             </CardContent>
