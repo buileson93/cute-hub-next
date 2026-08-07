@@ -40,6 +40,7 @@ import { Route as AppTepTinRouteImport } from './routes/_app.tep-tin'
 import { Route as AppSuCoRouteImport } from './routes/_app.su-co'
 import { Route as AppSapHetHanRouteImport } from './routes/_app.sap-het-han'
 import { Route as AppPhanQuyenRouteImport } from './routes/_app.phan-quyen'
+import { Route as AppPhanMemBanQuyenRouteImport } from './routes/_app.phan-mem-ban-quyen'
 import { Route as AppNhapLieuRouteImport } from './routes/_app.nhap-lieu'
 import { Route as AppNhanRouteImport } from './routes/_app.nhan'
 import { Route as AppMessagesRouteImport } from './routes/_app.messages'
@@ -281,6 +282,11 @@ const AppSapHetHanRoute = AppSapHetHanRouteImport.update({
 const AppPhanQuyenRoute = AppPhanQuyenRouteImport.update({
   id: '/phan-quyen',
   path: '/phan-quyen',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPhanMemBanQuyenRoute = AppPhanMemBanQuyenRouteImport.update({
+  id: '/phan-mem-ban-quyen',
+  path: '/phan-mem-ban-quyen',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNhapLieuRoute = AppNhapLieuRouteImport.update({
@@ -759,6 +765,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof AppMessagesRouteWithChildren
   '/nhan': typeof AppNhanRoute
   '/nhap-lieu': typeof AppNhapLieuRoute
+  '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRoute
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
   '/su-co': typeof AppSuCoRouteWithChildren
@@ -875,6 +882,7 @@ export interface FileRoutesByTo {
   '/kiem-ke': typeof AppKiemKeRoute
   '/nhan': typeof AppNhanRoute
   '/nhap-lieu': typeof AppNhapLieuRoute
+  '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRoute
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
   '/tep-tin': typeof AppTepTinRoute
@@ -993,6 +1001,7 @@ export interface FileRoutesById {
   '/_app/messages': typeof AppMessagesRouteWithChildren
   '/_app/nhan': typeof AppNhanRoute
   '/_app/nhap-lieu': typeof AppNhapLieuRoute
+  '/_app/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRoute
   '/_app/phan-quyen': typeof AppPhanQuyenRoute
   '/_app/sap-het-han': typeof AppSapHetHanRoute
   '/_app/su-co': typeof AppSuCoRouteWithChildren
@@ -1116,6 +1125,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/nhan'
     | '/nhap-lieu'
+    | '/phan-mem-ban-quyen'
     | '/phan-quyen'
     | '/sap-het-han'
     | '/su-co'
@@ -1232,6 +1242,7 @@ export interface FileRouteTypes {
     | '/kiem-ke'
     | '/nhan'
     | '/nhap-lieu'
+    | '/phan-mem-ban-quyen'
     | '/phan-quyen'
     | '/sap-het-han'
     | '/tep-tin'
@@ -1349,6 +1360,7 @@ export interface FileRouteTypes {
     | '/_app/messages'
     | '/_app/nhan'
     | '/_app/nhap-lieu'
+    | '/_app/phan-mem-ban-quyen'
     | '/_app/phan-quyen'
     | '/_app/sap-het-han'
     | '/_app/su-co'
@@ -1700,6 +1712,13 @@ declare module '@tanstack/react-router' {
       path: '/phan-quyen'
       fullPath: '/phan-quyen'
       preLoaderRoute: typeof AppPhanQuyenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/phan-mem-ban-quyen': {
+      id: '/_app/phan-mem-ban-quyen'
+      path: '/phan-mem-ban-quyen'
+      fullPath: '/phan-mem-ban-quyen'
+      preLoaderRoute: typeof AppPhanMemBanQuyenRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/nhap-lieu': {
@@ -2506,6 +2525,7 @@ interface AppRouteChildren {
   AppMessagesRoute: typeof AppMessagesRouteWithChildren
   AppNhanRoute: typeof AppNhanRoute
   AppNhapLieuRoute: typeof AppNhapLieuRoute
+  AppPhanMemBanQuyenRoute: typeof AppPhanMemBanQuyenRoute
   AppPhanQuyenRoute: typeof AppPhanQuyenRoute
   AppSapHetHanRoute: typeof AppSapHetHanRoute
   AppSuCoRoute: typeof AppSuCoRouteWithChildren
@@ -2565,6 +2585,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMessagesRoute: AppMessagesRouteWithChildren,
   AppNhanRoute: AppNhanRoute,
   AppNhapLieuRoute: AppNhapLieuRoute,
+  AppPhanMemBanQuyenRoute: AppPhanMemBanQuyenRoute,
   AppPhanQuyenRoute: AppPhanQuyenRoute,
   AppSapHetHanRoute: AppSapHetHanRoute,
   AppSuCoRoute: AppSuCoRouteWithChildren,

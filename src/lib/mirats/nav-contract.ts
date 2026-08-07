@@ -18,7 +18,7 @@ import {
   Boxes, Layers, Settings2, Waypoints, Cable,
   LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
   Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
-  Factory, Truck, Tag, Bug, HardDrive, Component, Link2,
+  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound,
 } from "lucide-react";
 import type { AppRole } from "@/hooks/use-session";
 
@@ -77,6 +77,7 @@ export const workspaces: Workspace[] = [
           { to: "/so-do", label: "Sơ đồ hệ thống", icon: Waypoints, hideOnMobile: true },
           { to: "/giay-phep", label: "Giấy phép", icon: ShieldCheck },
           { to: "/kiem-dinh", label: "Kiểm định & Hiệu chuẩn", icon: ShieldCheck },
+          { to: "/phan-mem-ban-quyen", label: "Bản quyền phần mềm", icon: KeyRound },
         ],
       },
     ],
@@ -247,6 +248,7 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/kiem-dinh": { crumb: "Vận hành", title: "Kiểm định & Hiệu chuẩn" },
   "/tuoi-tho": { crumb: "Vòng đời", title: "Tuổi thọ & Vòng đời" },
   "/giay-phep": { crumb: "Giấy phép", title: "Giấy phép" },
+  "/phan-mem-ban-quyen": { crumb: "Tài sản", title: "Bản quyền phần mềm" },
   "/phan-quyen": { crumb: "Hệ thống", title: "Phân quyền & Bảo mật" },
   "/cho-duyet": { crumb: "Hệ thống", title: "Chờ duyệt — Change Request" },
 
