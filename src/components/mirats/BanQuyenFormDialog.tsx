@@ -90,7 +90,7 @@ export function BanQuyenFormDialog({
       loadOptions: loadOpts("dm_loai_ban_quyen"),
     },
     { key: "so_ghe", type: "number", label: "Số ghế (seats)", help: "Bỏ trống = không giới hạn số máy cài", min: 1, step: 1 },
-    { key: "license_key", type: "textarea", label: "License key / mã kích hoạt", placeholder: "XXXXX-XXXXX-…", colSpan: 2 },
+    { key: "license_key", type: "password", label: "License key / mã kích hoạt", placeholder: "••••••••••••", colSpan: 2, help: "Thông tin này được ẩn để bảo mật. Chỉ người quản lý mới có quyền xem." },
     
     // Group: Thời hạn
     { key: "ngay_mua", type: "date", label: "Ngày mua" },
