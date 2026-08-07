@@ -39,12 +39,17 @@ const JET_TRACKS = [
  * - Compact HUD: live UTC clock + radar sweep + telemetry chips
  */
 export function AtcTowerScene() {
+  const [mounted, setMounted] = useState(false);
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const [time, setTime] = useState("");
   const [peek, setPeek] = useState(false);
   const [cabinPeek, setCabinPeek] = useState(false);
   const [typed, setTyped] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
 
 
@@ -118,6 +123,8 @@ export function AtcTowerScene() {
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
   }, []);
+
+  if (!mounted) return <div className="h-full w-full bg-[#050914]" />;
 
   return (
     <div
