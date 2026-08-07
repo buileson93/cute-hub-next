@@ -15,7 +15,7 @@ import { BanQuyenCapPhatDialog } from "@/components/mirats/BanQuyenCapPhatDialog
 import { useSession } from "@/hooks/use-session";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+
 import {
   useBanQuyenList, STATUS_CLASS, STATUS_LABEL, dinhDangTien, type BanQuyenRow,
 } from "@/lib/mirats/ban-quyen";
