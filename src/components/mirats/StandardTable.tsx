@@ -142,6 +142,8 @@ type Props<T> = {
     pageSize: number;
     onFilteredTotalChange?: (n: number) => void;
   };
+  /** Tự căn độ rộng cột theo nội dung (auto-fit). */
+  autoFit?: boolean;
 };
 
 
@@ -156,6 +158,7 @@ export function StandardTable<T>({
   maxHeightClass = "h-[calc(100vh-16rem)] min-h-[320px]", rowClassName, countUnit = "dòng",
   requireFilterToShow = true, selectable = false, bulkActions, exportName, hideExport = false,
   trangThai, emptyContent, loadingContent, errorContent, pagination, clientPagination,
+  autoFit = false,
 }: Props<T>) {
 
   const [internalEdit, setInternalEdit] = useState(false);
@@ -263,6 +266,15 @@ export function StandardTable<T>({
     restores.forEach((fn) => fn());
     Object.entries(next).forEach(([k, w]) => setColWidth(k, w));
   }, [selectable, shownCols, setColWidth]);
+
+  // Tự động căn chỉnh nếu bật autoFit
+  useEffect(() => {
+    if (autoFit && shownCols.length > 0 && !trangThai?.dangTai) {
+      // Đợi table render xong
+      const timer = setTimeout(autoFitWidths, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [autoFit, shownCols.length, trangThai?.dangTai, autoFitWidths]);
 
   // Bộ lọc.
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});

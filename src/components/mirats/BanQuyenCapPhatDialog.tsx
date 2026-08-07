@@ -113,33 +113,41 @@ export function BanQuyenCapPhatDialog({
         </DialogHeader>
 
         {canManage && (
-          <div className="flex flex-col gap-2 rounded-md border p-3 sm:flex-row sm:items-center">
-            <Combobox
-              className="flex-1"
-              value={thietBiId}
-              onChange={setThietBiId}
-              options={tbOptions}
-              loading={loadingTb}
-              placeholder="Chọn máy tính/máy chủ"
-              searchPlaceholder="Tìm theo tên hoặc mã tài sản…"
-            />
-            <Input
-              className="sm:w-48"
-              value={nguoiCai}
-              onChange={(e) => setNguoiCai(e.target.value)}
-              placeholder="Người cài đặt"
-            />
-            <Button
-              size="sm"
-              disabled={!thietBiId || capPhatMut.isPending || (conLai != null && conLai <= 0)}
-              onClick={() => capPhatMut.mutate()}
-            >
-              <Plus className="mr-1 h-4 w-4" /> Cấp phát
-            </Button>
+          <div className="flex flex-col gap-3 rounded-xl border-2 border-primary/10 bg-primary/5 p-4 transition-all hover:border-primary/20">
+            <div className="flex flex-col gap-3 md:flex-row md:items-end">
+              <div className="flex-1 space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-primary/70 ml-1">Tài sản (Máy tính/Máy chủ)</label>
+                <Combobox
+                  className="w-full"
+                  value={thietBiId}
+                  onChange={setThietBiId}
+                  options={tbOptions}
+                  loading={loadingTb}
+                  placeholder="Chọn tài sản để cấp phát..."
+                  searchPlaceholder="Tìm theo tên hoặc mã tài sản…"
+                />
+              </div>
+              <div className="w-full md:w-64 space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-primary/70 ml-1">Người cài đặt</label>
+                <Input
+                  className="w-full bg-background"
+                  value={nguoiCai}
+                  onChange={(e) => setNguoiCai(e.target.value)}
+                  placeholder="Họ tên người cài..."
+                />
+              </div>
+              <Button
+                className="shadow-lg shadow-primary/20 h-10 px-6 font-semibold"
+                disabled={!thietBiId || capPhatMut.isPending || (conLai != null && conLai <= 0)}
+                onClick={() => capPhatMut.mutate()}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Cấp phát
+              </Button>
+            </div>
           </div>
         )}
 
-        <div className="max-h-80 overflow-y-auto rounded-md border">
+        <div className="max-h-80 overflow-y-auto rounded-xl border-2 border-muted/30 bg-muted/5">
           {isLoading ? (
             <div className="p-6 text-center text-sm text-muted-foreground">Đang tải…</div>
           ) : capPhat.length === 0 ? (
@@ -147,7 +155,7 @@ export function BanQuyenCapPhatDialog({
           ) : (
             <ul className="divide-y">
               {capPhat.map((c) => (
-                <li key={c.id} className="flex items-center justify-between gap-3 p-3">
+                <li key={c.id} className="group flex items-center justify-between gap-3 p-4 transition-colors hover:bg-primary/5">
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium">{c.tenThietBi ?? c.maThietBi}</div>
                     <div className="truncate font-mono text-xs text-muted-foreground">
@@ -161,10 +169,11 @@ export function BanQuyenCapPhatDialog({
                     <Button
                       size="sm"
                       variant="ghost"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive font-medium"
                       disabled={thuHoiMut.isPending}
                       onClick={() => thuHoiMut.mutate(c.id)}
                     >
-                      <Undo2 className="mr-1 h-3.5 w-3.5" /> Thu hồi
+                      <Undo2 className="mr-2 h-4 w-4" /> Thu hồi
                     </Button>
                   ) : (
                     <Badge variant="secondary">Đang dùng</Badge>
