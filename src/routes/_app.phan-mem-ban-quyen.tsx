@@ -358,7 +358,7 @@ function BanQuyenPage() {
                 <div className="space-y-1">
                   <div className="text-[11px] font-bold text-primary">Mẹo vận hành</div>
                   <p className="text-[10px] leading-relaxed text-muted-foreground/90 font-medium">
-                    Hãy thu hồi bản quyền (Cap phat -> Thu hoi) khi máy tính bị hỏng hoặc thanh lý để tối ưu hóa chi phí phần mềm.
+                    Hãy thu hồi bản quyền (Cap phat {"->"} Thu hoi) khi máy tính bị hỏng hoặc thanh lý để tối ưu hóa chi phí phần mềm.
                   </p>
                 </div>
               </div>
