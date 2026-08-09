@@ -2,14 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((input: any) => 
-    z.object({
+  .validator((input: any) => {
+    const schema = z.object({
       kind: z.string(),
       ma: z.string(),
       ten: z.string().nullable(),
       du_lieu: z.record(z.any().nullable()).nullable(),
-    }).parse(input)
-  )
+    });
+    return schema.parse(input);
+  })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
@@ -27,13 +28,14 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((input: any) => 
-    z.object({
+  .validator((input: any) => {
+    const schema = z.object({
       parentKind: z.string(),
       parentMa: z.string(),
       order: z.array(z.string()),
-    }).parse(input)
-  )
+    });
+    return schema.parse(input);
+  })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
