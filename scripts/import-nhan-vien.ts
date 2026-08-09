@@ -9,35 +9,51 @@ async function importEmployees() {
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   
-  // Parse data starting from row 5 (index 4)
-  const data: any[] = xlsx.utils.sheet_to_json(worksheet, { range: 4 });
+  // Parse data as a 2D array to inspect it accurately
+  const rows: any[][] = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
   
-  console.log(`Found ${data.length} potential rows.`);
+  console.log(`Found ${rows.length} raw rows.`);
   
-  const employees = data
-    .filter(row => row["HỌ TÊN"] && row["STT"] !== "*")
-    .map((row, index) => {
-      // Clean phone number
-      let phone = row[" SĐT"] ? String(row[" SĐT"]).trim() : null;
-      
-      // Parse date
-      let dob = null;
-      if (row["Ngày sinh"]) {
-        const d = new Date(row["Ngày sinh"]);
-        if (!isNaN(d.getTime())) {
-          dob = d.toISOString().split('T')[0];
-        }
-      }
+  // Header is at index 4 (row 5)
+  const header = rows[4];
+  console.log("Header found:", header);
 
-      return {
-        ma_nhan_vien: `NV_${String(index + 1).padStart(4, '0')}`,
-        ho_ten: row["HỌ TÊN"].trim(),
-        chuc_vu: row["CHỨC DANH"] ? row["CHỨC DANH"].trim() : null,
-        dien_thoai: phone,
-        ngay_sinh: dob,
-        hoat_dong: true
-      };
+  const employees = [];
+  
+  // Data starts from index 5
+  for (let i = 5; i < rows.length; i++) {
+    const row = rows[i];
+    const stt = row[0];
+    const hoTen = row[1];
+    const chucVu = row[2];
+    const dobRaw = row[3];
+    const sdt = row[4];
+
+    if (!hoTen || stt === "*" || String(hoTen).includes("Ban Giám đốc") || String(hoTen).includes("Phòng") || String(hoTen).includes("Đài")) {
+      continue;
+    }
+
+    // Clean phone number
+    let phone = sdt ? String(sdt).trim() : null;
+    
+    // Parse date
+    let dob = null;
+    if (dobRaw) {
+      const d = new Date(dobRaw);
+      if (!isNaN(d.getTime())) {
+        dob = d.toISOString().split('T')[0];
+      }
+    }
+
+    employees.push({
+      ma_nhan_vien: `NV_${String(employees.length + 1).padStart(4, '0')}`,
+      ho_ten: String(hoTen).trim(),
+      chuc_vu: chucVu ? String(chucVu).trim() : null,
+      dien_thoai: phone,
+      ngay_sinh: dob,
+      hoat_dong: true
     });
+  }
 
   console.log(`Prepared ${employees.length} employees to import.`);
 
@@ -49,7 +65,7 @@ async function importEmployees() {
     if (error) {
       console.error(`Error importing ${emp.ho_ten}:`, error.message);
     } else {
-      console.log(`Imported: ${emp.ho_ten}`);
+      // console.log(`Imported: ${emp.ho_ten}`);
     }
   }
 
