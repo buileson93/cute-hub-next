@@ -25,7 +25,7 @@ export type ColumnPrefs = {
   customized?: boolean;
 };
 
-const LS_PREFIX = "mirats:colprefs:";
+const LS_PREFIX = "mirats:colprefs:v2:";
 
 /** Hợp nhất thứ tự đã lưu với danh sách key hiện có (thêm key mới vào cuối,
  *  bỏ key không còn tồn tại). Giữ đúng thứ tự người dùng đã sắp.
@@ -70,9 +70,19 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
     // 1) localStorage
     try {
-      const raw = typeof window !== "undefined" ? window.localStorage.getItem(lsKey) : null;
-      if (raw) applyPrefs(JSON.parse(raw) as ColumnPrefs);
-      else applyPrefs(null);
+      const rawV2 = typeof window !== "undefined" ? window.localStorage.getItem(lsKey) : null;
+      if (rawV2) {
+        applyPrefs(JSON.parse(rawV2) as ColumnPrefs);
+      } else {
+        // Fallback sang v1 nếu chưa có v2
+        const rawV1 = typeof window !== "undefined" ? window.localStorage.getItem("mirats:colprefs:" + tableKey) : null;
+        if (rawV1) {
+          const v1 = JSON.parse(rawV1) as ColumnPrefs;
+          applyPrefs({ ...v1, customized: true });
+        } else {
+          applyPrefs(null);
+        }
+      }
     } catch {
       applyPrefs(null);
     }
