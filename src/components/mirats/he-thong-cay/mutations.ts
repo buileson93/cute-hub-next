@@ -15,10 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator() with a standard Zod schema to satisfy the build system's expectation.
-// If the environment requires more arguments, we provide them explicitly as per common patterns.
+// Using validator signature with 2 arguments (parser and encoder) to satisfy TS2554.
+// Based on the build error, this specific version of TanStack Start requires the encoder function.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data), (d: any) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data), (d: any) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
