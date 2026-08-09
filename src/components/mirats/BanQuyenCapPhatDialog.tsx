@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Combobox } from "@/components/mirats/Combobox";
 import { supabase } from "@/integrations/backend/client";
 import { useCapPhatList, type BanQuyenRow } from "@/lib/mirats/ban-quyen";
+import { UserCircle } from "lucide-react";
+
 
 function useThietBiOptions(search: string = "") {
   return useQuery({
@@ -22,7 +24,12 @@ function useThietBiOptions(search: string = "") {
     queryFn: async () => {
       let query = supabase
         .from("thiet_bi")
-        .select("id, ma_thiet_bi, ten_thiet_bi, dm_loai_thiet_bi!inner(ten, la_may_tinh)")
+        .select(`
+          id, ma_thiet_bi, ten_thiet_bi, 
+          nhan_vien:nhan_vien_id(ho_ten, don_vi, chuc_vu),
+          dm_loai_thiet_bi!inner(ten, la_may_tinh)
+        `)
+
         .eq("dm_loai_thiet_bi.la_may_tinh", true)
         .order("ten_thiet_bi")
         .limit(100);
@@ -34,10 +41,12 @@ function useThietBiOptions(search: string = "") {
       const { data, error } = await query;
       if (error) throw error;
       
-      return (data ?? []).map((r) => ({
+      return (data ?? []).map((r: any) => ({
         value: r.id,
         label: `${r.ten_thiet_bi ?? r.ma_thiet_bi} · ${r.ma_thiet_bi}`,
+        subLabel: r.nhan_vien ? `${r.nhan_vien.ho_ten} (${r.nhan_vien.don_vi || 'KĐĐ'})` : "Chưa gán người sử dụng",
       }));
+
     },
   });
 }
@@ -209,15 +218,26 @@ export function BanQuyenCapPhatDialog({
             <div className="p-6 text-center text-sm text-muted-foreground">Chưa cấp phát cho tài sản nào</div>
           ) : (
             <ul className="divide-y">
-              {capPhat.map((c) => (
+              {capPhat.map((c: any) => (
                 <li key={c.id} className="group flex items-center justify-between gap-3 p-4 transition-colors hover:bg-primary/5">
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-medium">{c.tenThietBi ?? c.maThietBi}</div>
-                    <div className="truncate font-mono text-xs text-muted-foreground">
-                      {c.maThietBi} · cài {c.ngay_cai_dat}
-                      {c.nguoi_cai ? ` · ${c.nguoi_cai}` : ""}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                      <UserCircle className="h-5 w-5 text-muted-foreground/70" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium">{c.tenThietBi ?? c.maThietBi}</div>
+                      <div className="truncate font-mono text-xs text-muted-foreground">
+                        {c.maThietBi} · cài {c.ngay_cai_dat}
+                        {c.nguoi_cai ? ` · ${c.nguoi_cai}` : ""}
+                      </div>
+                      {c.nhanVien && (
+                        <div className="text-[10px] text-primary/70 font-medium">
+                          👤 {c.nhanVien.hoTen} ({c.nhanVien.donVi || 'KĐĐ'})
+                        </div>
+                      )}
                     </div>
                   </div>
+
                   {c.ngay_thu_hoi ? (
                     <Badge variant="secondary">Đã thu hồi {c.ngay_thu_hoi}</Badge>
                   ) : canManage ? (

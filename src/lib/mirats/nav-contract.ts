@@ -18,8 +18,9 @@ import {
   Boxes, Layers, Settings2, Waypoints, Cable,
   LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
   Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
-  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound,
+  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users,
 } from "lucide-react";
+
 import type { AppRole } from "@/hooks/use-session";
 
 export type LucideIcon = typeof LayoutDashboard;
@@ -205,7 +206,9 @@ export const workspaces: Workspace[] = [
 
 
           { to: "/admin/users", label: "Quản lý tài khoản", icon: UserCog, roles: ADMIN_ONLY },
+          { to: "/admin/nhan-vien", label: "Quản lý nhân viên", icon: Users, roles: MANAGER_ROLES },
           { to: "/admin/audit", label: "Nhật ký hệ thống", icon: Lock, roles: ADMIN_ONLY },
+
           { to: "/admin/schema", label: "Sơ đồ CSDL", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/backup", label: "Sao lưu & Khôi phục", icon: DatabaseBackup, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/nhap-lieu", label: "Nhập/Xuất hàng loạt", icon: Upload, roles: ADMIN_ONLY, hideOnMobile: true },
@@ -253,7 +256,9 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/cho-duyet": { crumb: "Hệ thống", title: "Chờ duyệt — Change Request" },
 
   "/admin/users": { crumb: "Hệ thống", title: "Quản lý tài khoản" },
+  "/admin/nhan-vien": { crumb: "Hệ thống", title: "Quản lý nhân viên" },
   "/admin/audit": { crumb: "Hệ thống", title: "Nhật ký hệ thống" },
+
   "/admin/schema": { crumb: "Hệ thống", title: "Sơ đồ CSDL" },
   "/admin/backup": { crumb: "Hệ thống", title: "Sao lưu & Khôi phục" },
   "/admin/ai": { crumb: "Hệ thống", title: "Cấu hình AI" },
