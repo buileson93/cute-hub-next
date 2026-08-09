@@ -15,10 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// For TanStack Start v1, when using a validator function, it often requires a second argument
-// (the 'encoder') to satisfy the overload. If two arguments still fail, we'll try a dummy object.
+// Trong TanStack Start v1, nếu validator(fn) báo lỗi thiếu đối số, 
+// ta sử dụng object-based validator hoặc signature chuẩn nhất của nó.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (d: any) => d)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (d: any) => d)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
