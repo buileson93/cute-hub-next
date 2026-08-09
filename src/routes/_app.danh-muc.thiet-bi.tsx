@@ -1001,6 +1001,7 @@ function DanhMucThietBiPage() {
             tableKey="danh-muc-thiet-bi"
             columns={columns}
             rows={devices}
+            presets={THIET_BI_PRESETS}
             getRowId={(d) => d.ma_thiet_bi}
             requireFilterToShow={false}
             countUnit="tài sản"
