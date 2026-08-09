@@ -18,7 +18,7 @@ import {
   Boxes, Layers, Settings2, Waypoints, Cable,
   LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
   Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
-  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users,
+  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users, Laptop,
 } from "lucide-react";
 
 import type { AppRole } from "@/hooks/use-session";
