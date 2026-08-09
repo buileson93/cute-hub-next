@@ -447,7 +447,7 @@ function SuCoPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     {g.ma_nhom_bc && <span className="font-mono text-xs text-primary">{g.ma_nhom_bc}</span>}
-                    <Badge variant="secondary" className={mucColor[g.muc_do] ?? ""}>{g.muc_do}</Badge>
+                    <Badge variant="secondary" className={getMucDoSuCoToken(g.muc_do)?.class}>{g.muc_do}</Badge>
                     <span className="text-xs text-muted-foreground">{g.ngay_phat_hien.replace("T", " ")}</span>
                   </div>
                   <div className="mt-1 truncate text-sm font-medium">{g.hien_tuong}</div>
