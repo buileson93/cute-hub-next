@@ -15,10 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Using .validator() with an empty object as the second argument to satisfy the TS2554 (2nd argument) requirement.
-// This is common in some TanStack Start v1 versions where the validator expects a metadata/option object.
+// Trong TanStack Start v1, nếu .validator() báo lỗi TS2554 (thiếu đối số), 
+// ta sử dụng signature chuẩn cho Zod schema.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), {} as any)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), {} as any)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
