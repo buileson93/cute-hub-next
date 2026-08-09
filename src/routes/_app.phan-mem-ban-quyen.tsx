@@ -250,6 +250,21 @@ function BanQuyenPage() {
         }
       />
 
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 mb-6 shadow-sm">
+        <div className="flex gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+            <Info className="h-5 w-5 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-sm font-bold text-primary">Thông tin hệ thống</div>
+            <p className="text-sm leading-relaxed text-muted-foreground/90 font-medium">
+              Hiện nay đã có tính năng để phần mềm bản quyền cấp pháp cho máy tính laptop nào thuộc quyền sử dụng của nhân viên nào. 
+              Bạn có thể gán tài sản cho nhân viên trong danh mục Tài sản, sau đó cấp phát bản quyền cho tài sản đó tại đây hoặc từ Sổ lý lịch tài sản.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4 sm:grid-cols-2">
         <Kpi 
           icon={KeyRound} 

@@ -35,7 +35,7 @@ function useThietBiOptions(search: string = "") {
         .limit(100);
 
       if (search) {
-        query = query.or(`ten_thiet_bi.ilike.%${search}%,ma_thiet_bi.ilike.%${search}%`);
+        query = query.or(`ten_thiet_bi.ilike.%${search}%,ma_thiet_bi.ilike.%${search}%,nhan_vien.ho_ten.ilike.%${search}%`);
       }
 
       const { data, error } = await query;
