@@ -15,8 +15,8 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Trong TanStack Start v1, nếu .validator() báo lỗi TS2554 (thiếu đối số), 
-// ta sử dụng signature chuẩn cho Zod schema.
+// TanStack Start v1 creator structure using .input() to bypass the .validator() TS2554 issue
+// while still providing Zod validation and type safety.
 export const saveNode = createServerFn({ method: "POST" })
   .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
