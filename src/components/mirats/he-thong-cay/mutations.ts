@@ -15,10 +15,12 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Using .input() which is the standard validator in some TanStack versions, 
-// or providing a dummy encoder to satisfy the 2-argument requirement if using .validator
+/**
+ * Server function to save node overrides or draft data.
+ * Using .validator(schema) to satisfy TypeScript's requirement for arguments in TanStack Start v1.
+ */
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (data) => data)
+  .validator(saveSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -34,8 +36,11 @@ export const saveNode = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Server function to save node ordering metadata.
+ */
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (data) => data)
+  .validator(reorderSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
