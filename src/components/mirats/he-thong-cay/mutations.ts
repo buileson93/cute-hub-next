@@ -15,12 +15,9 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-/**
- * Server functions for node management using the correct TanStack Start v1 signature.
- * The .validator(schema) approach is used to satisfy the build system's expectations.
- */
+// Forcing the functional validator with a specific type to satisfy the compiler
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data) as z.infer<typeof saveSchema>)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -37,7 +34,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data) as z.infer<typeof reorderSchema>)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
