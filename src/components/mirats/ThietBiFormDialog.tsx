@@ -93,7 +93,11 @@ export function ThietBiFormDialog({
     trang_thai_id?: string | null;
     nhan_vien_id?: string | null;
     ghi_chu?: string | null;
+    thiet_bi_he_thong_tuong_thich?: CompatibilityItem[];
   } | null;
+
+  const systemOptsQuery = useQuery(loadOpts("dm_he_thong"));
+
 
 
   const defaultValues = useMemo<Partial<FormValues>>(
