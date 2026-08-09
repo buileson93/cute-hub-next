@@ -15,11 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// TanStack Start v1 validator expects (data: unknown) => T
-// If TypeScript still complains about arguments, it might be the version mismatch
-// where it expects the schema itself as the second argument or a specific callback signature.
+// Using .input() which is the standard validator in some TanStack versions, 
+// or providing a dummy encoder to satisfy the 2-argument requirement if using .validator
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator((data: unknown) => saveSchema.parse(data), (data) => data)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -36,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator((data: unknown) => reorderSchema.parse(data), (data) => data)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
