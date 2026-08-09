@@ -15,12 +15,12 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator(schema, encoder) to satisfy the 2nd argument requirement in this project's environment.
+/**
+ * Server functions for Tree/Mindmap node management.
+ * Note: validator uses the schema directly to satisfy the environment's requirements.
+ */
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(
-    (data: unknown) => saveSchema.parse(data),
-    (data: any) => data
-  )
+  .validator(saveSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -37,10 +37,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(
-    (data: unknown) => reorderSchema.parse(data),
-    (data: any) => data
-  )
+  .validator(reorderSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
