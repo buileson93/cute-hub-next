@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Users, Plus, Search, Pencil, Trash2, Mail, Phone, UserCircle } from "lucide-react";
+import { Users, Plus, Search, Pencil, Trash2, Mail, Phone, UserCircle, ShieldCheck } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -12,6 +12,7 @@ import { SchemaDialog, type SchemaField } from "@/components/mirats/SchemaDialog
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { NhanVienSoftwareSheet } from "@/components/mirats/NhanVienSoftwareSheet";
 
 export const Route = createFileRoute("/_app/admin/nhan-vien")({
   component: NhanVienAdminPage,
@@ -43,6 +44,7 @@ function NhanVienAdminPage() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<any | "new" | null>(null);
+  const [softwareSheet, setSoftwareSheet] = useState<{ id: string; ten: string } | null>(null);
 
   const { data: nhanVien = [], isLoading } = useQuery({
     queryKey: ["nhan_vien", q],
@@ -150,6 +152,14 @@ function NhanVienAdminPage() {
       align: "right",
       cell: (row) => (
         <div className="flex justify-end gap-1">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            title="Xem phần mềm"
+            onClick={() => setSoftwareSheet({ id: row.id, ten: row.ho_ten })}
+          >
+            <ShieldCheck className="h-4 w-4 text-primary" />
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => setEditing(row)}>
             <Pencil className="h-4 w-4" />
           </Button>
@@ -207,6 +217,13 @@ function NhanVienAdminPage() {
         schema={schema}
         defaultValues={editing === "new" ? { hoat_dong: true } : editing}
         onSubmit={(v) => saveMut.mutateAsync(v)}
+      />
+
+      <NhanVienSoftwareSheet
+        nhanVienId={softwareSheet?.id || ""}
+        nhanVienTen={softwareSheet?.ten || ""}
+        open={!!softwareSheet}
+        onOpenChange={(o) => !o && setSoftwareSheet(null)}
       />
     </div>
   );
