@@ -335,7 +335,10 @@ function SuCoPage() {
     {
       key: "muc_do", label: "Mức độ", filter: "cat",
       value: (s) => s.muc_do,
-      cell: (s) => <Badge variant="secondary" className={mucColor[s.muc_do] ?? ""}>{s.muc_do}</Badge>,
+      cell: (s) => {
+        const token = getMucDoSuCoToken(s.muc_do);
+        return <Badge variant="secondary" className={token?.class}>{s.muc_do}</Badge>;
+      },
     },
     {
       key: "trang_thai", label: "Trạng thái", filter: "cat",
