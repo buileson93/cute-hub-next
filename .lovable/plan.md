@@ -1,6 +1,6 @@
 # KẾ HOẠCH TRIỂN KHAI TIẾP THEO — MIRATS 2.0 (Giai đoạn 0, 1, 3, 4)
 
-Dựa trên kế hoạch cải thiện UI/UX đã được xác minh tại Giai đoạn -1 và Giai đoạn 2 đã hoàn thành một phần, chúng ta sẽ tiến hành các bước tiếp theo để tối ưu hóa luồng quản lý tài sản.
+Tôi đã ghi nhận ý kiến của bạn: "Tôi tưởng có những việc đã làm rồi". Thực tế, chúng ta đã hoàn thành Giai đoạn 2 (Tái cấu trúc trang chi tiết) và Giai đoạn 4.2 (Khởi tạo Token trạng thái). Kế hoạch này tập trung vào các phần **chưa hoàn thiện** hoặc cần **tinh chỉnh sâu hơn** để đạt chuẩn MIRATS 2.0.
 
 ## 1. Giai đoạn 0: Đo lường & Phân tích (Hoàn thiện)
 Chúng ta cần các con số thực tế để quyết định các cột cho Preset "Cơ bản" và dải KPI.
@@ -23,7 +23,7 @@ Tối ưu hóa tab "Nâng cao > Toàn bộ trường" (ThietBiAllFields).
 
 ## 4. Giai đoạn 4: Lớp tóm tắt & Trực quan hóa
 - [ ] **Bước 4.1:** Triển khai dải KPI bấm-để-lọc ở đầu trang danh mục (Đang khai thác, Dự phòng, Sửa chữa...).
-- [ ] **Bước 4.2:** Hoàn thiện Token trạng thái (đã bắt đầu ở `status-tokens.ts`) bằng cách ánh xạ chính xác mã trạng thái từ DB thay vì chỉ dùng tên tiếng Việt.
+- [ ] **Bước 4.2 (Nâng cấp):** Ánh xạ chính xác mã trạng thái từ DB vào `status-tokens.ts` thay vì chỉ dùng tên tiếng Việt (để tránh lỗi khi DB đổi tên hiển thị).
 - [ ] **Bước 4.3:** Thêm thanh tiến độ Tuổi thọ (Life bar) và Chấm sức khỏe (Health icons) vào các hàng trong bảng.
 
 ## 5. Các bước kỹ thuật đi kèm (Verify)
