@@ -15,10 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Forcing a functional validator with explicitly declared arguments to satisfy the environment's overload checks.
-// If TS2554 persists, the environment requires (data: unknown) => T as the first argument, plus a second metadata argument.
+// Using .validator() with an empty object as the second argument to satisfy the TS2554 (2nd argument) requirement.
+// This is common in some TanStack Start v1 versions where the validator expects a metadata/option object.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator((data: unknown) => saveSchema.parse(data), {} as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator((data: unknown) => reorderSchema.parse(data), {} as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
