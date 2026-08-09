@@ -17,8 +17,8 @@ export const Route = createFileRoute("/_app/thong-ke/laptop")({
   component: LaptopStatsPage,
   head: () => ({
     meta: [
-      { title: "Thống kê Laptop & Bản quyền — MIRATS" },
-      { name: "description", content: "Thống kê chi tiết máy tính laptop theo nhân viên và tình trạng bản quyền phần mềm." },
+      { title: "Thống kê Máy tính & Bản quyền — MIRATS" },
+      { name: "description", content: "Thống kê chi tiết máy tính (Laptop/PC) theo nhân viên và tình trạng bản quyền phần mềm." },
     ],
   }),
 });
@@ -258,7 +258,7 @@ function LaptopStatsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-emerald-700">{kpis.assignedLaptops}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">Laptop/PC đang được nhân viên phụ trách</div>
+            <div className="text-[10px] text-muted-foreground font-medium mt-1">Máy tính (Laptop/PC) đang được nhân viên phụ trách</div>
           </CardContent>
         </Card>
         <Card className="shadow-sm border-amber-100 bg-amber-50/30">
@@ -325,7 +325,7 @@ function LaptopStatsPage() {
         <div className="space-y-1">
           <div className="text-sm font-bold text-blue-900">Mẹo vận hành</div>
           <p className="text-xs text-blue-800 leading-relaxed font-medium">
-            Sử dụng chức năng này để rà soát các máy tính laptop chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
+            Sử dụng chức năng này để rà soát các máy tính (Laptop/PC) chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
           </p>
       </div>
 

@@ -113,7 +113,7 @@ export function AssetImportDialog({
             Nhập tài sản máy tính hàng loạt
           </DialogTitle>
           <DialogDescription>
-            Tải lên file Excel (.xlsx, .csv) để thêm nhanh máy tính và gán nhân viên phụ trách.
+            Tải lên file Excel (.xlsx, .csv) để thêm nhanh máy tính (Laptop/PC) và gán nhân viên phụ trách.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,7 +184,7 @@ export function AssetImportDialog({
             <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
             <div className="text-[11px] text-blue-700 leading-normal">
               <strong>Mẹo:</strong> Cột <code>nhan_vien_id</code> phải chứa UUID của nhân viên để gán tự động. 
-              Cột <code>loai_thiet_bi_id</code> nên để trống để hệ thống tự nhận diện Laptop/PC.
+              Cột <code>loai_thiet_bi_id</code> nên để trống để hệ thống tự nhận diện Máy tính (Laptop/PC).
             </div>
           </div>
         </div>

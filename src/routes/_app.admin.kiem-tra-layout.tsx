@@ -17,8 +17,8 @@ const PRESETS: Preset[] = [
   { label: "Mobile 375", w: 375, h: 667, device: "iPhone SE" },
   { label: "Mobile 414", w: 414, h: 896, device: "iPhone XR" },
   { label: "Tablet 768", w: 768, h: 1024, device: "iPad" },
-  { label: "Laptop 1024", w: 1024, h: 768, device: "Laptop nhỏ" },
-  { label: "Desktop 1280", w: 1280, h: 800, device: "Laptop chuẩn" },
+  { label: "Máy tính 1024", w: 1024, h: 768, device: "Laptop nhỏ" },
+  { label: "Desktop 1280", w: 1280, h: 800, device: "Máy tính chuẩn" },
   { label: "Desktop 1536", w: 1536, h: 864, device: "Màn hình lớn" },
 ];
 
