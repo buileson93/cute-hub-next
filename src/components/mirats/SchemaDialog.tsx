@@ -69,7 +69,18 @@ export type SchemaField =
         queryFn: (values: Record<string, unknown>) => Promise<SchemaOption[]>;
         deps?: string[];
       };
+    })
+  | (Common & {
+      type: "custom";
+      render: (props: {
+        value: any;
+        onChange: (v: any) => void;
+        values: Record<string, unknown>;
+        error?: string;
+      }) => ReactNode;
+      colSpan?: 1 | 2;
     });
+
 
 export interface SchemaDialogProps<TValues extends Record<string, unknown>> {
   open: boolean;
