@@ -13,11 +13,14 @@ export const getThietBiDataOccupancy = createServerFn({ method: "GET" })
     const total = devices.length;
     const occupancy: Record<string, number> = {};
 
-    const keys = Object.keys(devices[0]);
+    const firstDevice = devices[0] as Record<string, any>;
+    const keys = Object.keys(firstDevice);
+    
     keys.forEach((key) => {
-      const filledCount = devices.filter(
-        (d) => d[key] !== null && d[key] !== "" && d[key] !== undefined
-      ).length;
+      const filledCount = devices.filter((d: any) => {
+        const val = d[key];
+        return val !== null && val !== "" && val !== undefined;
+      }).length;
       occupancy[key] = (filledCount / total) * 100;
     });
 
