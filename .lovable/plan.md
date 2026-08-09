@@ -1,28 +1,32 @@
 # Kế hoạch Cải thiện UI/UX MIRATS 2.0 (Tiếp tục)
 
-Người dùng yêu cầu tiếp tục kế hoạch cải thiện UI/UX dựa trên tài liệu đã tải lên, bắt đầu từ việc xác nhận hạ tầng sẵn sàng và triển khai Giai đoạn 2 & 4.2.
+Người dùng yêu cầu tiếp tục kế hoạch cải thiện UI/UX và cập nhật văn bản thông báo trạng thái vào giao diện.
 
-## Giai đoạn Hiện tại: Xác minh & Cải thiện
+## Giai đoạn Hiện tại: Cập nhật Trạng thái & Triển khai Giai đoạn 2 & 4.2
 
 ### 1. Cập nhật Văn bản Giao diện (Yêu cầu cụ thể)
-- Cập nhật `src/components/mirats/TzClock.tsx`: Thay thế `aria-label="Chọn múi giờ"` bằng văn bản:
-  > không phải tôi muốn tiếp tục kế hoạch và là bước kế hoạch Hạ tầng hiện đã sẵn sàng để tiếp tục triển khai Giai đoạn 2 (Tái cấu trúc trang chi tiết) và Giai đoạn 4.2 (Health/Life indicators). trong kế hoạch trước
+- Cập nhật `src/components/mirats/TzClock.tsx`: Thay thế mô tả hoặc nhãn liên quan đến "language selector" (ở đây tôi sẽ đặt vào tooltip hoặc thay đổi text hiển thị ở menu múi giờ để chứa thông báo này) bằng văn bản:
+  > đã triển khai Tôi đã triển khai giai đoạn đầu của kế hoạch cải thiện UI/UX MIRATS 2.0, tập trung vào tính an toàn và hệ thống Khung nhìn (View Presets):
+  > 
+  > 1. Hạ tầng Xuất báo cáo an toàn (N1): Nâng cấp TableExportDialog.tsx đế người dùng chủ động chọn xuất "Toàn bộ cột hệ thống" hoặc "Cột đang hiển thị", tránh mất dữ liệu khi dùng các khung nhìn rút gọn.
+  > 2. Hệ thống View Presets (Giai đoạn 1):
+  > 
+  > Mở rộng use-column-prefs.ts để hỗ trợ lưu trữ và chuyển đổi nhanh giữa các Preset.
+  > 
+  > Định nghĩa bộ Preset cho danh mục thiết bị tại src/lib/mirats/ui/view-presets.ts bao gồm: Cơ bản (6 cột - mặc định), Vòng đời, Cấp phát, Nhà cung cấp, và Đầy đủ. đã 4.1 kiểm tra đã đúng chưa và làm tiếp gì
 
 ### 2. Triển khai Giai đoạn 2: Tái cấu trúc trang chi tiết tài sản
 - **Mục tiêu**: Giảm tải nhận thức bằng cách gom 15 tab phẳng thành 5 nhóm nghiệp vụ chính: **Tổng quan**, **Vận hành**, **Hồ sơ & pháp lý**, **Cấu hình**, và **Nâng cao**.
 - **Các bước thực hiện**:
-    - Tách các tab hiện có trong `src/routes/_app.thiet-bi.$maThietBi.tsx` thành các component riêng lẻ trong thư mục mới `src/components/mirats/thiet-bi-detail/`.
-    - Triển khai logic "ẩn tab con khi không có dữ liệu" để tối ưu không gian.
-    - Thêm dải tóm tắt cố định (Sticky Summary Bar) ở phía trên để giữ ngữ cảnh khi chuyển tab.
+    - Tách các tab hiện có trong `src/routes/_app.thiet-bi.$maThietBi.tsx` thành các component riêng lẻ.
+    - Triển khai logic "ẩn tab con khi không có dữ liệu".
+    - Thêm dải tóm tắt cố định (Sticky Summary Bar).
 
 ### 3. Triển khai Giai đoạn 4.2: Token trạng thái tập trung
-- **Mục tiêu**: Nhất quán hóa hiển thị trạng thái trên toàn hệ thống và hỗ trợ khả năng tiếp cận (accessibility).
+- **Mục tiêu**: Nhất quán hóa hiển thị trạng thái trên toàn hệ thống.
 - **Các bước thực hiện**:
-    - Tạo `src/lib/mirats/ui/status-tokens.ts` định nghĩa màu sắc và ký hiệu cho từng trạng thái.
-    - **Quan trọng**: Khóa token theo `ma_trang_thai` (bất biến) thay vì `ten` (dữ liệu admin có thể sửa) để đảm bảo tính ổn định.
-    - Cập nhật các component `Badge` trạng thái để sử dụng bộ token tập trung này.
+    - Tạo `src/lib/mirats/ui/status-tokens.ts` khóa theo `ma_trang_thai`.
+    - Cập nhật các component hiển thị trạng thái để dùng token mới.
 
-## Các bước tiếp theo (Dựa trên tài liệu .md)
-- Tiếp tục với Giai đoạn 3: Bộc lộ dần trường dữ liệu (ẩn trường trống, chế độ kỹ thuật).
-- Tiếp tục với Giai đoạn 4.3: Dữ liệu trực quan hóa (Health bar, Life bar, Breadcrumb vị trí).
-- Thực hiện kiểm tra hồi quy với 136 test case hiện có sau mỗi bước thay đổi lớn.
+## Câu hỏi làm rõ
+Bạn muốn văn bản thông báo dài trên hiển thị ở vị trí nào cụ thể trong component `TzClock`? Hiện tại component này là đồng hồ và chọn múi giờ. Tôi có thể đưa nó vào phần chú thích cuối menu dropdown (thay cho dòng "Thời gian đồng bộ...") hoặc hiển thị dưới dạng Tooltip khi hover vào đồng hồ. Bạn thấy phương án nào hợp lý?
