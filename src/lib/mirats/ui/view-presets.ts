@@ -20,36 +20,34 @@ export type ViewPreset = {
 
 /**
  * THIET_BI_PRESETS: Danh sách các khung nhìn mặc định.
- * Các ID cột phải khớp với key trong DbDevice (taxonomy) 
- * hoặc key gốc trong database (thiet_bi).
+ * Cột phải khớp với ID cột khai báo trong StandardTable (trang Danh mục thiết bị).
  */
 export const THIET_BI_PRESETS: ViewPreset[] = [
   {
     id: "co-ban",
     ten: "Cơ bản",
     moTa: "6 cột cốt lõi: Tên, Serial, Model, Trạng thái, Hệ thống, Đơn vị",
-    // Chuyển sang dùng key thực tế (DbDevice/thiet_bi)
-    cot: ["ten_thiet_bi", "ma_serial", "model", "trang_thai_id", "he_thong_id", "don_vi_id"],
-    sapXep: { key: "ten_thiet_bi", dir: "asc" },
+    cot: ["tb", "serial", "mau", "tt", "ht", "dv"],
+    sapXep: { key: "tb", dir: "asc" },
   },
   {
     id: "vong-doi",
     ten: "Vòng đời",
     moTa: "Thông tin mua sắm, bảo hành, tuổi thọ và khai thác",
-    cot: ["ten_thiet_bi", "ma_serial", "nam_dua_vao_khai_thac", "nam_san_xuat", "ty_le_tuoi_tho", "trang_thai_id"],
-    sapXep: { key: "nam_dua_vao_khai_thac", dir: "desc" },
+    cot: ["tb", "serial", "namkt", "namsx", "tuoitho", "tt"],
+    sapXep: { key: "namkt", dir: "desc" },
   },
   {
     id: "cap-phat",
     ten: "Cấp phát",
     moTa: "Thông tin ai đang giữ và tình trạng cấp phát",
-    cot: ["ten_thiet_bi", "ma_serial", "trang_thai_id", "trang_thai_cap_phat", "nguoi_giu", "don_vi_giu_id"],
+    cot: ["tb", "serial", "tt", "capphat", "nguoigiu", "dv"],
   },
   {
     id: "nha-cc",
     ten: "Nhà cung cấp",
     moTa: "Thông tin NSX, NCC, Part Number và mã tài sản kế toán",
-    cot: ["ten_thiet_bi", "ma_serial", "model", "nha_san_xuat_id", "nha_cung_cap_id", "ma_tai_san_bravo", "p_n"],
+    cot: ["tb", "serial", "mau", "nsx", "ncc", "bravo", "pn"],
   },
   {
     id: "day-du",
