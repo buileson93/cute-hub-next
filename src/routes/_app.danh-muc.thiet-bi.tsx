@@ -16,8 +16,9 @@ import { useCallback, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2,
+  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2, ShieldCheck,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -80,7 +81,9 @@ type TbSearch = {
   mode?: CheDoLoc;
   standalone?: boolean;
   retired?: boolean;
+  compatibleSystem?: string;
 };
+
 
 const TAG_MODES: readonly CheDoLoc[] = ["any", "all", "none"] as const;
 
@@ -100,7 +103,9 @@ export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
       : undefined;
     const standalone = s.standalone === true || s.standalone === "true" ? true : undefined;
     const retired = s.retired === true || s.retired === "true" ? true : undefined;
-    return { q, loai, tt, tags, mode, standalone, retired };
+    const compatibleSystem = typeof s.compatibleSystem === "string" && s.compatibleSystem ? s.compatibleSystem : undefined;
+    return { q, loai, tt, tags, mode, standalone, retired, compatibleSystem };
+
   },
   head: () => ({
     meta: [
@@ -408,7 +413,29 @@ function DanhMucThietBiPage() {
     [taxo],
   );
 
+  const { data: tuongThichRows } = useQuery({
+    queryKey: ["thiet_bi_he_thong_tuong_thich_all"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("thiet_bi_he_thong_tuong_thich")
+        .select("thiet_bi_id, he_thong_id");
+      if (error) throw error;
+      return data;
+    }
+  });
+  const compatibleMap = useMemo(() => {
+    const m = new Map<string, Set<string>>();
+    for (const r of tuongThichRows ?? []) {
+      const s = m.get(r.thiet_bi_id) ?? new Set();
+      s.add(r.he_thong_id);
+      m.set(r.thiet_bi_id, s);
+    }
+    return m;
+  }, [tuongThichRows]);
+
   const devices = useMemo(() => {
+
     let all = taxo?.devices ?? [];
     if (!scopeAll) all = all.filter((d) => !donViCode || d.don_vi === donViCode);
     if (!showRetired) all = all.filter((d) => !isRetiredStatus(d.trang_thai));
@@ -430,8 +457,13 @@ function DanhMucThietBiPage() {
         normalize(d.trang_thai ?? "").includes(nq),
       );
     }
+    if (sp.compatibleSystem) {
+      all = all.filter((d) => compatibleMap.get(d.id)?.has(sp.compatibleSystem!));
+    }
     return all;
-  }, [taxo, scopeAll, donViCode, showRetired, onlyStandalone, filterLoai, filterTt, search, tbName, tagsByDevice, tagSelected, tagMode]);
+  }, [taxo, scopeAll, donViCode, showRetired, onlyStandalone, filterLoai, filterTt, sp, tbName, tagsByDevice, tagSelected, tagMode, compatibleMap]);
+
+
 
   const standaloneCount = useMemo(
     () => (taxo?.devices ?? []).filter((d) => !d._htId).length,
@@ -842,6 +874,23 @@ function DanhMucThietBiPage() {
                 {ttOptions.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select 
+              value={sp.compatibleSystem || "all"} 
+              onValueChange={(v) => patchSearch({ compatibleSystem: v === "all" ? undefined : v })}
+            >
+
+              <SelectTrigger className="h-9 w-[220px]">
+                <ShieldCheck className="mr-2 h-4 w-4 text-emerald-600" />
+                <SelectValue placeholder="Vật tư tương thích hệ thống" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả (không lọc tương thích)</SelectItem>
+                {(taxo?.htList ?? []).map((h) => (
+                  <SelectItem key={h.id} value={h.id}>{htName(h.id, h.ten)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             {/* Lọc theo Nhãn tài sản (đa trị) — song song với "Chủng loại" (đơn trị). */}
             <Popover>
               <PopoverTrigger asChild>

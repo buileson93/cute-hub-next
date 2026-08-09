@@ -7,8 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   HardDrive, Package, PackagePlus, PackageMinus, PackageOpen,
-  ExternalLink, History, Pencil,
+  ExternalLink, History, Pencil, ShieldCheck,
 } from "lucide-react";
+
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
@@ -101,7 +102,57 @@ function LoaiChip({ loaiId, ten }: { loaiId: string | null | undefined; ten: str
 }
 
 
+function TuongThichSection({ deviceId }: { deviceId: string }) {
+  const { data } = useQuery({
+    queryKey: ["thiet_bi_tuong_thich_detail", deviceId],
+    enabled: !!deviceId,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("thiet_bi_he_thong_tuong_thich")
+        .select(`
+          phan_loai,
+          danh_gia,
+          he_thong:he_thong_id (ten, ma)
+        `)
+        .eq("thiet_bi_id", deviceId);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (!data?.length) return null;
+
+  return (
+    <section className="space-y-2">
+      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+        <ShieldCheck className="h-3 w-3 text-emerald-600" /> Hệ thống có thể thay thế
+      </div>
+      <div className="space-y-1.5 rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-2.5">
+        {data.map((item: any, idx: number) => (
+          <div key={idx} className="flex flex-col gap-0.5 border-b border-emerald-500/10 pb-1.5 last:border-0 last:pb-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium text-foreground">
+                {(item.he_thong as any)?.ten || "Hệ thống"}
+              </span>
+              <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal">
+                {item.phan_loai}
+              </Badge>
+            </div>
+            {item.danh_gia && (
+              <p className="text-[11px] italic text-muted-foreground line-clamp-1">
+                “{item.danh_gia}”
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /** LỚP 2 — Thành phần hệ thống: tài sản đang lắp vào vai trò nào (kế thừa vị trí/trạng thái). */
+
 function ThanhPhanSection({ device }: { device: DbDevice }) {
   const { data: vaiTroList = [], isLoading } = useVaiTroThietBi(device.id);
   const installed = vaiTroList.length > 0 || !!device._htId;
@@ -247,7 +298,11 @@ export function ThietBiDetailDrawer({
               {/* ── LỚP 2: Thành phần hệ thống (vai trò đang đảm nhận) ── */}
               <ThanhPhanSection device={device} />
 
+              {/* ── Khả năng thay thế tương thích ── */}
+              <TuongThichSection deviceId={device.id} />
+
               {/* ── LỚP 3: Hệ thống (ngữ cảnh cấp cao) ── */}
+
               {device._htId && (
                 <section className="space-y-2">
                   <LayerSectionHeader layer="ht" />

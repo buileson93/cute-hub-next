@@ -69,7 +69,18 @@ export type SchemaField =
         queryFn: (values: Record<string, unknown>) => Promise<SchemaOption[]>;
         deps?: string[];
       };
+    })
+  | (Common & {
+      type: "custom";
+      render: (props: {
+        value: any;
+        onChange: (v: any) => void;
+        values: Record<string, unknown>;
+        error?: string;
+      }) => ReactNode;
+      colSpan?: 1 | 2;
     });
+
 
 export interface SchemaDialogProps<TValues extends Record<string, unknown>> {
   open: boolean;
@@ -354,6 +365,22 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                 </label>
               );
             }
+            if (f.type === "custom") {
+              return (
+                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
+                  {f.render({
+                    value: values[f.key],
+                    onChange: (v) => setValue(f.key, v),
+                    values,
+                    error: err ?? undefined,
+                  })}
+
+                  {errNode}
+                  {helpNode}
+                </div>
+              );
+            }
+
             if (f.type !== "select" && f.type !== "combobox") return null;
             const selectField = f;
             const opts: SchemaOption[] = selectField.options ?? asyncOpts[selectField.key] ?? [];
@@ -422,6 +449,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               </div>
             );
           })}
+
         </div>
         {footerExtra}
         <DialogFooter>
