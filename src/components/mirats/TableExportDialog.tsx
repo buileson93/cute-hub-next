@@ -43,7 +43,7 @@ export function TableExportDialog<T>({
   const [open, setOpen] = useState(false);
   const coChon = rowsByScope.selected.length > 0;
   const [scope, setScope] = useState<ExportScope>(defaultScope ?? (coChon ? "selected" : "filtered"));
-  const [dungCotHienThi, setDungCotHienThi] = useState(true);
+  const [cheDoCot, setCheDoCot] = useState<"visible" | "all" | "custom">("visible");
   const [cotChon, setCotChon] = useState<string[]>(() => visibleColumns.map((c) => c.key));
   const [sep, setSep] = useState(";");
   const [tenFile, setTenFile] = useState(
@@ -52,10 +52,11 @@ export function TableExportDialog<T>({
 
   const cotKhaDung = useMemo(() => exportableCols(allColumns), [allColumns]);
   const cols = useMemo(() => {
-    if (dungCotHienThi) return exportableCols(visibleColumns);
+    if (cheDoCot === "visible") return exportableCols(visibleColumns);
+    if (cheDoCot === "all") return exportableCols(allColumns);
     const set = new Set(cotChon);
     return cotKhaDung.filter((c) => set.has(c.key));
-  }, [dungCotHienThi, visibleColumns, cotChon, cotKhaDung]);
+  }, [cheDoCot, visibleColumns, allColumns, cotChon, cotKhaDung]);
 
   const rows = rowsByScope[scope] ?? [];
   const sanSang = rows.length > 0 && cols.length > 0;
@@ -110,27 +111,52 @@ export function TableExportDialog<T>({
 
           <div className="space-y-2">
             <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cột xuất</Label>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="cot-hien-thi"
-                checked={dungCotHienThi}
-                onCheckedChange={(v) => {
-                  const on = v === true;
-                  setDungCotHienThi(on);
-                  if (!on) setCotChon(exportableCols(visibleColumns).map((c) => c.key));
-                }}
-              />
-              <Label htmlFor="cot-hien-thi">
-                Theo cột đang hiển thị ({exportableCols(visibleColumns).length} cột)
-              </Label>
-            </div>
-            {!dungCotHienThi && (
-              <div className="max-h-52 space-y-1 overflow-auto rounded-md border p-2">
+            <RadioGroup
+              value={cheDoCot}
+              onValueChange={(v) => {
+                const val = v as "visible" | "all" | "custom";
+                setCheDoCot(val);
+                if (val === "custom") {
+                  setCotChon(exportableCols(visibleColumns).map((c) => c.key));
+                }
+              }}
+              className="gap-2"
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="visible" id="cols-visible" />
+                <Label htmlFor="cols-visible">
+                  Theo cột đang hiển thị ({exportableCols(visibleColumns).length} cột)
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="all" id="cols-all" />
+                <Label htmlFor="cols-all">
+                  Toàn bộ cột hệ thống ({exportableCols(allColumns).length} cột)
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="custom" id="cols-custom" />
+                <Label htmlFor="cols-custom">Tùy chọn từng cột...</Label>
+              </div>
+            </RadioGroup>
+
+            {cheDoCot === "custom" && (
+              <div className="max-h-52 space-y-1 overflow-auto rounded-md border p-2 animate-in fade-in slide-in-from-top-1">
                 <div className="flex gap-3 pb-1 text-xs">
-                  <button type="button" className="text-primary hover:underline"
-                    onClick={() => setCotChon(cotKhaDung.map((c) => c.key))}>Chọn tất cả</button>
-                  <button type="button" className="text-primary hover:underline"
-                    onClick={() => setCotChon([])}>Bỏ chọn</button>
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => setCotChon(cotKhaDung.map((c) => c.key))}
+                  >
+                    Chọn tất cả
+                  </button>
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => setCotChon([])}
+                  >
+                    Bỏ chọn
+                  </button>
                 </div>
                 {cotKhaDung.map((c) => (
                   <div key={c.key} className="flex items-center gap-2">
@@ -139,10 +165,13 @@ export function TableExportDialog<T>({
                       checked={cotChon.includes(c.key)}
                       onCheckedChange={(v) =>
                         setCotChon((prev) =>
-                          v === true ? [...prev, c.key] : prev.filter((k) => k !== c.key))
+                          v === true ? [...prev, c.key] : prev.filter((k) => k !== c.key)
+                        )
                       }
                     />
-                    <Label htmlFor={`col-${c.key}`} className="font-normal">{c.label}</Label>
+                    <Label htmlFor={`col-${c.key}`} className="font-normal">
+                      {c.label}
+                    </Label>
                   </div>
                 ))}
               </div>

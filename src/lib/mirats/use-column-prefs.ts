@@ -18,7 +18,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/backend/client";
 
-export type ColumnPrefs = { order: string[]; hidden: string[] };
+export type ColumnPrefs = {
+  order: string[];
+  hidden: string[];
+  presetId?: string;
+  customized?: boolean;
+};
 
 const LS_PREFIX = "mirats:colprefs:";
 
@@ -45,6 +50,8 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
   const [order, setOrderState] = useState<string[]>(() => reconcileOrder(undefined, allKeys));
   const [hidden, setHiddenState] = useState<Set<string>>(() => new Set(defaultHidden));
+  const [activePreset, setActivePreset] = useState<string | undefined>();
+  const [isCustomized, setIsCustomized] = useState(false);
   const [ready, setReady] = useState(false);
   const userIdRef = useRef<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,6 +64,8 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       if (cancelled) return;
       setOrderState(reconcileOrder(p?.order, allKeys));
       setHiddenState(new Set(p?.hidden ?? defaultHidden));
+      setActivePreset(p?.presetId);
+      setIsCustomized(p?.customized ?? false);
     };
 
     // 1) localStorage
@@ -107,36 +116,74 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
   const setOrder = useCallback((next: string[]) => {
     const reconciled = reconcileOrder(next, allKeys);
     setOrderState(reconciled);
-    setHiddenState((h) => { persist({ order: reconciled, hidden: [...h] }); return h; });
-  }, [allKeys, persist]);
+    setIsCustomized(true);
+    setHiddenState((h) => {
+      persist({ order: reconciled, hidden: [...h], presetId: activePreset, customized: true });
+      return h;
+    });
+  }, [allKeys, persist, activePreset]);
 
   const toggle = useCallback((key: string) => {
     setHiddenState((prev) => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
-      setOrderState((o) => { persist({ order: o, hidden: [...next] }); return o; });
+      setIsCustomized(true);
+      setOrderState((o) => {
+        persist({ order: o, hidden: [...next], presetId: activePreset, customized: true });
+        return o;
+      });
       return next;
     });
-  }, [persist]);
+  }, [persist, activePreset]);
 
   const setHidden = useCallback((keys: string[]) => {
     const next = new Set(keys);
     setHiddenState(next);
-    setOrderState((o) => { persist({ order: o, hidden: [...next] }); return o; });
-  }, [persist]);
+    setIsCustomized(true);
+    setOrderState((o) => {
+      persist({ order: o, hidden: [...next], presetId: activePreset, customized: true });
+      return o;
+    });
+  }, [persist, activePreset]);
 
   const reset = useCallback(() => {
     const o = reconcileOrder(undefined, allKeys);
     const h = new Set(defaultHidden);
     setOrderState(o);
     setHiddenState(h);
-    persist({ order: o, hidden: [...h] });
+    setActivePreset(undefined);
+    setIsCustomized(false);
+    persist({ order: o, hidden: [...h], customized: false });
   }, [allKeys, defaultHidden, persist]);
+
+  const setPreset = useCallback((presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
+    const reconciledOrder = reconcileOrder(orderKeys ?? allKeys, allKeys);
+    const hiddenKeys = allKeys.filter(k => !visibleKeys.includes(k));
+    const nextHidden = new Set(hiddenKeys);
+
+    setOrderState(reconciledOrder);
+    setHiddenState(nextHidden);
+    setActivePreset(presetId);
+    setIsCustomized(false);
+    persist({ order: reconciledOrder, hidden: [...nextHidden], presetId, customized: false });
+  }, [allKeys, persist]);
 
   const isHidden = useCallback((key: string) => hidden.has(key), [hidden]);
 
   return useMemo(
-    () => ({ order, hidden, ready, setOrder, toggle, setHidden, reset, isHidden }),
-    [order, hidden, ready, setOrder, toggle, setHidden, reset, isHidden],
+    () => ({
+      order,
+      hidden,
+      ready,
+      activePreset,
+      isCustomized,
+      setOrder,
+      toggle,
+      setHidden,
+      reset,
+      isHidden,
+      setPreset,
+    }),
+    [order, hidden, ready, activePreset, isCustomized, setOrder, toggle, setHidden, reset, isHidden, setPreset],
   );
 }
