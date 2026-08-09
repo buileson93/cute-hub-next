@@ -15,9 +15,11 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Sử dụng validator(schema) thay vì validator(fn) để tránh lỗi TS2554
+// TanStack Start v1 validator expects (data: unknown) => T
+// If TypeScript still complains about arguments, it might be the version mismatch
+// where it expects the schema itself as the second argument or a specific callback signature.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -34,7 +36,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
