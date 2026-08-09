@@ -61,9 +61,10 @@ export default function TabTongQuan({
             } />
             <InfoRow icon={Network} label="Hệ thống" value={
               sysName
-                ? <Link to="/danh-muc/he-thong" className="inline-flex items-center gap-1 text-primary hover:underline">{sysName}<ExternalLink className="h-3 w-3" /></Link>
+                ? <Link to="/danh-muc/he-thong" search={{ q: sysName }} className="inline-flex items-center gap-1 text-primary hover:underline">{sysName}<ExternalLink className="h-3 w-3" /></Link>
                 : "—"
             } />
+
             <InfoRow icon={MapPin} label="Vị trí lắp đặt" value={
               tb.vi_tri
                 ? <Link to="/danh-muc/vi-tri" className="inline-flex items-center gap-1 text-primary hover:underline">{tb.vi_tri}<ExternalLink className="h-3 w-3" /></Link>
