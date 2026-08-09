@@ -80,7 +80,9 @@ type TbSearch = {
   mode?: CheDoLoc;
   standalone?: boolean;
   retired?: boolean;
+  compatibleSystem?: string;
 };
+
 
 const TAG_MODES: readonly CheDoLoc[] = ["any", "all", "none"] as const;
 
