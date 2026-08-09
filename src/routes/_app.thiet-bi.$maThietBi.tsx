@@ -7,8 +7,9 @@ import { storage } from "@/lib/storage";
 import { toast } from "sonner";
 import {
   ArrowLeft, Gauge, Calendar, AlertTriangle, Wrench, PencilLine,
-  LayoutDashboard, Activity, ShieldCheck, Cpu, Settings
+  LayoutDashboard, Activity, ShieldCheck, Cpu, Settings, History, ArrowLeftRight
 } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
