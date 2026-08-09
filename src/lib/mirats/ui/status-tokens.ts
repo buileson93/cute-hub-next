@@ -116,7 +116,8 @@ export type TrangThaiMa = keyof typeof TRANG_THAI_TOKEN;
  */
 export function getTrangThaiToken(key: string | null) {
   if (!key) return null;
-  return (TRANG_THAI_TOKEN as any)[key] || {
+  const k = key.trim();
+  return (TRANG_THAI_TOKEN as any)[k] || {
     class: "bg-slate-100 text-slate-700",
     dot: "bg-slate-400",
     kyHieu: "•",
