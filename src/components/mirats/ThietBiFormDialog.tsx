@@ -181,8 +181,22 @@ export function ThietBiFormDialog({
         step: 1,
       },
       { key: "ghi_chu", type: "textarea", label: "Ghi chú", placeholder: "Thông tin bổ sung…" },
+      {
+        key: "he_thong_tuong_thich",
+        type: "custom",
+        label: "Hệ thống tương thích",
+        colSpan: 2,
+        render: ({ value, onChange }) => (
+          <CompatibilityManager
+            value={value || []}
+            onChange={onChange}
+            systemOptions={systemOptsQuery.data || []}
+          />
+        ),
+      },
     ],
-    [mode],
+    [mode, systemOptsQuery.data],
+
   );
 
   const save = useMutation({
