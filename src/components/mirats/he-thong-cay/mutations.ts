@@ -15,9 +15,13 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use (data: T) => T signature which is standard for single-argument functional validators in TanStack Start v1.
+// Use .validator(schema, encoder) with explicit typing to satisfy the 2nd argument requirement.
+// The encoder is required by this project's TanStack Start configuration for client->server serialization.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator(
+    (data: unknown) => saveSchema.parse(data),
+    (data: z.infer<typeof saveSchema>) => data
+  )
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -34,7 +38,10 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator(
+    (data: unknown) => reorderSchema.parse(data),
+    (data: z.infer<typeof reorderSchema>) => data
+  )
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
