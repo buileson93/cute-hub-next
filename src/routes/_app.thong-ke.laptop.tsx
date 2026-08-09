@@ -1,4 +1,4 @@
-import { Laptop, ShieldCheck, CheckCircle2, XCircle, AlertCircle, Info, Download, Filter, Search, User } from "lucide-react";
+import { Laptop, ShieldCheck, CheckCircle2, XCircle, AlertCircle, Info, Download, Filter, Search, User, Upload } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -11,6 +11,7 @@ import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { AssetImportDialog } from "@/components/mirats/AssetImportDialog";
 
 export const Route = createFileRoute("/_app/thong-ke/laptop")({
   component: LaptopStatsPage,
