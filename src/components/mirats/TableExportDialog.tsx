@@ -63,7 +63,17 @@ export function TableExportDialog<T>({
 
   const xuat = () => {
     if (!sanSang) return;
-    taiFileCsv(`${slugTen(tenFile)}.csv`, buildCsv(rows, cols, sep));
+    const csvContent = buildCsv(rows, cols, sep);
+    // BOM UTF-8 để Excel hiển thị đúng tiếng Việt
+    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${slugTen(tenFile)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
     toast.success(`Đã xuất ${rows.length.toLocaleString("vi-VN")} ${countUnit} × ${cols.length} cột ra CSV.`);
     setOpen(false);
   };
