@@ -23,7 +23,12 @@ const reorderSchema = z.object({
  */
 export const saveNode = createServerFn({ method: "POST" })
   .validator((data: unknown) => {
-    return saveSchema.parse(data);
+    try {
+      return saveSchema.parse(data);
+    } catch (e) {
+      console.error("saveNode validation error:", e);
+      throw e;
+    }
   })
   .handler(async ({ data }) => {
     const { error } = await supabase
@@ -45,7 +50,12 @@ export const saveNode = createServerFn({ method: "POST" })
  */
 export const reorderNodes = createServerFn({ method: "POST" })
   .validator((data: unknown) => {
-    return reorderSchema.parse(data);
+    try {
+      return reorderSchema.parse(data);
+    } catch (e) {
+      console.error("reorderNodes validation error:", e);
+      throw e;
+    }
   })
   .handler(async ({ data }) => {
     const { error } = await supabase
