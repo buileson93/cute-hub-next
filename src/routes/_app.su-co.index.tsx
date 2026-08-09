@@ -49,12 +49,8 @@ export const Route = createFileRoute("/_app/su-co/")({
   component: SuCoPage,
 });
 
-const mucColor: Record<string, string> = {
-  "Nghiêm trọng": "bg-red-100 text-red-700",
-  "Cao": "bg-orange-100 text-orange-700",
-  "Trung bình": "bg-amber-100 text-amber-700",
-  "Thấp": "bg-slate-100 text-slate-700",
-};
+import { getMucDoSuCoToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
