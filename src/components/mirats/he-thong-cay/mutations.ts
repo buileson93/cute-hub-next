@@ -2,15 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/backend/client";
 import { z } from "zod";
 
-const saveSchema = z.object({
-  kind: z.string(),
-  ma: z.string(),
-  ten: z.string().nullable(),
-  du_lieu: z.record(z.any()).nullable(),
-});
-
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator((data: unknown) => 
+    z.object({
+      kind: z.string(),
+      ma: z.string(),
+      ten: z.string().nullable(),
+      du_lieu: z.record(z.any()).nullable(),
+    }).parse(data)
+  )
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -26,14 +26,14 @@ export const saveNode = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-const reorderSchema = z.object({
-  parentKind: z.string(),
-  parentMa: z.string(),
-  order: z.array(z.string()),
-});
-
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator((data: unknown) => 
+    z.object({
+      parentKind: z.string(),
+      parentMa: z.string(),
+      order: z.array(z.string()),
+    }).parse(data)
+  )
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
