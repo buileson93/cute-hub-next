@@ -372,8 +372,9 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                     value: values[f.key],
                     onChange: (v) => setValue(f.key, v),
                     values,
-                    error: err,
+                    error: err ?? undefined,
                   })}
+
                   {errNode}
                   {helpNode}
                 </div>
