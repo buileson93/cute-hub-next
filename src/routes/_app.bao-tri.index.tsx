@@ -27,12 +27,8 @@ export const Route = createFileRoute("/_app/bao-tri/")({
   component: BaoTriPage,
 });
 
-const loaiColor: Record<string, string> = {
-  "Định kỳ": "bg-sky-100 text-sky-700",
-  "Đột xuất": "bg-amber-100 text-amber-700",
-  "Hiệu chuẩn": "bg-violet-100 text-violet-700",
-  "Nâng cấp": "bg-emerald-100 text-emerald-700",
-};
+import { getLoaiBaoTriToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
