@@ -14,6 +14,8 @@ export const Route = createFileRoute("/_app/danh-muc/don-vi")({
 
 function DonViPage() {
   return (
+    <div className="flex h-full flex-col">
+
     <CatalogTable
       table="dm_don_vi"
       usageColumn="don_vi_id"
@@ -24,5 +26,6 @@ function DonViPage() {
       namePlaceholder="VD: Đài Thông tin Duyên hải…"
       hiddenCols={["ma", "mo_ta", "active"]}
     />
+    </div>
   );
 }
