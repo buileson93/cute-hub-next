@@ -34,7 +34,17 @@ const formSchema = z.object({
     .lte(2100, "Năm sản xuất không hợp lệ")
     .optional(),
   ghi_chu: z.string().trim().max(2000, "Ghi chú tối đa 2000 ký tự").optional(),
+  he_thong_tuong_thich: z
+    .array(
+      z.object({
+        he_thong_id: z.string(),
+        phan_loai: z.string(),
+        danh_gia: z.string(),
+      })
+    )
+    .default([]),
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
