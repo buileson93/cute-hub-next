@@ -257,10 +257,20 @@ export function ThietBiFormDialog({
         const { data: inserted, error } = await supabase
           .from("thiet_bi")
           .insert(payload as never)
-          .select("ma_thiet_bi")
+          .select("id, ma_thiet_bi")
           .single();
         if (error) throw error;
+
+        // Lưu bảng liên kết
+        if (items.length > 0) {
+          const { error: err2 } = await supabase
+            .from("thiet_bi_he_thong_tuong_thich")
+            .insert(items.map(it => ({ ...it, thiet_bi_id: (inserted as any).id })));
+          if (err2) toast.error("Không lưu được thông tin hệ thống tương thích");
+        }
+
         return (inserted as { ma_thiet_bi: string }).ma_thiet_bi;
+
       } else {
         if (!device?.id) throw new Error("Thiếu id tài sản");
         const { error } = await supabase
