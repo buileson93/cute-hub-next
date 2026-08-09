@@ -56,19 +56,19 @@ export default function TabTongQuan({
             )}
             <InfoRow icon={Building2} label="Đơn vị quản lý" value={
               (tb.don_vi || tb._donViTen)
-                ? <Link to="/danh-muc/don-vi" search={{ q: tb.don_vi }} className="inline-flex items-center gap-1 text-primary hover:underline">{`${tb.don_vi || "—"}${tb._donViTen ? " — " + tb._donViTen : ""}`}<ExternalLink className="h-3 w-3" /></Link>
+                ? <Link to="/danh-muc/don-vi" search={{ f_id: tb.don_vi_id }} className="inline-flex items-center gap-1 text-primary hover:underline">{`${tb.don_vi || "—"}${tb._donViTen ? " — " + tb._donViTen : ""}`}<ExternalLink className="h-3 w-3" /></Link>
                 : "—"
             } />
 
             <InfoRow icon={Network} label="Hệ thống" value={
               sysName
-                ? <Link to="/danh-muc/he-thong" search={{ q: sysName }} className="inline-flex items-center gap-1 text-primary hover:underline">{sysName}<ExternalLink className="h-3 w-3" /></Link>
+                ? <Link to="/danh-muc/he-thong" search={{ f_id: tb.he_thong_id }} className="inline-flex items-center gap-1 text-primary hover:underline">{sysName}<ExternalLink className="h-3 w-3" /></Link>
                 : "—"
             } />
 
             <InfoRow icon={MapPin} label="Vị trí lắp đặt" value={
               tb.vi_tri
-                ? <Link to="/danh-muc/vi-tri" search={{ q: tb.vi_tri }} className="inline-flex items-center gap-1 text-primary hover:underline">{tb.vi_tri}<ExternalLink className="h-3 w-3" /></Link>
+                ? <Link to="/danh-muc/vi-tri" search={{ f_id: tb.vi_tri_id }} className="inline-flex items-center gap-1 text-primary hover:underline">{tb.vi_tri}<ExternalLink className="h-3 w-3" /></Link>
                 : "—"
             } />
 
