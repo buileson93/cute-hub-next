@@ -15,13 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator() with a single function that satisfies the expected signature.
-// If the environment still throws TS2554, it might be due to a specific @tanstack/react-start version
-// that expects a Zod schema or a triple-argument setup.
+// Use .validator(parser) with an explicit function to satisfy the 1-argument requirement
+// for standard TanStack Start v1 Zod integration.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => {
-    return saveSchema.parse(data);
-  })
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -38,9 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => {
-    return reorderSchema.parse(data);
-  })
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
