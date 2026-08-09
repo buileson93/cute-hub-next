@@ -232,17 +232,151 @@ function useChangeLogProxy(id: string, canEdit: boolean) {
   return useChangeLog("thiet_bi", canEdit ? id : null);
 }
 
-function TelemetryPanelProxy(props: any) {
-  // Re-implemented here briefly or imported if possible.
-  // Given current structure, let's assume we need to re-implement or pass down.
-  // For the sake of the plan, I'll keep it simple.
-  return <div className="p-4 border rounded bg-muted/10 italic text-xs">Phân hệ Đo đạc Telemetry</div>;
+function TelemetryPanelProxy({ thietBiId, canManage }: any) {
+  const { useTelemetry, useAddTelemetry } = require("@/lib/mirats/db-smart");
+  const { data: rows = [], isLoading } = useTelemetry(thietBiId);
+  const addMut = useAddTelemetry(thietBiId);
+  const [chiSo, setChiSo] = useState("gio_chay");
+  const [giaTri, setGiaTri] = useState("");
+  const [donVi, setDonVi] = useState("giờ");
+
+  const submit = () => {
+    const v = giaTri.trim() === "" ? null : Number(giaTri.replace(",", "."));
+    if (!chiSo.trim()) return toast.error("Nhập tên chỉ số");
+    if (v != null && Number.isNaN(v)) return toast.error("Giá trị phải là số");
+    addMut.mutate(
+      { chi_so: chiSo.trim(), gia_tri: v, don_vi_do: donVi.trim() || null },
+      {
+        onSuccess: () => {
+          toast.success("Đã ghi số đo");
+          setGiaTri("");
+        },
+        onError: (e: Error) => toast.error(e.message),
+      }
+    );
+  };
+
+  return (
+    <div className="space-y-3">
+      {canManage && (
+        <div className="flex flex-wrap items-end gap-2 rounded-md border bg-muted/30 p-3">
+          <label className="flex-1 min-w-[140px] text-[10px] font-bold uppercase text-muted-foreground">
+            Chỉ số
+            <Input className="mt-1 h-8 text-xs" value={chiSo} onChange={(e) => setChiSo(e.target.value)} placeholder="gio_chay, nhiet_do…" />
+          </label>
+          <label className="w-28 text-[10px] font-bold uppercase text-muted-foreground">
+            Giá trị
+            <Input className="mt-1 h-8 text-xs" value={giaTri} onChange={(e) => setGiaTri(e.target.value)} inputMode="decimal" placeholder="0" />
+          </label>
+          <label className="w-24 text-[10px] font-bold uppercase text-muted-foreground">
+            Đơn vị
+            <Input className="mt-1 h-8 text-xs" value={donVi} onChange={(e) => setDonVi(e.target.value)} placeholder="giờ, °C…" />
+          </label>
+          <Button size="sm" onClick={submit} disabled={addMut.isPending}>
+            {addMut.isPending ? <Activity className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Activity className="mr-1 h-3.5 w-3.5" />}
+            Ghi số đo
+          </Button>
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+          <Activity className="h-4 w-4 animate-spin" /> Đang tải...
+        </div>
+      ) : rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có số đo nào.</p>
+      ) : (
+        <div className="space-y-2">
+          {rows.map((r: any) => (
+            <div key={r.id} className="flex items-center justify-between rounded-md border p-2.5 text-xs bg-card">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="font-mono">{r.chi_so}</Badge>
+                <span className="font-bold tabular-nums text-sm">
+                  {r.gia_tri == null ? "—" : r.gia_tri.toLocaleString("vi-VN")}
+                </span>
+                <span className="text-muted-foreground">{r.don_vi_do ?? ""}</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground">
+                {new Date(r.thoi_diem).toLocaleString("vi-VN")}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
-function AllocationPanelProxy(props: any) {
-  return <div className="p-4 border rounded bg-muted/10 italic text-xs">Lịch sử Cấp phát / Thu hồi</div>;
+function AllocationPanelProxy({ thietBiId, donViTenMap }: any) {
+  const { useAllocationHistory } = require("@/lib/mirats/db-smart");
+  const { data: rows = [], isLoading } = useAllocationHistory(thietBiId);
+
+  if (isLoading) return <div className="py-8 text-center"><Activity className="h-5 w-5 animate-spin mx-auto" /></div>;
+  if (rows.length === 0) return <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có lịch sử cấp phát.</p>;
+
+  return (
+    <ol className="relative ml-2 border-l border-border pl-6 space-y-6">
+      {rows.map((r: any) => {
+        const isCap = r.hanh_dong === "cap_phat";
+        return (
+          <li key={r.id} className="relative">
+            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${isCap ? "bg-amber-500" : "bg-emerald-500"}`}>
+              <Activity className="h-3.5 w-3.5 text-white" />
+            </span>
+            <div className="rounded-md border p-3 text-xs bg-card shadow-sm">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="font-medium text-muted-foreground">
+                  {new Date(r.thoi_diem).toLocaleString("vi-VN")}
+                </span>
+                <Badge variant="secondary" className={isCap ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}>
+                  {isCap ? "Cấp phát" : "Thu hồi"}
+                </Badge>
+              </div>
+              {(r.nguoi_giu || r.don_vi_giu_id) && (
+                <div className="flex flex-col gap-1">
+                  {r.nguoi_giu && <div className="font-bold">{r.nguoi_giu}</div>}
+                  {r.don_vi_giu_id && <div className="text-muted-foreground">{donViTenMap.get(r.don_vi_giu_id) ?? "—"}</div>}
+                </div>
+              )}
+              {r.ghi_chu && <div className="mt-2 pt-2 border-t italic text-muted-foreground">{r.ghi_chu}</div>}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
 }
 
-function LifecyclePanelProxy(props: any) {
-  return <div className="p-4 border rounded bg-muted/10 italic text-xs">Nhật ký Vòng đời Trạng thái</div>;
+function LifecyclePanelProxy({ thietBiId }: any) {
+  const { useLifecycle, useTrangThaiMap } = require("@/lib/mirats/db-smart");
+  const { data: rows = [], isLoading } = useLifecycle(thietBiId);
+  const { data: ttMap } = useTrangThaiMap();
+  const nameOf = (id: string | null) => (id ? ttMap?.get(id) ?? "—" : "—");
+
+  if (isLoading) return <div className="py-8 text-center"><Activity className="h-5 w-5 animate-spin mx-auto" /></div>;
+  if (rows.length === 0) return <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có nhật ký vòng đời.</p>;
+
+  return (
+    <ol className="relative ml-2 border-l border-border pl-6 space-y-6">
+      {rows.map((r: any) => (
+        <li key={r.id} className="relative">
+          <span className="absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full bg-primary ring-4 ring-background">
+            <History className="h-3.5 w-3.5 text-primary-foreground" />
+          </span>
+          <div className="rounded-md border p-3 text-xs bg-card shadow-sm">
+            <div className="text-muted-foreground mb-2">
+              {new Date(r.thoi_diem).toLocaleString("vi-VN")}
+            </div>
+            <div className="flex items-center gap-2 font-medium">
+              <Badge variant="outline" className="text-[10px]">{nameOf(r.tu_trang_thai_id)}</Badge>
+              <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
+              <Badge variant="secondary" className="text-[10px]">{nameOf(r.den_trang_thai_id)}</Badge>
+            </div>
+            {r.ly_do && <div className="mt-2 text-muted-foreground italic">{r.ly_do}</div>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
 }
+
