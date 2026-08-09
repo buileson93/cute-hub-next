@@ -15,11 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator(schema) directly. In TanStack Start v1, the validator function
-// often requires a second argument for custom validation functions.
-// If direct schema fails, we use (data) => schema.parse(data) with any required padding.
+// For TanStack Start v1, when using a validator function, it often requires a second argument
+// (the 'encoder') to satisfy the overload. If two arguments still fail, we'll try a dummy object.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data), (d: any) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -36,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data), (d: any) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
