@@ -18,6 +18,10 @@ export type ViewPreset = {
   filterMacDinh?: Record<string, string | string[]>;
 };
 
+/**
+ * THIET_BI_PRESETS: Danh sách các khung nhìn mặc định.
+ * Cột phải khớp với ID cột khai báo trong StandardTable (trang Danh mục thiết bị).
+ */
 export const THIET_BI_PRESETS: ViewPreset[] = [
   {
     id: "co-ban",
@@ -30,8 +34,8 @@ export const THIET_BI_PRESETS: ViewPreset[] = [
     id: "vong-doi",
     ten: "Vòng đời",
     moTa: "Thông tin mua sắm, bảo hành, tuổi thọ và khai thác",
-    cot: ["tb", "serial", "ngaymua", "baohanh", "tuoitho", "tt"],
-    sapXep: { key: "baohanh", dir: "asc" },
+    cot: ["tb", "serial", "namkt", "namsx", "tuoitho", "tt"],
+    sapXep: { key: "namkt", dir: "desc" },
   },
   {
     id: "cap-phat",

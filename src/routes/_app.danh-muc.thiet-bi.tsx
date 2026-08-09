@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
   MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, 
-  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid
+  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid, Timer, HeartPulse
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -36,6 +36,7 @@ import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
+import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 import { CenterHoverCard } from "@/components/mirats/CenterHoverCard";
 import { AssignSystemDialog } from "@/components/mirats/AssignSystemDialog";
@@ -643,9 +644,15 @@ function DanhMucThietBiPage() {
     // ---- Trạng thái & cấp phát ----
     {
       key: "tt", label: "Trạng thái", group: "Thành phần hệ thống · Trạng thái", filter: "cat", value: (d) => d.trang_thai,
-      cell: (d) => d.trang_thai ? (
-        <Badge variant="secondary" className={cn("font-medium", ttColor[d.trang_thai] ?? "")}>{d.trang_thai}</Badge>
-      ) : <span className="text-muted-foreground">—</span>,
+      cell: (d) => {
+        const token = getTrangThaiToken(d.trang_thai);
+        return d.trang_thai ? (
+          <Badge variant="secondary" className={cn("font-medium gap-1.5", token?.class)}>
+            {token?.kyHieu && <span className="text-[10px]">{token.kyHieu}</span>}
+            {d.trang_thai}
+          </Badge>
+        ) : <span className="text-muted-foreground">—</span>;
+      },
     },
     {
       key: "capphat", label: "Cấp phát", group: "Thành phần hệ thống · Trạng thái", filter: "cat",
@@ -676,8 +683,24 @@ function DanhMucThietBiPage() {
     { key: "namsx", label: "Năm sản xuất", group: "Tài sản vật lý · Vòng đời", align: "right", filter: "text", value: (d) => num(d._namSanXuat), defaultHidden: true },
     { key: "namkt", label: "Năm khai thác", group: "Tài sản vật lý · Vòng đời", align: "right", filter: "text", value: (d) => num(d._namKhaiThac), defaultHidden: true },
     {
-      key: "tuoitho", label: "Tỷ lệ tuổi thọ (%)", group: "Tài sản vật lý · Vòng đời", align: "right",
-      value: (d) => num(d._tyLeTuoiTho), sortValue: (d) => d._tyLeTuoiTho ?? -1, defaultHidden: true,
+      key: "tuoitho", label: "Tuổi thọ", group: "Tài sản vật lý · Vòng đời", align: "left" as const, minW: "min-w-[140px]",
+      value: (d) => num(d._tyLeTuoiTho), 
+      sortValue: (d) => d._tyLeTuoiTho ?? -1,
+      cell: (d) => {
+        const pct = d._tyLeTuoiTho;
+        if (pct == null) return <span className="text-muted-foreground">—</span>;
+        const color = pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-500" : "bg-emerald-500";
+        return (
+          <div className="flex w-full flex-col gap-1">
+            <div className="flex justify-between text-[10px] font-medium text-muted-foreground">
+              <span className="flex items-center gap-0.5"><Timer className="h-2.5 w-2.5" /> {pct}%</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div className={cn("h-full transition-all", color)} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        );
+      }
     },
     { key: "ngaymua", label: "Ngày mua", group: "Tài sản vật lý · Vòng đời", minW: "min-w-[120px]", filter: "text", value: (d) => d.ngay_mua, defaultHidden: true },
     { key: "baohanh", label: "Hạn bảo hành", group: "Tài sản vật lý · Vòng đời", minW: "min-w-[120px]", filter: "text", value: (d) => d.han_bao_hanh, defaultHidden: true },
