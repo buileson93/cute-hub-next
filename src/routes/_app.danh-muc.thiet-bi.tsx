@@ -16,8 +16,9 @@ import { useCallback, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2,
+  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2, ShieldCheck,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
