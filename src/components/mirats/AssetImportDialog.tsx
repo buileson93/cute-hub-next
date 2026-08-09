@@ -77,7 +77,7 @@ export function AssetImportDialog({
         ten_thiet_bi: row.ten_thiet_bi,
         ma_serial: row.ma_serial || null,
         model_id: row.model_id || null,
-        loai_thiet_bi_id: row.loai_thiet_bi_id || null, // Phải là ID của "Máy tính/Laptop"
+        loai_thiet_bi_id: row.loai_thiet_bi_id || null, // Phải là ID của "Máy tính (Laptop/PC)"
         nhan_vien_id: row.nhan_vien_id || null,
         don_vi_id: row.don_vi_id || null,
         trang_thai_cap_phat: row.nhan_vien_id ? "da_cap_phat" : "san_sang",
@@ -89,7 +89,7 @@ export function AssetImportDialog({
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["thiet_bi"] });
-      qc.invalidateQueries({ queryKey: ["stats", "laptop-employee"] });
+      qc.invalidateQueries({ queryKey: ["stats", "may-tinh-employee"] });
       toast.success(`Đã nhập thành công ${previewData.length} tài sản`);
       onOpenChange(false);
       reset();
