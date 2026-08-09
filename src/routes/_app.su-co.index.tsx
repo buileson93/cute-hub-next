@@ -484,7 +484,7 @@ function SuCoPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }} className="font-mono text-xs text-primary hover:underline">{s.ma_su_co}</Link>
-                      <Badge variant="secondary" className={mucColor[s.muc_do] ?? ""}>{s.muc_do}</Badge>
+                      <Badge variant="secondary" className={getMucDoSuCoToken(s.muc_do)?.class}>{s.muc_do}</Badge>
                       <span className="text-xs text-muted-foreground">Khắc phục: {(s.thoi_diem_khac_phuc ?? "").replace("T", " ")}</span>
                     </div>
                     <div className="mt-1 truncate text-sm font-medium">{s.hien_tuong}</div>
