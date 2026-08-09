@@ -6,7 +6,7 @@ const saveSchema = z.object({
   ma: z.string(),
   ten: z.string().nullable(),
   du_lieu: z.record(z.any().nullable()).nullable(),
-});
+}, { description: "Schema for saving node" });
 
 const reorderSchema = z.object({
   parentKind: z.string(),
