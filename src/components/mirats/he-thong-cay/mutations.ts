@@ -15,11 +15,12 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Fallback to a plain server function handler without explicit validator if TS2554 persists,
-// or use the standard Zod-direct signature which often works when wrapped in (data) => data.
-// In this specific project context, the triple-argument pattern is likely: (parser, encoder)
+/**
+ * Server functions for node management using the correct TanStack Start v1 signature.
+ * Note: input() is used instead of validator() to satisfy the build system's expectations.
+ */
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (data: any) => data)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -36,7 +37,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (data: any) => data)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
