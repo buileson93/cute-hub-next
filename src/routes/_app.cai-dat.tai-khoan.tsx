@@ -225,7 +225,6 @@ function AccountPage() {
         <DisplayDensityCard />
 
         <PasskeyManager />
-      </div>
     </div>
   );
 }
