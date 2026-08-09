@@ -15,9 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator() with a standard Zod schema to satisfy the build system's expectation.
+// Trong TanStack Start v1, .validator() có thể yêu cầu hàm decode/encode làm đối số thứ 2 và 3
+// signature: .validator(parser: (input: any) => T, encoder: (input: T) => any)
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data), (data) => data)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -34,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data), (data) => data)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
