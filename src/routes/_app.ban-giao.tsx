@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
-import { getLoaiBanGiaoToken } from "@/lib/mirats/ui/status-tokens";
+import { getLoaiBanGiaoToken, LOAI_BAN_GIAO_TOKEN } from "@/lib/mirats/ui/status-tokens";
+
 
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
