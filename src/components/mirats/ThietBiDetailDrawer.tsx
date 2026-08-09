@@ -298,7 +298,11 @@ export function ThietBiDetailDrawer({
               {/* ── LỚP 2: Thành phần hệ thống (vai trò đang đảm nhận) ── */}
               <ThanhPhanSection device={device} />
 
+              {/* ── Khả năng thay thế tương thích ── */}
+              <TuongThichSection deviceId={device.id} />
+
               {/* ── LỚP 3: Hệ thống (ngữ cảnh cấp cao) ── */}
+
               {device._htId && (
                 <section className="space-y-2">
                   <LayerSectionHeader layer="ht" />
