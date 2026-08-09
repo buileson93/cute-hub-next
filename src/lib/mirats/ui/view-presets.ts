@@ -14,7 +14,7 @@ export type ViewPreset = {
   ten: string;
   moTa: string;
   cot: string[]; // thứ tự + tập cột hiển thị
-  sapXep?: { key: string; huong: "asc" | "desc" };
+  sapXep?: { key: string; dir: "asc" | "desc" };
   filterMacDinh?: Record<string, string | string[]>;
 };
 
@@ -24,14 +24,14 @@ export const THIET_BI_PRESETS: ViewPreset[] = [
     ten: "Cơ bản",
     moTa: "6 cột cốt lõi: Tên, Serial, Model, Trạng thái, Hệ thống, Vị trí",
     cot: ["ten", "ma_serial", "model", "trang_thai", "he_thong", "vi_tri"],
-    sapXep: { key: "ten", huong: "asc" },
+    sapXep: { key: "ten", dir: "asc" },
   },
   {
     id: "vong-doi",
     ten: "Vòng đời",
     moTa: "Thông tin mua sắm, bảo hành, tuổi thọ và khai thác",
     cot: ["ten", "ma_serial", "ngay_mua", "han_bao_hanh", "ty_le_tuoi_tho", "trang_thai"],
-    sapXep: { key: "han_bao_hanh", huong: "asc" },
+    sapXep: { key: "han_bao_hanh", dir: "asc" },
   },
   {
     id: "cap-phat",
