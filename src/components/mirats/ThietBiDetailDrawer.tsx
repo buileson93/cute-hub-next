@@ -7,8 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   HardDrive, Package, PackagePlus, PackageMinus, PackageOpen,
-  ExternalLink, History, Pencil,
+  ExternalLink, History, Pencil, ShieldCheck,
 } from "lucide-react";
+
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet";
