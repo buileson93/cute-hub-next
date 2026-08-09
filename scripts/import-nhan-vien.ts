@@ -1,4 +1,4 @@
-import { supabase } from "../src/integrations/backend/client";
+import { supabaseAdmin } from "../src/integrations/backend/client.server";
 import { readFileSync } from "fs";
 import * as xlsx from "xlsx";
 
@@ -15,7 +15,6 @@ async function importEmployees() {
   const employees = [];
   let currentDonVi = "Công ty";
 
-  // Data starts from index 7
   for (let i = 7; i < rows.length; i++) {
     const row = rows[i];
     const stt = row[0];
@@ -31,14 +30,10 @@ async function importEmployees() {
       continue;
     }
 
-    // Clean phone number
     let phone = sdt ? String(sdt).trim() : null;
-    
-    // Parse date
     let dob = null;
     if (dobRaw) {
       if (typeof dobRaw === 'number') {
-        // Excel serial date
         const d = new Date((dobRaw - 25569) * 86400 * 1000);
         dob = d.toISOString().split('T')[0];
       } else {
@@ -62,16 +57,16 @@ async function importEmployees() {
 
   console.log(`Prepared ${employees.length} employees to import.`);
 
-  // Batch insert in chunks of 50
   const chunkSize = 50;
   for (let i = 0; i < employees.length; i += chunkSize) {
     const chunk = employees.slice(i, i + chunkSize);
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from("nhan_vien")
       .upsert(chunk, { onConflict: "ma_nhan_vien" });
     
     if (error) {
       console.error(`Error importing chunk starting at ${i}:`, error.message);
+      break;
     } else {
       console.log(`Imported chunk ${i / chunkSize + 1}`);
     }
