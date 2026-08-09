@@ -15,13 +15,9 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator(schema, encoder) with explicit typing to satisfy the 2nd argument requirement.
-// The encoder is required by this project's TanStack Start configuration for client->server serialization.
+// Use .validator() with a standard Zod schema to satisfy the build system's expectation.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(
-    (data: unknown) => saveSchema.parse(data),
-    (data: z.infer<typeof saveSchema>) => data
-  )
+  .validator(saveSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -38,10 +34,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(
-    (data: unknown) => reorderSchema.parse(data),
-    (data: z.infer<typeof reorderSchema>) => data
-  )
+  .validator(reorderSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
