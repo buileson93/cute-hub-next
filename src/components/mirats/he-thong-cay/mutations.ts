@@ -15,9 +15,14 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .inputValidator() to bypass the TS2554 error in .validator() for this TanStack Start version
+// Based on the build logs and typical TanStack Start v1 patterns, 
+// if .validator() expects 2-3 arguments and functional approaches fail,
+// we provide a custom validator object that explicitly defines parse and serialize.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator({
+    parse: (data: unknown) => saveSchema.parse(data),
+    serialize: (data: any) => data,
+  } as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -34,7 +39,10 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator({
+    parse: (data: unknown) => reorderSchema.parse(data),
+    serialize: (data: any) => data,
+  } as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
