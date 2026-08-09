@@ -13,7 +13,7 @@
 // ============================================================================
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Filter, SlidersHorizontal, GripVertical, ArrowLeftRight, ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
+import { Filter, SlidersHorizontal, GripVertical, ArrowLeftRight, ArrowUp, ArrowDown, ChevronsUpDown, RotateCcw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useColumnWidths } from "@/lib/mirats/use-column-widths";
 import { tongSoTrang } from "@/lib/mirats/ui/list-controls";
 import type { UseListControlsReturn } from "@/lib/mirats/ui/use-list-controls";
+import type { ViewPreset } from "@/lib/mirats/ui/view-presets";
 import { cn } from "@/lib/utils";
 
 
@@ -144,6 +145,8 @@ type Props<T> = {
   };
   /** Tự căn độ rộng cột theo nội dung (auto-fit). */
   autoFit?: boolean;
+  /** Danh sách các khung nhìn (View Presets) có sẵn. */
+  presets?: ViewPreset[];
 };
 
 
@@ -158,7 +161,7 @@ export function StandardTable<T>({
   maxHeightClass = "h-[calc(100vh-16rem)] min-h-[320px]", rowClassName, countUnit = "dòng",
   requireFilterToShow = true, selectable = false, bulkActions, exportName, hideExport = false,
   trangThai, emptyContent, loadingContent, errorContent, pagination, clientPagination,
-  autoFit = false,
+  autoFit = false, presets,
 }: Props<T>) {
 
   const [internalEdit, setInternalEdit] = useState(false);
@@ -184,8 +187,18 @@ export function StandardTable<T>({
   );
   const colMap = useMemo(() => new Map(columns.map((c) => [c.key, c])), [columns]);
 
-  const { order, hidden, setOrder, toggle, setHidden, reset, isHidden } =
-    useColumnPrefs(tableKey, allKeys, defaultHidden);
+  const {
+    order,
+    hidden,
+    activePreset,
+    isCustomized,
+    setOrder,
+    toggle,
+    setHidden,
+    reset,
+    isHidden,
+    setPreset,
+  } = useColumnPrefs(tableKey, allKeys, defaultHidden);
 
   // Độ rộng cột tuỳ chỉnh (kéo mép phải tiêu đề cột để đổi).
   const { widths: colWidths, setWidth: setColWidth, resetWidth: resetColWidth, resetAll: resetAllWidths, MIN_W: MIN_COL_W } =
@@ -325,6 +338,16 @@ export function StandardTable<T>({
 
   // ---- Sắp xếp theo cột (bấm tiêu đề để đổi asc/desc/tắt) ----
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
+
+  // Khi chọn preset, nếu preset có sort mặc định thì áp dụng
+  const handleSetPreset = useCallback((p: ViewPreset) => {
+    const visibleKeys = p.id === "day-du" ? allKeys : p.cot;
+    setPreset(p.id, visibleKeys);
+    if (p.sapXep) {
+      setSort(p.sapXep);
+    }
+  }, [allKeys, setPreset]);
+
   const sortableKey = useCallback((c: StdColumn<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
   const cycleSort = useCallback((key: string) => setSort((prev) => {
     if (!prev || prev.key !== key) return { key, dir: "asc" };
