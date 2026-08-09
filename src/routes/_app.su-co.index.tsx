@@ -416,10 +416,10 @@ function SuCoPage() {
       {/* Dải thống kê gọn */}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
         <Stat icon={AlertTriangle} label="Sự cố" value={stats.total} />
-        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600" />
-        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600" />
-        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600" />
-        <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600" />
+        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
+        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600 dark:text-red-400" />
+        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
+        <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600 dark:text-sky-400" />
         <div className="ml-auto">
           <Select value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
             <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
