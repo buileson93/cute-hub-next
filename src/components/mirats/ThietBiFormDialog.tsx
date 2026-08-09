@@ -278,7 +278,23 @@ export function ThietBiFormDialog({
           .update(payload as never)
           .eq("id", device.id);
         if (error) throw error;
+
+        // Sync bảng liên kết: Xoá cũ, thêm mới
+        const { error: errDel } = await supabase
+          .from("thiet_bi_he_thong_tuong_thich")
+          .delete()
+          .eq("thiet_bi_id", device.id);
+        if (errDel) console.error("Xoá tương thích cũ lỗi:", errDel);
+
+        if (items.length > 0) {
+          const { error: errIns } = await supabase
+            .from("thiet_bi_he_thong_tuong_thich")
+            .insert(items.map(it => ({ ...it, thiet_bi_id: device.id })));
+          if (errIns) toast.error("Không cập nhật được thông tin hệ thống tương thích");
+        }
+
         return device.ma_thiet_bi;
+
       }
     },
     onSuccess: (ma) => {
