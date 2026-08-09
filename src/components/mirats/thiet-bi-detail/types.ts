@@ -25,4 +25,5 @@ export interface DeviceDetailTabProps {
   hongHoc: any[];
   banGiao: any[];
   changeEvents: any[];
+  pct: number | null;
 }
