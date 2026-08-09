@@ -24,6 +24,7 @@ const formSchema = z.object({
   model_id: z.string().optional(),
   trang_thai_id: z.string().optional(),
   he_thong_id: z.string().optional(),
+  nhan_vien_id: z.string().optional(),
   nam_san_xuat: z
     .number()
     .int()
@@ -32,21 +33,23 @@ const formSchema = z.object({
     .optional(),
   ghi_chu: z.string().trim().max(2000, "Ghi chú tối đa 2000 ký tự").optional(),
 });
+
 type FormValues = z.infer<typeof formSchema>;
 
-type OptTable = "dm_loai_thiet_bi" | "dm_model" | "dm_trang_thai_thiet_bi" | "dm_he_thong";
+type OptTable = "dm_loai_thiet_bi" | "dm_model" | "dm_trang_thai_thiet_bi" | "dm_he_thong" | "nhan_vien";
 
 function loadOpts(table: OptTable) {
   return {
     queryKey: ["tb-form-options", table] as unknown[],
     queryFn: async (): Promise<SchemaOption[]> => {
-      const { data, error } = await supabase.from(table).select("id, ten, ma").order("ten");
+      const select = table === "nhan_vien" ? "id, ho_ten, ma_nhan_vien" : "id, ten, ma";
+      const { data, error } = await supabase.from(table).select(select).order(table === "nhan_vien" ? "ho_ten" : "ten");
       if (error) throw error;
       return (data ?? []).map((r) => {
-        const row = r as { id: string; ten: string; ma?: string | null };
-        return {
-          value: row.id,
-          label: row.ma ? `${row.ten} · ${row.ma}` : row.ten,
+        const row = r as { id: string; ten?: string; ma?: string | null; ho_ten?: string; ma_nhan_vien?: string | null };
+        const label = row.ho_ten ? (row.ma_nhan_vien ? `${row.ho_ten} · ${row.ma_nhan_vien}` : row.ho_ten)
+          : (row.ma ? `${row.ten} · ${row.ma}` : row.ten!);
+
         };
       });
     },
@@ -72,11 +75,14 @@ export function ThietBiFormDialog({
   useQuery(loadOpts("dm_model"));
   useQuery(loadOpts("dm_trang_thai_thiet_bi"));
   useQuery(loadOpts("dm_he_thong"));
+  useQuery(loadOpts("nhan_vien"));
 
   const extra = (device ?? null) as unknown as {
     trang_thai_id?: string | null;
+    nhan_vien_id?: string | null;
     ghi_chu?: string | null;
   } | null;
+
 
   const defaultValues = useMemo<Partial<FormValues>>(
     () => ({
@@ -86,8 +92,10 @@ export function ThietBiFormDialog({
       model_id: device?._modelId ?? "",
       trang_thai_id: extra?.trang_thai_id ?? "",
       he_thong_id: device?._htId ?? "",
+      nhan_vien_id: extra?.nhan_vien_id ?? "",
       nam_san_xuat: device?._namSanXuat ?? undefined,
       ghi_chu: extra?.ghi_chu ?? "",
+
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [device, open],
@@ -139,7 +147,15 @@ export function ThietBiFormDialog({
         loadOptions: loadOpts("dm_he_thong"),
       },
       {
+        key: "nhan_vien_id",
+        type: "combobox",
+        label: "Người sử dụng / quản lý",
+        placeholder: "Chọn nhân viên...",
+        loadOptions: loadOpts("nhan_vien"),
+      },
+      {
         key: "nam_san_xuat",
+
         type: "number",
         label: "Năm sản xuất",
         placeholder: "2024",
@@ -192,8 +208,10 @@ export function ThietBiFormDialog({
         model_id: d.model_id || null,
         trang_thai_id: d.trang_thai_id || null,
         he_thong_id: d.he_thong_id || null,
+        nhan_vien_id: d.nhan_vien_id || null,
         nam_san_xuat: d.nam_san_xuat ?? null,
         ghi_chu: d.ghi_chu || null,
+
       };
       if (mode === "create") {
         const genCode = () => {
