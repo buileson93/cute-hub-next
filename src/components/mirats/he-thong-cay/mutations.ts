@@ -15,10 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Using .validator() with a single-function signature that correctly types the input.
-// This approach avoids the TS2554 error by providing the expected function type.
+// Trong TanStack Start v1, .validator() yêu cầu 2 đối số (parser và encoder) khi dùng hàm tùy chỉnh.
+// Đối số thứ 2 thường là (data: T) => any để serialize dữ liệu từ client sang server.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown): z.infer<typeof saveSchema> => saveSchema.parse(data))
+  .validator((data: unknown) => saveSchema.parse(data), (d) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown): z.infer<typeof reorderSchema> => reorderSchema.parse(data))
+  .validator((data: unknown) => reorderSchema.parse(data), (d) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
