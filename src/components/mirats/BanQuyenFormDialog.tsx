@@ -1,14 +1,22 @@
 // ============================================================================
 // BanQuyenFormDialog — thêm/sửa một bản quyền phần mềm (phan_mem_ban_quyen).
 // Dùng SchemaDialog để đồng bộ UX với các form khác trong hệ thống.
+// Giai đoạn nâng cấp: Cho phép cấp phát ngay khi tạo mới bản quyền.
 // ============================================================================
-import { useMemo } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState, useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
+import { Laptop, Calendar, User, Info, X } from "lucide-react";
 import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/mirats/SchemaDialog";
 import { supabase } from "@/integrations/backend/client";
 import type { BanQuyenRow } from "@/lib/mirats/ban-quyen";
+import { useSession } from "@/hooks/use-session";
+import { Combobox } from "@/components/mirats/Combobox";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 const schema = z.object({
   ma_ban_quyen: z.string().trim().max(60).optional(),
@@ -53,7 +61,51 @@ export function BanQuyenFormDialog({
   row?: BanQuyenRow | null;
 }) {
   const qc = useQueryClient();
+  const { session, profile } = useSession();
   const mode = row ? "edit" : "create";
+
+  // State cho việc cấp phát ngay khi tạo mới
+  const [assignDevices, setAssignDevices] = useState<string[]>([]);
+  const [assignSearch, setAssignSearch] = useState("");
+  const [assignDate, setAssignDate] = useState(new Date().toISOString().slice(0, 10));
+  const [assigner, setAssigner] = useState("");
+
+  // Tự động điền người cài từ profile
+  useEffect(() => {
+    if (open && profile?.ho_ten) {
+      setAssigner(profile.ho_ten);
+    }
+    if (!open) {
+      setAssignDevices([]);
+      setAssignSearch("");
+    }
+  }, [open, profile]);
+
+  // Query lấy danh sách máy tính cho Combobox
+  const { data: tbOptions = [], isLoading: loadingTb } = useQuery({
+    queryKey: ["ban_quyen", "thiet-bi-options", assignSearch],
+    queryFn: async () => {
+      let query = supabase
+        .from("thiet_bi")
+        .select("id, ma_thiet_bi, ten_thiet_bi, dm_loai_thiet_bi!inner(ten, la_may_tinh)")
+        .eq("dm_loai_thiet_bi.la_may_tinh", true)
+        .order("ten_thiet_bi")
+        .limit(50);
+
+      if (assignSearch) {
+        query = query.or(`ten_thiet_bi.ilike.%${assignSearch}%,ma_thiet_bi.ilike.%${assignSearch}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      
+      return (data ?? []).map((r) => ({
+        value: r.id,
+        label: `${r.ten_thiet_bi ?? r.ma_thiet_bi} · ${r.ma_thiet_bi}`,
+      }));
+    },
+    enabled: open && mode === "create",
+  });
 
   const defaultValues = useMemo<Partial<Values>>(
     () => ({
@@ -136,32 +188,66 @@ export function BanQuyenFormDialog({
         nha_cung_cap_id: v.nha_cung_cap_id || null,
         ghi_chu: v.ghi_chu || null,
       };
+
       if (row) {
         const { error } = await supabase.from("phan_mem_ban_quyen").update(payload).eq("id", row.id);
         if (error) throw error;
-        await import("@/lib/mirats/ban-quyen-detail").then(m => 
-          m.logBanQuyenAudit(row.id, "UPDATE", `Cập nhật thông tin bản quyền ${v.ten_phan_mem}`)
+        await import("@/lib/mirats/ban-quyen-detail").then((m) =>
+          m.logBanQuyenAudit(row.id, "UPDATE", `Cập nhật thông tin bản quyền ${v.ten_phan_mem}`),
         );
       } else {
-        const { data, error } = await supabase.from("phan_mem_ban_quyen").insert(payload).select("id").single();
-        if (error) throw error;
-        if (data) {
-          await import("@/lib/mirats/ban-quyen-detail").then(m => 
-            m.logBanQuyenAudit(data.id, "CREATE", `Tạo mới bản quyền ${v.ten_phan_mem}`)
+        // Tạo mới bản quyền
+        const { data: bq, error: bqErr } = await supabase
+          .from("phan_mem_ban_quyen")
+          .insert(payload)
+          .select("id, ten_phan_mem")
+          .single();
+        if (bqErr) throw bqErr;
+
+        if (bq) {
+          await import("@/lib/mirats/ban-quyen-detail").then((m) =>
+            m.logBanQuyenAudit(bq.id, "CREATE", `Tạo mới bản quyền ${v.ten_phan_mem}`),
           );
+
+          // Cấp phát ngay nếu có chọn thiết bị
+          if (assignDevices.length > 0) {
+            const capPhatRows = assignDevices.map((tbId) => ({
+              ban_quyen_id: bq.id,
+              thiet_bi_id: tbId,
+              ngay_cai_dat: assignDate,
+              nguoi_cai: assigner || null,
+            }));
+
+            const { error: cpErr } = await supabase.from("phan_mem_ban_quyen_cap_phat").insert(capPhatRows);
+            if (cpErr) {
+              // Nếu lỗi cấp phát (vd: hết ghế), ta vẫn giữ bản quyền nhưng báo lỗi
+              toast.error(`Bản quyền đã tạo nhưng không thể cấp phát: ${cpErr.message}`);
+            } else {
+              // Ghi audit cho từng máy
+              const m = await import("@/lib/mirats/ban-quyen-detail");
+              for (const tbId of assignDevices) {
+                await m.logBanQuyenAudit(bq.id, "ASSIGN", `Cấp phát ngay khi tạo mới cho thiết bị ID: ${tbId}`);
+              }
+              toast.success(`Đã tạo bản quyền và cấp phát cho ${assignDevices.length} máy`);
+            }
+          }
         }
       }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ban_quyen"] });
       qc.invalidateQueries({ queryKey: ["ban_quyen", "detail"] });
-      toast.success(mode === "create" ? "Đã thêm bản quyền" : "Đã cập nhật bản quyền");
+      qc.invalidateQueries({ queryKey: ["ban_quyen", "cap-phat-list-unified"] });
+      if (mode === "edit" || assignDevices.length === 0) {
+        toast.success(mode === "create" ? "Đã thêm bản quyền" : "Đã cập nhật bản quyền");
+      }
       onOpenChange(false);
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không lưu được bản quyền"),
   });
 
   if (!open) return null;
+
   return (
     <SchemaDialog<Values>
       open={open}
@@ -174,8 +260,98 @@ export function BanQuyenFormDialog({
       submitLabel={mode === "create" ? "Thêm bản quyền" : "Lưu thay đổi"}
       maxWidth="2xl"
       onSubmit={async (v) => {
+        // Cảnh báo sớm nếu số máy chọn > số ghế
+        if (v.so_ghe != null && assignDevices.length > v.so_ghe) {
+          toast.error(`Số máy chọn (${assignDevices.length}) vượt quá số ghế cho phép (${v.so_ghe})`);
+          return;
+        }
         await save.mutateAsync(v);
       }}
+      disableSubmitWhenInvalid={false} // Cho phép submit để hiện lỗi Zod nếu có
+      footerExtra={
+        mode === "create" && (
+          <div className="mt-6 space-y-4 border-t pt-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <Laptop className="h-4 w-4" />
+              Cấp phát ngay (tuỳ chọn)
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs">Chọn thiết bị (Máy tính/Máy chủ)</Label>
+                <Combobox
+                  options={tbOptions}
+                  loading={loadingTb}
+                  onSearchChange={setAssignSearch}
+                  value=""
+                  onChange={(val) => {
+                    if (val && !assignDevices.includes(val)) {
+                      setAssignDevices((prev) => [...prev, val]);
+                    }
+                  }}
+                  placeholder="Tìm và thêm máy tính..."
+                />
+                {assignDevices.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {assignDevices.map((id) => {
+                      const opt = tbOptions.find((o) => o.value === id);
+                      return (
+                        <Badge key={id} variant="secondary" className="gap-1 pr-1">
+                          {opt?.label?.split(" · ")[0] ?? id}
+                          <button
+                            type="button"
+                            onClick={() => setAssignDevices((prev) => prev.filter((x) => x !== id))}
+                            className="rounded-full p-0.5 hover:bg-muted"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs">Người cài đặt</Label>
+                  <div className="relative">
+                    <User className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      className="pl-9"
+                      value={assigner}
+                      onChange={(e) => setAssigner(e.target.value)}
+                      placeholder="Họ tên người cài..."
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Ngày cài đặt</Label>
+                  <div className="relative">
+                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="date"
+                      className="pl-9"
+                      value={assignDate}
+                      onChange={(e) => setAssignDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+              <div className="flex items-start gap-2">
+                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                <p>
+                  Bản quyền sẽ được tạo trước, sau đó hệ thống sẽ tự động gán vào các máy tính đã chọn. 
+                  Nếu số máy vượt quá "Số ghế", hệ thống sẽ báo lỗi khi lưu.
+                </p>
+              </div>
+            </div>
+          </div>
+        )
+      }
     />
   );
 }
