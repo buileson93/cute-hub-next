@@ -369,7 +369,8 @@ function TuoiThoPage() {
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
                   const token = getXepLoaiHealthToken(r.h.xepLoai);
-                  return <Badge variant="outline" className={cn(token?.class, "font-mono")}>{r.h.xepLoai}</Badge>;
+                  return <Badge variant="outline" className={cn(token?.class, "font-mono border")}>{r.h.xepLoai}</Badge>;
+
 
                 },
               },
@@ -427,7 +428,7 @@ function TuoiThoPage() {
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
                   const token = getXepLoaiHealthToken(r.h.xepLoai);
-                  return <Badge variant="outline" className={cn(token?.class, "font-mono")}>{r.h.xepLoai}</Badge>;
+                  return <Badge variant="outline" className={cn(token?.class, "font-mono border")}>{r.h.xepLoai}</Badge>;
 
                 },
               },

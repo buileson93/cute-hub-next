@@ -401,9 +401,10 @@ function ThietBiPage() {
                               <span className="min-w-0 flex-1 truncate">{tbName(d)}</span>
                             </div>
                           </div>
-                          <Badge variant="outline" className={cn("shrink-0", getTrangThaiToken(d.trang_thai)?.class)}>
+                          <Badge variant="outline" className={cn("shrink-0 border", getTrangThaiToken(d.trang_thai)?.class)}>
                             {d.trang_thai}
                           </Badge>
+
                           {d._htTen && (
                             <Badge variant="outline" className="shrink-0 gap-1 border-primary/30 text-primary" title="Hệ thống">
                               <Network className="h-3 w-3" />
