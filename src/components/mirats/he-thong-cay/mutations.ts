@@ -5,7 +5,7 @@ const saveSchema = z.object({
   kind: z.string(),
   ma: z.string(),
   ten: z.string().nullable(),
-  du_lieu: z.record(z.any().nullable()).nullable(),
+  du_lieu: z.record(z.any().nullable()).nullable() as any,
 });
 
 const reorderSchema = z.object({
