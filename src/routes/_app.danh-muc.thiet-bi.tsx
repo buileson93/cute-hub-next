@@ -102,7 +102,9 @@ export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
       : undefined;
     const standalone = s.standalone === true || s.standalone === "true" ? true : undefined;
     const retired = s.retired === true || s.retired === "true" ? true : undefined;
-    return { q, loai, tt, tags, mode, standalone, retired };
+    const compatibleSystem = typeof s.compatibleSystem === "string" && s.compatibleSystem ? s.compatibleSystem : undefined;
+    return { q, loai, tt, tags, mode, standalone, retired, compatibleSystem };
+
   },
   head: () => ({
     meta: [
