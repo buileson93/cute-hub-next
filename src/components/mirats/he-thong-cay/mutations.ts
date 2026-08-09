@@ -15,10 +15,9 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Trong TanStack Start v1, .validator() có thể yêu cầu hàm decode/encode làm đối số thứ 2 và 3
-// signature: .validator(parser: (input: any) => T, encoder: (input: T) => any)
+// Use .inputValidator() to bypass the TS2554 error in .validator() for this TanStack Start version
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (data) => data)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +34,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (data) => data)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
