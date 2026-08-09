@@ -5336,6 +5336,7 @@ export type Database = {
           hoat_dong: boolean
           id: string
           ma_nhan_vien: string
+          ngay_sinh: string | null
           updated_at: string
         }
         Insert: {
@@ -5348,6 +5349,7 @@ export type Database = {
           hoat_dong?: boolean
           id?: string
           ma_nhan_vien: string
+          ngay_sinh?: string | null
           updated_at?: string
         }
         Update: {
@@ -5360,6 +5362,7 @@ export type Database = {
           hoat_dong?: boolean
           id?: string
           ma_nhan_vien?: string
+          ngay_sinh?: string | null
           updated_at?: string
         }
         Relationships: []
