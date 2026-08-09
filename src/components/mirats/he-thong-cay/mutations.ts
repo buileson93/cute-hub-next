@@ -15,8 +15,7 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Using a type-safe single argument validator function.
-// If the environment still flags TS2554, we will try provide a second argument for serializing.
+// Use (data: T) => T signature which is standard for single-argument functional validators in TanStack Start v1.
 export const saveNode = createServerFn({ method: "POST" })
   .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
