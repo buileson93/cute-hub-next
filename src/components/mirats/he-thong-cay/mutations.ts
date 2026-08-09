@@ -15,7 +15,7 @@ const reorderSchema = z.object({
 });
 
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((input: any) => saveSchema.parse(input), (d: any) => d)
+  .validator((input: any) => saveSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
@@ -33,7 +33,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((input: any) => reorderSchema.parse(input), (d: any) => d)
+  .validator((input: any) => reorderSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
