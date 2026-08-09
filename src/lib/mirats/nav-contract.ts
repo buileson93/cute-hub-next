@@ -289,6 +289,7 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/danh-muc/dac-tinh": { crumb: "Danh mục", title: "Nhãn tài sản" },
   "/danh-muc/nha-san-xuat": { crumb: "Danh mục", title: "Nhà sản xuất" },
   "/danh-muc/nha-cung-cap": { crumb: "Danh mục", title: "Nhà cung cấp" },
+  "/thong-ke/laptop": { crumb: "Vận hành", title: "Thống kê Laptop & Bản quyền" },
 };
 
 // ---------------------------------------------------------------------------
