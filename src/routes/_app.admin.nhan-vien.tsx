@@ -155,6 +155,17 @@ function NhanVienAdminPage() {
           <Button 
             variant="ghost" 
             size="icon" 
+            title="Xuất báo cáo phần mềm"
+            onClick={() => {
+              // Logic xuất báo cáo cá nhân sẽ được thêm vào đây
+              toast.info(`Đang chuẩn bị báo cáo cho ${row.ho_ten}...`);
+            }}
+          >
+            <Download className="h-4 w-4 text-emerald-600" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
             title="Xem phần mềm"
             onClick={() => setSoftwareSheet({ id: row.id, ten: row.ho_ten })}
           >

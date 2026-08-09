@@ -48,6 +48,7 @@ type LaptopStatsRow = {
 function LaptopStatsPage() {
   const [q, setQ] = useState("");
   const [unitFilter, setUnitFilter] = useState("all");
+  const [importOpen, setImportOpen] = useState(false);
 
   const { data: stats = [], isLoading } = useQuery({
     queryKey: ["stats", "laptop-employee"],
@@ -231,6 +232,9 @@ function LaptopStatsPage() {
         subtitle="Quản lý chi tiết tình trạng cấp phát thiết bị và phần mềm theo nhân sự"
         actions={
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5 shadow-sm" onClick={() => setImportOpen(true)}>
+              <Upload className="h-4 w-4" /> Nhập Excel
+            </Button>
             <Button variant="outline" size="sm" className="gap-1.5 shadow-sm">
               <Download className="h-4 w-4" /> Xuất Excel
             </Button>
@@ -323,8 +327,13 @@ function LaptopStatsPage() {
           <p className="text-xs text-blue-800 leading-relaxed font-medium">
             Sử dụng chức năng này để rà soát các máy tính laptop chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
           </p>
-        </div>
       </div>
+
+      <AssetImportDialog 
+        open={importOpen} 
+        onOpenChange={setImportOpen} 
+      />
+    </div>
     </div>
   );
 }
