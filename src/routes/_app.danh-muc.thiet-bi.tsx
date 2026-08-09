@@ -9,7 +9,6 @@ import {
   MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, 
   Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
