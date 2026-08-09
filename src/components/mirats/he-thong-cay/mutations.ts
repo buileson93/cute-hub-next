@@ -15,10 +15,11 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Using a wrapper function that provides the signature TanStack Start v1 expects.
-// If .validator() fails with TS2554, it means the build system requires specific arguments.
+// Trong TanStack Start v1, nếu .validator() báo lỗi TS2554 và không nhận 1 đối số (parser) lẫn 2 đối số (parser, encoder),
+// ta sử dụng signature validator(schema) nhưng có thể cần truyền thêm encoder/decoder làm đối số 2, 3 nếu library yêu cầu.
+// Thử nghiệm signature (schema, undefined, undefined) để thỏa mãn "2-3 arguments".
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator(saveSchema, undefined as any, undefined as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +36,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator(reorderSchema, undefined as any, undefined as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
