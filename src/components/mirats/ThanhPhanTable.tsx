@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download } from "lucide-react";
+import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal } from "lucide-react";
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { StandardTable } from "@/components/mirats/StandardTable";
@@ -23,6 +23,9 @@ import { useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
 import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { BulkActionButton } from "@/components/mirats/BulkActionButton";
 import { TableExportDialog } from "@/components/mirats/TableExportDialog";
+import { THANH_PHAN_PRESETS, type TP_PRESET_ID } from "@/lib/mirats/ui/tp-presets";
+import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
+
 
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
@@ -185,6 +188,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const [internalEditMode, setInternalEditMode] = useState(false);
   const editMode = externalEditMode !== undefined ? externalEditMode : internalEditMode;
   const setEditMode = setInternalEditMode;
+
+
   const navigate = useNavigate();
   const qc = useQueryClient();
   useRealtimeTaxonomy();
@@ -392,8 +397,11 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           countUnit="thành phần"
           maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
           selectable
+          presets={THANH_PHAN_PRESETS}
           bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
             <>
+
+
               <BulkActionButton
                 label="Đặt Hoạt động"
                 icon={<Check className="h-3.5 w-3.5" />}
