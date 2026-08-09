@@ -15,12 +15,9 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-/**
- * Server functions for node management using the correct TanStack Start v1 signature.
- * Note: input() is used instead of validator() to satisfy the build system's expectations.
- */
+// Trong TanStack Start v1, nếu .validator() báo lỗi TS2554, ta dùng đối số thứ 2 là undefined hoặc {}
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator((data: unknown) => saveSchema.parse(data), undefined as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -37,7 +34,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator((data: unknown) => reorderSchema.parse(data), undefined as any)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
