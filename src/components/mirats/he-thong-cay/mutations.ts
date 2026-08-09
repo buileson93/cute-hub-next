@@ -22,7 +22,9 @@ const reorderSchema = z.object({
  * Server function to save node overrides or draft data
  */
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator((data: unknown) => {
+    return saveSchema.parse(data);
+  })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -42,7 +44,9 @@ export const saveNode = createServerFn({ method: "POST" })
  * Server function to save node ordering metadata
  */
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator((data: unknown) => {
+    return reorderSchema.parse(data);
+  })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
