@@ -108,6 +108,35 @@ export const TRANG_THAI_TOKEN = {
   },
 } as const;
 
+/**
+ * MUC_DO_SU_CO_TOKEN: Màu sắc cho mức độ nghiêm trọng của sự cố.
+ */
+export const MUC_DO_SU_CO_TOKEN = {
+  "Nghiêm trọng": { class: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300 border-red-200" },
+  "Cao": { class: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border-orange-200" },
+  "Trung bình": { class: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-200" },
+  "Thấp": { class: "bg-slate-100 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300 border-slate-200" },
+} as const;
+
+/**
+ * LOAI_BAO_TRI_TOKEN: Màu sắc cho các loại hình bảo trì.
+ */
+export const LOAI_BAO_TRI_TOKEN = {
+  "Định kỳ": { class: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300 border-sky-200" },
+  "Đột xuất": { class: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-200" },
+  "Hiệu chuẩn": { class: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300 border-violet-200" },
+  "Nâng cấp": { class: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-200" },
+} as const;
+
+/**
+ * PHUONG_AN_HONG_HOC_TOKEN: Màu sắc cho phương án xử lý hỏng hóc.
+ */
+export const PHUONG_AN_HONG_HOC_TOKEN = {
+  "Sửa chữa": { class: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300 border-sky-200" },
+  "Thay thế": { class: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-200" },
+  "Thanh lý": { class: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300 border-red-200" },
+} as const;
+
 export type TrangThaiMa = keyof typeof TRANG_THAI_TOKEN;
 
 /**
@@ -118,8 +147,33 @@ export function getTrangThaiToken(key: string | null) {
   if (!key) return null;
   const k = key.trim();
   return (TRANG_THAI_TOKEN as any)[k] || {
-    class: "bg-slate-100 text-slate-700",
+    class: "bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400",
     dot: "bg-slate-400",
     kyHieu: "•",
   };
 }
+
+/**
+ * Lấy token giao diện cho mức độ sự cố.
+ */
+export function getMucDoSuCoToken(key: string | null) {
+  if (!key) return null;
+  return (MUC_DO_SU_CO_TOKEN as any)[key.trim()] || { class: "bg-slate-100 text-slate-600" };
+}
+
+/**
+ * Lấy token giao diện cho loại bảo trì.
+ */
+export function getLoaiBaoTriToken(key: string | null) {
+  if (!key) return null;
+  return (LOAI_BAO_TRI_TOKEN as any)[key.trim()] || { class: "bg-slate-100 text-slate-600" };
+}
+
+/**
+ * Lấy token giao diện cho phương án hỏng hóc.
+ */
+export function getPhuongAnHongHocToken(key: string | null) {
+  if (!key) return null;
+  return (PHUONG_AN_HONG_HOC_TOKEN as any)[key.trim()] || { class: "bg-slate-100 text-slate-600" };
+}
+
