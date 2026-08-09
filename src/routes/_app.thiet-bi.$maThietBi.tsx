@@ -201,18 +201,27 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
         suCo,
         hongHoc,
         banGiao,
-        changeEvents: changeEvents.map((ev) => ({
+        changeEvents: (changeEvents || []).map((ev) => ({
           at: ev.at,
           action: ev.action,
           userName: ev.userName,
           changesCount: ev.changes.length,
           changesText: ev.changes
-            .map((c) => `${c.label}: ${formatVal(c.from)} → ${formatVal(c.to)}`)
+            .map((c: any) => `${c.label}: ${formatVal(c.from)} → ${formatVal(c.to)}`)
             .join("; "),
         })),
       }),
     [baoTri, suCo, hongHoc, banGiao, changeEvents],
   );
+
+  const tabProps = {
+    tb, ma, tenTb, refInfo, loaiMau: loaiMau ?? null,
+    sysName, sysGpSo, sysGpHan, vaiTroList,
+    canEdit, canManage, timeline,
+    suCo, baoTri, hongHoc, banGiao,
+    changeEvents, pct
+  };
+
 
   return (
     <div className="space-y-6">
