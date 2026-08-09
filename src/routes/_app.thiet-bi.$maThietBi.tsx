@@ -388,37 +388,4 @@ function LifecyclePanelProxy({ thietBiId }: any) {
       ))}
     </ol>
   );
-}
-
-  const { useLifecycle, useTrangThaiMap } = require("@/lib/mirats/db-smart");
-  const { data: rows = [], isLoading } = useLifecycle(thietBiId);
-  const { data: ttMap } = useTrangThaiMap();
-  const nameOf = (id: string | null) => (id ? ttMap?.get(id) ?? "—" : "—");
-
-  if (isLoading) return <div className="py-8 text-center"><Activity className="h-5 w-5 animate-spin mx-auto" /></div>;
-  if (rows.length === 0) return <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có nhật ký vòng đời.</p>;
-
-  return (
-    <ol className="relative ml-2 border-l border-border pl-6 space-y-6">
-      {rows.map((r: any) => (
-        <li key={r.id} className="relative">
-          <span className="absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full bg-primary ring-4 ring-background">
-            <History className="h-3.5 w-3.5 text-primary-foreground" />
-          </span>
-          <div className="rounded-md border p-3 text-xs bg-card shadow-sm">
-            <div className="text-muted-foreground mb-2">
-              {new Date(r.thoi_diem).toLocaleString("vi-VN")}
-            </div>
-            <div className="flex items-center gap-2 font-medium">
-              <Badge variant="outline" className="text-[10px]">{nameOf(r.tu_trang_thai_id)}</Badge>
-              <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
-              <Badge variant="secondary" className="text-[10px]">{nameOf(r.den_trang_thai_id)}</Badge>
-            </div>
-            {r.ly_do && <div className="mt-2 text-muted-foreground italic">{r.ly_do}</div>}
-          </div>
-        </li>
-      ))}
-    </ol>
-  );
-}
 
