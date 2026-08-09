@@ -556,6 +556,8 @@ function HeThongInner({
                 <TabsTrigger value="hh"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
                 <TabsTrigger value="bg"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
                 <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết hệ thống</TabsTrigger>
+                <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư dự phòng ({tuongThich?.length || 0})</TabsTrigger>
+
                 {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký thay đổi</TabsTrigger>}
               </TabsList>
 
