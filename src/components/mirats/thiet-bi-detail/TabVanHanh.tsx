@@ -68,24 +68,30 @@ export default function TabVanHanh({
 
 function Timeline({ items }: { items: any[] }) {
   return (
-    <div className="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-      {items.map((item, idx) => (
-        <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-100 group-hover:bg-white group-hover:scale-110 transition-all duration-300 z-10">
-             <Clock className="w-4 h-4 text-slate-500" />
-          </div>
-          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border bg-white shadow-sm">
-            <div className="flex items-center justify-between space-x-2 mb-1">
-              <div className="font-bold text-slate-900 text-sm">{item.kind}</div>
-              <time className="font-mono text-[10px] text-indigo-500 font-semibold uppercase">{item.at}</time>
+    <ol className="relative ml-2 border-l border-border pl-6">
+      {items.map((it, i) => {
+        const Icon = it.kind === 'bt' ? Wrench : it.kind === 'sc' ? AlertTriangle : it.kind === 'hh' ? History : ArrowLeftRight;
+        const color = it.kind === 'bt' ? 'bg-emerald-500' : it.kind === 'sc' ? 'bg-red-500' : it.kind === 'hh' ? 'bg-orange-500' : 'bg-sky-500';
+        return (
+          <li key={i} className="relative mb-5 last:mb-0">
+            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${color}`}>
+              <Icon className="h-3.5 w-3.5 text-white" />
+            </span>
+            <div className="rounded-md border p-3 text-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground">{it.at}</span>
+                <Badge variant="outline">{it.kind === 'bt' ? 'Bảo dưỡng' : it.kind === 'sc' ? 'Sự cố' : it.kind === 'hh' ? 'Hỏng hóc' : 'Bàn giao'}</Badge>
+              </div>
+              <div className="mt-1 font-medium">{it.title}</div>
+              {it.desc && <div className="mt-0.5 text-muted-foreground">{it.desc}</div>}
             </div>
-            <div className="text-slate-500 text-xs">{item.desc}</div>
-          </div>
-        </div>
-      ))}
-    </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
+
 
 function EventRow({ title, date, label, desc, tag, tone }: any) {
   return (
