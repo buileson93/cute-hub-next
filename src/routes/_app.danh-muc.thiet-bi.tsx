@@ -872,6 +872,22 @@ function DanhMucThietBiPage() {
                 {ttOptions.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select 
+              value={search.compatibleSystem || "all"} 
+              onValueChange={(v) => patchSearch({ compatibleSystem: v === "all" ? undefined : v })}
+            >
+              <SelectTrigger className="h-9 w-[220px]">
+                <ShieldCheck className="mr-2 h-4 w-4 text-emerald-600" />
+                <SelectValue placeholder="Vật tư tương thích hệ thống" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả (không lọc tương thích)</SelectItem>
+                {(taxo?.htList ?? []).map((h) => (
+                  <SelectItem key={h.id} value={h.id}>{htName(h.id, h.ten)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             {/* Lọc theo Nhãn tài sản (đa trị) — song song với "Chủng loại" (đơn trị). */}
             <Popover>
               <PopoverTrigger asChild>
