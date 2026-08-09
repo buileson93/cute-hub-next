@@ -412,7 +412,29 @@ function DanhMucThietBiPage() {
     [taxo],
   );
 
+  const { data: tuongThichRows } = useQuery({
+    queryKey: ["thiet_bi_he_thong_tuong_thich_all"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("thiet_bi_he_thong_tuong_thich")
+        .select("thiet_bi_id, he_thong_id");
+      if (error) throw error;
+      return data;
+    }
+  });
+  const compatibleMap = useMemo(() => {
+    const m = new Map<string, Set<string>>();
+    for (const r of tuongThichRows ?? []) {
+      const s = m.get(r.thiet_bi_id) ?? new Set();
+      s.add(r.he_thong_id);
+      m.set(r.thiet_bi_id, s);
+    }
+    return m;
+  }, [tuongThichRows]);
+
   const devices = useMemo(() => {
+
     let all = taxo?.devices ?? [];
     if (!scopeAll) all = all.filter((d) => !donViCode || d.don_vi === donViCode);
     if (!showRetired) all = all.filter((d) => !isRetiredStatus(d.trang_thai));
