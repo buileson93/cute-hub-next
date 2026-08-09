@@ -123,6 +123,29 @@ function HeThongInner({
   const [tpOpen, setTpOpen] = useState(true);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
   const [thrOpen, setThrOpen] = useState(false);
+  const { data: tuongThich } = useQuery({
+    queryKey: ["he-thong-tuong-thich", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("thiet_bi_he_thong_tuong_thich")
+        .select(`
+          phan_loai,
+          danh_gia,
+          thiet_bi:thiet_bi_id (
+            id,
+            ma_thiet_bi,
+            ten_thiet_bi,
+            ma_serial,
+            trang_thai:trang_thai_id (ten),
+            model:model_id (ten)
+          )
+        `)
+        .eq("he_thong_id", id);
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const thrKey = `hp-thresholds:${donViMa || "default"}`;
   const [thr, setThr] = useState<{ good: number; ok: number; warn: number }>({ good: 85, ok: 60, warn: 40 });
   useEffect(() => {
