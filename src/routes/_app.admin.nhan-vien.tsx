@@ -1,14 +1,13 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Users, Plus, Search, Pencil, Trash2, Mail, Phone, Building2, UserCircle, Calendar } from "lucide-react";
+import { Users, Plus, Search, Pencil, Trash2, Mail, Phone, UserCircle } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { StandardTable } from "@/components/mirats/StandardTable";
+import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { SchemaDialog, type SchemaField } from "@/components/mirats/SchemaDialog";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
@@ -36,6 +35,7 @@ const schema = z.object({
 });
 
 type Values = z.infer<typeof schema>;
+type NhanVien = any; // Will use proper typing from database
 
 function NhanVienAdminPage() {
   const { roles } = useSession();
@@ -99,6 +99,70 @@ function NhanVienAdminPage() {
     { key: "hoat_dong", type: "switch", label: "Đang làm việc" },
   ];
 
+  const columns: StdColumn<NhanVien>[] = [
+    {
+      key: "ho_ten",
+      label: "Họ tên",
+      cell: (row) => (
+        <div className="flex items-center gap-2">
+          <UserCircle className="h-8 w-8 text-muted-foreground/50" />
+          <div>
+            <div className="font-medium">{row.ho_ten}</div>
+            <div className="text-xs text-muted-foreground">{row.ma_nhan_vien}</div>
+          </div>
+        </div>
+      ),
+      sortable: true,
+    },
+    { key: "don_vi", label: "Đơn vị", filter: "cat", sortable: true },
+    { key: "chuc_vu", label: "Chức vụ", filter: "cat", sortable: true },
+    {
+      key: "email",
+      label: "Liên lạc",
+      cell: (row) => (
+        <div className="space-y-1 text-xs">
+          {row.email && (
+            <div className="flex items-center gap-1.5">
+              <Mail className="h-3 w-3" /> {row.email}
+            </div>
+          )}
+          {row.dien_thoai && (
+            <div className="flex items-center gap-1.5">
+              <Phone className="h-3 w-3" /> {row.dien_thoai}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "hoat_dong",
+      label: "Trạng thái",
+      cell: (row) => (
+        <div className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${row.hoat_dong ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          {row.hoat_dong ? "Đang làm việc" : "Nghỉ việc"}
+        </div>
+      ),
+      filter: "cat",
+    },
+    {
+      key: "actions",
+      label: "",
+      align: "right",
+      cell: (row) => (
+        <div className="flex justify-end gap-1">
+          <Button variant="ghost" size="icon" onClick={() => setEditing(row)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="text-destructive" onClick={() => {
+            if (confirm(`Xoá nhân viên ${row.ho_ten}?`)) deleteMut.mutate(row.id);
+          }}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   if (!isAdmin) return <div className="p-8 text-center text-muted-foreground">Bạn không có quyền quản trị viên.</div>;
 
   return (
@@ -118,7 +182,7 @@ function NhanVienAdminPage() {
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm theo tên, mã, đơn vị..."
+            placeholder="Tìm nhanh theo tên, mã..."
             className="pl-9"
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -127,69 +191,12 @@ function NhanVienAdminPage() {
       </div>
 
       <StandardTable
-        data={nhanVien}
-        isLoading={isLoading}
-        columns={[
-          {
-            key: "ho_ten",
-            header: "Họ tên",
-            render: (v, row) => (
-              <div className="flex items-center gap-2">
-                <UserCircle className="h-8 w-8 text-muted-foreground/50" />
-                <div>
-                  <div className="font-medium">{v}</div>
-                  <div className="text-xs text-muted-foreground">{row.ma_nhan_vien}</div>
-                </div>
-              </div>
-            ),
-          },
-          { key: "don_vi", header: "Đơn vị" },
-          { key: "chuc_vu", header: "Chức vụ" },
-          {
-            key: "email",
-            header: "Liên lạc",
-            render: (v, row) => (
-              <div className="space-y-1 text-xs">
-                {v && (
-                  <div className="flex items-center gap-1.5">
-                    <Mail className="h-3 w-3" /> {v}
-                  </div>
-                )}
-                {row.dien_thoai && (
-                  <div className="flex items-center gap-1.5">
-                    <Phone className="h-3 w-3" /> {row.dien_thoai}
-                  </div>
-                )}
-              </div>
-            ),
-          },
-          {
-            key: "hoat_dong",
-            header: "Trạng thái",
-            render: (v) => (
-              <div className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${v ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {v ? "Đang làm việc" : "Nghỉ việc"}
-              </div>
-            ),
-          },
-          {
-            key: "actions",
-            header: "",
-            align: "right",
-            render: (_, row) => (
-              <div className="flex justify-end gap-1">
-                <Button variant="ghost" size="icon" onClick={() => setEditing(row)}>
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-destructive" onClick={() => {
-                  if (confirm(`Xoá nhân viên ${row.ho_ten}?`)) deleteMut.mutate(row.id);
-                }}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ),
-          },
-        ]}
+        tableKey="admin_nhan_vien"
+        columns={columns}
+        rows={nhanVien}
+        getRowId={(r) => r.id}
+        requireFilterToShow={false}
+        trangThai={{ dangTai: isLoading }}
       />
 
       <SchemaDialog
