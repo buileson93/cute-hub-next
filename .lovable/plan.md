@@ -1,38 +1,33 @@
-# Plan: Software License & Asset Management Enhancement
+# Kế hoạch: Nâng cấp Quản lý Bản quyền Phần mềm & Tài sản
 
-The goal is to improve the software license assignment workflow, add comprehensive statistics for laptop-employee tracking, implement bulk import for assets with employee assignment, and provide reporting capabilities.
+Mục tiêu là cải thiện quy trình cấp phát bản quyền, bổ sung thống kê chi tiết máy tính-nhân viên, triển khai nhập liệu hàng loạt cho tài sản kèm gán nhân viên, và cung cấp khả năng xuất báo cáo.
 
-## Phase 1: UI Updates & Text Refinement
-- Update the information banner in `src/routes/_app.phan-mem-ban-quyen.tsx` to reflect the new capabilities and roadmap as requested by the user.
-- Search for any remaining placeholders (like "language selector") in `src/components/mirats/AppShell.tsx` or similar and replace them if found.
+## Giai đoạn 1: Ràng buộc Dữ liệu & Kiểm tra Cấp phát
+- Cập nhật `src/components/mirats/BanQuyenCapPhatDialog.tsx`:
+    - Cải thiện form cấp phát: tự động kiểm tra xem máy tính đã được gán nhân viên phụ trách hay chưa.
+    - Kiểm tra các thông tin cần thiết (như Model, Số Serial) trước khi cho phép lưu cấp phát.
+    - Hiển thị cảnh báo trực quan nếu dữ liệu tài sản chưa đầy đủ để đảm bảo tính minh bạch.
 
-## Phase 2: Enhanced License Assignment Validation
-- Modify `src/components/mirats/BanQuyenCapPhatDialog.tsx`:
-    - Update `useThietBiOptions` to fetch more details about the asset (e.g., specific hardware info).
-    - In `capPhatMut`, add a validation check: if the selected asset has no `nhan_vien_id`, show a clear warning or prevent saving (depending on user preference, but the request says "tự động kiểm tra... và có đủ thông tin cần thiết trước khi cho phép tôi lưu").
-    - Add a visual "Validation Status" indicator in the dialog.
+## Giai đoạn 2: Trang Thống kê Máy tính - Nhân viên
+- Tạo route mới `src/routes/_app.thong-ke.laptop.tsx`:
+    - Hiển thị danh sách nhân viên cùng các máy tính (laptop/PC) đã gán.
+    - Trạng thái cấp phát bản quyền: Máy nào đã có bản quyền, máy nào còn thiếu.
+    - Thống kê số ghế (seats) còn trống của từng loại bản quyền liên quan.
+    - Bộ lọc theo Đơn vị và trạng thái nhân sự.
 
-## Phase 3: Employee-Laptop Statistics Dashboard
-- Create a new route `src/routes/_app.thong-ke.laptop.tsx`:
-    - Display a grid or table of employees.
-    - For each employee, show assigned laptops (assets).
-    - For each laptop, show active software licenses.
-    - Highlight laptops without licenses or licenses without seats.
-    - Add filters for Unit (Đơn vị) and Status.
+## Giai đoạn 3: Nhập liệu hàng loạt Assets & Nhân viên
+- Tạo `src/components/mirats/AssetImportDialog.tsx`:
+    - Hỗ trợ tải tệp Excel/CSV cho tài sản máy tính.
+    - Quy trình 1 bước: Tự động gán nhân viên phụ trách thông qua mã nhân viên hoặc email có trong file nhập.
+    - Tích hợp vào trang danh mục tài sản để tối ưu thời gian nhập liệu ban đầu.
 
-## Phase 4: Bulk Import for Assets & Employees
-- Create `src/components/mirats/AssetImportDialog.tsx`:
-    - Support Excel/CSV file upload.
-    - One-step processing: create/update `thiet_bi` (assets) and link them to `nhan_vien` (employees) via `ma_nhan_vien`.
-    - Auto-create models/categories if missing (optional/configurable).
-- Integrate this dialog into `src/routes/_app.danh-muc.thiet-bi.tsx` (Asset Catalog).
+## Giai đoạn 4: Xuất Báo cáo (PDF/Excel)
+- Triển khai tính năng xuất dữ liệu:
+    - Báo cáo cá nhân: Xuất PDF/Excel cho từng nhân viên bao gồm danh sách máy tính, phần mềm đang sử dụng và lịch sử cấp phát.
+    - Báo cáo đơn vị: Tổng hợp dữ liệu tài sản và phần mềm theo phòng ban.
+    - Tích hợp nút xuất báo cáo tại trang Quản lý nhân viên và trang Thống kê mới.
 
-## Phase 5: Reporting & Export
-- Add "Export PDF/Excel" functionality:
-    - In `src/routes/_app.admin.nhan-vien.tsx`: Export a report for a specific employee (Assets + Software + History).
-    - In the new statistics page: Bulk export unit-level reports.
-    - Use `xlsx` for Excel and a dedicated print-optimized view or server function for PDF.
+## Giai đoạn 5: Cấu hình Điều hướng & Kiểm tra
+- Cập nhật menu sidebar trong `src/lib/mirats/nav-contract.ts` để bổ sung mục "Thống kê tài sản".
+- Kiểm tra lại toàn bộ phân quyền (RLS) để đảm bảo an toàn dữ liệu khi xuất báo cáo hàng loạt.
 
-## Phase 6: Navigation & Cleanup
-- Update sidebar navigation in `src/lib/mirats/nav-contract.ts` to include the new Statistics route.
-- Final verification of all RLS policies and grants.
