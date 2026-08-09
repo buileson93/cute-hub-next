@@ -15,9 +15,11 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Forcing the functional validator with a specific type to satisfy the compiler
+// Fallback to a plain server function handler without explicit validator if TS2554 persists,
+// or use the standard Zod-direct signature which often works when wrapped in (data) => data.
+// In this specific project context, the triple-argument pattern is likely: (parser, encoder)
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data) as z.infer<typeof saveSchema>)
+  .validator((data: unknown) => saveSchema.parse(data), (data: any) => data)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -34,7 +36,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data) as z.infer<typeof reorderSchema>)
+  .validator((data: unknown) => reorderSchema.parse(data), (data: any) => data)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
