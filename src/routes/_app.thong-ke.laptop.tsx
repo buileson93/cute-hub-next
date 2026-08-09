@@ -70,10 +70,13 @@ function LaptopStatsPage() {
             id, ngay_thu_hoi,
             phan_mem_ban_quyen(id, ten_phan_mem, ma_ban_quyen, so_ghe)
           )
-        `) as any;
+        `)
         .eq("dm_loai_thiet_bi.la_may_tinh", true);
       
       if (assetErr) throw assetErr;
+
+      // Type cast to any because of complex joins not fully typed in Supabase client
+      const rawAssets = (assets as any) || [];
 
       // 3. Lấy số lượng ghế đã dùng cho mỗi bản quyền để tính ghế trống
       const { data: capPhatCount, error: countErr } = await supabase
@@ -84,20 +87,20 @@ function LaptopStatsPage() {
       if (countErr) throw countErr;
 
       const usageMap = new Map<string, number>();
-      capPhatCount.forEach(cp => {
+      (capPhatCount || []).forEach(cp => {
         usageMap.set(cp.ban_quyen_id, (usageMap.get(cp.ban_quyen_id) || 0) + 1);
       });
 
       // 4. Map dữ liệu
-      return employees.map(emp => {
-        const empLaptops = (assets || [])
-          .filter(a => a.nhan_vien_id === emp.id)
-          .map(a => ({
+      return (employees || []).map(emp => {
+        const empLaptops = rawAssets
+          .filter((a: any) => a.nhan_vien_id === emp.id)
+          .map((a: any) => ({
             id: a.id,
             ma_thiet_bi: a.ma_thiet_bi,
             ten_thiet_bi: a.ten_thiet_bi,
             ma_serial: a.ma_serial,
-            model: (a.dm_model as any)?.ten || null,
+            model: a.dm_model?.ten || null,
             software: (a.phan_mem_ban_quyen_cap_phat || [])
               .filter((cp: any) => !cp.ngay_thu_hoi)
               .map((cp: any) => ({
@@ -135,7 +138,6 @@ function LaptopStatsPage() {
   }, [stats]);
 
   const kpis = useMemo(() => {
-    let totalLaptops = 0;
     let assignedLaptops = 0;
     let totalSoftware = 0;
     let employeesWithLaptop = 0;
@@ -150,7 +152,7 @@ function LaptopStatsPage() {
       }
     });
 
-    return { totalLaptops, assignedLaptops, totalSoftware, employeesWithLaptop };
+    return { assignedLaptops, totalSoftware, employeesWithLaptop };
   }, [filteredStats]);
 
   const columns: StdColumn<LaptopStatsRow>[] = [
@@ -199,7 +201,7 @@ function LaptopStatsPage() {
                       const gheTrong = sw.so_ghe === null ? null : sw.so_ghe - sw.ghe_da_dung;
                       const hetGhe = gheTrong !== null && gheTrong <= 0;
                       return (
-                        <Badge key={sw.id} variant="outline" className="gap-1 bg-background text-[9px] px-1.5 py-0 h-6 flex flex-col items-start h-auto py-1">
+                        <Badge key={sw.id} variant="outline" className="gap-1 bg-background text-[9px] px-1.5 py-0 flex flex-col items-start h-auto py-1">
                           <div className="flex items-center gap-1">
                             <ShieldCheck className="h-2.5 w-2.5 text-emerald-500" />
                             <span className="font-medium">{sw.ten_phan_mem}</span>
