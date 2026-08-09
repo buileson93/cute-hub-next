@@ -43,8 +43,8 @@ export function TableExportDialog<T>({
   const [open, setOpen] = useState(false);
   const coChon = rowsByScope.selected.length > 0;
   const [scope, setScope] = useState<ExportScope>(defaultScope ?? (coChon ? "selected" : "filtered"));
-  const [cheDoCot, setCheDoCot] = useState<"visible" | "all" | "custom">("visible");
-  const [cotChon, setCotChon] = useState<string[]>(() => visibleColumns.map((c) => c.key));
+  const [cheDoCot, setCheDoCot] = useState<"visible" | "all" | "custom">("all");
+  const [cotChon, setCotChon] = useState<string[]>(() => allColumns.map((c) => c.key));
   const [sep, setSep] = useState(";");
   const [tenFile, setTenFile] = useState(
     () => `${slugTen(ten)}-${new Date().toISOString().slice(0, 10)}`,
