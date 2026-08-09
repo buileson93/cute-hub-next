@@ -456,8 +456,12 @@ function DanhMucThietBiPage() {
         normalize(d.trang_thai ?? "").includes(nq),
       );
     }
+    if (search.compatibleSystem) {
+      all = all.filter((d) => compatibleMap.get(d.id)?.has(search.compatibleSystem!));
+    }
     return all;
-  }, [taxo, scopeAll, donViCode, showRetired, onlyStandalone, filterLoai, filterTt, search, tbName, tagsByDevice, tagSelected, tagMode]);
+  }, [taxo, scopeAll, donViCode, showRetired, onlyStandalone, filterLoai, filterTt, search, tbName, tagsByDevice, tagSelected, tagMode, compatibleMap]);
+
 
   const standaloneCount = useMemo(
     () => (taxo?.devices ?? []).filter((d) => !d._htId).length,
