@@ -15,10 +15,10 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Using .validator(schema) which is a common pattern for Zod integration.
-// If TS2554 persists, it implies a version-specific requirement for multiple arguments.
+// Forcing a functional validator with explicitly declared arguments to satisfy the environment's overload checks.
+// If TS2554 persists, the environment requires (data: unknown) => T as the first argument, plus a second metadata argument.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +35,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
