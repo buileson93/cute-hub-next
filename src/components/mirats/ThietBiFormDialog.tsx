@@ -111,8 +111,9 @@ export function ThietBiFormDialog({
       nhan_vien_id: extra?.nhan_vien_id ?? "",
       nam_san_xuat: device?._namSanXuat ?? undefined,
       ghi_chu: extra?.ghi_chu ?? "",
-
+      he_thong_tuong_thich: extra?.thiet_bi_he_thong_tuong_thich ?? [],
     }),
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [device, open],
   );
