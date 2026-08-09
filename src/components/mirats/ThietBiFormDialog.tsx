@@ -244,6 +244,8 @@ export function ThietBiFormDialog({
         ghi_chu: d.ghi_chu || null,
 
       };
+      const items = d.he_thong_tuong_thich || [];
+
       if (mode === "create") {
         const genCode = () => {
           const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
