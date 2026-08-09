@@ -79,6 +79,7 @@ export const workspaces: Workspace[] = [
           { to: "/giay-phep", label: "Giấy phép", icon: ShieldCheck },
           { to: "/kiem-dinh", label: "Kiểm định & Hiệu chuẩn", icon: ShieldCheck },
           { to: "/phan-mem-ban-quyen", label: "Bản quyền phần mềm", icon: KeyRound },
+          { to: "/thong-ke/laptop", label: "Thống kê Laptop", icon: Laptop },
         ],
       },
     ],
