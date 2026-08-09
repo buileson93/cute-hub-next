@@ -189,7 +189,9 @@ export type CapPhatRow = {
   ghi_chu: string | null;
   maThietBi: string | null;
   tenThietBi: string | null;
+  nhanVien?: { hoTen: string; donVi: string | null; chucVu: string | null } | null;
 };
+
 
 export function useCapPhatList(banQuyenId: string | null) {
   return useQuery({
@@ -198,18 +200,36 @@ export function useCapPhatList(banQuyenId: string | null) {
     queryFn: async (): Promise<CapPhatRow[]> => {
       const { data, error } = await supabase
         .from("phan_mem_ban_quyen_cap_phat")
-        .select("id, ban_quyen_id, thiet_bi_id, ngay_cai_dat, nguoi_cai, ngay_thu_hoi, ghi_chu, thiet_bi(ma_thiet_bi, ten_thiet_bi)")
+        .select(`
+          id, ban_quyen_id, thiet_bi_id, ngay_cai_dat, nguoi_cai, ngay_thu_hoi, ghi_chu, 
+          thiet_bi(
+            ma_thiet_bi, ten_thiet_bi,
+            nhan_vien:nhan_vien_id(ho_ten, don_vi, chuc_vu)
+          )
+        `)
+
         .eq("ban_quyen_id", banQuyenId!)
         .order("ngay_cai_dat", { ascending: false });
       if (error) throw error;
       type Raw = Omit<CapPhatRow, "maThietBi" | "tenThietBi"> & {
-        thiet_bi: { ma_thiet_bi: string; ten_thiet_bi: string | null } | null;
+        thiet_bi: { 
+          ma_thiet_bi: string; 
+          ten_thiet_bi: string | null;
+          nhan_vien: { ho_ten: string; don_vi: string | null; chuc_vu: string | null } | null;
+        } | null;
+
       };
       return ((data ?? []) as unknown as Raw[]).map((r) => ({
         ...r,
         maThietBi: r.thiet_bi?.ma_thiet_bi ?? null,
         tenThietBi: r.thiet_bi?.ten_thiet_bi ?? null,
+        nhanVien: r.thiet_bi?.nhan_vien ? {
+          hoTen: r.thiet_bi.nhan_vien.ho_ten,
+          donVi: r.thiet_bi.nhan_vien.don_vi,
+          chucVu: r.thiet_bi.nhan_vien.chuc_vu
+        } : null,
       }));
+
     },
   });
 }
@@ -237,7 +257,11 @@ export function useCapPhatListUnified({
           nguoi_cai,
           ngay_thu_hoi,
           ghi_chu,
-          thiet_bi(ma_thiet_bi, ten_thiet_bi),
+          thiet_bi(
+            ma_thiet_bi, ten_thiet_bi,
+            nhan_vien:nhan_vien_id(ho_ten, don_vi, chuc_vu)
+          ),
+
           phan_mem_ban_quyen(ten_phan_mem, phien_ban, license_key, ngay_het_han, ma_ban_quyen)
         `);
 
@@ -251,6 +275,12 @@ export function useCapPhatListUnified({
         ...r,
         maThietBi: r.thiet_bi?.ma_thiet_bi,
         tenThietBi: r.thiet_bi?.ten_thiet_bi,
+        nhanVien: r.thiet_bi?.nhan_vien ? {
+          hoTen: r.thiet_bi.nhan_vien.ho_ten,
+          donVi: r.thiet_bi.nhan_vien.don_vi,
+          chucVu: r.thiet_bi.nhan_vien.chuc_vu
+        } : null,
+
         tenPhanMem: r.phan_mem_ban_quyen?.ten_phan_mem,
         phienBan: r.phan_mem_ban_quyen?.phien_ban,
         licenseKey: r.phan_mem_ban_quyen?.license_key,
