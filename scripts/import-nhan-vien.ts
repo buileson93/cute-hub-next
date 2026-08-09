@@ -9,19 +9,14 @@ async function importEmployees() {
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   
-  // Parse data as a 2D array to inspect it accurately
   const rows: any[][] = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
-  
   console.log(`Found ${rows.length} raw rows.`);
-  
-  // Header is at index 4 (row 5)
-  const header = rows[4];
-  console.log("Header found:", header);
 
   const employees = [];
-  
-  // Data starts from index 5
-  for (let i = 5; i < rows.length; i++) {
+  let currentDonVi = "Công ty";
+
+  // Data starts from index 7
+  for (let i = 7; i < rows.length; i++) {
     const row = rows[i];
     const stt = row[0];
     const hoTen = row[1];
@@ -29,7 +24,10 @@ async function importEmployees() {
     const dobRaw = row[3];
     const sdt = row[4];
 
-    if (!hoTen || stt === "*" || String(hoTen).includes("Ban Giám đốc") || String(hoTen).includes("Phòng") || String(hoTen).includes("Đài")) {
+    if (!hoTen) continue;
+
+    if (stt === "*") {
+      currentDonVi = String(hoTen).trim();
       continue;
     }
 
@@ -39,9 +37,15 @@ async function importEmployees() {
     // Parse date
     let dob = null;
     if (dobRaw) {
-      const d = new Date(dobRaw);
-      if (!isNaN(d.getTime())) {
+      if (typeof dobRaw === 'number') {
+        // Excel serial date
+        const d = new Date((dobRaw - 25569) * 86400 * 1000);
         dob = d.toISOString().split('T')[0];
+      } else {
+        const d = new Date(dobRaw);
+        if (!isNaN(d.getTime())) {
+          dob = d.toISOString().split('T')[0];
+        }
       }
     }
 
@@ -49,6 +53,7 @@ async function importEmployees() {
       ma_nhan_vien: `NV_${String(employees.length + 1).padStart(4, '0')}`,
       ho_ten: String(hoTen).trim(),
       chuc_vu: chucVu ? String(chucVu).trim() : null,
+      don_vi: currentDonVi,
       dien_thoai: phone,
       ngay_sinh: dob,
       hoat_dong: true
@@ -57,15 +62,18 @@ async function importEmployees() {
 
   console.log(`Prepared ${employees.length} employees to import.`);
 
-  for (const emp of employees) {
+  // Batch insert in chunks of 50
+  const chunkSize = 50;
+  for (let i = 0; i < employees.length; i += chunkSize) {
+    const chunk = employees.slice(i, i + chunkSize);
     const { error } = await supabase
       .from("nhan_vien")
-      .upsert(emp, { onConflict: "ma_nhan_vien" });
+      .upsert(chunk, { onConflict: "ma_nhan_vien" });
     
     if (error) {
-      console.error(`Error importing ${emp.ho_ten}:`, error.message);
+      console.error(`Error importing chunk starting at ${i}:`, error.message);
     } else {
-      // console.log(`Imported: ${emp.ho_ten}`);
+      console.log(`Imported chunk ${i / chunkSize + 1}`);
     }
   }
 
