@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import type { DbDevice, DbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import type { ThietBi } from "@/lib/mirats/types";
 import { Boxes, Layers, FolderTree, Network, Cpu, Puzzle, Building2, Plug, MapPin } from "lucide-react";
@@ -101,7 +101,14 @@ export type MindData = {
   code?: string;
 };
 
-export { PHYS_TABLE_BY_LAYER } from "@/lib/mirats/editable-columns";
+export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string }> = {
+  pl: { table: "dm_phan_loai", keyCol: "id" },
+  lv: { table: "dm_linh_vuc", keyCol: "id" },
+  nh: { table: "dm_nhom_he_thong", keyCol: "id" },
+  ht: { table: "dm_he_thong", keyCol: "id" },
+  tb: { table: "thiet_bi", keyCol: "ma_thiet_bi" },
+};
+
 export type { ViTriChucNangTree };
 
 export const LEVEL_META: Record<
