@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, Paperclip, ExternalLink } from "lucide-react";
+import { ShieldCheck, Paperclip } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ThietBiTepDinhKem } from "@/components/mirats/ThietBiTepDinhKem";
 import { ChungChiPanel } from "@/components/mirats/ChungChiPanel";
@@ -8,11 +8,11 @@ import { useSession } from "@/hooks/use-session";
 
 export default function TabHoSoPhapLy({ 
   tb, ma, sysGpSo, sysName, sysGpHan, roles 
-}: DeviceDetailTabProps & { roles?: string[] }) {
+}: DeviceDetailTabProps & { roles?: any[] }) {
   const hasGp = Boolean(sysGpSo);
   const gpLabel = "Giấy phép khai thác";
   const { roles: sessionRoles } = useSession();
-  const effectiveRoles = roles || sessionRoles || [];
+  const effectiveRoles = (roles || sessionRoles || []) as any[];
 
   return (
     <div className="space-y-6">
@@ -46,7 +46,7 @@ export default function TabHoSoPhapLy({
           )}
           
           {/* Kiểm định / Hiệu chuẩn */}
-          <ChungChiPanel thietBiId={tb.id} cheDo={tb.che_do_kd_hc as any} roles={effectiveRoles} />
+          <ChungChiPanel thietBiId={tb.id} cheDo={(tb as any).che_do_kd_hc} roles={effectiveRoles} />
         </div>
       </section>
 
