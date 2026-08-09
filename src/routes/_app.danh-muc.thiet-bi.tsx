@@ -35,6 +35,7 @@ import {
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
 
 import { CenterHoverCard } from "@/components/mirats/CenterHoverCard";
 import { AssignSystemDialog } from "@/components/mirats/AssignSystemDialog";
