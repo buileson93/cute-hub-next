@@ -14,9 +14,8 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Forcing a 2nd argument to satisfy the build system's error, even if it's an identity function
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (d: any) => d)
+  .inputValidator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
@@ -34,7 +33,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (d: any) => d)
+  .inputValidator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
