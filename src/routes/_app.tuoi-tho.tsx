@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { getXepLoaiHealthToken } from "@/lib/mirats/ui/status-tokens";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -37,12 +39,6 @@ export const Route = createFileRoute("/_app/tuoi-tho")({
   component: TuoiThoPage,
 });
 
-const loaiColors: Record<string, { bg: string; text: string; ring: string; hex: string }> = {
-  A: { bg: "bg-emerald-500/10", text: "text-emerald-700 dark:text-emerald-300", ring: "border-emerald-500/20", hex: "#10b981" },
-  B: { bg: "bg-blue-500/10", text: "text-blue-700 dark:text-blue-300", ring: "border-blue-500/20", hex: "#3b82f6" },
-  C: { bg: "bg-amber-500/10", text: "text-amber-700 dark:text-amber-300", ring: "border-amber-500/20", hex: "#f59e0b" },
-  D: { bg: "bg-red-500/10", text: "text-red-700 dark:text-red-300", ring: "border-red-500/20", hex: "#ef4444" },
-};
 
 function TuoiThoPage() {
   const { thietBi, donVi } = useScope();

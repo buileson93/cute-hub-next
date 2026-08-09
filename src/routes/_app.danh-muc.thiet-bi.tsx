@@ -37,6 +37,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
 
 import { CenterHoverCard } from "@/components/mirats/CenterHoverCard";
 import { AssignSystemDialog } from "@/components/mirats/AssignSystemDialog";
@@ -60,6 +61,7 @@ import {
 import { MauChip } from "@/components/mirats/MauChip";
 import { storage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+
 
 // Bộ lọc lưu trên URL để "quay lại trang" giữ nguyên trạng thái đã chọn.
 // - q, loai, tt: text đơn trị (bỏ khi rỗng / "all")
@@ -114,17 +116,6 @@ export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
 
 const STANDALONE = "— Độc lập (chưa gán hệ thống) —";
 
-const ttColor: Record<string, string> = {
-  "Đang khai thác": "bg-emerald-100 text-emerald-700",
-  "Đang sử dụng": "bg-emerald-100 text-emerald-700",
-  "Đang hoạt động": "bg-emerald-100 text-emerald-700",
-  "Dự phòng": "bg-sky-100 text-sky-700",
-  "Đang sửa chữa": "bg-amber-100 text-amber-700",
-  "Hỏng": "bg-red-100 text-red-700",
-  "Chờ thanh lý": "bg-orange-100 text-orange-700",
-  "Đã thanh lý": "bg-slate-200 text-slate-700",
-  "Ngừng hoạt động": "bg-slate-200 text-slate-700",
-};
 
 /** Thẻ hover cho model (dm_model) đã gán — có ảnh + thông số cơ bản. */
 function ModelHoverContent({ d }: { d: DbDevice }) {

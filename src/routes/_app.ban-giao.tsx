@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { getLoaiBanGiaoToken } from "@/lib/mirats/ui/status-tokens";
+
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
@@ -36,12 +38,6 @@ export const Route = createFileRoute("/_app/ban-giao")({
   component: BanGiaoPage,
 });
 
-const loaiColors: Record<string, string> = {
-  "Cấp phát": "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-300",
-  "Thu hồi": "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:text-orange-300",
-  "Luân chuyển": "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-300",
-  "Mượn tạm": "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-300",
-};
 
 function fmtDate(s: string | null) {
   if (!s) return "—";
