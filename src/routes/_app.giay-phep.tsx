@@ -245,9 +245,9 @@ function GiayPhepPage() {
             <CardTitle className="text-base">Cảnh báo gia hạn</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Nhac label="≤ 30 ngày" value={kpi.d30} tone="text-red-600" />
-            <Nhac label="31–60 ngày" value={kpi.d60} tone="text-amber-600" />
-            <Nhac label="61–90 ngày" value={kpi.d90} tone="text-sky-600" />
+            <Nhac label="≤ 30 ngày" value={kpi.d30} tone="text-red-600 dark:text-red-400" />
+            <Nhac label="31–60 ngày" value={kpi.d60} tone="text-amber-600 dark:text-amber-400" />
+            <Nhac label="61–90 ngày" value={kpi.d90} tone="text-sky-600 dark:text-sky-400" />
             <div className="pt-2 text-xs text-muted-foreground">Ưu tiên gia hạn để tránh gián đoạn khai thác.</div>
           </CardContent>
         </Card>
