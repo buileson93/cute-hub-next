@@ -260,8 +260,14 @@ export function BanQuyenFormDialog({
       submitLabel={mode === "create" ? "Thêm bản quyền" : "Lưu thay đổi"}
       maxWidth="2xl"
       onSubmit={async (v) => {
+        // Cảnh báo sớm nếu số máy chọn > số ghế
+        if (v.so_ghe != null && assignDevices.length > v.so_ghe) {
+          toast.error(`Số máy chọn (${assignDevices.length}) vượt quá số ghế cho phép (${v.so_ghe})`);
+          return;
+        }
         await save.mutateAsync(v);
       }}
+      disableSubmitWhenInvalid={false} // Cho phép submit để hiện lỗi Zod nếu có
       footerExtra={
         mode === "create" && (
           <div className="mt-6 space-y-4 border-t pt-4">
