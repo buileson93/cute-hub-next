@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Laptop, Undo2, Plus } from "lucide-react";
+import { Laptop, Undo2, Plus, AlertCircle, CheckCircle2 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -25,9 +25,10 @@ function useThietBiOptions(search: string = "") {
       let query = supabase
         .from("thiet_bi")
         .select(`
-          id, ma_thiet_bi, ten_thiet_bi, 
+          id, ma_thiet_bi, ten_thiet_bi, ma_serial, model_id,
           nhan_vien:nhan_vien_id(ho_ten, don_vi, chuc_vu),
-          dm_loai_thiet_bi!inner(ten, la_may_tinh)
+          dm_loai_thiet_bi!inner(ten, la_may_tinh),
+          dm_model:model_id(ten, ma)
         `)
 
         .eq("dm_loai_thiet_bi.la_may_tinh", true)
@@ -45,6 +46,9 @@ function useThietBiOptions(search: string = "") {
         value: r.id,
         label: `${r.ten_thiet_bi ?? r.ma_thiet_bi} · ${r.ma_thiet_bi}`,
         subLabel: r.nhan_vien ? `${r.nhan_vien.ho_ten} (${r.nhan_vien.don_vi || 'KĐĐ'})` : "Chưa gán người sử dụng",
+        nhanVien: r.nhan_vien,
+        hasModel: !!r.model_id,
+        hasSerial: !!r.ma_serial
       }));
 
     },
@@ -101,6 +105,15 @@ export function BanQuyenCapPhatDialog({
     mutationFn: async () => {
       const bqId = banQuyen?.id || selectedBqId;
       if (!bqId || !thietBiId) throw new Error("Chưa chọn tài sản hoặc bản quyền");
+      
+      const selectedTb = tbOptions.find(o => o.value === thietBiId);
+      if (!selectedTb?.nhanVien) {
+        throw new Error("Tài sản chưa được gán nhân viên phụ trách. Vui lòng cập nhật danh mục trước khi cấp phát.");
+      }
+      if (!selectedTb.hasModel || !selectedTb.hasSerial) {
+        throw new Error("Tài sản thiếu thông tin Model hoặc Số Serial. Vui lòng bổ sung thông tin này.");
+      }
+
       const { error } = await supabase.from("phan_mem_ban_quyen_cap_phat").insert({
         ban_quyen_id: bqId,
         thiet_bi_id: thietBiId,
@@ -190,6 +203,30 @@ export function BanQuyenCapPhatDialog({
                   placeholder="Chọn tài sản..."
                   searchPlaceholder="Tìm theo tên hoặc mã tài sản…"
                 />
+                {thietBiId && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(() => {
+                      const tb = tbOptions.find(o => o.value === thietBiId);
+                      if (!tb) return null;
+                      return (
+                        <>
+                          <Badge variant={tb.nhanVien ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-[10px]">
+                            {tb.nhanVien ? <CheckCircle2 className="h-3 w-3 text-emerald-500" /> : <AlertCircle className="h-3 w-3" />}
+                            Nhân viên: {tb.nhanVien ? tb.nhanVien.ho_ten : "Chưa gán"}
+                          </Badge>
+                          <Badge variant={tb.hasModel ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-[10px]">
+                            {tb.hasModel ? <CheckCircle2 className="h-3 w-3 text-emerald-500" /> : <AlertCircle className="h-3 w-3" />}
+                            Model: {tb.hasModel ? "OK" : "Thiếu"}
+                          </Badge>
+                          <Badge variant={tb.hasSerial ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-[10px]">
+                            {tb.hasSerial ? <CheckCircle2 className="h-3 w-3 text-emerald-500" /> : <AlertCircle className="h-3 w-3" />}
+                            Serial: {tb.hasSerial ? "OK" : "Thiếu"}
+                          </Badge>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
               <div className="w-full md:w-64 space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-primary/70 ml-1">Người cài đặt</label>
@@ -202,7 +239,14 @@ export function BanQuyenCapPhatDialog({
               </div>
               <Button
                 className="shadow-lg shadow-primary/20 h-10 px-6 font-semibold"
-                disabled={!thietBiId || capPhatMut.isPending || (conLai != null && conLai <= 0)}
+                disabled={
+                  !thietBiId || 
+                  capPhatMut.isPending || 
+                  (conLai != null && conLai <= 0) ||
+                  !tbOptions.find(o => o.value === thietBiId)?.nhanVien ||
+                  !tbOptions.find(o => o.value === thietBiId)?.hasModel ||
+                  !tbOptions.find(o => o.value === thietBiId)?.hasSerial
+                }
                 onClick={() => capPhatMut.mutate()}
               >
                 <Plus className="mr-2 h-4 w-4" /> Cấp phát

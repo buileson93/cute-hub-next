@@ -18,7 +18,7 @@ import {
   Boxes, Layers, Settings2, Waypoints, Cable,
   LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
   Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
-  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users,
+  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users, Laptop,
 } from "lucide-react";
 
 import type { AppRole } from "@/hooks/use-session";
@@ -79,6 +79,7 @@ export const workspaces: Workspace[] = [
           { to: "/giay-phep", label: "Giấy phép", icon: ShieldCheck },
           { to: "/kiem-dinh", label: "Kiểm định & Hiệu chuẩn", icon: ShieldCheck },
           { to: "/phan-mem-ban-quyen", label: "Bản quyền phần mềm", icon: KeyRound },
+          { to: "/thong-ke/laptop", label: "Thống kê Laptop", icon: Laptop },
         ],
       },
     ],
@@ -288,6 +289,7 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/danh-muc/dac-tinh": { crumb: "Danh mục", title: "Nhãn tài sản" },
   "/danh-muc/nha-san-xuat": { crumb: "Danh mục", title: "Nhà sản xuất" },
   "/danh-muc/nha-cung-cap": { crumb: "Danh mục", title: "Nhà cung cấp" },
+  "/thong-ke/laptop": { crumb: "Vận hành", title: "Thống kê Laptop & Bản quyền" },
 };
 
 // ---------------------------------------------------------------------------
