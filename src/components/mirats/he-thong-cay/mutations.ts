@@ -15,13 +15,12 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Use .validator() as a single-argument call with the Zod schema directly.
-// In TanStack Start v1, if this still fails, it typically means the version 
-// requires a function with exactly (data: T) => T signature.
+// Use .validator(schema, encoder) to satisfy the 2nd argument requirement in this project's environment.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => {
-    return saveSchema.parse(data);
-  })
+  .validator(
+    (data: unknown) => saveSchema.parse(data),
+    (data: any) => data
+  )
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -38,9 +37,10 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => {
-    return reorderSchema.parse(data);
-  })
+  .validator(
+    (data: unknown) => reorderSchema.parse(data),
+    (data: any) => data
+  )
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
