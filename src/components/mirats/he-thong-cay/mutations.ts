@@ -15,10 +15,12 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Trong TanStack Start v1, .validator() yêu cầu 2 đối số (parser và encoder) khi dùng hàm tùy chỉnh.
-// Đối số thứ 2 thường là (data: T) => any để serialize dữ liệu từ client sang server.
+/**
+ * Server functions for node management using the correct TanStack Start v1 signature.
+ * The .validator(schema) approach is used to satisfy the build system's expectations.
+ */
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (d) => d)
+  .validator(saveSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +37,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (d) => d)
+  .validator(reorderSchema)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
