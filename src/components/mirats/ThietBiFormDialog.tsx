@@ -45,8 +45,8 @@ function loadOpts(table: OptTable) {
       const select = table === "nhan_vien" ? "id, ho_ten, ma_nhan_vien" : "id, ten, ma";
       const { data, error } = await supabase.from(table).select(select).order(table === "nhan_vien" ? "ho_ten" : "ten");
       if (error) throw error;
-      return (data ?? []).map((r) => {
-        const row = r as { id: string; ten?: string; ma?: string | null; ho_ten?: string; ma_nhan_vien?: string | null };
+      return (data as any[] ?? []).map((row) => {
+
         const label = row.ho_ten ? (row.ma_nhan_vien ? `${row.ho_ten} · ${row.ma_nhan_vien}` : row.ho_ten)
           : (row.ma ? `${row.ten} · ${row.ma}` : row.ten!);
         return { value: row.id, label };
