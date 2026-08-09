@@ -265,16 +265,17 @@ function TelemetryPanelProxy({ thietBiId, canManage }: any) {
         <div className="flex flex-wrap items-end gap-2 rounded-md border bg-muted/30 p-3">
           <label className="flex-1 min-w-[140px] text-[10px] font-bold uppercase text-muted-foreground">
             Chỉ số
-            <Input className="mt-1 h-8 text-xs" value={chiSo} onChange={(e) => setChiSo(e.target.value)} placeholder="gio_chay, nhiet_do…" />
+            <Input className="mt-1 h-8 text-xs" value={chiSo} onChange={(e: any) => setChiSo(e.target.value)} placeholder="gio_chay, nhiet_do…" />
           </label>
           <label className="w-28 text-[10px] font-bold uppercase text-muted-foreground">
             Giá trị
-            <Input className="mt-1 h-8 text-xs" value={giaTri} onChange={(e) => setGiaTri(e.target.value)} inputMode="decimal" placeholder="0" />
+            <Input className="mt-1 h-8 text-xs" value={giaTri} onChange={(e: any) => setGiaTri(e.target.value)} inputMode="decimal" placeholder="0" />
           </label>
           <label className="w-24 text-[10px] font-bold uppercase text-muted-foreground">
             Đơn vị
-            <Input className="mt-1 h-8 text-xs" value={donVi} onChange={(e) => setDonVi(e.target.value)} placeholder="giờ, °C…" />
+            <Input className="mt-1 h-8 text-xs" value={donVi} onChange={(e: any) => setDonVi(e.target.value)} placeholder="giờ, °C…" />
           </label>
+
           <Button size="sm" onClick={submit} disabled={addMut.isPending}>
             {addMut.isPending ? <Activity className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Activity className="mr-1 h-3.5 w-3.5" />}
             Ghi số đo
