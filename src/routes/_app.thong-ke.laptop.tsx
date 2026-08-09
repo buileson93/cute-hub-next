@@ -70,7 +70,7 @@ function LaptopStatsPage() {
             id, ngay_thu_hoi,
             phan_mem_ban_quyen(id, ten_phan_mem, ma_ban_quyen, so_ghe)
           )
-        `)
+        `) as any;
         .eq("dm_loai_thiet_bi.la_may_tinh", true);
       
       if (assetErr) throw assetErr;
