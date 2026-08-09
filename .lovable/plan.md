@@ -1,0 +1,38 @@
+---
+name: Nâng cấp quản lý nhân viên và gán thiết bị
+description: Nạp dữ liệu nhân viên từ Excel, thêm giao diện quản lý nhân viên cho Admin và liên kết nhân viên với tài sản (máy tính/laptop).
+type: feature
+---
+
+## Mục tiêu
+1. **Dữ liệu**: Nạp danh sách nhân viên từ file Excel `Thông_tin_CBNV_1.xlsx` vào bảng `nhan_vien`.
+2. **Admin UI**: Thêm trang quản lý nhân viên (`/admin/nhan-vien`) cho phép xem, thêm, sửa, xoá và import nhân viên.
+3. **Liên kết tài sản**: Cập nhật `thiet_bi` để hỗ trợ gán nhân viên sử dụng (trường `nguoi_giu` hoặc `nguoi_su_dung_id`).
+4. **Bản quyền**: Củng cố luồng cấp phát bản quyền thông qua việc xác định chính xác máy tính thuộc về nhân viên nào.
+
+## Chi tiết triển khai
+
+### 1. Nạp dữ liệu (Migration & Seeding)
+- Tạo migration để đảm bảo bảng `nhan_vien` có đầy đủ các trường: `ma_nhan_vien`, `ho_ten`, `don_vi`, `chuc_vu`, `email`, `dien_thoai`, `ngay_sinh`.
+- Viết script nạp dữ liệu từ file Excel đã upload:
+  - Header mapping: `HỌ TÊN` -> `ho_ten`, `CHỨC DANH` -> `chuc_vu`, `Ngày sinh` -> `ngay_sinh`, `SĐT` -> `dien_thoai`.
+  - Tự sinh `ma_nhan_vien` nếu thiếu.
+
+### 2. Giao diện Admin Nhân viên
+- Tạo route mới `src/routes/_app.admin.nhan-vien.tsx`.
+- Sử dụng `StandardTable` để hiển thị danh sách nhân viên.
+- Tích hợp `NhanVienFormDialog` để thêm/sửa nhân viên.
+
+### 3. Cập nhật Form Tài sản (`ThietBiFormDialog.tsx`)
+- Thêm trường "Người sử dụng" (Combobox chọn từ `nhan_vien`).
+- Khi chọn nhân viên, cập nhật trường `nguoi_giu` trong bảng `thiet_bi`.
+- Hiển thị thông tin nhân viên trong chi tiết thiết bị.
+
+### 4. Tối ưu luồng Bản quyền
+- Trong `BanQuyenFormDialog.tsx`, khi chọn thiết bị để cấp phát, hiển thị kèm tên nhân viên đang sử dụng máy đó để người dùng dễ nhận biết.
+
+## Kế hoạch thực hiện
+1. **Phase 1**: Chạy migration cập nhật schema `nhan_vien` và script import dữ liệu từ Excel.
+2. **Phase 2**: Xây dựng trang quản lý nhân viên `/admin/nhan-vien`.
+3. **Phase 3**: Cập nhật `ThietBiFormDialog.tsx` để gán nhân viên cho tài sản.
+4. **Phase 4**: Cập nhật `BanQuyenFormDialog.tsx` hiển thị thông tin nhân viên khi cấp phát.
