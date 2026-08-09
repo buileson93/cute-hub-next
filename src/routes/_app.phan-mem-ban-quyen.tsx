@@ -258,7 +258,7 @@ function BanQuyenPage() {
           <div className="space-y-1">
             <div className="text-sm font-bold text-primary">Thông tin hệ thống</div>
             <p className="text-sm leading-relaxed text-muted-foreground/90 font-medium">
-              Hiện nay đã có tính năng để phần mềm bản quyền cấp pháp cho máy tính laptop nào thuộc quyền sử dụng của nhân viên nào. 
+              Hiện nay đã có tính năng để phần mềm bản quyền cấp phát cho máy tính (Laptop/PC) thuộc quyền sử dụng của nhân viên nào. 
               Bạn có thể gán tài sản cho nhân viên trong danh mục Tài sản, sau đó cấp phát bản quyền cho tài sản đó tại đây hoặc từ Sổ lý lịch tài sản.
             </p>
           </div>

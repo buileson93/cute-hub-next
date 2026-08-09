@@ -14,22 +14,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AssetImportDialog } from "@/components/mirats/AssetImportDialog";
 
 export const Route = createFileRoute("/_app/thong-ke/laptop")({
-  component: LaptopStatsPage,
+  component: MayTinhStatsPage,
   head: () => ({
     meta: [
-      { title: "Thống kê Laptop & Bản quyền — MIRATS" },
-      { name: "description", content: "Thống kê chi tiết máy tính laptop theo nhân viên và tình trạng bản quyền phần mềm." },
+      { title: "Thống kê Máy tính & Bản quyền — MIRATS" },
+      { name: "description", content: "Thống kê chi tiết máy tính (Laptop/PC) theo nhân viên và tình trạng bản quyền phần mềm." },
     ],
   }),
 });
 
-type LaptopStatsRow = {
+type MayTinhStatsRow = {
   id: string;
   ma_nhan_vien: string;
   ho_ten: string;
   don_vi: string | null;
   chuc_vu: string | null;
-  laptops: Array<{
+  thiet_bi: Array<{
     id: string;
     ma_thiet_bi: string;
     ten_thiet_bi: string;
@@ -45,14 +45,14 @@ type LaptopStatsRow = {
   }>;
 };
 
-function LaptopStatsPage() {
+function MayTinhStatsPage() {
   const [q, setQ] = useState("");
   const [unitFilter, setUnitFilter] = useState("all");
   const [importOpen, setImportOpen] = useState(false);
 
   const { data: stats = [], isLoading } = useQuery({
-    queryKey: ["stats", "laptop-employee"],
-    queryFn: async (): Promise<LaptopStatsRow[]> => {
+    queryKey: ["stats", "may-tinh-employee"],
+    queryFn: async (): Promise<MayTinhStatsRow[]> => {
       // 1. Lấy danh sách nhân viên
       const { data: employees, error: empErr } = await supabase
         .from("nhan_vien")
@@ -61,7 +61,7 @@ function LaptopStatsPage() {
       
       if (empErr) throw empErr;
 
-      // 2. Lấy danh sách laptop và phần mềm cấp phát
+      // 2. Lấy danh sách máy tính và phần mềm cấp phát
       const { data: assets, error: assetErr } = await supabase
         .from("thiet_bi")
         .select(`
@@ -95,7 +95,7 @@ function LaptopStatsPage() {
 
       // 4. Map dữ liệu
       return (employees || []).map(emp => {
-        const empLaptops = rawAssets
+        const empDevices = rawAssets
           .filter((a: any) => a.nhan_vien_id === emp.id)
           .map((a: any) => ({
             id: a.id,
@@ -120,7 +120,7 @@ function LaptopStatsPage() {
           ho_ten: emp.ho_ten,
           don_vi: emp.don_vi,
           chuc_vu: emp.chuc_vu,
-          laptops: empLaptops
+          thiet_bi: empDevices
         };
       });
     }
@@ -140,24 +140,24 @@ function LaptopStatsPage() {
   }, [stats]);
 
   const kpis = useMemo(() => {
-    let assignedLaptops = 0;
+    let assignedDevices = 0;
     let totalSoftware = 0;
-    let employeesWithLaptop = 0;
+    let employeesWithDevice = 0;
 
     filteredStats.forEach(s => {
-      if (s.laptops.length > 0) {
-        employeesWithLaptop++;
-        assignedLaptops += s.laptops.length;
-        s.laptops.forEach(l => {
+      if (s.thiet_bi.length > 0) {
+        employeesWithDevice++;
+        assignedDevices += s.thiet_bi.length;
+        s.thiet_bi.forEach(l => {
           totalSoftware += l.software.length;
         });
       }
     });
 
-    return { assignedLaptops, totalSoftware, employeesWithLaptop };
+    return { assignedDevices, totalSoftware, employeesWithDevice };
   }, [filteredStats]);
 
-  const columns: StdColumn<LaptopStatsRow>[] = [
+  const columns: StdColumn<MayTinhStatsRow>[] = [
     {
       key: "ho_ten",
       label: "Nhân viên",
@@ -175,14 +175,14 @@ function LaptopStatsPage() {
     },
     { key: "don_vi", label: "Đơn vị", filter: "cat" },
     {
-      key: "laptops",
+      key: "thiet_bi",
       label: "Máy tính & Bản quyền",
       cell: (row) => (
         <div className="space-y-2 py-1">
-          {row.laptops.length === 0 ? (
+          {row.thiet_bi.length === 0 ? (
             <span className="text-xs text-muted-foreground italic">— Chưa gán máy tính —</span>
           ) : (
-            row.laptops.map(l => (
+            row.thiet_bi.map((l: any) => (
               <div key={l.id} className="rounded-lg border bg-muted/30 p-2 text-xs">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-1.5">
@@ -199,7 +199,7 @@ function LaptopStatsPage() {
                       <XCircle className="h-2.5 w-2.5" /> Chưa có bản quyền
                     </Badge>
                   ) : (
-                    l.software.map(sw => {
+                    l.software.map((sw: any) => {
                       const gheTrong = sw.so_ghe === null ? null : sw.so_ghe - sw.ghe_da_dung;
                       const hetGhe = gheTrong !== null && gheTrong <= 0;
                       return (
@@ -248,7 +248,7 @@ function LaptopStatsPage() {
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary">Nhân viên có máy</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black text-primary">{kpis.employeesWithLaptop}</div>
+            <div className="text-3xl font-black text-primary">{kpis.employeesWithDevice}</div>
             <div className="text-[10px] text-muted-foreground font-medium mt-1">Trong tổng số {filteredStats.length} nhân viên (theo bộ lọc)</div>
           </CardContent>
         </Card>
@@ -257,8 +257,8 @@ function LaptopStatsPage() {
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-emerald-700">Tổng máy tính đã gán</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black text-emerald-700">{kpis.assignedLaptops}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">Laptop/PC đang được nhân viên phụ trách</div>
+            <div className="text-3xl font-black text-emerald-700">{kpis.assignedDevices}</div>
+            <div className="text-[10px] text-muted-foreground font-medium mt-1">Máy tính (Laptop/PC) đang được nhân viên phụ trách</div>
           </CardContent>
         </Card>
         <Card className="shadow-sm border-amber-100 bg-amber-50/30">
@@ -307,7 +307,7 @@ function LaptopStatsPage() {
       <Card className="shadow-sm border-muted/60 overflow-hidden">
         <CardContent className="p-0">
           <StandardTable
-            tableKey="laptop_stats"
+            tableKey="may_tinh_stats"
             columns={columns}
             rows={filteredStats}
             getRowId={(r) => r.id}
@@ -325,7 +325,7 @@ function LaptopStatsPage() {
         <div className="space-y-1">
           <div className="text-sm font-bold text-blue-900">Mẹo vận hành</div>
           <p className="text-xs text-blue-800 leading-relaxed font-medium">
-            Sử dụng chức năng này để rà soát các máy tính laptop chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
+            Sử dụng chức năng này để rà soát các máy tính (Laptop/PC) chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
           </p>
       </div>
 

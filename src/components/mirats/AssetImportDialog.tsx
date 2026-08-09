@@ -77,7 +77,7 @@ export function AssetImportDialog({
         ten_thiet_bi: row.ten_thiet_bi,
         ma_serial: row.ma_serial || null,
         model_id: row.model_id || null,
-        loai_thiet_bi_id: row.loai_thiet_bi_id || null, // Phải là ID của "Máy tính/Laptop"
+        loai_thiet_bi_id: row.loai_thiet_bi_id || null, // Phải là ID của "Máy tính (Laptop/PC)"
         nhan_vien_id: row.nhan_vien_id || null,
         don_vi_id: row.don_vi_id || null,
         trang_thai_cap_phat: row.nhan_vien_id ? "da_cap_phat" : "san_sang",
@@ -89,7 +89,7 @@ export function AssetImportDialog({
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["thiet_bi"] });
-      qc.invalidateQueries({ queryKey: ["stats", "laptop-employee"] });
+      qc.invalidateQueries({ queryKey: ["stats", "may-tinh-employee"] });
       toast.success(`Đã nhập thành công ${previewData.length} tài sản`);
       onOpenChange(false);
       reset();
@@ -113,7 +113,7 @@ export function AssetImportDialog({
             Nhập tài sản máy tính hàng loạt
           </DialogTitle>
           <DialogDescription>
-            Tải lên file Excel (.xlsx, .csv) để thêm nhanh máy tính và gán nhân viên phụ trách.
+            Tải lên file Excel (.xlsx, .csv) để thêm nhanh máy tính (Laptop/PC) và gán nhân viên phụ trách.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,7 +184,7 @@ export function AssetImportDialog({
             <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
             <div className="text-[11px] text-blue-700 leading-normal">
               <strong>Mẹo:</strong> Cột <code>nhan_vien_id</code> phải chứa UUID của nhân viên để gán tự động. 
-              Cột <code>loai_thiet_bi_id</code> nên để trống để hệ thống tự nhận diện Laptop/PC.
+              Cột <code>loai_thiet_bi_id</code> nên để trống để hệ thống tự nhận diện Máy tính (Laptop/PC).
             </div>
           </div>
         </div>
