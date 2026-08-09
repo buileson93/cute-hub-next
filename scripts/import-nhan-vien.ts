@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "../src/integrations/backend/client.server";
+import { supabaseAdmin } from "../src/integrations/supabase/client.server";
 import { readFileSync } from "fs";
 import * as xlsx from "xlsx";
 
@@ -66,7 +66,6 @@ async function importEmployees() {
     
     if (error) {
       console.error(`Error importing chunk starting at ${i}:`, error.message);
-      break;
     } else {
       console.log(`Imported chunk ${i / chunkSize + 1}`);
     }
