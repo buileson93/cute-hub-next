@@ -49,12 +49,12 @@ function loadOpts(table: OptTable) {
         const row = r as { id: string; ten?: string; ma?: string | null; ho_ten?: string; ma_nhan_vien?: string | null };
         const label = row.ho_ten ? (row.ma_nhan_vien ? `${row.ho_ten} · ${row.ma_nhan_vien}` : row.ho_ten)
           : (row.ma ? `${row.ten} · ${row.ma}` : row.ten!);
-
-        };
+        return { value: row.id, label };
       });
     },
   };
 }
+
 
 export function ThietBiFormDialog({
   open,
