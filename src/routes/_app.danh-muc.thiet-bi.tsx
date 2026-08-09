@@ -875,9 +875,10 @@ function DanhMucThietBiPage() {
               </SelectContent>
             </Select>
             <Select 
-              value={search.compatibleSystem || "all"} 
+              value={sp.compatibleSystem || "all"} 
               onValueChange={(v) => patchSearch({ compatibleSystem: v === "all" ? undefined : v })}
             >
+
               <SelectTrigger className="h-9 w-[220px]">
                 <ShieldCheck className="mr-2 h-4 w-4 text-emerald-600" />
                 <SelectValue placeholder="Vật tư tương thích hệ thống" />
