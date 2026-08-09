@@ -232,9 +232,14 @@ function KpiCard({ icon: Icon, label, value, tone }: any) {
 
 // Proxies for internal components to avoid re-defining them in this file
 function useChangeLogProxy(id: string, canEdit: boolean) {
-  const { useChangeLog } = require("@/lib/mirats/change-log");
-  return useChangeLog("thiet_bi", canEdit ? id : null);
+  const { getChangeLog } = require("@/lib/mirats/change-log.functions");
+  return useQuery({
+    queryKey: ["change_log", "thiet_bi", canEdit ? id : null],
+    enabled: !!(canEdit && id),
+    queryFn: () => getChangeLog({ data: { entity: "thiet_bi", entityId: id } }),
+  });
 }
+
 
 function TelemetryPanelProxy({ thietBiId, canManage }: any) {
   const { useTelemetry, useAddTelemetry } = require("@/lib/mirats/db-smart");
