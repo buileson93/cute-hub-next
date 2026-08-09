@@ -492,6 +492,45 @@ export function StandardTable<T>({
             </span>
           )}
           {toolbarLeft}
+
+          {presets && presets.length > 0 && (
+            <div className="flex items-center gap-1 rounded-md border bg-muted/30 p-0.5">
+              {presets.map((p) => {
+                const isActive = activePreset === p.id;
+                return (
+                  <Button
+                    key={p.id}
+                    variant={isActive ? "secondary" : "ghost"}
+                    size="sm"
+                    className={cn(
+                      "h-7 px-2.5 text-[11px] font-medium uppercase tracking-wider transition-all",
+                      isActive ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
+                    )}
+                    onClick={() => handleSetPreset(p)}
+                  >
+                    {p.ten}
+                  </Button>
+                );
+              })}
+              {isCustomized && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
+                  title="Trả về mặc định của khung nhìn"
+                  onClick={reset}
+                >
+                  <RotateCcw className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          )}
+
+          {isCustomized && !presets && (
+            <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-muted-foreground" onClick={reset}>
+              <RotateCcw className="h-3.5 w-3.5" /> Mặc định
+            </Button>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {typeof toolbarRight === "function"
