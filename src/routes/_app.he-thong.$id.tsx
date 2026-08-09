@@ -667,10 +667,11 @@ function HeThongInner({
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <Link 
-                                  to="/thiet-bi/$id" 
-                                  params={{ id: tb.id }}
+                                  to="/danh-muc/thiet-bi"
+                                  search={{ q: tb.ma_thiet_bi } as any}
                                   className="font-bold text-primary hover:underline block"
                                 >
+
                                   {tb.ten_thiet_bi}
                                 </Link>
                                 <span className="text-xs font-mono text-muted-foreground">
