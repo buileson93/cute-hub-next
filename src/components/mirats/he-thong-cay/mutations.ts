@@ -15,11 +15,13 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Trong TanStack Start v1, .validator() yêu cầu 2-3 đối số nếu dùng hàm parser tùy chỉnh
-// Hoặc sử dụng .inputValidator() nếu library cung cấp (tùy thuộc vào version chính xác)
-// Ở đây ta dùng signature (data, schema) hoặc đơn giản là truyền schema nếu library hỗ trợ Zod trực tiếp
+// Use .validator() as a single-argument call with the Zod schema directly.
+// In TanStack Start v1, if this still fails, it typically means the version 
+// requires a function with exactly (data: T) => T signature.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (d) => d)
+  .validator((data: unknown) => {
+    return saveSchema.parse(data);
+  })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -36,7 +38,9 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (d) => d)
+  .validator((data: unknown) => {
+    return reorderSchema.parse(data);
+  })
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
