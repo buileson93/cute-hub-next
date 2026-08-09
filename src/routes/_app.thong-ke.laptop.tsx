@@ -157,7 +157,7 @@ function MayTinhStatsPage() {
     return { assignedDevices, totalSoftware, employeesWithDevice };
   }, [filteredStats]);
 
-  const columns: StdColumn<LaptopStatsRow>[] = [
+  const columns: StdColumn<MayTinhStatsRow>[] = [
     {
       key: "ho_ten",
       label: "Nhân viên",
@@ -182,7 +182,7 @@ function MayTinhStatsPage() {
           {row.thiet_bi.length === 0 ? (
             <span className="text-xs text-muted-foreground italic">— Chưa gán máy tính —</span>
           ) : (
-            row.thiet_bi.map(l => (
+            row.thiet_bi.map((l: any) => (
               <div key={l.id} className="rounded-lg border bg-muted/30 p-2 text-xs">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-1.5">
@@ -199,7 +199,7 @@ function MayTinhStatsPage() {
                       <XCircle className="h-2.5 w-2.5" /> Chưa có bản quyền
                     </Badge>
                   ) : (
-                    l.software.map(sw => {
+                    l.software.map((sw: any) => {
                       const gheTrong = sw.so_ghe === null ? null : sw.so_ghe - sw.ghe_da_dung;
                       const hetGhe = gheTrong !== null && gheTrong <= 0;
                       return (
