@@ -635,16 +635,9 @@ function DanhMucThietBiPage() {
     // ---- Trạng thái & cấp phát ----
     {
       key: "tt", label: "Trạng thái", group: "Thành phần hệ thống · Trạng thái", filter: "cat", value: (d) => d.trang_thai,
-      cell: (d) => {
-        const token = getTrangThaiToken(d.trang_thai);
-        return d.trang_thai ? (
-          <Badge variant="secondary" className={cn("font-medium gap-1.5", token?.class)}>
-            {token?.kyHieu && <span className="text-[10px]">{token.kyHieu}</span>}
-            {d.trang_thai}
-          </Badge>
-        ) : <span className="text-muted-foreground">—</span>;
-      },
+      cell: (d) => <StatusBadge domain="thiet_bi" code={d.trang_thai} />,
     },
+
     {
       key: "capphat", label: "Cấp phát", group: "Thành phần hệ thống · Trạng thái", filter: "cat",
       value: (d) => CAP_PHAT_LABEL[d._capPhatTrangThai] ?? d._capPhatTrangThai,

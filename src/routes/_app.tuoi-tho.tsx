@@ -88,6 +88,7 @@ function TuoiThoPage() {
     for (const r of rows) buckets[r.h.xepLoai]++;
     return (["A", "B", "C", "D"] as const).map((k) => ({
       loai: k, count: buckets[k], hex: XEP_LOAI_HEALTH_TOKEN[k].hex,
+
     }));
   }, [rows]);
 
