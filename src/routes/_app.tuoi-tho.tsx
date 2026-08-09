@@ -85,7 +85,7 @@ function TuoiThoPage() {
     const buckets: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
     for (const r of rows) buckets[r.h.xepLoai]++;
     return (["A", "B", "C", "D"] as const).map((k) => ({
-      loai: k, count: buckets[k], hex: loaiColors[k].hex,
+      loai: k, count: buckets[k], hex: XEP_LOAI_HEALTH_TOKEN[k].hex,
     }));
   }, [rows]);
 
@@ -365,8 +365,9 @@ function TuoiThoPage() {
                 key: "xep_loai", label: "Xếp loại", filter: "cat",
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
-                  const c = loaiColors[r.h.xepLoai];
-                  return <Badge variant="outline" className={`${c.bg} ${c.text} ${c.ring} font-mono`}>{r.h.xepLoai}</Badge>;
+                  const token = getXepLoaiHealthToken(r.h.xepLoai);
+                  return <Badge variant="outline" className={cn(token?.class, "font-mono")}>{r.h.xepLoai}</Badge>;
+
                 },
               },
               { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
@@ -422,8 +423,9 @@ function TuoiThoPage() {
                 key: "xep_loai", label: "Loại", filter: "cat",
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
-                  const c = loaiColors[r.h.xepLoai];
-                  return <Badge variant="outline" className={`${c.bg} ${c.text} ${c.ring} font-mono`}>{r.h.xepLoai}</Badge>;
+                  const token = getXepLoaiHealthToken(r.h.xepLoai);
+                  return <Badge variant="outline" className={cn(token?.class, "font-mono")}>{r.h.xepLoai}</Badge>;
+
                 },
               },
               { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },

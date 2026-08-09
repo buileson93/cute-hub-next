@@ -212,7 +212,7 @@ function BanGiaoPage() {
             <SelectTrigger className="w-[150px]"><SelectValue placeholder="Loại" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Mọi loại</SelectItem>
-              {Object.keys(loaiColors).map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+              {Object.keys(LOAI_BAN_GIAO_TOKEN).map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={tt} onValueChange={setTt}>
@@ -245,7 +245,7 @@ function BanGiaoPage() {
               {
                 key: "loai", label: "Loại", filter: "cat",
                 value: (b) => b.loai_ban_giao,
-                cell: (b) => <Badge variant="outline" className={loaiColors[b.loai_ban_giao] ?? ""}>{b.loai_ban_giao}</Badge>,
+                cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge>,
               },
               {
                 key: "thiet_bi", label: "Tài sản", minW: "min-w-[180px]", filter: "text",
@@ -327,7 +327,7 @@ function BanGiaoPage() {
               },
               { key: "nguoi_nhan", label: "Người đang giữ", filter: "text", value: (b) => b.nguoi_nhan ?? "", cell: (b) => <span className="text-sm">{b.nguoi_nhan || "—"}</span> },
               { key: "don_vi_nhan", label: "Đơn vị", filter: "cat", value: (b) => donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan, cell: (b) => <span className="text-sm">{donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan}</span> },
-              { key: "loai", label: "Loại bàn giao", filter: "cat", value: (b) => b.loai_ban_giao, cell: (b) => <Badge variant="outline" className={loaiColors[b.loai_ban_giao] ?? ""}>{b.loai_ban_giao}</Badge> },
+              { key: "loai", label: "Loại bàn giao", filter: "cat", value: (b) => b.loai_ban_giao, cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge> },
               { key: "ngay_nhan", label: "Từ ngày", sortable: true, value: (b) => b.ngay_nhan, cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_nhan)}</span> },
               {
                 key: "thoi_gian_giu", label: "Thời gian giữ", align: "right", sortable: true,
