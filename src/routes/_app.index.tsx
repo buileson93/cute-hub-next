@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { LayoutDashboard } from "lucide-react";
+
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
   CartesianGrid,
@@ -314,12 +317,12 @@ function Dashboard() {
 
   return (
     <div className="space-y-6 p-4 sm:space-y-8 sm:p-6 lg:space-y-10 lg:p-10">
-      {/* Editorial hero */}
-      <header className="border-b border-border pb-5 sm:pb-8">
-        <h1 className="text-3xl font-light tracking-tight sm:text-4xl lg:text-6xl">
-          <span className="font-bold">Overview</span>
-        </h1>
-      </header>
+      <PageHeader
+        title="Tổng quan"
+        icon={LayoutDashboard}
+        description="Overview — Dashboard điều hành, chỉ số KPI độ tin cậy và báo cáo định kỳ toàn hệ thống MIRATS."
+      />
+
 
 
 

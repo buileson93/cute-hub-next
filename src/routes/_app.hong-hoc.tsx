@@ -40,11 +40,8 @@ export const Route = createFileRoute("/_app/hong-hoc")({
   component: HongHocPage,
 });
 
-const paColor: Record<string, string> = {
-  "Sửa chữa": "bg-sky-100 text-sky-700",
-  "Thay thế": "bg-amber-100 text-amber-700",
-  "Thanh lý": "bg-red-100 text-red-700",
-};
+import { getPhuongAnHongHocToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
@@ -129,7 +126,7 @@ function HongHocPage() {
       {
         key: "phuong_an", label: "Phương án", filter: "cat",
         value: (h) => h.phuong_an,
-        cell: (h) => <Badge variant="secondary" className={paColor[h.phuong_an] ?? ""}>{h.phuong_an}</Badge>,
+        cell: (h) => <Badge variant="secondary" className={getPhuongAnHongHocToken(h.phuong_an)?.class}>{h.phuong_an}</Badge>,
       },
       {
         key: "thay_the", label: "Thay bằng",
@@ -188,9 +185,9 @@ function HongHocPage() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Kpi icon={Replace} label="Phiếu hỏng hóc" value={stats.total} tone="text-foreground/70" />
-        <Kpi icon={AlertTriangle} label="Đang xử lý" value={stats.mo} tone="text-amber-600" />
-        <Kpi icon={Replace} label="Thay thế linh kiện" value={stats.thay} tone="text-sky-600" />
-        <Kpi icon={DollarSign} label="Chi phí sửa/thay" value={`${fmtVND(stats.chi_phi)} đ`} tone="text-emerald-600" />
+        <Kpi icon={AlertTriangle} label="Đang xử lý" value={stats.mo} tone="text-amber-600 dark:text-amber-400" />
+        <Kpi icon={Replace} label="Thay thế linh kiện" value={stats.thay} tone="text-sky-600 dark:text-sky-400" />
+        <Kpi icon={DollarSign} label="Chi phí sửa/thay" value={`${fmtVND(stats.chi_phi)} đ`} tone="text-emerald-600 dark:text-emerald-400" />
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -223,7 +220,7 @@ function HongHocPage() {
                     <SelectTrigger><SelectValue placeholder="Phương án" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi phương án</SelectItem>
-                      {Object.keys(paColor).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      {["Sửa chữa", "Thay thế", "Thanh lý"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Select value={tt} onValueChange={(v) => setTt(v)}>

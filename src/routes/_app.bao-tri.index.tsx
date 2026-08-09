@@ -27,12 +27,8 @@ export const Route = createFileRoute("/_app/bao-tri/")({
   component: BaoTriPage,
 });
 
-const loaiColor: Record<string, string> = {
-  "Định kỳ": "bg-sky-100 text-sky-700",
-  "Đột xuất": "bg-amber-100 text-amber-700",
-  "Hiệu chuẩn": "bg-violet-100 text-violet-700",
-  "Nâng cấp": "bg-emerald-100 text-emerald-700",
-};
+import { getLoaiBaoTriToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
@@ -108,7 +104,7 @@ function BaoTriPage() {
     {
       key: "loai_bao_tri", label: "Loại", filter: "cat",
       value: (b) => b.loai_bao_tri,
-      cell: (b) => <Badge variant="secondary" className={loaiColor[b.loai_bao_tri] ?? ""}>{b.loai_bao_tri}</Badge>,
+      cell: (b) => <Badge variant="secondary" className={getLoaiBaoTriToken(b.loai_bao_tri)?.class}>{b.loai_bao_tri}</Badge>,
     },
     {
       key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat",
@@ -163,7 +159,7 @@ function BaoTriPage() {
                     <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Loại" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi loại</SelectItem>
-                      {Object.keys(loaiColor).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      {["Định kỳ", "Đột xuất", "Hiệu chuẩn", "Nâng cấp"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Select value={tt} onValueChange={setTt}>

@@ -208,9 +208,9 @@ function GiayPhepPage() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Kpi icon={ShieldCheck} label="Tổng GP đang lưu trữ" value={kpi.total} tone="text-foreground/70" />
-        <Kpi icon={CheckCircle2} label="Còn hiệu lực" value={kpi.valid} tone="text-emerald-600" />
-        <Kpi icon={Clock} label={`Sắp hết hạn (≤ ${DEFAULT_NGAY_SAP_HET_HAN} ngày)`} value={kpi.expiring} tone="text-amber-600" />
-        <Kpi icon={AlertTriangle} label="Hệ thống thiếu GP mới" value={heThongThieuGpMoi.length} tone="text-red-600" />
+        <Kpi icon={CheckCircle2} label="Còn hiệu lực" value={kpi.valid} tone="text-emerald-600 dark:text-emerald-400" />
+        <Kpi icon={Clock} label={`Sắp hết hạn (≤ ${DEFAULT_NGAY_SAP_HET_HAN} ngày)`} value={kpi.expiring} tone="text-amber-600 dark:text-amber-400" />
+        <Kpi icon={AlertTriangle} label="Hệ thống thiếu GP mới" value={heThongThieuGpMoi.length} tone="text-red-600 dark:text-red-400" />
       </div>
 
       <GiayPhepFormDialog open={dialogOpen} onOpenChange={setDialogOpen} row={editingRow} />
@@ -245,9 +245,9 @@ function GiayPhepPage() {
             <CardTitle className="text-base">Cảnh báo gia hạn</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Nhac label="≤ 30 ngày" value={kpi.d30} tone="text-red-600" />
-            <Nhac label="31–60 ngày" value={kpi.d60} tone="text-amber-600" />
-            <Nhac label="61–90 ngày" value={kpi.d90} tone="text-sky-600" />
+            <Nhac label="≤ 30 ngày" value={kpi.d30} tone="text-red-600 dark:text-red-400" />
+            <Nhac label="31–60 ngày" value={kpi.d60} tone="text-amber-600 dark:text-amber-400" />
+            <Nhac label="61–90 ngày" value={kpi.d90} tone="text-sky-600 dark:text-sky-400" />
             <div className="pt-2 text-xs text-muted-foreground">Ưu tiên gia hạn để tránh gián đoạn khai thác.</div>
           </CardContent>
         </Card>

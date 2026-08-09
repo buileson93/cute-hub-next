@@ -2,7 +2,9 @@ import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, RefreshCw, Puzzle } from "lucide-react";
+import { PageHeader } from "@/components/mirats/PageHeader";
+
 
 export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
   head: () => ({
@@ -20,7 +22,18 @@ export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
 });
 
 function ThanhPhanListPage() {
-  return <ThanhPhanTable />;
+  return (
+    <div className="flex h-full flex-col">
+      <PageHeader
+        title="Bảng thành phần & tài sản"
+        icon={Puzzle}
+        description="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật."
+      />
+      <div className="flex-1 overflow-hidden">
+        <ThanhPhanTable />
+      </div>
+    </div>
+  );
 }
 
 /**

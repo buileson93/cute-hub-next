@@ -49,12 +49,8 @@ export const Route = createFileRoute("/_app/su-co/")({
   component: SuCoPage,
 });
 
-const mucColor: Record<string, string> = {
-  "Nghiêm trọng": "bg-red-100 text-red-700",
-  "Cao": "bg-orange-100 text-orange-700",
-  "Trung bình": "bg-amber-100 text-amber-700",
-  "Thấp": "bg-slate-100 text-slate-700",
-};
+import { getMucDoSuCoToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
@@ -339,7 +335,10 @@ function SuCoPage() {
     {
       key: "muc_do", label: "Mức độ", filter: "cat",
       value: (s) => s.muc_do,
-      cell: (s) => <Badge variant="secondary" className={mucColor[s.muc_do] ?? ""}>{s.muc_do}</Badge>,
+      cell: (s) => {
+        const token = getMucDoSuCoToken(s.muc_do);
+        return <Badge variant="secondary" className={token?.class}>{s.muc_do}</Badge>;
+      },
     },
     {
       key: "trang_thai", label: "Trạng thái", filter: "cat",
@@ -417,10 +416,10 @@ function SuCoPage() {
       {/* Dải thống kê gọn */}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
         <Stat icon={AlertTriangle} label="Sự cố" value={stats.total} />
-        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600" />
-        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600" />
-        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600" />
-        <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600" />
+        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
+        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600 dark:text-red-400" />
+        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
+        <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600 dark:text-sky-400" />
         <div className="ml-auto">
           <Select value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
             <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
@@ -448,7 +447,7 @@ function SuCoPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     {g.ma_nhom_bc && <span className="font-mono text-xs text-primary">{g.ma_nhom_bc}</span>}
-                    <Badge variant="secondary" className={mucColor[g.muc_do] ?? ""}>{g.muc_do}</Badge>
+                    <Badge variant="secondary" className={getMucDoSuCoToken(g.muc_do)?.class}>{g.muc_do}</Badge>
                     <span className="text-xs text-muted-foreground">{g.ngay_phat_hien.replace("T", " ")}</span>
                   </div>
                   <div className="mt-1 truncate text-sm font-medium">{g.hien_tuong}</div>
@@ -485,7 +484,7 @@ function SuCoPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }} className="font-mono text-xs text-primary hover:underline">{s.ma_su_co}</Link>
-                      <Badge variant="secondary" className={mucColor[s.muc_do] ?? ""}>{s.muc_do}</Badge>
+                      <Badge variant="secondary" className={getMucDoSuCoToken(s.muc_do)?.class}>{s.muc_do}</Badge>
                       <span className="text-xs text-muted-foreground">Khắc phục: {(s.thoi_diem_khac_phuc ?? "").replace("T", " ")}</span>
                     </div>
                     <div className="mt-1 truncate text-sm font-medium">{s.hien_tuong}</div>

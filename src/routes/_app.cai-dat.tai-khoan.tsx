@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { ArrowLeft, Upload, Trash2, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Upload, Trash2, Loader2, Save, User } from "lucide-react";
+import { PageHeader } from "@/components/mirats/PageHeader";
+
 import { UserAvatar } from "@/components/mirats/UserAvatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -130,14 +132,13 @@ function AccountPage() {
   }
 
   return (
-    <>
-      <div className="mx-auto w-full max-w-3xl space-y-5 p-4 lg:p-6">
-        <Button variant="ghost" size="sm" asChild className="w-fit">
-          <Link to="/">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Quay lại
-          </Link>
-        </Button>
+    <div className="mx-auto w-full max-w-3xl space-y-5 p-4 lg:p-6">
+      <PageHeader
+        title="Tài khoản của tôi"
+        icon={User}
+        description="Quản lý thông tin cá nhân, ảnh đại diện và bảo mật tài khoản."
+      />
+
 
         <Card>
           <CardHeader>
@@ -224,8 +225,7 @@ function AccountPage() {
         <DisplayDensityCard />
 
         <PasskeyManager />
-      </div>
-    </>
+    </div>
   );
 }
 
