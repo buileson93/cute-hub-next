@@ -1,23 +1,15 @@
 // ============================================================================
 // DANH MỤC › THIẾT BỊ — bảng phẳng liệt kê TẤT CẢ tài sản trong CSDL.
-//
-// Khác với "Sổ lý lịch" (cây theo hệ thống đang khai thác), trang này coi mọi
-// tài sản như một danh mục tài sản: kể cả tài sản ĐỘC LẬP chưa gán hệ thống
-// (vật tư dự phòng, công cụ dụng cụ, tài sản đo…). Có bộ lọc riêng để lọc
-// nhanh nhóm tài sản độc lập này.
-//
-// Phạm vi RỘNG HƠN TableView "Vận hành › Hệ Thống": đầy đủ cột (định danh, mẫu,
-// loại, nhà SX/CC, trạng thái, cấp phát, vị trí, phân loại, vòng đời…), sắp xếp,
-// lọc, chọn cột, tích chọn dòng và XUẤT .xlsx (theo bộ lọc hoặc dòng đang chọn).
-// Chỉ đọc + điều hướng — mọi chỉnh sửa vẫn qua trang chi tiết / cây Hệ Thống.
 // ============================================================================
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2, ShieldCheck,
+  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, 
+  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -810,8 +802,50 @@ function DanhMucThietBiPage() {
     return <div className="p-8 text-center text-sm text-destructive">Không tải được dữ liệu tài sản.</div>;
   }
 
+  // ---- KPI Stats & Click-to-filter ----
+  const kpiStats = useMemo(() => {
+    const total = devices.length;
+    const inService = devices.filter(d => d.trang_thai === "Đang sử dụng").length;
+    const warranty = devices.filter(d => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date()).length;
+    const lowLife = devices.filter(d => d._tyLeTuoiTho !== null && d._tyLeTuoiTho < 20).length;
+    
+    return [
+      { id: "total", label: "Tổng tài sản", value: total, icon: LayoutGrid, color: "text-blue-600", bg: "bg-blue-50" },
+      { id: "active", label: "Đang khai thác", value: inService, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+      { id: "warranty", label: "Còn bảo hành", value: warranty, icon: ShieldCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
+      { id: "alert", label: "Sắp hết tuổi thọ", value: lowLife, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
+    ];
+  }, [devices]);
+
   return (
-    <div className="space-y-4">
+    <div className="flex h-full flex-col gap-4 overflow-hidden p-4">
+      {/* KPI Header */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {kpiStats.map((kpi) => (
+          <div 
+            key={kpi.id}
+            className={cn(
+              "group relative overflow-hidden rounded-xl border bg-card p-4 transition-all hover:shadow-md",
+              "before:absolute before:inset-y-0 before:left-0 before:w-1",
+              kpi.id === "total" && "before:bg-blue-500",
+              kpi.id === "active" && "before:bg-emerald-500",
+              kpi.id === "warranty" && "before:bg-indigo-500",
+              kpi.id === "alert" && "before:bg-amber-500"
+            )}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
+                <h3 className="mt-1 text-2xl font-bold tracking-tight">{kpi.value.toLocaleString("vi-VN")}</h3>
+              </div>
+              <div className={cn("rounded-lg p-2.5", kpi.bg)}>
+                <kpi.icon className={cn("h-5 w-5", kpi.color)} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <PageHeader
         icon={HardDrive}
         title="Danh mục tài sản"
