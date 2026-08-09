@@ -164,10 +164,11 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
           </div>
           <div className="flex items-center gap-2">
             {canEdit && (
-              <Button variant={editMode ? "default" : "outline"} size="sm" onClick={() => setEditMode(!editMode)}>
+              <Button variant={editMode ? "default" : "outline"} size="xs" onClick={() => setEditMode(!editMode)}>
                 <PencilLine className="h-3.5 w-3.5" />
               </Button>
             )}
+
 
             {canManage && <ThietBiLifecycleActions ma={ma} trangThai={tb.trang_thai} />}
           </div>
