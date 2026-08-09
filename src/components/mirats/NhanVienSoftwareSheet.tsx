@@ -37,7 +37,7 @@ export function NhanVienSoftwareSheet({
             phan_mem_ban_quyen(id, ten_phan_mem, phien_ban, license_key, ngay_het_han, ma_ban_quyen)
           )
         `)
-        .eq("nhan_vien_id", nhanVienId);
+        .eq("nhan_vien_id" as any, nhanVienId);
       
       if (error) throw error;
       return (data || []).map(tb => ({
