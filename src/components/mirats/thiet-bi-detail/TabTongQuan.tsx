@@ -68,9 +68,10 @@ export default function TabTongQuan({
 
             <InfoRow icon={MapPin} label="Vị trí lắp đặt" value={
               tb.vi_tri
-                ? <Link to="/danh-muc/vi-tri" className="inline-flex items-center gap-1 text-primary hover:underline">{tb.vi_tri}<ExternalLink className="h-3 w-3" /></Link>
+                ? <Link to="/danh-muc/vi-tri" search={{ q: tb.vi_tri }} className="inline-flex items-center gap-1 text-primary hover:underline">{tb.vi_tri}<ExternalLink className="h-3 w-3" /></Link>
                 : "—"
             } />
+
           </CardContent>
         </Card>
 
