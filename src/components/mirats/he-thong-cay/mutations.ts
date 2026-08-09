@@ -15,10 +15,12 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// Trong môi trường này, TanStack Start có vẻ yêu cầu parser function PHẢI có thêm serializer/encoder làm đối số thứ 2.
-// Hoặc đơn giản là validator(schema, undefined) nếu overload yêu cầu.
+/**
+ * Server functions for Tree/Mindmap node management.
+ * Note: validator is used with a direct Zod-compatible parser to avoid TS2554.
+ */
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data), (d) => d)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -35,7 +37,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data), (d) => d)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
