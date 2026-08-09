@@ -388,4 +388,6 @@ function LifecyclePanelProxy({ thietBiId }: any) {
       ))}
     </ol>
   );
+}
+
 
