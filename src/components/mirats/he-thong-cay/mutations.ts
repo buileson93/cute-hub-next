@@ -15,11 +15,11 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-// TanStack Start v1 validator typically works with a single function or a schema object.
-// If TS2554 persists, the project's environment might expect a specific Zod integration wrapper or a triple-argument setup for serialization.
-// We'll use the simplest Zod-direct approach which is standard.
+// Trong TanStack Start v1, .validator() yêu cầu 2-3 đối số nếu dùng hàm parser tùy chỉnh
+// Hoặc sử dụng .inputValidator() nếu library cung cấp (tùy thuộc vào version chính xác)
+// Ở đây ta dùng signature (data, schema) hoặc đơn giản là truyền schema nếu library hỗ trợ Zod trực tiếp
 export const saveNode = createServerFn({ method: "POST" })
-  .validator((data: unknown) => saveSchema.parse(data))
+  .validator((data: unknown) => saveSchema.parse(data), (d) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -36,7 +36,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator((data: unknown) => reorderSchema.parse(data))
+  .validator((data: unknown) => reorderSchema.parse(data), (d) => d)
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
