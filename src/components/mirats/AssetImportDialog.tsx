@@ -84,7 +84,7 @@ export function AssetImportDialog({
         nguon_du_lieu: "import_excel"
       }));
 
-      const { error } = await supabase.from("thiet_bi").insert(assets);
+      const { error } = await supabase.from("thiet_bi").insert(assets as any);
       if (error) throw error;
     },
     onSuccess: () => {
