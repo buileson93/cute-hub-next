@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { QRCodeSVG } from "qrcode.react";
 import { 
   FileText, Package, Factory, Truck, Tag, Building2, 
