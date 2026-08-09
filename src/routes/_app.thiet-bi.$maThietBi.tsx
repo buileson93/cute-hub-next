@@ -28,7 +28,7 @@ import { CapPhatControl } from "@/components/mirats/CapPhatControl";
 import { ThietBiLifecycleActions } from "@/components/mirats/ThietBiLifecycleActions";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
 import { buildRecordTimeline, type TimelineItem } from "@/lib/mirats/record-timeline";
-import { formatVal } from "@/lib/mirats/change-log.functions";
+import { formatVal } from "@/lib/mirats/change-log-utils";
 import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
