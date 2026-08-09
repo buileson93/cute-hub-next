@@ -10,8 +10,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/mirats/SchemaDialog";
+import { CompatibilityManager, type CompatibilityItem } from "@/components/mirats/CompatibilityManager";
 import { supabase } from "@/integrations/backend/client";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
+
 
 const formSchema = z.object({
   ten_thiet_bi: z
