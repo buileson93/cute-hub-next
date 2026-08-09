@@ -10,7 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
-import { BookOpen as BookOpenIcon } from "lucide-react";
+import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
+
+
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { LyLichThanhPhanPanel } from "@/components/mirats/LyLichLayerPanel";
 import { cn } from "@/lib/utils";
@@ -32,17 +34,6 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   component: ThietBiPage,
 });
 
-const ttColor: Record<string, string> = {
-  "Đang khai thác": "bg-emerald-100 text-emerald-700",
-  "Đang sử dụng": "bg-emerald-100 text-emerald-700",
-  "Đang hoạt động": "bg-emerald-100 text-emerald-700",
-  "Dự phòng": "bg-sky-100 text-sky-700",
-  "Đang sửa chữa": "bg-amber-100 text-amber-700",
-  "Hỏng": "bg-red-100 text-red-700",
-  "Chờ thanh lý": "bg-orange-100 text-orange-700",
-  "Đã thanh lý": "bg-slate-200 text-slate-700",
-  "Ngừng hoạt động": "bg-slate-200 text-slate-700",
-};
 
 /** Tổng hợp số lần bảo dưỡng / sự cố / hỏng hóc theo mã tài sản. */
 interface Hist { bt: number; sc: number; hh: number }
@@ -410,6 +401,10 @@ function ThietBiPage() {
                               <span className="min-w-0 flex-1 truncate">{tbName(d)}</span>
                             </div>
                           </div>
+                          <Badge variant="outline" className={cn("shrink-0 border", getTrangThaiToken(d.trang_thai)?.class)}>
+                            {d.trang_thai}
+                          </Badge>
+
                           {d._htTen && (
                             <Badge variant="outline" className="shrink-0 gap-1 border-primary/30 text-primary" title="Hệ thống">
                               <Network className="h-3 w-3" />
@@ -417,6 +412,7 @@ function ThietBiPage() {
                             </Badge>
                           )}
                         </button>
+
                       ))}
                       {suggestions.devTotal > suggestions.devHits.length && (
                         <div className="px-3 py-1.5 text-center text-[11px] text-muted-foreground">

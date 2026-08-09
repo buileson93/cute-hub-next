@@ -11,7 +11,7 @@
 // còn `normalizeLegacy` ánh xạ về code chuẩn khi cần so sánh / phân loại.
 // ============================================================================
 
-export type Domain = "su_co" | "van_de" | "cong_viec" | "hong_hoc" | "ban_giao" | "bao_tri";
+export type Domain = "su_co" | "van_de" | "cong_viec" | "hong_hoc" | "ban_giao" | "bao_tri" | "thiet_bi";
 
 export type Phase = "open" | "in_progress" | "closed" | "cancelled";
 
@@ -105,7 +105,28 @@ const DEFS: Record<Domain, readonly StatusDef[]> = {
     { code: "hoan", label: "Hoãn", phase: "cancelled",
       aliases: ["Hoãn", "hoan", "HOAN", "postponed"] },
   ],
+
+  // ------------------------------------------------------------------------
+  // TÀI SẢN (TRẠNG THÁI KHAI THÁC)
+  // ------------------------------------------------------------------------
+  thiet_bi: [
+    { code: "dang_su_dung", label: "Đang sử dụng", phase: "closed",
+      aliases: ["Đang sử dụng", "Đang khai thác", "Đang hoạt động", "dang_su_dung", "active"] },
+    { code: "du_phong", label: "Dự phòng", phase: "open",
+      aliases: ["Dự phòng", "du_phong", "standby"] },
+    { code: "dang_sua_chua", label: "Đang sửa chữa", phase: "in_progress",
+      aliases: ["Đang sửa chữa", "dang_sua_chua", "repairing"] },
+    { code: "hong", label: "Hỏng", phase: "in_progress",
+      aliases: ["Hỏng", "hong", "broken"] },
+    { code: "cho_thanh_ly", label: "Chờ thanh lý", phase: "cancelled",
+      aliases: ["Chờ thanh lý", "cho_thanh_ly"] },
+    { code: "da_thanh_ly", label: "Đã thanh lý", phase: "cancelled",
+      aliases: ["Đã thanh lý", "da_thanh_ly", "retired"] },
+    { code: "ngung_hoat_dong", label: "Ngừng hoạt động", phase: "cancelled",
+      aliases: ["Ngừng hoạt động", "ngung_hoat_dong"] },
+  ],
 };
+
 
 /** Trả về danh sách trạng thái đã định nghĩa cho một domain. */
 export function statuses(d: Domain): StatusDef[] {

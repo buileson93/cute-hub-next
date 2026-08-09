@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { getLoaiBanGiaoToken, LOAI_BAN_GIAO_TOKEN } from "@/lib/mirats/ui/status-tokens";
+
+
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
@@ -36,12 +39,6 @@ export const Route = createFileRoute("/_app/ban-giao")({
   component: BanGiaoPage,
 });
 
-const loaiColors: Record<string, string> = {
-  "Cấp phát": "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:text-emerald-300",
-  "Thu hồi": "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:text-orange-300",
-  "Luân chuyển": "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-300",
-  "Mượn tạm": "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-300",
-};
 
 function fmtDate(s: string | null) {
   if (!s) return "—";
@@ -216,7 +213,7 @@ function BanGiaoPage() {
             <SelectTrigger className="w-[150px]"><SelectValue placeholder="Loại" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Mọi loại</SelectItem>
-              {Object.keys(loaiColors).map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+              {Object.keys(LOAI_BAN_GIAO_TOKEN).map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={tt} onValueChange={setTt}>
@@ -249,7 +246,7 @@ function BanGiaoPage() {
               {
                 key: "loai", label: "Loại", filter: "cat",
                 value: (b) => b.loai_ban_giao,
-                cell: (b) => <Badge variant="outline" className={loaiColors[b.loai_ban_giao] ?? ""}>{b.loai_ban_giao}</Badge>,
+                cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge>,
               },
               {
                 key: "thiet_bi", label: "Tài sản", minW: "min-w-[180px]", filter: "text",
@@ -331,7 +328,7 @@ function BanGiaoPage() {
               },
               { key: "nguoi_nhan", label: "Người đang giữ", filter: "text", value: (b) => b.nguoi_nhan ?? "", cell: (b) => <span className="text-sm">{b.nguoi_nhan || "—"}</span> },
               { key: "don_vi_nhan", label: "Đơn vị", filter: "cat", value: (b) => donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan, cell: (b) => <span className="text-sm">{donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan}</span> },
-              { key: "loai", label: "Loại bàn giao", filter: "cat", value: (b) => b.loai_ban_giao, cell: (b) => <Badge variant="outline" className={loaiColors[b.loai_ban_giao] ?? ""}>{b.loai_ban_giao}</Badge> },
+              { key: "loai", label: "Loại bàn giao", filter: "cat", value: (b) => b.loai_ban_giao, cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge> },
               { key: "ngay_nhan", label: "Từ ngày", sortable: true, value: (b) => b.ngay_nhan, cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_nhan)}</span> },
               {
                 key: "thoi_gian_giu", label: "Thời gian giữ", align: "right", sortable: true,

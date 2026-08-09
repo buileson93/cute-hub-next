@@ -11,6 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { getXepLoaiHealthToken, XEP_LOAI_HEALTH_TOKEN } from "@/lib/mirats/ui/status-tokens";
+import { cn } from "@/lib/utils";
+
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -37,12 +41,6 @@ export const Route = createFileRoute("/_app/tuoi-tho")({
   component: TuoiThoPage,
 });
 
-const loaiColors: Record<string, { bg: string; text: string; ring: string; hex: string }> = {
-  A: { bg: "bg-emerald-500/10", text: "text-emerald-700 dark:text-emerald-300", ring: "border-emerald-500/20", hex: "#10b981" },
-  B: { bg: "bg-blue-500/10", text: "text-blue-700 dark:text-blue-300", ring: "border-blue-500/20", hex: "#3b82f6" },
-  C: { bg: "bg-amber-500/10", text: "text-amber-700 dark:text-amber-300", ring: "border-amber-500/20", hex: "#f59e0b" },
-  D: { bg: "bg-red-500/10", text: "text-red-700 dark:text-red-300", ring: "border-red-500/20", hex: "#ef4444" },
-};
 
 function TuoiThoPage() {
   const { thietBi, donVi } = useScope();
@@ -89,7 +87,8 @@ function TuoiThoPage() {
     const buckets: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
     for (const r of rows) buckets[r.h.xepLoai]++;
     return (["A", "B", "C", "D"] as const).map((k) => ({
-      loai: k, count: buckets[k], hex: loaiColors[k].hex,
+      loai: k, count: buckets[k], hex: XEP_LOAI_HEALTH_TOKEN[k].hex,
+
     }));
   }, [rows]);
 
@@ -369,8 +368,10 @@ function TuoiThoPage() {
                 key: "xep_loai", label: "Xếp loại", filter: "cat",
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
-                  const c = loaiColors[r.h.xepLoai];
-                  return <Badge variant="outline" className={`${c.bg} ${c.text} ${c.ring} font-mono`}>{r.h.xepLoai}</Badge>;
+                  const token = getXepLoaiHealthToken(r.h.xepLoai);
+                  return <Badge variant="outline" className={cn(token?.class, "font-mono border")}>{r.h.xepLoai}</Badge>;
+
+
                 },
               },
               { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
@@ -426,8 +427,9 @@ function TuoiThoPage() {
                 key: "xep_loai", label: "Loại", filter: "cat",
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
-                  const c = loaiColors[r.h.xepLoai];
-                  return <Badge variant="outline" className={`${c.bg} ${c.text} ${c.ring} font-mono`}>{r.h.xepLoai}</Badge>;
+                  const token = getXepLoaiHealthToken(r.h.xepLoai);
+                  return <Badge variant="outline" className={cn(token?.class, "font-mono border")}>{r.h.xepLoai}</Badge>;
+
                 },
               },
               { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
