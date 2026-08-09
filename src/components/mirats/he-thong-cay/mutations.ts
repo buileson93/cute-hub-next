@@ -15,12 +15,11 @@ const reorderSchema = z.object({
   order: z.array(z.string()),
 });
 
-/**
- * Server function to save node overrides or draft data.
- * Using .validator(schema) to satisfy TypeScript's requirement for arguments in TanStack Start v1.
- */
+// TanStack Start v1 validator typically works with a single function or a schema object.
+// If TS2554 persists, the project's environment might expect a specific Zod integration wrapper or a triple-argument setup for serialization.
+// We'll use the simplest Zod-direct approach which is standard.
 export const saveNode = createServerFn({ method: "POST" })
-  .validator(saveSchema)
+  .validator((data: unknown) => saveSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
@@ -36,11 +35,8 @@ export const saveNode = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/**
- * Server function to save node ordering metadata.
- */
 export const reorderNodes = createServerFn({ method: "POST" })
-  .validator(reorderSchema)
+  .validator((data: unknown) => reorderSchema.parse(data))
   .handler(async ({ data }) => {
     const { error } = await supabase
       .from("cay_node_edit")
