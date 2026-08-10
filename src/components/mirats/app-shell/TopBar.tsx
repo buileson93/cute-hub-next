@@ -3,10 +3,12 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export function TopBar() {
+export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   return (
-    <div className="flex h-full items-center justify-between gap-4">
-      <div className="relative w-full max-w-sm" data-tour="search">
+    <div className="flex h-full items-center justify-between gap-4 w-full">
+      <div className="flex items-center gap-3">
+        {renderMobileMenu}
+        <div className="relative w-full max-w-sm" data-tour="search">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"

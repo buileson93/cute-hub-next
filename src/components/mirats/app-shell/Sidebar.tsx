@@ -6,7 +6,7 @@ import { navGroups, isActive } from "@/lib/mirats/nav/nav-config";
 import { useSession } from "@/hooks/use-session";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { hasRole } = useSession();
   
@@ -38,6 +38,7 @@ export function Sidebar() {
                     <TooltipTrigger asChild>
                       <Link
                         to={item.route}
+                        onClick={onNavigate}
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                           active 

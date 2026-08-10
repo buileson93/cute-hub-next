@@ -14,6 +14,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import {
   type Workspace,
@@ -71,6 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [wsLastRoute, setWsLastRoute] = useState<Record<string, string>>({});
   const [flyoutWs, setFlyoutWs] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -176,10 +186,29 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
-               <div className="flex items-center gap-4">
-                  <Link to="/" className="md:hidden"><SidebarLogoRail /></Link>
+               <div className="flex flex-1 items-center gap-4">
+                  <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
                   <div className="hidden md:block"><TourButton /></div>
-                  <TopBar />
+                  <TopBar 
+                    renderMobileMenu={
+                      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                        <SheetTrigger asChild>
+                          <Button variant="ghost" size="icon" className="md:hidden shrink-0">
+                            <Menu className="h-5 w-5" />
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[86vw] p-0 focus:outline-none">
+                          <SheetHeader className="border-b h-14 px-6 flex flex-row items-center gap-2">
+                             <SidebarLogoRail />
+                             <SheetTitle className="text-sm font-bold">MIRATS 2.0</SheetTitle>
+                          </SheetHeader>
+                          <div className="overflow-y-auto h-[calc(100dvh-3.5rem)]">
+                             <Sidebar onNavigate={() => setIsMobileMenuOpen(false)} />
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+                    }
+                  />
                </div>
                <div className="flex items-center gap-3">
                   <UserMenu />
