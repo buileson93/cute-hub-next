@@ -34,6 +34,7 @@ import { formatVal } from "@/lib/mirats/change-log-utils";
 import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 import { cn } from "@/lib/utils";
+import { DetailLayout, DetailCard, DetailInfoGrid, KpiCard } from "@/components/mirats/DetailLayout";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
