@@ -167,10 +167,22 @@ export function NodeEditorSheet({
 
         <div className="space-y-2 border-t pt-3">
           {canManage && (
-            <Button className="w-full" onClick={submit} disabled={saving}>
+            <Button 
+              className="w-full" 
+              onClick={() => {
+                if (target?.kind === "tb") {
+                  // Gọi saveCell cho ten_thiet_bi qua Change Request logic nếu cần
+                  onSave({ ten });
+                } else {
+                  submit();
+                }
+              }} 
+              disabled={saving}
+            >
               {saving ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Save className="mr-1.5 h-4 w-4" />} Lưu thay đổi
             </Button>
           )}
+
           {target && (target.kind === "nh" || target.kind === "ht") && canManage && target.ma !== HT_KHAC && (
             <Button variant="outline" className="w-full text-destructive" onClick={() => onDelete(target.kind, target.ma, ten, title)}>
               <Trash2 className="mr-1.5 h-4 w-4" /> Xoá {title}
