@@ -1,396 +1,178 @@
-import { Suspense, lazy } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/backend/client";
-import { storage } from "@/lib/storage";
-import { toast } from "sonner";
-import {
-  ArrowLeft, Gauge, Calendar, AlertTriangle, Wrench, PencilLine,
-  LayoutDashboard, Activity, ShieldCheck, Cpu, Settings, History, ArrowLeftRight,
-  Info, LayoutList, Package, FileText
-} from "lucide-react";
-
-import { Card, CardContent } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAllRows } from "@/lib/mirats/paginate";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { Package } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DetailLayout, DetailCard, DetailInfoGrid, KpiCard as LayoutKpiCard } from "@/components/mirats/DetailLayout";
-
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
-import { useOperationsData } from "@/lib/mirats/db-operations";
-import { useScope } from "@/lib/mirats/scope";
-import { useSession } from "@/hooks/use-session";
-import {
-  useTelemetry, useAddTelemetry, useLifecycle, useTrangThaiMap,
-  useCapPhatThietBi, useAllocationHistory, useCapPhatVoiChuKy, useLatestHandover,
-} from "@/lib/mirats/db-smart";
-import { CapPhatControl } from "@/components/mirats/CapPhatControl";
-import { ThietBiLifecycleActions } from "@/components/mirats/ThietBiLifecycleActions";
-import { AccessDenied } from "@/components/mirats/AccessDenied";
-import { buildRecordTimeline, type TimelineItem } from "@/lib/mirats/record-timeline";
-import { formatVal } from "@/lib/mirats/change-log-utils";
-import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
-import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
-import { cn } from "@/lib/utils";
-
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Lazy load tab components
-const TabTongQuan = lazy(() => import("@/components/mirats/thiet-bi-detail/TabTongQuan"));
-const TabVanHanh = lazy(() => import("@/components/mirats/thiet-bi-detail/TabVanHanh"));
-const TabHoSoPhapLy = lazy(() => import("@/components/mirats/thiet-bi-detail/TabHoSoPhapLy"));
-const TabCauHinh = lazy(() => import("@/components/mirats/thiet-bi-detail/TabCauHinh"));
-const TabNangCao = lazy(() => import("@/components/mirats/thiet-bi-detail/TabNangCao"));
-
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.maThietBi} — Sổ lý lịch tài sản — MIRATS 2.0` },
-      { name: "description", content: `Sổ lý lịch tài sản ${params.maThietBi}: thông tin, vận hành, cấu hình và hồ sơ pháp lý.` },
-    ],
-  }),
-  component: ThietBiDetail,
+  component: ThietBiDetailRoute,
 });
 
-function ThietBiDetail() {
-  const { maThietBi } = Route.useParams();
-  const { inScope, scopeAll } = useScope();
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
-  const { data: nameOv } = useSystemNameOverrides();
-  const { data: devNameOv } = useDeviceNameOverrides();
+function ThietBiDetailRoute() {
+  const { maThietBi: ma } = Route.useParams();
 
-  const tb = useMemo<DbDevice | undefined>(
-    () => taxo?.devices.find((d) => d.ma_thiet_bi === maThietBi),
-    [taxo, maThietBi],
-  );
-
-  if (isLoading) return <div className="p-16 text-center"><Skeleton className="h-20 w-full" /></div>;
-  if (error || !tb) return (
-    <div className="p-8 text-center">
-      <h2 className="text-lg font-semibold">Không tìm thấy tài sản</h2>
-      <Button asChild variant="outline" className="mt-4"><Link to="/thiet-bi" search={{ q: "" }}>Về danh sách</Link></Button>
-    </div>
-  );
-  
-  if (!scopeAll && !inScope(tb.don_vi)) return <AccessDenied backTo="/thiet-bi" backLabel="Về danh sách tài sản" />;
-
-  return <ThietBiDetailInner tb={tb} tenTb={devNameOv?.get(tb.ma_thiet_bi) || tb.ten} sysName={(tb._htId && nameOv?.get(tb._htId)) || tb._htTen} sysGpSo={taxo?.htList.find((h) => h.id === tb._htId)?.gpSo ?? ""} sysGpHan={taxo?.htList.find((h) => h.id === tb._htId)?.gpHan ?? ""} />;
-}
-
-function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbDevice; tenTb: string; sysName: string; sysGpSo: string; sysGpHan: string }) {
-  const { ops } = useOperationsData();
-  const { data: taxo } = useDbTaxonomy();
-  const ma = tb.ma_thiet_bi;
-
-  const { data: loaiMau } = useQuery({
-    queryKey: ["dm_loai_thiet_bi_mau", tb._loaiTbId],
-    enabled: !!tb._loaiTbId,
+  const { data: tb, isLoading } = useQuery({
+    queryKey: ["thiet-bi", ma],
     queryFn: async () => {
-      const { data } = await supabase.from("dm_loai_thiet_bi").select("mau").eq("id", tb._loaiTbId!).maybeSingle();
-      return data?.mau as string | null;
+      const { data, error } = await supabase
+        .from("thiet_bi")
+        .select(`
+          *,
+          loai:loai_thiet_bi_id(ten),
+          trang_thai:trang_thai_id(ma, ten),
+          don_vi:don_vi_quan_ly_id(ten, ma)
+        `)
+        .eq("ma_thiet_bi", ma)
+        .single();
+      if (error) throw error;
+      return data;
     },
   });
 
-  const { data: refInfo } = useQuery({
-    queryKey: ["tb_ref_info", ma],
+  const vt = useQuery({
+    queryKey: ["vai-tro-thiet-bi", tb?.id],
+    enabled: !!tb?.id,
     queryFn: async () => {
-      const { data } = await supabase.from("thiet_bi").select("dm_model(ten, p_n, hinh_anh), dm_nha_san_xuat(ten), dm_nha_cung_cap(ten)").eq("ma_thiet_bi", ma).maybeSingle();
-      const row = data as any;
-      let modelImg = "";
-      if (row?.dm_model?.hinh_anh) {
-        const { data: signed } = await storage.from("model-anh").createSignedUrl(row.dm_model.hinh_anh, 315360000);
-        modelImg = signed?.signedUrl ?? "";
-      }
-      return {
-        model: row?.dm_model?.ten || "",
-        modelPn: row?.dm_model?.p_n || "",
-        nhaSanXuat: row?.dm_nha_san_xuat?.ten || "",
-        nhaCungCap: row?.dm_nha_cung_cap?.ten || "",
-        modelImg,
-      };
+      const rows = await fetchAllRows<{
+        thanh_phan: { id: string; ten: string; he_thong: { id: string; ten: string } | null } | null;
+      }>((from, to) =>
+        supabase
+          .from("gan_chuc_nang")
+          .select("thanh_phan:thanh_phan_id(id, ten, he_thong:he_thong_id(id, ten))")
+          .eq("thiet_bi_id", tb!.id)
+          .is("den_ngay", null)
+          .range(from, to)
+      );
+      return rows.map((r) => r.thanh_phan).filter(Boolean);
     },
   });
 
-  const { hasRole } = useSession();
-  const canEdit = hasRole("admin") || hasRole("phong_kt");
-  const [editMode, setEditMode] = useState(false);
-  const canManage = canEdit && editMode;
+  if (isLoading) return <DetailSkeleton />;
+  if (!tb) return <div>Không tìm thấy tài sản.</div>;
 
-  const capPhatMut = useCapPhatThietBi();
-  const capPhatKyMut = useCapPhatVoiChuKy();
-  const { data: latestHandover } = useLatestHandover(tb.id);
-  const { data: vaiTroList = [] } = useVaiTroThietBi(tb.id);
-  const donViOptions = useMemo(() => (taxo?.donViList ?? []).map((d) => ({ id: d.id, ten: `${d.ma}${d.ten ? " — " + d.ten : ""}` })), [taxo]);
-  const donViTenMap = useMemo(() => new Map((taxo?.donViList ?? []).map((d) => [d.id, `${d.ma}${d.ten ? " — " + d.ten : ""}`])), [taxo]);
-
-  const suCo = useMemo(() => ops.suCo.filter((e) => e.thiet_bi_id === tb.id || e.thiet_bi === ma), [ops.suCo, tb.id, ma]);
-  const baoTri = useMemo(() => ops.baoTri.filter((e) => e.thiet_bi_id === tb.id || e.thiet_bi === ma), [ops.baoTri, tb.id, ma]);
-  const hongHoc = useMemo(() => ops.hongHoc.filter((e) => e.thiet_bi_hong_id === tb.id || e.thiet_bi_hong === ma), [ops.hongHoc, tb.id, ma]);
-  const banGiao = useMemo(() => ops.banGiao.filter((e) => e.thiet_bi === ma), [ops.banGiao, ma]);
-  const { data: changeEvents = [] } = useChangeLogProxy(tb.id, canEdit);
-
-  const timeline = useMemo<TimelineItem[]>(
-    () => buildRecordTimeline({ baoTri, suCo, hongHoc, banGiao, changeEvents: (changeEvents || []).map((ev: any) => ({
-      at: ev.at, action: ev.action, userName: ev.userName, changesCount: ev.changes.length,
-      changesText: ev.changes.map((c: any) => `${c.label}: ${formatVal(c.from)} → ${formatVal(c.to)}`).join("; "),
-    })) }),
-    [baoTri, suCo, hongHoc, banGiao, changeEvents]
-  );
-
-  const pct = tb._tyLeTuoiTho == null ? null : Math.max(0, Math.min(100, Math.round(tb._tyLeTuoiTho)));
-  const statusToken = getTrangThaiToken(tb.trang_thai);
-
-  const tabProps = {
-    tb, ma, tenTb, refInfo, loaiMau: loaiMau ?? null, sysName, sysGpSo, sysGpHan, vaiTroList,
-    canEdit, canManage, timeline, suCo, baoTri, hongHoc, banGiao, changeEvents, pct
-  } as any;
+  const pct = tb.ty_le_tuoi_tho == null ? null : Math.max(0, Math.min(100, Math.round(tb.ty_le_tuoi_tho)));
 
   return (
-    <div className="space-y-6 pb-20">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-30 -mx-4 bg-background/95 px-4 py-3 backdrop-blur-sm border-b md:-mx-6 md:px-6">
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm" className="-ml-2">
-            <Link to="/thiet-bi" search={{ q: "" }}><ArrowLeft className="h-4 w-4" /></Link>
-          </Button>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold font-mono truncate">{ma}</h1>
-              {statusToken && (
-                <Badge variant="outline" className={`${statusToken.class} px-1.5 py-0 h-5 text-[10px]`}>
-                  <span className={`mr-1 h-1.5 w-1.5 rounded-full ${statusToken.dot}`} />
-                  {tb.trang_thai}
-                </Badge>
-              )}
-            </div>
-            <div className="text-[10px] text-muted-foreground truncate font-medium uppercase tracking-tight">
-              {tenTb} {sysName ? `· ${sysName}` : ""}
-            </div>
-          </div>
+    <PageBody>
+      <PageHeader
+        icon={Package}
+        title={tb.ten_thiet_bi || tb.ma_thiet_bi}
+        actions={
           <div className="flex items-center gap-2">
-            {canEdit && (
-              <Button variant={editMode ? "default" : "outline"} size="xs" onClick={() => setEditMode(!editMode)}>
-                <PencilLine className="h-3.5 w-3.5" />
-              </Button>
-            )}
-
-
-            {canManage && <ThietBiLifecycleActions ma={ma} trangThai={tb.trang_thai} />}
+            <StatusBadge domain="thiet_bi" code={tb.trang_thai?.ma} />
+            {tb.ma_serial && <Badge variant="secondary" className="font-mono">S/N: {tb.ma_serial}</Badge>}
           </div>
-        </div>
-      </div>
-
-      <CapPhatControl
-        trangThai={tb._capPhatTrangThai} nguoiGiu={tb._nguoiGiu} donViGiuTen={tb._donViGiuTen}
-        ngayCapPhat={tb._ngayCapPhat} daKy={tb._capPhatTrangThai === "da_cap_phat" && !!latestHandover?.da_chap_nhan}
-        thoiDiemKy={latestHandover?.thoi_diem_chap_nhan ?? null} canManage={canManage}
-        donViOptions={donViOptions} pending={capPhatKyMut.isPending || capPhatMut.isPending}
-        onCapPhat={(p) => capPhatKyMut.mutate({ ...p, thietBiId: tb.id, maThietBi: ma, hanhDong: "cap_phat", nguoiGiao: null })}
-        onThuHoi={(p) => capPhatMut.mutate({ ...p, thietBiId: tb.id, hanhDong: "thu_hoi" })}
+        }
+        description={
+          <div className="flex items-center gap-2 mt-1">
+             <Badge variant="outline" className="text-[10px] font-normal">Tài sản</Badge>
+             <span className="text-muted-foreground">/</span>
+             <span className="text-muted-foreground">{tb.ma_thiet_bi}</span>
+          </div>
+        }
       />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <KpiCard icon={Gauge} label="Tuổi thọ" value={pct == null ? "—" : `${pct}%`} tone={pct != null && pct >= 90 ? "text-red-600" : pct != null && pct >= 70 ? "text-amber-600" : "text-emerald-600"} />
-        <KpiCard icon={Calendar} label="Khai thác" value={tb._namKhaiThac ? String(tb._namKhaiThac) : "—"} />
-        <KpiCard icon={AlertTriangle} label="Sự cố" value={String(suCo.length)} tone={suCo.length > 0 ? "text-red-600" : "text-emerald-600"} />
-        <KpiCard icon={Wrench} label="Bảo dưỡng" value={String(baoTri.length)} />
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Thông tin kỹ thuật</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <InfoItem label="Mã tài sản" value={tb.ma_thiet_bi} bold />
+              <InfoItem label="Chủng loại" value={tb.loai?.ten} />
+              <InfoItem label="Model" value={tb.model} />
+              <InfoItem label="P/N" value={tb.p_n} />
+              <InfoItem label="Hãng sản xuất" value={tb.nha_san_xuat} />
+              <InfoItem label="Năm sản xuất" value={tb.nam_san_xuat} />
+            </CardContent>
+          </Card>
 
-      <Tabs defaultValue="tongquan" className="space-y-4">
-        <TabsList className="flex w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50 scrollbar-hide">
-          <TabsTrigger value="tongquan" className="flex-shrink-0"><LayoutDashboard className="mr-1.5 h-3.5 w-3.5" /> Tổng quan</TabsTrigger>
-          <TabsTrigger value="vanhanh" className="flex-shrink-0"><Activity className="mr-1.5 h-3.5 w-3.5" /> Vận hành {suCo.length + baoTri.length > 0 && `(${suCo.length + baoTri.length})`}</TabsTrigger>
-          <TabsTrigger value="hoso" className="flex-shrink-0"><ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> Hồ sơ & Pháp lý</TabsTrigger>
-          <TabsTrigger value="cauhinh" className="flex-shrink-0"><Cpu className="mr-1.5 h-3.5 w-3.5" /> Cấu hình</TabsTrigger>
-          <TabsTrigger value="nangcao" className="flex-shrink-0"><Settings className="mr-1.5 h-3.5 w-3.5" /> Nâng cao</TabsTrigger>
-        </TabsList>
-
-        <Suspense fallback={<div className="py-20 text-center"><Skeleton className="h-40 w-full" /></div>}>
-          <TabsContent value="tongquan"><TabTongQuan {...tabProps} /></TabsContent>
-          <TabsContent value="vanhanh"><TabVanHanh {...tabProps} /></TabsContent>
-          <TabsContent value="hoso"><TabHoSoPhapLy {...tabProps} /></TabsContent>
-          <TabsContent value="cauhinh"><TabCauHinh {...tabProps} donViTenMap={donViTenMap} TelemetryPanel={TelemetryPanelProxy} AllocationPanel={AllocationPanelProxy} /></TabsContent>
-          <TabsContent value="nangcao"><TabNangCao {...tabProps} LifecyclePanel={LifecyclePanelProxy} /></TabsContent>
-        </Suspense>
-      </Tabs>
-    </div>
-  );
-}
-
-function KpiCard({ icon: Icon, label, value, tone }: any) {
-  return (
-    <Card className="border-none bg-muted/30 shadow-none">
-      <CardContent className="flex items-center gap-3 p-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-background shadow-sm"><Icon className={`h-4 w-4 ${tone ?? "text-foreground/70"}`} /></div>
-        <div className="min-w-0">
-          <div className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">{label}</div>
-          <div className={`text-sm font-bold ${tone ?? ""}`}>{value}</div>
+          <Tabs defaultValue="history">
+            <TabsList>
+              <TabsTrigger value="history">Lịch sử khai thác</TabsTrigger>
+              <TabsTrigger value="roles">Vai trò hệ thống</TabsTrigger>
+              <TabsTrigger value="docs">Tài liệu</TabsTrigger>
+            </TabsList>
+            <TabsContent value="roles" className="mt-4">
+              <Card>
+                <CardContent className="pt-6">
+                  {vt.isLoading ? <Skeleton className="h-20 w-full" /> : 
+                   vt.data?.length ? (
+                    <div className="space-y-3">
+                      {vt.data.map(v => (
+                        <div key={v!.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <div className="font-medium">{v!.ten}</div>
+                            <div className="text-xs text-muted-foreground">{v!.he_thong?.ten}</div>
+                          </div>
+                          <Badge variant="outline">Đang lắp</Badge>
+                        </div>
+                      ))}
+                    </div>
+                   ) : (
+                    <div className="text-center py-6 text-muted-foreground text-sm italic">Tài sản chưa được gán vào thành phần hệ thống nào.</div>
+                   )
+                  }
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-      </CardContent>
-    </Card>
-  );
-}
 
-// Proxies for internal components to avoid re-defining them in this file
-function useChangeLogProxy(id: string, canEdit: boolean) {
-  const { getChangeLog } = require("@/lib/mirats/change-log.functions");
-  return useQuery({
-    queryKey: ["change_log", "thiet_bi", canEdit ? id : null],
-    enabled: !!(canEdit && id),
-    queryFn: () => getChangeLog({ data: { entity: "thiet_bi", entityId: id } }),
-  });
-}
-
-
-function TelemetryPanelProxy({ thietBiId, canManage }: any) {
-  const { useTelemetry, useAddTelemetry } = require("@/lib/mirats/db-smart");
-  const { data: rows = [], isLoading } = useTelemetry(thietBiId);
-  const addMut = useAddTelemetry(thietBiId);
-  const [chiSo, setChiSo] = useState("gio_chay");
-  const [giaTri, setGiaTri] = useState("");
-  const [donVi, setDonVi] = useState("giờ");
-
-  const submit = () => {
-    const v = giaTri.trim() === "" ? null : Number(giaTri.replace(",", "."));
-    if (!chiSo.trim()) return toast.error("Nhập tên chỉ số");
-    if (v != null && Number.isNaN(v)) return toast.error("Giá trị phải là số");
-    addMut.mutate(
-      { chi_so: chiSo.trim(), gia_tri: v, don_vi_do: donVi.trim() || null },
-      {
-        onSuccess: () => {
-          toast.success("Đã ghi số đo");
-          setGiaTri("");
-        },
-        onError: (e: Error) => toast.error(e.message),
-      }
-    );
-  };
-
-  return (
-    <div className="space-y-3">
-      {canManage && (
-        <div className="flex flex-wrap items-end gap-2 rounded-md border bg-muted/30 p-3">
-          <label className="flex-1 min-w-[140px] text-[10px] font-bold uppercase text-muted-foreground">
-            Chỉ số
-            <Input className="mt-1 h-8 text-xs" value={chiSo} onChange={(e: any) => setChiSo(e.target.value)} placeholder="gio_chay, nhiet_do…" />
-          </label>
-          <label className="w-28 text-[10px] font-bold uppercase text-muted-foreground">
-            Giá trị
-            <Input className="mt-1 h-8 text-xs" value={giaTri} onChange={(e: any) => setGiaTri(e.target.value)} inputMode="decimal" placeholder="0" />
-          </label>
-          <label className="w-24 text-[10px] font-bold uppercase text-muted-foreground">
-            Đơn vị
-            <Input className="mt-1 h-8 text-xs" value={donVi} onChange={(e: any) => setDonVi(e.target.value)} placeholder="giờ, °C…" />
-          </label>
-
-          <Button size="sm" onClick={submit} disabled={addMut.isPending}>
-            {addMut.isPending ? <Activity className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Activity className="mr-1 h-3.5 w-3.5" />}
-            Ghi số đo
-          </Button>
-        </div>
-      )}
-
-      {isLoading ? (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-          <Activity className="h-4 w-4 animate-spin" /> Đang tải...
-        </div>
-      ) : rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có số đo nào.</p>
-      ) : (
-        <div className="space-y-2">
-          {rows.map((r: any) => (
-            <div key={r.id} className="flex items-center justify-between rounded-md border p-2.5 text-xs bg-card">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="font-mono">{r.chi_so}</Badge>
-                <span className="font-bold tabular-nums text-sm">
-                  {r.gia_tri == null ? "—" : r.gia_tri.toLocaleString("vi-VN")}
-                </span>
-                <span className="text-muted-foreground">{r.don_vi_do ?? ""}</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground">
-                {new Date(r.thoi_diem).toLocaleString("vi-VN")}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AllocationPanelProxy({ thietBiId, donViTenMap }: any) {
-  const { useAllocationHistory } = require("@/lib/mirats/db-smart");
-  const { data: rows = [], isLoading } = useAllocationHistory(thietBiId);
-
-  if (isLoading) return <div className="py-8 text-center"><Activity className="h-5 w-5 animate-spin mx-auto" /></div>;
-  if (rows.length === 0) return <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có lịch sử cấp phát.</p>;
-
-  return (
-    <ol className="relative ml-2 border-l border-border pl-6 space-y-6">
-      {rows.map((r: any) => {
-        const isCap = r.hanh_dong === "cap_phat";
-        return (
-          <li key={r.id} className="relative">
-            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${isCap ? "bg-amber-500" : "bg-emerald-500"}`}>
-              <Activity className="h-3.5 w-3.5 text-white" />
-            </span>
-            <div className="rounded-md border p-3 text-xs bg-card shadow-sm">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="font-medium text-muted-foreground">
-                  {new Date(r.thoi_diem).toLocaleString("vi-VN")}
-                </span>
-                <Badge variant="secondary" className={isCap ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}>
-                  {isCap ? "Cấp phát" : "Thu hồi"}
-                </Badge>
-              </div>
-              {(r.nguoi_giu || r.don_vi_giu_id) && (
-                <div className="flex flex-col gap-1">
-                  {r.nguoi_giu && <div className="font-bold">{r.nguoi_giu}</div>}
-                  {r.don_vi_giu_id && <div className="text-muted-foreground">{donViTenMap.get(r.don_vi_giu_id) ?? "—"}</div>}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">Tình trạng & Tuổi thọ</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {pct !== null && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span>Đã sử dụng</span>
+                    <span>{pct}%</span>
+                  </div>
+                  <Progress value={pct} className="h-1.5" />
                 </div>
               )}
-              {r.ghi_chu && <div className="mt-2 pt-2 border-t italic text-muted-foreground">{r.ghi_chu}</div>}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+              <InfoItem label="Đơn vị quản lý" value={tb.don_vi?.ten} />
+              <InfoItem label="Năm SD" value={tb.nam_dua_vao_khai_thac} />
+              <InfoItem label="Hạn dùng" value={tb.so_nam_su_dung ? `${tb.so_nam_su_dung} năm` : "—"} />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </PageBody>
   );
 }
 
-function LifecyclePanelProxy({ thietBiId }: any) {
-  const { useLifecycle, useTrangThaiMap } = require("@/lib/mirats/db-smart");
-  const { data: rows = [], isLoading } = useLifecycle(thietBiId);
-  const { data: ttMap } = useTrangThaiMap();
-  const nameOf = (id: string | null) => (id ? ttMap?.get(id) ?? "—" : "—");
-
-  if (isLoading) return <div className="py-8 text-center"><Activity className="h-5 w-5 animate-spin mx-auto" /></div>;
-  if (rows.length === 0) return <p className="text-sm text-muted-foreground py-8 text-center border border-dashed rounded-md">Chưa có nhật ký vòng đời.</p>;
-
+function InfoItem({ label, value, bold }: { label: string; value: any; bold?: boolean }) {
   return (
-    <ol className="relative ml-2 border-l border-border pl-6 space-y-6">
-      {rows.map((r: any) => (
-        <li key={r.id} className="relative">
-          <span className="absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full bg-primary ring-4 ring-background">
-            <History className="h-3.5 w-3.5 text-primary-foreground" />
-          </span>
-          <div className="rounded-md border p-3 text-xs bg-card shadow-sm">
-            <div className="text-muted-foreground mb-2">
-              {new Date(r.thoi_diem).toLocaleString("vi-VN")}
-            </div>
-            <div className="flex items-center gap-2 font-medium">
-              <Badge variant="outline" className="text-[10px]">{nameOf(r.tu_trang_thai_id)}</Badge>
-              <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
-              <Badge variant="secondary" className="text-[10px]">{nameOf(r.den_trang_thai_id)}</Badge>
-            </div>
-            {r.ly_do && <div className="mt-2 text-muted-foreground italic">{r.ly_do}</div>}
-          </div>
-        </li>
-      ))}
-    </ol>
+    <div>
+      <div className="text-[11px] text-muted-foreground uppercase tracking-wider">{label}</div>
+      <div className={`text-sm ${bold ? "font-bold" : ""}`}>{value || "—"}</div>
+    </div>
   );
 }
 
-
+function DetailSkeleton() {
+  return (
+    <PageBody>
+      <div className="space-y-6">
+        <Skeleton className="h-20 w-full" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="lg:col-span-2 h-64" />
+          <Skeleton className="h-64" />
+        </div>
+      </div>
+    </PageBody>
+  );
+}

@@ -312,9 +312,14 @@ function TongQuanPage() {
         </Card>
       )}
 
-      {/* ROW 1 — BRIEF HÔM NAY */}
-      <div>
-        <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Đi tới Sự cố" />
+      {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Hành động khẩn cấp" to="/su-co" more="Đi tới Sự cố" />
+          <div className="text-xs text-muted-foreground hidden md:block">
+            Theo dõi các chỉ số vận hành quan trọng trong thời gian thực
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
             value={briefQ.data?.su_co_khan} loading={briefQ.isLoading} tone="danger"
@@ -335,7 +340,7 @@ function TongQuanPage() {
       </div>
 
       {/* ROW 2 — SỨC KHOẺ KHAI THÁC */}
-      <div>
+      <div className="space-y-4">
         <SectionHeader icon={<HeartPulse className="h-3.5 w-3.5" />} title={`Sức khoẻ khai thác (${days} ngày)`} to="/bao-tri/pm" more="Kế hoạch bảo trì" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <HealthTile
@@ -347,6 +352,7 @@ function TongQuanPage() {
               : healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 95 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/su-co"
+            description="Tỷ lệ thời gian hệ thống sẵn sàng phục vụ trong kỳ quan sát."
           />
           <HealthTile
             icon={<Repeat2 className="h-4 w-4" />}
@@ -356,6 +362,7 @@ function TongQuanPage() {
             tone="default"
             loading={healthQ.isLoading}
             to="/su-co"
+            description="Chỉ số tin cậy: thời gian trung bình giữa hai lần phát sinh sự cố."
           />
           <HealthTile
             icon={<Wrench className="h-4 w-4" />}
@@ -364,17 +371,19 @@ function TongQuanPage() {
             hint={healthQ.data ? compareLabel(healthQ.data.mttr_h, healthQ.data.mttr_prev_h, true) : ""}
             tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
             loading={healthQ.isLoading}
-            to="/bao-tri"
+            to="/su-co"
+            description="Chỉ số bảo trì: thời gian trung bình để khắc phục một sự cố."
           />
           <HealthTile
             icon={<ShieldCheck className="h-4 w-4" />}
-            label="Compliance (giấy phép + chứng chỉ)"
+            label="Compliance"
             value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
-            hint="Tỷ lệ còn hiệu lực"
+            hint="Tỷ lệ giấy phép/chứng chỉ còn hiệu lực"
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/giay-phep"
+            description="Tỷ lệ tuân thủ hiệu lực giấy phép khai thác và chứng chỉ."
           />
         </div>
       </div>
@@ -412,7 +421,10 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">Xu hướng sự cố theo tháng (12 tháng)</CardTitle>
+            <CardTitle className="text-sm">
+              Xu hướng sự cố theo tháng (12 tháng)
+              <p className="text-[10px] font-normal text-muted-foreground mt-1">Biểu đồ thể hiện số lượng sự cố phân loại theo mức độ nghiêm trọng trong vòng 1 năm qua.</p>
+            </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
@@ -537,7 +549,10 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">Heatmap sự cố (90 ngày) — thứ × giờ</CardTitle>
+            <CardTitle className="text-sm">
+              Heatmap sự cố (90 ngày) — thứ × giờ
+              <p className="text-[10px] font-normal text-muted-foreground mt-1">Phân tích tần suất sự cố theo thời gian trong tuần để phát hiện quy luật phát sinh.</p>
+            </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent>
@@ -546,7 +561,10 @@ function TongQuanPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">Top thiết bị hỏng lặp (90 ngày)</CardTitle>
+            <CardTitle className="text-sm">
+              Top thiết bị hỏng lặp (90 ngày)
+              <p className="text-[10px] font-normal text-muted-foreground mt-1">Danh sách các thiết bị có tần suất hỏng hóc cao bất thường cần kiểm tra chuyên sâu.</p>
+            </CardTitle>
             <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
           </CardHeader>
           <CardContent>
@@ -579,7 +597,10 @@ function TongQuanPage() {
       {/* ROW — Timeline hạn */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm">Hạn giấy phép & kiểm định (90 ngày tới)</CardTitle>
+          <CardTitle className="text-sm">
+            Hạn giấy phép & kiểm định (90 ngày tới)
+            <p className="text-[10px] font-normal text-muted-foreground mt-1">Lộ trình các mốc thời gian hết hạn giấy phép, kiểm định và bảo trì sắp tới.</p>
+          </CardTitle>
           <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
         </CardHeader>
         <CardContent>
@@ -708,9 +729,10 @@ function fmtRelative(iso: string): string {
   return new Date(iso).toLocaleDateString("vi-VN");
 }
 
-function HealthTile({ icon, label, value, hint, tone, loading, to }: {
+function HealthTile({ icon, label, value, hint, tone, loading, to, description }: {
   icon: React.ReactNode; label: string; value: string; hint?: string;
   tone: "default" | "ok" | "warn" | "danger"; loading: boolean; to?: string;
+  description?: string;
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
@@ -729,6 +751,7 @@ function HealthTile({ icon, label, value, hint, tone, loading, to }: {
           {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
         </div>
         {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+        {description && <div className="mt-1 text-[10px] italic text-muted-foreground/80 leading-tight">{description}</div>}
       </CardContent>
     </Card>
   );
