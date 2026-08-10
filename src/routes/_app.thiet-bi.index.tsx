@@ -584,12 +584,8 @@ function TreeBranch({
             />
           ))}
         </div>
-        </div>
       )}
     </div>
   );
 }
 
-
-  );
-}
