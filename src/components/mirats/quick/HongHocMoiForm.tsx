@@ -79,7 +79,7 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
     onSuccess: () => { toast.success("Đã ghi nhận hỏng hóc"); if (onDone) onDone(); }
   });
 
-  if (!canManageHongHoc(roles)) return <AccessDenied backTo="/hong-hoc" />;
+  if (!canManageHongHoc(roles)) return <AccessDenied backTo="/hong-hoc" backLabel="Về danh sách" />;
 
   const steps = [{ id: 1, title: "Nguồn gốc" }, { id: 2, title: "Tài sản & Phương án" }, { id: 3, title: "Mô tả chi tiết" }];
 
