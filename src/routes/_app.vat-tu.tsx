@@ -87,7 +87,7 @@ function VatTuPage() {
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
-        icon={Boxes}
+        icon={Package}
         title="Vật tư & Kho"
         help="Sổ cái kho vật tư: tồn kho luôn được tính từ các giao dịch nhập/xuất/chuyển/điều chỉnh (bất biến, truy nguyên được) — không sửa số tồn trực tiếp."
         actions={
@@ -102,19 +102,12 @@ function VatTuPage() {
         }
       />
 
-
-      {/* KPI */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard icon={Boxes} label="Loại vật tư" value={fmt(vatTu.data?.length ?? 0)} />
-        <StatCard icon={Warehouse} label="Kho" value={fmt(kho.data?.length ?? 0)} />
-        <StatCard icon={ScrollText} label="Giao dịch" value={fmt(giaoDich.data?.length ?? 0)} />
-        <StatCard
-          icon={AlertTriangle}
-          label="Dưới định mức"
-          value={fmt(canhBaoCount)}
-          alert={canhBaoCount > 0}
-        />
-      </div>
+      <InventoryDashboard
+        vatTuCount={vatTu.data?.length ?? 0}
+        khoCount={kho.data?.length ?? 0}
+        giaoDichCount={giaoDich.data?.length ?? 0}
+        canhBaoCount={canhBaoCount}
+      />
 
       <Tabs defaultValue="ton">
         <TabsList className="flex-wrap">
@@ -127,7 +120,6 @@ function VatTuPage() {
           <TabsTrigger value="soquy">Sổ giao dịch</TabsTrigger>
         </TabsList>
 
-        {/* Tồn kho */}
         <TabsContent value="ton" className="mt-4 space-y-3">
           <div className="relative max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -135,41 +127,7 @@ function VatTuPage() {
           </div>
           <Card>
             <CardContent className="p-2">
-              {ton.isLoading ? (
-                <div className="flex items-center justify-center py-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /></div>
-              ) : (
-                <StandardTable
-                  tableKey="vat_tu_ton_list"
-                  rows={tonRows}
-                  getRowId={(r) => `${r.vat_tu_id}-${r.kho_id}`}
-                  requireFilterToShow={false}
-                  emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có dữ liệu tồn kho.</div>}
-                  columns={[
-                    {
-                      key: "vat_tu", label: "Vật tư", filter: "text",
-                      value: (r) => r.ten_vat_tu,
-                      cell: (r) => (
-                        <div>
-                          <div className="font-medium">{r.ten_vat_tu}</div>
-                          {r.ma_vat_tu && <div className="font-mono text-[11px] text-muted-foreground">{r.ma_vat_tu}</div>}
-                        </div>
-                      ),
-                    },
-                    { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <LoaiBadge loai={r.loai} /> },
-                    { key: "kho", label: "Kho", filter: "cat", value: (r) => r.ten_kho, cell: (r) => <span className="text-sm">{r.ten_kho}</span> },
-                    {
-                      key: "ton", label: "Tồn", align: "right", sortable: true,
-                      value: (r) => r.ton_kho,
-                      sortValue: (r) => r.ton_kho,
-                      cell: (r) => {
-                        const low = r.ton_kho < r.muc_ton_toi_thieu;
-                        return <span className={cn("text-right font-mono font-semibold", low && "text-red-600")}>{fmt(r.ton_kho)} {r.don_vi_tinh}</span>;
-                      },
-                    },
-                    { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu, cell: (r) => <span className="text-right font-mono text-sm text-muted-foreground">{fmt(r.muc_ton_toi_thieu)}</span> },
-                  ]}
-                />
-              )}
+              <SparePartsTable rows={tonRows} isLoading={ton.isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
