@@ -70,7 +70,7 @@ function ThietBiDetail() {
   if (error || !tb) return (
     <div className="p-8 text-center">
       <h2 className="text-lg font-semibold">Không tìm thấy tài sản</h2>
-      <Button asChild variant="outline" className="mt-4"><Link to="/thiet-bi">Về danh sách</Link></Button>
+      <Button asChild variant="outline" className="mt-4"><Link to="/thiet-bi" search={{ q: "" }}>Về danh sách</Link></Button>
     </div>
   );
   
@@ -153,7 +153,7 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
       <div className="sticky top-0 z-30 -mx-4 bg-background/95 px-4 py-3 backdrop-blur-sm border-b md:-mx-6 md:px-6">
         <div className="flex items-center gap-3">
           <Button asChild variant="ghost" size="sm" className="-ml-2">
-            <Link to="/thiet-bi"><ArrowLeft className="h-4 w-4" /></Link>
+            <Link to="/thiet-bi" search={{ q: "" }}><ArrowLeft className="h-4 w-4" /></Link>
           </Button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">

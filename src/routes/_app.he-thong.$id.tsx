@@ -86,7 +86,7 @@ function HeThongDetail() {
     return (
       <div className="rounded-md border p-8 text-center">
         <h2 className="text-lg font-semibold">Không tìm thấy hệ thống</h2>
-        <Button asChild variant="outline" className="mt-4"><Link to="/thiet-bi">Về sổ lý lịch</Link></Button>
+        <Button asChild variant="outline" className="mt-4"><Link to="/thiet-bi" search={{ q: "" }}>Về sổ lý lịch</Link></Button>
       </div>
     );
   }
@@ -355,9 +355,9 @@ function HeThongInner({
         body{background:white !important;}
       }`}</style>
       <div className="flex items-center gap-3 no-print">
-        <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi"><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi" search={{ q: "" }}><ArrowLeft className="mr-1 h-4 w-4" /> Sổ lý lịch</Link></Button>
         <div className="text-xs text-muted-foreground truncate">
-          <Link to="/thiet-bi" className="hover:underline">Sổ lý lịch</Link>
+          <Link to="/thiet-bi" search={{ q: "" }} className="hover:underline">Sổ lý lịch</Link>
           <ChevronRight className="inline h-3 w-3 mx-1 opacity-60" />
           <span className="text-foreground/80">{tenHt}</span>
         </div>
