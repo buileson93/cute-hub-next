@@ -360,7 +360,7 @@ export function StandardTable<T>({
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
                   const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
-                  const currentWidth = savedW || parseInt(minWVal) || 120;
+                  const currentWidth = savedW || parseInt(minWVal || "100") || 120;
 
                   return (
                     <TableHead
