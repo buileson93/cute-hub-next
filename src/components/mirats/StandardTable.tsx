@@ -709,10 +709,15 @@ export function StandardTable<T>({
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     <EmptyState
-                      title={emptyContent ? undefined : emptyText}
-                      description={typeof emptyContent === "string" ? emptyContent : undefined}
+                      title={hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyContent ? undefined : emptyText)}
+                      description={hasFilter ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật" : (typeof emptyContent === "string" ? emptyContent : undefined)}
+                      action={hasFilter ? (
+                        <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
+                          Xoá tất cả bộ lọc
+                        </Button>
+                      ) : undefined}
                     />
-                    {typeof emptyContent !== "string" && emptyContent}
+                    {!hasFilter && typeof emptyContent !== "string" && emptyContent}
                   </TableCell>
                 </TableRow>
               ) : (
