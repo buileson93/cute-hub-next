@@ -425,7 +425,7 @@ function Dashboard() {
                         <Badge variant="destructive" className="text-[10px]">{s.muc_do}</Badge>
                         <Badge variant="outline" className="font-mono text-[10px]">{s.ma_su_co}</Badge>
                       </div>
-                      <div className="mt-1 truncate font-medium">{s.mo_ta}</div>
+                      <div className="mt-1 truncate font-medium">{s.hien_tuong}</div>
                       <div className="font-mono text-[11px] text-muted-foreground">{s.thiet_bi}</div>
                     </div>
                     <div className="shrink-0 text-right">
