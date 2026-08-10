@@ -394,6 +394,8 @@ export function StandardTable<T>({
   // Lựa chọn được GIỮ khi chuyển trang / đổi bộ lọc: chỉ loại bỏ những id không
   // còn tồn tại trong nguồn dữ liệu. Mọi bulk action luôn chạy đúng tập đã tick.
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const isMobile = vw > 0 && vw < BP_PX.md;
+
   const rowById = useMemo(() => {
     const m = new Map<string, T>();
     for (const r of rows) m.set(getRowId(r), r);
