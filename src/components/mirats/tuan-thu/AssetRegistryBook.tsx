@@ -37,11 +37,11 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           key: "so_gp",
           label: "Số GP / Mã",
           filter: "text",
-          value: (r) => r.soGP ?? r.ma ?? "",
+          value: (r) => r.soGP ?? r.maGiayPhep ?? "",
           cell: (r) => (
             <div>
               <div className="font-mono text-xs font-semibold">{r.soGP || "—"}</div>
-              <div className="text-[10px] text-muted-foreground uppercase">{r.ma}</div>
+              <div className="text-[10px] text-muted-foreground uppercase">{r.maGiayPhep || "—"}</div>
             </div>
           ),
         },
