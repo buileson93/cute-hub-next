@@ -340,7 +340,7 @@ function TongQuanPage() {
       </div>
 
       {/* ROW 2 — SỨC KHOẺ KHAI THÁC */}
-      <div>
+      <div className="space-y-4">
         <SectionHeader icon={<HeartPulse className="h-3.5 w-3.5" />} title={`Sức khoẻ khai thác (${days} ngày)`} to="/bao-tri/pm" more="Kế hoạch bảo trì" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <HealthTile
@@ -354,6 +354,7 @@ function TongQuanPage() {
             to="/su-co"
           />
           <HealthTile
+            description="Tỷ lệ thời gian hệ thống sẵn sàng phục vụ trong kỳ quan sát."
             icon={<Repeat2 className="h-4 w-4" />}
             label="MTBF (giờ)"
             value={healthQ.data ? fmtHours(healthQ.data.mtbf_h) : "—"}
