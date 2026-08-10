@@ -2275,6 +2275,54 @@ export type Database = {
           },
         ]
       }
+      dong_gop_diem: {
+        Row: {
+          change_request_id: string | null
+          created_at: string | null
+          diem: number
+          id: string
+          ky: string
+          loai_dong_gop: string
+          nhiem_vu_id: string | null
+          user_id: string
+        }
+        Insert: {
+          change_request_id?: string | null
+          created_at?: string | null
+          diem: number
+          id?: string
+          ky: string
+          loai_dong_gop: string
+          nhiem_vu_id?: string | null
+          user_id: string
+        }
+        Update: {
+          change_request_id?: string | null
+          created_at?: string | null
+          diem?: number
+          id?: string
+          ky?: string
+          loai_dong_gop?: string
+          nhiem_vu_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dong_gop_diem_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_request"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dong_gop_diem_nhiem_vu_id_fkey"
+            columns: ["nhiem_vu_id"]
+            isOneToOne: false
+            referencedRelation: "nhiem_vu_nhap_lieu"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dot_bao_duong: {
         Row: {
           created_at: string
@@ -5366,6 +5414,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      nhiem_vu_nhap_lieu: {
+        Row: {
+          created_at: string | null
+          do_uu_tien: number | null
+          don_vi_id: string | null
+          entity: string
+          field_key: string | null
+          id: string
+          loai: string
+          nguoi_nhan: string | null
+          target_id: string
+          trang_thai: string
+        }
+        Insert: {
+          created_at?: string | null
+          do_uu_tien?: number | null
+          don_vi_id?: string | null
+          entity: string
+          field_key?: string | null
+          id?: string
+          loai: string
+          nguoi_nhan?: string | null
+          target_id: string
+          trang_thai?: string
+        }
+        Update: {
+          created_at?: string | null
+          do_uu_tien?: number | null
+          don_vi_id?: string | null
+          entity?: string
+          field_key?: string | null
+          id?: string
+          loai?: string
+          nguoi_nhan?: string | null
+          target_id?: string
+          trang_thai?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nhiem_vu_nhap_lieu_don_vi_id_fkey"
+            columns: ["don_vi_id"]
+            isOneToOne: false
+            referencedRelation: "dm_don_vi"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       node_note: {
         Row: {
