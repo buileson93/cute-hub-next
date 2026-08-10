@@ -231,10 +231,12 @@ function HeThongCayPage() {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
          <div className="flex items-center gap-4">
-           <PageHeader
-             title="Cây Hệ Thống"
-             icon={ListTree}
-           />
+            <PageHeader
+              title="Cây Hệ Thống"
+              subtitle={tpCount > 0 ? `(${tpCount.toLocaleString("vi-VN")} thành phần)` : undefined}
+              icon={ListTree}
+            />
+
 
             <Tabs value={display} onValueChange={handleDisplayChange}>
               <TabsList>
