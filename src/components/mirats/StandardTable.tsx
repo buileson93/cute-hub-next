@@ -158,7 +158,7 @@ export function StandardTable<T>({
               bulkActions({
                 selectedRows,
                 visibleColumns: shownCols,
-                allColumns: columns,
+                allColumns: exportCols, // Truyền exportCols để hành động hàng loạt (như xuất tệp) đủ dữ liệu
                 filteredRows: rows,
                 pageRows: rows,
                 clear: clearSelection
