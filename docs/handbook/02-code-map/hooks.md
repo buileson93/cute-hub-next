@@ -1,6 +1,6 @@
 # 02 — Code map: Hooks
 
-Custom hooks trong `src/hooks/`. Mỗi hook có 1 dòng mục đích + input/output chính. Không copy code.
+179 hook trong `src/hooks/` và `src/lib/`. Dưới đây là các hook chính.
 
 | Hook | Input | Output | Mục đích |
 |---|---|---|---|
