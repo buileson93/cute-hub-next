@@ -840,6 +840,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               filter: "text",
               value: (r) => r.ma,
               cell: (r) => <CodeBadge code={r.ma} />,
+              defaultHidden: true,
             },
             {
               key: "ten",
