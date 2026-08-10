@@ -2,12 +2,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import {
   Search, HardDrive, Loader2, Building2, Layers, Network,
-  Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu,
+  Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu, ChevronRight, Monitor
 } from "lucide-react";
 import { PageBody } from "@/components/mirats/PageBody";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -21,7 +22,7 @@ import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbD
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
-import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
+import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 
 export const Route = createFileRoute("/_app/thiet-bi/")({
   head: () => ({
