@@ -213,8 +213,8 @@ function VatTuPage() {
                 emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có kho. Thêm kho để bắt đầu.</div>}
                 columns={[
                   { key: "ten", label: "Tên kho", filter: "text", value: (k) => k.ten, cell: (k) => <span className="font-medium">{k.ten}</span> },
-                  { key: "ma_kho", label: "Mã", value: (k) => k.ma_kho ?? "", cell: (k) => <span className="font-mono text-[11px] text-muted-foreground">{k.ma_kho ?? "—"}</span> },
-                  { key: "ghi_chu", label: "Ghi chú", filter: "text", value: (k) => k.ghi_chu ?? "", cell: (k) => <span className="text-sm text-muted-foreground">{k.ghi_chu ?? "—"}</span> },
+                  { key: "ma_kho", label: "Mã", hideBelow: "sm", value: (k) => k.ma_kho ?? "", cell: (k) => <span className="font-mono text-[11px] text-muted-foreground">{k.ma_kho ?? "—"}</span> },
+                  { key: "ghi_chu", label: "Ghi chú", filter: "text", hideBelow: "md", value: (k) => k.ghi_chu ?? "", cell: (k) => <span className="text-sm text-muted-foreground">{k.ghi_chu ?? "—"}</span> },
                 ]}
               />
             </CardContent>
