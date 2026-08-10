@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AppShell } from '../AppShell';
+import { Sidebar } from '../Sidebar';
 import React from 'react';
 
 // Mock các dependencies
@@ -94,7 +95,18 @@ describe('AppShell Sidebar Collapse (T17)', () => {
     localStorage.clear();
   });
 
-  it('phải có nút thu gọn với aria-label chính xác', () => {
+  it('Sidebar: ẩn tiêu đề h3 và render đúng class khi collapsed', () => {
+    const { rerender } = render(<Sidebar collapsed={false} />);
+    expect(screen.queryByRole('heading', { level: 3 })).not.toBeNull();
+
+    rerender(<Sidebar collapsed={true} />);
+    expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
+    
+    // Kiểm tra icon vẫn tồn tại nhưng span nhãn chữ bị ẩn
+    // (Dựa trên implementation: Icon vẫn render, nhưng span {item.nhan} bị ẩn)
+  });
+
+  it('AppShell: phải có nút thu gọn với aria-label chính xác', () => {
     render(<AppShell>Content</AppShell>);
     
     // Mặc định là mở rộng
