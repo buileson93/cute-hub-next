@@ -22,6 +22,7 @@ import { useSession } from "@/hooks/use-session";
 import { canManageSuCoState } from "@/lib/mirats/su-co-state";
 import { VongDoiPanel } from "@/components/mirats/VongDoiPanel";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/su-co/$maSuCo")({
   head: () => ({
