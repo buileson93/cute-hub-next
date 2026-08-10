@@ -371,13 +371,14 @@ function TongQuanPage() {
             hint={healthQ.data ? compareLabel(healthQ.data.mttr_h, healthQ.data.mttr_prev_h, true) : ""}
             tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
             loading={healthQ.isLoading}
-            to="/bao-tri"
+            to="/su-co"
+            description="Chỉ số bảo trì: thời gian trung bình để khắc phục một sự cố."
           />
           <HealthTile
             icon={<ShieldCheck className="h-4 w-4" />}
-            label="Compliance (giấy phép + chứng chỉ)"
+            label="Compliance"
             value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
-            hint="Tỷ lệ còn hiệu lực"
+            hint="Tỷ lệ giấy phép/chứng chỉ còn hiệu lực"
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
