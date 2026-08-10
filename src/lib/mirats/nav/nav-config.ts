@@ -66,10 +66,11 @@ function toItem(nhomKey: string, source: ContractNavItem): NavItem {
     exact: source.exact,
     badgeKey: BADGE_BY_ROUTE[source.to],
     roles: source.roles,
+    children: source.children?.map(c => toItem(nhomKey, c)),
   };
 }
 
-/** Trả về toàn bộ nhóm điều hướng (đã trải phẳng children lên cùng cấp). */
+/** Trả về toàn bộ nhóm điều hướng. */
 export function navGroups(): NavGroup[] {
   const groups: NavGroup[] = [];
   workspaces.forEach((ws, idx) => {
@@ -77,7 +78,6 @@ export function navGroups(): NavGroup[] {
     for (const g of ws.groups) {
       for (const it of g.items) {
         items.push(toItem(ws.id, it));
-        for (const c of it.children ?? []) items.push(toItem(ws.id, c));
       }
     }
     groups.push({ key: ws.id, nhan: ws.label, thuTu: idx, items });
