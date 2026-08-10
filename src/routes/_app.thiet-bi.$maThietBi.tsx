@@ -5,7 +5,7 @@ import { fetchAllRows } from "@/lib/mirats/paginate";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
-import { ThietBiIcon } from "@/components/mirats/ThietBiIcon";
+import { Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -27,7 +27,7 @@ function ThietBiDetailRoute() {
         .select(`
           *,
           loai:loai_thiet_bi_id(ten),
-          model:model_id(ten, hang_san_xuat, p_n),
+          model_rel:model_id(ten, hang_san_xuat, p_n),
           trang_thai:trang_thai_id(ma, ten),
           don_vi:don_vi_quan_ly_id(ten, ma)
         `)
@@ -59,18 +59,24 @@ function ThietBiDetailRoute() {
   if (isLoading) return <DetailSkeleton />;
   if (!tb) return <div>Không tìm thấy tài sản.</div>;
 
-  const pct = tb._tyLeTuoiTho == null ? null : Math.max(0, Math.min(100, Math.round(tb._tyLeTuoiTho)));
+  const pct = tb.ty_le_tuoi_tho == null ? null : Math.max(0, Math.min(100, Math.round(tb.ty_le_tuoi_tho)));
 
   return (
     <PageBody>
       <PageHeader
-        icon={ThietBiIcon}
+        icon={Package}
         title={tb.ten_thiet_bi || tb.ma_thiet_bi}
-        breadcrumb={[{ label: "Tài sản", to: "/thiet-bi" }, { label: tb.ma_thiet_bi }]}
+        description={
+          <div className="flex items-center gap-2 mt-1">
+             <Badge variant="outline" className="text-[10px] font-normal">Tài sản</Badge>
+             <span className="text-muted-foreground">/</span>
+             <span className="text-muted-foreground">{tb.ma_thiet_bi}</span>
+          </div>
+        }
       >
         <div className="flex items-center gap-2">
           <StatusBadge domain="thiet_bi" code={tb.trang_thai?.ma} />
-          {tb.serial && <Badge variant="secondary" className="font-mono">S/N: {tb.serial}</Badge>}
+          {tb.ma_serial && <Badge variant="secondary" className="font-mono">S/N: {tb.ma_serial}</Badge>}
         </div>
       </PageHeader>
 
@@ -83,9 +89,9 @@ function ThietBiDetailRoute() {
             <CardContent className="grid grid-cols-2 gap-4">
               <InfoItem label="Mã tài sản" value={tb.ma_thiet_bi} bold />
               <InfoItem label="Chủng loại" value={tb.loai?.ten} />
-              <InfoItem label="Model" value={tb.model?.ten} />
-              <InfoItem label="P/N" value={tb.model?.p_n} />
-              <InfoItem label="Hãng sản xuất" value={tb.model?.hang_san_xuat} />
+              <InfoItem label="Model" value={tb.model_rel?.ten || tb.model} />
+              <InfoItem label="P/N" value={tb.model_rel?.p_n || tb.p_n} />
+              <InfoItem label="Hãng sản xuất" value={tb.model_rel?.hang_san_xuat || tb.nha_san_xuat} />
               <InfoItem label="Năm sản xuất" value={tb.nam_san_xuat} />
             </CardContent>
           </Card>
@@ -138,8 +144,8 @@ function ThietBiDetailRoute() {
                 </div>
               )}
               <InfoItem label="Đơn vị quản lý" value={tb.don_vi?.ten} />
-              <InfoItem label="Ngày đưa vào SD" value={tb.ngay_dua_vao_su_dung} />
-              <InfoItem label="Hạn dùng còn lại" value={tb._hanDungConLai ? `${tb._hanDungConLai} ngày` : "—"} />
+              <InfoItem label="Năm SD" value={tb.nam_dua_vao_khai_thac} />
+              <InfoItem label="Hạn dùng" value={tb.so_nam_su_dung ? `${tb.so_nam_su_dung} năm` : "—"} />
             </CardContent>
           </Card>
         </div>
