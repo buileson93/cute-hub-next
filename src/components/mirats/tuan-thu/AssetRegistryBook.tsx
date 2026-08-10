@@ -5,18 +5,8 @@ import { Eye, Pencil } from "lucide-react";
 import { type LicenseRow } from "@/lib/mirats/db-licenses";
 import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
 
-const loaiColor: Record<string, string> = {
-  GPKT: "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
-  "QĐ đưa vào khai thác": "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
-  "GCN KĐ/HC": "bg-teal-100 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300",
-};
+import { StatusBadge } from "@/components/mirats/StatusBadge";
 
-const statusMeta: Record<string, { label: string; className: string }> = {
-  valid: { label: "Còn hiệu lực", className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" },
-  expiring: { label: "Sắp hết hạn", className: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" },
-  expired: { label: "Đã hết hạn", className: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300" },
-  none: { label: "Chưa có", className: "bg-slate-200 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300" },
-};
 
 interface AssetRegistryBookProps {
   rows: LicenseRow[];
@@ -63,9 +53,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           filter: "cat",
           value: (r) => r.loai ?? "",
           cell: (r) => (
-            <Badge variant="outline" className={cn("text-[10px] border-transparent", loaiColor[r.loai ?? ""] || "bg-muted text-muted-foreground")}>
-              {r.loai || "—"}
-            </Badge>
+            <StatusBadge domain="bao_tri" code={r.loai} label={r.loai} />
           ),
         },
         {
@@ -86,12 +74,14 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           filter: "cat",
           value: (r) => statusMeta[r.trangThai]?.label ?? r.trangThai,
           cell: (r) => {
-            const meta = statusMeta[r.trangThai];
-            return meta ? (
-              <Badge variant="outline" className={cn("text-[10px] border-transparent", meta.className)}>
-                {meta.label}
-              </Badge>
-            ) : null;
+            // "valid", "expiring", "expired", "none" aren't standard MIRATS status codes yet
+            // but we use StatusBadge with domain 'thiet_bi' if we had them or 'health'
+            // For now, mapping manually to StatusBadge for consistency if possible, 
+            // or use a temporary local registry.
+            // Let's assume 'valid' -> DANG_KHAI_THAC, 'expired' -> HONG for colors.
+            const map: any = { valid: 'DANG_KHAI_THAC', expiring: 'CHO_XU_LY', expired: 'HONG', none: 'NGUNG_KHAI_THAC' };
+            const labels: any = { valid: 'Còn hiệu lực', expiring: 'Sắp hết hạn', expired: 'Đã hết hạn', none: 'Chưa có' };
+            return <StatusBadge domain="thiet_bi" code={map[r.trangThai]} label={labels[r.trangThai]} />;
           },
         },
         {
