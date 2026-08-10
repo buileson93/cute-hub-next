@@ -6,42 +6,52 @@ const STORE_NAME = 'outbox';
 const VERSION = 1;
 
 export class IndexedDBStorage implements Storage {
-  private dbPromise: Promise<IDBPDatabase>;
+  private dbPromise: Promise<IDBPDatabase> | null = null;
+
+  private getDB() {
+    if (typeof window === 'undefined') {
+      throw new Error('IndexedDB is not available in non-browser environments');
+    }
+    if (!this.dbPromise) {
+      this.dbPromise = openDB(DB_NAME, VERSION, {
+        upgrade(db: IDBPDatabase) {
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            store.createIndex('status', 'status');
+            store.createIndex('created_at', 'created_at');
+          }
+        },
+      });
+    }
+    return this.dbPromise;
+  }
 
   constructor() {
-    this.dbPromise = openDB(DB_NAME, VERSION, {
-      upgrade(db: IDBPDatabase) {
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-          store.createIndex('status', 'status');
-          store.createIndex('created_at', 'created_at');
-        }
-      },
-    });
+    // Lazy initialization to avoid SSR issues
   }
 
   async put(item: OutboxItem): Promise<void> {
-    const db = await this.dbPromise;
+    const db = await this.getDB();
     await db.put(STORE_NAME, item);
   }
 
   async get(id: string): Promise<OutboxItem | undefined> {
-    const db = await this.dbPromise;
+    const db = await this.getDB();
     return db.get(STORE_NAME, id);
   }
 
   async list(): Promise<OutboxItem[]> {
-    const db = await this.dbPromise;
+    const db = await this.getDB();
     return db.getAll(STORE_NAME);
   }
 
   async remove(id: string): Promise<void> {
-    const db = await this.dbPromise;
+    const db = await this.getDB();
     await db.delete(STORE_NAME, id);
   }
 
   async clear(): Promise<void> {
-    const db = await this.dbPromise;
+    const db = await this.getDB();
     await db.clear(STORE_NAME);
   }
 }
