@@ -14,6 +14,8 @@ import { CompatibilityManager, type CompatibilityItem } from "@/components/mirat
 import { supabase } from "@/integrations/backend/client";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { useSession } from "@/hooks/use-session";
+
 
 
 
@@ -84,6 +86,8 @@ export function ThietBiFormDialog({
   onSaved?: (maThietBi: string) => void;
 }) {
   const qc = useQueryClient();
+  const { roles } = useSession();
+
 
   // Prefetch options song song để select mở nhanh
   useQuery(loadOpts("dm_model"));
@@ -235,6 +239,8 @@ export function ThietBiFormDialog({
 
   const save = useMutation({
     mutationFn: async (d: FormValues) => {
+      const isAdmin = roles.includes("admin") || roles.includes("phong_kt");
+
       // Cảnh báo mềm: trùng số serial vẫn cho lưu
       const sn = (d.ma_serial ?? "").trim();
       if (sn) {
@@ -288,11 +294,20 @@ export function ThietBiFormDialog({
           return out;
         };
         payload.ma_thiet_bi = d.ma_thiet_bi?.trim() || genCode();
+        
+        if (!isAdmin) {
+          // KTV thêm mới -> tạo CR propose_new (giả định CR support tạo mới)
+          // Hoặc đơn giản là dùng RPC trung gian. 
+          // Ở đây ta dùng saveCellSecurely cho edit, còn create vẫn để RLS lo nếu có policy.
+          // Tạm thời nếu !isAdmin mà vẫn vào đây thì insert sẽ fail do RLS.
+        }
+
         const { data: inserted, error } = await supabase
           .from("thiet_bi")
           .insert(payload as never)
           .select("id, ma_thiet_bi")
           .single();
+
         if (error) throw error;
 
         // Lưu bảng liên kết
@@ -307,11 +322,25 @@ export function ThietBiFormDialog({
 
       } else {
         if (!device?.id) throw new Error("Thiếu id tài sản");
+
+        if (!isAdmin) {
+          // Gom payload thành đề xuất
+          const { createChangeRequest } = await import("@/lib/mirats/ghi-nghiep-vu-actions");
+          await createChangeRequest({
+            loai: "thiet_bi.propose_field",
+            entity_id: device.ma_thiet_bi,
+            noi_dung: payload,
+            ghi_chu: `Cập nhật thông tin tài sản qua Form Wizard`,
+          });
+          return { ma: device.ma_thiet_bi, mode: "proposed" };
+        }
+
         const { error } = await supabase
           .from("thiet_bi")
           .update(payload as never)
           .eq("id", device.id);
         if (error) throw error;
+
 
         // Sync bảng liên kết: Xoá cũ, thêm mới
         const { error: errDel } = await supabase
@@ -327,16 +356,22 @@ export function ThietBiFormDialog({
           if (errIns) toast.error("Không cập nhật được thông tin hệ thống tương thích");
         }
 
-        return device.ma_thiet_bi;
+        return { ma: device.ma_thiet_bi, mode: "direct" };
 
       }
     },
     onSuccess: (ma) => {
       qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
-      toast.success(mode === "create" ? `Đã thêm tài sản ${ma}` : "Đã cập nhật tài sản");
+      // Thêm thông báo nếu là đề xuất
+      if ((save.data as any)?.mode === "proposed") {
+         toast.success(`Đã gửi đề xuất cập nhật tài sản ${ma} để Admin phê duyệt`);
+      } else {
+         toast.success(mode === "create" ? `Đã thêm tài sản ${ma}` : "Đã cập nhật tài sản");
+      }
       onSaved?.(ma);
       onOpenChange(false);
     },
+
     onError: (e: unknown) =>
       toast.error(e instanceof Error ? e.message : "Không lưu được tài sản"),
   });
