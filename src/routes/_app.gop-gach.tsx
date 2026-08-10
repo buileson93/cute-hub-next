@@ -49,10 +49,9 @@ function GopGachPage() {
 
   const submit = useMutation({
     mutationFn: async () => {
-      if (!nhiemVu) return;
-      // Giả lập tạo change request
+      if (!user?.id) throw new Error("Vui lòng đăng nhập");
       const { error: crError } = await supabase.rpc("create_change_request", {
-        p_loai: nhiemVu.entity === "thiet_bi" ? "thiet_bi.propose_field" : "he_thong.propose_field",
+        p_loai: (nhiemVu.entity === "thiet_bi" ? "thiet_bi.propose_field" : "he_thong.propose_field") as any,
         p_payload: {
           target_id: nhiemVu.target_id,
           field_key: nhiemVu.field_key,

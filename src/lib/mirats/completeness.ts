@@ -9,8 +9,7 @@ export const CORE_FIELDS: Record<string, string[]> = {
     "model_id",
     "trang_thai_id",
     "he_thong_id",
-    "don_vi_id",
-    "nguoi_quan_ly_id"
+    "don_vi_id"
   ],
   he_thong: [
     "ten_he_thong",

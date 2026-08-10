@@ -68,7 +68,7 @@ function QuetQrLanding() {
     queryFn: async () => {
       const { data: tb, error } = await supabase
         .from("thiet_bi")
-        .select("id, ma_thiet_bi, ten_thiet_bi, don_vi_id, vi_tri_id, trang_thai_id, he_thong_id, ma_serial, model_id, nhan_vien_id, nam_san_xuat")
+        .select("id, ma_thiet_bi, ten_thiet_bi, don_vi_id, vi_tri_id, trang_thai_id, he_thong_id, ma_serial, model_id, nam_san_xuat")
         .eq("ma_thiet_bi", maThietBi)
         .maybeSingle();
       if (error) throw error;
@@ -227,7 +227,7 @@ function QuetQrLanding() {
             <Card className="mt-4 border-emerald-500/20 bg-emerald-500/5">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <CompletenessRing value={calculateCompleteness("thiet_bi", fresh || {})} showText size={48} />
+                  <CompletenessRing value={calculateCompleteness("thiet_bi", fresh || ({} as any))} showText size={48} />
                   <div>
                     <h3 className="text-sm font-bold">Góp dữ liệu tài sản</h3>
                     <p className="text-[10px] text-muted-foreground uppercase">Giúp hệ thống hoàn thiện dữ liệu</p>
