@@ -304,7 +304,17 @@ function HeThongCayPage() {
         tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
         canManage={canManage && editMode}
         saving={false}
-        onSave={() => {}}
+        onSave={(payload) => {
+          if (target?.kind === "tb" && payload.ten) {
+            import("@/lib/mirats/ui/save-cell-securely").then(m => 
+              m.saveCellSecurely({ maThietBi: target.ma, field: "ten_thiet_bi", value: payload.ten, userRoles: roles })
+            ).then(res => {
+              if (res.mode === "proposed") toast.success("Đã tạo đề xuất thay đổi tên");
+              else toast.success("Đã cập nhật tên tài sản");
+              setTarget(null);
+            }).catch(e => toast.error(e.message));
+          }
+        }}
         onDelete={() => {}}
         unitCodeOf={() => null}
         isCustomNode={() => false}
@@ -322,6 +332,7 @@ function HeThongCayPage() {
         onRenameGroupCode={() => {}}
         slugMa={(s) => s}
       />
+
     </div>
   );
 }
