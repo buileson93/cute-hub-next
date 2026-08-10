@@ -10,13 +10,12 @@ import type { ReactNode } from "react";
 import type { ZodSchema } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -266,9 +265,15 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
   }, [fields, hasWizard, step]);
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !busy && onOpenChange(o)}>
-      <DialogContent
-        className={cn(WIDTH_CLASS[maxWidth], "flex flex-col max-h-[90vh]")}
+    <ResponsiveDialog
+      open={open}
+      onOpenChange={(o) => !busy && onOpenChange(o)}
+      title={title as string}
+      description={description}
+      className={WIDTH_CLASS[maxWidth]}
+    >
+      <div
+        className="flex flex-col h-full"
         onKeyDown={(e) => {
           if (
             e.key === "Enter" &&
@@ -277,17 +282,13 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
           ) {
             e.preventDefault();
             if (hasWizard && step < maxStep) {
-              setStep(s => s + 1);
+              setStep((s) => s + 1);
             } else if (!busy && (isValid || !disableSubmitWhenInvalid)) {
               void submit();
             }
           }
         }}
       >
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
-        </DialogHeader>
 
         {hasWizard && wizardSteps && (
           <div className="py-2">
@@ -505,7 +506,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
             )}
           </div>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </ResponsiveDialog>
   );
 }
