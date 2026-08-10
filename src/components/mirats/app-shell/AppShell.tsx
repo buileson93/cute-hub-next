@@ -31,6 +31,8 @@ import {
 } from "./index";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { MobileNav } from "./MobileNav";
+
 
 /** Tự động mở tour MỘT LẦN cho mỗi tài khoản ở lần đăng nhập đầu tiên. */
 function TourAutoStart({
@@ -183,10 +185,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <UserMenu />
                </div>
             </header>
-            <main className="flex-1 overflow-y-auto">{children}</main>
+            <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">{children}</main>
           </div>
           
+          <MobileNav activeWsId={activeWs.id} wsLastRoute={wsLastRoute} />
           <AiChatButton />
+
           <CommandPalette />
         </div>
       </TooltipProvider>
