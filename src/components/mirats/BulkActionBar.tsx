@@ -45,6 +45,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
               size="icon" 
               className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20 rounded-full" 
               onClick={onClear}
+              aria-label="Bỏ chọn tất cả"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -71,6 +72,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20 rounded-full"
+                    aria-label="Thao tác hàng loạt khác"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>

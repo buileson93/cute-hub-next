@@ -199,7 +199,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
               <Plus className="h-4 w-4" />
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} title="Đóng" aria-label="Nút">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} title="Đóng" aria-label="Đóng bảng">
             <X className="h-4 w-4" />
           </Button>
         </div>
