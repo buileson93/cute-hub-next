@@ -56,6 +56,8 @@ interface TreeNode {
 }
 
 function ThietBiPage() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   const { scopeAll, donViCode } = useScope();
   const { data: taxo, isLoading, error } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
@@ -307,7 +309,9 @@ function ThietBiPage() {
     return (
       <div className="flex items-center justify-center gap-2 p-16 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" /> Đang tải sổ lý lịch từ cơ sở dữ liệu…
-      </div>
+        </div>
+      )}
+
     );
   }
   if (error) {

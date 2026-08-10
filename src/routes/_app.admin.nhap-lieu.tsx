@@ -69,6 +69,26 @@ function download(name: string, content: string) {
 }
 
 function NhapLieuPage() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  if (isMobile) {
+    return (
+      <div className="p-4">
+        <PageHeader 
+          icon={Monitor} 
+          title="Nhập/Xuất hàng loạt" 
+          description="Công cụ quản trị dữ liệu chuyên sâu."
+        />
+        <DesktopOnly 
+          featureName="Nhập/Xuất hàng loạt"
+          reason="Việc nhập dữ liệu từ file CSV/Excel và đối chiếu cột (mapping) cần không gian màn hình lớn và độ chính xác của con trỏ chuột để tránh sai sót dữ liệu hệ thống. Vui lòng thực hiện trên máy tính."
+        >
+          <div />
+        </DesktopOnly>
+      </div>
+    );
+  }
+
   const runImport = useServerFn(runBulkImport);
   const [entity, setEntity] = useState("thiet_bi");
   const [catTable, setCatTable] = useState("dm_don_vi");

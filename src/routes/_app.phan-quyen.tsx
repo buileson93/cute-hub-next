@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ShieldCheck, Lock, FileClock, Database, Boxes } from "lucide-react";
+import { ShieldCheck, Lock, FileClock, Database, Boxes, Monitor } from "lucide-react";
+import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,6 +25,26 @@ export const Route = createFileRoute("/_app/phan-quyen")({
 });
 
 function PhanQuyenPage() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  if (isMobile) {
+    return (
+      <div className="p-4">
+        <PageHeader 
+          icon={Monitor} 
+          title="Phân quyền & Bảo mật" 
+          description="Quản trị vai trò và kiểm soát truy cập."
+        />
+        <DesktopOnly 
+          featureName="Quản trị Phân quyền"
+          reason="Ma trận phân quyền với hàng chục cột và vai trò cần màn hình rộng để có cái nhìn tổng thể và cấu hình chính xác. Vui lòng sử dụng máy tính để thực hiện các thay đổi về bảo mật."
+        >
+          <div />
+        </DesktopOnly>
+      </div>
+    );
+  }
+
   const [q, setQ] = useState("");
 
   const statsQ = useQuery({
