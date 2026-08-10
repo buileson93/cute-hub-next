@@ -374,7 +374,7 @@ export function StandardTable<T>({
                               c.align === "right" && "text-right tabular-nums",
                               c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
                             )}
-                            style={c.minW ? { minWidth: c.minW } : undefined}
+                            style={c.minW ? { minWidth: c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW } : undefined}
                           >
                             {c.cell ? (
                               c.cell(r)
