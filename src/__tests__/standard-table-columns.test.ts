@@ -40,7 +40,7 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
     });
 
     const exportCols = mockColumns.filter(c => {
-      if (userHidden.has(c.key)) return false; // Tầng 1
+      if ((userHidden as Set<string>).has(c.key)) return false; // Tầng 1
       if (c.hidden) return false;              // Tầng 3
       return true;                             // Bỏ qua Tầng 2
     });
@@ -58,12 +58,12 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
       isHidden: () => false,
     });
 
-    const userHidden = new Set([]);
+    const userHidden = new Set<string>([]);
     const vw = 375; // Màn hình nhỏ
     const BP_PX = { lg: 1024 };
 
     const shownCols = mockColumns.filter(c => {
-      if (userHidden.has(c.key)) return false;
+      if ((userHidden as Set<string>).has(c.key)) return false;
       if (c.hidden) return false;
       if (c.hideBelow) {
         const threshold = BP_PX.lg;
