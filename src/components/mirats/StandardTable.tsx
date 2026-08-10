@@ -4,9 +4,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 
 export interface StdColumn<T> {
@@ -185,6 +186,30 @@ export function StandardTable<T>({
     return toolbar;
   };
 
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 48,
+    overscan: isTest ? rows.length : 10,
+    initialRect: { width: 1280, height: 800 },
+    // Cần observeElementRect vì JSDOM không có ResizeObserver thực sự
+    observeElementRect: (instance, cb) => {
+      cb({ width: 1280, height: 800 });
+      return () => {};
+    },
+  });
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const totalSize = rowVirtualizer.getTotalSize();
+  const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
+      : 0;
+
   return (
     <div className="space-y-3">
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
@@ -258,7 +283,7 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        <Card className={cn("relative min-h-0 overflow-auto border shadow-sm", maxHeightClass)}>
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-sm", maxHeightClass)}>
           <Table className="w-full border-separate border-spacing-0 caption-bottom text-sm">
             <TableHeader className="bg-muted sticky top-0 z-20 shadow-[0_1px_0_hsl(var(--border))]">
               <TableRow className="hover:bg-transparent">
@@ -310,40 +335,55 @@ export function StandardTable<T>({
                 </TableRow>
               ) : (
 
-                rows.map((r) => {
-                  const rid = getRowIdInternal(r);
-                  const isSel = selectable && selected?.has(rid);
-                  return (
-                    <TableRow
-                      key={rid}
-                      className={cn(onRowClick && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
-                      onClick={() => onRowClick?.(r)}
-                    >
-                      {selectable && (
-                        <TableCell
-                          onClick={(e) => e.stopPropagation()}
-                          className="sticky left-0 z-10 bg-card border-r border-border/50"
-                        >
-                          <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
-                        </TableCell>
-                      )}
-                      {shownCols.map((c) => (
-                        <TableCell
-                          key={c.key}
-                          className={cn(
-                            c.cellClassName,
-                            c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
-                            selectable && c.sticky && "left-10",
-                            c.align === "center" && "text-center",
-                            c.align === "right" && "text-right"
-                          )}
-                        >
-                          {c.cell ? c.cell(r) : String(c.value?.(r) ?? "")}
-                        </TableCell>
-                      ))}
+                <>
+                  {paddingTop > 0 && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
                     </TableRow>
-                  );
-                })
+                  )}
+                  {virtualRows.map((virtualRow) => {
+                    const r = rows[virtualRow.index];
+                    const rid = getRowIdInternal(r);
+                    const isSel = selectable && selected?.has(rid);
+                    return (
+                      <TableRow
+                        key={rid}
+                        data-index={virtualRow.index}
+                        ref={rowVirtualizer.measureElement}
+                        className={cn(onRowClick && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
+                        onClick={() => onRowClick?.(r)}
+                      >
+                        {selectable && (
+                          <TableCell
+                            onClick={(e) => e.stopPropagation()}
+                            className="sticky left-0 z-10 bg-card border-r border-border/50"
+                          >
+                            <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
+                          </TableCell>
+                        )}
+                        {shownCols.map((c) => (
+                          <TableCell
+                            key={c.key}
+                            className={cn(
+                              c.cellClassName,
+                              c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
+                              selectable && c.sticky && "left-10",
+                              c.align === "center" && "text-center",
+                              c.align === "right" && "text-right"
+                            )}
+                          >
+                            {c.cell ? c.cell(r) : String(c.value?.(r) ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
+                  {paddingBottom > 0 && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
+                    </TableRow>
+                  )}
+                </>
               )}
             </TableBody>
           </Table>
