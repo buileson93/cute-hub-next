@@ -714,9 +714,10 @@ function fmtRelative(iso: string): string {
   return new Date(iso).toLocaleDateString("vi-VN");
 }
 
-function HealthTile({ icon, label, value, hint, tone, loading, to }: {
+function HealthTile({ icon, label, value, hint, tone, loading, to, description }: {
   icon: React.ReactNode; label: string; value: string; hint?: string;
   tone: "default" | "ok" | "warn" | "danger"; loading: boolean; to?: string;
+  description?: string;
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
@@ -735,6 +736,7 @@ function HealthTile({ icon, label, value, hint, tone, loading, to }: {
           {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
         </div>
         {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+        {description && <div className="mt-1 text-[10px] italic text-muted-foreground/80 leading-tight">{description}</div>}
       </CardContent>
     </Card>
   );
