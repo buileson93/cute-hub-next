@@ -109,6 +109,7 @@ export function StandardTable<T>({
   // Nối presets vào useColumnPrefs khi component mount/update
   useEffect(() => {
     if (presets && prefs.setPreset && prefs.ready) {
+      console.log('StandardTable preset effect:', { activePreset, currentPref: prefs.activePreset, isCustomized: prefs.isCustomized });
       const currentPreset = presets.find(p => p.id === activePreset);
       if (currentPreset && !prefs.isCustomized && prefs.activePreset !== activePreset) {
         const visibleKeys = currentPreset.visibleKeys || currentPreset.columns || currentPreset.cot || [];
