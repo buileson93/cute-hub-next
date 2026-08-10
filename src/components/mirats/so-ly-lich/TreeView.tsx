@@ -88,7 +88,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
                   <TooltipTrigger asChild>
                     <Link 
                       to="/thiet-bi/$maThietBi" 
-                    params={{ maThietBi: d.ma_thiet_bi }} as any
+                      params={{ maThietBi: d.ma_thiet_bi } as any}
                       className="text-xs hover:underline truncate flex-1"
                     >
                       {d.ten}
