@@ -6,7 +6,7 @@ import {
   type OutboxItem,
   type Storage,
 } from "@/lib/mirats/offline-queue";
-import { IndexedDBStorage } from "@/lib/mirats/indexeddb-storage";
+import { offlineStorage } from "@/lib/mirats/indexeddb-storage";
 
 
 /**
@@ -52,7 +52,9 @@ let sharedQueue: OfflineQueue | null = null;
 export function getOfflineQueue(handlers: HandlerMap = {}): OfflineQueue {
   if (!sharedQueue) {
     const isBrowser = typeof window !== "undefined";
-    const storage = isBrowser ? new IndexedDBStorage() : new SessionStorageAdapter();
+    // T8: Nối IndexedDBStorage đã viết sẵn vào hàng đợi ngoại tuyến.
+    // Dùng SessionStorageAdapter cho SSR/preview để tránh lỗi ReferenceError: IDBDatabase
+    const storage = isBrowser ? offlineStorage : new SessionStorageAdapter();
     sharedQueue = new OfflineQueue(storage, handlers);
   }
   return sharedQueue;
