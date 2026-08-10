@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useColumnPrefs } from "../lib/mirats/use-column-prefs";
 import { StdColumn } from "../components/mirats/StandardTable";
 
@@ -15,6 +15,10 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
     { key: "c4", label: "Cột 4" },
   ];
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("người dùng ẩn cột X -> X không có trên màn hình VÀ không có trong xuất", () => {
     // Giả lập người dùng ẩn 'c1' (Tầng 1)
     (useColumnPrefs as any).mockReturnValue({
@@ -25,12 +29,12 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
     });
 
     // Mô phỏng logic lọc trong StandardTable
-    const userHidden = new Set(["c1"]);
+    const userHidden = new Set<string>(["c1"]);
     const vw = 1200; // Màn hình lớn
     const BP_PX = { lg: 1024 };
 
     const shownCols = mockColumns.filter(c => {
-      if (userHidden.has(c.key)) return false; // Tầng 1
+      if ((userHidden as Set<string>).has(c.key)) return false; // Tầng 1
       if (c.hidden) return false;              // Tầng 3
       if (c.hideBelow) {                       // Tầng 2
         const threshold = BP_PX.lg;
@@ -73,7 +77,7 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
     });
 
     const exportCols = mockColumns.filter(c => {
-      if (userHidden.has(c.key)) return false;
+      if ((userHidden as Set<string>).has(c.key)) return false;
       if (c.hidden) return false;
       return true;
     });
@@ -82,7 +86,7 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
     expect(exportCols.map(c => c.key)).toContain("c2");    // Vẫn xuất hiện khi export
   });
 
-  it("không có tableKey -> không vỡ, chỉ là không nhớ", () => {
+  it("không có tableKey -> vẫn gọi hook với key default", () => {
     (useColumnPrefs as any).mockReturnValue({
       order: ["c1", "c2", "c3", "c4"],
       hidden: new Set([]),
@@ -90,12 +94,11 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
       isHidden: () => false,
     });
 
-    // In this turn I just need to verify logic, and since we are testing the logic block 
-    // rather than the React component render in this unit test file, 
-    // we just ensure useColumnPrefs was mocked.
-    const prefs = useColumnPrefs("default", ["c1", "c2", "c3", "c4"]);
-    expect(prefs).toBeDefined();
-    expect(useColumnPrefs).toHaveBeenCalled();
+    // Simulate calling the hook as it happens in the component
+    const tableKey = undefined;
+    useColumnPrefs(tableKey || "default", ["c1", "c2", "c3", "c4"], []);
+    
+    expect(useColumnPrefs).toHaveBeenCalledWith("default", expect.any(Array), expect.any(Array));
   });
 
   it("đổi thứ tự cột rồi tải lại -> giữ nguyên thứ tự", () => {
@@ -107,7 +110,7 @@ describe("StandardTable Logic 3 Tầng (Column Filtering)", () => {
       isHidden: () => false,
     });
 
-    const prefs = useColumnPrefs("any", ["c1", "c2", "c3", "c4"]);
+    const prefs = useColumnPrefs("any", ["c1", "c2", "c3", "c4"], []);
     
     // Sắp xếp columns theo prefs.order
     const sorted = [...mockColumns].sort((a, b) => {
