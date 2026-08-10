@@ -281,7 +281,7 @@ function SuCoDetail() {
                   </div>
                   <div className="min-w-0 flex-1 truncate px-2 text-muted-foreground">{x.hien_tuong}</div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className={mucColor[x.muc_do]}>{x.muc_do}</Badge>
+                    <StatusBadge domain="su_co" code={x.muc_do} label={x.muc_do} />
                     <span className="text-xs tabular-nums text-muted-foreground">{fmtDowntime(x.thoi_gian_gian_doan)}</span>
                   </div>
                 </Link>

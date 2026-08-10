@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 interface DetailLayoutProps {
   title: string;
   subtitle?: string;
-  badges?: { label: string; className?: string }[];
+  badges?: ({ label: string; className?: string } | { component: ReactNode })[];
   actions?: ReactNode;
   headerIcon?: ReactNode;
   kpiCards?: ReactNode;
@@ -41,9 +41,13 @@ export function DetailLayout({
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
               {badges?.map((b, i) => (
-                <Badge key={i} variant="secondary" className={cn("text-[10px] font-mono", b.className)}>
-                  {b.label}
-                </Badge>
+                'component' in b ? (
+                  <div key={i}>{b.component}</div>
+                ) : (
+                  <Badge key={i} variant="secondary" className={cn("text-[10px] font-mono", b.className)}>
+                    {b.label}
+                  </Badge>
+                )
               ))}
             </div>
             {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
