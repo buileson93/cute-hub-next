@@ -716,10 +716,10 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
         </div>
         {canManage && (
           <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/50 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onEdit} title="Sửa" aria-label="Sửa">
+            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onEdit} title="Sửa" aria-label="Sửa mẫu">
               <Pencil className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onDelete} title="Xoá" aria-label="Xoá">
+            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onDelete} title="Xoá" aria-label="Xoá mẫu">
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
