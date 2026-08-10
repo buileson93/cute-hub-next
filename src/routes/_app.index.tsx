@@ -595,9 +595,10 @@ function Dashboard() {
       </Tabs>
 
       <KpiDrilldownDialog drill={drill} onClose={() => setDrill(null)} />
-    </div>
+    </PageBody>
   );
 }
+
 
 /** Drill-down: liệt kê bản ghi nguồn tạo nên một KPI, có liên kết chi tiết. */
 function KpiDrilldownDialog({ drill, onClose }: { drill: { title: string; result: KpiResult; kind?: "su-co" | "cong-viec" } | null; onClose: () => void }) {
@@ -689,11 +690,11 @@ function ReportCard({ title, desc, onClick }: { title: string; desc: string; onC
       <div className="text-xs text-muted-foreground">{desc}</div>
       <div className="mt-1 flex items-center gap-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
         Tải xuống CSV <ArrowRight className="h-3 w-3" />
-    </PageBody>
-
+      </div>
     </button>
   );
 }
+
 
 function SectionHeader({ title, icon: Icon, action }: { title: string; icon?: React.ComponentType<{ className?: string }>; action?: React.ReactNode }) {
   return (
