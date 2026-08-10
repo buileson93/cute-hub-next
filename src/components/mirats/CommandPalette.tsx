@@ -848,9 +848,12 @@ export function CommandPalette() {
                   <CommandItem
                     key={`${h.entity}-${h.id}`}
                     value={`hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}`}
-
-                    onSelect={() => go(h.to)}
+                    onSelect={() => {
+                      saveRecent(h);
+                      go(h.to);
+                    }}
                   >
+
                     <Icon className={h.entity === "he_thong" ? "h-4 w-4 text-primary" : "h-4 w-4"} />
                     <div className="min-w-0 flex-1">
                       <div className="truncate">
