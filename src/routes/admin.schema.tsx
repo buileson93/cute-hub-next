@@ -33,6 +33,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 
 export const Route = createFileRoute("/admin/schema")({
   head: () => ({
