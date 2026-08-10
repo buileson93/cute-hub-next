@@ -705,7 +705,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
               <Button
                 size="icon" variant="secondary"
                 className="h-7 w-7"
-                onClick={onInfo} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin">
+                onClick={onInfo} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
                 <Info className="h-3.5 w-3.5" />
               </Button>
             </HoverCardTrigger>
