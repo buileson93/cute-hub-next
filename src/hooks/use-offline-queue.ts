@@ -6,6 +6,8 @@ import {
   type OutboxItem,
   type Storage,
 } from "@/lib/mirats/offline-queue";
+import { IndexedDBStorage } from "@/lib/mirats/indexeddb-storage";
+
 
 /**
  * N11 — Hook UI cho hàng chờ offline.
