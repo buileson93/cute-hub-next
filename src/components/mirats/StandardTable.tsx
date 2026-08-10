@@ -60,15 +60,9 @@ export interface StandardTableProps<T> {
   countUnit?: string;
   requireFilterToShow?: boolean;
   gated?: boolean;
-  presets?: any[];
-  activePreset?: any;
-  handleSetPreset?: (p: any) => void;
-  isCustomized?: boolean;
-  reset?: () => void;
-  hideExport?: boolean;
+  presets?: { id: string; label: string; visibleKeys: string[]; orderKeys?: string[] }[];
+  activePreset?: string;
   hideReorderToggle?: boolean;
-  exportName?: string;
-  autoFit?: boolean;
 }
 
 export function StandardTable<T>({
@@ -92,6 +86,8 @@ export function StandardTable<T>({
   tableKey,
   countUnit = "bản ghi",
   gated,
+  presets,
+  activePreset,
 }: StandardTableProps<T>) {
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
   
