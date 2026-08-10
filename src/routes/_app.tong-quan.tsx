@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
   CartesianGrid,
@@ -254,7 +257,7 @@ function TongQuanPage() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 p-4 md:p-6">
+    <PageBody>
       {/* Thanh tiêu đề + bộ lọc */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="mr-auto">
@@ -805,7 +808,8 @@ function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
             <div className="text-[11px] text-muted-foreground">{new Date(r.ngay_het).toLocaleDateString("vi-VN")}</div>
             <div className={cn("w-24 text-right text-xs font-medium tabular-nums", tone)}>
               {overdue ? `${Math.abs(r.days_left)} ngày quá hạn` : `còn ${r.days_left} ngày`}
-            </div>
+    </PageBody>
+
             <span className="text-[11px] text-primary opacity-0 transition-opacity group-hover:opacity-100">Mở →</span>
           </li>
         );
