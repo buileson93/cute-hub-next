@@ -698,7 +698,36 @@ function KpiDrilldownDialog({ drill, onClose }: { drill: { title: string; result
 }
 
 
+function ActionCard({ 
+  icon: Icon, label, value, desc, href, color, bg 
+}: { 
+  icon: any, label: string, value: string | number, desc: string, href: string, color: string, bg: string 
+}) {
+  return (
+    <Card className="overflow-hidden border-none bg-muted/30 shadow-none">
+      <Link to={href as any}>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", bg)}>
+              <Icon className={cn("h-5 w-5", color)} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium text-muted-foreground">{label}</div>
+              <div className="text-2xl font-bold tabular-nums">{value}</div>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+            <span className="truncate">{desc}</span>
+            <ArrowRight className="h-3 w-3 shrink-0" />
+          </div>
+        </CardContent>
+      </Link>
+    </Card>
+  );
+}
+
 function MiniKpi({ title, value, icon: Icon, tone = "text-primary" }: { title: string; value: string | number; icon: React.ComponentType<{ className?: string }>; tone?: string }) {
+
   return (
     <Card>
       <CardContent className="flex items-center justify-between gap-2 p-2.5 sm:p-4">
