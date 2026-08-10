@@ -99,6 +99,8 @@ export type ThanhPhanRow = {
   thietBiSerial: string;
   model: string;
   modelId: string | null;
+
+  modelId: string | null;
   chungLoai: string;
   nhaSanXuat: string;
   nhaCungCap: string;
