@@ -146,15 +146,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TooltipProvider delayDuration={300}>
         <div className="flex min-h-dvh w-full bg-gradient-to-br from-background via-background to-primary/[0.045] text-foreground">
           {/* Rail (Desktop) */}
-          <aside className="hidden w-16 h-dvh sticky top-0 shrink-0 flex-col items-center border-r border-sidebar-border bg-gradient-to-b from-sidebar via-sidebar to-sidebar/92 py-4 md:flex">
+          <aside className="hidden w-16 h-dvh sticky top-0 shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-4 md:flex z-30">
             <SidebarLogoRail />
-            <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1.5">
+            <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
               {railWorkspaces.map((ws) => (
                 <button
                   key={ws.id}
                   onClick={() => gotoWorkspace(ws)}
                   className={cn(
-                    "group relative flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                    "group relative flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
                     ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   )}
                 >
@@ -174,7 +174,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <button
                   onClick={() => gotoWorkspace(adminWs)}
                   className={cn(
-                    "flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                    "flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
                     adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   )}
                 >
@@ -187,16 +187,16 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Sub-sidebar (Desktop) */}
           <aside 
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onPointerEnter={() => setIsHovered(true)}
+            onPointerLeave={() => setIsHovered(false)}
             className={cn(
-              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-300 ease-in-out overflow-hidden z-20",
-              (isCollapsed && !isHovered) ? "w-[3.25rem]" : "w-64"
+              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/40 md:flex transition-[width] duration-300 ease-in-out overflow-hidden z-20",
+              (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-60"
             )}
           >
             <div className={cn(
               "flex h-14 items-center border-b px-6 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
-              (isCollapsed && !isHovered) && "px-0 justify-center opacity-0 w-0"
+              (isCollapsed && !isHovered) && "opacity-0"
             )}>
               {activeWs.label}
             </div>
