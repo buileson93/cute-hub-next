@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/backend/client";
 export type ColumnPrefs = {
   order: string[];
   hidden: string[];
+  widths?: Record<string, number>;
   presetId?: string;
   customized?: boolean;
 };
@@ -50,6 +51,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
   const [order, setOrderState] = useState<string[]>(() => reconcileOrder(undefined, allKeys));
   const [hidden, setHiddenState] = useState<Set<string>>(() => new Set(defaultHidden));
+  const [widths, setWidthsState] = useState<Record<string, number>>({});
   const [activePreset, setActivePreset] = useState<string | undefined>();
   const [isCustomized, setIsCustomized] = useState(false);
   const [ready, setReady] = useState(false);
@@ -64,6 +66,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       if (cancelled) return;
       setOrderState(reconcileOrder(p?.order, allKeys));
       setHiddenState(new Set(p?.hidden ?? defaultHidden));
+      setWidthsState(p?.widths ?? {});
       setActivePreset(p?.presetId);
       setIsCustomized(p?.customized ?? false);
     };
@@ -127,24 +130,30 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     const reconciled = reconcileOrder(next, allKeys);
     setOrderState(reconciled);
     setIsCustomized(true);
-    setHiddenState((h) => {
-      persist({ order: reconciled, hidden: [...h], presetId: activePreset, customized: true });
-      return h;
-    });
-  }, [allKeys, persist, activePreset]);
+    persist({ order: reconciled, hidden: [...hidden], widths, presetId: activePreset, customized: true });
+  }, [allKeys, persist, activePreset, hidden, widths]);
+
+  const setWidth = useCallback((key: string, w: number) => {
+    const nextWidths = { ...widths, [key]: Math.round(w) };
+    setWidthsState(nextWidths);
+    setIsCustomized(true);
+    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true });
+  }, [widths, order, hidden, persist, activePreset]);
+
+  const resetWidth = useCallback((key: string) => {
+    const nextWidths = { ...widths };
+    delete nextWidths[key];
+    setWidthsState(nextWidths);
+    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true });
+  }, [widths, order, hidden, persist, activePreset]);
 
   const toggle = useCallback((key: string) => {
-    setHiddenState((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      setIsCustomized(true);
-      setOrderState((o) => {
-        persist({ order: o, hidden: [...next], presetId: activePreset, customized: true });
-        return o;
-      });
-      return next;
-    });
-  }, [persist, activePreset]);
+    const nextHidden = new Set(hidden);
+    nextHidden.has(key) ? nextHidden.delete(key) : nextHidden.add(key);
+    setHiddenState(nextHidden);
+    setIsCustomized(true);
+    persist({ order, hidden: [...nextHidden], widths, presetId: activePreset, customized: true });
+  }, [hidden, order, widths, persist, activePreset]);
 
   const setHidden = useCallback((keys: string[]) => {
     const next = new Set(keys);
@@ -161,9 +170,10 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     const h = new Set(defaultHidden);
     setOrderState(o);
     setHiddenState(h);
+    setWidthsState({});
     setActivePreset(undefined);
     setIsCustomized(false);
-    persist({ order: o, hidden: [...h], customized: false });
+    persist({ order: o, hidden: [...h], widths: {}, customized: false });
   }, [allKeys, defaultHidden, persist]);
 
   const setPreset = useCallback((presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
@@ -184,16 +194,19 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     () => ({
       order,
       hidden,
+      widths,
       ready,
       activePreset,
       isCustomized,
       setOrder,
+      setWidth,
+      resetWidth,
       toggle,
       setHidden,
       reset,
       isHidden,
       setPreset,
     }),
-    [order, hidden, ready, activePreset, isCustomized, setOrder, toggle, setHidden, reset, isHidden, setPreset],
+    [order, hidden, widths, ready, activePreset, isCustomized, setOrder, setWidth, resetWidth, toggle, setHidden, reset, isHidden, setPreset],
   );
 }
