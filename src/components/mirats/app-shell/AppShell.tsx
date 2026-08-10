@@ -21,7 +21,7 @@ import {
   SheetHeader,
   SheetTitle
 } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -81,6 +81,20 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [flyoutWs, setFlyoutWs] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("mirats-sidebar-collapsed");
+    if (saved === "1") setIsCollapsed(true);
+  }, []);
+
+  const toggleCollapsed = () => {
+    setIsCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem("mirats-sidebar-collapsed", next ? "1" : "0");
+      return next;
+    });
+  };
 
   useEffect(() => {
     try {
@@ -174,12 +188,29 @@ export function AppShell({ children }: { children: ReactNode }) {
           </aside>
 
           {/* Sub-sidebar (Desktop) */}
-          <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex">
-            <div className="flex h-14 items-center border-b px-6 font-bold tracking-tight">
+          <aside className={cn(
+            "hidden shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-200",
+            isCollapsed ? "w-[3.25rem]" : "w-64"
+          )}>
+            <div className={cn(
+              "flex h-14 items-center border-b px-6 font-bold tracking-tight overflow-hidden whitespace-nowrap",
+              isCollapsed && "px-0 justify-center opacity-0 w-0"
+            )}>
               {activeWs.label}
             </div>
             <div className="flex-1 overflow-y-auto">
-              <Sidebar />
+              <Sidebar collapsed={isCollapsed} />
+            </div>
+            <div className="mt-auto border-t p-2 flex justify-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={toggleCollapsed}
+                aria-label={isCollapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng"}
+              >
+                {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+              </Button>
             </div>
           </aside>
 
