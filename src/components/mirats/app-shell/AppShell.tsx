@@ -190,7 +190,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={cn(
-              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-300 ease-in-out",
+              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-300 ease-in-out overflow-hidden z-20",
               (isCollapsed && !isHovered) ? "w-[3.25rem]" : "w-64"
             )}
           >
