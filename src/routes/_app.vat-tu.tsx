@@ -153,7 +153,7 @@ function VatTuPage() {
                       </div>
                     ),
                   },
-                  { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <LoaiBadge loai={r.loai} /> },
+                  { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <StatBadge loai={r.loai} /> },
                   { key: "tong_ton", label: "Tổng tồn", align: "right", sortable: true, value: (r) => r.tong_ton, cell: (r) => <span className="text-right font-mono font-semibold text-red-600">{fmt(r.tong_ton)} {r.don_vi_tinh}</span> },
                   { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu, cell: (r) => <span className="text-right font-mono text-sm">{fmt(r.muc_ton_toi_thieu)}</span> },
                   { key: "thieu", label: "Thiếu", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu - r.tong_ton, cell: (r) => <span className="text-right font-mono text-sm text-red-600">{fmt(r.muc_ton_toi_thieu - r.tong_ton)}</span> },
