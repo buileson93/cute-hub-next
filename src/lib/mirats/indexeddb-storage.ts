@@ -1,36 +1,11 @@
 import { openDB, type IDBPDatabase } from 'idb';
+import type { OutboxItem, Storage } from './offline-queue';
 
 const DB_NAME = 'mirats-offline-db';
 const STORE_NAME = 'outbox';
 const VERSION = 1;
 
-export interface OutboxItem {
-  id: string;
-  op: string;
-  entity_key: string;
-  payload: any;
-  created_at: number;
-  attempts: number;
-  last_error?: string;
-  status: 'pending' | 'syncing' | 'failed';
-}
-
-const DB_NAME = 'mirats-offline-db';
-const STORE_NAME = 'outbox';
-const VERSION = 1;
-
-export interface OutboxItem {
-  id: string;
-  op: string;
-  entity_key: string;
-  payload: any;
-  created_at: number;
-  attempts: number;
-  last_error?: string;
-  status: 'pending' | 'syncing' | 'failed';
-}
-
-export class IndexedDBStorage {
+export class IndexedDBStorage implements Storage {
   private dbPromise: Promise<IDBPDatabase>;
 
   constructor() {
@@ -55,17 +30,12 @@ export class IndexedDBStorage {
     return db.get(STORE_NAME, id);
   }
 
-  async getAll(): Promise<OutboxItem[]> {
+  async list(): Promise<OutboxItem[]> {
     const db = await this.dbPromise;
     return db.getAll(STORE_NAME);
   }
 
-  async getPending(): Promise<OutboxItem[]> {
-    const db = await this.dbPromise;
-    return db.getAllFromIndex(STORE_NAME, 'status', 'pending');
-  }
-
-  async delete(id: string): Promise<void> {
+  async remove(id: string): Promise<void> {
     const db = await this.dbPromise;
     await db.delete(STORE_NAME, id);
   }
