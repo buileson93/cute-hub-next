@@ -3,7 +3,7 @@
 Người dùng yêu cầu kiểm tra trạng thái Giai đoạn 13 và tiếp tục nếu đã xong. Dựa trên rà soát mã nguồn, Giai đoạn 13 (tách AppShell, Sidebar, TopBar...) đã được thực hiện một phần nhưng cần hoàn thiện và chuyển sang Giai đoạn 14 (Hiện trường & Điều hướng) cũng như các yêu cầu về Dashboard hợp nhất.
 
 ## 1. Cập nhật giao diện (Text Edit)
-- Thay đổi văn bản từ "language selector" (có thể là một placeholder hoặc mô tả linh kiện chọn múi giờ/ngôn ngữ) thành "kiểm tra nếu xong giai đoạn 13 thì tiếp tục". Do không tìm thấy chuỗi chính xác "language selector" trong mã nguồn hiện tại, tôi sẽ thêm nhãn này vào vị trí hợp lý trong `TopBar` hoặc `Sidebar` để làm chỉ báo trạng thái theo yêu cầu.
+- Thay đổi văn bản từ "language selector" thành "đã hoàn tất giai đoạn 13 xem còn trong kế hoạch đã xong chưa tiếp tục sang giai đoạn khác".
 
 ## 2. Hoàn thiện Giai đoạn 13 (Chi tiết bản ghi & Form)
 - **Chuẩn hoá trang chi tiết**: Áp dụng layout chuẩn (Header, KPI, Tabs) cho các trang Sự cố, Bảo trì, Thiết bị.
