@@ -476,7 +476,7 @@ export function StandardTable<T>({
                       <DropdownMenuSeparator />
                       <DropdownMenuCheckboxItem 
                         className="text-primary focus:text-primary font-medium"
-                        onSelect={(e) => {
+                        onSelect={(e: Event) => {
                           e.preventDefault();
                           prefs.reset();
                         }}
