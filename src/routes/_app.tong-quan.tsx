@@ -623,9 +623,10 @@ function TongQuanPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageBody>
   );
 }
+
 
 function KpiCard({
   icon, label, value, loading, tone, link, sub,
@@ -808,8 +809,7 @@ function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
             <div className="text-[11px] text-muted-foreground">{new Date(r.ngay_het).toLocaleDateString("vi-VN")}</div>
             <div className={cn("w-24 text-right text-xs font-medium tabular-nums", tone)}>
               {overdue ? `${Math.abs(r.days_left)} ngày quá hạn` : `còn ${r.days_left} ngày`}
-    </PageBody>
-
+            </div>
             <span className="text-[11px] text-primary opacity-0 transition-opacity group-hover:opacity-100">Mở →</span>
           </li>
         );
@@ -817,6 +817,7 @@ function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
     </ul>
   );
 }
+
 
 function FeedIcon({ loai }: { loai: string }) {
   const map: Record<string, React.ReactNode> = {
