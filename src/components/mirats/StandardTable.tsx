@@ -301,7 +301,7 @@ export function StandardTable<T>({
                       c.align === "center" && "text-center",
                       c.align === "right" && "text-right"
                     )}
-                    style={c.minW ? { minWidth: c.minW, width: c.minW } : undefined}
+                    style={c.minW ? { minWidth: c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW, width: c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW } : undefined}
                   >
                     {c.label}
                   </TableHead>
