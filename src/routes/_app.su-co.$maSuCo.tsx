@@ -35,23 +35,8 @@ export const Route = createFileRoute("/_app/su-co/$maSuCo")({
   component: SuCoDetail,
 });
 
-const mucColor: Record<string, string> = {
-  "Nghiêm trọng": "bg-red-100 text-red-700",
-  "Cao": "bg-orange-100 text-orange-700",
-  "Trung bình": "bg-amber-100 text-amber-700",
-  "Thấp": "bg-slate-100 text-slate-700",
-};
-const ttColor: Record<string, string> = {
-  "Mới": "bg-sky-100 text-sky-700",
-  "Đang xử lý": "bg-amber-100 text-amber-700",
-  "Đã khắc phục": "bg-emerald-100 text-emerald-700",
-  "Đóng": "bg-slate-200 text-slate-700",
-};
-const ahColor: Record<string, string> = {
-  "Có gián đoạn ĐHB": "bg-red-100 text-red-700",
-  "Ảnh hưởng một phần": "bg-amber-100 text-amber-700",
-  "Không ảnh hưởng": "bg-slate-100 text-slate-600",
-};
+import { StatusBadge } from "@/components/mirats/StatusBadge";
+
 
 function SuCoDetail() {
   const { maSuCo } = Route.useParams();
@@ -132,9 +117,9 @@ function SuCoDetail() {
       subtitle={sc.hien_tuong}
       headerIcon={<AlertTriangle className={cn("h-6 w-6", sc.muc_do === "Nghiêm trọng" ? "text-destructive" : "text-primary")} />}
       badges={[
-        { label: sc.muc_do, className: mucColor[sc.muc_do] },
-        { label: sc.trang_thai, className: ttColor[sc.trang_thai] },
-        { label: sc.anh_huong_dhb, className: ahColor[sc.anh_huong_dhb] }
+        { component: <StatusBadge domain="su_co" code={sc.muc_do} label={sc.muc_do} /> },
+        { component: <StatusBadge domain="thiet_bi" code={sc.trang_thai} label={sc.trang_thai} /> },
+        { component: <StatusBadge domain="su_co" code={sc.anh_huong_dhb} label={sc.anh_huong_dhb} /> }
       ]}
       actions={
         <div className="flex gap-2">
