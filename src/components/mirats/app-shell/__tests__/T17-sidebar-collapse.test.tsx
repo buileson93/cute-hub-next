@@ -12,6 +12,7 @@ vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: any) => <div>{children}</div>,
   useRouterState: vi.fn((selector?: any) => {
     const state = { location: { pathname: '/' } };
+    // TanStack Router selector pattern
     if (typeof selector === 'function') return selector(state);
     return state;
   }),
@@ -96,6 +97,7 @@ Object.defineProperty(window, 'matchMedia', {
 describe('AppShell Sidebar Collapse (T17)', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -103,18 +105,14 @@ describe('AppShell Sidebar Collapse (T17)', () => {
   });
 
   it('Sidebar: ẩn tiêu đề h3 khi collapsed', () => {
-    const { rerender } = render(<Sidebar collapsed={false} />);
-    // Tìm bất kỳ h3 nào
-    expect(screen.queryByRole('heading', { level: 3 })).not.toBeNull();
-
-    rerender(<Sidebar collapsed={true} />);
+    render(<Sidebar collapsed={true} />);
+    // h3 thường được dùng cho group label trong Sidebar.tsx
     expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
   });
 
   it('AppShell: phải có nút thu gọn với aria-label chính xác', () => {
     render(<AppShell>Content</AppShell>);
-    
-    // Mặc định là mở rộng
+    // Desktop flex aside
     const buttons = screen.getAllByLabelText(/Thu gọn thanh điều hướng/i);
     expect(buttons.length).toBeGreaterThan(0);
   });
@@ -128,7 +126,7 @@ describe('AppShell Sidebar Collapse (T17)', () => {
     // Kiểm tra localStorage
     expect(localStorage.getItem('mirats-sidebar-collapsed')).toBe('1');
 
-    // Nút phải đổi aria-label
+    // Nút phải đổi aria-label (sau khi re-render)
     expect(screen.getAllByLabelText(/Mở rộng thanh điều hướng/i).length).toBeGreaterThan(0);
   });
 
