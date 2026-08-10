@@ -564,12 +564,12 @@ export function StandardTable<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {rows.length === 0 ? (
+          {fullDisplay.length === 0 ? (
             <div className="py-20 text-center text-sm text-muted-foreground border rounded-lg bg-card">
-              {gated ? "Bảng đang trống." : (emptyContent ?? emptyText)}
+              {hasFilter ? "Không có dòng nào khớp bộ lọc" : (gated ? "Bảng đang trống." : (emptyContent ?? emptyText))}
             </div>
           ) : (
-            rows.map((r) => {
+            display.map((r) => {
               const rid = getRowIdInternal(r);
               const isSel = selectable && selected?.has(rid);
               return (
