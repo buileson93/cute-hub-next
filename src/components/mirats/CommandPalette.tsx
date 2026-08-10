@@ -373,8 +373,9 @@ export function CommandPalette() {
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
 
   // Không lặp lại kết quả đã hiển thị bởi useGlobalSearch (theo cặp loai:id / entity:id)
-  const daHienThi = new Set(rows.map((r) => `${r.entity}:${r.id}`));
-  const rowsMoRong = rowsToanCuc.filter((r) => !daHienThi.has(`${r.loai}:${r.id}`));
+  const daHienThi = new Set(rows.map((r: any) => `${r.entity}:${r.id}`));
+  const rowsMoRong = rowsToanCuc.filter((r: any) => !daHienThi.has(`${r.loai}:${r.id}`));
+
 
   // Dữ liệu danh mục (đã cache bởi react-query — không phát sinh truy vấn thừa)
   // dùng để làm giàu khung xem trước với thông tin THẬT của tài sản/hệ thống.
@@ -580,10 +581,11 @@ export function CommandPalette() {
     }
     if (v.startsWith("hit-")) {
       const row = rows.find(
-        (h) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
+        (h: any) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
       );
       if (!row) return null;
-      const meta = ENTITY_META[row.entity];
+      const meta = (ENTITY_META as any)[row.entity];
+
 
       // Tài sản: hiển thị thông tin thật lấy từ CSDL (danh mục tài sản).
       if (row.entity === "thiet_bi") {
@@ -653,8 +655,9 @@ export function CommandPalette() {
     const v = activeValue;
     if (!v?.startsWith("hit-")) return null;
     const row = rows.find(
-      (h) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
+      (h: any) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
     );
+
     if (!row) return null;
     if (row.entity === "thiet_bi" || row.entity === "he_thong") {
       return { type: row.entity, id: row.id };
@@ -878,8 +881,9 @@ export function CommandPalette() {
         {rows.length > 0 && (
           <>
             <CommandGroup heading="Tài sản & Hệ thống">
-              {rows.filter(h => h.entity === 'thiet_bi' || h.entity === 'he_thong').map((h) => {
-                const meta = ENTITY_META[h.entity];
+              {rows.filter((h: any) => h.entity === 'thiet_bi' || h.entity === 'he_thong').map((h: any) => {
+                const meta = (ENTITY_META as any)[h.entity];
+
                 const Icon = meta.icon;
                 return (
                   <CommandItem
