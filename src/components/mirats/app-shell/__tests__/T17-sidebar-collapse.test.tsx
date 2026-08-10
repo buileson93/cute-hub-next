@@ -122,24 +122,26 @@ describe('AppShell Sidebar Layout (T17 - Revised)', () => {
     expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
   });
 
-  it('AppShell: sub-sidebar phải có class hidden md:flex', () => {
+  it('AppShell: Desktop container phải có class hidden md:flex và z-30', () => {
     const { container } = render(<AppShell>Content</AppShell>);
-    const subSidebar = container.querySelector('aside.z-20');
-    expect(subSidebar).toBeDefined();
-    expect(subSidebar?.className).toContain('hidden');
-    expect(subSidebar?.className).toContain('md:flex');
+    // Tìm div bọc Rail và Sub-sidebar (có h-dvh và z-30)
+    const desktopNav = container.querySelector('div.h-dvh.z-30');
+    expect(desktopNav).toBeDefined();
+    expect(desktopNav?.className).toContain('hidden');
+    expect(desktopNav?.className).toContain('md:flex');
   });
 
   it('AppShell: mặc định sub-sidebar phải thu gọn (w-0)', () => {
     const { container } = render(<AppShell>Content</AppShell>);
-    const subSidebar = container.querySelector('aside.z-20');
+    // Tìm aside Sub-sidebar (aside thứ 2 trong desktop container, có overflow-hidden)
+    const subSidebar = container.querySelector('aside.overflow-hidden');
     expect(subSidebar?.className).toContain('w-0');
   });
 
-  it('AppShell: Rail phải có width w-16 và z-30', () => {
+  it('AppShell: Rail phải có width w-16', () => {
     const { container } = render(<AppShell>Content</AppShell>);
     const rail = container.querySelector('aside.w-16');
     expect(rail).toBeDefined();
-    expect(rail?.className).toContain('z-30');
+    expect(rail?.className).toContain('w-16');
   });
 });
