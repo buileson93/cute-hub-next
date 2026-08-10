@@ -86,18 +86,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("mirats-sidebar-collapsed");
-    // Mặc định là co lại (1), trừ khi người dùng đã mở rộng (0)
-    if (saved === "0") setIsCollapsed(false);
-    else setIsCollapsed(true);
+    // Mặc định là thu gọn (true)
+    if (saved === "0") {
+      setIsCollapsed(false);
+    } else {
+      setIsCollapsed(true);
+    }
   }, []);
-
-  const toggleCollapsed = () => {
-    setIsCollapsed(prev => {
-      const next = !prev;
-      localStorage.setItem("mirats-sidebar-collapsed", next ? "1" : "0");
-      return next;
-    });
-  };
 
   useEffect(() => {
     try {
