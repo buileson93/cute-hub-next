@@ -1,26 +1,23 @@
-import { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
-  ListTree, GitFork, Boxes, FolderTree, Network, Cpu, Puzzle,
-  Search, Pencil, List, Search as SearchIcon
+  ListTree, GitFork, List, Search as SearchIcon, Pencil
 } from "lucide-react";
 import { ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { useSession } from "@/hooks/use-session";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/backend/client";
 import {
   useDbTaxonomy,
   type DbDevice, type DbTaxonomy,
 } from "@/lib/mirats/db-taxonomy";
-import { useAllViTriChucNang, useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
+import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useMyPermissions } from "@/hooks/use-permissions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import { parseHtSysMa } from "@/lib/mirats/phan-loai";
 
 import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/CayContext";
@@ -29,8 +26,7 @@ import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { buildTree, filterTreeByBadge, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import type { 
-  PlGroup, EditKind, BadgeFilter, FocusTarget, 
-  StatusCat, ImpCat, InfoChip, OverrideMap 
+  EditKind, OverrideMap 
 } from "@/components/mirats/he-thong-cay/types";
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
@@ -82,23 +78,24 @@ function useOverrides() {
 
 function usePlMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (id: string) => overrides?.get(okey("pl", id))?.ten || taxonomy?.plList.find((p: any) => p.id === id)?.ten || id,
+    (id: string) => overrides?.get(okey("pl", id))?.ten || taxonomy?.plNameMap.get(id) || id,
     [overrides, taxonomy],
   );
 }
 
 function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (ma: string) => overrides?.get(okey("nh", ma))?.ten || taxonomy?.nhMap.get(ma)?.ten || ma,
+    (ma: string) => overrides?.get(okey("nh", ma))?.ten || taxonomy?.nhomNameMap.get(ma) || ma,
     [overrides, taxonomy],
   );
 }
 
 function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback((ma: string) => {
-    const id = parseHtSysMa(ma).sysName;
+    const parsed = parseHtSysMa(ma);
+    const id = parsed.sysName;
     if (!id || id === NONE_HT) return "Hệ thống khác";
-    return overrides?.get(okey("ht", ma))?.ten || taxonomy?.htMap.get(id)?.ten || ma;
+    return overrides?.get(okey("ht", ma))?.ten || taxonomy?.htNameMap.get(id) || ma;
   }, [overrides, taxonomy]);
 }
 
@@ -108,7 +105,8 @@ function useTbMind(overrides: OverrideMap | undefined) {
 
 function HeThongCayPage() {
   const nav = useNavigate();
-  const { canManage } = useMyPermissions();
+  const { data: perms } = useMyPermissions();
+  const canManage = perms?.canManage ?? false;
 
   const {
     display, setDisplay,
@@ -265,6 +263,24 @@ function HeThongCayPage() {
         htLabel={htMind}
         tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
         canManage={canManage && editMode}
+        saving={false}
+        onSave={() => {}}
+        onDelete={() => {}}
+        unitCodeOf={() => null}
+        isCustomNode={() => false}
+        isRealNode={() => true}
+        plGroups={[]}
+        onAddGroup={() => {}}
+        childInfo={{items: []}}
+        onAddSystem={() => {}}
+        donViList={[]}
+        physSection={null}
+        submit={() => {}}
+        renamingGroupCode={false}
+        groupCode=""
+        setGroupCode={() => {}}
+        onRenameGroupCode={() => {}}
+        slugMa={(s) => s}
       />
     </div>
   );
