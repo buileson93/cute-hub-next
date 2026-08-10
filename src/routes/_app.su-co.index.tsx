@@ -100,7 +100,9 @@ function downloadCsv(name: string, content: string) {
 }
 
 function SuCoPage() {
-  const { suCo, isLoading, error, refetch } = useScope();
+  const { suCo, loading: isLoading } = useScope();
+  const error = null; // useScope currently doesn't expose aggregate error state
+  const refetch = () => qc.invalidateQueries({ queryKey: ["operations_data"] });
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
