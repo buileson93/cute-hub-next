@@ -1,40 +1,40 @@
-# Plan - Stage 11: Permission Management Refactoring (Phân quyền)
+# Kế hoạch - Giai đoạn 11: Tái cấu trúc Quản lý Phân quyền (Phân quyền)
 
-Refactor `src/routes/_app.phan-quyen.tsx` to improve readability, maintainability, and user experience of the permission matrix, following the MIRATS 2.0 visual guidelines.
+Tái cấu trúc `src/routes/_app.phan-quyen.tsx` để cải thiện khả năng đọc, bảo trì và trải nghiệm người dùng của ma trận quyền, tuân theo hướng dẫn thị giác MIRATS 2.0.
 
-## 1. Verification of Previous Stages
-- [x] Stage 10 (System Tree) refactoring confirmed: Monolith split into `src/components/mirats/he-thong-cay/` and logic modularized in `utils.ts`.
+## 1. Xác minh các Giai đoạn Trước
+- [x] Giai đoạn 10 (Cây hệ thống) đã xác nhận hoàn thành: Tách file lớn thành `src/components/mirats/he-thong-cay/` và mô-đun hóa logic trong `utils.ts`.
 
-## 2. Stage 11: Permissions (Phân quyền) - Implementation Details
+## 2. Giai đoạn 11: Phân quyền - Chi tiết triển khai
 
-### A. Modularize the Monolith
-Split `src/routes/_app.phan-quyen.tsx` into specialized components:
-- `src/components/mirats/phan-quyen/RoleOverview.tsx`: Role statistics and summary cards.
-- `src/components/mirats/phan-quyen/PermissionMatrix.tsx`: The core permission grid with sticky behavior.
-- `src/components/mirats/phan-quyen/DistributionStats.tsx`: Account distribution by unit and data volume.
-- `src/components/mirats/phan-quyen/AuditLogViewer.tsx`: Enhanced audit log table.
-- `src/components/mirats/phan-quyen/SecurityPolicies.tsx`: Policy description and standards cards.
+### A. Mô-đun hóa file Monolith
+Tách `src/routes/_app.phan-quyen.tsx` thành các component chuyên biệt:
+- `src/components/mirats/phan-quyen/RoleOverview.tsx`: Thống kê vai trò và các thẻ tóm tắt.
+- `src/components/mirats/phan-quyen/PermissionMatrix.tsx`: Ma trận quyền cốt lõi với khả năng cố định tiêu đề (sticky).
+- `src/components/mirats/phan-quyen/DistributionStats.tsx`: Thống kê phân bổ tài khoản theo đơn vị và khối lượng dữ liệu.
+- `src/components/mirats/phan-quyen/AuditLogViewer.tsx`: Bảng nhật ký kiểm toán nâng cao.
+- `src/components/mirats/phan-quyen/SecurityPolicies.tsx`: Các thẻ mô tả chính sách và tiêu chuẩn bảo mật.
 
-### B. Enhance Permission Matrix UX
-- **Sticky Headers/Columns**: Implement sticky headers for roles and a sticky first column for collection names to maintain context when scrolling.
-- **Cross-Highlighting**: Add hover effects that highlight both the current row and current column (crosshair) to improve readability of the dense grid.
-- **Semantic Coloring**: Standardize "Tier" colors (Full, Edit, View, None) using theme-appropriate semantic tokens, moving away from hardcoded Tailwind classes.
-- **Interactive Legend**: Allow clicking legend items to highlight corresponding cells in the matrix.
+### B. Nâng cao trải nghiệm người dùng (UX) cho Ma trận quyền
+- **Tiêu đề/Cột cố định (Sticky)**: Triển khai tiêu đề cố định cho các vai trò và cột đầu tiên cố định cho tên bộ sưu tập (collection) để giữ ngữ cảnh khi cuộn.
+- **Highlight chéo**: Thêm hiệu ứng hover làm nổi bật cả hàng và cột hiện tại (dạng dấu thập) để cải thiện khả năng đọc của lưới dữ liệu dày đặc.
+- **Màu sắc ngữ nghĩa**: Chuẩn hóa màu sắc "Cấp độ" (Đầy đủ, Sửa, Xem, Không) sử dụng các token ngữ nghĩa phù hợp với theme, loại bỏ các class Tailwind cứng.
+- **Chú giải tương tác**: Cho phép nhấp vào các mục chú giải để làm nổi bật các ô tương ứng trong ma trận.
 
-### C. Improve Audit Log & Distribution
-- **Audit Detail View**: Add a sheet or dialog to view full details of an audit record, including potential "before/after" diffs.
-- **Visual Distribution**: Use better progress bars or charts for unit distribution.
+### C. Cải thiện Nhật ký kiểm toán & Phân bổ dữ liệu
+- **Xem chi tiết nhật ký**: Thêm Sheet hoặc Dialog để xem chi tiết đầy đủ của một bản ghi kiểm toán, bao gồm các thay đổi "trước/sau" (diff).
+- **Phân bổ trực quan**: Sử dụng thanh tiến độ hoặc biểu đồ tốt hơn cho phân bổ theo đơn vị.
 
-### D. Code Quality & Consistency
-- Use `StandardTable` for the audit log consistent with other modules.
-- Ensure `PageHeader` usage is consistent.
-- Standardize data fetching using `useQuery` and appropriate caching.
+### D. Chất lượng mã nguồn & Sự nhất quán
+- Sử dụng `StandardTable` cho nhật ký kiểm toán để nhất quán với các mô-đun khác.
+- Đảm bảo việc sử dụng `PageHeader` được nhất quán.
+- Chuẩn hóa việc lấy dữ liệu sử dụng `useQuery` và cơ chế cache phù hợp.
 
-## 3. Implementation Steps
+## 3. Các bước triển khai
 
-1. **Create Directory Structure**: `src/components/mirats/phan-quyen/`.
-2. **Move Types & Metadata**: Create `src/components/mirats/phan-quyen/types.ts` for shared roles/permissions metadata.
-3. **Build Sub-components**: Implement extracted components one by one.
-4. **Refactor Route**: Update `src/routes/_app.phan-quyen.tsx` to use the new components.
-5. **Add Interactive Features**: Implement the sticky/hover logic in `PermissionMatrix`.
-6. **Final Polish**: Verify dark mode and responsive behavior.
+1. **Tạo cấu trúc thư mục**: `src/components/mirats/phan-quyen/`.
+2. **Di chuyển Type & Metadata**: Tạo `src/components/mirats/phan-quyen/types.ts` cho các metadata dùng chung về vai trò/quyền.
+3. **Xây dựng các component con**: Triển khai các component đã tách lần lượt.
+4. **Tái cấu trúc Route**: Cập nhật `src/routes/_app.phan-quyen.tsx` để sử dụng các component mới.
+5. **Thêm các tính năng tương tác**: Triển khai logic sticky/hover trong `PermissionMatrix`.
+6. **Hoàn thiện cuối cùng**: Kiểm tra chế độ Dark mode và khả năng hiển thị trên các màn hình khác nhau (responsive).
