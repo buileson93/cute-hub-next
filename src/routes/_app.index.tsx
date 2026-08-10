@@ -379,15 +379,119 @@ function Dashboard() {
 
 
 
-        {/* LEADERSHIP */}
-        <TabsContent value="leader" className="space-y-5">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
+        {/* 15.3.1: Việc cần làm - Tasks */}
+        <TabsContent value="tasks" className="space-y-5">
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Card>
+              <SectionHeader
+                title="Bảo trì đến hạn sắp tới"
+                action={<Button asChild variant="ghost" size="sm"><Link to="/bao-tri">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+              />
+              <CardContent className="space-y-2 pt-2">
+                {pmDueSoon.length === 0 ? (
+                  <div className="py-8 text-center text-sm text-muted-foreground">Không có phiếu PM đến hạn.</div>
+                ) : pmDueSoon.map((b) => (
+                  <Link key={b.ma_bao_tri} to="/bao-tri/$maBaoTri" params={{ maBaoTri: b.ma_bao_tri }}
+                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-muted/40">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="font-mono text-[10px]">{b.ma_bao_tri}</Badge>
+                        <Badge variant="secondary" className="text-[10px]">{b.trang_thai}</Badge>
+                      </div>
+                      <div className="mt-1 truncate font-medium">{b.mo_ta_cong_viec}</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">{b.thiet_bi}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-mono text-xs tabular-nums">{b.ngay_bat_dau}</div>
+                    </div>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <SectionHeader
+                title="Sự cố nghiêm trọng / cao đang mở"
+                action={<Button asChild variant="ghost" size="sm"><Link to="/su-co">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+              />
+              <CardContent className="space-y-2 pt-2">
+                {openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').length === 0 ? (
+                  <div className="py-8 text-center text-sm text-muted-foreground">Không có sự cố mức độ cao.</div>
+                ) : openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').slice(0, 5).map((s) => (
+                  <Link key={s.ma_su_co} to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }}
+                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-muted/40">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="destructive" className="text-[10px]">{s.muc_do}</Badge>
+                        <Badge variant="outline" className="font-mono text-[10px]">{s.ma_su_co}</Badge>
+                      </div>
+                      <div className="mt-1 truncate font-medium">{s.mo_ta}</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">{s.thiet_bi}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-mono text-xs tabular-nums text-muted-foreground">{s.ngay_phat_hien}</div>
+                    </div>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* 15.3.1: Chỉ số nhanh - Quick KPIs */}
+        <TabsContent value="kpi" className="space-y-5">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             <MiniKpi title="Tổng tài sản" value={thietBi.length.toLocaleString("vi-VN")} icon={HardDrive} />
             <MiniKpi title="Đang khai thác" value={thietBi.filter((t) => isActive(t.trang_thai)).length.toLocaleString("vi-VN")} icon={CheckCircle2} tone="text-emerald-600" />
-            <MiniKpi title="Sự cố đang mở" value={openIncidents.length} icon={AlertTriangle} tone="text-orange-600" />
-            <MiniKpi title={`GP sắp hết hạn (≤ ${90} ngày)`} value={gpStats.expiring} icon={ShieldCheck} tone="text-amber-600" />
-            <MiniKpi title="Vật tư dưới định mức" value={lowStock ?? "—"} icon={Package} tone="text-red-600" />
+            <MiniKpi title="Availability (trọng yếu)" value={useV2 ? formatKpiValue(rel.availabilityRes) : `${kpis.availability.toFixed(2)}%`} icon={Gauge} tone={kpis.availability >= 99.5 ? "text-emerald-600" : "text-orange-600"} />
+            <MiniKpi title="MTTR" value={useV2 ? formatKpiValue(rel.mttrRes, fmtDowntime) : fmtDowntime(kpis.mttr)} icon={Clock} />
           </div>
+
+          <Card>
+            <SectionHeader title="Bộ KPI theo dõi độ tin cậy" icon={Target} />
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>KPI</TableHead>
+                      <TableHead>Giá trị hiện tại</TableHead>
+                      <TableHead>Mục tiêu</TableHead>
+                      <TableHead className="text-right">Trạng thái</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {kpiRows.slice(0, 4).map((k) => {
+                      const Icon = k.icon;
+                      return (
+                        <TableRow key={k.ten}>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                              <span className="font-medium">{k.ten}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-mono text-lg font-semibold tabular-nums">
+                            <div>{k.giaTri}</div>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{k.muc}</TableCell>
+                          <TableCell className="text-right">
+                            {k.ok ? (
+                              <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">Đạt</Badge>
+                            ) : (
+                              <Badge variant="outline" className="border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-300">Cần cải thiện</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
 
           <div className="grid gap-5 lg:grid-cols-3">
             <Card className="lg:col-span-2">
