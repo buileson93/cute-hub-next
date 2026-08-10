@@ -144,20 +144,50 @@ function HeThongCayPage() {
   const { data: posByHt } = useAllViTriChucNang();
 
 
-  const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, error: errorDevices, refetch: refetchDevices } = useQuery({
-    queryKey: ["thiet_bi_cay", groupMode],
+  const { data: tpCount = 0 } = useQuery({
+    queryKey: ["he_thong_thanh_phan_count"],
     queryFn: async () => {
-      let q = supabase.from("thiet_bi").select(`
-        *,
-        _loaiTbTen:dm_loai_thiet_bi(ten),
-        _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
-        _pl:dm_phan_loai(id),
-        _nhKey:dm_nhom_he_thong(id),
-        _htId:dm_he_thong(id)
-      `);
-      const { data, error } = await q;
+      const { count, error } = await supabase
+        .from("he_thong_thanh_phan")
+        .select("id", { count: "exact", head: true });
       if (error) throw error;
-      return (data || []).map((d: any) => ({
+      return count || 0;
+    }
+  });
+
+  const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, error: errorDevices, refetch: refetchDevices } = useQuery({
+    queryKey: ["thiet_bi_cay"],
+    queryFn: async () => {
+      const pageSize = 1000;
+      let from = 0;
+      const allData: any[] = [];
+      
+      for (;;) {
+        const { data, error } = await supabase
+          .from("thiet_bi")
+          .select(`
+            *,
+            _loaiTbTen:dm_loai_thiet_bi(ten),
+            _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
+            _pl:dm_phan_loai(id),
+            _nhKey:dm_nhom_he_thong(id),
+            _htId:dm_he_thong(id)
+          `)
+          .range(from, from + pageSize - 1);
+
+        if (error) throw error;
+        const rows = data || [];
+        allData.push(...rows);
+
+        if (rows.length < pageSize) break;
+        from += pageSize;
+      }
+
+      if (allData.length > 0 && allData.length % 1000 === 0) {
+        console.warn(`[MIRATS-T30] Cảnh báo: Số lượng thiết bị (${allData.length}) chia hết cho 1000. Có khả năng dữ liệu bị PostgREST cắt nếu không dùng vòng lặp fetchAll.`);
+      }
+
+      return allData.map((d: any) => ({
         ...d,
         _pl: d._pl?.id,
         _nhKey: d._nhKey?.id,
@@ -167,6 +197,7 @@ function HeThongCayPage() {
       }));
     }
   });
+
 
   const { tree } = useMemo(() => buildTree(
     devices as any,
