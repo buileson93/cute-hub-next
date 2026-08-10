@@ -367,12 +367,8 @@ export function CommandPalette() {
   const navigate = useNavigate();
   const { session, roles } = useSession();
 
-  const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q) as {
-    rows: Hit[];
-    loading: boolean;
-    hasQuery: boolean;
-    activeTerm: string;
-  };
+  const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q) as any;
+
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
 
   // Không lặp lại kết quả đã hiển thị bởi useGlobalSearch (theo cặp loai:id / entity:id)
