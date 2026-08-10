@@ -1,13 +1,4 @@
--- 1. Thêm loại đề xuất mới
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typname = 'change_request_loai' AND e.enumlabel = 'thiet_bi.propose_field') THEN
-        ALTER TYPE public.change_request_loai ADD VALUE 'thiet_bi.propose_field';
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid WHERE t.typname = 'change_request_loai' AND e.enumlabel = 'he_thong.propose_field') THEN
-        ALTER TYPE public.change_request_loai ADD VALUE 'he_thong.propose_field';
-    END IF;
-END $$;
+-- 1. Loại đề xuất mới đã được thêm bởi migration 20260810035917
 
 -- 2. Bảng nhiệm vụ nhập liệu
 CREATE TABLE IF NOT EXISTS public.nhiem_vu_nhap_lieu (
