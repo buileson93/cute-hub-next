@@ -148,7 +148,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TooltipProvider delayDuration={300}>
         <div className="flex min-h-dvh w-full bg-gradient-to-br from-background via-background to-primary/[0.045] text-foreground">
           {/* Rail (Desktop) */}
-          <aside className="hidden w-16 shrink-0 flex-col items-center border-r border-sidebar-border bg-gradient-to-b from-sidebar via-sidebar to-sidebar/92 py-4 md:flex">
+          <aside className="hidden w-16 h-dvh sticky top-0 shrink-0 flex-col items-center border-r border-sidebar-border bg-gradient-to-b from-sidebar via-sidebar to-sidebar/92 py-4 md:flex">
             <SidebarLogoRail />
             <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1.5">
               {railWorkspaces.map((ws) => (
@@ -189,7 +189,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Sub-sidebar (Desktop) */}
           <aside className={cn(
-            "hidden shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-200",
+            "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-200",
             isCollapsed ? "w-[3.25rem]" : "w-64"
           )}>
             <div className={cn(
