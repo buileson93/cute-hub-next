@@ -1018,7 +1018,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             { key: "ngayBaoTriGanNhat", label: "BT gần nhất", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", value: (r) => r.ngayBaoTriGanNhat },
             { key: "ngayBaoTriKeTiep", label: "BT kế tiếp", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", value: (r) => r.ngayBaoTriKeTiep },
             {
-
               key: "actions",
               label: "Hành động",
               minW: "min-w-[150px]",
@@ -1041,6 +1040,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
           ]}
         />
+
       )}
     </div>
   );
