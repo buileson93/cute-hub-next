@@ -2,8 +2,8 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Package, PackagePlus, PackageMinus, ArrowLeftRight, ClipboardCheck, AlertTriangle,
-  Warehouse, Boxes, ScrollText, Plus, Loader2, Search,
+  Package, PackagePlus, PackageMinus, ArrowLeftRight, ClipboardCheck,
+  Plus, Loader2, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -18,9 +18,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
-import { InfoHint } from "@/components/mirats/InfoHint";
+import { StandardTable } from "@/components/mirats/StandardTable";
 import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
 import {
@@ -32,6 +30,9 @@ import {
 } from "@/lib/mirats/kho";
 import { DetailDrawer } from "@/components/mirats/DetailDrawer";
 import { useDetailPanel } from "@/lib/mirats/ui/detail-panel";
+import { InventoryDashboard } from "@/components/mirats/vat-tu/InventoryDashboard";
+import { SparePartsTable } from "@/components/mirats/vat-tu/SparePartsTable";
+import { StockMovementLog } from "@/components/mirats/vat-tu/StockMovementLog";
 
 export const Route = createFileRoute("/_app/vat-tu")({
   head: () => ({
@@ -86,7 +87,7 @@ function VatTuPage() {
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <PageHeader
-        icon={Boxes}
+        icon={Package}
         title="Vật tư & Kho"
         help="Sổ cái kho vật tư: tồn kho luôn được tính từ các giao dịch nhập/xuất/chuyển/điều chỉnh (bất biến, truy nguyên được) — không sửa số tồn trực tiếp."
         actions={
@@ -101,19 +102,12 @@ function VatTuPage() {
         }
       />
 
-
-      {/* KPI */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard icon={Boxes} label="Loại vật tư" value={fmt(vatTu.data?.length ?? 0)} />
-        <StatCard icon={Warehouse} label="Kho" value={fmt(kho.data?.length ?? 0)} />
-        <StatCard icon={ScrollText} label="Giao dịch" value={fmt(giaoDich.data?.length ?? 0)} />
-        <StatCard
-          icon={AlertTriangle}
-          label="Dưới định mức"
-          value={fmt(canhBaoCount)}
-          alert={canhBaoCount > 0}
-        />
-      </div>
+      <InventoryDashboard
+        vatTuCount={vatTu.data?.length ?? 0}
+        khoCount={kho.data?.length ?? 0}
+        giaoDichCount={giaoDich.data?.length ?? 0}
+        canhBaoCount={canhBaoCount}
+      />
 
       <Tabs defaultValue="ton">
         <TabsList className="flex-wrap">
@@ -126,7 +120,6 @@ function VatTuPage() {
           <TabsTrigger value="soquy">Sổ giao dịch</TabsTrigger>
         </TabsList>
 
-        {/* Tồn kho */}
         <TabsContent value="ton" className="mt-4 space-y-3">
           <div className="relative max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -134,41 +127,7 @@ function VatTuPage() {
           </div>
           <Card>
             <CardContent className="p-2">
-              {ton.isLoading ? (
-                <div className="flex items-center justify-center py-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /></div>
-              ) : (
-                <StandardTable
-                  tableKey="vat_tu_ton_list"
-                  rows={tonRows}
-                  getRowId={(r) => `${r.vat_tu_id}-${r.kho_id}`}
-                  requireFilterToShow={false}
-                  emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có dữ liệu tồn kho.</div>}
-                  columns={[
-                    {
-                      key: "vat_tu", label: "Vật tư", filter: "text",
-                      value: (r) => r.ten_vat_tu,
-                      cell: (r) => (
-                        <div>
-                          <div className="font-medium">{r.ten_vat_tu}</div>
-                          {r.ma_vat_tu && <div className="font-mono text-[11px] text-muted-foreground">{r.ma_vat_tu}</div>}
-                        </div>
-                      ),
-                    },
-                    { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <LoaiBadge loai={r.loai} /> },
-                    { key: "kho", label: "Kho", filter: "cat", value: (r) => r.ten_kho, cell: (r) => <span className="text-sm">{r.ten_kho}</span> },
-                    {
-                      key: "ton", label: "Tồn", align: "right", sortable: true,
-                      value: (r) => r.ton_kho,
-                      sortValue: (r) => r.ton_kho,
-                      cell: (r) => {
-                        const low = r.ton_kho < r.muc_ton_toi_thieu;
-                        return <span className={cn("text-right font-mono font-semibold", low && "text-red-600")}>{fmt(r.ton_kho)} {r.don_vi_tinh}</span>;
-                      },
-                    },
-                    { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu, cell: (r) => <span className="text-right font-mono text-sm text-muted-foreground">{fmt(r.muc_ton_toi_thieu)}</span> },
-                  ]}
-                />
-              )}
+              <SparePartsTable rows={tonRows} isLoading={ton.isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -194,7 +153,7 @@ function VatTuPage() {
                       </div>
                     ),
                   },
-                  { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <LoaiBadge loai={r.loai} /> },
+                  { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <StatBadge loai={r.loai} /> },
                   { key: "tong_ton", label: "Tổng tồn", align: "right", sortable: true, value: (r) => r.tong_ton, cell: (r) => <span className="text-right font-mono font-semibold text-red-600">{fmt(r.tong_ton)} {r.don_vi_tinh}</span> },
                   { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu, cell: (r) => <span className="text-right font-mono text-sm">{fmt(r.muc_ton_toi_thieu)}</span> },
                   { key: "thieu", label: "Thiếu", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu - r.tong_ton, cell: (r) => <span className="text-right font-mono text-sm text-red-600">{fmt(r.muc_ton_toi_thieu - r.tong_ton)}</span> },
@@ -229,7 +188,7 @@ function VatTuPage() {
                       </div>
                     ),
                   },
-                  { key: "loai", label: "Loại", filter: "cat", value: (v) => LOAI_VAT_TU_META[v.loai].label, cell: (v) => <LoaiBadge loai={v.loai} /> },
+                  { key: "loai", label: "Loại", filter: "cat", value: (v) => LOAI_VAT_TU_META[v.loai].label, cell: (v) => <StatBadge loai={v.loai} /> },
                   { key: "dvt", label: "ĐVT", value: (v) => v.don_vi_tinh, cell: (v) => <span className="text-sm">{v.don_vi_tinh}</span> },
                   { key: "don_gia", label: "Đơn giá", align: "right", sortable: true, value: (v) => v.don_gia, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.don_gia)}</span> },
                   { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (v) => v.muc_ton_toi_thieu, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.muc_ton_toi_thieu)}</span> },
@@ -266,32 +225,7 @@ function VatTuPage() {
         <TabsContent value="soquy" className="mt-4">
           <Card>
             <CardContent className="p-2">
-              <StandardTable
-                tableKey="vat_tu_giaodich_list"
-                rows={giaoDich.data ?? []}
-                getRowId={(g) => g.id}
-                requireFilterToShow={false}
-                emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có giao dịch nào.</div>}
-                columns={[
-                  { key: "so_ct", label: "Số CT", filter: "text", value: (g) => g.so_ct ?? "", cell: (g) => <span className="font-mono text-[11px]">{g.so_ct ?? "—"}</span> },
-                  { key: "ngay", label: "Ngày", sortable: true, value: (g) => g.ngay, cell: (g) => <span className="text-sm">{new Date(g.ngay).toLocaleDateString("vi-VN")}</span> },
-                  { key: "vat_tu", label: "Vật tư", filter: "text", value: (g) => g.vat_tu?.ten ?? "", cell: (g) => <span className="text-sm">{g.vat_tu?.ten ?? "—"}</span> },
-                  { key: "kho", label: "Kho", filter: "cat", value: (g) => g.kho?.ten ?? "", cell: (g) => <span className="text-sm">{g.kho?.ten ?? "—"}</span> },
-                  {
-                    key: "loai", label: "Loại", filter: "cat",
-                    value: (g) => LOAI_GD_META[g.loai].label,
-                    cell: (g) => { const meta = LOAI_GD_META[g.loai]; return <Badge variant="outline" className={cn("border-transparent", meta.cls)}>{meta.label}</Badge>; },
-                  },
-                  {
-                    key: "so_luong", label: "Số lượng", align: "right", sortable: true,
-                    value: (g) => g.so_luong,
-                    cell: (g) => {
-                      const meta = LOAI_GD_META[g.loai];
-                      return <span className={cn("text-right font-mono font-semibold", meta.nhap ? "text-emerald-600" : "text-red-600")}>{meta.nhap ? "+" : "−"}{fmt(g.so_luong)} {g.vat_tu?.don_vi_tinh ?? ""}</span>;
-                    },
-                  },
-                ]}
-              />
+              <StockMovementLog rows={giaoDich.data ?? []} isLoading={giaoDich.isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -313,33 +247,9 @@ function VatTuPage() {
   );
 }
 
-function StatCard({ icon: Icon, label, value, alert }: { icon: typeof Package; label: string; value: string; alert?: boolean }) {
-  return (
-    <Card className={cn(alert && "border-red-300 bg-red-50/50")}>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", alert ? "bg-red-100 text-red-600" : "bg-muted text-muted-foreground")}>
-          <Icon className="h-4 w-4" />
-        </div>
-        <div>
-          <div className={cn("text-lg font-semibold leading-none", alert && "text-red-600")}>{value}</div>
-          <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function LoaiBadge({ loai }: { loai: LoaiVatTu }) {
+function StatBadge({ loai }: { loai: LoaiVatTu }) {
   const m = LOAI_VAT_TU_META[loai];
   return <Badge variant="outline" className={cn("border-transparent", m.cls)}>{m.label}</Badge>;
-}
-
-function EmptyRow({ cols, children }: { cols: number; children: React.ReactNode }) {
-  return (
-    <TableRow>
-      <TableCell colSpan={cols} className="py-8 text-center text-sm text-muted-foreground">{children}</TableCell>
-    </TableRow>
-  );
 }
 
 // ---------------------------------------------------------------------------
