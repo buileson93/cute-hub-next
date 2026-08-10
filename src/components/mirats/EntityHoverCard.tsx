@@ -19,6 +19,22 @@ import {
 } from "@/lib/mirats/display/registry";
 import type { EntityLoai } from "@/lib/mirats/display/types";
 import { cn } from "@/lib/utils";
+import { Package } from "lucide-react";
+
+/** Thumb cho model - dùng lại logic từ catalog model */
+function ModelThumbSmall({ url, ten }: { url?: string | null; ten: string }) {
+  if (!url) return null;
+  return (
+    <div className="shrink-0">
+      <img
+        src={url}
+        alt={ten}
+        className="h-12 w-12 rounded border bg-white object-contain p-0.5 shadow-sm"
+      />
+    </div>
+  );
+}
+
 
 export interface EntityHoverCardProps {
   loai: EntityLoai;
