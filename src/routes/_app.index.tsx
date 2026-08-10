@@ -321,25 +321,59 @@ function Dashboard() {
   return (
     <PageBody>
       <PageHeader
-        title="Hôm nay tôi phải xử lý gì?"
+        title="Chào buổi sáng!"
         icon={LayoutDashboard}
-        description="Trung tâm hành động: việc cần làm, cảnh báo, quá hạn — xử lý nhanh ngay tại đây."
-
+        description="Chào mừng bạn quay lại MIRATS. Đây là tóm tắt các hoạt động bạn cần chú ý trong hôm nay."
       />
 
+      {/* 15.3.1: Action Center - Câu chữ trả lời trực tiếp */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ActionCard
+          icon={AlertTriangle}
+          label="Sự cố đang mở"
+          value={openIncidents.length}
+          desc={`${openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').length} vụ mức độ Cao/Nghiêm trọng`}
+          href="/su-co"
+          color="text-orange-600"
+          bg="bg-orange-500/10"
+        />
+        <ActionCard
+          icon={Wrench}
+          label="Bảo trì đến hạn"
+          value={pmDueSoon.length}
+          desc="Trong vòng 30 ngày tới"
+          href="/bao-tri"
+          color="text-blue-600"
+          bg="bg-blue-500/10"
+        />
+        <ActionCard
+          icon={ShieldCheck}
+          label="Giấy phép sắp hết hạn"
+          value={gpStats.expiring}
+          desc="Cần gia hạn trong 90 ngày"
+          href="/giay-phep"
+          color="text-amber-600"
+          bg="bg-amber-500/10"
+        />
+        <ActionCard
+          icon={TrendingUp}
+          label="Tài sản quá tuổi thọ"
+          value={kpis.over}
+          desc={`${kpis.overPct}% tổng số tài sản`}
+          href="/thiet-bi"
+          color="text-slate-600"
+          bg="bg-slate-500/10"
+        />
+      </div>
 
-
-
-
-
-      <Tabs defaultValue="leader" className="space-y-5 sm:space-y-6">
+      <Tabs defaultValue="tasks" className="space-y-5 sm:space-y-6">
         <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           <TabsList className="w-max sm:w-auto">
-            <TabsTrigger value="leader">Dashboard Lãnh đạo</TabsTrigger>
-            <TabsTrigger value="engineer">Dashboard Kỹ thuật</TabsTrigger>
-            <TabsTrigger value="kpi">Bộ KPI</TabsTrigger>
+            <TabsTrigger value="tasks">Việc cần làm</TabsTrigger>
+            <TabsTrigger value="kpi">Chỉ số nhanh</TabsTrigger>
           </TabsList>
         </div>
+
 
 
         {/* LEADERSHIP */}
