@@ -859,22 +859,55 @@ export function CommandPalette() {
 
         {aiEnabled && hasQuery && (
           <>
-            <CommandGroup heading="Trợ lý AI">
-              <CommandItem
-                value={`ai-ask ${q}`}
-                onSelect={() => askAi(q)}
-              >
-                <SparklesIcon className="h-4 w-4 text-primary" />
-                <div className="min-w-0 flex-1">
-                  <div className="truncate">Hỏi MIRATS AI</div>
-                  <div className="truncate text-xs text-muted-foreground">“{q.trim()}”</div>
-                </div>
-                <span className="ml-auto shrink-0 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                  AI
-                </span>
-              </CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
+            {!hasQuery && recentHits.length > 0 && (
+              <>
+                <CommandGroup heading="Truy cập gần đây">
+                  {recentHits.map((h) => {
+                    const meta = (ENTITY_META as any)[h.entity];
+                    const Icon = meta?.icon || Search;
+                    return (
+                      <CommandItem
+                        key={`recent-${h.entity}-${h.id}`}
+                        value={`recent-${h.entity}-${h.id}-${h.title}`}
+                        onSelect={() => go(h.to)}
+                      >
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate font-medium">{h.title}</div>
+                          {h.subtitle && <div className="truncate text-xs text-muted-foreground">{h.subtitle}</div>}
+                        </div>
+                        <span className="ml-auto shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          {meta?.label || "Tài sản"}
+                        </span>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+                <CommandSeparator />
+              </>
+            )}
+
+            {aiEnabled && hasQuery && (
+              <>
+                <CommandGroup heading="Trợ lý AI">
+                  <CommandItem
+                    value={`ai-ask ${q}`}
+                    onSelect={() => askAi(q)}
+                  >
+                    <SparklesIcon className="h-4 w-4 text-primary" />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate">Hỏi MIRATS AI</div>
+                      <div className="truncate text-xs text-muted-foreground">“{q.trim()}”</div>
+                    </div>
+                    <span className="ml-auto shrink-0 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      AI
+                    </span>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+              </>
+            )}
+
           </>
         )}
 
