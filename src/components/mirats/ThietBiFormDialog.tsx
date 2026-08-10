@@ -360,10 +360,11 @@ export function ThietBiFormDialog({
 
       }
     },
-    onSuccess: (ma) => {
+    onSuccess: (res: any) => {
+      const ma = typeof res === "string" ? res : res.ma;
       qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
       // Thêm thông báo nếu là đề xuất
-      if ((save.data as any)?.mode === "proposed") {
+      if (res.mode === "proposed") {
          toast.success(`Đã gửi đề xuất cập nhật tài sản ${ma} để Admin phê duyệt`);
       } else {
          toast.success(mode === "create" ? `Đã thêm tài sản ${ma}` : "Đã cập nhật tài sản");
@@ -371,6 +372,7 @@ export function ThietBiFormDialog({
       onSaved?.(ma);
       onOpenChange(false);
     },
+
 
     onError: (e: unknown) =>
       toast.error(e instanceof Error ? e.message : "Không lưu được tài sản"),
