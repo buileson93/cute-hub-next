@@ -215,8 +215,17 @@ function MindNode({ data }: { data: MindData }) {
     </div>
   );
 }
+function LayerNode({ data }: NodeProps) {
+  const d = data as { label: string };
+  return (
+    <div className="pointer-events-none select-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+      {d.label}
+    </div>
+  );
+}
 
-const nodeTypes: NodeTypes = { mind: MindNode as any };
+const nodeTypes: NodeTypes = { mind: MindNode, layer: LayerNode };
+
 
 export function CayMindMap({ 
   tree, 
@@ -246,12 +255,18 @@ export function CayMindMap({
   onMaint: (htMa: string) => void;
   onRecord: (kind: "tb" | "tp", ma: string, ten: string) => void;
   onMoveSystem: (req: MoveReq) => void;
+  onMoveGroup: (req: MoveGroupReq) => void;
+  onMoveDevice: (req: MoveDeviceReq) => void;
+
+  onMoveGroup: (req: MoveGroupReq) => void;
+  onMoveDevice: (req: MoveDeviceReq) => void;
+
   plMind: (id: string) => string;
   nhMind: (ma: string) => string;
   htMind: (ma: string) => string;
   tbMind: (t: any) => string;
 }) {
-  const { fitView, getViewport, setViewport } = useReactFlow();
+  const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
   const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hitId, setHitId] = useState<string | null>(null);
@@ -431,8 +446,9 @@ export function CayMindMap({
     const edges: Edge[] = [];
     
     const walk = (n: Raw) => {
+      const nd = n.data as MindData;
       const x = COL[n.depth!];
-      nodes.push({ id: n.id, type: "mind", position: { x, y: n.y! }, data: n.data });
+      nodes.push({ id: n.id, type: "mind", position: { x, y: n.y! }, data: n.data, draggable: canManage });
       for (const c of n.children) {
         edges.push({ id: `${n.id}->${c.id}`, source: n.id, target: c.id, type: "smoothstep", style: { stroke: "var(--border)", strokeWidth: 1 } });
         walk(c);
@@ -441,17 +457,108 @@ export function CayMindMap({
     walk(rootRaw);
     walk(stoppedPlRaw);
 
-    return { nodes, edges };
+    const unitMode = tree.some((pl) => pl.fields[0]?.groups[0]?.passthrough);
+    const layerLabels = unitMode
+      ? ["Toàn hệ thống", "Đơn vị", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"]
+      : ["Toàn hệ thống", "Phân loại", "Nhóm hệ thống", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"];
+
+    const layerNodes: ReactFlowNode[] = layerLabels.map((label, i) => ({
+      id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -80 },
+      data: { label }, selectable: false, draggable: false, focusable: false,
+    }));
+
+    return { nodes: [...layerNodes, ...nodes], edges };
   }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
+
 
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState(nodes);
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
 
+  const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
+
+  const collectDescendants = useCallback((rootId: string): Set<string> => {
+    const childMap = new Map<string, string[]>();
+    for (const e of edges) {
+      const arr = childMap.get(e.source) ?? [];
+      arr.push(e.target);
+      childMap.set(e.source, arr);
+    }
+    const desc = new Set<string>();
+    const stack = [...(childMap.get(rootId) ?? [])];
+    while (stack.length) {
+      const id = stack.pop()!;
+      if (desc.has(id)) continue;
+      desc.add(id);
+      for (const c of childMap.get(id) ?? []) stack.push(c);
+    }
+    return desc;
+  }, [edges]);
+
+
   return (
     <div className="h-full w-full">
-      <ReactFlow nodeTypes={nodeTypes} nodes={rfNodes} edges={edges} onNodesChange={onNodesChange} fitView>
-        <Controls />
-        <MiniMap />
+      <ReactFlow 
+        nodeTypes={nodeTypes} 
+        nodes={rfNodes} 
+        edges={edges} 
+        onNodesChange={onNodesChange} 
+        fitView
+        minZoom={0.05}
+        maxZoom={1.5}
+        onNodeDragStart={(_e, node) => {
+          const desc = collectDescendants(String(node.id));
+          const posMap = new Map<string, { x: number; y: number }>();
+          for (const n of rfNodes) if (desc.has(String(n.id))) posMap.set(String(n.id), { x: n.position.x, y: n.position.y });
+          dragRef.current = { startX: node.position.x, startY: node.position.y, desc: posMap };
+        }}
+        onNodeDrag={(_e, node) => {
+          const dr = dragRef.current;
+          if (!dr || dr.desc.size === 0) return;
+          const dx = node.position.x - dr.startX;
+          const dy = node.position.y - dr.startY;
+          setRfNodes((prev) => prev.map((n) => {
+            const base = dr.desc.get(String(n.id));
+            return base ? { ...n, position: { x: base.x + dx, y: base.y + dy } } : n;
+          }));
+        }}
+        onNodeDragStop={(_e, node) => {
+          dragRef.current = null;
+          const d = node.data as MindData;
+          const reset = () => setRfNodes(nodes);
+
+          const hitFirst = (prefixes: string[]) =>
+            getIntersectingNodes(node).find((n) => prefixes.some((p) => String(n.id).startsWith(p)));
+
+          if (d.kind === "ht" && d.ma) {
+            const sysId = parseHtSysMa(d.ma).sysName;
+            const hitNode = hitFirst(["nh:", "pl:", "lv:"]);
+            if (hitNode && isRealSystemId(sysId)) {
+              const parts = String(hitNode.id).split(":");
+              const toNhomId = parts[1] ?? "";
+              const toLvId = parts[2];
+              const toNhKey = String(hitNode.id).startsWith("nh:") ? parts.slice(3).join(":") : undefined;
+              const hitData = hitNode.data as MindData;
+              onMoveSystem({ heThongId: sysId, tenHeThong: d.label, toNhomId, toLvId, toNhKey, toNhTen: toNhKey ? hitData.label : undefined });
+            }
+            return reset();
+          }
+
+          if (d.kind === "tb" && d.ma) {
+             const hitNode = hitFirst(["ht:"]);
+             if (hitNode) {
+               const hitData = hitNode.data as MindData;
+               const toHtId = hitData.ma ? parseHtSysMa(hitData.ma).sysName : "";
+               if (isRealSystemId(toHtId)) onMoveDevice({ deviceMa: d.ma, label: d.label, toHtId, toHtLabel: hitData.label });
+             }
+             return reset();
+          }
+
+          return reset();
+        }}
+      >
+        <Controls showInteractive={false} />
+        <MiniMap pannable zoomable className="!hidden sm:!block" />
+
         <Panel position="top-right">
            <Button size="sm" variant="outline" onClick={() => fitView()}>Fit View</Button>
         </Panel>

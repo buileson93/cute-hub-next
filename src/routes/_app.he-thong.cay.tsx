@@ -336,7 +336,17 @@ function HeThongCayPage() {
               onIncident={() => {}}
               onMaint={() => {}}
               onRecord={onRecord}
-              onMoveSystem={() => {}}
+              onMoveSystem={(req) => {
+                toast.info(`Di chuyển hệ thống ${req.tenHeThong} sang ${req.toNhTen || req.toNhomId}`);
+                // Implementation for actual move will be added in a separate task or by clarifying MoveSystem dialogs
+              }}
+              onMoveGroup={(req) => {
+                toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
+              }}
+              onMoveDevice={(req) => {
+                toast.info(`Di chuyển tài sản ${req.label} sang ${req.toHtLabel}`);
+              }}
+
               plMind={plMind}
               nhMind={nhMind}
               htMind={htMind}
