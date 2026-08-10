@@ -159,10 +159,8 @@ function GiayPhepPage() {
       />
 
       <ComplianceTimeline 
-        expiring30={kpi.d30}
-        expiring60={kpi.d60}
-        expiring90={kpi.d90}
-        criticalSystemsCount={heThongThieuGpMoi.length}
+        kpi={kpi}
+        warningCount={heThongThieuGpMoi.length}
       />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -240,6 +238,7 @@ function GiayPhepPage() {
             <CardContent className="p-2">
               <AssetRegistryBook 
                 rows={filtered} 
+                canManage={canManage}
                 onEdit={(r) => { setEditingRow(r); setDialogOpen(true); }}
                 onView={(r) => setViewerRow(r)}
               />
