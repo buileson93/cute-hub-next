@@ -253,7 +253,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <UserMenu />
                </div>
             </header>
-            <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">{children}</main>
+            <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 [@container]">{children}</main>
           </div>
           
           <MobileNav activeWsId={activeWs.id} wsLastRoute={wsLastRoute} />

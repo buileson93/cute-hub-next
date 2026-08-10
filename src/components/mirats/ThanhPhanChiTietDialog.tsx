@@ -586,7 +586,7 @@ function ThanhPhanFieldsForm({
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Mã</Label>
           <div className="flex items-center gap-1">
@@ -634,7 +634,7 @@ function ThanhPhanFieldsForm({
           <Combobox options={ttOptions} value={ttId} onChange={setTtId} placeholder="Chọn trạng thái" emptyText="Không có trạng thái" />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Thứ tự</Label>
           <Input value={thuTu} onChange={(e) => setThuTu(e.target.value)} inputMode="numeric" placeholder="1" />
@@ -727,7 +727,7 @@ function SoLyLichThanhPhanSection({
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 @md:grid-cols-4">
           <TabsTrigger value="all">Tất cả</TabsTrigger>
           <TabsTrigger value="lap-thao">Tháo–lắp</TabsTrigger>
           <TabsTrigger value="su-co">Sự cố</TabsTrigger>
