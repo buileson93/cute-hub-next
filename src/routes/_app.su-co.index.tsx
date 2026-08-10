@@ -633,7 +633,11 @@ function SuCoPage() {
             state={state}
             isFiltering={isFiltering}
             onRetry={refetch}
-            emptyAction={() => { setQuery(""); setTt("all"); setPeriod("all"); }}
+            emptyAction={
+              <Button onClick={() => { setQuery(""); setTt("all"); setPeriod("all"); }} variant="outline" size="sm">
+                Xoá bộ lọc
+              </Button>
+            }
           >
             <StandardTable
               tableKey="su_co_nhat_ky_list"
