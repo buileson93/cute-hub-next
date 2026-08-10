@@ -225,32 +225,7 @@ function VatTuPage() {
         <TabsContent value="soquy" className="mt-4">
           <Card>
             <CardContent className="p-2">
-              <StandardTable
-                tableKey="vat_tu_giaodich_list"
-                rows={giaoDich.data ?? []}
-                getRowId={(g) => g.id}
-                requireFilterToShow={false}
-                emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có giao dịch nào.</div>}
-                columns={[
-                  { key: "so_ct", label: "Số CT", filter: "text", value: (g) => g.so_ct ?? "", cell: (g) => <span className="font-mono text-[11px]">{g.so_ct ?? "—"}</span> },
-                  { key: "ngay", label: "Ngày", sortable: true, value: (g) => g.ngay, cell: (g) => <span className="text-sm">{new Date(g.ngay).toLocaleDateString("vi-VN")}</span> },
-                  { key: "vat_tu", label: "Vật tư", filter: "text", value: (g) => g.vat_tu?.ten ?? "", cell: (g) => <span className="text-sm">{g.vat_tu?.ten ?? "—"}</span> },
-                  { key: "kho", label: "Kho", filter: "cat", value: (g) => g.kho?.ten ?? "", cell: (g) => <span className="text-sm">{g.kho?.ten ?? "—"}</span> },
-                  {
-                    key: "loai", label: "Loại", filter: "cat",
-                    value: (g) => LOAI_GD_META[g.loai].label,
-                    cell: (g) => { const meta = LOAI_GD_META[g.loai]; return <Badge variant="outline" className={cn("border-transparent", meta.cls)}>{meta.label}</Badge>; },
-                  },
-                  {
-                    key: "so_luong", label: "Số lượng", align: "right", sortable: true,
-                    value: (g) => g.so_luong,
-                    cell: (g) => {
-                      const meta = LOAI_GD_META[g.loai];
-                      return <span className={cn("text-right font-mono font-semibold", meta.nhap ? "text-emerald-600" : "text-red-600")}>{meta.nhap ? "+" : "−"}{fmt(g.so_luong)} {g.vat_tu?.don_vi_tinh ?? ""}</span>;
-                    },
-                  },
-                ]}
-              />
+              <StockMovementLog rows={giaoDich.data ?? []} isLoading={giaoDich.isLoading} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -272,33 +247,9 @@ function VatTuPage() {
   );
 }
 
-function StatCard({ icon: Icon, label, value, alert }: { icon: typeof Package; label: string; value: string; alert?: boolean }) {
-  return (
-    <Card className={cn(alert && "border-red-300 bg-red-50/50")}>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", alert ? "bg-red-100 text-red-600" : "bg-muted text-muted-foreground")}>
-          <Icon className="h-4 w-4" />
-        </div>
-        <div>
-          <div className={cn("text-lg font-semibold leading-none", alert && "text-red-600")}>{value}</div>
-          <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function LoaiBadge({ loai }: { loai: LoaiVatTu }) {
+function StatBadge({ loai }: { loai: LoaiVatTu }) {
   const m = LOAI_VAT_TU_META[loai];
   return <Badge variant="outline" className={cn("border-transparent", m.cls)}>{m.label}</Badge>;
-}
-
-function EmptyRow({ cols, children }: { cols: number; children: React.ReactNode }) {
-  return (
-    <TableRow>
-      <TableCell colSpan={cols} className="py-8 text-center text-sm text-muted-foreground">{children}</TableCell>
-    </TableRow>
-  );
 }
 
 // ---------------------------------------------------------------------------
