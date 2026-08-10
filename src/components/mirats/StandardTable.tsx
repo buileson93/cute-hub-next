@@ -61,14 +61,8 @@ export interface StandardTableProps<T> {
   requireFilterToShow?: boolean;
   gated?: boolean;
   presets?: any[];
-  activePreset?: any;
-  handleSetPreset?: (p: any) => void;
-  isCustomized?: boolean;
-  reset?: () => void;
-  hideExport?: boolean;
+  activePreset?: string;
   hideReorderToggle?: boolean;
-  exportName?: string;
-  autoFit?: boolean;
 }
 
 export function StandardTable<T>({
@@ -92,6 +86,8 @@ export function StandardTable<T>({
   tableKey,
   countUnit = "bản ghi",
   gated,
+  presets,
+  activePreset,
 }: StandardTableProps<T>) {
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
   
@@ -109,6 +105,18 @@ export function StandardTable<T>({
   );
   
   const prefs = useColumnPrefs(tableKey || "default", allKeys, defaultHidden);
+  
+  // Nối presets vào useColumnPrefs khi component mount/update
+  useEffect(() => {
+    if (presets && prefs.setPreset) {
+      const currentPreset = presets.find(p => p.id === activePreset);
+      if (currentPreset && !prefs.isCustomized) {
+        // Hỗ trợ cả 3 format: visibleKeys (mới), columns (ThanhPhanTable), cot (ThietBiTable)
+        const visibleKeys = currentPreset.visibleKeys || currentPreset.columns || currentPreset.cot || [];
+        prefs.setPreset(currentPreset.id, visibleKeys, currentPreset.orderKeys || visibleKeys);
+      }
+    }
+  }, [presets, activePreset, prefs.ready, prefs.isCustomized]);
 
   const isMobile = vw > 0 && vw < BP_PX.md;
   
