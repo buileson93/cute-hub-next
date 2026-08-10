@@ -251,7 +251,9 @@ function AdminSchemaPage() {
         <DesktopOnly 
           featureName="Sơ đồ CSDL & Quản trị Schema"
           reason="Việc quản trị lược đồ cơ sở dữ liệu và xem sơ đồ quan hệ (ERD) cần không gian màn hình lớn để hiển thị các bảng và đường nối phức tạp. Hãy thực hiện thao tác này trên máy tính để tránh sai sót dữ liệu."
-        />
+        >
+          <div />
+        </DesktopOnly>
       </AppShell>
     );
   }
