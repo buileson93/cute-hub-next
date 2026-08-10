@@ -195,6 +195,11 @@ export function StandardTable<T>({
     estimateSize: () => 48,
     overscan: isTest ? rows.length : 10,
     initialRect: { width: 1280, height: 800 },
+    // Cần observeElementRect vì JSDOM không có ResizeObserver thực sự
+    observeElementRect: (instance, cb) => {
+      cb({ width: 1280, height: 800 });
+      return () => {};
+    },
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
