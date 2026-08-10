@@ -333,53 +333,42 @@ function ThietBiPage() {
       <PageHeader
         icon={BookOpen}
         title="Sổ lý lịch"
-        help="Duyệt theo cây phân cấp, mở tới từng tài sản để xem lịch sử bảo dưỡng, sự cố, hỏng hóc & thay thế."
-      />
-
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <CardTitle>Cây sổ lý lịch</CardTitle>
-              <InfoHint>Duyệt theo cây phân cấp, mở tới từng tài sản để xem lịch sử bảo dưỡng, sự cố, hỏng hóc &amp; thay thế.</InfoHint>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        actions={
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <button
               type="button"
               onClick={() => setOnlyAllocated((v) => !v)}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-2 text-sm transition-colors",
+                "flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition-colors",
                 onlyAllocated ? "border-amber-300 bg-amber-50 text-amber-700" : "hover:bg-muted",
               )}
               title="Chỉ hiện tài sản đang được cấp phát"
             >
-              <PackageCheck className="h-4 w-4" /> Đang cấp phát
+              <PackageCheck className="h-3.5 w-3.5" /> Đang cấp phát
             </button>
             {retiredCount > 0 && (
               <button
                 type="button"
                 onClick={() => setShowRetired((v) => !v)}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-2 text-sm transition-colors",
+                  "flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition-colors",
                   showRetired ? "border-slate-400 bg-slate-100 text-slate-700" : "hover:bg-muted",
                 )}
                 title="Hiện cả tài sản đã ngừng khai thác / thanh lý"
               >
-                <Archive className="h-4 w-4" /> {showRetired ? "Đang hiện" : "Hiện"} nghỉ KT ({retiredCount})
+                <Archive className="h-3.5 w-3.5" /> {showRetired ? "Đang hiện" : "Hiện"} nghỉ KT ({retiredCount})
               </button>
             )}
-            <div className="relative sm:w-80">
-
-              <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative sm:w-64">
+              <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => { if (blurTimer.current) clearTimeout(blurTimer.current); setFocused(true); }}
                 onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
-                placeholder="Tìm mã, tên, serial, hệ thống…"
-                className="pl-9"
+                placeholder="Tìm mã, tên, serial..."
+                className="h-8 pl-9 text-xs"
               />
-
               {openDropdown && suggestions && (
                 <div className="absolute right-0 top-full z-50 mt-2 max-h-96 w-[min(30rem,90vw)] overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-popover shadow-xl">
                   {suggestions.sysHits.length > 0 && (
@@ -390,13 +379,11 @@ function ThietBiPage() {
                           key={s.id}
                           type="button"
                           onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/$id", params: { id: s.id } }); }}
-
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <BookOpen className="h-4 w-4 shrink-0 text-primary" />
                           <span className="min-w-0 flex-1 truncate font-medium">{s.ten}</span>
                           <Badge variant="secondary" className="shrink-0 tabular-nums">{s.count} TB</Badge>
-                          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">Sổ hệ thống</span>
                         </button>
                       ))}
                     </div>
@@ -411,38 +398,31 @@ function ThietBiPage() {
                           onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi } }); }}
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
-                          <HardDrive className="h-4 w-4 shrink-0 text-foreground/60" />
+                          <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs text-primary">{d.ma_thiet_bi}</span>
-                              <span className="min-w-0 flex-1 truncate">{tbName(d)}</span>
+                              <span className="truncate font-medium">{tbName(d)}</span>
+                              <span className="text-[10px] font-mono text-muted-foreground">{d.ma_thiet_bi}</span>
                             </div>
+                            <div className="text-[10px] text-muted-foreground">{htName(d._htId, d._htTen)}</div>
                           </div>
-                          <Badge variant="outline" className={cn("shrink-0 border", getTrangThaiToken(d.trang_thai)?.class)}>
-                            {d.trang_thai}
-                          </Badge>
-
-                          {d._htTen && (
-                            <Badge variant="outline" className="shrink-0 gap-1 border-primary/30 text-primary" title="Hệ thống">
-                              <Network className="h-3 w-3" />
-                              <span className="max-w-[12rem] truncate">{htName(d._htId, d._htTen)}</span>
-                            </Badge>
-                          )}
                         </button>
-
                       ))}
-                      {suggestions.devTotal > suggestions.devHits.length && (
-                        <div className="px-3 py-1.5 text-center text-[11px] text-muted-foreground">
-                          … và {suggestions.devTotal - suggestions.devHits.length} tài sản khác trong cây bên dưới
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
               )}
             </div>
-            </div>
           </div>
+        }
+      />
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Layers className="h-4 w-4 text-primary" />
+            Cây phân cấp tài sản & hệ thống
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isMobile ? (

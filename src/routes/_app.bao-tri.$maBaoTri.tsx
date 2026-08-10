@@ -23,18 +23,8 @@ export const Route = createFileRoute("/_app/bao-tri/$maBaoTri")({
   component: BaoTriDetail,
 });
 
-const loaiColor: Record<string, string> = {
-  "Định kỳ": "bg-sky-100 text-sky-700",
-  "Đột xuất": "bg-amber-100 text-amber-700",
-  "Hiệu chuẩn": "bg-violet-100 text-violet-700",
-  "Nâng cấp": "bg-emerald-100 text-emerald-700",
-};
-const ttColor: Record<string, string> = {
-  "Kế hoạch": "bg-slate-100 text-slate-700",
-  "Đang thực hiện": "bg-amber-100 text-amber-700",
-  "Hoàn thành": "bg-emerald-100 text-emerald-700",
-  "Hoãn": "bg-red-100 text-red-700",
-};
+import { StatusBadge } from "@/components/mirats/StatusBadge";
+
 const kqIcon: Record<string, React.ComponentType<{ className?: string }>> = {
   "Đạt": CheckCircle2,
   "Không đạt": XCircle,
@@ -82,8 +72,8 @@ function BaoTriDetail() {
       subtitle={bt.mo_ta_cong_viec}
       headerIcon={<Wrench className="h-6 w-6 text-primary" />}
       badges={[
-        { label: bt.loai_bao_tri, className: loaiColor[bt.loai_bao_tri] },
-        { label: bt.trang_thai, className: ttColor[bt.trang_thai] }
+        { component: <StatusBadge domain="bao_tri" code={bt.loai_bao_tri} label={bt.loai_bao_tri} /> },
+        { component: <StatusBadge domain="thiet_bi" code={bt.trang_thai} label={bt.trang_thai} /> }
       ]}
       actions={
         <div className="flex gap-2">
@@ -254,8 +244,8 @@ function BaoTriDetail() {
                       <TableRow key={x.ma_bao_tri}>
                         <TableCell><Link to="/bao-tri/$maBaoTri" params={{ maBaoTri: x.ma_bao_tri }} className="font-mono text-xs text-primary hover:underline">{x.ma_bao_tri}</Link></TableCell>
                         <TableCell className="text-xs text-muted-foreground">{x.ngay_bat_dau}</TableCell>
-                        <TableCell><Badge variant="secondary" className={cn("text-[10px]", loaiColor[x.loai_bao_tri])}>{x.loai_bao_tri}</Badge></TableCell>
-                        <TableCell><Badge variant="secondary" className={cn("text-[10px]", ttColor[x.trang_thai])}>{x.trang_thai}</Badge></TableCell>
+                        <TableCell><StatusBadge domain="bao_tri" code={x.loai_bao_tri} label={x.loai_bao_tri} /></TableCell>
+                        <TableCell><StatusBadge domain="thiet_bi" code={x.trang_thai} label={x.trang_thai} /></TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
