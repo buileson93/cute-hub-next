@@ -2,8 +2,11 @@ import {
   PlGroup, LvGroup, NhGroup, HtGroup, DevNode, 
   StatusCat, ImpCat, BadgeFilter, InfoChip
 } from "./types";
+import { DbDevice, DbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { htSysMa, parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
 
 export const DUNG_KHAI_THAC_TEN = "Dừng khai thác";
+export const NONE_HT = "__none__";
 
 export function statusCat(tt: string): StatusCat {
   const v = (tt ?? "").toLowerCase();
@@ -85,6 +88,119 @@ export const NH_COLOR_MAP = new Map(NH_COLORS.map((c) => [c.id, c]));
 
 export const okey = (kind: string, ma: string) => `${kind}:${ma}`;
 
-export function isRealSystemId(s: string) {
-  return s && s.length > 5 && s !== "HT_KHAC";
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isRealSystemId(id: string | null | undefined): id is string {
+  return !!id && id !== NONE_HT && UUID_RE.test(id);
+}
+
+export function cmpDeviceByLoai(a: DevNode, b: DevNode): number {
+  const oa = a.tb._loaiTbOrder ?? 9999;
+  const ob = b.tb._loaiTbOrder ?? 9999;
+  const ta = (a.tb._loaiTbTen ?? "").trim();
+  const tb = (b.tb._loaiTbTen ?? "").trim();
+  if (!ta !== !tb) return ta ? -1 : 1;
+  if (oa !== ob) return oa - ob;
+  if (ta !== tb) return ta.localeCompare(tb, "vi");
+  return a.tb.ma_thiet_bi.localeCompare(b.tb.ma_thiet_bi);
+}
+
+export function buildTree(
+  devices: DbDevice[],
+  plList: DbTaxonomy["plList"],
+  htLabel: (ma: string) => string,
+  nhLabel: (ma: string) => string,
+  customGroups: Array<{ ma: string; ten: string; plId: string }> = [],
+  ordNh: (ma: string) => number | undefined = () => undefined,
+  ordHt: (ma: string) => number | undefined = () => undefined,
+  colNh: (ma: string) => string | undefined = () => undefined,
+  customSystems: Array<{ ma: string; ten: string; nhMa: string; plId: string }> = [],
+  htDonVi: (htId: string) => string | null = () => null,
+  realSystems: Array<{ ma: string; ten: string; nhMa: string; nhTen: string; plId: string }> = [],
+): { tree: PlGroup[]; total: number } {
+  const acc = new Map<string, Map<string, Map<string, DevNode[]>>>();
+  for (const t of devices) {
+    const pl = t._pl || "__nopl__";
+    const nh = t._nhKey || "KHAC";
+    const ht = t._htId || NONE_HT;
+    let m1 = acc.get(pl); if (!m1) { m1 = new Map(); acc.set(pl, m1); }
+    let m2 = m1.get(nh); if (!m2) { m2 = new Map(); m1.set(nh, m2); }
+    let list = m2.get(ht); if (!list) { list = []; m2.set(ht, list); }
+    list.push({ tb: t, children: [] });
+  }
+
+  const totalOf = (devs: DevNode[]) => devs.reduce((n, d) => n + 1 + d.children.length, 0);
+  const plOrder = new Map(plList.map((p, i) => [p.id, i]));
+  const plTenMap = new Map(plList.map((p) => [p.id, p.ten]));
+  const plToneMap = new Map(plList.map((p) => [p.id, p.tone]));
+
+  const tree: PlGroup[] = [];
+  let total = 0;
+  const plIdSet = new Set<string>(acc.keys());
+  for (const rs of realSystems) if (rs.plId) plIdSet.add(rs.plId);
+  for (const cg of customGroups) if (cg.plId) plIdSet.add(cg.plId);
+  for (const cs of customSystems) if (cs.plId) plIdSet.add(cs.plId);
+  const plIds = [...plIdSet].sort((a, b) => (plOrder.get(a) ?? 999) - (plOrder.get(b) ?? 999));
+  for (const plId of plIds) {
+    const m1 = acc.get(plId) ?? new Map<string, Map<string, DevNode[]>>();
+    const groups: NhGroup[] = [];
+    for (const [nhKey, m2] of m1) {
+      const systems: HtGroup[] = [];
+      for (const [htId, devs] of m2) {
+        devs.sort(cmpDeviceByLoai);
+        const ma = htSysMa(nhKey, htId);
+        const dvCount = new Map<string, number>();
+        for (const d of devs) {
+          const dv = (d.tb.don_vi ?? "").trim();
+          if (dv) dvCount.set(dv, (dvCount.get(dv) ?? 0) + 1);
+        }
+        let donViMa: string | null = htDonVi(htId);
+        if (!donViMa) {
+          let best = 0;
+          for (const [dv, n] of dvCount) if (n > best) { best = n; donViMa = dv; }
+        }
+        systems.push({ ma, ten: htLabel(ma), devices: devs, count: totalOf(devs), donViMa });
+      }
+      systems.sort((a, b) => {
+        const da = (a.donViMa ?? "").trim();
+        const db = (b.donViMa ?? "").trim();
+        if (da !== db) {
+          if (!da) return 1;
+          if (!db) return -1;
+          return da.localeCompare(db, "vi");
+        }
+        return (ordHt(a.ma) ?? 1e9) - (ordHt(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi");
+      });
+      groups.push({ ma: nhKey, ten: nhLabel(nhKey), systems, count: systems.reduce((n, s) => n + s.count, 0), mau: colNh(nhKey) });
+    }
+    for (const cg of customGroups) {
+      if (cg.plId !== plId) continue;
+      if (groups.some((g) => g.ma === cg.ma)) continue;
+      groups.push({ ma: cg.ma, ten: nhLabel(cg.ma), systems: [], count: 0, mau: colNh(cg.ma), isCustom: true });
+    }
+    for (const cs of customSystems) {
+      if (cs.plId !== plId) continue;
+      const g = groups.find((gr) => gr.ma === cs.nhMa);
+      if (g && !g.systems.some((s) => s.ma === cs.ma)) {
+        g.systems.push({ ma: cs.ma, ten: htLabel(cs.ma), devices: [], count: 0, donViMa: null, isCustom: true });
+      }
+    }
+    for (const rs of realSystems) {
+      if (rs.plId !== plId) continue;
+      let g = groups.find((gr) => gr.ma === rs.nhMa);
+      if (!g) {
+        g = { ma: rs.nhMa, ten: rs.nhTen, systems: [], count: 0, mau: colNh(rs.nhMa) };
+        groups.push(g);
+      }
+      if (!g.systems.some((s) => s.ma === rs.ma)) {
+        g.systems.push({ ma: rs.ma, ten: rs.ten, devices: [], count: 0, donViMa: htDonVi(parseHtSysMa(rs.ma).sysName) });
+      }
+    }
+    groups.sort((a, b) => (ordNh(a.ma) ?? 1e9) - (ordNh(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi"));
+    const fields: LvGroup[] = [{ id: "all", ten: "Tất cả", groups, count: groups.reduce((n, g) => n + g.count, 0), passthrough: true }];
+    const count = fields.reduce((n, lv) => n + lv.count, 0);
+    tree.push({ id: plId, ten: plTenMap.get(plId) || plId, tone: plToneMap.get(plId) || "", fields, count });
+    total += count;
+  }
+  return { tree, total };
 }
