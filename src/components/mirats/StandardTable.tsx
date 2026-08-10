@@ -105,6 +105,18 @@ export function StandardTable<T>({
   );
   
   const prefs = useColumnPrefs(tableKey || "default", allKeys, defaultHidden);
+  
+  // Nối presets vào useColumnPrefs khi component mount/update
+  useEffect(() => {
+    if (presets && prefs.setPreset) {
+      const currentPreset = presets.find(p => p.id === activePreset);
+      if (currentPreset && !prefs.isCustomized) {
+        // Hỗ trợ cả 3 format: visibleKeys (mới), columns (ThanhPhanTable), cot (ThietBiTable)
+        const visibleKeys = currentPreset.visibleKeys || currentPreset.columns || currentPreset.cot || [];
+        prefs.setPreset(currentPreset.id, visibleKeys, currentPreset.orderKeys || visibleKeys);
+      }
+    }
+  }, [presets, activePreset, prefs.ready, prefs.isCustomized]);
 
   const isMobile = vw > 0 && vw < BP_PX.md;
   

@@ -319,7 +319,6 @@ function BanQuyenPage() {
               getRowId={(r) => r.id}
               onRowClick={(r) => navigate({ to: "/phan-mem-ban-quyen/$ma", params: { ma: r.ma_ban_quyen } })}
               requireFilterToShow={false}
-              autoFit={true}
               emptyContent={
                 <div className="py-20 text-center flex flex-col items-center gap-3">
                   <div className="h-12 w-12 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground/40">
