@@ -81,19 +81,19 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
           <div className="border-l ml-5 pl-1">
             {node.sub.map(s => renderNode(s, level + 1))}
             {node.devices.map(d => (
-              <div key={d.id} className="ml-8 flex items-center gap-2 py-1">
+              <div key={d.id} className="group/item ml-8 flex items-center gap-2 py-1 hover:bg-muted/30 rounded px-1 pr-2">
                 <Cpu className="h-3.5 w-3.5 text-muted-foreground/50" />
                 <CodeBadge code={d.ma_thiet_bi} className="text-[10px]" />
                 <Link 
                   to="/thiet-bi/$maThietBi" 
                   params={{ maThietBi: d.ma_thiet_bi }}
-                  className="text-xs hover:underline truncate"
+                  className="text-xs hover:underline truncate flex-1"
                 >
                   {d.ten}
                 </Link>
-                <div className="ml-auto opacity-0 group-hover:opacity-100">
-                   <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }}>
-                     <History className="h-3 w-3 text-muted-foreground" />
+                <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2">
+                   <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }} title="Xem sổ lý lịch">
+                     <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
                    </Link>
                 </div>
               </div>
