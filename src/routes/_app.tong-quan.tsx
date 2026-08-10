@@ -549,7 +549,10 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">Heatmap sự cố (90 ngày) — thứ × giờ</CardTitle>
+            <CardTitle className="text-sm">
+              Heatmap sự cố (90 ngày) — thứ × giờ
+              <p className="text-[10px] font-normal text-muted-foreground mt-1">Phân tích tần suất sự cố theo thời gian trong tuần để phát hiện quy luật phát sinh.</p>
+            </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent>
@@ -558,7 +561,10 @@ function TongQuanPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">Top thiết bị hỏng lặp (90 ngày)</CardTitle>
+            <CardTitle className="text-sm">
+              Top thiết bị hỏng lặp (90 ngày)
+              <p className="text-[10px] font-normal text-muted-foreground mt-1">Danh sách các thiết bị có tần suất hỏng hóc cao bất thường cần kiểm tra chuyên sâu.</p>
+            </CardTitle>
             <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
           </CardHeader>
           <CardContent>
@@ -591,7 +597,10 @@ function TongQuanPage() {
       {/* ROW — Timeline hạn */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm">Hạn giấy phép & kiểm định (90 ngày tới)</CardTitle>
+          <CardTitle className="text-sm">
+            Hạn giấy phép & kiểm định (90 ngày tới)
+            <p className="text-[10px] font-normal text-muted-foreground mt-1">Lộ trình các mốc thời gian hết hạn giấy phép, kiểm định và bảo trì sắp tới.</p>
+          </CardTitle>
           <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
         </CardHeader>
         <CardContent>
