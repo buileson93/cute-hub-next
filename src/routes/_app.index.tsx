@@ -500,9 +500,6 @@ function Dashboard() {
 }
 
 
-  );
-}
-
 
 /** Drill-down: liệt kê bản ghi nguồn tạo nên một KPI, có liên kết chi tiết. */
 function KpiDrilldownDialog({ drill, onClose }: { drill: { title: string; result: KpiResult; kind?: "su-co" | "cong-viec" } | null; onClose: () => void }) {
