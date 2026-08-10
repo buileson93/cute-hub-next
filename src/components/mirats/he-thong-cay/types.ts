@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
-import type { DbDevice, DbTaxonomy } from "@/lib/mirats/db-taxonomy";
-import type { ThietBi } from "@/lib/mirats/types";
-import { Boxes, Layers, FolderTree, Network, Cpu, Puzzle, Building2, Plug, MapPin } from "lucide-react";
+import type { DbDevice } from "@/lib/mirats/db-taxonomy";
 import type { ViTriChucNangTree } from "@/lib/mirats/he-thong-thanh-phan";
+import { Boxes, Layers, FolderTree, Network, Cpu, Puzzle, Building2, Plug, MapPin } from "lucide-react";
 
-export type EditKind = "pl" | "lv" | "nh" | "ht" | "tb";
+export type EditKind = "pl" | "lv" | "nh" | "ht" | "tb" | "tp";
 
 export type DevNode = { tb: DbDevice; children: DbDevice[] };
 export type HtGroup = { ma: string; ten: string; devices: DevNode[]; count: number; donViMa: string | null; isCustom?: boolean };
@@ -99,6 +98,16 @@ export type MindData = {
   active?: boolean;
   hit?: boolean;
   code?: string;
+  assignState?: "stopped" | "assigned" | "empty";
+  devLabel?: string;
+  onOpenEditor?: () => void;
+  onRecord?: () => void;
+  maThietBi?: string;
+  onHistory?: () => void;
+  onIncident?: () => void;
+  onMaint?: () => void;
+  moveTargets?: MoveTarget[];
+  onMove?: (toNhomId: string, toLvId: string | undefined, toNhKey: string | undefined, toNhTen: string | undefined) => void;
 };
 
 export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string }> = {
@@ -108,8 +117,6 @@ export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string
   ht: { table: "dm_he_thong", keyCol: "id" },
   tb: { table: "thiet_bi", keyCol: "ma_thiet_bi" },
 };
-
-export type { ViTriChucNangTree };
 
 export const LEVEL_META: Record<
   SearchItem["kind"],
@@ -140,13 +147,4 @@ export const IMP_TONE: Record<ImpCat, string> = {
   thuong: "border-border bg-muted text-muted-foreground",
 };
 
-export const NH_COLORS = [
-  { id: "violet", label: "Tím", list: "bg-violet-500/5", mind: "border-violet-500/40 bg-violet-500/5", dot: "bg-violet-500" },
-  { id: "blue", label: "Xanh dương", list: "bg-blue-500/5", mind: "border-blue-500/40 bg-blue-500/5", dot: "bg-blue-500" },
-  { id: "emerald", label: "Xanh lá", list: "bg-emerald-500/5", mind: "border-emerald-500/40 bg-emerald-500/5", dot: "bg-emerald-500" },
-  { id: "amber", label: "Vàng", list: "bg-amber-500/5", mind: "border-amber-500/40 bg-amber-500/5", dot: "bg-amber-500" },
-  { id: "rose", label: "Đỏ", list: "bg-rose-500/5", mind: "border-rose-500/40 bg-rose-500/5", dot: "bg-rose-500" },
-  { id: "sky", label: "Xanh biển", list: "bg-sky-500/5", mind: "border-sky-500/40 bg-sky-500/5", dot: "bg-sky-500" },
-  { id: "cyan", label: "Lục lam", list: "bg-cyan-500/5", mind: "border-cyan-500/40 bg-cyan-500/5", dot: "bg-cyan-500" },
-  { id: "slate", label: "Xám", list: "bg-slate-500/5", mind: "border-slate-500/40 bg-slate-500/5", dot: "bg-slate-500" },
-];
+export type { ViTriChucNangTree };
