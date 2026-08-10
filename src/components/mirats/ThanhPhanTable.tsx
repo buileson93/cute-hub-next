@@ -397,7 +397,9 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           countUnit="thành phần"
           maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
           selectable
+          activePreset="co-ban"
           presets={THANH_PHAN_PRESETS}
+
           bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
             <>
 
