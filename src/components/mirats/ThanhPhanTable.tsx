@@ -225,7 +225,6 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
 const LY_DO_KHOA =
-
   "Vai trò của bạn chỉ được xem: cần quyền sửa dữ liệu Hệ thống kỹ thuật (Admin / Phòng KT / Phụ trách đơn vị) để đổi trạng thái hàng loạt.";
 
 /** Nội dung hộp thoại xác nhận đổi trạng thái hàng loạt. */
@@ -244,9 +243,6 @@ function MoTaXacNhan({ rows, tt }: { rows: readonly { ma: string }[]; tt: string
   );
 }
 
-
-
-
 export type ThanhPhanTableProps = {
   /** Ẩn khối header (tiêu đề + mô tả) khi nhúng vào trang khác */
   hideHeader?: boolean;
@@ -257,6 +253,7 @@ export type ThanhPhanTableProps = {
 };
 
 export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-phan-toan-cuc", externalEditMode }: ThanhPhanTableProps) {
+
   const { data: rows = [], isLoading, error } = useThanhPhanRows();
   const { data: taiSanRows = [], isLoading: loadingTS, error: errorTS } = useTaiSanRows();
   const { data: multiRoleMap } = useMultiRoleMap();
