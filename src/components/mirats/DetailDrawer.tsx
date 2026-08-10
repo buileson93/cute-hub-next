@@ -35,6 +35,7 @@ const LOAI_TO_DOMAIN: Record<EntityLoai, Domain> = {
   ban_giao: "ban_giao",
   giay_phep: "giay_phep",
   vat_tu: "vat_tu",
+  dm_model: "danh_muc",
 };
 
 export interface DetailDrawerProps {
