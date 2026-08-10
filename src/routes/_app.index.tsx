@@ -723,20 +723,11 @@ function Dashboard() {
 
           </Card>
 
-          <Card>
-            <SectionHeader title="Báo cáo định kỳ (xuất CSV)" icon={Download} />
-            <CardContent className="grid gap-4 pt-2 sm:grid-cols-3">
-              <ReportCard title="Báo cáo tháng/quý theo đơn vị" desc="Tài sản, BT, sự cố, chi phí" onClick={exportUnitReport} />
-              <ReportCard title="Độ tin cậy hệ thống ĐHB" desc="Sự cố, downtime, ảnh hưởng ĐHB theo hệ thống" onClick={exportReliabilityReport} />
-              <ReportCard title="Đề xuất đầu tư/thay thế" desc="Từ M9 · tài sản loại C/D cần thay" onClick={exportReplacementPlan} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
       </Tabs>
 
       <KpiDrilldownDialog drill={drill} onClose={() => setDrill(null)} />
     </PageBody>
+
   );
 }
 
