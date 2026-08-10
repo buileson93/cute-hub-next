@@ -11,9 +11,13 @@ import React from 'react';
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: any) => <div>{children}</div>,
   useRouterState: vi.fn((selector?: any) => {
+    // TanStack Router selector pattern: selector({ location: { pathname: '/' } })
     const state = { location: { pathname: '/' } };
-    // TanStack Router selector pattern
-    if (typeof selector === 'function') return selector(state);
+    if (typeof selector === 'function') {
+      const result = selector(state);
+      // Nếu kết quả vẫn là state object (như s => s), đảm bảo s.location.pathname tồn tại
+      return result;
+    }
     return state;
   }),
   useNavigate: vi.fn(() => vi.fn()),
