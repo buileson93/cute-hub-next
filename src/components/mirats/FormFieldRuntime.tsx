@@ -186,7 +186,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
     case "measure": {
       const status = checkThreshold(f, value);
       return (
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-1">
           <Input type="number" value={(value as string) ?? ""} onChange={(e) => set(e.target.value)}
                  placeholder={ph ?? "Giá trị đo"} disabled={disabled} />
           <div className="flex items-center rounded-md border bg-muted px-2 text-xs text-muted-foreground">
