@@ -8,7 +8,7 @@ import { Boxes } from "lucide-react";
 export interface StdColumn<T> {
   key: string;
   label: string;
-  value: (r: T) => any;
+  value?: (r: T) => any;
   cell?: (r: T) => React.ReactNode;
   filter?: "text" | "cat";
   align?: "left" | "center" | "right";
@@ -18,9 +18,10 @@ export interface StdColumn<T> {
   hidden?: boolean;
   group?: string;
   inherited?: boolean;
-  hideBelow?: number;
+  hideBelow?: number | string;
   defaultHidden?: boolean;
   sortable?: boolean;
+  sortValue?: (r: T) => any;
 }
 
 export interface StandardTableProps<T> {
