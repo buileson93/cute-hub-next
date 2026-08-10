@@ -6,7 +6,8 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Database, AlertTriangle, ClipboardList, TrendingUp, LayoutGrid } from 'lucide-react';
+import { CompletenessStats } from '@/components/mirats/CompletenessStats';
+import { Database, AlertTriangle, ClipboardList } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/chat-luong-du-lieu')({
   component: ChatLuongDuLieu,
@@ -52,36 +53,9 @@ function ChatLuongDuLieu() {
         />
       </div>
       <PageBody>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <StatCard 
-            title="Hoàn thiện Tài sản" 
-            value={`${stats.avg_thiet_bi || 0}%`} 
-            desc="Trung bình toàn hệ thống"
-            icon={TrendingUp}
-            color="text-blue-500"
-          />
-          <StatCard 
-            title="Hoàn thiện Hệ thống" 
-            value={`${stats.avg_he_thong || 0}%`} 
-            desc="Trung bình theo module"
-            icon={LayoutGrid}
-            color="text-purple-500"
-          />
-          <StatCard 
-            title="Cần bổ sung" 
-            value={stats.low_pct_tb || 0} 
-            desc="Tài sản dưới 50% dữ liệu"
-            icon={AlertTriangle}
-            color="text-amber-500"
-          />
-          <StatCard 
-            title="Nhiệm vụ mở" 
-            value={stats.total_tasks || 0} 
-            desc="Tác vụ 'Góp gạch' đang đợi"
-            icon={ClipboardList}
-            color="text-green-500"
-          />
-        </div>
+      <div className="mb-6">
+        <CompletenessStats stats={stats} />
+      </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
@@ -144,20 +118,5 @@ function ChatLuongDuLieu() {
         </div>
       </PageBody>
     </div>
-  );
-}
-
-function StatCard({ title, value, desc, icon: Icon, color }: any) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className={`w-4 h-4 ${color}`} />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground mt-1">{desc}</p>
-      </CardContent>
-    </Card>
   );
 }
