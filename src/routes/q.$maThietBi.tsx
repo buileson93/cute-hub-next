@@ -199,23 +199,23 @@ function QuetQrLanding() {
               </CardContent>
             </Card>
 
-            <div className="grid gap-2">
-              <Button asChild size="lg" className="h-12 text-base">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button asChild size="lg" className="h-16 text-lg font-bold shadow-md active:scale-95 transition-transform bg-red-600 hover:bg-red-700">
                 <Link to="/su-co/moi" search={{ thietBi: data.ma_thiet_bi, from: "qr" } as never}>
-                  <AlertTriangle className="h-5 w-5 mr-2" /> Báo sự cố
+                  <AlertTriangle className="h-6 w-6 mr-2" /> Báo sự cố
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 text-base">
-                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }}>
-                  <BookOpen className="h-5 w-5 mr-2" /> Xem lý lịch đầy đủ
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 text-base">
+              <Button asChild size="lg" variant="secondary" className="h-16 text-lg font-bold shadow-md active:scale-95 transition-transform border-2 border-primary/20">
                 <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} hash="bao-tri">
-                  <Wrench className="h-5 w-5 mr-2" /> Bảo trì gần nhất
+                  <Wrench className="h-6 w-6 mr-2" /> Ghi bảo trì
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 text-base">
+              <Button asChild variant="outline" size="lg" className="h-14 text-base shadow-sm">
+                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }}>
+                  <BookOpen className="h-5 w-5 mr-2" /> Xem lý lịch
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-14 text-base shadow-sm">
                 <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} hash="chung-chi">
                   <FileBadge className="h-5 w-5 mr-2" /> Giấy phép / Chứng chỉ
                 </Link>
