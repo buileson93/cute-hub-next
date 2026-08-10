@@ -100,7 +100,6 @@ export type ThanhPhanRow = {
   model: string;
   modelId: string | null;
 
-  modelId: string | null;
   chungLoai: string;
   nhaSanXuat: string;
   nhaCungCap: string;
