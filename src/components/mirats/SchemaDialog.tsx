@@ -99,7 +99,7 @@ export type SchemaField =
 export interface SchemaDialogProps<TValues extends Record<string, unknown>> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
+  title: ReactNode;
   description?: string;
   fields: SchemaField[];
   schema: ZodSchema<TValues>;
