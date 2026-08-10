@@ -128,7 +128,21 @@ export function EntityHoverCard({
             <InfoGrid fields={chiTietFields} />
           </div>
         )}
+
+        {/* Footer: Link sang trang chi tiết (Giai đoạn 2 - Mục 8) */}
+        {loai === "dm_model" && (
+          <div className="border-t bg-muted/20 px-4 py-2 text-right">
+            <a 
+              href={`/danh-muc/model?q=${encodeURIComponent(tieuDe)}`}
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primary hover:underline"
+            >
+              Xem model này trong danh mục
+              <Package className="h-3 w-3" />
+            </a>
+          </div>
+        )}
       </HoverCardContent>
+
     </HoverCard>
   );
 }
