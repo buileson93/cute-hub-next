@@ -377,9 +377,9 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
 
   const [step, setStep] = useState(1);
   const steps = [
-    { id: 1, title: "Thông tin cơ bản" },
-    { id: 2, title: "Thành phần & tài sản" },
-    { id: 3, title: "Diễn biến & đánh giá" },
+    { id: 1, title: "Thông tin chung" },
+    { id: 2, title: "Thành phần" },
+    { id: 3, title: "Diễn biến & Đánh giá" },
   ];
 
   function nextStep() {
@@ -389,67 +389,46 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     if (step > 1) setStep(s => s - 1);
   }
 
-  // ── Render components ───────────────────────────────────────────────────────
-
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
           <div className="space-y-4">
             <Card>
-              <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm">1. Thông tin hệ thống</CardTitle></CardHeader>
+              <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle></CardHeader>
               <CardContent className="space-y-3">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Hệ thống / Dịch vụ</Label>
-                    <Combobox
-                      options={heThongOptions}
-                      value={heThongId}
-                      onChange={onPickHeThong}
-                      placeholder="Chọn hệ thống..."
-                      searchPlaceholder="Tìm hệ thống..."
-                    />
+                <div>
+                  <Label className="text-xs font-medium">Sự cố *</Label>
+                  <Textarea value={hienTuong} onChange={(e) => setHienTuong(e.target.value)} rows={2} className="mt-1" />
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div>
+                    <Label className="text-xs font-medium">Kính gửi</Label>
+                    <Combobox options={kinhGuiOptions} value={kinhGui} onChange={setKinhGui} allowCustom placeholder="Đơn vị nhận..." searchPlaceholder="Tìm đơn vị..." />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Kính gửi</Label>
-                    <Combobox
-                      options={kinhGuiOptions}
-                      value={kinhGui}
-                      onChange={setKinhGui}
-                      placeholder="Chọn nơi nhận..."
-                      searchPlaceholder="Tìm đơn vị..."
-                    />
+                  <div>
+                    <Label className="text-xs font-medium">Vấn đề (RCA) liên quan</Label>
+                    <Combobox options={[{ value: "", label: "— Không liên kết —" }, ...vanDeOptions]} value={vanDeId} onChange={setVanDeId} placeholder="Chọn vấn đề..." searchPlaceholder="Tìm vấn đề..." />
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Hiện tượng / Tiêu đề</Label>
-                  <Input value={hienTuong} onChange={(e) => setHienTuong(e.target.value)} placeholder="Mô tả ngắn gọn lỗi hệ thống..." />
+                <div>
+                  <Label className="text-xs font-medium">Hệ thống bị sự cố *</Label>
+                  <Combobox options={heThongOptions} value={heThongId || heThongDichVu} onChange={onPickHeThong} allowCustom placeholder="Chọn hệ thống..." searchPlaceholder="Tìm hệ thống..." />
                 </div>
               </CardContent>
             </Card>
-            
-            <CollapsibleSection title="Thành phần kíp trực" sectionId="sec-4-kip-truc" formId="su-co-moi">
-               <div className="space-y-2">
-                  {kip.map((k, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
-                      <Input value={k.ho_ten} onChange={(e) => updateKip(i, "ho_ten", e.target.value)} placeholder="Họ tên" />
-                      <Input value={k.chuc_vu} onChange={(e) => updateKip(i, "chuc_vu", e.target.value)} placeholder="Chức vụ" />
-                      <Input value={k.nang_dinh} onChange={(e) => updateKip(i, "nang_dinh", e.target.value)} placeholder="Năng định" />
-                      <Button variant="ghost" size="icon" onClick={() => removeKip(i)}><Trash2 className="h-4 w-4" /></Button>
-                    </div>
-                  ))}
-                  <Button variant="outline" size="sm" onClick={addKip}><Plus className="mr-1 h-4 w-4" /> Thêm</Button>
-               </div>
-            </CollapsibleSection>
           </div>
         );
       case 2:
         return (
           <Card>
-            <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm">2. Chọn thành phần bị ảnh hưởng</CardTitle></CardHeader>
+            <CardHeader className="pb-2 pt-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-primary">
+                <Layers className="h-4 w-4" /> 2. Thành phần hệ thống bị ảnh hưởng *
+              </CardTitle>
+            </CardHeader>
             <CardContent>
-              {/* [Code giữ nguyên từ file gốc từ dòng 610-658] */}
-              {!heThongId ? (
+               {!heThongId ? (
                 <p className="rounded-md border border-dashed bg-muted/40 px-3 py-3 text-xs text-muted-foreground">
                   Chọn Hệ thống ở Bước 1 để hiển thị danh sách thành phần.
                 </p>
@@ -494,21 +473,20 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
         return (
           <div className="space-y-4">
             <Card>
-              <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm">3. Diễn biến & đánh giá</CardTitle></CardHeader>
+              <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến & đánh giá</CardTitle></CardHeader>
               <CardContent className="space-y-3">
-                 {/* [Fields từ dòng 666 trở đi] */}
-                 <div className="grid grid-cols-2 gap-3">
-                   <div className="space-y-1">
-                      <Label className="text-xs">Bắt đầu</Label>
-                      <Input type="datetime-local" value={thoiGianBatDau} onChange={(e) => setThoiGianBatDau(e.target.value)} />
-                   </div>
-                   <div className="space-y-1">
-                      <Label className="text-xs">Kết thúc</Label>
-                      <Input type="datetime-local" value={thoiGianKetThuc} onChange={(e) => setThoiGianKetThuc(e.target.value)} />
-                   </div>
-                 </div>
-                 <Textarea placeholder="Tóm tắt sự việc..." value={tomTat} onChange={(e) => setTomTat(e.target.value)} rows={3} />
-                 <Textarea placeholder="Nguyên nhân / giải pháp..." value={nguyenNhan} onChange={(e) => setNguyenNhan(e.target.value)} rows={3} />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Thời gian bắt đầu</Label>
+                    <Input type="datetime-local" value={thoiGianBatDau} onChange={(e) => setThoiGianBatDau(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Thời gian kết thúc</Label>
+                    <Input type="datetime-local" value={thoiGianKetThuc} onChange={(e) => setThoiGianKetThuc(e.target.value)} />
+                  </div>
+                </div>
+                <Textarea placeholder="Tóm tắt sự việc..." value={tomTat} onChange={(e) => setTomTat(e.target.value)} rows={3} />
+                <Textarea placeholder="Nguyên nhân / giải pháp..." value={nguyenNhan} onChange={(e) => setNguyenNhan(e.target.value)} rows={3} />
               </CardContent>
             </Card>
           </div>
@@ -516,16 +494,14 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     }
   }
 
-  // ── UI Wrapper ──────────────────────────────────────────────────────────────
   return (
-    <div className="flex h-full flex-col">
-       <FormWizardSteps steps={steps} currentStep={step} />
+    <div className={embedded ? "flex h-[calc(100vh-100px)] flex-col" : "mx-auto max-w-5xl space-y-3 pb-28"}>
+       <FormWizardSteps steps={steps} currentStep={step} className="border-b" />
        
-       <div className="flex-1 overflow-y-auto px-4 pb-20">
+       <div className="flex-1 overflow-y-auto px-4">
          {renderStep()}
        </div>
 
-       {/* Action Bar */}
        <div className="sticky bottom-0 flex items-center justify-between border-t bg-background px-4 py-3">
          <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
          {step < 3 ? (
@@ -539,6 +515,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
        </div>
     </div>
   );
+
 
       thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "",
       dia_diem: diaDiemAuto,
