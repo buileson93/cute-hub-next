@@ -402,14 +402,14 @@ export function StandardTable<T>({
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2">
-            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: rows, visibleColumns: shownCols })}
+            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: fullDisplay, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
                 selectedRows,
                 visibleColumns: shownCols,
-                allColumns: exportCols, // Truyền exportCols để hành động hàng loạt (như xuất tệp) đủ dữ liệu
-                filteredRows: rows,
-                pageRows: rows,
+                allColumns: exportCols,
+                filteredRows: fullDisplay,
+                pageRows: display,
                 clear: clearSelection
               })
             )}
