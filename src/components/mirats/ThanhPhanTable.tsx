@@ -150,7 +150,9 @@ async function copyCodes(codes: string[]) {
     toast.success(`Đã sao chép ${codes.length} mã.`);
   } catch {
     toast.error("Trình duyệt không cho phép sao chép.");
+  }
 }
+
 
 /** Model Registry Map dùng cho ModelCell */
 type ModelRegistry = Record<string, {
