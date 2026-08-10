@@ -6,6 +6,7 @@ import {
   type Node, type Edge, type NodeTypes, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import type { Node as ReactFlowNode } from "@xyflow/react";
 import {
   ChevronRight, ChevronDown, Network, Layers, Cpu, Search, Building2, ListTree, GitFork,
   Pencil, Check, X, Save, Loader2, Eye, MapPin, Plus, Minus, Table2, Boxes, Puzzle,
@@ -426,7 +427,7 @@ export function CayMindMap({
     const COL: number[] = [];
     for (let d = 0; d <= maxDepth; d++) COL[d] = d === 0 ? 0 : COL[d - 1] + colW[d - 1] + COL_GAP;
 
-    const nodes: MindNodeType[] = [];
+    const nodes: ReactFlowNode[] = [];
     const edges: Edge[] = [];
     
     const walk = (n: Raw) => {

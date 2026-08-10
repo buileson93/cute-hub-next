@@ -78,7 +78,7 @@ export type MindData = {
   label: string;
   kind: MindKind;
   ma: string;
-  plId: string;
+  plId?: string;
   lvId?: string;
   nhMa?: string;
   htMa?: string;

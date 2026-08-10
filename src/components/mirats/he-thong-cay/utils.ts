@@ -85,6 +85,7 @@ export const NH_COLORS: Array<{ id: string; label: string; list: string; mind: s
 ];
 
 export const NH_COLOR_MAP = new Map(NH_COLORS.map((c) => [c.id, c]));
+export const nhMindTone = (mau?: string) => (mau ? NH_COLOR_MAP.get(mau)?.mind : undefined);
 
 export const okey = (kind: string, ma: string) => `${kind}:${ma}`;
 
