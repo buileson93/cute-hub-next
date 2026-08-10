@@ -840,14 +840,15 @@ export function CommandPalette() {
 
         {rows.length > 0 && (
           <>
-            <CommandGroup heading="Kết quả tìm kiếm">
-              {rows.map((h) => {
+            <CommandGroup heading="Tài sản & Hệ thống">
+              {rows.filter(h => h.entity === 'thiet_bi' || h.entity === 'he_thong').map((h) => {
                 const meta = ENTITY_META[h.entity];
                 const Icon = meta.icon;
                 return (
                   <CommandItem
                     key={`${h.entity}-${h.id}`}
                     value={`hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}`}
+
                     onSelect={() => go(h.to)}
                   >
                     <Icon className={h.entity === "he_thong" ? "h-4 w-4 text-primary" : "h-4 w-4"} />
