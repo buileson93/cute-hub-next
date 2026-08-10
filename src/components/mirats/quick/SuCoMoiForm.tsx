@@ -389,6 +389,69 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     if (step > 1) setStep(s => s - 1);
   }
 
+  function validateBeforeSave(closing: boolean): string | null {
+    if (!hienTuong.trim()) return "Vui lòng nhập tiêu đề / hiện tượng sự cố";
+    if (!heThongDichVu.trim()) return "Vui lòng chọn hệ thống tài sản/dịch vụ bị sự cố";
+    if (selectedTpIds.size === 0) return "Chọn ít nhất một thành phần hệ thống bị ảnh hưởng";
+    if (selected.length === 0) return "Các thành phần đã chọn chưa lắp tài sản nào — không thể ghi sự cố";
+    if (closing) {
+      if (!thoiGianKetThuc) return "Đóng sự cố cần có Thời gian kết thúc";
+      if (!tinhTrangHT.trim()) return "Đóng sự cố cần khai Tình trạng hệ thống sau xử lý";
+      if (!nguyenNhan.trim()) return "Đóng sự cố cần khai Nguyên nhân";
+      if (!bienPhap.trim()) return "Đóng sự cố cần khai Biện pháp xử lý";
+      if (!tinhHinh.trim()) return "Đóng sự cố cần khai Tình hình hiện tại";
+      if (!ketQua.trim()) return "Đóng sự cố cần khai Phương án khắc phục";
+    }
+    return null;
+  }
+
+  function buildPayloadForSave(maNhom: string, closing: boolean) {
+    const selectedTp = tpList.filter((t) => selectedTpIds.has(t.id));
+    const bao_cao_ban_dau = {
+      kinh_gui: kinhGui,
+      he_thong_dich_vu: heThongDichVu,
+      tom_tat: tomTat,
+      thoi_gian_bat_dau: fmtDateTime(thoiGianBatDau),
+      thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "",
+      dia_diem: diaDiemAuto,
+      kip_truc: kip.filter((k) => k.ho_ten.trim()),
+      thanh_phan_list: selectedTp.map((t) => ({ id: t.id, ma: t.ma, ten: t.ten, vi_tri: t.vi_tri_ten })),
+      tinh_trang_he_thong: tinhTrangHT,
+      da_dong: closing,
+      tinh_hinh_hien_tai: tinhHinh,
+      ket_qua_khac_phuc: ketQua,
+      phan_loai: phanLoai,
+      nguyen_nhan: nguyenNhan,
+      bien_phap_xu_ly: bienPhap,
+      thiet_bi_list: selected.map((d) => d.ma_thiet_bi),
+      nguon: aiFilled ? "AI" : "Người dùng",
+    };
+    return buildSuCoPayload({
+      ma_nhom_bc: maNhom,
+      ngay_phat_hien: ngayPhatHien,
+      nguoi_bao_cao: profile?.ho_ten || profile?.email || "",
+      muc_do: MUC_BY_PL[phanLoai] ?? "Thấp",
+      anh_huong_dhb: anhHuongDhb,
+      hien_tuong: hienTuong,
+      nguyen_nhan: nguyenNhan || null,
+      bien_phap_xu_ly: bienPhap || null,
+      bao_cao_ban_dau,
+      van_de_id: vanDeId || null,
+      trang_thai: closing ? "hoan_thanh" : "bao_cao",
+      devices: selected.map((d) => ({
+        id: d.id,
+        ma_thiet_bi: d.ma_thiet_bi,
+        don_vi: d.don_vi ?? null,
+        he_thong_id: d._htId ?? null,
+        he_thong_ten: d._htTen ?? null,
+      })),
+    });
+  }
+
+  const [maNhomDraft, setMaNhomDraft] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [closingIntent, setClosingIntent] = useState(false);
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -417,6 +480,30 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                 </div>
               </CardContent>
             </Card>
+
+            <CollapsibleSection
+              formId="su-co-moi"
+              sectionId="sec-4-kip-truc"
+              title={<span className="inline-flex items-center">4. Thành phần kíp trực{kipAmbient.isAuto && <AutoFilledBadge onUndo={kipAmbient.undo} />}</span>}
+              action={
+                <Button type="button" variant="outline" size="sm" onClick={addKip}>
+                  <Plus className="mr-1 h-4 w-4" /> Thêm
+                </Button>
+              }
+            >
+              <div className="space-y-1.5">
+                {kip.map((k, i) => (
+                  <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]">
+                    <Input value={k.ho_ten} onChange={(e) => updateKip(i, "ho_ten", e.target.value)} placeholder="Họ và tên" />
+                    <Input value={k.chuc_vu} onChange={(e) => updateKip(i, "chuc_vu", e.target.value)} placeholder="Chức vụ" />
+                    <Input value={k.nang_dinh} onChange={(e) => updateKip(i, "nang_dinh", e.target.value)} placeholder="Năng định" />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeKip(i)} disabled={kip.length === 1}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleSection>
           </div>
         );
       case 2:
@@ -427,35 +514,41 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                 <Layers className="h-4 w-4" /> 2. Thành phần hệ thống bị ảnh hưởng *
               </CardTitle>
             </CardHeader>
-            <CardContent>
-               {!heThongId ? (
+            <CardContent className="space-y-2">
+              {!heThongId ? (
                 <p className="rounded-md border border-dashed bg-muted/40 px-3 py-3 text-xs text-muted-foreground">
-                  Chọn Hệ thống ở Bước 1 để hiển thị danh sách thành phần.
+                  Chọn <span className="font-medium text-foreground">Hệ thống</span> ở Bước 1 để hiển thị danh sách thành phần.
                 </p>
               ) : tpLoading ? (
-                <p className="text-xs text-muted-foreground"><Loader2 className="mr-1 inline h-3 w-3 animate-spin" /> Đang tải…</p>
+                <p className="text-xs text-muted-foreground"><Loader2 className="mr-1 inline h-3 w-3 animate-spin" /> Đang tải thành phần…</p>
               ) : tpList.length === 0 ? (
-                <p className="text-xs text-muted-foreground">Không có thành phần.</p>
+                <p className="text-xs text-muted-foreground">Hệ thống này chưa khai thành phần nào.</p>
               ) : (
                 <div className="max-h-72 space-y-1 overflow-y-auto rounded-md border p-1">
                   {tpList.map((tp) => {
                     const on = selectedTpIds.has(tp.id);
                     const assets = mounted.filter((m) => m.thanh_phan_id === tp.id);
                     return (
-                      <label key={tp.id} className={`flex cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted ${on ? "bg-primary/5" : ""}`}>
+                      <label key={tp.id}
+                        className={`flex cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted ${on ? "bg-primary/5" : ""}`}>
                         <Checkbox checked={on} onCheckedChange={(v) => toggleTp(tp.id, !!v)} className="mt-0.5" />
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="font-mono text-xs text-primary">{tp.ma}</span>
                             <span className="font-medium">{tp.ten}</span>
+                            {tp.vi_tri_ten && (
+                              <Badge variant="outline" className="gap-1 text-[10px]">
+                                <MapPin className="h-2.5 w-2.5" /> {tp.vi_tri_ten}
+                              </Badge>
+                            )}
                           </div>
                           {on && (
                             <div className="mt-1 flex flex-wrap gap-1">
                               {assets.length === 0 ? (
-                                <span className="text-[11px] text-amber-700">Chưa lắp tài sản.</span>
+                                <span className="text-[11px] text-amber-700">Chưa lắp tài sản nào.</span>
                               ) : assets.map((a) => (
                                 <Badge key={a.device.id} variant="secondary" className="text-[10px]">
-                                  <span className="font-mono">{a.device.ma_thiet_bi}</span> · {a.device.ten}
+                                  <span className="font-mono">{a.device.ma_thiet_bi}</span>&nbsp;· {a.device.ten}
                                 </Badge>
                               ))}
                             </div>
@@ -466,6 +559,11 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                   })}
                 </div>
               )}
+              {selectedTpIds.size > 0 && (
+                <p className="text-[11px] text-muted-foreground">
+                  Đã chọn <b>{selectedTpIds.size}</b> thành phần · liên kết <b>{selected.length}</b> tài sản đang lắp.
+                </p>
+              )}
             </CardContent>
           </Card>
         );
@@ -475,18 +573,67 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
             <Card>
               <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến & đánh giá</CardTitle></CardHeader>
               <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="space-y-1">
-                    <Label className="text-xs">Thời gian bắt đầu</Label>
+                    <Label className="block h-4 text-xs font-medium leading-4">Thời gian bắt đầu</Label>
                     <Input type="datetime-local" value={thoiGianBatDau} onChange={(e) => setThoiGianBatDau(e.target.value)} />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Thời gian kết thúc</Label>
+                    <Label className="block h-4 text-xs font-medium leading-4">Thời gian kết thúc</Label>
                     <Input type="datetime-local" value={thoiGianKetThuc} onChange={(e) => setThoiGianKetThuc(e.target.value)} />
                   </div>
+                  <div className="space-y-1">
+                    <Label className="block h-4 text-xs font-medium leading-4">Ngày phát hiện</Label>
+                    <Input type="date" value={ngayPhatHien} onChange={(e) => setNgayPhatHien(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="flex h-4 items-center gap-1 text-xs font-medium leading-4">
+                      <Lock className="h-3 w-3" /> Địa điểm (tự động)
+                    </Label>
+                    <Input value={diaDiemAuto} readOnly className="bg-muted/50" placeholder="Chọn thành phần..." />
+                  </div>
                 </div>
-                <Textarea placeholder="Tóm tắt sự việc..." value={tomTat} onChange={(e) => setTomTat(e.target.value)} rows={3} />
-                <Textarea placeholder="Nguyên nhân / giải pháp..." value={nguyenNhan} onChange={(e) => setNguyenNhan(e.target.value)} rows={3} />
+                <div>
+                  <Label className="mb-1 block text-xs font-medium">Tóm tắt sự việc xảy ra</Label>
+                  <Textarea value={tomTat} onChange={(e) => setTomTat(e.target.value)} rows={3} />
+                </div>
+                <div>
+                  <Label className="mb-1 block text-xs font-medium">Tình trạng hệ thống sau xử lý</Label>
+                  <Textarea value={tinhTrangHT} onChange={(e) => setTinhTrangHT(e.target.value)} rows={2} />
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div>
+                    <Label className="mb-1 block text-xs font-medium">Ảnh hưởng ĐHB</Label>
+                    <Select value={anhHuongDhb} onValueChange={setAnhHuongDhb}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {AH_OPTIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="mb-1 block text-xs font-medium">Phân loại sự cố (A/B/C/D/E)</Label>
+                    <RadioGroup value={phanLoai} onValueChange={setPhanLoai} className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                      {PHAN_LOAI.map((p) => (
+                        <label key={p} htmlFor={`pl-${p}`} className={cn("flex cursor-pointer items-center gap-1.5 rounded-md border px-2 py-1.5 text-sm transition", phanLoai === p ? "border-primary bg-primary/5" : "border-input hover:bg-muted/50")}>
+                          <RadioGroupItem value={p} id={`pl-${p}`} />
+                          <span className="font-medium">Loại {p}</span>
+                        </label>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div>
+                    <Label className="mb-1 block text-xs font-medium">Nguyên nhân</Label>
+                    <Textarea value={nguyenNhan} onChange={(e) => setNguyenNhan(e.target.value)} rows={3} />
+                  </div>
+                  <div>
+                    <Label className="mb-1 block text-xs font-medium">Biện pháp xử lý</Label>
+                    <Textarea value={bienPhap} onChange={(e) => setBienPhap(e.target.value)} rows={3} />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -494,27 +641,77 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     }
   }
 
+  const daDong = !!thoiGianKetThuc;
+
   return (
-    <div className={embedded ? "flex h-[calc(100vh-100px)] flex-col" : "mx-auto max-w-5xl space-y-3 pb-28"}>
-       <FormWizardSteps steps={steps} currentStep={step} className="border-b" />
+    <div className={embedded ? "flex h-full flex-col" : "mx-auto max-w-5xl space-y-3 pb-28"}>
+       {!embedded && (
+        <FormPageHeader
+          backTo="/su-co"
+          backLabel="Nhật ký sự cố"
+          icon={FileText}
+          title="Báo cáo ban đầu"
+          description="Lập biên bản sự cố theo quy trình 3 bước."
+          actions={
+            <div className="flex flex-wrap items-center gap-2">
+            {aiFilled && <Badge variant="secondary">AI điền · chờ xác nhận</Badge>}
+            {daDong ? <Badge className="bg-emerald-600">Đã kết thúc</Badge> : <Badge variant="outline" className="border-amber-400">Chưa kết thúc</Badge>}
+            </div>
+          }
+        />
+       )}
+
+       {aiNote && <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">{aiNote}</p>}
+
+       <FormWizardSteps steps={steps} currentStep={step} className={cn(embedded && "mb-2 pt-0")} />
        
        <div className="flex-1 overflow-y-auto px-4">
          {renderStep()}
        </div>
 
-       <div className="sticky bottom-0 flex items-center justify-between border-t bg-background px-4 py-3">
+       <div className="sticky bottom-0 mt-4 flex items-center justify-between border-t bg-background px-4 py-3">
          <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
-         {step < 3 ? (
-            <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button>
-         ) : (
-            <div className="flex gap-2">
-              <Button variant="secondary" onClick={() => openPreview(false)}>Lưu</Button>
-              <Button onClick={() => openPreview(true)}>Đóng sự cố</Button>
-            </div>
-         )}
+         <div className="flex items-center gap-2">
+            {step < 3 ? (
+              <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => openPreview(false)}>Lưu (nháp)</Button>
+                <Button className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={() => openPreview(true)}>Đóng sự cố</Button>
+              </>
+            )}
+         </div>
        </div>
+
+       <PreviewKhaiDialog
+        open={previewOpen}
+        input={previewInput}
+        dangGhi={save.isPending}
+        onCancel={() => setPreviewOpen(false)}
+        onConfirm={() => save.mutate()}
+      />
+
+      <Button type="button" onClick={() => setAiOpen(true)} className="fixed bottom-6 right-6 z-40 gap-2 rounded-full shadow-lg">
+        <Bot className="h-4 w-4" /> AI bóc tách
+      </Button>
+
+      <Sheet open={aiOpen} onOpenChange={setAiOpen}>
+        <SheetContent side="right" className="flex w-full flex-col gap-4 sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>AI hỗ trợ nhập liệu</SheetTitle>
+            <SheetDescription>Dán nội dung báo cáo sự cố vào đây.</SheetDescription>
+          </SheetHeader>
+          <Textarea value={aiText} onChange={(e) => setAiText(e.target.value)} rows={12} className="flex-1 resize-none" placeholder="VD: Hệ thống VHF lỗi lúc 0259Z..." />
+          <Button type="button" onClick={() => aiParse.mutate()} disabled={aiParse.isPending || aiText.trim().length < 10}>
+            {aiParse.isPending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Wand2 className="mr-1 h-4 w-4" />}
+            Phân tích & điền form
+          </Button>
+        </SheetContent>
+      </Sheet>
     </div>
   );
+}
+
 
 
       thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "",
