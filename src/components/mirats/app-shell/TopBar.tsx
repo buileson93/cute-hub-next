@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { NotificationBell } from "../NotificationBell";
@@ -8,6 +8,16 @@ import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
 import { DesktopOnly } from "../DesktopOnly";
 
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPhone|iPad/i.test(navigator.platform));
+  }, []);
+
+  const handleOpenSearch = () => {
+    window.dispatchEvent(new CustomEvent("mirats:open-command-palette"));
+  };
+
   return (
     <div className="flex h-full items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -17,11 +27,14 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <Input
             type="search"
             placeholder="Tìm tài sản, sự cố, hồ sơ..."
-            className="h-9 w-full rounded-full bg-muted/50 pl-9 pr-4 text-sm focus-visible:ring-1"
+            className="h-9 w-full cursor-pointer rounded-full bg-muted/50 pl-9 pr-4 text-sm focus-visible:ring-1"
             readOnly
+            onClick={handleOpenSearch}
+            onFocus={handleOpenSearch}
+            aria-label="Mở bảng lệnh tìm kiếm"
           />
           <div className="absolute right-3 top-2 hidden items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-            <span className="text-xs">⌘</span>K
+            <span className="text-xs">{isMac ? "⌘" : "Ctrl"}</span>K
           </div>
         </div>
       </div>
