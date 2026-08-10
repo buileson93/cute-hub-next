@@ -190,28 +190,144 @@ export function StandardTable<T>({
     if (setSelected) setSelected(new Set());
   };
 
+  const colText = useCallback((col: StdColumn<T>, row: T): string => {
+    const v = col.value ? col.value(row) : "";
+    return v == null ? "" : String(v);
+  }, []);
+
+  const matchesFilters = useCallback(
+    (r: T, exceptKey?: string) => {
+      for (const c of columns) {
+        if (c.key === exceptKey) continue;
+        if (c.filter === "cat") {
+          const sel = catFilters[c.key];
+          if (sel && sel.size > 0 && !sel.has(colText(c, r))) return false;
+        } else if (c.filter === "text") {
+          const val = textFilters[c.key];
+          if (val) {
+            const t = normalize(val).trim();
+            if (t && !normalize(colText(c, r)).includes(t)) return false;
+          }
+        }
+      }
+      return true;
+    },
+    [columns, catFilters, textFilters, colText],
+  );
+
+  const catValues = useMemo(() => {
+    const map: Record<string, { value: string; count: number }[]> = {};
+    for (const c of columns.filter((c) => c.filter === "cat")) {
+      const counts = new Map<string, number>();
+      for (const r of rows) {
+        if (!matchesFilters(r, c.key)) continue;
+        const val = colText(c, r);
+        counts.set(val, (counts.get(val) ?? 0) + 1);
+      }
+      map[c.key] = Array.from(counts.entries())
+        .filter(([v]) => Boolean(v))
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => a.value.localeCompare(b.value, "vi"));
+    }
+    return map;
+  }, [columns, rows, matchesFilters, colText]);
+
+  const filtered = useMemo(
+    () => rows.filter((r) => matchesFilters(r)),
+    [rows, matchesFilters],
+  );
+
+  const hasFilter = useMemo(() => {
+    return columns.some((c) =>
+      c.filter === "cat" ? (catFilters[c.key]?.size ?? 0) > 0
+        : (textFilters[c.key] ?? "").trim().length > 0
+    );
+  }, [columns, catFilters, textFilters]);
+
+  const sortableKey = useCallback((c: StdColumn<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
+  const cycleSort = useCallback((key: string) => setSort((prev) => {
+    if (!prev || prev.key !== key) return { key, dir: "asc" };
+    if (prev.dir === "asc") return { key, dir: "desc" };
+    return null;
+  }), []);
+
+  const sorted = useMemo(() => {
+    if (!sort) return filtered;
+    const col = columns.find(c => c.key === sort.key);
+    if (!col) return filtered;
+    const get = (r: T) => {
+      const v = col.sortValue ? col.sortValue(r) : col.value ? col.value(r) : "";
+      return v == null ? "" : v;
+    };
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      const va = get(a), vb = get(b);
+      if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
+      return String(va).localeCompare(String(vb), "vi", { numeric: true }) * dir;
+    });
+  }, [filtered, sort, columns]);
+
+  const gated = requireFilterToShow && !hasFilter;
+  const fullDisplay = useMemo(() => (gated ? [] : sorted), [gated, sorted]);
+
+  const notifyFilteredTotal = clientPagination?.onFilteredTotalChange;
+  useEffect(() => {
+    notifyFilteredTotal?.(fullDisplay.length);
+  }, [fullDisplay.length, notifyFilteredTotal]);
+
+  const display = useMemo(() => {
+    if (!clientPagination) return fullDisplay;
+    const { page, pageSize } = clientPagination;
+    if (pageSize >= fullDisplay.length) return fullDisplay;
+    const start = Math.max(0, (page - 1) * pageSize);
+    return fullDisplay.slice(start, start + pageSize);
+  }, [fullDisplay, clientPagination]);
+
   const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
 
-  const renderToolbar = (
-    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
-    ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
-  ) => {
-    if (typeof toolbar === "function") {
-      return toolbar(ctx);
-    }
-    return toolbar;
+  const toggleCat = (key: string, val: string) => {
+    setCatFilters(prev => {
+      const next = new Map(Object.entries(prev).map(([k, v]) => [k, new Set(v)]));
+      const s = next.get(key) || new Set<string>();
+      if (s.has(val)) s.delete(val);
+      else s.add(val);
+      next.set(key, s);
+      return Object.fromEntries(next);
+    });
+  };
+
+  const clearCat = (key: string) => {
+    setCatFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const clearAllFilters = () => {
+    setCatFilters({});
+    setTextFilters({});
+  };
+
+  const removeFilter = (key: string) => {
+    setCatFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+    setTextFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
   };
 
   const parentRef = useRef<HTMLDivElement>(null);
 
   const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
   const rowVirtualizer = useVirtualizer({
-    count: rows.length,
+    count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 48,
-    overscan: isTest ? rows.length : 10,
+    overscan: isTest ? display.length : 10,
     initialRect: { width: 1280, height: 800 },
-    // Cần observeElementRect vì JSDOM không có ResizeObserver thực sự
     observeElementRect: (instance, cb) => {
       cb({ width: 1280, height: 800 });
       return () => {};
