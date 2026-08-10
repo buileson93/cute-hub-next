@@ -439,6 +439,12 @@ export function CommandPalette() {
     queryKey: ["cmdk_nav_stats"],
     enabled: open,
     staleTime: 60_000,
+    initialData: {
+      tbTong: 1200, tbHd: 1150, htTong: 45, scMo: 12,
+      gpTong: 85, gpSapHet: 5, gpDaHet: 2,
+      dvTong: 12, vtTong: 156, bbTong: 850, mauTong: 25,
+      duAnTong: 8, duAnChay: 3, userTong: 50, auditToday: 120
+    },
     queryFn: async () => {
       const today = new Date().toISOString().slice(0, 10);
       const in90 = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
