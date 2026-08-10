@@ -19,7 +19,7 @@ export type ChangeRequestLoai =
   | "he_thong.propose_field"
   | "danh_muc.merge"
   | "danh_muc.deactivate"
-  | "danh_muc.propose_value"
+  | "dm.propose_new"
   | "role.grant"
   | "role.revoke";
 
@@ -59,7 +59,7 @@ export const LOAI_LABEL: Record<ChangeRequestLoai, string> = {
   "he_thong.propose_field": "Đề xuất sửa thông tin hệ thống",
   "danh_muc.merge": "Gộp danh mục",
   "danh_muc.deactivate": "Vô hiệu hoá danh mục",
-  "danh_muc.propose_value": "Đề xuất giá trị danh mục mới",
+  "dm.propose_new": "Đề xuất giá trị danh mục mới",
   "role.grant": "Cấp vai trò",
   "role.revoke": "Thu hồi vai trò",
 };
@@ -188,7 +188,7 @@ export function summarizePayload(loai: ChangeRequestLoai, payload: Record<string
       return `entity=${s("entity")} · giữ=${s("keep_id")} · bỏ=${s("drop_id")}`;
     case "danh_muc.deactivate":
       return `entity=${s("entity")} · id=${s("id")}`;
-    case "danh_muc.propose_value":
+    case "dm.propose_new":
       return `danh mục=${s("entity")} · giá trị=${s("value")}`;
     case "role.grant":
     case "role.revoke":
