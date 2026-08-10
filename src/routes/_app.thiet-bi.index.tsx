@@ -22,7 +22,7 @@ import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbD
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
-import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
+import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
 
 export const Route = createFileRoute("/_app/thiet-bi/")({
   head: () => ({
@@ -453,7 +453,7 @@ function ThietBiPage() {
                     <div className="pt-2 border-t mt-2 flex justify-between items-center">
                       <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
                       <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
-                         <Link to="/thiet-bi/" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
+                         <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
                       </Button>
                     </div>
                   </CardContent>
