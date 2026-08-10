@@ -99,8 +99,9 @@ export function ThietBiFormDialog({
   } | null;
 
   const systemOptsQuery = useQuery(loadOpts("dm_he_thong"));
-  const { getPref, setPref } = useUserPref();
   const draftKey = `draft:thiet_bi:${device?.id || "new"}`;
+  const [draft, setDraft] = useUserPref(draftKey, null);
+
 
   const defaultValues = useMemo<Partial<FormValues>>(
     () => ({
