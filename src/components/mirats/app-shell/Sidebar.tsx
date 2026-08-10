@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import * as LucideIcons from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,17 +32,13 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
   return (
     <div className="flex flex-col gap-8 py-4 overflow-x-hidden">
       {filteredGroups.map((group) => {
-        const visibleItems = group.items;
-
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
-            {/* Ẩn tiêu đề nhóm để tránh trùng lặp với tiêu đề Workspace trong AppShell */}
             <nav className="space-y-1.5">
-              {visibleItems.map((item) => {
+              {group.items.map((item) => {
                 const Icon = (LucideIcons as any)[item.icon] || LucideIcons.Circle;
                 const active = isActive(pathname, item);
 
-                return (
                 const link = (
                   <Link
                     key={item.key}
@@ -88,7 +84,6 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                 }
 
                 return link;
-                );
               })}
             </nav>
           </div>
