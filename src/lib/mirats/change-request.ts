@@ -13,10 +13,13 @@ export type ChangeRequestLoai =
   | "cay.reorg"
   | "thiet_bi.change_model"
   | "thiet_bi.change_don_vi"
+  | "thiet_bi.propose_field"
   | "he_thong.change_nhom"
   | "he_thong.change_don_vi"
+  | "he_thong.propose_field"
   | "danh_muc.merge"
   | "danh_muc.deactivate"
+  | "danh_muc.propose_value"
   | "role.grant"
   | "role.revoke";
 
@@ -50,10 +53,13 @@ export const LOAI_LABEL: Record<ChangeRequestLoai, string> = {
   "cay.reorg": "Đổi cấu trúc cây",
   "thiet_bi.change_model": "Đổi model tài sản",
   "thiet_bi.change_don_vi": "Chuyển tài sản sang đơn vị khác",
+  "thiet_bi.propose_field": "Đề xuất sửa thông tin tài sản",
   "he_thong.change_nhom": "Đổi nhóm hệ thống",
   "he_thong.change_don_vi": "Đổi đơn vị của hệ thống",
+  "he_thong.propose_field": "Đề xuất sửa thông tin hệ thống",
   "danh_muc.merge": "Gộp danh mục",
   "danh_muc.deactivate": "Vô hiệu hoá danh mục",
+  "danh_muc.propose_value": "Đề xuất giá trị danh mục mới",
   "role.grant": "Cấp vai trò",
   "role.revoke": "Thu hồi vai trò",
 };
@@ -182,15 +188,21 @@ export function summarizePayload(loai: ChangeRequestLoai, payload: Record<string
       return `entity=${s("entity")} · giữ=${s("keep_id")} · bỏ=${s("drop_id")}`;
     case "danh_muc.deactivate":
       return `entity=${s("entity")} · id=${s("id")}`;
+    case "danh_muc.propose_value":
+      return `danh mục=${s("entity")} · giá trị=${s("value")}`;
     case "role.grant":
     case "role.revoke":
       return `user=${s("user_id")} · role=${s("role")}`;
     case "thiet_bi.change_don_vi":
       return `tài sản=${s("thiet_bi_id")} → đơn vị=${s("to_don_vi_id")}`;
+    case "thiet_bi.propose_field":
+      return `tài sản=${s("target_id")} · ${s("field_key")}: ${s("gia_tri_cu")} → ${s("gia_tri_moi")}`;
     case "he_thong.change_nhom":
       return `hệ thống=${s("he_thong_id")} → nhóm=${s("to_nhom_id")}`;
     case "he_thong.change_don_vi":
       return `hệ thống=${s("he_thong_id")} → đơn vị=${s("to_don_vi_id")}`;
+    case "he_thong.propose_field":
+      return `hệ thống=${s("target_id")} · ${s("field_key")}: ${s("gia_tri_cu")} → ${s("gia_tri_moi")}`;
     case "cay.delete_node":
     case "cay.restore_node":
     case "cay.hard_delete_node":
