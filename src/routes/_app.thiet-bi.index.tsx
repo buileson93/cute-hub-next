@@ -25,6 +25,9 @@ import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
 
 export const Route = createFileRoute("/_app/thiet-bi/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: (search.q as string) || "",
+  }),
   head: () => ({
     meta: [
       { title: "Sổ lý lịch — MIRATS 2.0" },
@@ -35,6 +38,7 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   }),
   component: ThietBiPage,
 });
+
 
 
 /** Tổng hợp số lần bảo dưỡng / sự cố / hỏng hóc theo mã tài sản. */
