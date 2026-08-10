@@ -222,32 +222,6 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
   );
 }
 
-}
-
-/** Hook lấy toàn bộ danh mục model để dùng cho hover card */
-function useModelRegistry() {
-  return useQuery({
-    queryKey: ["dm_model_registry"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("dm_model")
-        .select("id, ma, ten, so_model, p_n, hinh_anh, mo_ta, nsx:nha_san_xuat_id(ten), loai:loai_thiet_bi_id(ten)")
-        .eq("active", true);
-      if (error) throw error;
-      
-      const map: Record<string, any> = {};
-      (data ?? []).forEach((m: any) => {
-        map[m.id] = {
-          ...m,
-          nha_san_xuat: m.nsx?.ten || "",
-          loai_thiet_bi: m.loai?.ten || "",
-        };
-      });
-      return map;
-    },
-    staleTime: 5 * 60_000,
-  });
-}
 
 function ModelCell({ model, modelId, registry }: { model: string, modelId: string | null, registry: Record<string, any> }) {
   if (!model) return <span className="text-xs text-muted-foreground">—</span>;
