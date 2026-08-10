@@ -10,6 +10,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/mirats/SchemaDialog";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
+import { calculateCompleteness } from "@/lib/mirats/completeness";
 import { CompatibilityManager, type CompatibilityItem } from "@/components/mirats/CompatibilityManager";
 import { supabase } from "@/integrations/backend/client";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
@@ -390,7 +392,16 @@ export function ThietBiFormDialog({
       key={nonce}
       open={open}
       onOpenChange={onOpenChange}
-      title={mode === "create" ? "Thêm tài sản mới" : "Sửa tài sản"}
+      title={
+        <div className="flex items-center gap-3">
+          {mode === "create" ? "Thêm tài sản mới" : "Sửa tài sản"}
+          <CompletenessRing 
+            value={calculateCompleteness("thiet_bi", defaultValues)} 
+            size={32} 
+            showText 
+          />
+        </div>
+      }
       description={
         mode === "create"
           ? "Khai tài sản mới vào danh mục. Chỉ tên là bắt buộc — các trường khác có thể bổ sung sau."
