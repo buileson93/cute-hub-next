@@ -18,6 +18,9 @@ export interface StdColumn<T> {
   hidden?: boolean;
   group?: string;
   inherited?: boolean;
+  hideBelow?: number;
+  defaultHidden?: boolean;
+  sortable?: boolean;
 }
 
 export interface StandardTableProps<T> {
