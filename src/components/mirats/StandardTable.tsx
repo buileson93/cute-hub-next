@@ -335,7 +335,7 @@ export function StandardTable<T>({
 
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
+  const isTest = typeof window !== 'undefined' && (window as any).process?.env?.NODE_ENV === 'test';
   const rowVirtualizer = useVirtualizer({
     count: display.length,
     getScrollElement: () => parentRef.current,
