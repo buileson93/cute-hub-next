@@ -122,6 +122,14 @@ function HeThongCayPage() {
     groupMode,
   } = useCayContext();
 
+  const handleDisplayChange = (v: string) => {
+    if (v === "table") {
+      nav({ to: "/he-thong/thanh-phan" });
+    } else {
+      setDisplay(v as any);
+    }
+  };
+
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
   const { roles } = useSession();
 
@@ -190,14 +198,15 @@ function HeThongCayPage() {
              icon={ListTree}
            />
 
-           <Tabs value={display} onValueChange={(v) => setDisplay(v as any)}>
-             <TabsList>
-               <TabsTrigger value="tree" className="gap-2"><List className="h-4 w-4"/>Cây</TabsTrigger>
-               <TabsTrigger value="mindmap" className="gap-2"><GitFork className="h-4 w-4"/>Sơ đồ</TabsTrigger>
-               <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
-               <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
-             </TabsList>
-           </Tabs>
+            <Tabs value={display} onValueChange={handleDisplayChange}>
+              <TabsList>
+                <TabsTrigger value="table" className="gap-2"><List className="h-4 w-4"/>Bảng</TabsTrigger>
+                <TabsTrigger value="tree" className="gap-2"><ListTree className="h-4 w-4"/>Cây</TabsTrigger>
+                <TabsTrigger value="mindmap" className="gap-2"><GitFork className="h-4 w-4"/>Sơ đồ</TabsTrigger>
+                <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
+                <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
+              </TabsList>
+            </Tabs>
 
          </div>
          <div className="flex items-center gap-2">
