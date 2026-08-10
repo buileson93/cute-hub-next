@@ -8,8 +8,16 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw } from "lucide-react";
+import { Maximize2, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
@@ -275,10 +283,80 @@ export function StandardTable<T>({
           <div className="flex items-center gap-1">
             {tableKey && (
               <>
+                {!isMobile && (
+                  <DropdownMenu>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-8 gap-2 ml-1"
+                              disabled={!prefs.ready}
+                            >
+                              <SlidersHorizontal className="h-4 w-4" />
+                              <span className="hidden sm:inline">Cột hiển thị</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Tuỳ chỉnh các cột hiển thị</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>Hiển thị cột</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      
+                      {/* Nhóm các cột theo 'group' nếu có, hoặc không nhóm */}
+                      {Object.entries(
+                        sortedColumns.reduce((acc, col) => {
+                          const g = col.group || "Khác";
+                          if (!acc[g]) acc[g] = [];
+                          acc[g].push(col);
+                          return acc;
+                        }, {} as Record<string, StdColumn<T>[]>)
+                      ).map(([group, cols], idx, arr) => (
+                        <div key={group}>
+                          {group !== "Khác" && <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
+                          {cols.map((col) => {
+                            const isCurrentlyVisible = !prefs.isHidden(col.key);
+                            // Chặn việc ẩn cột cuối cùng
+                            const canToggle = !isCurrentlyVisible || shownCols.length > 1;
+                            
+                            return (
+                              <DropdownMenuCheckboxItem
+                                key={col.key}
+                                checked={isCurrentlyVisible}
+                                onCheckedChange={() => prefs.toggle(col.key)}
+                                onSelect={(e) => e.preventDefault()}
+                                disabled={!canToggle}
+                              >
+                                {col.label}
+                              </DropdownMenuCheckboxItem>
+                            );
+                          })}
+                          {idx < arr.length - 1 && <DropdownMenuSeparator />}
+                        </div>
+                      ))}
+
+                      <DropdownMenuSeparator />
+                      <DropdownMenuCheckboxItem 
+                        className="text-primary focus:text-primary font-medium"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          prefs.reset();
+                        }}
+                      >
+                        Đặt lại mặc định
+                      </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={autoFitWidths}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 ml-1" onClick={autoFitWidths}>
                         <Maximize2 className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
