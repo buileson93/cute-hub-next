@@ -17,6 +17,12 @@ export function TopBar() {
           <span className="text-xs">⌘</span>K
         </div>
       </div>
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-muted-foreground/60 font-medium italic">
+          Kiểm tra nếu xong giai đoạn 13 thì tiếp tục
+        </span>
+      </div>
+    </div>
     </div>
   );
 }
