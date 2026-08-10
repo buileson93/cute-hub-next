@@ -100,8 +100,26 @@ export function StandardTable<T>({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const isMobile = vw > 0 && vw < 768;
-  const shownCols = columns.filter((c) => !c.hidden);
+  const isMobile = vw > 0 && vw < BP_PX.md;
+  
+  const shownCols = useMemo(() => {
+    return columns.filter((c) => {
+      if (c.hidden) return false;
+      if (!c.hideBelow) return true;
+      
+      const threshold = typeof c.hideBelow === "number" 
+        ? c.hideBelow 
+        : (BP_PX as any)[c.hideBelow] || BP_PX.md;
+        
+      return vw >= threshold;
+    });
+  }, [columns, vw]);
+
+  // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
+  // bỏ qua hideBelow để đảm bảo toàn vẹn dữ liệu báo cáo (Giải quyết N29)
+  const exportCols = useMemo(() => {
+    return columns.filter(c => !c.hidden);
+  }, [columns]);
   const getRowIdInternal = (r: T): string => (getRowId ? getRowId(r) : (r as any).id);
 
   const toggleRow = (id: string) => {
