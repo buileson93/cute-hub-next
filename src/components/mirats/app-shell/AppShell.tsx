@@ -85,8 +85,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
+    // Luôn bắt đầu bằng việc kiểm tra localStorage
     const saved = localStorage.getItem("mirats-sidebar-collapsed");
-    // Mặc định là thu gọn (true)
+    console.log("Sidebar saved state:", saved);
+    
+    // Nếu chưa từng lưu hoặc lưu là "1", thì mặc định là thu gọn (true)
     if (saved === "0") {
       setIsCollapsed(false);
     } else {
