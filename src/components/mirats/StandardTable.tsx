@@ -4,10 +4,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { Maximize2, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 export interface StdColumn<T> {
@@ -211,6 +214,47 @@ export function StandardTable<T>({
       ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
       : 0;
 
+  // --- Kéo đổi độ rộng cột ---
+  const isDragging = useRef<string | null>(null);
+  const startX = useRef(0);
+  const startW = useRef(0);
+
+  const onHandleMouseDown = useCallback((e: React.MouseEvent, key: string, currentWidth: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isDragging.current = key;
+    startX.current = e.pageX;
+    startW.current = currentWidth;
+    document.body.style.cursor = "col-resize";
+    document.addEventListener("mousemove", onHandleMouseMove);
+    document.addEventListener("mouseup", onHandleMouseUp);
+  }, []);
+
+  const onHandleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging.current) return;
+    const delta = e.pageX - startX.current;
+    const nextW = Math.max(60, startW.current + delta);
+    prefs.setWidth(isDragging.current, nextW);
+  }, [prefs]);
+
+  const onHandleMouseUp = useCallback(() => {
+    isDragging.current = null;
+    document.body.style.cursor = "";
+    document.removeEventListener("mousemove", onHandleMouseMove);
+    document.removeEventListener("mouseup", onHandleMouseUp);
+    // Sau khi đổi độ rộng, có thể chữ xuống dòng khác đi -> báo ảo hoá đo lại
+    rowVirtualizer.measure();
+  }, [rowVirtualizer]);
+
+  const autoFitWidths = () => {
+    // Logic tự căn: reset về mặc định của browser (xóa prefs.widths)
+    prefs.reset();
+  };
+
+  const resetAllWidths = () => {
+    allKeys.forEach(k => prefs.resetWidth(k));
+  };
+
   return (
     <div className="space-y-3">
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
@@ -228,7 +272,29 @@ export function StandardTable<T>({
               })
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {tableKey && (
+              <>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={autoFitWidths}>
+                        <Maximize2 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Tự căn theo nội dung</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Đặt lại độ rộng mọi cột</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </>
+            )}
             {toolbarRight && renderToolbar(toolbarRight, { visibleRows: rows, visibleColumns: shownCols })}
           </div>
         </div>
@@ -291,21 +357,40 @@ export function StandardTable<T>({
                 {selectable && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted border-r border-border/50"></TableHead>
                 )}
-                {shownCols.map((c) => (
-                  <TableHead
-                    key={c.key}
-                    className={cn(
-                      "bg-muted border-r border-border/50 last:border-r-0 whitespace-nowrap",
-                      c.sticky && "sticky left-0 z-30",
-                      selectable && c.sticky && "left-10",
-                      c.align === "center" && "text-center",
-                      c.align === "right" && "text-right"
-                    )}
-                    style={c.minW ? { minWidth: c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW, width: c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW } : undefined}
-                  >
-                    {c.label}
-                  </TableHead>
-                ))}
+                {shownCols.map((c) => {
+                  const savedW = prefs.widths[c.key];
+                  const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
+                  const currentWidth = savedW || parseInt(minWVal || "100") || 120;
+
+                  return (
+                    <TableHead
+                      key={c.key}
+                      className={cn(
+                        "group relative bg-muted border-r border-border/50 last:border-r-0",
+                        c.sticky && "sticky left-0 z-30",
+                        selectable && c.sticky && "left-10",
+                        c.align === "center" && "text-center",
+                        c.align === "right" && "text-right"
+                      )}
+                      style={{ 
+                        width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
+                        minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                      }}
+                    >
+                      <span className="truncate block" title={c.label}>
+                        {c.label}
+                      </span>
+
+                      {/* Resizer handle */}
+                      <div
+                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-primary/30 transition-opacity z-10"
+                        onMouseDown={(e) => onHandleMouseDown(e, c.key, currentWidth)}
+                        onDoubleClick={() => prefs.resetWidth(c.key)}
+                        title="Kéo để đổi độ rộng — bấm đúp để đặt lại"
+                      />
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -363,19 +448,24 @@ export function StandardTable<T>({
                             <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
                           </TableCell>
                         )}
-                        {shownCols.map((c) => (
-                          <TableCell
-                            key={c.key}
-                            className={cn(
-                              c.cellClassName,
-                              c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
-                              selectable && c.sticky && "left-10",
-                              c.align === "center" && "text-center",
-                              c.align === "right" && "text-right tabular-nums",
-                              c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
-                            )}
-                            style={c.minW ? { minWidth: c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW } : undefined}
-                          >
+                        {shownCols.map((c) => {
+                          const savedW = prefs.widths[c.key];
+                          return (
+                            <TableCell
+                              key={c.key}
+                              className={cn(
+                                c.cellClassName,
+                                c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
+                                selectable && c.sticky && "left-10",
+                                c.align === "center" && "text-center",
+                                c.align === "right" && "text-right tabular-nums",
+                                c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
+                              )}
+                              style={{ 
+                                width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
+                                minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                              }}
+                            >
                             {c.cell ? (
                               c.cell(r)
                             ) : (
@@ -392,7 +482,8 @@ export function StandardTable<T>({
                               </div>
                             )}
                           </TableCell>
-                        ))}
+                        );
+                      })}
                       </TableRow>
                     );
                   })}
