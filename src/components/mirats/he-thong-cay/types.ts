@@ -77,7 +77,7 @@ export type MindNodeType = MindKind;
 export type MindData = {
   label: string;
   kind: MindKind;
-  ma: string;
+  ma?: string;
   plId?: string;
   lvId?: string;
   nhMa?: string;
