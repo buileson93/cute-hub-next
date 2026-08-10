@@ -72,7 +72,10 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           key: "trang_thai",
           label: "Trạng thái",
           filter: "cat",
-          value: (r) => statusMeta[r.trangThai]?.label ?? r.trangThai,
+          value: (r) => {
+            const labels: any = { valid: 'Còn hiệu lực', expiring: 'Sắp hết hạn', expired: 'Đã hết hạn', none: 'Chưa có' };
+            return labels[r.trangThai] ?? r.trangThai;
+          },
           cell: (r) => {
             // "valid", "expiring", "expired", "none" aren't standard MIRATS status codes yet
             // but we use StatusBadge with domain 'thiet_bi' if we had them or 'health'
