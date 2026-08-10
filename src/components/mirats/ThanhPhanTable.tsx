@@ -152,8 +152,56 @@ async function copyCodes(codes: string[]) {
   }
 }
 
+/** Hook lấy toàn bộ danh mục model để dùng cho hover card */
+function useModelRegistry() {
+  return useQuery({
+    queryKey: ["dm_model_registry"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("dm_model")
+        .select("id, ma, ten, so_model, p_n, hinh_anh, mo_ta, nsx:nha_san_xuat_id(ten), loai:loai_thiet_bi_id(ten)")
+        .eq("active", true);
+      if (error) throw error;
+      
+      const map: Record<string, any> = {};
+      (data ?? []).forEach((m: any) => {
+        map[m.id] = {
+          ...m,
+          nha_san_xuat: m.nsx?.ten || "",
+          loai_thiet_bi: m.loai?.ten || "",
+        };
+      });
+      return map;
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+function ModelCell({ model, modelId, registry }: { model: string, modelId: string | null, registry: Record<string, any> }) {
+  if (!model) return <span className="text-xs text-muted-foreground">—</span>;
+  
+  const modelData = modelId ? registry[modelId] : null;
+  
+  if (!modelData) {
+    return (
+      <span title={model} className="line-clamp-2 break-words text-sm leading-snug">
+        {model}
+      </span>
+    );
+  }
+
+  return (
+    <EntityHoverCard loai="dm_model" row={modelData}>
+      <span className="line-clamp-2 break-words text-sm leading-snug text-primary hover:underline underline-offset-4 decoration-primary/30 cursor-pointer">
+        {model}
+      </span>
+    </EntityHoverCard>
+  );
+}
+
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
 const LY_DO_KHOA =
+
   "Vai trò của bạn chỉ được xem: cần quyền sửa dữ liệu Hệ thống kỹ thuật (Admin / Phòng KT / Phụ trách đơn vị) để đổi trạng thái hàng loạt.";
 
 /** Nội dung hộp thoại xác nhận đổi trạng thái hàng loạt. */
