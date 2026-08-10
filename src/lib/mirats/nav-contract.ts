@@ -212,6 +212,7 @@ export const workspaces: Workspace[] = [
 
           { to: "/admin/schema", label: "Sơ đồ CSDL", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/backup", label: "Sao lưu & Khôi phục", icon: DatabaseBackup, roles: ADMIN_ONLY, hideOnMobile: true },
+          { to: "/chat-luong-du-lieu", label: "Chất lượng dữ liệu", icon: Database, roles: MANAGER_ROLES },
           { to: "/admin/nhap-lieu", label: "Nhập/Xuất hàng loạt", icon: Upload, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/review", label: "Rà soát dữ liệu", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/kiem-tra-so-lieu", label: "Kiểm tra số liệu", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
