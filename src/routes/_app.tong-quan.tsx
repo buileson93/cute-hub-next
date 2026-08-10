@@ -352,9 +352,9 @@ function TongQuanPage() {
               : healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 95 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/su-co"
+            description="Tỷ lệ thời gian hệ thống sẵn sàng phục vụ trong kỳ quan sát."
           />
           <HealthTile
-            description="Tỷ lệ thời gian hệ thống sẵn sàng phục vụ trong kỳ quan sát."
             icon={<Repeat2 className="h-4 w-4" />}
             label="MTBF (giờ)"
             value={healthQ.data ? fmtHours(healthQ.data.mtbf_h) : "—"}
@@ -362,6 +362,7 @@ function TongQuanPage() {
             tone="default"
             loading={healthQ.isLoading}
             to="/su-co"
+            description="Chỉ số tin cậy: thời gian trung bình giữa hai lần phát sinh sự cố."
           />
           <HealthTile
             icon={<Wrench className="h-4 w-4" />}
