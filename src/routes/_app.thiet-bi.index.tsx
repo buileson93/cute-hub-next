@@ -79,7 +79,9 @@ function ThietBiPage() {
     [devNameOv],
   );
 
-  const [query, setQuery] = useState("");
+  const search = Route.useSearch();
+  const [query, setQuery] = useState(search.q || "");
+
   const [focused, setFocused] = useState(false);
   const [onlyAllocated, setOnlyAllocated] = useState(false);
   const [showRetired, setShowRetired] = useState(false);
