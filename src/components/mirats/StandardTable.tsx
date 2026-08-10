@@ -4,7 +4,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 
 
 export interface StdColumn<T> {
