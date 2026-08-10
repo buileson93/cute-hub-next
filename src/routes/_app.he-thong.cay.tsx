@@ -14,7 +14,7 @@ import {
   type DbDevice, type DbTaxonomy,
 } from "@/lib/mirats/db-taxonomy";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
-import { useMyPermissions } from "@/hooks/use-permissions";
+import { useMyPermissions, useCan } from "@/hooks/use-permissions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -100,13 +100,12 @@ function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 }
 
 function useTbMind(overrides: OverrideMap | undefined) {
-  return useCallback((d: DbDevice) => overrides?.get(okey("tb", d.ma_thiet_bi))?.ten || d.ten_thiet_bi || d.ma_thiet_bi, [overrides]);
+  return useCallback((d: DbDevice) => overrides?.get(okey("tb", d.ma_thiet_bi))?.ten || d.ten || d.ma_thiet_bi, [overrides]);
 }
 
 function HeThongCayPage() {
   const nav = useNavigate();
-  const { data: perms } = useMyPermissions();
-  const canManage = perms?.canManage ?? false;
+  const canManage = useCan("he-thong", "manage");
 
   const {
     display, setDisplay,
