@@ -29,6 +29,8 @@ import {
   TourButton, 
   TOUR_STEPS 
 } from "./index";
+import { Sidebar } from "./Sidebar";
+import { TopBar } from "./TopBar";
 
 /** Tự động mở tour MỘT LẦN cho mỗi tài khoản ở lần đăng nhập đầu tiên. */
 function TourAutoStart({
@@ -128,12 +130,18 @@ export function AppShell({ children }: { children: ReactNode }) {
                   key={ws.id}
                   onClick={() => gotoWorkspace(ws)}
                   className={cn(
-                    "flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                    "group relative flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
                     ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   )}
                 >
                   <ws.icon className="h-5 w-5" />
                   <span className="w-full truncate text-center leading-tight">{ws.short}</span>
+                  {ws.id === activeWs.id && (
+                    <motion.div 
+                      layoutId="active-ws"
+                      className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
+                    />
+                  )}
                 </button>
               ))}
             </nav>
@@ -153,12 +161,23 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
           </aside>
 
+          {/* Sub-sidebar (Desktop) */}
+          <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex">
+            <div className="flex h-14 items-center border-b px-6 font-bold tracking-tight">
+              {activeWs.label}
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <Sidebar />
+            </div>
+          </aside>
+
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
                <div className="flex items-center gap-4">
                   <Link to="/" className="md:hidden"><SidebarLogoRail /></Link>
                   <div className="hidden md:block"><TourButton /></div>
+                  <TopBar />
                </div>
                <div className="flex items-center gap-3">
                   <UserMenu />
