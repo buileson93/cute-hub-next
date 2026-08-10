@@ -259,12 +259,23 @@ export function StandardTable<T>({
         </div>
       ) : (
         <Card className={cn("relative min-h-0 overflow-auto border shadow-sm", maxHeightClass)}>
-          <Table className="w-full caption-bottom text-sm">
-            <TableHeader className="bg-muted/30">
+          <Table className="w-full border-separate border-spacing-0 caption-bottom text-sm">
+            <TableHeader className="bg-muted sticky top-0 z-20 shadow-[0_1px_0_hsl(var(--border))]">
               <TableRow className="hover:bg-transparent">
-                {selectable && <TableHead className="w-10"></TableHead>}
+                {selectable && (
+                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted border-r border-border/50"></TableHead>
+                )}
                 {shownCols.map((c) => (
-                  <TableHead key={c.key} className={cn(c.align === "center" && "text-center", c.align === "right" && "text-right")}>
+                  <TableHead
+                    key={c.key}
+                    className={cn(
+                      "bg-muted border-r border-border/50 last:border-r-0 whitespace-nowrap",
+                      c.sticky && "sticky left-0 z-30",
+                      selectable && c.sticky && "left-10",
+                      c.align === "center" && "text-center",
+                      c.align === "right" && "text-right"
+                    )}
+                  >
                     {c.label}
                   </TableHead>
                 ))}
@@ -293,14 +304,30 @@ export function StandardTable<T>({
                   const rid = getRowIdInternal(r);
                   const isSel = selectable && selected?.has(rid);
                   return (
-                    <TableRow key={rid} className={cn(onRowClick && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))} onClick={() => onRowClick?.(r)}>
+                    <TableRow
+                      key={rid}
+                      className={cn(onRowClick && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
+                      onClick={() => onRowClick?.(r)}
+                    >
                       {selectable && (
-                        <TableCell onClick={(e) => e.stopPropagation()}>
+                        <TableCell
+                          onClick={(e) => e.stopPropagation()}
+                          className="sticky left-0 z-10 bg-card border-r border-border/50"
+                        >
                           <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
                         </TableCell>
                       )}
                       {shownCols.map((c) => (
-                        <TableCell key={c.key} className={cn(c.cellClassName, c.align === "center" && "text-center", c.align === "right" && "text-right")}>
+                        <TableCell
+                          key={c.key}
+                          className={cn(
+                            c.cellClassName,
+                            c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
+                            selectable && c.sticky && "left-10",
+                            c.align === "center" && "text-center",
+                            c.align === "right" && "text-right"
+                          )}
+                        >
                           {c.cell ? c.cell(r) : String(c.value?.(r) ?? "")}
                         </TableCell>
                       ))}
