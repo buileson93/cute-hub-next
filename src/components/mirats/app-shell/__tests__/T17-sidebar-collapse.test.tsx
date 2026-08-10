@@ -118,7 +118,7 @@ describe('AppShell Sidebar Layout (T17 - Revised)', () => {
   });
 
   it('Sidebar: ẩn tiêu đề h3 khi collapsed', () => {
-    render(<Sidebar collapsed={true} />);
+    render(<Sidebar collapsed={true} activeWsId="van-hanh" />);
     expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
   });
 
