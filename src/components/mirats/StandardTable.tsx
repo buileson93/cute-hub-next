@@ -462,7 +462,7 @@ export function StandardTable<T>({
                                 key={col.key}
                                 checked={isCurrentlyVisible}
                                 onCheckedChange={() => prefs.toggle(col.key)}
-                                onSelect={(e) => e.preventDefault()}
+                                 onSelect={(e: Event) => e.preventDefault()}
                                 disabled={!canToggle}
                               >
                                 {col.label}
