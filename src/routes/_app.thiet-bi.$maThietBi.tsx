@@ -31,8 +31,7 @@ import { ThietBiLifecycleActions } from "@/components/mirats/ThietBiLifecycleAct
 import { AccessDenied } from "@/components/mirats/AccessDenied";
 import { buildRecordTimeline, type TimelineItem } from "@/lib/mirats/record-timeline";
 import { formatVal } from "@/lib/mirats/change-log-utils";
-import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
-import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { cn } from "@/lib/utils";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -140,7 +139,6 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
   );
 
   const pct = tb._tyLeTuoiTho == null ? null : Math.max(0, Math.min(100, Math.round(tb._tyLeTuoiTho)));
-  const statusToken = getTrangThaiToken(tb.trang_thai);
 
   const tabProps = {
     tb, ma, tenTb, refInfo, loaiMau: loaiMau ?? null, sysName, sysGpSo, sysGpHan, vaiTroList,
@@ -158,12 +156,7 @@ function ThietBiDetailInner({ tb, tenTb, sysName, sysGpSo, sysGpHan }: { tb: DbD
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold font-mono truncate">{ma}</h1>
-              {statusToken && (
-                <Badge variant="outline" className={`${statusToken.class} px-1.5 py-0 h-5 text-[10px]`}>
-                  <span className={`mr-1 h-1.5 w-1.5 rounded-full ${statusToken.dot}`} />
-                  {tb.trang_thai}
-                </Badge>
-              )}
+              <StatusBadge domain="thiet_bi" code={tb.trang_thai} className="h-5 text-[10px]" />
             </div>
             <div className="text-[10px] text-muted-foreground truncate font-medium uppercase tracking-tight">
               {tenTb} {sysName ? `· ${sysName}` : ""}

@@ -312,9 +312,14 @@ function TongQuanPage() {
         </Card>
       )}
 
-      {/* ROW 1 — BRIEF HÔM NAY */}
-      <div>
-        <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Đi tới Sự cố" />
+      {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Hành động khẩn cấp" to="/su-co" more="Đi tới Sự cố" />
+          <div className="text-xs text-muted-foreground hidden md:block">
+            Theo dõi các chỉ số vận hành quan trọng trong thời gian thực
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
             value={briefQ.data?.su_co_khan} loading={briefQ.isLoading} tone="danger"
