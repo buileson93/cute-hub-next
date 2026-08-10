@@ -13,6 +13,9 @@ interface DataStateProps {
    */
   state: "loading" | "empty" | "error" | "success";
   
+  /** true nếu đang trong chế độ lọc. Khi đó trạng thái 'empty' sẽ hiển thị thông báo khác. */
+  isFiltering?: boolean;
+
   /** 
    * Loại skeleton hiển thị khi loading. 
    * Mặc định là 'none' (dùng LoadingState truyền thống).
@@ -38,6 +41,7 @@ interface DataStateProps {
   className?: string;
 }
 
+
 /**
  * Component dùng chung để quản lý các trạng thái dữ liệu (Loading, Empty, Error).
  * Task T29 - MIRATS 2.0.
@@ -49,9 +53,11 @@ export function DataState({
   description,
   onRetry,
   emptyAction,
+  isFiltering,
   children,
   className,
 }: DataStateProps) {
+
   if (state === "loading") {
     switch (loadingType) {
       case "table":
@@ -79,16 +85,20 @@ export function DataState({
   }
 
   if (state === "empty") {
+    const defaultTitle = isFiltering ? "Không có kết quả phù hợp" : "Không có dữ liệu";
+    const defaultDesc = isFiltering ? "Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm." : description;
+    
     return (
       <EmptyState
-        title={title || "Không có dữ liệu"}
-        description={description}
+        title={title || defaultTitle}
+        description={description || defaultDesc}
         action={emptyAction}
         className={className}
         live="polite"
       />
     );
   }
+
 
   return <>{children}</>;
 }
