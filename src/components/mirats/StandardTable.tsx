@@ -621,6 +621,8 @@ export function StandardTable<T>({
                   const savedW = prefs.widths[c.key];
                   const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
                   const currentWidth = savedW || parseInt(minWVal || "100") || 120;
+                  const canSort = sortableKey(c);
+                  const sortActive = sort?.key === c.key;
 
                   return (
                     <TableHead
@@ -630,16 +632,48 @@ export function StandardTable<T>({
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
-                        c.align === "right" && "text-right"
+                        c.align === "right" && "text-right",
+                        sortActive && "bg-primary/5"
                       )}
                       style={{ 
                         width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
                         minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                       }}
                     >
-                      <span className="truncate block" title={c.label}>
-                        {c.label}
-                      </span>
+                      <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                        {canSort ? (
+                          <button
+                            type="button"
+                            onClick={() => cycleSort(c.key)}
+                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left"
+                            title="Bấm để sắp xếp"
+                          >
+                            <span className="truncate">{c.label}</span>
+                            {sortActive ? (
+                              sort!.dir === "asc"
+                                ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" />
+                                : <ArrowDown className="h-3 w-3 shrink-0 text-primary" />
+                            ) : (
+                              <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" />
+                            )}
+                          </button>
+                        ) : (
+                          <span className="truncate">{c.label}</span>
+                        )}
+
+                        {c.filter && (
+                          <ColFilter
+                            type={c.filter}
+                            label={c.label}
+                            catValues={catValues[c.key] ?? []}
+                            catSel={catFilters[c.key] ?? new Set()}
+                            onToggleCat={(v) => toggleCat(c.key, v)}
+                            onClearCat={() => clearCat(c.key)}
+                            textVal={textFilters[c.key] ?? ""}
+                            onText={(v) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
+                          />
+                        )}
+                      </div>
 
                       {/* Resizer handle */}
                       <div
