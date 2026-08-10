@@ -1,8 +1,10 @@
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useMemo, useState } from "react";
 import { Search, Wrench, CheckCircle2, CalendarClock } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -119,7 +121,7 @@ function BaoTriPage() {
   ], [thietBiMap, heThongMap, donViMap]);
 
   return (
-    <div className="space-y-4">
+    <PageBody>
       <PageHeader
         icon={Wrench}
         title="Bảo dưỡng"
@@ -204,7 +206,8 @@ function BaoTriPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageBody>
+
   );
 }
 
