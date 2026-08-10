@@ -350,12 +350,15 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
 
 
 type Hit = {
-  entity: string;
+  entity: any;
   id: string;
   title: string;
   subtitle?: string;
   to: string;
+  sysName?: string;
+  count?: number;
 };
+
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
