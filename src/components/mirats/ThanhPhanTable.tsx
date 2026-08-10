@@ -150,7 +150,78 @@ async function copyCodes(codes: string[]) {
     toast.success(`Đã sao chép ${codes.length} mã.`);
   } catch {
     toast.error("Trình duyệt không cho phép sao chép.");
+}
+
+/** Model Registry Map dùng cho ModelCell */
+type ModelRegistry = Record<string, {
+  id: string;
+  ma: string;
+  ten: string;
+  so_model: string | null;
+  p_n: string | null;
+  hinh_anh: string | null;
+  mo_ta: string | null;
+  nha_san_xuat: string;
+  loai_thiet_bi: string;
+}>;
+
+/** Hook lấy toàn bộ danh mục model để dùng cho hover card */
+function useModelRegistry() {
+  return useQuery({
+    queryKey: ["dm_model_registry"],
+    queryFn: async (): Promise<ModelRegistry> => {
+      const { data, error } = await supabase
+        .from("dm_model")
+        .select(`
+          id, ma, ten, so_model, p_n, hinh_anh, mo_ta, 
+          nsx:nha_san_xuat_id(ten), 
+          loai:loai_thiet_bi_id(ten)
+        `)
+        .eq("active", true);
+      if (error) throw error;
+      
+      const map: ModelRegistry = {};
+      (data ?? []).forEach((m: any) => {
+        map[m.id] = {
+          id: m.id,
+          ma: m.ma,
+          ten: m.ten,
+          so_model: m.so_model,
+          p_n: m.p_n,
+          hinh_anh: m.hinh_anh,
+          mo_ta: m.mo_ta,
+          nha_san_xuat: m.nsx?.ten || "",
+          loai_thiet_bi: m.loai?.ten || "",
+        };
+      });
+      return map;
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+function ModelCell({ model, modelId, registry }: { model: string, modelId: string | null, registry: ModelRegistry }) {
+  if (!model) return <span className="text-xs text-muted-foreground">—</span>;
+  
+  const modelData = modelId ? registry[modelId] : null;
+  
+  if (!modelData) {
+    return (
+      <span title={model} className="line-clamp-2 break-words text-sm leading-snug">
+        {model}
+      </span>
+    );
   }
+
+  return (
+    <EntityHoverCard loai="dm_model" row={modelData}>
+      <span className="line-clamp-2 cursor-pointer break-words text-sm leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
+        {model}
+      </span>
+    </EntityHoverCard>
+  );
+}
+
 }
 
 /** Hook lấy toàn bộ danh mục model để dùng cho hover card */
