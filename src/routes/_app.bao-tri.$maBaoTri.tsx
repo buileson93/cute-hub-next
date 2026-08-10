@@ -1,12 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { ArrowLeft, Wrench, CalendarClock, Users, FileText, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
+import { 
+  ArrowLeft, Wrench, CalendarClock, Users, FileText, CheckCircle2, XCircle, MinusCircle,
+  LayoutList, ClipboardCheck, History, Info, Settings,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { DetailLayout, DetailCard, DetailInfoGrid } from "@/components/mirats/DetailLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useScope } from "@/lib/mirats/scope";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/bao-tri/$maBaoTri")({
   head: () => ({
