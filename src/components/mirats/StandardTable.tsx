@@ -27,6 +27,7 @@ export interface StdColumn<T> {
   defaultHidden?: boolean;
   sortable?: boolean;
   sortValue?: (r: T) => any;
+  lineClamp?: number;
 }
 
 export interface StandardTableProps<T> {
@@ -284,7 +285,7 @@ export function StandardTable<T>({
         </div>
       ) : (
         <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-sm", maxHeightClass)}>
-          <Table className="w-full border-separate border-spacing-0 caption-bottom text-sm">
+          <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-sm">
             <TableHeader className="bg-muted sticky top-0 z-20 shadow-[0_1px_0_hsl(var(--border))]">
               <TableRow className="hover:bg-transparent">
                 {selectable && (
@@ -300,6 +301,7 @@ export function StandardTable<T>({
                       c.align === "center" && "text-center",
                       c.align === "right" && "text-right"
                     )}
+                    style={c.minW ? { minWidth: c.minW, width: c.minW } : undefined}
                   >
                     {c.label}
                   </TableHead>
@@ -369,10 +371,26 @@ export function StandardTable<T>({
                               c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
                               selectable && c.sticky && "left-10",
                               c.align === "center" && "text-center",
-                              c.align === "right" && "text-right"
+                              c.align === "right" && "text-right tabular-nums",
+                              c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
                             )}
+                            style={c.minW ? { minWidth: c.minW } : undefined}
                           >
-                            {c.cell ? c.cell(r) : String(c.value?.(r) ?? "")}
+                            {c.cell ? (
+                              c.cell(r)
+                            ) : (
+                              <div
+                                className={cn(
+                                  "break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                                  (c.lineClamp ?? 1) > 1
+                                    ? `line-clamp-${c.lineClamp}`
+                                    : "truncate"
+                                )}
+                                title={String(c.value?.(r) ?? "")}
+                              >
+                                {String(c.value?.(r) ?? "")}
+                              </div>
+                            )}
                           </TableCell>
                         ))}
                       </TableRow>
