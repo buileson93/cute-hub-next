@@ -576,10 +576,10 @@ function ModelCatalogPage() {
               key: "actions", label: "", align: "right" as const,
               cell: (m: ModelRow) => (
                 <div className="flex justify-end gap-1 whitespace-nowrap">
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(m)} title="Sửa">
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(m)} title="Sửa" aria-label="Sửa mẫu">
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(m)} title="Xoá">
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(m)} title="Xoá" aria-label="Xoá mẫu">
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
