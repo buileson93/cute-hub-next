@@ -424,41 +424,6 @@ function ThietBiPage() {
             Cây phân cấp tài sản & hệ thống
           </CardTitle>
         </CardHeader>
-                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
-                        >
-                          <HardDrive className="h-4 w-4 shrink-0 text-foreground/60" />
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs text-primary">{d.ma_thiet_bi}</span>
-                              <span className="min-w-0 flex-1 truncate">{tbName(d)}</span>
-                            </div>
-                          </div>
-                          <Badge variant="outline" className={cn("shrink-0 border", getTrangThaiToken(d.trang_thai)?.class)}>
-                            {d.trang_thai}
-                          </Badge>
-
-                          {d._htTen && (
-                            <Badge variant="outline" className="shrink-0 gap-1 border-primary/30 text-primary" title="Hệ thống">
-                              <Network className="h-3 w-3" />
-                              <span className="max-w-[12rem] truncate">{htName(d._htId, d._htTen)}</span>
-                            </Badge>
-                          )}
-                        </button>
-
-                      ))}
-                      {suggestions.devTotal > suggestions.devHits.length && (
-                        <div className="px-3 py-1.5 text-center text-[11px] text-muted-foreground">
-                          … và {suggestions.devTotal - suggestions.devHits.length} tài sản khác trong cây bên dưới
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            </div>
-          </div>
-        </CardHeader>
         <CardContent>
           {isMobile ? (
             <div className="grid grid-cols-1 gap-4">
