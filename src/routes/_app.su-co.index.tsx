@@ -685,9 +685,6 @@ function SuCoPage() {
             />
           </DataState>
 
-            emptyContent={
-              <EmptyState
-            />
 
 
           {filtered.length > 40 && (
