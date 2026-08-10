@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
 import type { ViTriChucNangTree } from "@/lib/mirats/he-thong-thanh-phan";
 import { Boxes, Layers, FolderTree, Network, Cpu, Puzzle, Building2, Plug, MapPin } from "lucide-react";
@@ -77,8 +77,8 @@ export type MindNodeType = MindKind;
 export type MindData = {
   label: string;
   kind: MindKind;
-  ma: string;
-  plId: string;
+  ma?: string;
+  plId?: string;
   lvId?: string;
   nhMa?: string;
   htMa?: string;

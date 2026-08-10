@@ -6,6 +6,7 @@ import {
   type Node, type Edge, type NodeTypes, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import type { Node as ReactFlowNode } from "@xyflow/react";
 import {
   ChevronRight, ChevronDown, Network, Layers, Cpu, Search, Building2, ListTree, GitFork,
   Pencil, Check, X, Save, Loader2, Eye, MapPin, Plus, Minus, Table2, Boxes, Puzzle,
@@ -23,10 +24,13 @@ import {
   DropdownMenuTrigger, DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { useCayContext } from "./CayContext";
-import type { MindKind, MindData, PlGroup, DevNode, ViTriChucNangTree } from "./types";
-import { LEVEL_META } from "./types";
+import type { MindKind, MindData, PlGroup, HtGroup, MoveTarget, MoveReq } from "./types";
+import { LEVEL_META, STATUS_TONE } from "./types";
+import { parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
+import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils";
+import { toast } from "sonner";
 
-const KIND_STYLE: Record<MindKind, string> = {
+const KIND_STYLE: Record<string, string> = {
   root: "border-primary/60 bg-primary/10 text-foreground",
   pl: "border-rose-500/30 bg-card/70",
   lv: "border-primary/30 bg-card/70",
@@ -38,7 +42,7 @@ const KIND_STYLE: Record<MindKind, string> = {
   vt: "border-sky-500/25 bg-card/70",
 };
 
-const KIND_DOT: Record<MindKind, string> = {
+const KIND_DOT: Record<string, string> = {
   root: "bg-primary",
   pl: "bg-rose-500",
   lv: "bg-primary",
@@ -50,13 +54,34 @@ const KIND_DOT: Record<MindKind, string> = {
   vt: "bg-sky-400",
 };
 
-const KIND_ICON: Record<MindKind, React.ComponentType<{ className?: string }>> = {
+const KIND_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   root: Building2, pl: Boxes, lv: Layers, nh: FolderTree, ht: Network, tb: Cpu, tp: Puzzle, vtg: Plug, vt: MapPin,
 };
 
-const KIND_WIDTH: Record<MindKind, string> = {
+const KIND_WIDTH: Record<string, string> = {
   root: "w-[260px]", pl: "w-[248px]", lv: "w-[248px]", nh: "w-[268px]",
   ht: "w-[320px]", tb: "w-[308px]", tp: "w-[300px]", vtg: "w-[264px]", vt: "w-[320px]",
+};
+
+const KIND_H: Record<string, number> = {
+  root: 42, pl: 40, lv: 40, nh: 44, ht: 56, tb: 48, tp: 48, vtg: 44, vt: 52,
+};
+
+const KIND_W: Record<string, number> = {
+  root: 260, pl: 248, lv: 248, nh: 268, ht: 320, tb: 308, tp: 300, vtg: 264, vt: 320,
+};
+
+type Raw = {
+  id: string;
+  kind: MindKind;
+  data: MindData;
+  children: Raw[];
+  x?: number;
+  y?: number;
+  h?: number;
+  center?: number;
+  depth?: number;
+  parent?: Raw;
 };
 
 function TruncatedNodeLabel({ label }: { label: string }) {
@@ -169,6 +194,22 @@ function MindNode({ data }: { data: MindData }) {
           {data.code && <CodeBadge code={data.code} />}
           <TruncatedNodeLabel label={data.label} />
         </div>
+        
+        {data.count !== undefined && <Badge variant="secondary" className="text-[9px] opacity-70 shrink-0">{data.count}</Badge>}
+        
+        <div className="flex shrink-0 items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+           {data.onOpenEditor && (
+             <button onClick={(e) => { e.stopPropagation(); data.onOpenEditor?.(); }} className="rounded p-0.5 hover:bg-muted" title="Chi tiết">
+               <Eye className="h-3 w-3" />
+             </button>
+           )}
+           {data.onRecord && (
+             <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Sổ lý lịch">
+               <History className="h-3 w-3" />
+             </button>
+           )}
+        </div>
+        
         <Handle type="source" position={Position.Right} className="!h-1.5 !w-1.5 !border-0 !bg-muted-foreground/40" />
       </div>
     </div>
@@ -177,12 +218,243 @@ function MindNode({ data }: { data: MindData }) {
 
 const nodeTypes: NodeTypes = { mind: MindNode as any };
 
-export function CayMindMap({ tree, posByHt }: { tree: PlGroup[], posByHt: Map<string, any> }) {
+export function CayMindMap({ 
+  tree, 
+  posByHt, 
+  scopeText,
+  canManage,
+  onRename,
+  onOpenEditor,
+  onHistory,
+  onIncident,
+  onMaint,
+  onRecord,
+  onMoveSystem,
+  plMind,
+  nhMind,
+  htMind,
+  tbMind,
+}: { 
+  tree: PlGroup[]; 
+  posByHt: Map<string, any>; 
+  scopeText: string;
+  canManage: boolean;
+  onRename: (kind: any, ma: string, ten: string) => void;
+  onOpenEditor: (kind: any, ma: string) => void;
+  onHistory: (htMa: string) => void;
+  onIncident: (htMa: string) => void;
+  onMaint: (htMa: string) => void;
+  onRecord: (kind: "tb" | "tp", ma: string, ten: string) => void;
+  onMoveSystem: (req: MoveReq) => void;
+  plMind: (id: string) => string;
+  nhMind: (ma: string) => string;
+  htMind: (ma: string) => string;
+  tbMind: (t: any) => string;
+}) {
+  const { fitView, getViewport, setViewport } = useReactFlow();
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [hitId, setHitId] = useState<string | null>(null);
+  const justOpenedRef = useRef<string | null>(null);
+  const fitSeqRef = useRef(0);
+
+  const toggle = useCallback((id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); justOpenedRef.current = null; }
+      else { next.add(id); justOpenedRef.current = id; }
+      return next;
+    });
+    setActiveId(id === "root" ? null : id);
+  }, []);
+
+  const moveTargets = useMemo<MoveTarget[]>(() => {
+    const out: MoveTarget[] = [];
+    for (const pl of tree)
+      for (const lv of pl.fields)
+        for (const nh of lv.groups)
+          out.push({ plId: pl.id, plLabel: plMind(pl.id), lvId: "", lvLabel: "", nhKey: nh.ma, nhLabel: nhMind(nh.ma) });
+    return out;
+  }, [tree, plMind, nhMind]);
+
+  const { nodes, edges } = useMemo(() => {
+    const COL_GAP = 96;
+    const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
+    const ROW_GAP = 16;
+
+    const stoppedPl = tree.find((pl) => pl.ten === DUNG_KHAI_THAC_TEN);
+    const normalTree = tree.filter((pl) => pl.ten !== DUNG_KHAI_THAC_TEN);
+
+    const rootRaw: Raw = {
+      id: "root", kind: "root",
+      data: { kind: "root", label: scopeText, count: normalTree.length, collapsible: true, expanded: expanded.has("root"), toggle: () => toggle("root") },
+      children: [],
+    };
+
+    const pushSystem = (parent: Raw, ht: HtGroup, htId: string, unitMode: boolean) => {
+      const htSysId = parseHtSysMa(ht.ma).sysName;
+      const htPosCount = (isRealSystemId(htSysId) ? posByHt?.get(htSysId) : undefined)?.length ?? 0;
+      const htRaw: Raw = {
+        id: htId, kind: "ht",
+        data: {
+          kind: "ht", ma: ht.ma, label: htMind(ht.ma),
+          count: ht.devices.length, collapsible: ht.devices.length > 0 || htPosCount > 0, expanded: expanded.has(htId),
+          canManage: canManage && ht.ma !== HT_KHAC,
+          toggle: () => toggle(htId), onRename: (t) => onRename("ht", ht.ma, t), onOpenEditor: () => onOpenEditor("ht", ht.ma),
+          onHistory: ht.ma !== HT_KHAC ? () => onHistory(ht.ma) : undefined,
+          onRecord: ht.ma !== HT_KHAC ? () => onRecord("tb", ht.ma, htMind(ht.ma)) : undefined, // Placeholder for system record
+          onMove: unitMode ? undefined : (toNhomId, toLvId, toNhKey, toNhTen) => {
+             const sysId = parseHtSysMa(ht.ma).sysName;
+             if (!isRealSystemId(sysId)) return;
+             onMoveSystem({ heThongId: sysId, tenHeThong: htMind(ht.ma), toNhomId, toLvId, toNhKey, toNhTen });
+          }
+        },
+        children: [],
+      };
+      parent.children.push(htRaw);
+      if (!expanded.has(htId)) return;
+
+      for (const d of ht.devices) {
+        const tbId = `tb:${d.tb.ma_thiet_bi}`;
+        const hasKids = d.children.length > 0;
+        const tbRaw: Raw = {
+          id: tbId, kind: "tb",
+          data: {
+            kind: "tb", ma: d.tb.ma_thiet_bi, label: tbMind(d.tb), code: d.tb.ma_thiet_bi,
+            count: hasKids ? d.children.length : undefined,
+            collapsible: hasKids, expanded: expanded.has(tbId), canManage,
+            toggle: () => toggle(tbId), onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t), onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),
+            onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, tbMind(d.tb)),
+          },
+          children: [],
+        };
+        htRaw.children.push(tbRaw);
+      }
+    };
+
+    if (expanded.has("root")) {
+      for (const pl of normalTree) {
+        const plId = `pl:${pl.id}`;
+        const unitMode = !!pl.fields[0]?.groups[0]?.passthrough;
+        const nhGroups = pl.fields.flatMap(lv => lv.groups);
+        const plRaw: Raw = {
+          id: plId, kind: "pl",
+          data: {
+            kind: "pl", ma: pl.id, label: unitMode ? pl.ten : plMind(pl.id),
+            count: unitMode ? nhGroups[0]?.systems.length : nhGroups.length,
+            collapsible: true, expanded: expanded.has(plId), toggle: () => toggle(plId),
+            canManage: canManage && !unitMode, onRename: (t) => onRename("pl", pl.id, t), onOpenEditor: () => onOpenEditor("pl", pl.id)
+          },
+          children: [],
+        };
+        rootRaw.children.push(plRaw);
+        if (expanded.has(plId)) {
+          for (const nh of nhGroups) {
+            const nhId = `nh:${pl.id}:${nh.ma}`;
+            const nhRaw: Raw = {
+              id: nhId, kind: "nh",
+              data: {
+                kind: "nh", ma: nh.ma, label: nhMind(nh.ma), count: nh.systems.length,
+                tone: nhMindTone(nh.mau), collapsible: nh.systems.length > 0, expanded: expanded.has(nhId),
+                toggle: () => toggle(nhId), onRename: (t) => onRename("nh", nh.ma, t), onOpenEditor: () => onOpenEditor("nh", nh.ma)
+              },
+              children: [],
+            };
+            plRaw.children.push(nhRaw);
+            if (expanded.has(nhId)) {
+              for (const ht of nh.systems) pushSystem(nhRaw, ht, `ht:${pl.id}:${nh.ma}:${ht.ma}`, false);
+            }
+          }
+        }
+      }
+    }
+
+    const stoppedPlRaw: Raw = {
+       id: "root-stopped", kind: "root",
+       data: { kind: "root", label: stoppedPl ? stoppedPl.ten : DUNG_KHAI_THAC_TEN, count: stoppedPl?.fields[0].groups[0].systems.length, collapsible: true, expanded: expanded.has("root-stopped"), toggle: () => toggle("root-stopped") },
+       children: []
+    };
+    if (stoppedPl && expanded.has("root-stopped")) {
+       for (const ht of stoppedPl.fields[0].groups[0].systems) {
+         pushSystem(stoppedPlRaw, ht, `ht:stopped:${ht.ma}`, false);
+       }
+    }
+
+    const allRaw: Raw[] = [];
+    let cursor = 0;
+    const shiftSubtree = (n: Raw, dy: number) => {
+      n.y = (n.y ?? 0) + dy;
+      n.center = (n.center ?? 0) + dy;
+      for (const c of n.children) shiftSubtree(c, dy);
+    };
+    
+    const place = (n: Raw, depth: number, parent?: Raw) => {
+      n.depth = depth;
+      n.parent = parent;
+      n.h = estHeight(n.kind);
+      allRaw.push(n);
+      if (n.children.length === 0) {
+        n.y = cursor;
+        n.center = cursor + n.h / 2;
+        cursor += n.h + ROW_GAP;
+        return;
+      }
+      const top = cursor;
+      for (const c of n.children) place(c, depth + 1, n);
+      const firstMid = n.children[0].center ?? 0;
+      const lastMid = n.children[n.children.length - 1].center ?? 0;
+      let center = (firstMid + lastMid) / 2;
+      const parentTop = center - n.h / 2;
+      if (parentTop < top) {
+        const dy = top - parentTop;
+        for (const c of n.children) shiftSubtree(c, dy);
+        cursor += dy;
+        center += dy;
+      }
+      n.center = center;
+      n.y = center - n.h / 2;
+      const parentBottom = center + n.h / 2;
+      if (parentBottom + ROW_GAP > cursor) cursor = parentBottom + ROW_GAP;
+    };
+    
+    place(rootRaw, 0);
+    cursor += ROW_GAP * 2;
+    place(stoppedPlRaw, 0);
+
+    const maxDepth = allRaw.reduce((m, n) => Math.max(m, n.depth ?? 0), 0);
+    const colW: number[] = Array.from({ length: maxDepth + 1 }, () => 0);
+    for (const n of allRaw) colW[n.depth!] = Math.max(colW[n.depth!], KIND_W[n.kind]);
+    const COL: number[] = [];
+    for (let d = 0; d <= maxDepth; d++) COL[d] = d === 0 ? 0 : COL[d - 1] + colW[d - 1] + COL_GAP;
+
+    const nodes: ReactFlowNode[] = [];
+    const edges: Edge[] = [];
+    
+    const walk = (n: Raw) => {
+      const x = COL[n.depth!];
+      nodes.push({ id: n.id, type: "mind", position: { x, y: n.y! }, data: n.data });
+      for (const c of n.children) {
+        edges.push({ id: `${n.id}->${c.id}`, source: n.id, target: c.id, type: "smoothstep", style: { stroke: "var(--border)", strokeWidth: 1 } });
+        walk(c);
+      }
+    };
+    walk(rootRaw);
+    walk(stoppedPlRaw);
+
+    return { nodes, edges };
+  }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
+
+  const [rfNodes, setRfNodes, onNodesChange] = useNodesState(nodes);
+  useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
+
   return (
     <div className="h-full w-full">
-      <ReactFlow nodeTypes={nodeTypes} nodes={[]} edges={[]}>
+      <ReactFlow nodeTypes={nodeTypes} nodes={rfNodes} edges={edges} onNodesChange={onNodesChange} fitView>
         <Controls />
         <MiniMap />
+        <Panel position="top-right">
+           <Button size="sm" variant="outline" onClick={() => fitView()}>Fit View</Button>
+        </Panel>
       </ReactFlow>
     </div>
   );
