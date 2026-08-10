@@ -99,13 +99,14 @@ function BanQuyenPage() {
         </div>
       ),
     },
-    { key: "nha_phat_hanh", label: "Nhà phát hành", filter: "cat", value: (r) => r.nha_phat_hanh ?? "—" },
-    { key: "loai", label: "Loại", filter: "cat", value: (r) => r.loaiTen ?? "—" },
+    { key: "nha_phat_hanh", label: "Nhà phát hành", filter: "cat", hideBelow: "xl", value: (r) => r.nha_phat_hanh ?? "—" },
+    { key: "loai", label: "Loại", filter: "cat", hideBelow: "sm", value: (r) => r.loaiTen ?? "—" },
     {
       key: "ghe",
       label: "Sử dụng ghế (Seats)",
       align: "left",
       sortable: true,
+      hideBelow: "2xl",
       value: (r) => (r.so_ghe == null ? "∞" : `${r.gheDaDung}/${r.so_ghe}`),
       sortValue: (r) => (r.so_ghe == null ? -1 : r.gheDaDung / r.so_ghe),
       cell: (r) => {
@@ -142,6 +143,7 @@ function BanQuyenPage() {
       key: "ngay_het_han",
       label: "Thời hạn",
       sortable: true,
+      hideBelow: "xl",
       value: (r) => r.ngay_het_han ?? "",
       cell: (r) => (
         <div className="text-xs">
@@ -163,6 +165,7 @@ function BanQuyenPage() {
       key: "trang_thai",
       label: "Trạng thái",
       filter: "cat",
+      hideBelow: "sm",
       value: (r) => STATUS_LABEL[r.status],
       cell: (r) => (
         <Badge variant="secondary" className={cn("px-2 py-0 h-5 text-[10px] font-semibold uppercase tracking-wider", STATUS_CLASS[r.status])}>
@@ -175,6 +178,7 @@ function BanQuyenPage() {
       label: "Giá trị",
       align: "right",
       sortable: true,
+      hideBelow: "2xl",
       value: (r) => r.gia_tri ?? "",
       sortValue: (r) => r.gia_tri ?? -1,
       cell: (r) => <span className="tabular-nums text-sm font-medium">{dinhDangTien(r.gia_tri)}</span>,

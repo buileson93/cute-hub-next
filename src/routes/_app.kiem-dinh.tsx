@@ -144,7 +144,7 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "don_vi", label: "Đơn vị / Hệ thống",
+      key: "don_vi", label: "Đơn vị / Hệ thống", hideBelow: "md",
       value: (r) => `${donViMap.get(r.don_vi_id ?? "") ?? ""} ${heThongMap.get(r.he_thong_id ?? "") ?? ""}`,
       cell: (r) => (
         <div className="text-xs text-muted-foreground">
@@ -154,7 +154,7 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "loai", label: "Loại", sortable: true,
+      key: "loai", label: "Loại", sortable: true, hideBelow: "sm",
       value: (r) => r.che_do,
       cell: (r) => (
         <Badge
@@ -180,17 +180,17 @@ function KiemDinhPage() {
         ),
     },
     {
-      key: "ngay_bat_dau", label: "Bắt đầu",
+      key: "ngay_bat_dau", label: "Bắt đầu", hideBelow: "xl",
       value: (r) => r.cc?.ngay_bat_dau ?? "",
       cell: (r) => (r.cc?.ngay_bat_dau ? fmtNgay(r.cc.ngay_bat_dau) : "—"),
     },
     {
-      key: "ngay_het_han", label: "Hết hạn", sortable: true,
+      key: "ngay_het_han", label: "Hết hạn", sortable: true, hideBelow: "xl",
       value: (r) => r.cc?.ngay_het_han ?? "",
       cell: (r) => (r.cc?.ngay_het_han ? fmtNgay(r.cc.ngay_het_han) : "—"),
     },
     {
-      key: "canh_bao", label: "Cảnh báo",
+      key: "canh_bao", label: "Cảnh báo", hideBelow: "2xl",
       value: (r) => (r.soNgay ?? ""),
       cell: (r) =>
         r.cc?.ngay_het_han ? (

@@ -100,7 +100,7 @@ function HongHocPage() {
         ),
       },
       {
-        key: "ngay_hong", label: "Ngày", sortable: true,
+        key: "ngay_hong", label: "Ngày", sortable: true, hideBelow: "xl",
         value: (h) => h.ngay_hong,
         cell: (h) => <span className="whitespace-nowrap text-xs text-muted-foreground">{h.ngay_hong}</span>,
       },
@@ -124,12 +124,12 @@ function HongHocPage() {
         cell: (h) => <span className="text-sm">{h.bo_phan_hong}</span>,
       },
       {
-        key: "phuong_an", label: "Phương án", filter: "cat",
+        key: "phuong_an", label: "Phương án", filter: "cat", hideBelow: "sm",
         value: (h) => h.phuong_an,
         cell: (h) => <Badge variant="secondary" className={getPhuongAnHongHocToken(h.phuong_an)?.class}>{h.phuong_an}</Badge>,
       },
       {
-        key: "thay_the", label: "Thay bằng",
+        key: "thay_the", label: "Thay bằng", hideBelow: "2xl",
         value: (h) => (h.thiet_bi_thay_the ? thietBiMap.get(h.thiet_bi_thay_the)?.ma_thiet_bi ?? "" : ""),
         cell: (h) => {
           const tbT = h.thiet_bi_thay_the ? thietBiMap.get(h.thiet_bi_thay_the) : null;
@@ -141,13 +141,13 @@ function HongHocPage() {
         },
       },
       {
-        key: "chi_phi", label: "Chi phí", align: "right", sortable: true,
+        key: "chi_phi", label: "Chi phí", align: "right", sortable: true, hideBelow: "2xl",
         value: (h) => h.chi_phi,
         sortValue: (h) => h.chi_phi,
         cell: (h) => <span className="text-right text-sm tabular-nums">{fmtVND(h.chi_phi)}</span>,
       },
       {
-        key: "trang_thai", label: "Trạng thái", filter: "cat",
+        key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
         value: (h) => h.trang_thai,
         cell: (h) => <StatusBadge domain="hong_hoc" code={h.trang_thai} />,
       },

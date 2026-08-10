@@ -244,7 +244,7 @@ function BanGiaoPage() {
             columns={[
               { key: "ma", label: "Mã phiếu", filter: "text", value: (b) => b.ma_ban_giao, cell: (b) => <span className="font-mono text-xs">{b.ma_ban_giao}</span> },
               {
-                key: "loai", label: "Loại", filter: "cat",
+                key: "loai", label: "Loại", filter: "cat", hideBelow: "sm",
                 value: (b) => b.loai_ban_giao,
                 cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge>,
               },
@@ -272,25 +272,25 @@ function BanGiaoPage() {
                 cell: (b) => <div className="flex items-center gap-1.5 text-sm"><User className="h-3.5 w-3.5 text-muted-foreground" />{b.nguoi_nhan || "—"}</div>,
               },
               {
-                key: "don_vi_nhan", label: "Đơn vị nhận", filter: "cat",
+                key: "don_vi_nhan", label: "Đơn vị nhận", filter: "cat", hideBelow: "md",
                 value: (b) => donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan,
                 cell: (b) => <span className="text-sm">{donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan}</span>,
               },
-              { key: "ngay_nhan", label: "Ngày nhận", sortable: true, value: (b) => b.ngay_nhan, cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_nhan)}</span> },
-              { key: "ngay_tra", label: "Ngày trả", sortable: true, value: (b) => b.ngay_tra ?? "", cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_tra)}</span> },
+              { key: "ngay_nhan", label: "Ngày nhận", sortable: true, hideBelow: "xl", value: (b) => b.ngay_nhan, cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_nhan)}</span> },
+              { key: "ngay_tra", label: "Ngày trả", sortable: true, hideBelow: "xl", value: (b) => b.ngay_tra ?? "", cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_tra)}</span> },
               {
-                key: "thoi_gian_giu", label: "Thời gian giữ", align: "right", sortable: true,
+                key: "thoi_gian_giu", label: "Thời gian giữ", align: "right", sortable: true, hideBelow: "2xl",
                 sortValue: (b) => daysBetween(b.ngay_nhan, b.ngay_tra),
                 value: (b) => daysBetween(b.ngay_nhan, b.ngay_tra),
                 cell: (b) => <span className="text-sm text-muted-foreground"><Clock className="mr-1 inline h-3 w-3" />{daysBetween(b.ngay_nhan, b.ngay_tra)} ngày</span>,
               },
               {
-                key: "trang_thai", label: "Trạng thái", filter: "cat",
+                key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
                 value: (b) => b.trang_thai,
                 cell: (b) => <StatusBadge domain="ban_giao" code={b.trang_thai} />,
               },
               {
-                key: "bien_ban", label: "Biên bản", align: "right",
+                key: "bien_ban", label: "Biên bản", align: "right", hideBelow: "2xl",
                 value: (b) => b.file_bien_ban ?? "",
                 cell: (b) => b.file_bien_ban
                   ? <Button size="sm" variant="ghost" className="h-7 gap-1 text-xs"><FileText className="h-3 w-3" />{b.file_bien_ban}</Button>
@@ -327,16 +327,16 @@ function BanGiaoPage() {
                 },
               },
               { key: "nguoi_nhan", label: "Người đang giữ", filter: "text", value: (b) => b.nguoi_nhan ?? "", cell: (b) => <span className="text-sm">{b.nguoi_nhan || "—"}</span> },
-              { key: "don_vi_nhan", label: "Đơn vị", filter: "cat", value: (b) => donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan, cell: (b) => <span className="text-sm">{donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan}</span> },
-              { key: "loai", label: "Loại bàn giao", filter: "cat", value: (b) => b.loai_ban_giao, cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge> },
-              { key: "ngay_nhan", label: "Từ ngày", sortable: true, value: (b) => b.ngay_nhan, cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_nhan)}</span> },
+              { key: "don_vi_nhan", label: "Đơn vị", filter: "cat", hideBelow: "md", value: (b) => donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan, cell: (b) => <span className="text-sm">{donViMap.get(b.don_vi_nhan)?.ten ?? b.don_vi_nhan}</span> },
+              { key: "loai", label: "Loại bàn giao", filter: "cat", hideBelow: "sm", value: (b) => b.loai_ban_giao, cell: (b) => <Badge variant="outline" className={getLoaiBanGiaoToken(b.loai_ban_giao)?.class ?? ""}>{b.loai_ban_giao}</Badge> },
+              { key: "ngay_nhan", label: "Từ ngày", sortable: true, hideBelow: "xl", value: (b) => b.ngay_nhan, cell: (b) => <span className="text-sm tabular-nums">{fmtDate(b.ngay_nhan)}</span> },
               {
-                key: "thoi_gian_giu", label: "Thời gian giữ", align: "right", sortable: true,
+                key: "thoi_gian_giu", label: "Thời gian giữ", align: "right", sortable: true, hideBelow: "2xl",
                 sortValue: (b) => daysBetween(b.ngay_nhan, null),
                 value: (b) => daysBetween(b.ngay_nhan, null),
                 cell: (b) => <span className="text-sm text-muted-foreground">{daysBetween(b.ngay_nhan, null)} ngày</span>,
               },
-              { key: "tinh_trang", label: "Tình trạng khi nhận", value: (b) => b.tinh_trang_khi_nhan ?? "", cell: (b) => <span className="block max-w-[280px] truncate text-sm text-muted-foreground">{b.tinh_trang_khi_nhan}</span> },
+              { key: "tinh_trang", label: "Tình trạng khi nhận", hideBelow: "2xl", value: (b) => b.tinh_trang_khi_nhan ?? "", cell: (b) => <span className="block max-w-[280px] truncate text-sm text-muted-foreground">{b.tinh_trang_khi_nhan}</span> },
               {
                 key: "actions", label: "Thao tác", align: "right",
                 cell: (b) => <ReturnButton maBanGiao={b.ma_ban_giao} />,
