@@ -4,6 +4,8 @@ import {
   Search, HardDrive, Loader2, ChevronRight, Building2, Layers, Network,
   Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu,
 } from "lucide-react";
+import { PageBody } from "@/components/mirats/PageBody";
+
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -313,7 +315,7 @@ function ThietBiPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <PageBody>
       <PageHeader
         icon={BookOpen}
         title="Sổ lý lịch"
@@ -431,9 +433,10 @@ function ThietBiPage() {
           <TreeView tree={tree} total={filtered.length} histMap={histMap} />
         </CardContent>
       </Card>
-    </div>
+    </PageBody>
   );
 }
+
 
 /* ------------------------------ Cây (view) ------------------------------ */
 
@@ -585,3 +588,4 @@ function TreeBranch({
     </div>
   );
 }
+

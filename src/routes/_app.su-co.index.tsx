@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+
 import { AlertTriangle as AlertTriangleIcon2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -395,7 +397,8 @@ function SuCoPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <PageBody>
+
       <PageHeader
         icon={AlertTriangle}
         title="Sự cố kỹ thuật"
@@ -726,10 +729,10 @@ function SuCoPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-
+    </PageBody>
   );
 }
+
 
 function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; tone?: string }) {
   return (
@@ -740,3 +743,4 @@ function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ 
     </div>
   );
 }
+

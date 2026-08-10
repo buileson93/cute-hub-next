@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
   CartesianGrid,
@@ -11,7 +14,6 @@ import {
   Gauge, Wrench, TrendingUp, TrendingDown, Repeat2, Radio, ClipboardCheck, ArrowRightLeft,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHeader } from "@/components/mirats/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -254,7 +256,7 @@ function TongQuanPage() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 p-4 md:p-6">
+    <PageBody>
       {/* Thanh tiêu đề + bộ lọc */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="mr-auto">
@@ -620,9 +622,10 @@ function TongQuanPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageBody>
   );
 }
+
 
 function KpiCard({
   icon, label, value, loading, tone, link, sub,
@@ -813,6 +816,7 @@ function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
     </ul>
   );
 }
+
 
 function FeedIcon({ loai }: { loai: string }) {
   const map: Record<string, React.ReactNode> = {

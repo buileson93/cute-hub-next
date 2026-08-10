@@ -1,10 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import { labelOf, phaseOf, normalizeLegacy, type Domain, type Phase } from "@/lib/mirats/trang-thai";
 import { cn } from "@/lib/utils";
-
-// Task 25 — Badge trạng thái dùng chung cho 5 domain (Task 1).
-// Màu cố định theo `phase`; nhãn lấy từ `labelOf`. Chấp nhận cả code chuẩn
-// lẫn giá trị stored cũ (auto normalize).
+import { getToken, type DomainKey } from "@/lib/mirats/ui/status-registry";
+import { phaseOf, type Phase } from "@/lib/mirats/trang-thai";
 
 const PHASE_CLS: Record<Phase, string> = {
   open: "bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/25",
@@ -21,27 +18,32 @@ export function phaseColor(phase: Phase | null): string {
 }
 
 interface Props {
-  domain: Domain;
-  /** Giá trị lưu trong DB (code chuẩn hoặc alias cũ). */
+  domain: DomainKey;
   code: string | null | undefined;
   className?: string;
+  label?: string;
 }
 
-export function StatusBadge({ domain, code, className }: Props) {
-  const raw = (code ?? "").trim();
-  if (!raw) {
+export function StatusBadge({ domain, code, className, label }: Props) {
+  const token = getToken(domain, code ?? "");
+  const phase = phaseOf(domain as any, code ?? "");
+  
+  if (!token && !phase) {
     return (
       <Badge variant="outline" className={cn(UNKNOWN_CLS, "font-medium", className)}>
-        —
+        {label ?? code ?? "—"}
       </Badge>
     );
   }
-  const norm = normalizeLegacy(domain, raw);
-  const phase = phaseOf(domain, norm);
-  const label = labelOf(domain, norm);
+
+  // Ưu tiên class từ token (màu cụ thể), fallback sang màu theo phase.
+  const colorClass = token?.class || phaseColor(phase);
+
   return (
-    <Badge variant="outline" className={cn(phaseColor(phase), "font-medium", className)}>
-      {label}
+    <Badge variant="outline" className={cn("font-medium whitespace-nowrap", colorClass, className)}>
+      {label ?? token?.label ?? code}
     </Badge>
   );
 }
+
+

@@ -2,8 +2,12 @@ import { useMemo, useState, useCallback } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ListTree, GitFork, List, Search as SearchIcon, Pencil
+  ListTree, GitFork, List, Search as SearchIcon, Pencil, Activity, ClipboardList
 } from "lucide-react";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+
+
 import { ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -173,19 +177,23 @@ function HeThongCayPage() {
   }, [nav]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-full overflow-hidden">
       <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
          <div className="flex items-center gap-4">
-           <h1 className="text-xl font-bold flex items-center gap-2">
-             <ListTree className="h-5 w-5 text-primary" />
-             Cây Hệ Thống
-           </h1>
+           <PageHeader
+             title="Cây Hệ Thống"
+             icon={ListTree}
+           />
+
            <Tabs value={display} onValueChange={(v) => setDisplay(v as any)}>
              <TabsList>
                <TabsTrigger value="tree" className="gap-2"><List className="h-4 w-4"/>Cây</TabsTrigger>
                <TabsTrigger value="mindmap" className="gap-2"><GitFork className="h-4 w-4"/>Sơ đồ</TabsTrigger>
+               <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
+               <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
              </TabsList>
            </Tabs>
+
          </div>
          <div className="flex items-center gap-2">
             <div className="relative">
@@ -210,8 +218,8 @@ function HeThongCayPage() {
          </div>
       </div>
 
-      <div className="flex-1 overflow-hidden relative bg-muted/10">
-        {display === "tree" ? (
+      <PageBody noPadding className="relative bg-muted/10">
+        {display === "tree" && (
           <div className="h-full overflow-y-auto p-4 custom-scrollbar">
             <TreeView 
               tree={viewTree as any}
@@ -233,7 +241,9 @@ function HeThongCayPage() {
               posByHt={posByHt || new Map()}
             />
           </div>
-        ) : (
+        )}
+        
+        {display === "mindmap" && (
           <CayMindMap 
             tree={viewTree as any}
             posByHt={posByHt || new Map()}
@@ -252,7 +262,24 @@ function HeThongCayPage() {
             tbMind={tbMind}
           />
         )}
-      </div>
+
+        {display === "health" && (
+          <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
+            <Activity className="h-12 w-12 mb-4 opacity-20" />
+            <h3 className="text-lg font-medium">Bản đồ sức khỏe hệ thống</h3>
+            <p className="max-w-md text-center text-sm mt-2">Tính năng đang được chuyển sang module HealthMonitor chuyên biệt.</p>
+          </div>
+        )}
+
+        {display === "history" && (
+          <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
+            <ClipboardList className="h-12 w-12 mb-4 opacity-20" />
+            <h3 className="text-lg font-medium">Nhật ký tác động hệ thống</h3>
+            <p className="max-w-md text-center text-sm mt-2">Xem lịch sử thay đổi cấu trúc và điều động thiết bị toàn hệ thống.</p>
+          </div>
+        )}
+      </PageBody>
+
 
       <NodeEditorSheet 
         target={target}

@@ -1,35 +1,33 @@
-import { TRANG_THAI_TOKEN } from "./status-tokens";
+// src/lib/mirats/ui/tp-presets.ts
 
-export type TP_PRESET_ID = "co-ban" | "ky-thuat" | "quan-ly" | "day-du";
+import { StdColumn } from "@/components/mirats/StandardTable";
+import { ThanhPhanRow } from "@/components/mirats/ThanhPhanTable";
 
-export const THANH_PHAN_PRESETS: Array<{
-  id: TP_PRESET_ID;
-  ten: string;
-  moTa: string;
-  cot: string[];
-}> = [
+/**
+ * Định nghĩa các bộ cột mẫu cho bảng Thành phần hệ thống.
+ * Giúp giảm tải 56 cột xuống các góc nhìn chuyên biệt.
+ */
+export const THANH_PHAN_PRESETS = [
   {
     id: "co-ban",
-    ten: "Cơ bản",
-    moTa: "8 cột cốt lõi phục vụ khai thác",
-    cot: ["ma", "ten", "heThong", "trangThai", "thietBiMa", "thietBiSerial", "model", "viTri"],
+    label: "Cơ bản",
+    columns: ["ma", "ten", "nhomHeThong", "phanLoai", "heThong", "trangThai", "daLap", "thietBiMa"]
   },
   {
     id: "ky-thuat",
-    ten: "Kỹ thuật",
-    moTa: "Tập trung vào P/N, Năm sản xuất và tuổi thọ",
-    cot: ["ma", "ten", "pN", "namSanXuat", "tyLeTuoiTho", "tinhTrangKyThuat", "ngayBaoTriKeTiep"],
+    label: "Kỹ thuật",
+    columns: ["ma", "ten", "model", "chungLoai", "nhaSanXuat", "pN", "thietBiSerial", "tinhTrangKyThuat"]
   },
   {
-    id: "quan-ly",
-    ten: "Quản lý tài sản",
-    moTa: "Tập trung vào Bravo ID, NSX, NCC và Bảo hành",
-    cot: ["ma", "ten", "maTaiSanBravo", "nhaSanXuat", "nhaCungCap", "ngayMua", "hanBaoHanh"],
+    id: "vong-doi",
+    label: "Vòng đời",
+    columns: ["ma", "ten", "namSanXuat", "namKhaiThac", "ngayMua", "hanBaoHanh", "tyLeTuoiTho"]
   },
   {
-    id: "day-du",
-    ten: "Đầy đủ",
-    moTa: "Tất cả các trường thông tin",
-    cot: [],
-  },
+    id: "quan-tri",
+    label: "Quản trị",
+    columns: ["ma", "ten", "maTaiSanBravo", "nhaCungCap", "taiSanDonViQuanLy", "viTri", "cheDoKdHc"]
+  }
 ];
+
+export type TP_PRESET_ID = "co-ban" | "ky-thuat" | "vong-doi" | "quan-tri";
