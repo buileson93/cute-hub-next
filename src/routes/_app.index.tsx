@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 
 
 import {
@@ -10,9 +12,10 @@ import {
   CartesianGrid,
 } from "recharts";
 import {
-  HardDrive, ShieldCheck, AlertTriangle, Clock, CheckCircle2, ArrowRight, HeartPulse,
+  HardDrive, ShieldCheck, AlertTriangle, Clock, CheckCircle2, HeartPulse,
   Wrench, Activity, Radio, TrendingUp, Target, Gauge, Download, Package, Search,
 } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -321,152 +324,68 @@ function Dashboard() {
   return (
     <PageBody>
       <PageHeader
-        title="Hôm nay tôi phải xử lý gì?"
+        title="Chào buổi sáng!"
         icon={LayoutDashboard}
-        description="Trung tâm hành động: việc cần làm, cảnh báo, quá hạn — xử lý nhanh ngay tại đây."
-
+        description="Chào mừng bạn quay lại MIRATS. Đây là tóm tắt các hoạt động bạn cần chú ý trong hôm nay."
       />
 
+      {/* 15.3.1: Action Center - Câu chữ trả lời trực tiếp */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ActionCard
+          icon={AlertTriangle}
+          label="Sự cố đang mở"
+          value={openIncidents.length}
+          desc={`${openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').length} vụ mức độ Cao/Nghiêm trọng`}
+          href="/su-co/moi"
+          color="text-orange-600"
+          bg="bg-orange-500/10"
+        />
+        <ActionCard
+          icon={Wrench}
+          label="Bảo trì đến hạn"
+          value={pmDueSoon.length}
+          desc="Trong vòng 30 ngày tới"
+          href="/bao-tri/moi"
+          color="text-blue-600"
+          bg="bg-blue-500/10"
+        />
+        <ActionCard
+          icon={ShieldCheck}
+          label="Giấy phép sắp hết hạn"
+          value={gpStats.expiring}
+          desc="Cần gia hạn trong 90 ngày"
+          href="/giay-phep"
+          color="text-amber-600"
+          bg="bg-amber-500/10"
+        />
+        <ActionCard
+          icon={TrendingUp}
+          label="Tài sản quá tuổi thọ"
+          value={kpis.over}
+          desc={`${kpis.overPct}% tổng số tài sản`}
+          href="/thiet-bi"
+          color="text-slate-600"
+          bg="bg-slate-500/10"
+        />
+      </div>
 
 
-
-
-
-      <Tabs defaultValue="leader" className="space-y-5 sm:space-y-6">
+      <Tabs defaultValue="tasks" className="space-y-5 sm:space-y-6">
         <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           <TabsList className="w-max sm:w-auto">
-            <TabsTrigger value="leader">Dashboard Lãnh đạo</TabsTrigger>
-            <TabsTrigger value="engineer">Dashboard Kỹ thuật</TabsTrigger>
-            <TabsTrigger value="kpi">Bộ KPI</TabsTrigger>
+            <TabsTrigger value="tasks">Việc cần làm</TabsTrigger>
+            <TabsTrigger value="kpi">Chỉ số nhanh</TabsTrigger>
           </TabsList>
         </div>
 
 
-        {/* LEADERSHIP */}
-        <TabsContent value="leader" className="space-y-5">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
-            <MiniKpi title="Tổng tài sản" value={thietBi.length.toLocaleString("vi-VN")} icon={HardDrive} />
-            <MiniKpi title="Đang khai thác" value={thietBi.filter((t) => isActive(t.trang_thai)).length.toLocaleString("vi-VN")} icon={CheckCircle2} tone="text-emerald-600" />
-            <MiniKpi title="Sự cố đang mở" value={openIncidents.length} icon={AlertTriangle} tone="text-orange-600" />
-            <MiniKpi title={`GP sắp hết hạn (≤ ${90} ngày)`} value={gpStats.expiring} icon={ShieldCheck} tone="text-amber-600" />
-            <MiniKpi title="Vật tư dưới định mức" value={lowStock ?? "—"} icon={Package} tone="text-red-600" />
-          </div>
 
-          <div className="grid gap-5 lg:grid-cols-3">
-            <Card className="lg:col-span-2">
-              <SectionHeader title="Tài sản theo đơn vị" />
-              <CardContent className="h-64 pt-2 sm:h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={byDonVi}>
-                    <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip
-                      cursor={{ fill: "var(--muted)" }}
-                      contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }}
-                      labelFormatter={(l) => byDonVi.find((x) => x.name === l)?.ten ?? String(l)}
-                    />
-                    <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <SectionHeader title="Sức khỏe tài sản (A/B/C/D)" />
-              <CardContent className="h-64 pt-2 sm:h-72">
-                {healthDistHasData ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={healthDist} dataKey="count" nameKey="name" innerRadius={45} outerRadius={80} paddingAngle={2}>
-                        {healthDist.map((d) => <Cell key={d.loai} fill={d.hex} />)}
-                      </Pie>
-                      <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }} />
-                      <Legend wrapperStyle={{ fontSize: 11 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                    Chưa có tài sản trong phạm vi.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-
-          <div className="grid gap-5 lg:grid-cols-2">
-            <Card>
-              <SectionHeader title="Trạng thái vận hành" />
-              <CardContent className="space-y-3 pt-2">
-                {byTrangThai.map((r) => {
-                  const p = pct(r.value, thietBi.length);
-                  return (
-                    <div key={r.name}>
-                      <div className="mb-1 flex items-center justify-between text-sm">
-                        <span>{r.name}</span>
-                        <span className="font-mono text-muted-foreground tabular-nums">{r.value.toLocaleString("vi-VN")} · {p}%</span>
-                      </div>
-                      <Progress value={p} className="h-2" />
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <SectionHeader
-                title="Sự cố đang mở theo mức độ"
-                action={<Button asChild variant="ghost" size="sm"><Link to="/su-co">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
-              />
-              <CardContent className="h-56 pt-2 sm:h-60">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={openBySev} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid horizontal={false} stroke="var(--border)" strokeDasharray="3 3" />
-                    <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={110} />
-                    <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }} />
-                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                      {openBySev.map((d) => <Cell key={d.name} fill={d.hex} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-
-        {/* ENGINEERING */}
-        <TabsContent value="engineer" className="space-y-5">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-            <MiniKpi title="Availability (trọng yếu)" value={useV2 ? formatKpiValue(rel.availabilityRes) : `${kpis.availability.toFixed(2)}%`} icon={Gauge} tone={kpis.availability >= 99.5 ? "text-emerald-600" : "text-orange-600"} />
-            <MiniKpi title="MTTR" value={useV2 ? formatKpiValue(rel.mttrRes, fmtDowntime) : fmtDowntime(kpis.mttr)} icon={Clock} />
-            <MiniKpi title="PM đến hạn (30 ngày)" value={pmDueSoon.length} icon={Wrench} tone="text-blue-600" />
-            <MiniKpi title="Kế hoạch PM đang chạy" value={0} icon={Activity} />
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-1">
-            <Card>
-              <SectionHeader title="Sự cố theo nhóm hệ thống" />
-              <CardContent className="h-64 pt-2 sm:h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={incidentByGroup} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid horizontal={false} stroke="var(--border)" strokeDasharray="3 3" />
-                    <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={100} />
-                    <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }} />
-                    <Bar dataKey="count" fill="var(--destructive)" opacity={0.75} radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
+        {/* 15.3.1: Việc cần làm - Tasks */}
+        <TabsContent value="tasks" className="space-y-5">
           <div className="grid gap-5 lg:grid-cols-2">
             <Card>
               <SectionHeader
-                title="PM đến hạn tuần/tháng"
+                title="Bảo trì đến hạn sắp tới"
                 action={<Button asChild variant="ghost" size="sm"><Link to="/bao-tri">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
               />
               <CardContent className="space-y-2 pt-2">
@@ -493,101 +412,83 @@ function Dashboard() {
 
             <Card>
               <SectionHeader
-                title="Top tài sản hay hỏng"
-                action={<Button asChild variant="ghost" size="sm"><Link to="/su-co">Xem sự cố <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+                title="Sự cố nghiêm trọng / cao đang mở"
+                action={<Button asChild variant="ghost" size="sm"><Link to="/su-co">Xem tất cả <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
               />
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tài sản</TableHead>
-                      <TableHead>Đơn vị</TableHead>
-                      <TableHead className="text-right">Số sự cố</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {topFailures.map((r) => (
-                      <TableRow key={r.ma}>
-                        <TableCell>
-                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma }} className="font-medium hover:text-primary">{r.tb?.ten}</Link>
-                          <div className="font-mono text-[11px] text-muted-foreground">{r.ma}</div>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{donViMap.get(r.tb!.don_vi)?.ten}</TableCell>
-                        <TableCell className="text-right font-mono font-semibold tabular-nums text-orange-600">{r.n}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                </div>
+              <CardContent className="space-y-2 pt-2">
+                {openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').length === 0 ? (
+                  <div className="py-8 text-center text-sm text-muted-foreground">Không có sự cố mức độ cao.</div>
+                ) : openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').slice(0, 5).map((s) => (
+                  <Link key={s.ma_su_co} to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }}
+                    className="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-muted/40">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="destructive" className="text-[10px]">{s.muc_do}</Badge>
+                        <Badge variant="outline" className="font-mono text-[10px]">{s.ma_su_co}</Badge>
+                      </div>
+                      <div className="mt-1 truncate font-medium">{s.hien_tuong}</div>
+                      <div className="font-mono text-[11px] text-muted-foreground">{s.thiet_bi}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-mono text-xs tabular-nums text-muted-foreground">{s.ngay_phat_hien}</div>
+                    </div>
+                  </Link>
+                ))}
               </CardContent>
-
             </Card>
           </div>
         </TabsContent>
 
-        {/* KPI */}
+        {/* 15.3.1: Chỉ số nhanh - Quick KPIs */}
         <TabsContent value="kpi" className="space-y-5">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+            <MiniKpi title="Tổng tài sản" value={thietBi.length.toLocaleString("vi-VN")} icon={HardDrive} />
+            <MiniKpi title="Đang khai thác" value={thietBi.filter((t) => isActive(t.trang_thai)).length.toLocaleString("vi-VN")} icon={CheckCircle2} tone="text-emerald-600" />
+            <MiniKpi title="Availability (trọng yếu)" value={useV2 ? formatKpiValue(rel.availabilityRes) : `${kpis.availability.toFixed(2)}%`} icon={Gauge} tone={kpis.availability >= 99.5 ? "text-emerald-600" : "text-orange-600"} />
+            <MiniKpi title="MTTR" value={useV2 ? formatKpiValue(rel.mttrRes, fmtDowntime) : fmtDowntime(kpis.mttr)} icon={Clock} />
+          </div>
+
           <Card>
             <SectionHeader title="Bộ KPI theo dõi độ tin cậy" icon={Target} />
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>KPI</TableHead>
-                    <TableHead>Giá trị hiện tại</TableHead>
-                    <TableHead>Mục tiêu</TableHead>
-                    <TableHead className="text-right">Trạng thái</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {kpiRows.map((k) => {
-                    const Icon = k.icon;
-                    return (
-                      <TableRow key={k.ten}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                            <span className="font-medium">{k.ten}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-mono text-lg font-semibold tabular-nums">
-                          <div>{k.giaTri}</div>
-                          {k.result && k.result.sampleSize > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => setDrill({ title: k.ten, result: k.result!, kind: k.kind })}
-                              className="mt-1 inline-flex items-center gap-1 font-sans text-xs font-normal text-muted-foreground hover:text-primary"
-                            >
-                              <Search className="h-3 w-3" /> Xem {k.result.sampleSize} bản ghi nguồn
-                            </button>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{k.muc}</TableCell>
-                        <TableCell className="text-right">
-                          {k.ok ? (
-                            <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">Đạt</Badge>
-                          ) : (
-                            <Badge variant="outline" className="border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-300">Cần cải thiện</Badge>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>KPI</TableHead>
+                      <TableHead>Giá trị hiện tại</TableHead>
+                      <TableHead>Mục tiêu</TableHead>
+                      <TableHead className="text-right">Trạng thái</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {kpiRows.slice(0, 4).map((k) => {
+                      const Icon = k.icon;
+                      return (
+                        <TableRow key={k.ten}>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                              <span className="font-medium">{k.ten}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-mono text-lg font-semibold tabular-nums">
+                            <div>{k.giaTri}</div>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{k.muc}</TableCell>
+                          <TableCell className="text-right">
+                            {k.ok ? (
+                              <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">Đạt</Badge>
+                            ) : (
+                              <Badge variant="outline" className="border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-300">Cần cải thiện</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </div>
-            </CardContent>
-
-          </Card>
-
-          <Card>
-            <SectionHeader title="Báo cáo định kỳ (xuất CSV)" icon={Download} />
-            <CardContent className="grid gap-4 pt-2 sm:grid-cols-3">
-              <ReportCard title="Báo cáo tháng/quý theo đơn vị" desc="Tài sản, BT, sự cố, chi phí" onClick={exportUnitReport} />
-              <ReportCard title="Độ tin cậy hệ thống ĐHB" desc="Sự cố, downtime, ảnh hưởng ĐHB theo hệ thống" onClick={exportReliabilityReport} />
-              <ReportCard title="Đề xuất đầu tư/thay thế" desc="Từ M9 · tài sản loại C/D cần thay" onClick={exportReplacementPlan} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -598,6 +499,7 @@ function Dashboard() {
     </PageBody>
   );
 }
+
 
 
 /** Drill-down: liệt kê bản ghi nguồn tạo nên một KPI, có liên kết chi tiết. */
@@ -664,7 +566,36 @@ function KpiDrilldownDialog({ drill, onClose }: { drill: { title: string; result
 }
 
 
+function ActionCard({ 
+  icon: Icon, label, value, desc, href, color, bg 
+}: { 
+  icon: any, label: string, value: string | number, desc: string, href: string, color: string, bg: string 
+}) {
+  return (
+    <Card className="overflow-hidden border-none bg-muted/30 shadow-none">
+      <Link to={href as any}>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", bg)}>
+              <Icon className={cn("h-5 w-5", color)} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium text-muted-foreground">{label}</div>
+              <div className="text-2xl font-bold tabular-nums">{value}</div>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+            <span className="truncate">{desc}</span>
+            <ArrowRight className="h-3 w-3 shrink-0" />
+          </div>
+        </CardContent>
+      </Link>
+    </Card>
+  );
+}
+
 function MiniKpi({ title, value, icon: Icon, tone = "text-primary" }: { title: string; value: string | number; icon: React.ComponentType<{ className?: string }>; tone?: string }) {
+
   return (
     <Card>
       <CardContent className="flex items-center justify-between gap-2 p-2.5 sm:p-4">
