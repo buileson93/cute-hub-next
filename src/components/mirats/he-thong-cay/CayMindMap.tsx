@@ -84,7 +84,7 @@ type Raw = {
   parent?: Raw;
 };
 
-function TruncatedNodeLabel({ label }: { label: string }) {
+function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [truncated, setTruncated] = useState(false);
 
@@ -106,13 +106,23 @@ function TruncatedNodeLabel({ label }: { label: string }) {
     <span
       ref={ref}
       className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium"
-      title={truncated ? undefined : label}
     >
       {label}
     </span>
   );
 
-  if (!truncated) return text;
+  // Hiển thị tooltip nếu bị cắt HOẶC nếu có mã
+  if (!truncated && !code) return text;
+  
+  const content = code ? (
+    <div className="flex flex-col gap-0.5">
+      <div className="font-semibold">{label}</div>
+      <div className="text-[10px] opacity-80 font-mono">Mã: {code}</div>
+    </div>
+  ) : (
+    label
+  );
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>{text}</TooltipTrigger>
@@ -191,8 +201,7 @@ function MindNode({ data }: { data: MindData }) {
         <Icon className="h-3 w-3 shrink-0 opacity-60" />
 
         <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
-          {data.code && <CodeBadge code={data.code} />}
-          <TruncatedNodeLabel label={data.label} />
+          <TruncatedNodeLabel label={data.label} code={data.code} />
         </div>
         
         {data.count !== undefined && <Badge variant="secondary" className="text-[9px] opacity-70 shrink-0">{data.count}</Badge>}
