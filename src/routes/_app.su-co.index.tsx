@@ -629,53 +629,62 @@ function SuCoPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <StandardTable
-            tableKey="su_co_nhat_ky_list"
-            columns={logColumns}
-            rows={rows}
-            getRowId={(s) => s.ma_su_co}
-            selectable
-            bulkActions={({ selectedRows, clear }) => (
-              <>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                    clear();
-                  }}
-                >
-                  <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
-                </Button>
-                <ContextualToolbar
-                  selectionCount={selectedRows.length}
-                  onDismiss={clear}
-                  actions={[
-                    {
-                      id: "export-word",
-                      label: "Xuất Word",
-                      icon: FileDownIcon,
-                      supportsBulk: true,
-                      onSelect: () => {
-                        exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                        clear();
+          <DataState
+            state={state}
+            isFiltering={isFiltering}
+            onRetry={refetch}
+            emptyAction={() => { setQuery(""); setTt("all"); setPeriod("all"); }}
+          >
+            <StandardTable
+              tableKey="su_co_nhat_ky_list"
+              columns={logColumns}
+              rows={rows}
+              getRowId={(s) => s.ma_su_co}
+              selectable
+              bulkActions={({ selectedRows, clear }) => (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                      clear();
+                    }}
+                  >
+                    <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
+                  </Button>
+                  <ContextualToolbar
+                    selectionCount={selectedRows.length}
+                    onDismiss={clear}
+                    actions={[
+                      {
+                        id: "export-word",
+                        label: "Xuất Word",
+                        icon: FileDownIcon,
+                        supportsBulk: true,
+                        onSelect: () => {
+                          exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                          clear();
+                        },
                       },
-                    },
-                    {
-                      id: "close",
-                      label: "Đóng sự cố",
-                      icon: XCircle,
-                      supportsBulk: false,
-                      onSelect: () => {
-                        const first = selectedRows[0];
-                        if (!first) return;
-                        if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
-                        else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
+                      {
+                        id: "close",
+                        label: "Đóng sự cố",
+                        icon: XCircle,
+                        supportsBulk: false,
+                        onSelect: () => {
+                          const first = selectedRows[0];
+                          if (!first) return;
+                          if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
+                          else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
+                        },
                       },
-                    },
-                  ]}
-                />
-              </>
-            )}
+                    ]}
+                  />
+                </>
+              )}
+            />
+          </DataState>
+
             emptyContent={
               <EmptyState
                 icon={AlertTriangle}
