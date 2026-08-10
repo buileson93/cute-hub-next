@@ -47,6 +47,7 @@ import { Route as AppMessagesRouteImport } from './routes/_app.messages'
 import { Route as AppKiemKeRouteImport } from './routes/_app.kiem-ke'
 import { Route as AppKiemDinhRouteImport } from './routes/_app.kiem-dinh'
 import { Route as AppHongHocRouteImport } from './routes/_app.hong-hoc'
+import { Route as AppGopGachRouteImport } from './routes/_app.gop-gach'
 import { Route as AppGiayPhepRouteImport } from './routes/_app.giay-phep'
 import { Route as AppFormsRouteImport } from './routes/_app.forms'
 import { Route as AppChoDuyetRouteImport } from './routes/_app.cho-duyet'
@@ -320,6 +321,11 @@ const AppKiemDinhRoute = AppKiemDinhRouteImport.update({
 const AppHongHocRoute = AppHongHocRouteImport.update({
   id: '/hong-hoc',
   path: '/hong-hoc',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGopGachRoute = AppGopGachRouteImport.update({
+  id: '/gop-gach',
+  path: '/gop-gach',
   getParentRoute: () => AppRoute,
 } as any)
 const AppGiayPhepRoute = AppGiayPhepRouteImport.update({
@@ -777,6 +783,7 @@ export interface FileRoutesByFullPath {
   '/cho-duyet': typeof AppChoDuyetRoute
   '/forms': typeof AppFormsRouteWithChildren
   '/giay-phep': typeof AppGiayPhepRoute
+  '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
@@ -898,6 +905,7 @@ export interface FileRoutesByTo {
   '/ban-giao': typeof AppBanGiaoRouteWithChildren
   '/cho-duyet': typeof AppChoDuyetRoute
   '/giay-phep': typeof AppGiayPhepRoute
+  '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
@@ -1019,6 +1027,7 @@ export interface FileRoutesById {
   '/_app/cho-duyet': typeof AppChoDuyetRoute
   '/_app/forms': typeof AppFormsRouteWithChildren
   '/_app/giay-phep': typeof AppGiayPhepRoute
+  '/_app/gop-gach': typeof AppGopGachRoute
   '/_app/hong-hoc': typeof AppHongHocRouteWithChildren
   '/_app/kiem-dinh': typeof AppKiemDinhRoute
   '/_app/kiem-ke': typeof AppKiemKeRoute
@@ -1146,6 +1155,7 @@ export interface FileRouteTypes {
     | '/cho-duyet'
     | '/forms'
     | '/giay-phep'
+    | '/gop-gach'
     | '/hong-hoc'
     | '/kiem-dinh'
     | '/kiem-ke'
@@ -1267,6 +1277,7 @@ export interface FileRouteTypes {
     | '/ban-giao'
     | '/cho-duyet'
     | '/giay-phep'
+    | '/gop-gach'
     | '/hong-hoc'
     | '/kiem-dinh'
     | '/kiem-ke'
@@ -1387,6 +1398,7 @@ export interface FileRouteTypes {
     | '/_app/cho-duyet'
     | '/_app/forms'
     | '/_app/giay-phep'
+    | '/_app/gop-gach'
     | '/_app/hong-hoc'
     | '/_app/kiem-dinh'
     | '/_app/kiem-ke'
@@ -1797,6 +1809,13 @@ declare module '@tanstack/react-router' {
       path: '/hong-hoc'
       fullPath: '/hong-hoc'
       preLoaderRoute: typeof AppHongHocRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/gop-gach': {
+      id: '/_app/gop-gach'
+      path: '/gop-gach'
+      fullPath: '/gop-gach'
+      preLoaderRoute: typeof AppGopGachRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/giay-phep': {
@@ -2587,6 +2606,7 @@ interface AppRouteChildren {
   AppChoDuyetRoute: typeof AppChoDuyetRoute
   AppFormsRoute: typeof AppFormsRouteWithChildren
   AppGiayPhepRoute: typeof AppGiayPhepRoute
+  AppGopGachRoute: typeof AppGopGachRoute
   AppHongHocRoute: typeof AppHongHocRouteWithChildren
   AppKiemDinhRoute: typeof AppKiemDinhRoute
   AppKiemKeRoute: typeof AppKiemKeRoute
@@ -2649,6 +2669,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppChoDuyetRoute: AppChoDuyetRoute,
   AppFormsRoute: AppFormsRouteWithChildren,
   AppGiayPhepRoute: AppGiayPhepRoute,
+  AppGopGachRoute: AppGopGachRoute,
   AppHongHocRoute: AppHongHocRouteWithChildren,
   AppKiemDinhRoute: AppKiemDinhRoute,
   AppKiemKeRoute: AppKiemKeRoute,
