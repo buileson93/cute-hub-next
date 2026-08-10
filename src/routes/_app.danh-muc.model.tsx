@@ -556,7 +556,7 @@ function ModelCatalogPage() {
             { key: "info", label: "", align: "center" as const,
               cell: (m: ModelRow) => (
                 <div className="flex items-center justify-center gap-0.5">
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={(e) => showGoogleSearch(e, m)} title="Tạo link tìm sản phẩm trên Google">
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={(e) => showGoogleSearch(e, m)} title="Tạo link tìm sản phẩm trên Google" aria-label="Tìm trên Google">
                     <Search className="h-3.5 w-3.5" />
                   </Button>
                   <HoverCard openDelay={120} closeDelay={60}>
