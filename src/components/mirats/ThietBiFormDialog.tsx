@@ -126,6 +126,8 @@ export function ThietBiFormDialog({
         label: "Tên tài sản",
         required: true,
         placeholder: "VD: Máy phát VHF chính đài Nội Bài",
+        wizardStep: 1,
+        priority: "core",
       },
       {
         key: "ma_thiet_bi",
@@ -137,8 +139,17 @@ export function ThietBiFormDialog({
             ? "Bỏ trống hệ thống sẽ tự sinh mã theo quy ước"
             : "Không đổi được sau khi tạo",
         disabled: mode === "edit",
+        wizardStep: 3,
+        priority: "later",
       },
-      { key: "ma_serial", type: "text", label: "Số serial (S/N)", placeholder: "SN-xxxx" },
+      { 
+        key: "ma_serial", 
+        type: "text", 
+        label: "Số serial (S/N)", 
+        placeholder: "SN-xxxx",
+        wizardStep: 1,
+        priority: "core",
+      },
       {
         key: "model_id",
         type: "select",
@@ -147,6 +158,8 @@ export function ThietBiFormDialog({
         help: "Chủng loại của tài sản được kế thừa từ model",
         emptyOptionLabel: "— Không chọn —",
         loadOptions: loadOpts("dm_model"),
+        wizardStep: 1,
+        priority: "core",
       },
       {
         key: "trang_thai_id",
@@ -155,6 +168,8 @@ export function ThietBiFormDialog({
         placeholder: "Chọn trạng thái",
         emptyOptionLabel: "— Không chọn —",
         loadOptions: loadOpts("dm_trang_thai_thiet_bi"),
+        wizardStep: 2,
+        priority: "core",
       },
       {
         key: "he_thong_id",
@@ -162,6 +177,8 @@ export function ThietBiFormDialog({
         label: "Hệ thống (khi gán ngay)",
         placeholder: "Để trống = tài sản độc lập",
         loadOptions: loadOpts("dm_he_thong"),
+        wizardStep: 2,
+        priority: "core",
       },
       {
         key: "nhan_vien_id",
@@ -169,23 +186,35 @@ export function ThietBiFormDialog({
         label: "Người sử dụng / quản lý",
         placeholder: "Chọn nhân viên...",
         loadOptions: loadOpts("nhan_vien"),
+        wizardStep: 3,
+        priority: "later",
       },
       {
         key: "nam_san_xuat",
-
         type: "number",
         label: "Năm sản xuất",
         placeholder: "2024",
         min: 1900,
         max: 2100,
         step: 1,
+        wizardStep: 3,
+        priority: "later",
       },
-      { key: "ghi_chu", type: "textarea", label: "Ghi chú", placeholder: "Thông tin bổ sung…" },
+      { 
+        key: "ghi_chu", 
+        type: "textarea", 
+        label: "Ghi chú", 
+        placeholder: "Thông tin bổ sung…",
+        wizardStep: 3,
+        priority: "later",
+      },
       {
         key: "he_thong_tuong_thich",
         type: "custom",
         label: "Hệ thống tương thích",
         colSpan: 2,
+        wizardStep: 3,
+        priority: "later",
         render: ({ value, onChange }) => (
           <CompatibilityManager
             value={value || []}
