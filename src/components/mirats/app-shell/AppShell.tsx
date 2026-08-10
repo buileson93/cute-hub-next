@@ -83,6 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredWsId, setHoveredWsId] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("mirats-sidebar-collapsed");
@@ -145,65 +146,78 @@ export function AppShell({ children }: { children: ReactNode }) {
       />
       <TooltipProvider delayDuration={300}>
         <div className="flex min-h-dvh w-full bg-gradient-to-br from-background via-background to-primary/[0.045] text-foreground">
-          {/* Rail (Desktop) */}
-          <aside className="hidden w-16 h-dvh sticky top-0 shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-4 md:flex z-30">
-            <SidebarLogoRail />
-            <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
-              {railWorkspaces.map((ws) => (
-                <button
-                  key={ws.id}
-                  onClick={() => gotoWorkspace(ws)}
-                  className={cn(
-                    "group relative flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
-                    ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  )}
-                >
-                  <ws.icon className="h-5 w-5" />
-                  <span className="w-full truncate text-center leading-tight">{ws.short}</span>
-                  {ws.id === activeWs.id && (
-                    <motion.div 
-                      layoutId="active-ws"
-                      className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
-                    />
-                  )}
-                </button>
-              ))}
-            </nav>
-            {adminWs && (
-              <div className="mt-auto pt-2 border-t border-sidebar-border">
-                <button
-                  onClick={() => gotoWorkspace(adminWs)}
-                  className={cn(
-                    "flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
-                    adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  )}
-                >
-                  <adminWs.icon className="h-5 w-5" />
-                  <span className="w-full truncate text-center leading-tight">{adminWs.short}</span>
-                </button>
-              </div>
-            )}
-          </aside>
-
-          {/* Sub-sidebar (Desktop) */}
-          <aside 
+          {/* Desktop Navigation Container */}
+          <div 
+            className="hidden md:flex h-dvh sticky top-0 z-30"
             onPointerEnter={() => setIsHovered(true)}
-            onPointerLeave={() => setIsHovered(false)}
-            className={cn(
-              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/40 md:flex transition-[width] duration-300 ease-in-out overflow-hidden z-20",
-              (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-60"
-            )}
+            onPointerLeave={() => {
+              setIsHovered(false);
+              setHoveredWsId(null);
+            }}
           >
-            <div className={cn(
-              "flex h-14 items-center border-b px-6 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
-              (isCollapsed && !isHovered) && "opacity-0"
-            )}>
-              {activeWs.label}
-            </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden">
-              <Sidebar collapsed={isCollapsed && !isHovered} />
-            </div>
-          </aside>
+            {/* Rail (Desktop) */}
+            <aside className="w-16 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-4 flex">
+              <SidebarLogoRail />
+              <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
+                {railWorkspaces.map((ws) => (
+                  <button
+                    key={ws.id}
+                    onClick={() => gotoWorkspace(ws)}
+                    onPointerEnter={() => setHoveredWsId(ws.id)}
+                    className={cn(
+                      "group relative flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                      ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <ws.icon className="h-5 w-5" />
+                    <span className="w-full truncate text-center leading-tight">{ws.short}</span>
+                    {ws.id === activeWs.id && (
+                      <motion.div 
+                        layoutId="active-ws"
+                        className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
+                      />
+                    )}
+                  </button>
+                ))}
+              </nav>
+              {adminWs && (
+                <div className="mt-auto pt-2 border-t border-sidebar-border">
+                  <button
+                    onClick={() => gotoWorkspace(adminWs)}
+                    onPointerEnter={() => setHoveredWsId(adminWs.id)}
+                    className={cn(
+                      "flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                      adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <adminWs.icon className="h-5 w-5" />
+                    <span className="w-full truncate text-center leading-tight">{adminWs.short}</span>
+                  </button>
+                </div>
+              )}
+            </aside>
+
+            {/* Sub-sidebar (Desktop) */}
+            <aside 
+              className={cn(
+                "h-full shrink-0 flex-col border-r border-border bg-sidebar/40 flex transition-[width] duration-300 ease-in-out overflow-hidden",
+                (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-60"
+              )}
+            >
+              <div className={cn(
+                "flex h-14 items-center border-b px-6 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
+                (isCollapsed && !isHovered) && "opacity-0"
+              )}>
+                {(hoveredWsId ? visibleWorkspaces.find(w => w.id === hoveredWsId) : activeWs)?.label}
+              </div>
+              <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                <Sidebar 
+                  collapsed={isCollapsed && !isHovered} 
+                  workspaceId={hoveredWsId || activeWs.id}
+                />
+              </div>
+            </aside>
+          </div>
 
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
