@@ -35,6 +35,7 @@ export function StandardTable<T>({
   maxHeightClass = "max-h-[600px]",
   emptyText = "Không có dữ liệu",
   emptyContent,
+  errorContent,
   trangThai,
   loadingContent,
   gated,
