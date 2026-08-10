@@ -36,6 +36,13 @@ vi.mock('@/components/mirats/ProductTour', () => ({
   TOUR_STEPS: [],
 }));
 
+vi.mock('@/components/ui/tooltip', () => ({
+  Tooltip: ({ children }: any) => <div>{children}</div>,
+  TooltipContent: ({ children }: any) => <div>{children}</div>,
+  TooltipTrigger: ({ children }: any) => <div>{children}</div>,
+  TooltipProvider: ({ children }: any) => <div>{children}</div>,
+}));
+
 vi.mock('@/hooks/use-route-tracker', () => ({
   useRouteTracker: vi.fn(),
 }));
