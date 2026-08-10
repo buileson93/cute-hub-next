@@ -184,7 +184,7 @@ function Dashboard() {
             <CardTitle className="text-sm font-medium">Bản tin vận hành</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground italic text-center py-8">
-            Thông tin chi tiết về các chỉ số Availability, MTBF, MTTR đã được chuyển sang trang <Link to="/tong-quan" className="text-primary hover:underline font-medium">Phân tích Tổng quan</Link>.
+            Thông tin chi tiết về các chỉ số Availability, MTBF, MTTR đã được chuyển sang trang <Link to="/tong-quan" search={{ days: 30, donVi: [] }} className="text-primary hover:underline font-medium">Phân tích Tổng quan</Link>.
           </CardContent>
         </Card>
       </div>
