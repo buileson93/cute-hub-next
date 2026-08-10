@@ -2,8 +2,8 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Package, PackagePlus, PackageMinus, ArrowLeftRight, ClipboardCheck, AlertTriangle,
-  Warehouse, Boxes, ScrollText, Plus, Loader2, Search,
+  Package, PackagePlus, PackageMinus, ArrowLeftRight, ClipboardCheck,
+  Plus, Loader2, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -18,9 +18,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
-import { InfoHint } from "@/components/mirats/InfoHint";
+import { StandardTable } from "@/components/mirats/StandardTable";
 import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
 import {
@@ -32,6 +30,9 @@ import {
 } from "@/lib/mirats/kho";
 import { DetailDrawer } from "@/components/mirats/DetailDrawer";
 import { useDetailPanel } from "@/lib/mirats/ui/detail-panel";
+import { InventoryDashboard } from "@/components/mirats/vat-tu/InventoryDashboard";
+import { SparePartsTable } from "@/components/mirats/vat-tu/SparePartsTable";
+import { StockMovementLog } from "@/components/mirats/vat-tu/StockMovementLog";
 
 export const Route = createFileRoute("/_app/vat-tu")({
   head: () => ({
