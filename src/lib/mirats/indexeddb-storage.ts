@@ -15,12 +15,27 @@ export interface OutboxItem {
   status: 'pending' | 'syncing' | 'failed';
 }
 
-class IndexedDBStorage {
+const DB_NAME = 'mirats-offline-db';
+const STORE_NAME = 'outbox';
+const VERSION = 1;
+
+export interface OutboxItem {
+  id: string;
+  op: string;
+  entity_key: string;
+  payload: any;
+  created_at: number;
+  attempts: number;
+  last_error?: string;
+  status: 'pending' | 'syncing' | 'failed';
+}
+
+export class IndexedDBStorage {
   private dbPromise: Promise<IDBPDatabase>;
 
   constructor() {
     this.dbPromise = openDB(DB_NAME, VERSION, {
-      upgrade(db) {
+      upgrade(db: IDBPDatabase) {
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
           store.createIndex('status', 'status');
