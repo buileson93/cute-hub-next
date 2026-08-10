@@ -1,5 +1,5 @@
-import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, useRouter, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw, Puzzle, List, ListTree, GitFork, Activity, ClipboardList } from "lucide-react";
