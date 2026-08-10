@@ -10,7 +10,10 @@ import React from 'react';
 // Mock các dependencies
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: any) => <div>{children}</div>,
-  useRouterState: vi.fn(() => ({ location: { pathname: '/' } })),
+  useRouterState: vi.fn((selector?: any) => {
+    const state = { location: { pathname: '/' } };
+    return selector ? selector(state) : state;
+  }),
   useNavigate: vi.fn(() => vi.fn()),
 }));
 
