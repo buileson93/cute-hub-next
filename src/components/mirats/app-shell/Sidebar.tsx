@@ -13,7 +13,7 @@ export function Sidebar({ onNavigate, collapsed }: { onNavigate?: () => void; co
   const groups = useMemo(() => navGroups(), []);
 
   return (
-    <div className="flex flex-col gap-6 py-2">
+    <div className="flex flex-col gap-8 py-4">
       {groups.map((group) => {
         const visibleItems = group.items.filter(item => {
           // Note: In nav-config.ts, groups are already filtered or items are tagged.
@@ -30,7 +30,7 @@ export function Sidebar({ onNavigate, collapsed }: { onNavigate?: () => void; co
                 {group.nhan}
               </h3>
             )}
-            <nav className="space-y-1">
+            <nav className="space-y-1.5">
               {visibleItems.map((item) => {
                 const Icon = (LucideIcons as any)[item.icon] || LucideIcons.Circle;
                 const active = isActive(pathname, item);
