@@ -47,7 +47,13 @@ type Common = {
 };
 
 export type SchemaField =
-  | (Common & { type: "text" | "textarea" | "date" | "password"; placeholder?: string; colSpan?: 1 | 2 })
+  | (Common & { 
+      type: "text" | "textarea" | "date" | "password"; 
+      placeholder?: string; 
+      colSpan?: 1 | 2;
+      step?: number; // wizard step
+      priority?: "core" | "later";
+    })
   | (Common & {
       type: "number";
       placeholder?: string;
@@ -55,8 +61,15 @@ export type SchemaField =
       max?: number;
       step?: number;
       colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
     })
-  | (Common & { type: "switch"; colSpan?: 1 | 2 })
+  | (Common & { 
+      type: "switch"; 
+      colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
+    })
   | (Common & {
       type: "select" | "combobox";
       placeholder?: string;
@@ -64,6 +77,8 @@ export type SchemaField =
       /** Cho phép bỏ chọn — hiện 1 SelectItem "trống" trên đầu. */
       emptyOptionLabel?: string;
       colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
       loadOptions?: {
         queryKey: unknown[];
         queryFn: (values: Record<string, unknown>) => Promise<SchemaOption[]>;
@@ -79,6 +94,8 @@ export type SchemaField =
         error?: string;
       }) => ReactNode;
       colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
     });
 
 
