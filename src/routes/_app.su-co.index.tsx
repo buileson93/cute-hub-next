@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { DataState } from "@/components/mirats/DataState";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { ContextualToolbar } from "@/components/mirats/ContextualToolbar";
 import { FileDown as FileDownIcon, XCircle } from "lucide-react";
@@ -99,7 +100,7 @@ function downloadCsv(name: string, content: string) {
 }
 
 function SuCoPage() {
-  const { suCo } = useScope();
+  const { suCo, isLoading, error, refetch } = useScope();
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
@@ -131,6 +132,7 @@ function SuCoPage() {
     return d >= from;
   }
 
+  const isFiltering = query.trim() !== "" || tt !== "all" || period !== "all";
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return suCo.filter((s) => {
@@ -147,6 +149,9 @@ function SuCoPage() {
       );
     });
   }, [suCo, query, tt, period, devByMa, htNameOf]);
+
+  const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
+
 
   const stats = useMemo(() => {
     let open = 0, severe = 0, downtime = 0;
