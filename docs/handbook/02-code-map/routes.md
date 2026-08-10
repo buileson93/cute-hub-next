@@ -22,9 +22,11 @@ TanStack Router flat routing trong `src/routes/`. Quy ước: `_app.*` = layout 
 |---|---|---|
 | `/` | `_app.index.tsx` | Overview + Daily Brief |
 | `/tong-quan` | `_app.tong-quan.tsx` | Dashboard KPI (N8) |
+| `/chat-luong-du-lieu` | `_app.chat-luong-du-lieu.tsx` | KPI Data quality (Đợt 4) |
 | `/bao-cao/do-tin-cay` | `_app.bao-cao.do-tin-cay.tsx` | Reliability MTBF/MTTR (N9) |
 | `/tuan-thu` | `_app.tuan-thu.tsx` | Compliance/giấy phép |
-| `/sap-het-han` | `_app.sap-het-han.tsx` | Cảnh báo hết hạn (N5) |
+| `/gop-gach` | `_app.gop-gach.tsx` | Gamification & nhập liệu (Đợt 4) |
+| `/sap-het-han` | `_app.sap-het-han.tsx` | Cảnh báo hết han (N5) |
 | `/tuoi-tho` | `_app.tuoi-tho.tsx` | Lifecycle |
 
 ### Hệ thống & tài sản

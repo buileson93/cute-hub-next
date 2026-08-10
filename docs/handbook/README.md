@@ -2,6 +2,9 @@
 
 Tài liệu **duy nhất** cho lập trình viên bảo trì/mở rộng dự án MIRATS (Vietnam Air Traffic Management — Maintenance & Inventory of Rules, Assets, Tasks, Systems).
 
+> [!WARNING]
+> Bộ tài liệu này là tham khảo để hiểu luồng và kiến trúc. Nguồn sự thật về cấu trúc dữ liệu (SSOT) luôn là `supabase/dump/schema.sql`.
+
 > Nếu bạn mới vào dự án, đọc theo thứ tự bên dưới. Nếu đang debug, dùng `05-van-hanh/troubleshooting.md`.
 
 ## Đọc theo vai trò

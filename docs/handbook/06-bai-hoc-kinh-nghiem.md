@@ -187,3 +187,38 @@ server-only, đọc trong `.handler()` bằng `process.env.*`.
 lint.
 
 **Fix:** mọi function `SECURITY DEFINER` đều phải `SET search_path = public`.
+
+---
+
+## 17. Gỡ bỏ ảo hóa `@tanstack/react-virtual` (T10)
+
+**Bối cảnh:** `ThanhPhanTable` ban đầu dùng ảo hóa để tải hàng ngàn dòng.
+
+**Bài học:** với dữ liệu thực tế ~828 dòng và đã có phân trang client 50 dòng, ảo hóa gây phức tạp cho việc tìm kiếm (Ctrl+F) và CSS layout mà không mang lại lợi ích hiệu năng đáng kể. Đã gỡ bỏ để giảm bundle size (còn 256.5 KB gzip).
+
+---
+
+## 18. Quy ước đáp ứng `hideBelow` và ResponsiveDialog (T13, T14)
+
+**Vấn đề:** giao diện bảng quá nhiều cột trên mobile, Dialog tràn màn hình.
+
+**Quyết định kiến trúc:**
+1. Áp dụng thuộc tính `hideBelow` (sm, md, lg, xl, 2xl) cho mọi cột `StandardTable`.
+2. Dùng `ResponsiveDialog` (tự chuyển thành Drawer trên mobile) cho các form nhập liệu quan trọng (`SchemaDialog`, `GiayPhepFormDialog`).
+3. Quy ước cột: Tên/Mã (luôn hiện), Trạng thái (sm), Vị trí (md), Model (lg), Ngày (xl), Dẫn xuất (2xl).
+
+---
+
+## 19. Dual-Storage cho Column Preferences (T6)
+
+**Sự cố:** mất tính năng ghi nhớ ẩn/hiện cột sau khi tái cấu trúc `StandardTable`.
+
+**Giải pháp:** nối lại `useColumnPrefs` sử dụng đồng thời `localStorage` (cho tốc độ) và bảng `bang_cot_tuy_chinh` (cho đồng bộ tài khoản). Ưu tiên User Prefs > Responsive > Hardcoded.
+
+---
+
+## 20. Đồng bộ Offline Queue với IndexedDB (T8)
+
+**Bài học:** `localStorage` có giới hạn 5MB và không tối ưu cho dữ liệu lớn (ảnh/WebP).
+
+**Giải pháp:** Kết nối `IndexedDBStorage` vào hàng chờ ngoại tuyến. Dùng lazy initialization để tương thích SSR (chỉ init ở browser).
