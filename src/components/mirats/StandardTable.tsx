@@ -191,6 +191,16 @@ export function StandardTable<T>({
     if (setSelected) setSelected(new Set());
   };
 
+  const renderToolbar = (
+    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
+    ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
+  ) => {
+    if (typeof toolbar === "function") {
+      return toolbar(ctx);
+    }
+    return toolbar;
+  };
+
   const colText = useCallback((col: StdColumn<T>, row: T): string => {
     const v = col.value ? col.value(row) : "";
     return v == null ? "" : String(v);
