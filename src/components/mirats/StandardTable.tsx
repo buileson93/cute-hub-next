@@ -116,12 +116,22 @@ export function StandardTable<T>({
 
   const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
 
+  const renderToolbar = (
+    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
+    ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
+  ) => {
+    if (typeof toolbar === "function") {
+      return toolbar(ctx);
+    }
+    return toolbar;
+  };
+
   return (
     <div className="space-y-3">
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2">
-            {toolbarLeft && toolbarLeft({ visibleRows: rows, visibleColumns: shownCols })}
+            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: rows, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
                 selectedRows,
@@ -134,10 +144,11 @@ export function StandardTable<T>({
             )}
           </div>
           <div className="flex items-center gap-2">
-            {toolbarRight && toolbarRight({ visibleRows: rows, visibleColumns: shownCols })}
+            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: rows, visibleColumns: shownCols })}
           </div>
         </div>
       )}
+
 
       {isMobile ? (
         <div className="space-y-3">
