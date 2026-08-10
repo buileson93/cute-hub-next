@@ -1,4 +1,4 @@
-import { ShieldCheck, UserCog, Building2, FolderKanban, Users, Wrench, Eye, HardDrive, AlertTriangle, Replace, ArrowLeftRight, Package, FileText, ClipboardList, Database, KeyRound, FileClock } from "lucide-react";
+import { ShieldCheck, UserCog, Building2, FolderKanban, Users, Wrench, Eye, HardDrive, AlertTriangle, Replace, ArrowLeftRight, Package, FileText, ClipboardList, Database, KeyRound, FileClock, Network } from "lucide-react";
 
 export type PermLevel = "CRUD" | "CRU" | "CRUD-DV" | "CRU-DV" | "C-DV" | "R" | "R-DV" | "-";
 export type RoleKey = "admin" | "phong_kt" | "phu_trach_dv" | "quan_ly_du_an" | "to_truong" | "ktv" | "readonly";
