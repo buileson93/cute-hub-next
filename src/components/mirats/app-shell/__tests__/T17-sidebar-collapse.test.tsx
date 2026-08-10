@@ -36,12 +36,15 @@ vi.mock('@/components/mirats/ProductTour', () => ({
   TOUR_STEPS: [],
 }));
 
-vi.mock('@/components/ui/tooltip', () => ({
-  Tooltip: ({ children }: any) => <div>{children}</div>,
-  TooltipContent: ({ children }: any) => <div>{children}</div>,
-  TooltipTrigger: ({ children }: any) => <div>{children}</div>,
-  TooltipProvider: ({ children }: any) => <div>{children}</div>,
-}));
+vi.mock('@/components/ui/tooltip', () => {
+  const React = require('react');
+  return {
+    Tooltip: ({ children }: any) => React.createElement('div', null, children),
+    TooltipContent: ({ children }: any) => React.createElement('div', null, children),
+    TooltipTrigger: ({ children }: any) => React.createElement(React.Fragment, null, children),
+    TooltipProvider: ({ children }: any) => React.createElement('div', null, children),
+  };
+});
 
 vi.mock('@/hooks/use-route-tracker', () => ({
   useRouteTracker: vi.fn(),
