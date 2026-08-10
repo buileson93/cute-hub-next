@@ -39,6 +39,7 @@ export type TaiSanRow = {
   ten: string;
   serial: string;
   model: string;
+  modelId: string | null;
   chungLoai: string;
   nhaSanXuat: string;
   nhaCungCap: string;
@@ -64,6 +65,7 @@ export type TaiSanRow = {
   soSuCo90n: number;
   anomalyScore: number;
 };
+
 
 
 export function useTaiSanRows() {
@@ -96,6 +98,7 @@ export type ThanhPhanRow = {
   thietBiTen: string;
   thietBiSerial: string;
   model: string;
+  modelId: string | null;
   chungLoai: string;
   nhaSanXuat: string;
   nhaCungCap: string;
@@ -117,6 +120,7 @@ export type ThanhPhanRow = {
   taiSanViTri: string;
   taiSanDonViQuanLy: string;
 };
+
 
 const TT_LABEL: Record<string, string> = { hoat_dong: "Hoạt động", ngung: "Đã ngừng" };
 
