@@ -104,7 +104,17 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
     mutationFn: async () => {
       const maBase = maBaseDraft ?? `BD-${Date.now().toString(36).toUpperCase()}`;
       const payload = buildBaoDuongPayload({
-        submission: { template_id: templateId, tieu_de: templates?.find(t => t.id === templateId)?.ten ?? "", data: values, submitted_at: new Date().toISOString(), template_code: templates?.find(t => t.id === templateId)?.code ?? "", template_version: 1, template_snapshot: {} },
+        submission: { 
+          template_id: templateId, 
+          he_thong_id: heThongId,
+          tieu_de: templates?.find(t => t.id === templateId)?.ten ?? "", 
+          data: values, 
+          submitted_at: new Date().toISOString(), 
+          template_code: templates?.find(t => t.id === templateId)?.code ?? "", 
+          template_version: 1, 
+          template_snapshot: {} 
+        },
+
         ma_base: maBase, he_thong_ten: heThongTen, loai_bao_tri: "Định kỳ", ngay_bat_dau: ngayBatDau, ngay_hoan_thanh: ngayHoanThanh, ket_qua: "", trang_thai: trangThai, nguoi_thuc_hien: nguoiThucHien, don_vi_thuc_hien: profile?.don_vi ?? "", mo_ta_cong_viec: "",
         devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null })),
         item_results: isChecklist ? buildItemResults("__placeholder__", sections ?? [], chkValues) as any : []
