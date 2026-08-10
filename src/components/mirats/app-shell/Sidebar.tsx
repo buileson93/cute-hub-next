@@ -4,6 +4,7 @@ import * as LucideIcons from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navGroups, isActive } from "@/lib/mirats/nav/nav-config";
 import { useSession } from "@/hooks/use-session";
+import { useNavBadges } from "@/hooks/use-nav-badges";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function Sidebar({ onNavigate, collapsed, activeWsId }: { 
@@ -13,6 +14,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { hasRole } = useSession();
+  const badges = useNavBadges();
   
   const allGroups = useMemo(() => navGroups(), []);
   
@@ -54,10 +56,20 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                           collapsed && "justify-center px-0 py-2.5"
                         )}
                       >
-                        <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
+                        <div className="relative">
+                          <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
+                          {collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
+                            <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border-2 border-sidebar bg-primary" />
+                          )}
+                        </div>
                         {!collapsed && <span className="truncate">{item.nhan}</span>}
-                        {item.badgeKey && (
-                           <div className="ml-auto h-2 w-2 rounded-full bg-primary animate-pulse" />
+                        {!collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
+                          <div 
+                            className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-[10px] font-bold text-primary"
+                            aria-label={`${badges[item.badgeKey]} việc cần xử lý`}
+                          >
+                            {badges[item.badgeKey] > 99 ? "99+" : badges[item.badgeKey]}
+                          </div>
                         )}
                       </Link>
                     </TooltipTrigger>
