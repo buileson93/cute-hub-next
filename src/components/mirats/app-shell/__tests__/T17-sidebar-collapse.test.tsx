@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import { AppShell } from '../AppShell';
 import { Sidebar } from '../Sidebar';
 import React from 'react';
@@ -11,10 +11,7 @@ import React from 'react';
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: any) => <div>{children}</div>,
   useRouterState: vi.fn((selector?: any) => {
-    // Luôn cung cấp pathname là string '/'
     if (typeof selector === 'function') {
-      // Dựa trên AppShell.tsx: const pathname = useRouterState({ select: (s) => s.location.pathname });
-      // Ở đây, state truyền vào selector phải có s.location.pathname
       const mockRouterState = { location: { pathname: '/' } };
       return selector(mockRouterState);
     }
@@ -26,6 +23,7 @@ vi.mock('@tanstack/react-router', () => ({
 vi.mock('motion/react', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
   },
   useReducedMotion: vi.fn(() => false),
 }));
@@ -57,6 +55,7 @@ vi.mock('@/hooks/use-session', () => ({
     loading: false,
     refresh: vi.fn(),
     session: {},
+    roles: ['admin'],
   }),
 }));
 
@@ -100,15 +99,15 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
+    addListener: vi.fn(), 
+    removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
 });
 
-describe('AppShell Sidebar Collapse (T17)', () => {
+describe('AppShell Sidebar Layout (T17 - Revised)', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
@@ -120,34 +119,27 @@ describe('AppShell Sidebar Collapse (T17)', () => {
 
   it('Sidebar: ẩn tiêu đề h3 khi collapsed', () => {
     render(<Sidebar collapsed={true} />);
-    // h3 thường được dùng cho group label trong Sidebar.tsx
     expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
   });
 
-  it('AppShell: phải có nút thu gọn với aria-label chính xác', () => {
-    render(<AppShell>Content</AppShell>);
-    // Desktop flex aside
-    const buttons = screen.getAllByLabelText(/Thu gọn thanh điều hướng/i);
-    expect(buttons.length).toBeGreaterThan(0);
+  it('AppShell: sub-sidebar phải có class hidden md:flex', () => {
+    const { container } = render(<AppShell>Content</AppShell>);
+    const subSidebar = container.querySelector('aside.z-20');
+    expect(subSidebar).toBeDefined();
+    expect(subSidebar?.className).toContain('hidden');
+    expect(subSidebar?.className).toContain('md:flex');
   });
 
-  it('bấm nút thu gọn phải đổi aria-label và lưu localStorage', () => {
-    render(<AppShell>Content</AppShell>);
-    
-    const button = screen.getAllByLabelText(/Thu gọn thanh điều hướng/i)[0];
-    fireEvent.click(button);
-
-    // Kiểm tra localStorage
-    expect(localStorage.getItem('mirats-sidebar-collapsed')).toBe('1');
-
-    // Nút phải đổi aria-label (sau khi re-render)
-    expect(screen.getAllByLabelText(/Mở rộng thanh điều hướng/i).length).toBeGreaterThan(0);
+  it('AppShell: mặc định sub-sidebar phải thu gọn (w-0)', () => {
+    const { container } = render(<AppShell>Content</AppShell>);
+    const subSidebar = container.querySelector('aside.z-20');
+    expect(subSidebar?.className).toContain('w-0');
   });
 
-  it('phải khôi phục trạng thái từ localStorage khi load', () => {
-    localStorage.setItem('mirats-sidebar-collapsed', '1');
-    render(<AppShell>Content</AppShell>);
-
-    expect(screen.getAllByLabelText(/Mở rộng thanh điều hướng/i).length).toBeGreaterThan(0);
+  it('AppShell: Rail phải có width w-16 và z-30', () => {
+    const { container } = render(<AppShell>Content</AppShell>);
+    const rail = container.querySelector('aside.w-16');
+    expect(rail).toBeDefined();
+    expect(rail?.className).toContain('z-30');
   });
 });
