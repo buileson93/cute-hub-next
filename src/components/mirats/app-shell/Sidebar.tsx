@@ -20,16 +20,17 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
     return allGroups.filter(g => g.key === activeWsId);
   }, [allGroups, activeWsId]);
 
+  const filteredGroups = useMemo(() => {
+    return groups.map(group => ({
+      ...group,
+      items: group.items.filter(item => !item.roles || item.roles.some(r => hasRole(r)))
+    })).filter(group => group.items.length > 0);
+  }, [groups, hasRole]);
+
   return (
     <div className="flex flex-col gap-8 py-4 overflow-x-hidden">
-      {groups.map((group) => {
-        const visibleItems = group.items.filter(item => {
-          // Note: In nav-config.ts, groups are already filtered or items are tagged.
-          // For now we assume navGroups() returns what's relevant.
-          return true;
-        });
-
-        if (visibleItems.length === 0) return null;
+      {filteredGroups.map((group) => {
+        const visibleItems = group.items;
 
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
