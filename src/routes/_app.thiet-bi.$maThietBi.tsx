@@ -15,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DetailLayout, DetailCard, DetailInfoGrid, KpiCard as StandardKpiCard } from "@/components/mirats/DetailLayout";
+import { DetailLayout, DetailCard, DetailInfoGrid, KpiCard as LayoutKpiCard } from "@/components/mirats/DetailLayout";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
@@ -34,7 +34,6 @@ import { formatVal } from "@/lib/mirats/change-log-utils";
 import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 import { cn } from "@/lib/utils";
-import { DetailLayout, DetailCard, DetailInfoGrid, KpiCard } from "@/components/mirats/DetailLayout";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
