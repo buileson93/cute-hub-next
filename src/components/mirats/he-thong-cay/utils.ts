@@ -89,6 +89,8 @@ export const nhMindTone = (mau?: string) => (mau ? NH_COLOR_MAP.get(mau)?.mind :
 
 export const okey = (kind: string, ma: string) => `${kind}:${ma}`;
 
+import { STATUS_TONE, IMP_TONE } from "./types";
+
 export function statusTone(tt: string): string {
   const c = statusCat(tt);
   return c === "khac" && (tt ?? "").trim() ? "border-blue-500/30 bg-blue-500/10 text-blue-600" : STATUS_TONE[c];
@@ -97,6 +99,7 @@ export function statusTone(tt: string): string {
 export function importanceTone(v: string): string {
   return IMP_TONE[impCat(v)];
 }
+
 
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
