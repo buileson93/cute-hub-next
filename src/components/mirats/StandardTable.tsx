@@ -510,6 +510,55 @@ export function StandardTable<T>({
       )}
 
 
+      {hasFilter && (
+        <div className="flex flex-wrap items-center gap-2 px-1">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
+          {Object.entries(textFilters).map(([key, val]) => {
+            if (!val) return null;
+            const col = columns.find(c => c.key === key);
+            return (
+              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="truncate max-w-[120px]">{val}</span>
+                <button 
+                  onClick={() => setTextFilters(prev => {
+                    const { [key]: _, ...rest } = prev;
+                    return rest;
+                  })}
+                  className="hover:text-destructive transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            );
+          })}
+          {Object.entries(catFilters).map(([key, sel]) => {
+            if (!sel || sel.size === 0) return null;
+            const col = columns.find(c => c.key === key);
+            return (
+              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
+                <button 
+                  onClick={() => clearCat(key)}
+                  className="hover:text-destructive transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            );
+          })}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={clearAllFilters}
+            className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-destructive"
+          >
+            Xoá tất cả bộ lọc
+          </Button>
+        </div>
+      )}
+
       {isMobile ? (
         <div className="space-y-3">
           {rows.length === 0 ? (
