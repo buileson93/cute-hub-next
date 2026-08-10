@@ -349,6 +349,14 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
 }
 
 
+type Hit = {
+  entity: string;
+  id: string;
+  title: string;
+  subtitle?: string;
+  to: string;
+};
+
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -356,8 +364,14 @@ export function CommandPalette() {
   const navigate = useNavigate();
   const { session, roles } = useSession();
 
-  const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
+  const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q) as {
+    rows: Hit[];
+    loading: boolean;
+    hasQuery: boolean;
+    activeTerm: string;
+  };
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
+
   // Không lặp lại kết quả đã hiển thị bởi useGlobalSearch (theo cặp loai:id / entity:id)
   const daHienThi = new Set(rows.map((r) => `${r.entity}:${r.id}`));
   const rowsMoRong = rowsToanCuc.filter((r) => !daHienThi.has(`${r.loai}:${r.id}`));
