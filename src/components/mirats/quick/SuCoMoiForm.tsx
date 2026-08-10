@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Plus, Trash2, FileText, Loader2, Save, FileDown,
   Wand2, Bot, Sparkles, CheckCircle2, Layers, MapPin, Lock,
+  ArrowRight, ArrowLeft
 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
@@ -37,6 +38,9 @@ import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
 import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
 import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
+import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
+import { cn } from "@/lib/utils";
+
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
