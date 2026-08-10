@@ -7,7 +7,7 @@ export const saveNode = createServerFn({ method: "POST" })
       kind: z.string(),
       ma: z.string(),
       ten: z.string().nullable(),
-      du_lieu: z.record(z.any().nullable()).nullable(),
+      du_lieu: z.record(z.string(), z.any().nullable()).nullable(),
     }).parse(input)
   )
   .handler(async (ctx: any) => {
