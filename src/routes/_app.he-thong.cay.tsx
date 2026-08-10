@@ -4,8 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ListTree, GitFork, List, Search as SearchIcon, Pencil, Activity, ClipboardList
 } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
+import { useSession } from "@/hooks/use-session";
+
 
 
 import { ReactFlowProvider } from "@xyflow/react";
@@ -120,6 +123,7 @@ function HeThongCayPage() {
   } = useCayContext();
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
+  const { roles } = useSession();
 
   const { data: overrides } = useOverrides();
   const { data: taxonomy } = useDbTaxonomy();
@@ -129,6 +133,7 @@ function HeThongCayPage() {
   const tbMind = useTbMind(overrides);
 
   const { data: posByHt } = useAllViTriChucNang();
+
 
   const { data: devices = EMPTY_ROWS } = useQuery({
     queryKey: ["thiet_bi_cay", groupMode],
@@ -234,7 +239,11 @@ function HeThongCayPage() {
               onIncident={() => {}}
               onMaint={() => {}}
               onRecord={onRecord}
-              onRename={() => {}}
+              onRename={(kind, ma, ten) => {
+                import("@/lib/mirats/ui/save-cell-securely").then(m => 
+                  m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
+                ).catch(e => toast.error(e.message));
+              }}
               onMoveSystem={() => {}}
               onMoveGroup={() => {}}
               onMoveDevice={() => {}}
@@ -249,7 +258,11 @@ function HeThongCayPage() {
             posByHt={posByHt || new Map()}
             scopeText="Toàn hệ thống"
             canManage={canManage && editMode}
-            onRename={() => {}}
+            onRename={(kind, ma, ten) => {
+              import("@/lib/mirats/ui/save-cell-securely").then(m => 
+                m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
+              ).catch(e => toast.error(e.message));
+            }}
             onOpenEditor={onOpenEditor}
             onHistory={onHistory}
             onIncident={() => {}}
@@ -262,6 +275,7 @@ function HeThongCayPage() {
             tbMind={tbMind}
           />
         )}
+
 
         {display === "health" && (
           <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
@@ -290,7 +304,17 @@ function HeThongCayPage() {
         tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
         canManage={canManage && editMode}
         saving={false}
-        onSave={() => {}}
+        onSave={(payload) => {
+          if (target?.kind === "tb" && payload.ten) {
+            import("@/lib/mirats/ui/save-cell-securely").then(m => 
+              m.saveCellSecurely({ maThietBi: target.ma, field: "ten_thiet_bi", value: payload.ten, userRoles: roles })
+            ).then(res => {
+              if (res.mode === "proposed") toast.success("Đã tạo đề xuất thay đổi tên");
+              else toast.success("Đã cập nhật tên tài sản");
+              setTarget(null);
+            }).catch(e => toast.error(e.message));
+          }
+        }}
         onDelete={() => {}}
         unitCodeOf={() => null}
         isCustomNode={() => false}
@@ -308,6 +332,7 @@ function HeThongCayPage() {
         onRenameGroupCode={() => {}}
         slugMa={(s) => s}
       />
+
     </div>
   );
 }

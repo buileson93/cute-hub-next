@@ -1,13 +1,9 @@
 // ============================================================================
 // SchemaDialog — dialog "khai thêm / sửa nhanh" chuẩn hoá bằng schema.
-// GĐ3-06 + a11y hardening:
-//   - Radix Dialog đã bao focus-trap + ESC + return-focus; ta thêm
-//     aria-describedby/help + aria-invalid + aria-required cho từng field.
-//   - `disableSubmitWhenInvalid` (mặc định TRUE): live-validate values →
-//     disable nút submit khi schema fail. Vẫn hiện lỗi khi user bấm submit.
-//   - Field mới hỗ trợ: `disabled`, `emptyOptionLabel` (select) để cho phép
-//     bỏ chọn — thay cho pattern sentinel "__none__" cũ.
-//   - loadOptions lỗi → hiện thông báo dưới field và không rơi vào loop.
+// GĐ3-06 + MIRATS 2.0 Wizard support:
+//   - Hỗ trợ Wizard nhiều bước nếu fields có `wizardStep`.
+//   - a11y hardening: focus-trap, aria-describedby, aria-invalid.
+//   - loadOptions lỗi → hiện thông báo dưới field.
 // ============================================================================
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
@@ -35,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { cn } from "@/lib/utils";
+import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 
 export type SchemaOption = { value: string; label: string };
 
@@ -47,7 +44,13 @@ type Common = {
 };
 
 export type SchemaField =
-  | (Common & { type: "text" | "textarea" | "date" | "password"; placeholder?: string; colSpan?: 1 | 2 })
+  | (Common & { 
+      type: "text" | "textarea" | "date" | "password"; 
+      placeholder?: string; 
+      colSpan?: 1 | 2;
+      wizardStep?: number; // wizard step
+      priority?: "core" | "later";
+    })
   | (Common & {
       type: "number";
       placeholder?: string;
@@ -55,8 +58,15 @@ export type SchemaField =
       max?: number;
       step?: number;
       colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
     })
-  | (Common & { type: "switch"; colSpan?: 1 | 2 })
+  | (Common & { 
+      type: "switch"; 
+      colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
+    })
   | (Common & {
       type: "select" | "combobox";
       placeholder?: string;
@@ -64,6 +74,8 @@ export type SchemaField =
       /** Cho phép bỏ chọn — hiện 1 SelectItem "trống" trên đầu. */
       emptyOptionLabel?: string;
       colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
       loadOptions?: {
         queryKey: unknown[];
         queryFn: (values: Record<string, unknown>) => Promise<SchemaOption[]>;
@@ -79,6 +91,8 @@ export type SchemaField =
         error?: string;
       }) => ReactNode;
       colSpan?: 1 | 2;
+      wizardStep?: number;
+      priority?: "core" | "later";
     });
 
 
@@ -96,6 +110,8 @@ export interface SchemaDialogProps<TValues extends Record<string, unknown>> {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl";
   /** Disable submit nếu schema fail (mặc định TRUE). */
   disableSubmitWhenInvalid?: boolean;
+  /** Tên các bước Wizard nếu có. */
+  wizardSteps?: string[];
 }
 
 const WIDTH_CLASS: Record<
@@ -109,11 +125,6 @@ const WIDTH_CLASS: Record<
   "2xl": "max-w-2xl",
 };
 
-/** Coerce values → object phù hợp cho zod parse.
- *  - number: "" → undefined, còn lại Number(raw).
- *  - text/textarea/date: trim; giữ "" để `.min(1, msg)` bắn message custom
- *    thay vì "expected string, received undefined".
- *  - select/combobox: giữ "" (schema tự xử qua `.min(1)` hoặc `.optional()`). */
 function coerceForParse(fields: SchemaField[], values: Record<string, unknown>) {
   const draft: Record<string, unknown> = { ...values };
   for (const f of fields) {
@@ -153,12 +164,10 @@ function AsyncOptions({
       onLoaded(q.data);
       onError(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q.data]);
+  }, [q.data, onLoaded, onError]);
   useEffect(() => {
     if (q.error) onError(q.error instanceof Error ? q.error.message : "Không tải được lựa chọn");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q.error]);
+  }, [q.error, onError]);
   return null;
 }
 
@@ -175,6 +184,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
   footerExtra,
   maxWidth = "lg",
   disableSubmitWhenInvalid = true,
+  wizardSteps,
 }: SchemaDialogProps<TValues>) {
   const initial = useMemo(() => {
     const base: Record<string, unknown> = {};
@@ -190,12 +200,18 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
   const [busy, setBusy] = useState(false);
   const [asyncOpts, setAsyncOpts] = useState<Record<string, SchemaOption[]>>({});
   const [asyncErr, setAsyncErr] = useState<Record<string, string | null>>({});
+  
+  // Wizard state
+  const hasWizard = useMemo(() => fields.some(f => f.wizardStep), [fields]);
+  const maxStep = useMemo(() => Math.max(...fields.map(f => f.wizardStep || 1), 1), [fields]);
+  const [step, setStep] = useState(1);
 
   useEffect(() => {
     if (open) {
       setValues(initial);
       setErrors({});
       setAsyncErr({});
+      setStep(1);
     }
   }, [open, initial]);
 
@@ -209,8 +225,6 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
       });
   }
 
-  // Live-validate cho việc disable submit — KHÔNG set errors state để tránh
-  // hiển thị lỗi trước khi user tương tác.
   const isValid = useMemo(() => {
     if (!disableSubmitWhenInvalid) return true;
     const draft = coerceForParse(fields, values);
@@ -227,6 +241,13 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
         if (!map[key]) map[key] = iss.message;
       }
       setErrors(map);
+      
+      // Tìm bước đầu tiên có lỗi để nhảy về
+      if (hasWizard) {
+        const firstErrorKey = parsed.error.issues[0].path[0];
+        const errorField = fields.find(f => f.key === firstErrorKey);
+        if (errorField?.wizardStep) setStep(errorField.wizardStep);
+      }
       return;
     }
     setErrors({});
@@ -239,19 +260,27 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
     }
   }
 
+  const currentFields = useMemo(() => {
+    if (!hasWizard) return fields;
+    return fields.filter(f => (f.wizardStep || 1) === step);
+  }, [fields, hasWizard, step]);
+
   return (
     <Dialog open={open} onOpenChange={(o) => !busy && onOpenChange(o)}>
       <DialogContent
-        className={WIDTH_CLASS[maxWidth]}
+        className={cn(WIDTH_CLASS[maxWidth], "flex flex-col max-h-[90vh]")}
         onKeyDown={(e) => {
-          // Enter trong Input đơn dòng → submit; Textarea giữ hành vi mặc định.
           if (
             e.key === "Enter" &&
             !e.shiftKey &&
             (e.target as HTMLElement).tagName === "INPUT"
           ) {
             e.preventDefault();
-            if (!busy && (isValid || !disableSubmitWhenInvalid)) void submit();
+            if (hasWizard && step < maxStep) {
+              setStep(s => s + 1);
+            } else if (!busy && (isValid || !disableSubmitWhenInvalid)) {
+              void submit();
+            }
           }
         }}
       >
@@ -259,8 +288,18 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
-          {fields.map((f) => {
+
+        {hasWizard && wizardSteps && (
+          <div className="py-2">
+            <FormWizardSteps 
+              currentStep={step} 
+              steps={wizardSteps.map((s, i) => ({ id: i + 1, title: s }))} 
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 overflow-y-auto pr-2 py-2">
+          {currentFields.map((f) => {
             const err = errors[f.key] || asyncErr[f.key];
             const req = "required" in f && f.required;
             const helpId = f.help ? `sd-${f.key}-help` : undefined;
@@ -271,6 +310,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               "aria-required": req || undefined,
               "aria-describedby": describedBy,
             } as const;
+            
             const labelNode = (
               <Label htmlFor={`sd-${f.key}`}>
                 {f.label}
@@ -293,61 +333,55 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               </p>
             ) : null;
 
+            const wrap = (node: ReactNode) => (
+              <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
+                {labelNode}
+                {node}
+                {errNode}
+                {helpNode}
+              </div>
+            );
+
             if (f.type === "text" || f.type === "date" || f.type === "password") {
-              return (
-                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
-                  {labelNode}
-                  <Input
-                    id={`sd-${f.key}`}
-                    type={f.type === "date" ? "date" : f.type === "password" ? "password" : "text"}
-                    value={(values[f.key] as string) ?? ""}
-                    placeholder={f.placeholder}
-                    disabled={f.disabled}
-                    onChange={(e) => setValue(f.key, e.target.value)}
-                    {...commonAria}
-                  />
-                  {errNode}
-                  {helpNode}
-                </div>
+              return wrap(
+                <Input
+                  id={`sd-${f.key}`}
+                  type={f.type === "date" ? "date" : f.type === "password" ? "password" : "text"}
+                  value={(values[f.key] as string) ?? ""}
+                  placeholder={f.placeholder}
+                  disabled={f.disabled}
+                  onChange={(e) => setValue(f.key, e.target.value)}
+                  {...commonAria}
+                />
               );
             }
             if (f.type === "number") {
-              return (
-                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
-                  {labelNode}
-                  <Input
-                    id={`sd-${f.key}`}
-                    type="number"
-                    value={(values[f.key] as string | number) ?? ""}
-                    placeholder={f.placeholder}
-                    min={f.min}
-                    max={f.max}
-                    step={f.step}
-                    disabled={f.disabled}
-                    onChange={(e) => setValue(f.key, e.target.value)}
-                    {...commonAria}
-                  />
-                  {errNode}
-                  {helpNode}
-                </div>
+              return wrap(
+                <Input
+                  id={`sd-${f.key}`}
+                  type="number"
+                  value={(values[f.key] as string | number) ?? ""}
+                  placeholder={f.placeholder}
+                  min={f.min}
+                  max={f.max}
+                  step={f.step}
+                  disabled={f.disabled}
+                  onChange={(e) => setValue(f.key, e.target.value)}
+                  {...commonAria}
+                />
               );
             }
             if (f.type === "textarea") {
-              return (
-                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
-                  {labelNode}
-                  <Textarea
-                    id={`sd-${f.key}`}
-                    rows={3}
-                    value={(values[f.key] as string) ?? ""}
-                    placeholder={f.placeholder}
-                    disabled={f.disabled}
-                    onChange={(e) => setValue(f.key, e.target.value)}
-                    {...commonAria}
-                  />
-                  {errNode}
-                  {helpNode}
-                </div>
+              return wrap(
+                <Textarea
+                  id={`sd-${f.key}`}
+                  rows={3}
+                  value={(values[f.key] as string) ?? ""}
+                  placeholder={f.placeholder}
+                  disabled={f.disabled}
+                  onChange={(e) => setValue(f.key, e.target.value)}
+                  {...commonAria}
+                />
               );
             }
             if (f.type === "switch") {
@@ -366,18 +400,13 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               );
             }
             if (f.type === "custom") {
-              return (
-                <div key={f.key} className={cn("space-y-1", f.colSpan === 2 ? "md:col-span-2" : "")}>
-                  {f.render({
-                    value: values[f.key],
-                    onChange: (v) => setValue(f.key, v),
-                    values,
-                    error: err ?? undefined,
-                  })}
-
-                  {errNode}
-                  {helpNode}
-                </div>
+              return wrap(
+                f.render({
+                  value: values[f.key],
+                  onChange: (v) => setValue(f.key, v),
+                  values,
+                  error: err ?? undefined,
+                })
               );
             }
 
@@ -386,6 +415,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
             const opts: SchemaOption[] = selectField.options ?? asyncOpts[selectField.key] ?? [];
             const EMPTY_SENTINEL = "__sd_empty__";
             const currentVal = (values[selectField.key] as string) ?? "";
+            
             const inner =
               selectField.type === "combobox" ? (
                 <Combobox
@@ -420,49 +450,60 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   </SelectContent>
                 </Select>
               );
-            return (
-              <div key={selectField.key} className={cn("space-y-1", selectField.colSpan === 2 ? "md:col-span-2" : "")}>
-                {labelNode}
+              
+            return wrap(
+              <>
                 {selectField.loadOptions && (
                   <AsyncOptions
                     field={selectField}
                     values={values}
                     onLoaded={(list) =>
                       setAsyncOpts((prev) =>
-                        prev[selectField.key] === list
-                          ? prev
-                          : { ...prev, [selectField.key]: list },
+                        prev[selectField.key] === list ? prev : { ...prev, [selectField.key]: list }
                       )
                     }
                     onError={(msg) =>
                       setAsyncErr((prev) =>
-                        prev[selectField.key] === msg
-                          ? prev
-                          : { ...prev, [selectField.key]: msg },
+                        prev[selectField.key] === msg ? prev : { ...prev, [selectField.key]: msg }
                       )
                     }
                   />
                 )}
                 {inner}
-                {errNode}
-                {helpNode}
-              </div>
+              </>
             );
           })}
-
         </div>
+
         {footerExtra}
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={busy}>
-            Huỷ
-          </Button>
-          <Button
-            onClick={submit}
-            loading={busy}
-            disabled={busy || (disableSubmitWhenInvalid && !isValid)}
-          >
-            {submitLabel}
-          </Button>
+
+        <DialogFooter className="flex-row justify-between sm:justify-between border-t pt-4">
+          <div className="flex gap-2">
+            {hasWizard && step > 1 && (
+              <Button variant="outline" onClick={() => setStep(s => s - 1)} disabled={busy}>
+                Quay lại
+              </Button>
+            )}
+            <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>
+              Huỷ
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            {hasWizard && step < maxStep ? (
+              <Button onClick={() => setStep(s => s + 1)}>
+                Tiếp tục
+              </Button>
+            ) : (
+              <Button
+                onClick={submit}
+                loading={busy}
+                disabled={busy || (disableSubmitWhenInvalid && !isValid)}
+              >
+                {submitLabel}
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
