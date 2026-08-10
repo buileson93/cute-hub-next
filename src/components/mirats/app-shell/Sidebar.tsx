@@ -6,10 +6,10 @@ import { navGroups, isActive } from "@/lib/mirats/nav/nav-config";
 import { useSession } from "@/hooks/use-session";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-export function Sidebar({ onNavigate, collapsed, workspaceId }: { 
+export function Sidebar({ onNavigate, collapsed, activeWsId }: { 
   onNavigate?: () => void; 
   collapsed?: boolean;
-  workspaceId?: string;
+  activeWsId: string;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { hasRole } = useSession();
@@ -17,9 +17,8 @@ export function Sidebar({ onNavigate, collapsed, workspaceId }: {
   const allGroups = useMemo(() => navGroups(), []);
   
   const groups = useMemo(() => {
-    if (!workspaceId) return allGroups;
-    return allGroups.filter(g => g.key === workspaceId);
-  }, [allGroups, workspaceId]);
+    return allGroups.filter(g => g.key === activeWsId);
+  }, [allGroups, activeWsId]);
 
   return (
     <div className="flex flex-col gap-8 py-4 overflow-x-hidden">
@@ -34,11 +33,7 @@ export function Sidebar({ onNavigate, collapsed, workspaceId }: {
 
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
-            {!collapsed && (
-              <h3 className="mb-2 px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                {group.nhan}
-              </h3>
-            )}
+            {/* Ẩn tiêu đề nhóm để tránh trùng lặp với tiêu đề Workspace trong AppShell */}
             <nav className="space-y-1.5">
               {visibleItems.map((item) => {
                 const Icon = (LucideIcons as any)[item.icon] || LucideIcons.Circle;

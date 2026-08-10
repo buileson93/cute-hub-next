@@ -213,7 +213,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <div className="flex-1 overflow-y-auto overflow-x-hidden">
                 <Sidebar 
                   collapsed={isCollapsed && !isHovered} 
-                  workspaceId={hoveredWsId || activeWs.id}
+                  activeWsId={hoveredWsId || activeWs.id}
                 />
               </div>
             </aside>
@@ -239,7 +239,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                              <SheetTitle className="text-sm font-bold">MIRATS 2.0</SheetTitle>
                           </SheetHeader>
                           <div className="overflow-y-auto h-[calc(100dvh-3.5rem)]">
-                             <Sidebar onNavigate={() => setIsMobileMenuOpen(false)} />
+                             <Sidebar 
+                               activeWsId={activeWs.id}
+                               onNavigate={() => setIsMobileMenuOpen(false)} 
+                             />
                           </div>
                         </SheetContent>
                       </Sheet>
