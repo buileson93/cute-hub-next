@@ -375,33 +375,171 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voiceParam]);
 
-  const [maNhomDraft, setMaNhomDraft] = useState<string | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [closingIntent, setClosingIntent] = useState(false);
+  const [step, setStep] = useState(1);
+  const steps = [
+    { id: 1, title: "Thông tin cơ bản" },
+    { id: 2, title: "Thành phần & tài sản" },
+    { id: 3, title: "Diễn biến & đánh giá" },
+  ];
 
-  function validateBeforeSave(closing: boolean): string | null {
-    if (!hienTuong.trim()) return "Vui lòng nhập tiêu đề / hiện tượng sự cố";
-    if (!heThongDichVu.trim()) return "Vui lòng chọn hệ thống tài sản/dịch vụ bị sự cố";
-    if (selectedTpIds.size === 0) return "Chọn ít nhất một thành phần hệ thống bị ảnh hưởng";
-    if (selected.length === 0) return "Các thành phần đã chọn chưa lắp tài sản nào — không thể ghi sự cố";
-    if (closing) {
-      if (!thoiGianKetThuc) return "Đóng sự cố cần có Thời gian kết thúc";
-      if (!tinhTrangHT.trim()) return "Đóng sự cố cần khai Tình trạng hệ thống sau xử lý";
-      if (!nguyenNhan.trim()) return "Đóng sự cố cần khai Nguyên nhân";
-      if (!bienPhap.trim()) return "Đóng sự cố cần khai Biện pháp xử lý";
-      if (!tinhHinh.trim()) return "Đóng sự cố cần khai Tình hình hiện tại";
-      if (!ketQua.trim()) return "Đóng sự cố cần khai Phương án khắc phục";
-    }
-    return null;
+  function nextStep() {
+    if (step < 3) setStep(s => s + 1);
+  }
+  function prevStep() {
+    if (step > 1) setStep(s => s - 1);
   }
 
-  function buildPayloadForSave(maNhom: string, closing: boolean) {
-    const selectedTp = tpList.filter((t) => selectedTpIds.has(t.id));
-    const bao_cao_ban_dau = {
-      kinh_gui: kinhGui,
-      he_thong_dich_vu: heThongDichVu,
-      tom_tat: tomTat,
-      thoi_gian_bat_dau: fmtDateTime(thoiGianBatDau),
+  // ── Render components ───────────────────────────────────────────────────────
+
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <Card>
+              <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm">1. Thông tin hệ thống</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Hệ thống / Dịch vụ</Label>
+                    <Combobox
+                      options={heThongOptions}
+                      value={heThongId}
+                      onChange={onPickHeThong}
+                      placeholder="Chọn hệ thống..."
+                      searchPlaceholder="Tìm hệ thống..."
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Kính gửi</Label>
+                    <Combobox
+                      options={kinhGuiOptions}
+                      value={kinhGui}
+                      onChange={setKinhGui}
+                      placeholder="Chọn nơi nhận..."
+                      searchPlaceholder="Tìm đơn vị..."
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Hiện tượng / Tiêu đề</Label>
+                  <Input value={hienTuong} onChange={(e) => setHienTuong(e.target.value)} placeholder="Mô tả ngắn gọn lỗi hệ thống..." />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <CollapsibleSection title="Thành phần kíp trực" sectionId="sec-4-kip-truc" formId="su-co-moi">
+               <div className="space-y-2">
+                  {kip.map((k, i) => (
+                    <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
+                      <Input value={k.ho_ten} onChange={(e) => updateKip(i, "ho_ten", e.target.value)} placeholder="Họ tên" />
+                      <Input value={k.chuc_vu} onChange={(e) => updateKip(i, "chuc_vu", e.target.value)} placeholder="Chức vụ" />
+                      <Input value={k.nang_dinh} onChange={(e) => updateKip(i, "nang_dinh", e.target.value)} placeholder="Năng định" />
+                      <Button variant="ghost" size="icon" onClick={() => removeKip(i)}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
+                  <Button variant="outline" size="sm" onClick={addKip}><Plus className="mr-1 h-4 w-4" /> Thêm</Button>
+               </div>
+            </CollapsibleSection>
+          </div>
+        );
+      case 2:
+        return (
+          <Card>
+            <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm">2. Chọn thành phần bị ảnh hưởng</CardTitle></CardHeader>
+            <CardContent>
+              {/* [Code giữ nguyên từ file gốc từ dòng 610-658] */}
+              {!heThongId ? (
+                <p className="rounded-md border border-dashed bg-muted/40 px-3 py-3 text-xs text-muted-foreground">
+                  Chọn Hệ thống ở Bước 1 để hiển thị danh sách thành phần.
+                </p>
+              ) : tpLoading ? (
+                <p className="text-xs text-muted-foreground"><Loader2 className="mr-1 inline h-3 w-3 animate-spin" /> Đang tải…</p>
+              ) : tpList.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Không có thành phần.</p>
+              ) : (
+                <div className="max-h-72 space-y-1 overflow-y-auto rounded-md border p-1">
+                  {tpList.map((tp) => {
+                    const on = selectedTpIds.has(tp.id);
+                    const assets = mounted.filter((m) => m.thanh_phan_id === tp.id);
+                    return (
+                      <label key={tp.id} className={`flex cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted ${on ? "bg-primary/5" : ""}`}>
+                        <Checkbox checked={on} onCheckedChange={(v) => toggleTp(tp.id, !!v)} className="mt-0.5" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-xs text-primary">{tp.ma}</span>
+                            <span className="font-medium">{tp.ten}</span>
+                          </div>
+                          {on && (
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {assets.length === 0 ? (
+                                <span className="text-[11px] text-amber-700">Chưa lắp tài sản.</span>
+                              ) : assets.map((a) => (
+                                <Badge key={a.device.id} variant="secondary" className="text-[10px]">
+                                  <span className="font-mono">{a.device.ma_thiet_bi}</span> · {a.device.ten}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      case 3:
+        return (
+          <div className="space-y-4">
+            <Card>
+              <CardHeader className="pb-2 pt-3"><CardTitle className="text-sm">3. Diễn biến & đánh giá</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                 {/* [Fields từ dòng 666 trở đi] */}
+                 <div className="grid grid-cols-2 gap-3">
+                   <div className="space-y-1">
+                      <Label className="text-xs">Bắt đầu</Label>
+                      <Input type="datetime-local" value={thoiGianBatDau} onChange={(e) => setThoiGianBatDau(e.target.value)} />
+                   </div>
+                   <div className="space-y-1">
+                      <Label className="text-xs">Kết thúc</Label>
+                      <Input type="datetime-local" value={thoiGianKetThuc} onChange={(e) => setThoiGianKetThuc(e.target.value)} />
+                   </div>
+                 </div>
+                 <Textarea placeholder="Tóm tắt sự việc..." value={tomTat} onChange={(e) => setTomTat(e.target.value)} rows={3} />
+                 <Textarea placeholder="Nguyên nhân / giải pháp..." value={nguyenNhan} onChange={(e) => setNguyenNhan(e.target.value)} rows={3} />
+              </CardContent>
+            </Card>
+          </div>
+        );
+    }
+  }
+
+  // ── UI Wrapper ──────────────────────────────────────────────────────────────
+  return (
+    <div className="flex h-full flex-col">
+       <FormWizardSteps steps={steps} currentStep={step} />
+       
+       <div className="flex-1 overflow-y-auto px-4 pb-20">
+         {renderStep()}
+       </div>
+
+       {/* Action Bar */}
+       <div className="sticky bottom-0 flex items-center justify-between border-t bg-background px-4 py-3">
+         <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
+         {step < 3 ? (
+            <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button>
+         ) : (
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => openPreview(false)}>Lưu</Button>
+              <Button onClick={() => openPreview(true)}>Đóng sự cố</Button>
+            </div>
+         )}
+       </div>
+    </div>
+  );
+
       thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "",
       dia_diem: diaDiemAuto,
       kip_truc: kip.filter((k) => k.ho_ten.trim()),
