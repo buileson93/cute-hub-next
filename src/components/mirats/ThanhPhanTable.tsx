@@ -222,17 +222,6 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
   );
 }
 
-
-function ModelCell({ model, modelId, registry }: { model: string, modelId: string | null, registry: Record<string, any> }) {
-  if (!model) return <span className="text-xs text-muted-foreground">—</span>;
-  
-  const modelData = modelId ? registry[modelId] : null;
-  
-  if (!modelData) {
-    return (
-      <span title={model} className="line-clamp-2 break-words text-sm leading-snug">
-        {model}
-      </span>
     );
   }
 
