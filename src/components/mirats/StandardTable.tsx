@@ -193,7 +193,9 @@ export function StandardTable<T>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 48,
     overscan: 10,
-    initialRect: typeof window === "undefined" ? { width: 0, height: 800 } : undefined,
+    initialRect: typeof window === "undefined" || (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') 
+      ? { width: 1280, height: 800 } 
+      : undefined,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
