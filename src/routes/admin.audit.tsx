@@ -7,7 +7,7 @@ import {
   Plus, Pencil, Trash2, Shield, LogIn, KeyRound, Activity,
   RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle,
 } from "lucide-react";
-import { AppShell } from "@/components/mirats/AppShell";
+import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

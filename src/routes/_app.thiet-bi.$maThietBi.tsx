@@ -7,13 +7,15 @@ import { storage } from "@/lib/storage";
 import { toast } from "sonner";
 import {
   ArrowLeft, Gauge, Calendar, AlertTriangle, Wrench, PencilLine,
-  LayoutDashboard, Activity, ShieldCheck, Cpu, Settings, History, ArrowLeftRight
+  LayoutDashboard, Activity, ShieldCheck, Cpu, Settings, History, ArrowLeftRight,
+  Info, LayoutList, Package, FileText
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DetailLayout, DetailCard, DetailInfoGrid, KpiCard as LayoutKpiCard } from "@/components/mirats/DetailLayout";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
@@ -31,6 +33,7 @@ import { buildRecordTimeline, type TimelineItem } from "@/lib/mirats/record-time
 import { formatVal } from "@/lib/mirats/change-log-utils";
 import { useVaiTroThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
+import { cn } from "@/lib/utils";
 
 import { Skeleton } from "@/components/ui/skeleton";
 

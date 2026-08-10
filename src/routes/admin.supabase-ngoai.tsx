@@ -6,7 +6,7 @@ import {
   Plug, Loader2, CheckCircle2, XCircle, Trash2, Play, Database, ShieldCheck, Users, Power,
   FlaskConical, Undo2, Layers, Pause, AlertTriangle,
 } from "lucide-react";
-import { AppShell } from "@/components/mirats/AppShell";
+import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
