@@ -729,10 +729,10 @@ function SuCoPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-
+    </PageBody>
   );
 }
+
 
 function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; tone?: string }) {
   return (
@@ -740,7 +740,7 @@ function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ 
       <Icon className={`h-4 w-4 ${tone ?? "text-muted-foreground"}`} />
       <span className="text-muted-foreground">{label}:</span>
       <span className={`font-semibold tabular-nums ${tone ?? ""}`}>{typeof value === "number" ? value.toLocaleString("vi-VN") : value}</span>
-    </PageBody>
-
+    </div>
   );
 }
+
