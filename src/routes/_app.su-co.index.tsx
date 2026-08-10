@@ -687,17 +687,8 @@ function SuCoPage() {
 
             emptyContent={
               <EmptyState
-                icon={AlertTriangle}
-                title="Không có sự cố phù hợp"
-                description="Không có sự cố nào khớp bộ lọc hiện tại. Thử mở rộng khoảng thời gian hoặc tạo báo cáo mới."
-                action={
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Tạo sự cố</Link>
-                  </Button>
-                }
-              />
-            }
-          />
+            />
+
 
           {filtered.length > 40 && (
             <div className="mt-3 text-center">
