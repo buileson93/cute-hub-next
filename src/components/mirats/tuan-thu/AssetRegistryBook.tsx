@@ -92,12 +92,12 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           cell: (r) => (
             <div className="flex justify-end gap-1">
               {r.file && (
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onView(r)}>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onView(r)} aria-label="Xem chi tiết">
                   <Eye className="h-3.5 w-3.5" />
                 </Button>
               )}
               {canManage && r.nguon === "giay_phep" && (
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-primary" onClick={() => onEdit(r)}>
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-primary" onClick={() => onEdit(r)} aria-label="Sửa">
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
               )}

@@ -1220,6 +1220,7 @@ function CellPreview({
         title={content}
         onClick={(e) => { e.stopPropagation(); setOpen(true); }}
         className={`w-full cursor-pointer text-left hover:text-primary ${className ?? ""}`}
+        aria-label={`Xem chi tiết ${title.toLowerCase()}`}
       >
         {children ?? content}
       </button>

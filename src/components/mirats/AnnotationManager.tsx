@@ -255,10 +255,10 @@ export function AnnotationManager({
                     {a.mo_ta && <div className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{a.mo_ta}</div>}
                   </div>
                   <div className="flex shrink-0 gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => edit(a)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => edit(a)} aria-label="Sửa ghi chú">
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remove(a)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remove(a)} aria-label="Xoá ghi chú">
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>

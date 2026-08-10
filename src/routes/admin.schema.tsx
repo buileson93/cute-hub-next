@@ -831,10 +831,10 @@ function ColumnRow({
       <td className="py-1.5 text-right">
         {canModify && !isFk && (
           <div className="inline-flex gap-1">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setNewName(col.name); setRenameOpen(true); }}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setNewName(col.name); setRenameOpen(true); }} aria-label="Đổi tên cột">
               <Pencil className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-600 hover:text-rose-700" onClick={() => setDropOpen(true)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-600 hover:text-rose-700" onClick={() => setDropOpen(true)} aria-label="Xoá cột">
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
