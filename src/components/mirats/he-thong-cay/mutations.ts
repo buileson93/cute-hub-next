@@ -10,7 +10,8 @@ export const saveNode = createServerFn({ method: "POST" })
       du_lieu: z.record(z.any().nullable()).nullable(),
     }).parse(input)
   )
-  .handler(async ({ data }: any) => {
+  .handler(async (ctx: any) => {
+    const data = ctx.data;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("cay_node_edit")
@@ -34,7 +35,8 @@ export const reorderNodes = createServerFn({ method: "POST" })
       order: z.array(z.string()),
     }).parse(input)
   )
-  .handler(async ({ data }: any) => {
+  .handler(async (ctx: any) => {
+    const data = ctx.data;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("cay_node_edit")
