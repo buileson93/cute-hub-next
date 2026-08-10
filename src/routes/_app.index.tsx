@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { LayoutDashboard } from "lucide-react";
+
 
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
@@ -40,9 +42,10 @@ export const Route = createFileRoute("/_app/")({
   head: () => ({
     meta: [
       { title: "Dashboard & KPI — MIRATS 2.0" },
-      { name: "description", content: "M12 — Dashboard điều hành, chỉ số KPI độ tin cậy và báo cáo định kỳ toàn hệ thống MIRATS." },
-      { property: "og:title", content: "Dashboard & KPI — MIRATS 2.0" },
-      { property: "og:description", content: "Availability, MTTR/MTBF, PM đúng hạn, sức khỏe A/B/C/D và xuất báo cáo." },
+      { name: "description", content: "Trung tâm hành động MIRATS 2.0: việc cần làm, cảnh báo, quá hạn — xử lý nhanh mọi hoạt động trong ngày." },
+      { property: "og:title", content: "Hành động hôm nay — MIRATS 2.0" },
+      { property: "og:description", content: "Tình hình sự cố, bảo trì và giấy phép cần xử lý ngay." },
+
     ],
   }),
   component: Dashboard,
@@ -316,11 +319,12 @@ function Dashboard() {
   const lowStock: number | null = null;
 
   return (
-    <div className="space-y-6 p-4 sm:space-y-8 sm:p-6 lg:space-y-10 lg:p-10">
+    <PageBody>
       <PageHeader
-        title="Tổng quan"
+        title="Hôm nay tôi phải xử lý gì?"
         icon={LayoutDashboard}
-        description="Overview — Dashboard điều hành, chỉ số KPI độ tin cậy và báo cáo định kỳ toàn hệ thống MIRATS."
+        description="Trung tâm hành động: việc cần làm, cảnh báo, quá hạn — xử lý nhanh ngay tại đây."
+
       />
 
 
@@ -685,7 +689,8 @@ function ReportCard({ title, desc, onClick }: { title: string; desc: string; onC
       <div className="text-xs text-muted-foreground">{desc}</div>
       <div className="mt-1 flex items-center gap-1 text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
         Tải xuống CSV <ArrowRight className="h-3 w-3" />
-      </div>
+    </PageBody>
+
     </button>
   );
 }
