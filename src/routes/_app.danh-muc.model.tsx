@@ -561,7 +561,7 @@ function ModelCatalogPage() {
                   </Button>
                   <HoverCard openDelay={120} closeDelay={60}>
                     <HoverCardTrigger asChild>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={() => setInfoModel(m)} title="Xem thông số & tài sản đang dùng mẫu này">
+                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={() => setInfoModel(m)} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
                         <Info className="h-3.5 w-3.5" />
                       </Button>
                     </HoverCardTrigger>
