@@ -99,8 +99,9 @@ export function StandardTable<T>({
   bulkActions,
   tableKey,
   countUnit = "bản ghi",
-  gated: _gated,
   requireFilterToShow,
+  pagination,
+  clientPagination,
   presets,
   activePreset,
 }: StandardTableProps<T>) {
