@@ -433,9 +433,10 @@ function ThietBiPage() {
           <TreeView tree={tree} total={filtered.length} histMap={histMap} />
         </CardContent>
       </Card>
-    </div>
+    </PageBody>
   );
 }
+
 
 /* ------------------------------ Cây (view) ------------------------------ */
 
@@ -583,8 +584,12 @@ function TreeBranch({
             />
           ))}
         </div>
+        </div>
       )}
-    </PageBody>
+    </div>
+  );
+}
+
 
   );
 }
