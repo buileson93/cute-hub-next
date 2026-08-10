@@ -696,6 +696,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
             className="h-7 w-7"
             onClick={(e) => onGoogleSearch(e, m)}
             title="Tạo link tìm sản phẩm trên Google"
+            aria-label="Tìm trên Google"
           >
             <Search className="h-3.5 w-3.5" />
           </Button>
