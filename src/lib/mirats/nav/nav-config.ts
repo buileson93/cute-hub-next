@@ -31,6 +31,8 @@ export interface NavItem {
   badgeKey?: NavBadgeKey;
   /** Nếu set, chỉ hiện khi user có ÍT NHẤT 1 role trong danh sách. */
   roles?: AppRole[];
+  /** Mục con. */
+  children?: NavItem[];
 }
 
 export interface NavGroup {
