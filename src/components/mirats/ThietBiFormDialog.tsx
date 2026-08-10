@@ -367,7 +367,7 @@ export function ThietBiFormDialog({
       onSubmit={async (v) => {
         await save.mutateAsync(v);
         // Clear draft on success
-        setPref(draftKey, null);
+        setDraft(null);
       }}
       wizardSteps={["Nhận dạng", "Vị trí", "Bổ sung"]}
     />
