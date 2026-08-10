@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 
 
 import {
