@@ -1,6 +1,6 @@
 -- Thêm cột lưu trữ % hoàn thiện để query nhanh (denormalization for dashboard)
 ALTER TABLE public.thiet_bi ADD COLUMN IF NOT EXISTS completeness_pct integer DEFAULT 0;
-ALTER TABLE public.he_thong ADD COLUMN IF NOT EXISTS completeness_pct integer DEFAULT 0;
+ALTER TABLE public.dm_he_thong ADD COLUMN IF NOT EXISTS completeness_pct integer DEFAULT 0;
 
 -- Function để tính độ hoàn thiện (logic đồng bộ với frontend completeness.ts)
 CREATE OR REPLACE FUNCTION public.calculate_completeness(p_entity text, p_row jsonb)
@@ -12,8 +12,8 @@ DECLARE
 BEGIN
   IF p_entity = 'thiet_bi' THEN
     v_fields := ARRAY['ten_thiet_bi', 'ma_serial', 'model_id', 'trang_thai_id', 'he_thong_id', 'don_vi_id'];
-  ELSIF p_entity = 'he_thong' THEN
-    v_fields := ARRAY['ten_he_thong', 'ma_he_thong', 'loai_he_thong_id', 'don_vi_id', 'nhom_he_thong_id'];
+  ELSIF p_entity = 'dm_he_thong' THEN
+    v_fields := ARRAY['ten', 'ma', 'loai_he_thong_id', 'don_vi_id', 'nhom_he_thong_id'];
   ELSE
     RETURN 0;
   END IF;
@@ -34,8 +34,8 @@ RETURNS trigger AS $$
 BEGIN
   IF TG_TABLE_NAME = 'thiet_bi' THEN
     NEW.completeness_pct := public.calculate_completeness('thiet_bi', to_jsonb(NEW));
-  ELSIF TG_TABLE_NAME = 'he_thong' THEN
-    NEW.completeness_pct := public.calculate_completeness('he_thong', to_jsonb(NEW));
+  ELSIF TG_TABLE_NAME = 'dm_he_thong' THEN
+    NEW.completeness_pct := public.calculate_completeness('dm_he_thong', to_jsonb(NEW));
   END IF;
   RETURN NEW;
 END;
@@ -46,14 +46,14 @@ CREATE TRIGGER trg_thiet_bi_completeness
   BEFORE INSERT OR UPDATE ON public.thiet_bi
   FOR EACH ROW EXECUTE FUNCTION public.trg_update_completeness();
 
-DROP TRIGGER IF EXISTS trg_he_thong_completeness ON public.he_thong;
+DROP TRIGGER IF EXISTS trg_he_thong_completeness ON public.dm_he_thong;
 CREATE TRIGGER trg_he_thong_completeness
-  BEFORE INSERT OR UPDATE ON public.he_thong
+  BEFORE INSERT OR UPDATE ON public.dm_he_thong
   FOR EACH ROW EXECUTE FUNCTION public.trg_update_completeness();
 
 -- Cập nhật dữ liệu hiện tại
-UPDATE public.thiet_bi SET completeness_pct = public.calculate_completeness('thiet_bi', to_jsonb(public.thiet_bi));
-UPDATE public.he_thong SET completeness_pct = public.calculate_completeness('he_thong', to_jsonb(public.he_thong));
+UPDATE public.thiet_bi t SET completeness_pct = public.calculate_completeness('thiet_bi', to_jsonb(t));
+UPDATE public.dm_he_thong h SET completeness_pct = public.calculate_completeness('dm_he_thong', to_jsonb(h));
 
 -- RPC lấy thống kê tổng hợp cho Dashboard
 CREATE OR REPLACE FUNCTION public.get_completeness_stats()
@@ -63,7 +63,7 @@ DECLARE
 BEGIN
   SELECT jsonb_build_object(
     'avg_thiet_bi', ROUND(AVG(completeness_pct)),
-    'avg_he_thong', (SELECT ROUND(AVG(completeness_pct)) FROM public.he_thong),
+    'avg_he_thong', (SELECT ROUND(AVG(completeness_pct)) FROM public.dm_he_thong),
     'total_tb', COUNT(*),
     'low_pct_tb', COUNT(*) FILTER (WHERE completeness_pct < 50),
     'perfect_tb', COUNT(*) FILTER (WHERE completeness_pct = 100),
