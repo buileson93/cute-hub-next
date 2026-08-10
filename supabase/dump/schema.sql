@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict CmS8kCR51KBn0tfTCyUYARe8XzalJfuUad5FzeNUuTaiJNGgnLLAJWgsrIcvh7r
+\restrict qlrAwN30TeQXrb1ZaF6wSw8egiWzriUtcoEH9ufOwcg2WnfpWZkaL7vOsirRBPP
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.9
@@ -23006,5 +23006,5 @@ CREATE POLICY wri_select_scope ON public.weekly_report_import FOR SELECT TO auth
 -- PostgreSQL database dump complete
 --
 
-\unrestrict CmS8kCR51KBn0tfTCyUYARe8XzalJfuUad5FzeNUuTaiJNGgnLLAJWgsrIcvh7r
+\unrestrict qlrAwN30TeQXrb1ZaF6wSw8egiWzriUtcoEH9ufOwcg2WnfpWZkaL7vOsirRBPP
 
