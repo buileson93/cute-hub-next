@@ -2,7 +2,10 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableSkeleton } from "@/components/mirats/Skeletons";
+import { EmptyState } from "@/components/mirats/EmptyState";
 import { useState, useEffect } from "react";
+
 
 export interface StdColumn<T> {
   key: string;
@@ -214,17 +217,22 @@ export function StandardTable<T>({
             <TableBody>
               {trangThai?.dangTai ? (
                 <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24 text-center text-muted-foreground">
-                    {loadingContent || "Đang tải dữ liệu..."}
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
+                    {loadingContent ?? <TableSkeleton cols={shownCols.length} />}
                   </TableCell>
                 </TableRow>
               ) : rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24 text-center">
-                    {trangThai?.loi ? (errorContent ?? String(trangThai.loi)) : (emptyContent ?? emptyText)}
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
+                    <EmptyState 
+                      title={emptyContent ? undefined : emptyText}
+                      description={typeof emptyContent === "string" ? emptyContent : undefined}
+                    />
+                    {typeof emptyContent !== "string" && emptyContent}
                   </TableCell>
                 </TableRow>
               ) : (
+
                 rows.map((r) => {
                   const rid = getRowIdInternal(r);
                   const isSel = selectable && selected?.has(rid);
