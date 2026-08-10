@@ -11,9 +11,12 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
   CartesianGrid,
 } from "recharts";
+import { getCompletenessStats } from '@/lib/mirats/completeness.functions';
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   HardDrive, ShieldCheck, AlertTriangle, Clock, CheckCircle2, HeartPulse,
   Wrench, Activity, Radio, TrendingUp, Target, Gauge, Download, Package, Search,
+  Database, Sparkles,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,13 +45,18 @@ import { isOpenState } from "@/lib/mirats/su-co-state";
 
 
 export const Route = createFileRoute("/_app/")({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData({
+      queryKey: ['completeness-stats'],
+      queryFn: () => getCompletenessStats(),
+    });
+  },
   head: () => ({
     meta: [
       { title: "Dashboard & KPI — MIRATS 2.0" },
       { name: "description", content: "Trung tâm hành động MIRATS 2.0: việc cần làm, cảnh báo, quá hạn — xử lý nhanh mọi hoạt động trong ngày." },
       { property: "og:title", content: "Hành động hôm nay — MIRATS 2.0" },
       { property: "og:description", content: "Tình hình sự cố, bảo trì và giấy phép cần xử lý ngay." },
-
     ],
   }),
   component: Dashboard,
@@ -70,6 +78,12 @@ function isActive(tt: string) {
 }
 
 function Dashboard() {
+  const statsQuery = useSuspenseQuery({
+    queryKey: ['completeness-stats'],
+    queryFn: () => getCompletenessStats(),
+  });
+  const completeness = (statsQuery.data as any) || {};
+
   const { donVi, thietBi, giayPhep, suCo, baoTri } = useScope();
   const { data: tax } = useDbTaxonomy();
   const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
@@ -328,6 +342,69 @@ function Dashboard() {
         icon={LayoutDashboard}
         description="Chào mừng bạn quay lại MIRATS. Đây là tóm tắt các hoạt động bạn cần chú ý trong hôm nay."
       />
+      {/* 2026: Trung tâm hành động - Chất lượng dữ liệu & Gamification */}
+      <Card className="mb-6 bg-primary/5 border-primary/20 overflow-hidden relative group">
+        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+          <Database className="w-24 h-24 text-primary" />
+        </div>
+        <CardContent className="pt-6 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-3 text-center md:text-left flex-1">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <Badge className="bg-primary/20 text-primary border-none text-[10px] uppercase font-bold tracking-widest">MIRATS 2.0</Badge>
+                <span className="text-xs text-muted-foreground flex items-center gap-1"><Sparkles className="w-3 h-3" /> Data Quality Intelligence</span>
+              </div>
+              <h2 className="text-xl font-bold">Tiến độ làm sạch dữ liệu</h2>
+              <p className="text-muted-foreground text-sm max-w-md mx-auto md:mx-0">
+                Góp phần hoàn thiện thông tin thiết bị giúp hệ thống phân tích và dự báo sự cố chính xác hơn.
+              </p>
+              <div className="flex items-center justify-center md:justify-start gap-6 pt-2">
+                <div className="text-center">
+                  <p className="text-3xl font-black text-primary">{completeness.avg_thiet_bi || 0}%</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Độ hoàn thiện</p>
+                </div>
+                <div className="w-px h-8 bg-border" />
+                <div className="text-center">
+                  <p className="text-3xl font-black text-primary">{completeness.total_tasks || 0}</p>
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Nhiệm vụ mới</p>
+                </div>
+                <div className="ml-2">
+                  <Button asChild size="sm" className="rounded-full shadow-lg hover:shadow-primary/25 transition-all">
+                    <Link to="/chat-luong-du-lieu">Thực hiện ngay <ArrowRight className="ml-2 w-4 h-4" /></Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1 w-full max-w-md space-y-4 bg-background/50 p-4 rounded-xl border border-primary/10 shadow-inner">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold">
+                  <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Health Score Dữ liệu</span>
+                  <span>{completeness.avg_thiet_bi || 0}%</span>
+                </div>
+                <Progress value={completeness.avg_thiet_bi || 0} className="h-2.5 bg-primary/10" />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-green-500/5 border border-green-500/10">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold text-green-700 truncate">{completeness.perfect_tb || 0} Tài sản</p>
+                    <p className="text-[9px] text-green-600/80 uppercase">Đạt 100%</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold text-amber-700 truncate">{completeness.low_pct_tb || 0} Tài sản</p>
+                    <p className="text-[9px] text-amber-600/80 uppercase">Dưới 50%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 15.3.1: Action Center - Câu chữ trả lời trực tiếp */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

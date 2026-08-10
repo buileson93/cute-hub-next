@@ -1367,6 +1367,7 @@ export type Database = {
         Row: {
           active: boolean
           attrs: Json
+          completeness_pct: number | null
           created_at: string
           deactivated_at: string | null
           dia_diem_dat_gp: string | null
@@ -1404,6 +1405,7 @@ export type Database = {
         Insert: {
           active?: boolean
           attrs?: Json
+          completeness_pct?: number | null
           created_at?: string
           deactivated_at?: string | null
           dia_diem_dat_gp?: string | null
@@ -1441,6 +1443,7 @@ export type Database = {
         Update: {
           active?: boolean
           attrs?: Json
+          completeness_pct?: number | null
           created_at?: string
           deactivated_at?: string | null
           dia_diem_dat_gp?: string | null
@@ -6609,6 +6612,7 @@ export type Database = {
         Row: {
           attrs: Json
           che_do_kd_hc: string
+          completeness_pct: number | null
           created_at: string
           created_by: string | null
           danh_gia_nien_han_id: string | null
@@ -6680,6 +6684,7 @@ export type Database = {
         Insert: {
           attrs?: Json
           che_do_kd_hc?: string
+          completeness_pct?: number | null
           created_at?: string
           created_by?: string | null
           danh_gia_nien_han_id?: string | null
@@ -6751,6 +6756,7 @@ export type Database = {
         Update: {
           attrs?: Json
           che_do_kd_hc?: string
+          completeness_pct?: number | null
           created_at?: string
           created_by?: string | null
           danh_gia_nien_han_id?: string | null
@@ -9172,6 +9178,10 @@ export type Database = {
           tong_gia_tri: number
         }[]
       }
+      calculate_completeness: {
+        Args: { p_entity: string; p_row: Json }
+        Returns: number
+      }
       can_access_du_an: {
         Args: { _du_an_id: string; _user: string }
         Returns: boolean
@@ -9217,6 +9227,7 @@ export type Database = {
         Returns: {
           attrs: Json
           che_do_kd_hc: string
+          completeness_pct: number | null
           created_at: string
           created_by: string | null
           danh_gia_nien_han_id: string | null
@@ -9471,6 +9482,7 @@ export type Database = {
           model: string
         }[]
       }
+      get_completeness_stats: { Args: never; Returns: Json }
       get_user_don_vi_id: { Args: { _user_id: string }; Returns: string }
       get_user_don_vi_ma: { Args: { _user_id: string }; Returns: string }
       ghi_bao_duong_atomic:
