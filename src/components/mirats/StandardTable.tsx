@@ -8,7 +8,8 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search } from "lucide-react";
+import { normalize } from "@/lib/mirats/global-search";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,8 +18,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 
 export interface StdColumn<T> {
@@ -98,12 +102,16 @@ export function StandardTable<T>({
   bulkActions,
   tableKey,
   countUnit = "bản ghi",
-  gated,
+  requireFilterToShow,
+  pagination,
+  clientPagination,
   presets,
   activePreset,
 }: StandardTableProps<T>) {
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
-  
+  const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
+  const [textFilters, setTextFilters] = useState<Record<string, string>>({});
+  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   useEffect(() => {
     const handleResize = () => setVw(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -186,8 +194,6 @@ export function StandardTable<T>({
     if (setSelected) setSelected(new Set());
   };
 
-  const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
-
   const renderToolbar = (
     toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
     ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
@@ -198,16 +204,144 @@ export function StandardTable<T>({
     return toolbar;
   };
 
+  const colText = useCallback((col: StdColumn<T>, row: T): string => {
+    const v = col.value ? col.value(row) : "";
+    return v == null ? "" : String(v);
+  }, []);
+
+  const matchesFilters = useCallback(
+    (r: T, exceptKey?: string) => {
+      for (const c of columns) {
+        if (c.key === exceptKey) continue;
+        if (c.filter === "cat") {
+          const sel = catFilters[c.key];
+          if (sel && sel.size > 0 && !sel.has(colText(c, r))) return false;
+        } else if (c.filter === "text") {
+          const val = textFilters[c.key];
+          if (val) {
+            const t = normalize(val).trim();
+            if (t && !normalize(colText(c, r)).includes(t)) return false;
+          }
+        }
+      }
+      return true;
+    },
+    [columns, catFilters, textFilters, colText],
+  );
+
+  const catValues = useMemo(() => {
+    const map: Record<string, { value: string; count: number }[]> = {};
+    for (const c of columns.filter((c) => c.filter === "cat")) {
+      const counts = new Map<string, number>();
+      for (const r of rows) {
+        if (!matchesFilters(r, c.key)) continue;
+        const val = colText(c, r);
+        counts.set(val, (counts.get(val) ?? 0) + 1);
+      }
+      map[c.key] = Array.from(counts.entries())
+        .filter(([v]) => Boolean(v))
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => a.value.localeCompare(b.value, "vi"));
+    }
+    return map;
+  }, [columns, rows, matchesFilters, colText]);
+
+  const filtered = useMemo(
+    () => rows.filter((r) => matchesFilters(r)),
+    [rows, matchesFilters],
+  );
+
+  const hasFilter = useMemo(() => {
+    return columns.some((c) =>
+      c.filter === "cat" ? (catFilters[c.key]?.size ?? 0) > 0
+        : (textFilters[c.key] ?? "").trim().length > 0
+    );
+  }, [columns, catFilters, textFilters]);
+
+  const sortableKey = useCallback((c: StdColumn<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
+  const cycleSort = useCallback((key: string) => setSort((prev) => {
+    if (!prev || prev.key !== key) return { key, dir: "asc" };
+    if (prev.dir === "asc") return { key, dir: "desc" };
+    return null;
+  }), []);
+
+  const sorted = useMemo(() => {
+    if (!sort) return filtered;
+    const col = columns.find(c => c.key === sort.key);
+    if (!col) return filtered;
+    const get = (r: T) => {
+      const v = col.sortValue ? col.sortValue(r) : col.value ? col.value(r) : "";
+      return v == null ? "" : v;
+    };
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      const va = get(a), vb = get(b);
+      if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
+      return String(va).localeCompare(String(vb), "vi", { numeric: true }) * dir;
+    });
+  }, [filtered, sort, columns]);
+
+  const gated = requireFilterToShow && !hasFilter;
+  const fullDisplay = useMemo(() => (gated ? [] : sorted), [gated, sorted]);
+
+  const notifyFilteredTotal = clientPagination?.onFilteredTotalChange;
+  useEffect(() => {
+    notifyFilteredTotal?.(fullDisplay.length);
+  }, [fullDisplay.length, notifyFilteredTotal]);
+
+  const display = useMemo(() => {
+    if (!clientPagination) return fullDisplay;
+    const { page, pageSize } = clientPagination;
+    if (pageSize >= fullDisplay.length) return fullDisplay;
+    const start = Math.max(0, (page - 1) * pageSize);
+    return fullDisplay.slice(start, start + pageSize);
+  }, [fullDisplay, clientPagination]);
+
+  const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
+
+  const toggleCat = (key: string, val: string) => {
+    setCatFilters(prev => {
+      const next = new Map(Object.entries(prev).map(([k, v]) => [k, new Set(v)]));
+      const s = next.get(key) || new Set<string>();
+      if (s.has(val)) s.delete(val);
+      else s.add(val);
+      next.set(key, s);
+      return Object.fromEntries(next);
+    });
+  };
+
+  const clearCat = (key: string) => {
+    setCatFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const clearAllFilters = () => {
+    setCatFilters({});
+    setTextFilters({});
+  };
+
+  const removeFilter = (key: string) => {
+    setCatFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+    setTextFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
+  const isTest = typeof window !== 'undefined' && (window as any).process?.env?.NODE_ENV === 'test';
   const rowVirtualizer = useVirtualizer({
-    count: rows.length,
+    count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 48,
-    overscan: isTest ? rows.length : 10,
+    overscan: isTest ? display.length : 10,
     initialRect: { width: 1280, height: 800 },
-    // Cần observeElementRect vì JSDOM không có ResizeObserver thực sự
     observeElementRect: (instance, cb) => {
       cb({ width: 1280, height: 800 });
       return () => {};
@@ -268,14 +402,14 @@ export function StandardTable<T>({
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2">
-            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: rows, visibleColumns: shownCols })}
+            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: fullDisplay, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
                 selectedRows,
                 visibleColumns: shownCols,
-                allColumns: exportCols, // Truyền exportCols để hành động hàng loạt (như xuất tệp) đủ dữ liệu
-                filteredRows: rows,
-                pageRows: rows,
+                allColumns: exportCols,
+                filteredRows: fullDisplay,
+                pageRows: display,
                 clear: clearSelection
               })
             )}
@@ -328,7 +462,7 @@ export function StandardTable<T>({
                                 key={col.key}
                                 checked={isCurrentlyVisible}
                                 onCheckedChange={() => prefs.toggle(col.key)}
-                                onSelect={(e) => e.preventDefault()}
+                                 onSelect={(e: Event) => e.preventDefault()}
                                 disabled={!canToggle}
                               >
                                 {col.label}
@@ -342,7 +476,7 @@ export function StandardTable<T>({
                       <DropdownMenuSeparator />
                       <DropdownMenuCheckboxItem 
                         className="text-primary focus:text-primary font-medium"
-                        onSelect={(e) => {
+                        onSelect={(e: Event) => {
                           e.preventDefault();
                           prefs.reset();
                         }}
@@ -373,20 +507,69 @@ export function StandardTable<T>({
                 </TooltipProvider>
               </>
             )}
-            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: rows, visibleColumns: shownCols })}
+            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: fullDisplay, visibleColumns: shownCols })}
           </div>
         </div>
       )}
 
 
+      {hasFilter && (
+        <div className="flex flex-wrap items-center gap-2 px-1">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
+          {Object.entries(textFilters).map(([key, val]) => {
+            if (!val) return null;
+            const col = columns.find(c => c.key === key);
+            return (
+              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="truncate max-w-[120px]">{val}</span>
+                <button 
+                  onClick={() => setTextFilters(prev => {
+                    const { [key]: _, ...rest } = prev;
+                    return rest;
+                  })}
+                  className="hover:text-destructive transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            );
+          })}
+          {Object.entries(catFilters).map(([key, sel]) => {
+            if (!sel || sel.size === 0) return null;
+            const col = columns.find(c => c.key === key);
+            return (
+              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
+                <button 
+                  onClick={() => clearCat(key)}
+                  className="hover:text-destructive transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            );
+          })}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={clearAllFilters}
+            className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-destructive"
+          >
+            Xoá tất cả bộ lọc
+          </Button>
+        </div>
+      )}
+
       {isMobile ? (
         <div className="space-y-3">
-          {rows.length === 0 ? (
+          {fullDisplay.length === 0 ? (
             <div className="py-20 text-center text-sm text-muted-foreground border rounded-lg bg-card">
-              {gated ? "Bảng đang trống." : (emptyContent ?? emptyText)}
+              {hasFilter ? "Không có dòng nào khớp bộ lọc" : (gated ? "Bảng đang trống." : (emptyContent ?? emptyText))}
             </div>
           ) : (
-            rows.map((r) => {
+            display.map((r) => {
               const rid = getRowIdInternal(r);
               const isSel = selectable && selected?.has(rid);
               return (
@@ -405,7 +588,7 @@ export function StandardTable<T>({
                         <Checkbox
                           checked={isSel}
                           onCheckedChange={() => toggleRow(rid)}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         />
                       </div>
                     )}
@@ -439,6 +622,8 @@ export function StandardTable<T>({
                   const savedW = prefs.widths[c.key];
                   const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
                   const currentWidth = savedW || parseInt(minWVal || "100") || 120;
+                  const canSort = sortableKey(c);
+                  const sortActive = sort?.key === c.key;
 
                   return (
                     <TableHead
@@ -448,16 +633,48 @@ export function StandardTable<T>({
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
-                        c.align === "right" && "text-right"
+                        c.align === "right" && "text-right",
+                        sortActive && "bg-primary/5"
                       )}
                       style={{ 
                         width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
                         minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                       }}
                     >
-                      <span className="truncate block" title={c.label}>
-                        {c.label}
-                      </span>
+                      <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                        {canSort ? (
+                          <button
+                            type="button"
+                            onClick={() => cycleSort(c.key)}
+                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left"
+                            title="Bấm để sắp xếp"
+                          >
+                            <span className="truncate">{c.label}</span>
+                            {sortActive ? (
+                              sort!.dir === "asc"
+                                ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" />
+                                : <ArrowDown className="h-3 w-3 shrink-0 text-primary" />
+                            ) : (
+                              <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" />
+                            )}
+                          </button>
+                        ) : (
+                          <span className="truncate">{c.label}</span>
+                        )}
+
+                        {c.filter && (
+                          <ColFilter
+                            type={c.filter}
+                            label={c.label}
+                            catValues={catValues[c.key] ?? []}
+                            catSel={catFilters[c.key] ?? new Set()}
+                            onToggleCat={(v: string) => toggleCat(c.key, v)}
+                            onClearCat={() => clearCat(c.key)}
+                            textVal={textFilters[c.key] ?? ""}
+                            onText={(v: string) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
+                          />
+                        )}
+                      </div>
 
                       {/* Resizer handle */}
                       <div
@@ -492,10 +709,15 @@ export function StandardTable<T>({
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     <EmptyState
-                      title={emptyContent ? undefined : emptyText}
-                      description={typeof emptyContent === "string" ? emptyContent : undefined}
+                      title={hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyContent ? undefined : emptyText)}
+                      description={hasFilter ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật" : (typeof emptyContent === "string" ? emptyContent : undefined)}
+                      action={hasFilter ? (
+                        <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
+                          Xoá tất cả bộ lọc
+                        </Button>
+                      ) : undefined}
                     />
-                    {typeof emptyContent !== "string" && emptyContent}
+                    {!hasFilter && typeof emptyContent !== "string" && emptyContent}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -577,5 +799,121 @@ export function StandardTable<T>({
         </Card>
       )}
     </div>
+  );
+}
+
+function ColFilter({
+  type,
+  label,
+  catValues,
+  catSel,
+  onToggleCat,
+  onClearCat,
+  textVal,
+  onText,
+}: {
+  type: "text" | "cat";
+  label: string;
+  catValues: { value: string; count: number }[];
+  catSel: Set<string>;
+  onToggleCat: (v: string) => void;
+  onClearCat: () => void;
+  textVal: string;
+  onText: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const active = type === "text" ? textVal.length > 0 : catSel.size > 0;
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-6 w-6 ml-auto shrink-0 transition-colors",
+            active ? "text-primary bg-primary/10" : "text-muted-foreground/30 hover:text-muted-foreground hover:bg-muted"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Filter className={cn("h-3 w-3", active && "fill-current")} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
+          {active && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 px-1.5 text-[10px] text-destructive hover:bg-destructive/10"
+              onClick={() => {
+                if (type === "text") onText("");
+                else onClearCat();
+              }}
+            >
+              Xoá lọc
+            </Button>
+          )}
+        </div>
+
+        {type === "text" ? (
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                autoFocus
+                placeholder="Tìm nội dung..."
+                value={textVal}
+                onChange={(e) => onText(e.target.value)}
+                className="h-8 pl-8 text-sm"
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground px-1 italic">
+              * Lọc theo từ khóa chứa trong cột
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                autoFocus
+                placeholder="Tìm giá trị..."
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                className="h-8 pl-8 text-sm"
+              />
+            </div>
+            <div className="max-h-[300px] overflow-y-auto pr-1">
+              {catValues
+                .filter((v) => !q || normalize(v.value).includes(normalize(q)))
+                .map((v) => (
+                  <DropdownMenuCheckboxItem
+                    key={v.value}
+                    checked={catSel.has(v.value)}
+                    onCheckedChange={() => onToggleCat(v.value)}
+                    onSelect={(e) => e.preventDefault()}
+                    className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
+                  >
+                    <span className="truncate mr-2">{v.value}</span>
+                    <Badge variant="outline" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
+                      {v.count}
+                    </Badge>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              {catValues.length === 0 && (
+                <div className="py-6 text-center text-xs text-muted-foreground italic">
+                  Không có giá trị khả dụng
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
