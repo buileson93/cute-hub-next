@@ -35,6 +35,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           key: "ngay",
           label: "Ngày",
           sortable: true,
+          hideBelow: "xl",
           value: (g) => g.ngay,
           cell: (g) => <span className="text-sm">{new Date(g.ngay).toLocaleDateString("vi-VN")}</span>,
         },
@@ -49,6 +50,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           key: "kho",
           label: "Kho",
           filter: "cat",
+          hideBelow: "md",
           value: (g) => g.kho?.ten ?? "",
           cell: (g) => <span className="text-sm">{g.kho?.ten ?? "—"}</span>,
         },
@@ -56,6 +58,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           key: "loai",
           label: "Loại",
           filter: "cat",
+          hideBelow: "sm",
           value: (g) => LOAI_GD_META[g.loai].label,
           cell: (g) => {
             const meta = LOAI_GD_META[g.loai];
