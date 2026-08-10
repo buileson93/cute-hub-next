@@ -53,7 +53,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           filter: "cat",
           value: (r) => r.loai ?? "",
           cell: (r) => (
-            <StatusBadge domain="bao_tri" code={r.loai} label={r.loai} />
+            <StatusBadge domain="bao_tri" code={r.loai || undefined} label={r.loai || undefined} />
           ),
         },
         {
