@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState, useEffect } from "react";
-import { Boxes } from "lucide-react";
 
 export interface StdColumn<T> {
   key: string;
@@ -36,9 +35,11 @@ export interface StandardTableProps<T> {
   emptyContent?: React.ReactNode;
   errorContent?: React.ReactNode;
   trangThai?: { dangTai?: boolean; loi?: any };
+  loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
   toolbarRight?: (ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode;
+  toolbarLeft?: (ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode;
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: StdColumn<T>[];
@@ -53,6 +54,15 @@ export interface StandardTableProps<T> {
   countUnit?: string;
   requireFilterToShow?: boolean;
   gated?: boolean;
+  presets?: any[];
+  activePreset?: any;
+  handleSetPreset?: (p: any) => void;
+  isCustomized?: boolean;
+  reset?: () => void;
+  hideExport?: boolean;
+  hideReorderToggle?: boolean;
+  exportName?: string;
+  autoFit?: boolean;
 }
 
 export function StandardTable<T>({
@@ -67,9 +77,11 @@ export function StandardTable<T>({
   emptyContent,
   errorContent,
   trangThai,
+  loadingContent,
   onRowClick,
   rowClassName,
   toolbarRight,
+  toolbarLeft,
   bulkActions,
   tableKey,
   countUnit = "bản ghi",
@@ -105,9 +117,10 @@ export function StandardTable<T>({
 
   return (
     <div className="space-y-3">
-      {(toolbarRight || (selectable && selectedRows.length > 0)) && (
+      {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2">
+            {toolbarLeft && toolbarLeft({ visibleRows: rows, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
                 selectedRows,
@@ -162,7 +175,7 @@ export function StandardTable<T>({
                             {col.label}
                           </span>
                           <div className={cn("text-sm", col.cellClassName)}>
-                            {col.cell ? col.cell(r) : String(col.value(r) ?? "")}
+                            {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                           </div>
                         </div>
                       ))}
@@ -190,7 +203,7 @@ export function StandardTable<T>({
               {trangThai?.dangTai ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24 text-center text-muted-foreground">
-                    Đang tải dữ liệu...
+                    {loadingContent || "Đang tải dữ liệu..."}
                   </TableCell>
                 </TableRow>
               ) : rows.length === 0 ? (
@@ -212,7 +225,7 @@ export function StandardTable<T>({
                       )}
                       {shownCols.map((c) => (
                         <TableCell key={c.key} className={cn(c.cellClassName, c.align === "center" && "text-center", c.align === "right" && "text-right")}>
-                          {c.cell ? c.cell(r) : String(c.value(r) ?? "")}
+                          {c.cell ? c.cell(r) : String(c.value?.(r) ?? "")}
                         </TableCell>
                       ))}
                     </TableRow>
