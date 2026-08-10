@@ -383,6 +383,7 @@ function TongQuanPage() {
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/giay-phep"
+            description="Tỷ lệ tuân thủ hiệu lực giấy phép khai thác và chứng chỉ."
           />
         </div>
       </div>
