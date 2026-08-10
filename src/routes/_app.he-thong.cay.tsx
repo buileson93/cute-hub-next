@@ -8,13 +8,11 @@ import {
   Pencil, Check, X, Save, Loader2, Eye, MapPin, Plus, Minus, Table2, Boxes, Puzzle,
   Download, Upload, ExternalLink, FolderTree, ArrowRightLeft, ArrowUp, ArrowDown, Palette,
   History, Wrench, AlertTriangle, Package, Users, FileText, ClipboardList, BookMarked, Trash2, Info, Plug,
+  SlidersHorizontal, Filter, Tags,
 } from "lucide-react";
 
 import {
-  ReactFlow, ReactFlowProvider, Controls, MiniMap, Panel, useReactFlow,
-  useNodesState, useEdgesState,
-  Handle, Position,
-  type Node, type Edge, type NodeTypes, type NodeProps,
+  ReactFlowProvider, useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useScope } from "@/lib/mirats/scope";
@@ -45,11 +43,7 @@ import { useMyPermissions } from "@/hooks/use-permissions";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
-// Taxonomy giờ đọc từ CSDL nên id phân loại / lĩnh vực là chuỗi tự do.
-type PhanLoaiId = string;
-type LinhVucId = string;
-/** Mảng rỗng ổn định để giữ bảng trống khi chưa lọc. */
-const EMPTY_ROWS: never[] = [];
+
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -89,9 +83,15 @@ import {
   DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger,
   DropdownMenuTrigger, DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
-import { SlidersHorizontal, Filter, Tags } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/CayContext";
+import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
+import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
+import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
+import { buildTree, filterTreeByBadge, statusTone, importanceTone, deviceChips, NH_COLORS, NONE_HT, DUNG_KHAI_THAC_TEN } from "@/components/mirats/he-thong-cay/utils";
+import type { PlGroup, HtGroup, LvGroup, NhGroup, DevNode, BadgeFilter, FocusTarget, StatusCat, ImpCat, InfoChip } from "@/components/mirats/he-thong-cay/types";
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
   validateSearch: (search: Record<string, unknown>): { editTb?: string } => ({
@@ -107,8 +107,19 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
       },
     ],
   }),
-  component: HeThongCayPage,
+  component: HeThongCayPageWrapper,
 });
+
+function HeThongCayPageWrapper() {
+  return (
+    <CayProvider>
+       <ReactFlowProvider>
+         <HeThongCayPage />
+       </ReactFlowProvider>
+    </CayProvider>
+  );
+}
+
 
 /* =============================== Kiểu & hằng =============================== */
 
