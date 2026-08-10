@@ -188,14 +188,13 @@ export function StandardTable<T>({
 
   const parentRef = useRef<HTMLDivElement>(null);
 
+  const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 48,
-    overscan: 10,
-    initialRect: typeof window === "undefined" || (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') 
-      ? { width: 1280, height: 800 } 
-      : undefined,
+    overscan: isTest ? rows.length : 10,
+    initialRect: isTest ? { width: 1280, height: 800 } : undefined,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
