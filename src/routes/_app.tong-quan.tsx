@@ -421,7 +421,10 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">Xu hướng sự cố theo tháng (12 tháng)</CardTitle>
+            <CardTitle className="text-sm">
+              Xu hướng sự cố theo tháng (12 tháng)
+              <p className="text-[10px] font-normal text-muted-foreground mt-1">Biểu đồ thể hiện số lượng sự cố phân loại theo mức độ nghiêm trọng trong vòng 1 năm qua.</p>
+            </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
