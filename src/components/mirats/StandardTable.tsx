@@ -507,7 +507,7 @@ export function StandardTable<T>({
                 </TooltipProvider>
               </>
             )}
-            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: rows, visibleColumns: shownCols })}
+            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: fullDisplay, visibleColumns: shownCols })}
           </div>
         </div>
       )}
