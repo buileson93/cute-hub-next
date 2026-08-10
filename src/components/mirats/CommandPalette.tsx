@@ -360,6 +360,7 @@ type Hit = {
 };
 
 
+
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
