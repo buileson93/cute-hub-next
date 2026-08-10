@@ -51,7 +51,9 @@ let sharedQueue: OfflineQueue | null = null;
 
 export function getOfflineQueue(handlers: HandlerMap = {}): OfflineQueue {
   if (!sharedQueue) {
-    sharedQueue = new OfflineQueue(new SessionStorageAdapter(), handlers);
+    const isBrowser = typeof window !== "undefined";
+    const storage = isBrowser ? new IndexedDBStorage() : new SessionStorageAdapter();
+    sharedQueue = new OfflineQueue(storage, handlers);
   }
   return sharedQueue;
 }
