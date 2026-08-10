@@ -188,7 +188,7 @@ function VatTuPage() {
                       </div>
                     ),
                   },
-                  { key: "loai", label: "Loại", filter: "cat", value: (v) => LOAI_VAT_TU_META[v.loai].label, cell: (v) => <LoaiBadge loai={v.loai} /> },
+                  { key: "loai", label: "Loại", filter: "cat", value: (v) => LOAI_VAT_TU_META[v.loai].label, cell: (v) => <StatBadge loai={v.loai} /> },
                   { key: "dvt", label: "ĐVT", value: (v) => v.don_vi_tinh, cell: (v) => <span className="text-sm">{v.don_vi_tinh}</span> },
                   { key: "don_gia", label: "Đơn giá", align: "right", sortable: true, value: (v) => v.don_gia, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.don_gia)}</span> },
                   { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (v) => v.muc_ton_toi_thieu, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.muc_ton_toi_thieu)}</span> },
