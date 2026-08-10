@@ -1,30 +1,33 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import {
-  Search, HardDrive, Loader2, ChevronRight, Building2, Layers, Network,
-  Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu,
+  Search, HardDrive, Loader2, Building2, Layers, Network,
+  Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu, ChevronRight, Monitor
 } from "lucide-react";
 import { PageBody } from "@/components/mirats/PageBody";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { LyLichThanhPhanPanel } from "@/components/mirats/LyLichLayerPanel";
 import { cn } from "@/lib/utils";
 import { useScope } from "@/lib/mirats/scope";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
+import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
 
 export const Route = createFileRoute("/_app/thiet-bi/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: (search.q as string) || "",
+  }),
   head: () => ({
     meta: [
       { title: "Sổ lý lịch — MIRATS 2.0" },
@@ -35,6 +38,7 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   }),
   component: ThietBiPage,
 });
+
 
 
 /** Tổng hợp số lần bảo dưỡng / sự cố / hỏng hóc theo mã tài sản. */
@@ -56,6 +60,7 @@ interface TreeNode {
 }
 
 function ThietBiPage() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const { scopeAll, donViCode } = useScope();
   const { data: taxo, isLoading, error } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
@@ -74,7 +79,14 @@ function ThietBiPage() {
     [devNameOv],
   );
 
-  const [query, setQuery] = useState("");
+  const search = Route.useSearch();
+  const [query, setQuery] = useState(search.q || "");
+
+  useEffect(() => {
+    if (search.q) setQuery(search.q);
+  }, [search.q]);
+
+
   const [focused, setFocused] = useState(false);
   const [onlyAllocated, setOnlyAllocated] = useState(false);
   const [showRetired, setShowRetired] = useState(false);
@@ -153,8 +165,6 @@ function ThietBiPage() {
   const { data: viTriByHt } = useAllViTriChucNang();
 
   // Dựng cây: Đơn vị → Phân loại → Hệ thống → Thành phần → Tài sản.
-  // Nguồn: dm_he_thong (mọi hệ thống đang có) + he_thong_thanh_phan (mọi thành
-  // phần đang có), gắn tài sản (filtered) vào thành phần qua gan_chuc_nang.
   const tree = useMemo<TreeNode[]>(() => {
     if (!taxo) return [];
     const dvRoots = new Map<string, TreeNode>();
@@ -188,7 +198,6 @@ function ThietBiPage() {
       }
     };
 
-    // 1. Bản đồ thiết bị → thành phần đang gắn (từ gan_chuc_nang hiệu lực).
     const devToTp = new Map<string, { tpId: string; tpTen: string; htId: string }>();
     const tpByHt = viTriByHt ?? new Map();
     for (const [htId, tps] of tpByHt) {
@@ -203,7 +212,6 @@ function ThietBiPage() {
       }
     }
 
-    // 2. Phân devices theo (htId, tpId). __none__ = chưa gắn thành phần.
     const devByHtTp = new Map<string, Map<string, DbDevice[]>>();
     for (const d of filtered) {
       const gan = devToTp.get(d.id);
@@ -215,10 +223,8 @@ function ThietBiPage() {
       arr.push(d); m.set(tpId, arr);
     }
 
-    // Fallback đơn vị: nếu hệ thống chưa gán don_vi_id, suy ra từ đơn vị của
-    // tài sản đang gắn trong hệ thống (từ trường d.don_vi = mã đơn vị).
     const dvIdByMa = new Map(taxo.donViList.map((d) => [d.ma, d.id]));
-    const htDvFallback = new Map<string, string>(); // htId -> donViId
+    const htDvFallback = new Map<string, string>(); 
     for (const d of taxo.devices) {
       if (!d._htId || !d.don_vi) continue;
       const dvId = dvIdByMa.get(d.don_vi);
@@ -227,22 +233,18 @@ function ThietBiPage() {
     const resolveDvId = (h: { id: string; donViId: string }): string =>
       h.donViId || htDvFallback.get(h.id) || "";
 
-    // Trong phạm vi đơn vị hiện tại (theo mã đơn vị).
     const inScope = (dvId: string): boolean => {
       if (scopeAll) return true;
       if (!donViCode) return true;
       return donViMaMap.get(dvId) === donViCode;
     };
 
-    // 3. Duyệt tất cả hệ thống trong danh mục — cả hệ thống chưa gắn tài sản.
     for (const h of taxo.htList) {
       const dvId = resolveDvId(h);
       if (!inScope(dvId)) continue;
       const dvMa = donViMaMap.get(dvId) || "__no_dv__";
       const dvTen = donViTenMap.get(dvId);
-      const dvLabel = dvMa === "__no_dv__"
-        ? "(Chưa gán đơn vị)"
-        : `${dvMa}${dvTen ? " — " + dvTen : ""}`;
+      const dvLabel = dvMa === "__no_dv__" ? "(Chưa gán đơn vị)" : `${dvMa}${dvTen ? " — " + dvTen : ""}`;
       const dvNode = ensure(dvRoots, dvMa, dvLabel, "dv");
       const plId = h.phanLoaiId || "_";
       const plLabel = taxo.plNameMap.get(plId) ?? "(Chưa phân loại)";
@@ -271,7 +273,6 @@ function ThietBiPage() {
       }
     }
 
-    // 4. Tài sản không có he_thong_id → nhánh "(Chưa gán hệ thống)".
     const noHtMap = devByHtTp.get("__no_ht__");
     if (noHtMap) {
       for (const arr of noHtMap.values()) {
@@ -313,6 +314,19 @@ function ThietBiPage() {
   if (error) {
     return <div className="p-8 text-sm text-destructive">Không tải được dữ liệu: {error instanceof Error ? error.message : "Lỗi"}</div>;
   }
+
+  // Lấy danh sách thành phần hiển thị nhanh trên mobile
+  const mobileTps = useMemo(() => {
+    const list: TreeNode[] = [];
+    const walk = (nodes: TreeNode[]) => {
+      for (const n of nodes) {
+        if (n.kind === 'tp' && n.count > 0) list.push(n);
+        if (n.sub.length) walk(n.sub);
+      }
+    };
+    walk(tree);
+    return list.slice(0, 15);
+  }, [tree]);
 
   return (
     <PageBody>
@@ -376,6 +390,7 @@ function ThietBiPage() {
                           key={s.id}
                           type="button"
                           onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/$id", params: { id: s.id } }); }}
+
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <BookOpen className="h-4 w-4 shrink-0 text-primary" />
@@ -430,162 +445,41 @@ function ThietBiPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <TreeView tree={tree} total={filtered.length} histMap={histMap} />
+          {isMobile ? (
+            <div className="grid grid-cols-1 gap-4">
+              {mobileTps.map(n => (
+                <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-sm">{n.label}</h3>
+                      <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
+                    </div>
+                    <div className="flex gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Wrench className="w-3 h-3" /> {n.hist.bt} bảo dưỡng
+                      </div>
+                      <div className="flex items-center gap-1 text-amber-500">
+                        <AlertTriangle className="w-3 h-3" /> {n.hist.sc} sự cố
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t mt-2 flex justify-between items-center">
+                      <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
+                         <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <div className="text-center py-6 bg-muted/30 rounded-lg border border-dashed">
+                <p className="text-xs text-muted-foreground italic">Sử dụng thanh tìm kiếm để tra cứu nhanh Tài sản hoặc Hệ thống trên điện thoại</p>
+              </div>
+            </div>
+          ) : (
+            <TreeView tree={tree} total={filtered.length} histMap={histMap} />
+          )}
         </CardContent>
       </Card>
     </PageBody>
   );
 }
-
-
-/* ------------------------------ Cây (view) ------------------------------ */
-
-function HistBadges({ hist, compact }: { hist: Hist; compact?: boolean }) {
-  if (hist.bt === 0 && hist.sc === 0 && hist.hh === 0) {
-    return compact ? null : <span className="text-xs text-muted-foreground">Chưa có lịch sử</span>;
-  }
-  return (
-    <span className="flex items-center gap-1">
-      {hist.bt > 0 && <Badge variant="outline" className="gap-1 border-slate-300 text-slate-600" title="Bảo dưỡng"><Wrench className="h-3 w-3" />{hist.bt}</Badge>}
-      {hist.sc > 0 && <Badge variant="outline" className="gap-1 border-red-300 text-red-600" title="Sự cố"><AlertTriangle className="h-3 w-3" />{hist.sc}</Badge>}
-      {hist.hh > 0 && <Badge variant="outline" className="gap-1 border-orange-300 text-orange-600" title="Hỏng hóc / thay thế"><Repeat className="h-3 w-3" />{hist.hh}</Badge>}
-    </span>
-  );
-}
-
-function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: number; histMap: Map<string, Hist> }) {
-  const [open, setOpen] = useState<Set<string>>(new Set());
-  const toggle = (k: string) => setOpen((prev) => {
-    const next = new Set(prev);
-    if (next.has(k)) next.delete(k); else next.add(k);
-    return next;
-  });
-  const [tpOpen, setTpOpen] = useState<{ id: string; label: string } | null>(null);
-
-  if (total === 0) {
-    return (
-      <EmptyState
-        icon={HardDrive}
-        title="Không có tài sản phù hợp"
-        description="Chưa có tài sản nào khớp bộ lọc. Thử bỏ bớt điều kiện tìm kiếm hoặc mở phạm vi đơn vị."
-      />
-    );
-  }
-
-
-  return (
-    <>
-      <div className="rounded-md border divide-y">
-        {tree.map((n) => (
-          <TreeBranch
-            key={n.key} node={n} depth={0} path={n.key}
-            open={open} toggle={toggle} histMap={histMap}
-            icon={Building2}
-            onOpenTp={(id, label) => setTpOpen({ id, label })}
-          />
-        ))}
-      </div>
-      <Dialog open={!!tpOpen} onOpenChange={(v) => { if (!v) setTpOpen(null); }}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-primary" />
-              Lý lịch thành phần — {tpOpen?.label}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-1">
-            <LyLichThanhPhanPanel thanhPhanId={tpOpen?.id ?? null} />
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-const DEPTH_ICON = [Building2, Layers, Network, Cpu];
-
-function TreeBranch({
-  node, depth, path, open, toggle, histMap, icon: Icon, onOpenTp,
-}: {
-  node: TreeNode; depth: number; path: string; open: Set<string>; toggle: (k: string) => void;
-  histMap: Map<string, Hist>; icon: React.ComponentType<{ className?: string }>;
-  onOpenTp: (id: string, label: string) => void;
-}) {
-  const isOpen = open.has(path);
-  const isTp = node.kind === "tp";
-  const NextIcon = DEPTH_ICON[Math.min(depth + 1, DEPTH_ICON.length - 1)];
-
-  // Thành phần là LÁ: click để mở sổ lý lịch thành phần (không có tài sản con).
-  if (isTp) {
-    const hasLyLich = Boolean(node.tpId);
-    return (
-      <div className="flex items-center gap-1 pr-3 hover:bg-muted/50">
-        <button
-          type="button"
-          onClick={() => hasLyLich && onOpenTp(node.tpId!, node.label)}
-          disabled={!hasLyLich}
-          className={cn(
-            "flex min-w-0 flex-1 items-center gap-2 py-2 pl-3 text-left text-sm",
-            hasLyLich ? "cursor-pointer" : "cursor-default text-muted-foreground",
-          )}
-          style={{ paddingLeft: 12 + depth * 18 }}
-          title={hasLyLich ? "Mở sổ lý lịch thành phần" : "Nhánh gộp — không có sổ riêng"}
-        >
-          <Cpu className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="min-w-0 flex-1 truncate font-medium">{node.label}</span>
-          <HistBadges hist={node.hist} compact />
-          <Badge variant="secondary" className="ml-1 tabular-nums" title="Số tài sản đang lắp">
-            {node.devices.length}
-          </Badge>
-          {hasLyLich && (
-            <span className="ml-1 shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-              Sổ lý lịch
-            </span>
-          )}
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div className="flex items-center gap-1 pr-3 hover:bg-muted/50">
-        <button
-          onClick={() => toggle(path)}
-          className="flex min-w-0 flex-1 items-center gap-2 py-2 pl-3 text-left text-sm"
-          style={{ paddingLeft: 12 + depth * 18 }}
-        >
-          <ChevronRight className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", isOpen && "rotate-90")} />
-          <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="min-w-0 flex-1 truncate font-medium">{node.label}</span>
-          <HistBadges hist={node.hist} compact />
-          <Badge variant="secondary" className="ml-1 tabular-nums">{node.count}</Badge>
-        </button>
-        {node.kind === "ht" && node.sysId && (
-          <Link
-            to="/he-thong/$id"
-            params={{ id: node.sysId }}
-            onClick={(e) => e.stopPropagation()}
-            className="flex shrink-0 items-center gap-1 rounded border px-2 py-1 text-xs text-primary hover:bg-primary/10"
-            title="Mở sổ lý lịch hệ thống"
-          >
-            <BookOpen className="h-3.5 w-3.5" /> Sổ hệ thống
-          </Link>
-        )}
-      </div>
-
-      {isOpen && (
-        <div>
-          {node.sub.map((c) => (
-            <TreeBranch
-              key={c.key} node={c} depth={depth + 1} path={`${path}/${c.key}`}
-              open={open} toggle={toggle} histMap={histMap} icon={NextIcon}
-              onOpenTp={onOpenTp}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-

@@ -4,7 +4,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 
 
 export interface StdColumn<T> {
@@ -99,8 +100,26 @@ export function StandardTable<T>({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const isMobile = vw > 0 && vw < 768;
-  const shownCols = columns.filter((c) => !c.hidden);
+  const isMobile = vw > 0 && vw < BP_PX.md;
+  
+  const shownCols = useMemo(() => {
+    return columns.filter((c) => {
+      if (c.hidden) return false;
+      if (!c.hideBelow) return true;
+      
+      const threshold = typeof c.hideBelow === "number" 
+        ? c.hideBelow 
+        : (BP_PX as any)[c.hideBelow] || BP_PX.md;
+        
+      return vw >= threshold;
+    });
+  }, [columns, vw]);
+
+  // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
+  // bỏ qua hideBelow để đảm bảo toàn vẹn dữ liệu báo cáo (Giải quyết N29)
+  const exportCols = useMemo(() => {
+    return columns.filter(c => !c.hidden);
+  }, [columns]);
   const getRowIdInternal = (r: T): string => (getRowId ? getRowId(r) : (r as any).id);
 
   const toggleRow = (id: string) => {
@@ -139,7 +158,7 @@ export function StandardTable<T>({
               bulkActions({
                 selectedRows,
                 visibleColumns: shownCols,
-                allColumns: columns,
+                allColumns: exportCols, // Truyền exportCols để hành động hàng loạt (như xuất tệp) đủ dữ liệu
                 filteredRows: rows,
                 pageRows: rows,
                 clear: clearSelection

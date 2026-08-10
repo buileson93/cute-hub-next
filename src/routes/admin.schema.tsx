@@ -33,6 +33,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 
 export const Route = createFileRoute("/admin/schema")({
   head: () => ({
@@ -243,6 +244,19 @@ function AdminSchemaPage() {
   const { loading, session, hasRole } = useSession();
   const isAdmin = hasRole("admin");
   const isMobile = useIsMobile();
+  
+  if (isMobile) {
+    return (
+      <AppShell>
+        <DesktopOnly 
+          featureName="Sơ đồ CSDL & Quản trị Schema"
+          reason="Việc quản trị lược đồ cơ sở dữ liệu và xem sơ đồ quan hệ (ERD) cần không gian màn hình lớn để hiển thị các bảng và đường nối phức tạp. Hãy thực hiện thao tác này trên máy tính để tránh sai sót dữ liệu."
+        >
+          <div />
+        </DesktopOnly>
+      </AppShell>
+    );
+  }
 
   useEffect(() => {
     if (loading) return;
