@@ -37,10 +37,11 @@ function GopGachPage() {
   const { data: userScore } = useQuery({
     queryKey: ["dong_gop_diem", "summary", user?.id],
     queryFn: async () => {
+      if (!user?.id) throw new Error("Vui lòng đăng nhập");
       const { data, error } = await supabase
         .from("dong_gop_diem")
         .select("diem")
-        .eq("user_id", user?.id);
+        .eq("user_id", user.id);
       if (error) throw error;
       return (data || []).reduce((acc, cur) => acc + cur.diem, 0);
     },
@@ -50,6 +51,8 @@ function GopGachPage() {
   const submit = useMutation({
     mutationFn: async () => {
       if (!user?.id) throw new Error("Vui lòng đăng nhập");
+      if (!nhiemVu) throw new Error("Không có nhiệm vụ");
+
       const { error: crError } = await supabase.rpc("create_change_request", {
         p_loai: (nhiemVu.entity === "thiet_bi" ? "thiet_bi.propose_field" : "he_thong.propose_field") as any,
         p_payload: {
