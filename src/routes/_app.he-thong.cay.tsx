@@ -168,12 +168,6 @@ function HeThongCayPage() {
     }
   });
 
-  const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
-  const error = errorOverrides || errorTaxo || errorDevices;
-  const state = isLoading ? "loading" : error ? "error" : viewTree.length === 0 ? "empty" : "success";
-  const isFiltering = searchQuery.trim() !== "" || badgeFilter.length > 0;
-
-
   const { tree } = useMemo(() => buildTree(
     devices as any,
     taxonomy?.plList || [],
@@ -182,6 +176,12 @@ function HeThongCayPage() {
   ), [devices, taxonomy, htMind, nhMind]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
+
+  const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
+  const error = errorOverrides || errorTaxo || errorDevices;
+  const state = isLoading ? "loading" : error ? "error" : viewTree.length === 0 ? "empty" : "success";
+  const isFiltering = searchQuery.trim() !== "" || (Array.isArray(badgeFilter) ? badgeFilter.length > 0 : !!badgeFilter);
+
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => {
     setTarget({ kind, ma });
