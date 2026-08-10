@@ -4,8 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft, AlertTriangle, Clock, Activity, ShieldAlert, Wrench, User, Calendar,
   HardDrive, Network, Building2, FileText, Package, Sparkles, Link2, Unlink,
+  History, Info, Files, Settings, LayoutList,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DetailLayout, DetailCard, DetailInfoGrid } from "@/components/mirats/DetailLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
