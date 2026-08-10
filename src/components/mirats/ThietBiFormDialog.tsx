@@ -362,6 +362,8 @@ export function ThietBiFormDialog({
       onSubmit={async (v) => {
         await save.mutateAsync(v);
       }}
+      wizardSteps={["Nhận dạng", "Vị trí", "Bổ sung"]}
     />
+
   );
 }
