@@ -8,7 +8,8 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Filter, SlidersHorizontal, ArrowUp, ArrowDown, ChevronsUpDown, RotateCcw, X } from "lucide-react";
+import { normalize } from "@/lib/mirats/global-search";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -98,10 +99,15 @@ export function StandardTable<T>({
   bulkActions,
   tableKey,
   countUnit = "bản ghi",
-  gated,
+  gated: _gated,
+  requireFilterToShow,
   presets,
   activePreset,
 }: StandardTableProps<T>) {
+  const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
+  const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
+  const [textFilters, setTextFilters] = useState<Record<string, string>>({});
+  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
   
   useEffect(() => {
