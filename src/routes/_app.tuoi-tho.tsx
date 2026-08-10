@@ -211,7 +211,7 @@ function TuoiThoPage() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-2 grid grid-cols-4 gap-2 text-center text-xs">
+            <div className="mt-2 grid grid-cols-2 @sm:grid-cols-4 gap-2 text-center text-xs">
               {distribution.map((d) => (
                 <div key={d.loai}>
                   <div className="mx-auto h-2 w-2 rounded-full" style={{ background: d.hex }} />
