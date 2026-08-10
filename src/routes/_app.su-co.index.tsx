@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { DataState } from "@/components/mirats/DataState";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { ContextualToolbar } from "@/components/mirats/ContextualToolbar";
 import { FileDown as FileDownIcon, XCircle } from "lucide-react";
@@ -99,7 +100,9 @@ function downloadCsv(name: string, content: string) {
 }
 
 function SuCoPage() {
-  const { suCo } = useScope();
+  const { suCo, loading: isLoading } = useScope();
+  const error = null; // useScope currently doesn't expose aggregate error state
+  const refetch = () => qc.invalidateQueries({ queryKey: ["operations_data"] });
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
@@ -131,6 +134,7 @@ function SuCoPage() {
     return d >= from;
   }
 
+  const isFiltering = query.trim() !== "" || tt !== "all" || period !== "all";
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return suCo.filter((s) => {
@@ -147,6 +151,9 @@ function SuCoPage() {
       );
     });
   }, [suCo, query, tt, period, devByMa, htNameOf]);
+
+  const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
+
 
   const stats = useMemo(() => {
     let open = 0, severe = 0, downtime = 0;
@@ -622,66 +629,67 @@ function SuCoPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <StandardTable
-            tableKey="su_co_nhat_ky_list"
-            columns={logColumns}
-            rows={rows}
-            getRowId={(s) => s.ma_su_co}
-            selectable
-            bulkActions={({ selectedRows, clear }) => (
-              <>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                    clear();
-                  }}
-                >
-                  <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
-                </Button>
-                <ContextualToolbar
-                  selectionCount={selectedRows.length}
-                  onDismiss={clear}
-                  actions={[
-                    {
-                      id: "export-word",
-                      label: "Xuất Word",
-                      icon: FileDownIcon,
-                      supportsBulk: true,
-                      onSelect: () => {
-                        exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                        clear();
-                      },
-                    },
-                    {
-                      id: "close",
-                      label: "Đóng sự cố",
-                      icon: XCircle,
-                      supportsBulk: false,
-                      onSelect: () => {
-                        const first = selectedRows[0];
-                        if (!first) return;
-                        if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
-                        else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
-                      },
-                    },
-                  ]}
-                />
-              </>
-            )}
-            emptyContent={
-              <EmptyState
-                icon={AlertTriangle}
-                title="Không có sự cố phù hợp"
-                description="Không có sự cố nào khớp bộ lọc hiện tại. Thử mở rộng khoảng thời gian hoặc tạo báo cáo mới."
-                action={
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Tạo sự cố</Link>
-                  </Button>
-                }
-              />
+          <DataState
+            state={state}
+            isFiltering={isFiltering}
+            onRetry={refetch}
+            emptyAction={
+              <Button onClick={() => { setQuery(""); setTt("all"); setPeriod("all"); }} variant="outline" size="sm">
+                Xoá bộ lọc
+              </Button>
             }
-          />
+          >
+            <StandardTable
+              tableKey="su_co_nhat_ky_list"
+              columns={logColumns}
+              rows={rows}
+              getRowId={(s) => s.ma_su_co}
+              selectable
+              bulkActions={({ selectedRows, clear }) => (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                      clear();
+                    }}
+                  >
+                    <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
+                  </Button>
+                  <ContextualToolbar
+                    selectionCount={selectedRows.length}
+                    onDismiss={clear}
+                    actions={[
+                      {
+                        id: "export-word",
+                        label: "Xuất Word",
+                        icon: FileDownIcon,
+                        supportsBulk: true,
+                        onSelect: () => {
+                          exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                          clear();
+                        },
+                      },
+                      {
+                        id: "close",
+                        label: "Đóng sự cố",
+                        icon: XCircle,
+                        supportsBulk: false,
+                        onSelect: () => {
+                          const first = selectedRows[0];
+                          if (!first) return;
+                          if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
+                          else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
+                        },
+                      },
+                    ]}
+                  />
+                </>
+              )}
+            />
+          </DataState>
+
+
 
           {filtered.length > 40 && (
             <div className="mt-3 text-center">

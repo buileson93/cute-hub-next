@@ -15,6 +15,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DataState } from "@/components/mirats/DataState";
 import { supabase } from "@/integrations/backend/client";
 import {
   useDbTaxonomy,
@@ -133,8 +134,8 @@ function HeThongCayPage() {
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
   const { roles } = useSession();
 
-  const { data: overrides } = useOverrides();
-  const { data: taxonomy } = useDbTaxonomy();
+  const { data: overrides, isLoading: loadingOverrides, error: errorOverrides, refetch: refetchOverrides } = useOverrides();
+  const { data: taxonomy, isLoading: loadingTaxo, error: errorTaxo } = useDbTaxonomy();
   const plMind = usePlMind(overrides, taxonomy);
   const nhMind = useNhMind(overrides, taxonomy);
   const htMind = useHtMind(overrides, taxonomy);
@@ -143,7 +144,7 @@ function HeThongCayPage() {
   const { data: posByHt } = useAllViTriChucNang();
 
 
-  const { data: devices = EMPTY_ROWS } = useQuery({
+  const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, error: errorDevices, refetch: refetchDevices } = useQuery({
     queryKey: ["thiet_bi_cay", groupMode],
     queryFn: async () => {
       let q = supabase.from("thiet_bi").select(`
@@ -175,6 +176,12 @@ function HeThongCayPage() {
   ), [devices, taxonomy, htMind, nhMind]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
+
+  const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
+  const error = errorOverrides || errorTaxo || errorDevices;
+  const state = isLoading ? "loading" : error ? "error" : viewTree.length === 0 ? "empty" : "success";
+  const isFiltering = searchQuery.trim() !== "" || (Array.isArray(badgeFilter) ? badgeFilter.length > 0 : !!badgeFilter);
+
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => {
     setTarget({ kind, ma });
@@ -233,57 +240,77 @@ function HeThongCayPage() {
       </div>
 
       <PageBody noPadding className="relative bg-muted/10">
-        {display === "tree" && (
-          <div className="h-full overflow-y-auto p-4 custom-scrollbar">
-            <TreeView 
+        <DataState
+          state={state}
+          loadingType="drawer"
+          title={isFiltering ? "Không tìm thấy kết quả" : "Cây hệ thống trống"}
+          description={
+            isFiltering 
+              ? "Thử xoá từ khoá tìm kiếm hoặc bộ lọc để xem đầy đủ cây hệ thống."
+              : "Hệ thống chưa có dữ liệu cây phân cấp nào."
+          }
+          onRetry={() => { refetchOverrides(); refetchDevices(); }}
+          emptyAction={
+            isFiltering ? (
+              <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); /* badgeFilter is context-managed */ }}>
+                Xoá tìm kiếm
+              </Button>
+            ) : undefined
+          }
+          className="h-full"
+        >
+          {display === "tree" && (
+            <div className="h-full overflow-y-auto p-4 custom-scrollbar">
+              <TreeView 
+                tree={viewTree as any}
+                plLabel={plMind}
+                lvLabel={() => ""}
+                nhLabel={nhMind}
+                htMind={htMind}
+                tbLabel={tbMind}
+                canManage={canManage && editMode}
+                onOpenEditor={onOpenEditor}
+                onHistory={onHistory}
+                onIncident={() => {}}
+                onMaint={() => {}}
+                onRecord={onRecord}
+                onRename={(kind, ma, ten) => {
+                  import("@/lib/mirats/ui/save-cell-securely").then(m => 
+                    m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
+                  ).catch(e => toast.error(e.message));
+                }}
+                onMoveSystem={() => {}}
+                onMoveGroup={() => {}}
+                onMoveDevice={() => {}}
+                posByHt={posByHt || new Map()}
+              />
+            </div>
+          )}
+          
+          {display === "mindmap" && (
+            <CayMindMap 
               tree={viewTree as any}
-              plLabel={plMind}
-              lvLabel={() => ""}
-              nhLabel={nhMind}
-              htMind={htMind}
-              tbLabel={tbMind}
+              posByHt={posByHt || new Map()}
+              scopeText="Toàn hệ thống"
               canManage={canManage && editMode}
-              onOpenEditor={onOpenEditor}
-              onHistory={onHistory}
-              onIncident={() => {}}
-              onMaint={() => {}}
-              onRecord={onRecord}
               onRename={(kind, ma, ten) => {
                 import("@/lib/mirats/ui/save-cell-securely").then(m => 
                   m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
                 ).catch(e => toast.error(e.message));
               }}
+              onOpenEditor={onOpenEditor}
+              onHistory={onHistory}
+              onIncident={() => {}}
+              onMaint={() => {}}
+              onRecord={onRecord}
               onMoveSystem={() => {}}
-              onMoveGroup={() => {}}
-              onMoveDevice={() => {}}
-              posByHt={posByHt || new Map()}
+              plMind={plMind}
+              nhMind={nhMind}
+              htMind={htMind}
+              tbMind={tbMind}
             />
-          </div>
-        )}
-        
-        {display === "mindmap" && (
-          <CayMindMap 
-            tree={viewTree as any}
-            posByHt={posByHt || new Map()}
-            scopeText="Toàn hệ thống"
-            canManage={canManage && editMode}
-            onRename={(kind, ma, ten) => {
-              import("@/lib/mirats/ui/save-cell-securely").then(m => 
-                m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
-              ).catch(e => toast.error(e.message));
-            }}
-            onOpenEditor={onOpenEditor}
-            onHistory={onHistory}
-            onIncident={() => {}}
-            onMaint={() => {}}
-            onRecord={onRecord}
-            onMoveSystem={() => {}}
-            plMind={plMind}
-            nhMind={nhMind}
-            htMind={htMind}
-            tbMind={tbMind}
-          />
-        )}
+          )}
+        </DataState>
 
 
         {display === "health" && (
