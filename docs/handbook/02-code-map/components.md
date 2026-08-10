@@ -1,6 +1,16 @@
 # 02 — Code map: Components (`src/components/mirats/`)
 
-128 component nghiệp vụ. shadcn primitives ở `src/components/ui/`.
+212 component nghiệp vụ. shadcn primitives ở `src/components/ui/`.
+
+## Cấu trúc thư mục mới (Đợt tái cấu trúc 8/2026)
+
+- `app-shell/`: Layout chính, navigation, user profile, `MobileNav`.
+- `he-thong-cay/`: Logic hiển thị cây kỹ thuật, `TreeView`, `CayMindMap`.
+- `thiet-bi-detail/`: Sổ lý lịch tài sản, các tab thông tin chi tiết, `ThietBiDetailDrawer`.
+- `phan-quyen/`: Ma trận quyền, logic RBAC, `MultiRoleBadge`.
+- `vat-tu/`: Quản lý kho, dự phòng, tương thích vật tư.
+- `tuan-thu/`: Quản lý giấy phép (GPKT), kiểm định, cảnh báo.
+- `so-ly-lich/`: Các component đặc thù cho việc in ấn và xem lịch sử tài sản.
 
 ## Nhóm chính
 
