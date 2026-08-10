@@ -12,9 +12,10 @@ import {
   CartesianGrid,
 } from "recharts";
 import {
-  HardDrive, ShieldCheck, AlertTriangle, Clock, CheckCircle2, ArrowRight, HeartPulse,
+  HardDrive, ShieldCheck, AlertTriangle, Clock, CheckCircle2, HeartPulse,
   Wrench, Activity, Radio, TrendingUp, Target, Gauge, Download, Package, Search,
 } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
