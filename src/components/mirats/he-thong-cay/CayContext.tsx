@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import type { SearchItem, FocusTarget, BadgeFilter, PlGroup } from "./types";
 
-export type DisplayMode = "tree" | "table" | "mindmap";
+export type DisplayMode = "tree" | "table" | "mindmap" | "health" | "history";
 
 interface CayContextType {
   display: DisplayMode;
