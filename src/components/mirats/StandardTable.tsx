@@ -38,8 +38,8 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: (ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode;
-  toolbarLeft?: (ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode;
+  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: StdColumn<T>[];
@@ -48,6 +48,7 @@ export interface StandardTableProps<T> {
     pageRows: T[];
     clear: () => void;
   }) => React.ReactNode;
+
   pagination?: any;
   clientPagination?: any;
   tableKey?: string;
