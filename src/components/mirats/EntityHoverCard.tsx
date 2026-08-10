@@ -88,23 +88,32 @@ export function EntityHoverCard({
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-3 border-b bg-muted/40 px-4 py-3">
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {view.ten}
-            </div>
-            <div className="mt-0.5 truncate text-sm font-semibold text-foreground">
-              {tieuDe}
-            </div>
-            {phu && (
-              <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                {phu}
-              </div>
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            {loai === "dm_model" && (
+              <ModelThumbSmall 
+                url={row.hinh_anh as string | null} 
+                ten={tieuDe} 
+              />
             )}
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {view.ten}
+              </div>
+              <div className="mt-0.5 truncate text-sm font-semibold text-foreground">
+                {tieuDe}
+              </div>
+              {phu && (
+                <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                  {phu}
+                </div>
+              )}
+            </div>
           </div>
           {view.badgeTrangThai && (
             <StatusBadge domain={view.badgeTrangThai.domain} code={badgeCode ?? null} />
           )}
         </div>
+
 
         {/* Highlight strip */}
         {highlightFields.length > 0 && (
