@@ -342,25 +342,20 @@ function Dashboard() {
         icon={LayoutDashboard}
         description="Chào mừng bạn quay lại MIRATS. Đây là tóm tắt các hoạt động bạn cần chú ý trong hôm nay."
       />
-      {/* 2026: Trung tâm hành động - Chất lượng dữ liệu & Gamification */}
-      <Card className="mb-6 bg-primary/5 border-primary/20 overflow-hidden relative group">
-        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-          <Database className="w-24 h-24 text-primary" />
-        </div>
-        <CardContent className="pt-6 relative z-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-3 text-center md:text-left flex-1">
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <Badge className="bg-primary/20 text-primary border-none text-[10px] uppercase font-bold tracking-widest">MIRATS 2.0</Badge>
-                <span className="text-xs text-muted-foreground flex items-center gap-1"><Sparkles className="w-3 h-3" /> Data Quality Intelligence</span>
+      {/* Action Center - Refactored to only display Tasks/Quality - Analytical Charts Moved to Tong-Quan */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" /> Tiến độ làm sạch dữ liệu
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <p className="text-3xl font-black text-primary">{completeness.avg_thiet_bi || 0}%</p>
+                <p className="text-[10px] text-muted-foreground uppercase">Thiết bị</p>
               </div>
-              <h2 className="text-xl font-bold">Tiến độ làm sạch dữ liệu</h2>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto md:mx-0">
-                Góp phần hoàn thiện thông tin thiết bị giúp hệ thống phân tích và dự báo sự cố chính xác hơn.
-              </p>
-              <div className="flex items-center justify-center md:justify-start gap-6 pt-2">
-                <div className="text-center">
-                  <p className="text-3xl font-black text-primary">{completeness.avg_thiet_bi || 0}%</p>
                   <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Độ hoàn thiện</p>
                 </div>
                 <div className="w-px h-8 bg-border" />
