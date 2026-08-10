@@ -363,6 +363,8 @@ export function ThietBiFormDialog({
       maxWidth="2xl"
       onSubmit={async (v) => {
         await save.mutateAsync(v);
+        // Clear draft on success
+        setPref(draftKey, null);
       }}
       wizardSteps={["Nhận dạng", "Vị trí", "Bổ sung"]}
     />
