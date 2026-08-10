@@ -9971,6 +9971,9 @@ export type Database = {
         | "danh_muc.deactivate"
         | "role.grant"
         | "role.revoke"
+        | "thiet_bi.propose_field"
+        | "he_thong.propose_field"
+        | "dm.propose_new"
       change_request_status:
         | "pending"
         | "approved"
@@ -10226,6 +10229,9 @@ export const Constants = {
         "danh_muc.deactivate",
         "role.grant",
         "role.revoke",
+        "thiet_bi.propose_field",
+        "he_thong.propose_field",
+        "dm.propose_new",
       ],
       change_request_status: [
         "pending",
