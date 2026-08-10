@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger, DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { useCayContext } from "./CayContext";
-import type { MindKind, MindData, PlGroup, HtGroup, MoveTarget, MoveReq } from "./types";
+import type { MindKind, MindData, PlGroup, HtGroup, MoveTarget, MoveReq, MoveGroupReq, MoveDeviceReq } from "./types";
 import { LEVEL_META, STATUS_TONE } from "./types";
 import { parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
 import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils";
@@ -239,6 +239,8 @@ export function CayMindMap({
   onMaint,
   onRecord,
   onMoveSystem,
+  onMoveGroup,
+  onMoveDevice,
   plMind,
   nhMind,
   htMind,
@@ -257,15 +259,12 @@ export function CayMindMap({
   onMoveSystem: (req: MoveReq) => void;
   onMoveGroup: (req: MoveGroupReq) => void;
   onMoveDevice: (req: MoveDeviceReq) => void;
-
-  onMoveGroup: (req: MoveGroupReq) => void;
-  onMoveDevice: (req: MoveDeviceReq) => void;
-
   plMind: (id: string) => string;
   nhMind: (ma: string) => string;
   htMind: (ma: string) => string;
   tbMind: (t: any) => string;
 }) {
+
   const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
   const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
   const [activeId, setActiveId] = useState<string | null>(null);
