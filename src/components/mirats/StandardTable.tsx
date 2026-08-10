@@ -6,6 +6,7 @@ import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { useState, useEffect, useMemo } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
+import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 
 
 export interface StdColumn<T> {
@@ -100,26 +101,55 @@ export function StandardTable<T>({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // --- Tầng 1: Column Prefs (User Settings) ---
+  const allKeys = useMemo(() => columns.map(c => c.key), [columns]);
+  const defaultHidden = useMemo(() => 
+    columns.filter(c => c.defaultHidden).map(c => c.key), 
+    [columns]
+  );
+  
+  const prefs = useColumnPrefs(tableKey || "default", allKeys, defaultHidden);
+
   const isMobile = vw > 0 && vw < BP_PX.md;
   
+  // Sắp xếp cột theo thứ tự người dùng đã chọn
+  const sortedColumns = useMemo(() => {
+    if (!tableKey) return columns;
+    const order = prefs.order;
+    return [...columns].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+  }, [columns, tableKey, prefs.order]);
+
   const shownCols = useMemo(() => {
-    return columns.filter((c) => {
-      if (c.hidden) return false;
-      if (!c.hideBelow) return true;
+    return sortedColumns.filter((c) => {
+      // Tầng 1: Người dùng ẩn cột cố tình -> Ẩn mọi nơi
+      if (tableKey && (prefs.hidden as Set<string>).has(c.key)) return false;
       
+      // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn mọi nơi
+      if (c.hidden) return false;
+
+      // Tầng 2: Ẩn theo bề rộng màn hình (hideBelow) -> Chỉ ẩn trên UI
+      if (!c.hideBelow) return true;
       const threshold = typeof c.hideBelow === "number" 
         ? c.hideBelow 
         : (BP_PX as any)[c.hideBelow] || BP_PX.md;
-        
       return vw >= threshold;
     });
-  }, [columns, vw]);
+  }, [sortedColumns, tableKey, prefs.hidden, vw]);
 
   // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
-  // bỏ qua hideBelow để đảm bảo toàn vẹn dữ liệu báo cáo (Giải quyết N29)
+  // bỏ qua Tầng 2 (hideBelow) nhưng vẫn áp dụng Tầng 1 (User Prefs) và Tầng 3 (Hardcoded hidden)
   const exportCols = useMemo(() => {
-    return columns.filter(c => !c.hidden);
-  }, [columns]);
+    return sortedColumns.filter(c => {
+      // Tầng 1: Người dùng ẩn cột cố tình -> Ẩn cả trong tệp xuất
+      if (tableKey && (prefs.hidden as Set<string>).has(c.key)) return false;
+
+      // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn cả trong tệp xuất
+      if (c.hidden) return false;
+
+      // Bỏ qua Tầng 2 (hideBelow) để đảm bảo toàn vẹn dữ liệu báo cáo
+      return true;
+    });
+  }, [sortedColumns, tableKey, prefs.hidden]);
   const getRowIdInternal = (r: T): string => (getRowId ? getRowId(r) : (r as any).id);
 
   const toggleRow = (id: string) => {
