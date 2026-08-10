@@ -1,18 +1,12 @@
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { createFileRoute } from "@tanstack/react-router";
-import { InfoHint } from "@/components/mirats/InfoHint";
 import { useMemo, useState } from "react";
 import {
-  Search, ExternalLink, CheckCircle2, AlertTriangle, Clock, Ban, Building2, ShieldCheck, CalendarClock, Plus, Pencil, Eye,
+  CheckCircle2, AlertTriangle, Clock, ShieldCheck, CalendarClock, Plus,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// NOTE: Bảng tổng hợp bên dưới (Phân bổ theo đơn vị, Hệ thống thiếu GP mới) giữ nguyên <Table>
-// vì mang tính CHI TIẾT/tổng hợp không phải danh sách thao tác. Chỉ danh sách chính chuyển sang StandardTable.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Combobox } from "@/components/mirats/Combobox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -26,8 +20,8 @@ import { GiayPhepFormDialog } from "@/components/mirats/GiayPhepFormDialog";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { GpktImportDialog } from "@/components/mirats/GpktImportDialog";
 import { GpktBulkImportDialog } from "@/components/mirats/GpktBulkImportDialog";
-import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
-import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
+import { AssetRegistryBook } from "@/components/mirats/tuan-thu/AssetRegistryBook";
+import { ComplianceTimeline } from "@/components/mirats/tuan-thu/ComplianceTimeline";
 
 
 export const Route = createFileRoute("/_app/giay-phep")({
