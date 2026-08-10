@@ -43,40 +43,51 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                 const active = isActive(pathname, item);
 
                 return (
-                  <Tooltip key={item.key}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to={item.route}
-                        onClick={onNavigate}
-                        className={cn(
-                          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          active 
-                            ? "bg-primary/10 text-primary" 
-                            : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                          collapsed && "justify-center px-0 py-2.5"
-                        )}
+                const link = (
+                  <Link
+                    key={item.key}
+                    to={item.route}
+                    onClick={onNavigate}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      active 
+                        ? "bg-primary/10 text-primary" 
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      collapsed && "justify-center px-0 py-2.5"
+                    )}
+                  >
+                    <div className="relative">
+                      <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
+                      {collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
+                        <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border-2 border-sidebar bg-primary" />
+                      )}
+                    </div>
+                    {!collapsed && <span className="truncate">{item.nhan}</span>}
+                    {!collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
+                      <div 
+                        className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-[10px] font-bold text-primary"
+                        aria-label={`${badges[item.badgeKey]} việc cần xử lý`}
                       >
-                        <div className="relative">
-                          <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
-                          {collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
-                            <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border-2 border-sidebar bg-primary" />
-                          )}
-                        </div>
-                        {!collapsed && <span className="truncate">{item.nhan}</span>}
-                        {!collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
-                          <div 
-                            className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-[10px] font-bold text-primary"
-                            aria-label={`${badges[item.badgeKey]} việc cần xử lý`}
-                          >
-                            {badges[item.badgeKey] > 99 ? "99+" : badges[item.badgeKey]}
-                          </div>
-                        )}
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className={cn("md:hidden", collapsed && "md:block")}>
-                      {item.nhan}
-                    </TooltipContent>
-                  </Tooltip>
+                        {badges[item.badgeKey] > 99 ? "99+" : badges[item.badgeKey]}
+                      </div>
+                    )}
+                  </Link>
+                );
+
+                if (collapsed) {
+                  return (
+                    <Tooltip key={item.key}>
+                      <TooltipTrigger asChild>
+                        {link}
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        {item.nhan}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
+                return link;
                 );
               })}
             </nav>
