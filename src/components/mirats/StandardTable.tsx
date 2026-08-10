@@ -108,15 +108,14 @@ export function StandardTable<T>({
   
   // Nối presets vào useColumnPrefs khi component mount/update
   useEffect(() => {
-    if (presets && prefs.setPreset) {
+    if (presets && prefs.setPreset && prefs.ready) {
       const currentPreset = presets.find(p => p.id === activePreset);
-      if (currentPreset && !prefs.isCustomized) {
-        // Hỗ trợ cả 3 format: visibleKeys (mới), columns (ThanhPhanTable), cot (ThietBiTable)
+      if (currentPreset && !prefs.isCustomized && prefs.activePreset !== activePreset) {
         const visibleKeys = currentPreset.visibleKeys || currentPreset.columns || currentPreset.cot || [];
         prefs.setPreset(currentPreset.id, visibleKeys, currentPreset.orderKeys || visibleKeys);
       }
     }
-  }, [presets, activePreset, prefs.ready, prefs.isCustomized]);
+  }, [presets, activePreset, prefs.ready, prefs.isCustomized, prefs.activePreset]);
 
   const isMobile = vw > 0 && vw < BP_PX.md;
   

@@ -390,6 +390,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
         <StandardTable<ThanhPhanRow>
           tableKey={tableKey}
           rows={filtered}
+          trangThai={{ dangTai: isLoading, loi: error }}
           clientPagination={{ page: currentPage, pageSize, onFilteredTotalChange: setFilteredTotal }}
           getRowId={(r) => r.id}
           requireFilterToShow={false}
