@@ -157,7 +157,13 @@ export function NodeEditorSheet({
 
           {target?.kind === "ht" && <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="he_thong" />}
           {target?.kind === "tb" && <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="thiet_bi" />}
+          {target?.kind === "tb" && (
+             <div className="pt-4 border-t text-[10px] text-muted-foreground italic">
+               * Nếu bạn không có quyền ghi trực tiếp, thay đổi sẽ được tạo thành đề xuất phê duyệt.
+             </div>
+          )}
         </fieldset>
+
 
         <div className="space-y-2 border-t pt-3">
           {canManage && (
