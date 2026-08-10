@@ -268,8 +268,7 @@ function HeThongCayPage() {
             <Activity className="h-12 w-12 mb-4 opacity-20" />
             <h3 className="text-lg font-medium">Bản đồ sức khỏe hệ thống</h3>
             <p className="max-w-md text-center text-sm mt-2">Tính năng đang được chuyển sang module HealthMonitor chuyên biệt.</p>
-      </PageBody>
-
+          </div>
         )}
 
         {display === "history" && (
@@ -279,8 +278,8 @@ function HeThongCayPage() {
             <p className="max-w-md text-center text-sm mt-2">Xem lịch sử thay đổi cấu trúc và điều động thiết bị toàn hệ thống.</p>
           </div>
         )}
+      </PageBody>
 
-      </div>
 
       <NodeEditorSheet 
         target={target}
