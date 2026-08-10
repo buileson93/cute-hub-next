@@ -482,7 +482,8 @@ export function StandardTable<T>({
                               </div>
                             )}
                           </TableCell>
-                        ))}
+                        );
+                      })}
                       </TableRow>
                     );
                   })}
