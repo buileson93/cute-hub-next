@@ -27,7 +27,6 @@ function ThietBiDetailRoute() {
         .select(`
           *,
           loai:loai_thiet_bi_id(ten),
-          model_rel:model_id(ten, hang_san_xuat, p_n),
           trang_thai:trang_thai_id(ma, ten),
           don_vi:don_vi_quan_ly_id(ten, ma)
         `)
@@ -66,6 +65,12 @@ function ThietBiDetailRoute() {
       <PageHeader
         icon={Package}
         title={tb.ten_thiet_bi || tb.ma_thiet_bi}
+        actions={
+          <div className="flex items-center gap-2">
+            <StatusBadge domain="thiet_bi" code={tb.trang_thai?.ma} />
+            {tb.ma_serial && <Badge variant="secondary" className="font-mono">S/N: {tb.ma_serial}</Badge>}
+          </div>
+        }
         description={
           <div className="flex items-center gap-2 mt-1">
              <Badge variant="outline" className="text-[10px] font-normal">Tài sản</Badge>
@@ -73,14 +78,9 @@ function ThietBiDetailRoute() {
              <span className="text-muted-foreground">{tb.ma_thiet_bi}</span>
           </div>
         }
-      >
-        <div className="flex items-center gap-2">
-          <StatusBadge domain="thiet_bi" code={tb.trang_thai?.ma} />
-          {tb.ma_serial && <Badge variant="secondary" className="font-mono">S/N: {tb.ma_serial}</Badge>}
-        </div>
-      </PageHeader>
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
@@ -89,9 +89,9 @@ function ThietBiDetailRoute() {
             <CardContent className="grid grid-cols-2 gap-4">
               <InfoItem label="Mã tài sản" value={tb.ma_thiet_bi} bold />
               <InfoItem label="Chủng loại" value={tb.loai?.ten} />
-              <InfoItem label="Model" value={tb.model_rel?.ten || tb.model} />
-              <InfoItem label="P/N" value={tb.model_rel?.p_n || tb.p_n} />
-              <InfoItem label="Hãng sản xuất" value={tb.model_rel?.hang_san_xuat || tb.nha_san_xuat} />
+              <InfoItem label="Model" value={tb.model} />
+              <InfoItem label="P/N" value={tb.p_n} />
+              <InfoItem label="Hãng sản xuất" value={tb.nha_san_xuat} />
               <InfoItem label="Năm sản xuất" value={tb.nam_san_xuat} />
             </CardContent>
           </Card>
