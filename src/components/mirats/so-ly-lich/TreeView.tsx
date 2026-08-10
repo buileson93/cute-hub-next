@@ -6,6 +6,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@tanstack/react-router";
 
 export interface TreeNode {
@@ -83,16 +84,22 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             {node.devices.map(d => (
               <div key={d.id} className="group/item ml-8 flex items-center gap-2 py-1 hover:bg-muted/30 rounded px-1 pr-2">
                 <Cpu className="h-3.5 w-3.5 text-muted-foreground/50" />
-                <CodeBadge code={d.ma_thiet_bi} className="text-[10px]" />
-                <Link 
-                  to="/thiet-bi/$maThietBi" 
-                  params={{ maThietBi: d.ma_thiet_bi }}
-                  className="text-xs hover:underline truncate flex-1"
-                >
-                  {d.ten}
-                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link 
+                      to="/thiet-bi/$maThietBi" 
+                      params={{ maThietBi: d.ma_thiet_bi } as any}
+                      className="text-xs hover:underline truncate flex-1"
+                    >
+                      {d.ten}
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <div className="text-xs font-mono">Mã: {d.ma_thiet_bi}</div>
+                  </TooltipContent>
+                </Tooltip>
                 <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2">
-                   <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }} title="Xem sổ lý lịch">
+                   <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi } as any} title="Xem sổ lý lịch">
                      <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
                    </Link>
                 </div>

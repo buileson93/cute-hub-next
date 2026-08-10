@@ -97,8 +97,14 @@ export function TreeView({
           </div>
           <Cpu className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            <span className="truncate text-sm font-medium">{tbLabel(d.tb)}</span>
-            <CodeBadge code={d.tb.ma_thiet_bi} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="truncate text-sm font-medium cursor-help">{tbLabel(d.tb)}</span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <div className="text-xs font-mono">Mã: {d.tb.ma_thiet_bi}</div>
+              </TooltipContent>
+            </Tooltip>
             {chips.map((c, i) => (
               <Badge key={i} variant="outline" className={cn("px-1 py-0 text-[9px]", c.className)} title={c.title}>
                 {c.text}
