@@ -588,7 +588,7 @@ export function StandardTable<T>({
                         <Checkbox
                           checked={isSel}
                           onCheckedChange={() => toggleRow(rid)}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         />
                       </div>
                     )}
