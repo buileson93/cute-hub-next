@@ -4,8 +4,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/backend/client";
 import {
   Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, AlertTriangle, Plus, RefreshCw, ArrowRightLeft,
-  FileUp, Columns3, ClipboardCheck, ChevronRight, ChevronLeft, X, Wand2, Table2, ShieldCheck,
+  FileUp, Columns3, ClipboardCheck, ChevronRight, ChevronLeft, X, Wand2, Table2, ShieldCheck, Monitor
 } from "lucide-react";
+import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
