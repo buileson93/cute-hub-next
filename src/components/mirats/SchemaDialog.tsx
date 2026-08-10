@@ -293,7 +293,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
           <div className="py-2">
             <FormWizardSteps 
               currentStep={step} 
-              steps={wizardSteps.map((s, i) => ({ id: i + 1, label: s }))} 
+              steps={wizardSteps.map((s, i) => ({ id: i + 1, title: s }))} 
             />
           </div>
         )}
