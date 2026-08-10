@@ -82,6 +82,13 @@ export const workspaces: Workspace[] = [
           { to: "/thong-ke/laptop", label: "Thống kê Máy tính", icon: Laptop },
         ],
       },
+      {
+        header: "Trao đổi & Hỗ trợ",
+        items: [
+          { to: "/tickets", label: "Yêu cầu hỗ trợ", icon: Ticket },
+          { to: "/messages", label: "Tin nhắn", icon: MessageSquare },
+        ],
+      },
     ],
   },
   {
@@ -91,56 +98,60 @@ export const workspaces: Workspace[] = [
     icon: BookMarked,
     groups: [
       {
-        header: "Sổ lý lịch",
+        header: "Quản lý thiết bị",
         items: [
-          { to: "/thiet-bi", label: "Sổ lý lịch", icon: BookMarked },
-          // — Nhóm nhập liệu: có form tạo/cập nhật —
+          { to: "/thiet-bi", label: "Danh sách thiết bị", icon: BookMarked },
           { to: "/su-co", label: "Sự cố kỹ thuật", icon: AlertTriangle },
-          { to: "/bao-tri", label: "Bảo dưỡng", icon: Wrench },
+          {
+            to: "/bao-tri",
+            label: "Bảo trì & Sửa chữa",
+            icon: Wrench,
+            children: [
+              { to: "/bao-tri", label: "Lịch bảo trì", icon: Wrench, exact: true },
+              { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList },
+              { to: "/bao-tri/pm", label: "Bảo dưỡng định kỳ (PM)", icon: CalendarClock },
+              { to: "/bao-tri/dot", label: "Đợt bảo dưỡng lớn", icon: CalendarClock },
+            ],
+          },
           { to: "/hong-hoc", label: "Hỏng hóc", icon: LifeBuoy },
           { to: "/ban-giao", label: "Bàn giao", icon: ArrowLeftRight },
-          // — Dải phân cách —
-          { to: "#so-ly-lich-xem", label: "Xem & thống kê", icon: BookMarked, divider: true },
-          // — Nhóm chỉ xem/tổng hợp: không nhập liệu trực tiếp —
           { to: "/van-de", label: "Vấn đề (RCA)", icon: Bug },
-          { to: "/bao-tri/cong-viec", label: "Phiếu công việc & KPI", icon: ClipboardList },
-          { to: "/bao-tri/pm", label: "Bảo dưỡng định kỳ (PM)", icon: CalendarClock },
-          { to: "/bao-tri/dot", label: "Đợt bảo dưỡng lớn", icon: CalendarClock },
         ],
       },
     ],
   },
   {
     id: "danh-muc",
-    label: "Danh mục khu vực",
+    label: "Danh mục",
     short: "Danh mục",
     icon: Layers,
     roles: MANAGER_ROLES,
     groups: [
       {
-        header: "Đơn vị khu vực",
+        header: "Thiết lập dữ liệu",
         items: [
-          { to: "/danh-muc/don-vi", label: "Đơn vị", icon: Building2, roles: MANAGER_ROLES },
-          { to: "/danh-muc/vi-tri", label: "Vị trí", icon: MapPin, roles: MANAGER_ROLES },
-        ],
-      },
-      {
-        header: "Tài sản",
-        items: [
-          { to: "/danh-muc/thiet-bi", label: "Tài sản", icon: HardDrive, roles: MANAGER_ROLES },
-          { to: "/danh-muc/model", label: "Model", icon: Package, roles: MANAGER_ROLES },
-          { to: "/danh-muc/loai-thiet-bi", label: "Chủng loại", icon: Tag, roles: MANAGER_ROLES },
-
-          { to: "/danh-muc/dac-tinh", label: "Nhãn tài sản", icon: Sparkles, roles: MANAGER_ROLES },
-          { to: "/danh-muc/nha-san-xuat", label: "Nhà sản xuất", icon: Factory, roles: MANAGER_ROLES },
-          { to: "/danh-muc/nha-cung-cap", label: "Nhà cung cấp", icon: Truck, roles: MANAGER_ROLES },
+          {
+            to: "/danh-muc",
+            label: "Danh mục kỹ thuật",
+            icon: Layers,
+            children: [
+              { to: "/danh-muc/don-vi", label: "Đơn vị", icon: Building2 },
+              { to: "/danh-muc/vi-tri", label: "Vị trí", icon: MapPin },
+              { to: "/danh-muc/thiet-bi", label: "Tài sản", icon: HardDrive },
+              { to: "/danh-muc/model", label: "Model", icon: Package },
+              { to: "/danh-muc/loai-thiet-bi", label: "Chủng loại", icon: Tag },
+              { to: "/danh-muc/dac-tinh", label: "Nhãn tài sản", icon: Sparkles },
+              { to: "/danh-muc/nha-san-xuat", label: "Nhà sản xuất", icon: Factory },
+              { to: "/danh-muc/nha-cung-cap", label: "Nhà cung cấp", icon: Truck },
+            ],
+          },
         ],
       },
     ],
   },
   {
-    id: "du-an",
-    label: "Quản lý dự án",
+    id: "tai-san-du-an",
+    label: "Tài sản & Dự án",
     short: "Dự án",
     icon: FolderKanban,
     groups: [
@@ -150,29 +161,6 @@ export const workspaces: Workspace[] = [
           { to: "/du-an", label: "Danh sách dự án", icon: FolderKanban },
         ],
       },
-    ],
-  },
-  {
-    id: "trao-doi",
-    label: "Trao đổi & Hỗ trợ",
-    short: "Trao đổi",
-    icon: MessageSquare,
-    groups: [
-      {
-        header: "Trao đổi",
-        items: [
-          { to: "/tickets", label: "Yêu cầu hỗ trợ", icon: Ticket },
-          { to: "/messages", label: "Tin nhắn", icon: MessageSquare },
-        ],
-      },
-    ],
-  },
-  {
-    id: "tai-san",
-    label: "Tài sản & Hồ sơ",
-    short: "Tài sản",
-    icon: Boxes,
-    groups: [
       {
         header: "Tài sản & Tuân thủ",
         items: [
@@ -205,7 +193,6 @@ export const workspaces: Workspace[] = [
           { to: "/cho-duyet", label: "Chờ duyệt (Change Request)", icon: ClipboardCheck, roles: MANAGER_ROLES },
           { to: "/admin/bao-tri-chinh-sach", label: "Chính sách bảo dưỡng", icon: CalendarClock, roles: MANAGER_ROLES },
 
-
           { to: "/admin/users", label: "Quản lý tài khoản", icon: UserCog, roles: ADMIN_ONLY },
           { to: "/admin/nhan-vien", label: "Quản lý nhân viên", icon: Users, roles: MANAGER_ROLES },
           { to: "/admin/audit", label: "Nhật ký hệ thống", icon: Lock, roles: ADMIN_ONLY },
@@ -219,9 +206,8 @@ export const workspaces: Workspace[] = [
           { to: "/admin/kiem-tra-layout", label: "Kiểm tra layout", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/ai", label: "Cấu hình AI", icon: Sparkles, roles: ADMIN_ONLY },
           { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
-         { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
+          { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
           { to: "/admin/supabase-ngoai", label: "Kết nối Supabase ngoài", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
-
         ],
       },
     ],
