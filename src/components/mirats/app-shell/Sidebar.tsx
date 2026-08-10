@@ -6,14 +6,23 @@ import { navGroups, isActive } from "@/lib/mirats/nav/nav-config";
 import { useSession } from "@/hooks/use-session";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-export function Sidebar({ onNavigate, collapsed }: { onNavigate?: () => void; collapsed?: boolean }) {
+export function Sidebar({ onNavigate, collapsed, workspaceId }: { 
+  onNavigate?: () => void; 
+  collapsed?: boolean;
+  workspaceId?: string;
+}) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { hasRole } = useSession();
   
-  const groups = useMemo(() => navGroups(), []);
+  const allGroups = useMemo(() => navGroups(), []);
+  
+  const groups = useMemo(() => {
+    if (!workspaceId) return allGroups;
+    return allGroups.filter(g => g.key === workspaceId);
+  }, [allGroups, workspaceId]);
 
   return (
-    <div className="flex flex-col gap-8 py-4">
+    <div className="flex flex-col gap-8 py-4 overflow-x-hidden">
       {groups.map((group) => {
         const visibleItems = group.items.filter(item => {
           // Note: In nav-config.ts, groups are already filtered or items are tagged.
