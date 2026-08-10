@@ -668,7 +668,7 @@ export function StandardTable<T>({
                             label={c.label}
                             catValues={catValues[c.key] ?? []}
                             catSel={catFilters[c.key] ?? new Set()}
-                            onToggleCat={(v) => toggleCat(c.key, v)}
+                            onToggleCat={(v: string) => toggleCat(c.key, v)}
                             onClearCat={() => clearCat(c.key)}
                             textVal={textFilters[c.key] ?? ""}
                             onText={(v: string) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
