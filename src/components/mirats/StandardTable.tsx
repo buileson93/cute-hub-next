@@ -796,3 +796,119 @@ export function StandardTable<T>({
     </div>
   );
 }
+
+function ColFilter({
+  type,
+  label,
+  catValues,
+  catSel,
+  onToggleCat,
+  onClearCat,
+  textVal,
+  onText,
+}: {
+  type: "text" | "cat";
+  label: string;
+  catValues: { value: string; count: number }[];
+  catSel: Set<string>;
+  onToggleCat: (v: string) => void;
+  onClearCat: () => void;
+  textVal: string;
+  onText: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const active = type === "text" ? textVal.length > 0 : catSel.size > 0;
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-6 w-6 ml-auto shrink-0 transition-colors",
+            active ? "text-primary bg-primary/10" : "text-muted-foreground/30 hover:text-muted-foreground hover:bg-muted"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Filter className={cn("h-3 w-3", active && "fill-current")} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
+          {active && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 px-1.5 text-[10px] text-destructive hover:bg-destructive/10"
+              onClick={() => {
+                if (type === "text") onText("");
+                else onClearCat();
+              }}
+            >
+              Xoá lọc
+            </Button>
+          )}
+        </div>
+
+        {type === "text" ? (
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                autoFocus
+                placeholder="Tìm nội dung..."
+                value={textVal}
+                onChange={(e) => onText(e.target.value)}
+                className="h-8 pl-8 text-sm"
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground px-1 italic">
+              * Lọc theo từ khóa chứa trong cột
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                autoFocus
+                placeholder="Tìm giá trị..."
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                className="h-8 pl-8 text-sm"
+              />
+            </div>
+            <div className="max-h-[300px] overflow-y-auto pr-1">
+              {catValues
+                .filter((v) => !q || normalize(v.value).includes(normalize(q)))
+                .map((v) => (
+                  <DropdownMenuCheckboxItem
+                    key={v.value}
+                    checked={catSel.has(v.value)}
+                    onCheckedChange={() => onToggleCat(v.value)}
+                    onSelect={(e) => e.preventDefault()}
+                    className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
+                  >
+                    <span className="truncate mr-2">{v.value}</span>
+                    <Badge variant="outline" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
+                      {v.count}
+                    </Badge>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              {catValues.length === 0 && (
+                <div className="py-6 text-center text-xs text-muted-foreground italic">
+                  Không có giá trị khả dụng
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
