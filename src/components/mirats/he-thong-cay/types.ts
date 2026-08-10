@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
+import type { ViTriChucNangTree } from "@/lib/mirats/he-thong-thanh-phan";
 import { Boxes, Layers, FolderTree, Network, Cpu, Puzzle, Building2, Plug, MapPin } from "lucide-react";
 
 export type EditKind = "pl" | "lv" | "nh" | "ht" | "tb" | "tp";
@@ -102,6 +103,11 @@ export type MindData = {
   onOpenEditor?: () => void;
   onRecord?: () => void;
   maThietBi?: string;
+  onHistory?: () => void;
+  onIncident?: () => void;
+  onMaint?: () => void;
+  moveTargets?: MoveTarget[];
+  onMove?: (toNhomId: string, toLvId: string | undefined, toNhKey: string | undefined, toNhTen: string | undefined) => void;
 };
 
 export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string }> = {
@@ -140,3 +146,5 @@ export const IMP_TONE: Record<ImpCat, string> = {
   quan_trong: "border-amber-500/30 bg-amber-500/10 text-amber-600",
   thuong: "border-border bg-muted text-muted-foreground",
 };
+
+export type { ViTriChucNangTree };
