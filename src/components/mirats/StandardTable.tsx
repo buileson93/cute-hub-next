@@ -282,7 +282,17 @@ export function StandardTable<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trangThai?.dangTai ? (
+              {trangThai?.loi ? (
+                <TableRow>
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
+                    {errorContent ?? (
+                      <div className="flex h-full items-center justify-center text-sm text-destructive">
+                        {String(trangThai.loi)}
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ) : trangThai?.dangTai ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     {loadingContent ?? <TableSkeleton cols={shownCols.length} />}
@@ -291,7 +301,7 @@ export function StandardTable<T>({
               ) : rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
-                    <EmptyState 
+                    <EmptyState
                       title={emptyContent ? undefined : emptyText}
                       description={typeof emptyContent === "string" ? emptyContent : undefined}
                     />
