@@ -306,7 +306,7 @@ function SuCoPage() {
       cell: (s) => <Link to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }} className="font-mono text-xs text-primary hover:underline">{s.ma_su_co}</Link>,
     },
     {
-      key: "ngay_phat_hien", label: "Thời điểm", sortable: true,
+      key: "ngay_phat_hien", label: "Thời điểm", sortable: true, hideBelow: "xl",
       value: (s) => s.ngay_phat_hien,
       cell: (s) => <span className="whitespace-nowrap text-xs text-muted-foreground">{s.ngay_phat_hien.replace("T", " ")}</span>,
     },
@@ -330,12 +330,12 @@ function SuCoPage() {
       },
     },
     {
-      key: "hien_tuong", label: "Hiện tượng", filter: "text",
+      key: "hien_tuong", label: "Hiện tượng", filter: "text", hideBelow: "md",
       value: (s) => s.hien_tuong,
       cell: (s) => <span className="line-clamp-2 max-w-xs text-sm text-muted-foreground">{s.hien_tuong}</span>,
     },
     {
-      key: "muc_do", label: "Mức độ", filter: "cat",
+      key: "muc_do", label: "Mức độ", filter: "cat", hideBelow: "lg",
       value: (s) => s.muc_do,
       cell: (s) => {
         const token = getMucDoSuCoToken(s.muc_do);
@@ -343,7 +343,7 @@ function SuCoPage() {
       },
     },
     {
-      key: "trang_thai", label: "Trạng thái", filter: "cat",
+      key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
       value: (s) => s.trang_thai,
       cell: (s) => <StatusBadge domain="su_co" code={s.trang_thai} />,
     },

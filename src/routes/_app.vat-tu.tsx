@@ -153,9 +153,9 @@ function VatTuPage() {
                       </div>
                     ),
                   },
-                  { key: "loai", label: "Loại", filter: "cat", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <StatBadge loai={r.loai} /> },
+                  { key: "loai", label: "Loại", filter: "cat", hideBelow: "sm", value: (r) => LOAI_VAT_TU_META[r.loai].label, cell: (r) => <StatBadge loai={r.loai} /> },
                   { key: "tong_ton", label: "Tổng tồn", align: "right", sortable: true, value: (r) => r.tong_ton, cell: (r) => <span className="text-right font-mono font-semibold text-red-600">{fmt(r.tong_ton)} {r.don_vi_tinh}</span> },
-                  { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu, cell: (r) => <span className="text-right font-mono text-sm">{fmt(r.muc_ton_toi_thieu)}</span> },
+                  { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, hideBelow: "lg", value: (r) => r.muc_ton_toi_thieu, cell: (r) => <span className="text-right font-mono text-sm">{fmt(r.muc_ton_toi_thieu)}</span> },
                   { key: "thieu", label: "Thiếu", align: "right", sortable: true, value: (r) => r.muc_ton_toi_thieu - r.tong_ton, cell: (r) => <span className="text-right font-mono text-sm text-red-600">{fmt(r.muc_ton_toi_thieu - r.tong_ton)}</span> },
                 ]}
               />
@@ -188,10 +188,10 @@ function VatTuPage() {
                       </div>
                     ),
                   },
-                  { key: "loai", label: "Loại", filter: "cat", value: (v) => LOAI_VAT_TU_META[v.loai].label, cell: (v) => <StatBadge loai={v.loai} /> },
-                  { key: "dvt", label: "ĐVT", value: (v) => v.don_vi_tinh, cell: (v) => <span className="text-sm">{v.don_vi_tinh}</span> },
-                  { key: "don_gia", label: "Đơn giá", align: "right", sortable: true, value: (v) => v.don_gia, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.don_gia)}</span> },
-                  { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, value: (v) => v.muc_ton_toi_thieu, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.muc_ton_toi_thieu)}</span> },
+                  { key: "loai", label: "Loại", filter: "cat", hideBelow: "sm", value: (v) => LOAI_VAT_TU_META[v.loai].label, cell: (v) => <StatBadge loai={v.loai} /> },
+                  { key: "dvt", label: "ĐVT", hideBelow: "md", value: (v) => v.don_vi_tinh, cell: (v) => <span className="text-sm">{v.don_vi_tinh}</span> },
+                  { key: "don_gia", label: "Đơn giá", align: "right", sortable: true, hideBelow: "xl", value: (v) => v.don_gia, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.don_gia)}</span> },
+                  { key: "dinh_muc", label: "Định mức", align: "right", sortable: true, hideBelow: "lg", value: (v) => v.muc_ton_toi_thieu, cell: (v) => <span className="text-right font-mono text-sm">{fmt(v.muc_ton_toi_thieu)}</span> },
                 ]}
               />
             </CardContent>
@@ -213,8 +213,8 @@ function VatTuPage() {
                 emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có kho. Thêm kho để bắt đầu.</div>}
                 columns={[
                   { key: "ten", label: "Tên kho", filter: "text", value: (k) => k.ten, cell: (k) => <span className="font-medium">{k.ten}</span> },
-                  { key: "ma_kho", label: "Mã", value: (k) => k.ma_kho ?? "", cell: (k) => <span className="font-mono text-[11px] text-muted-foreground">{k.ma_kho ?? "—"}</span> },
-                  { key: "ghi_chu", label: "Ghi chú", filter: "text", value: (k) => k.ghi_chu ?? "", cell: (k) => <span className="text-sm text-muted-foreground">{k.ghi_chu ?? "—"}</span> },
+                  { key: "ma_kho", label: "Mã", hideBelow: "sm", value: (k) => k.ma_kho ?? "", cell: (k) => <span className="font-mono text-[11px] text-muted-foreground">{k.ma_kho ?? "—"}</span> },
+                  { key: "ghi_chu", label: "Ghi chú", filter: "text", hideBelow: "md", value: (k) => k.ghi_chu ?? "", cell: (k) => <span className="text-sm text-muted-foreground">{k.ghi_chu ?? "—"}</span> },
                 ]}
               />
             </CardContent>

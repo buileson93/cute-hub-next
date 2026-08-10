@@ -51,6 +51,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           key: "loai",
           label: "Loại GP",
           filter: "cat",
+          hideBelow: "lg",
           value: (r) => r.loai ?? "",
           cell: (r) => (
             <StatusBadge domain="bao_tri" code={r.loai || undefined} label={r.loai || undefined} />
@@ -60,6 +61,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           key: "han_dung",
           label: "Hạn dùng",
           sortable: true,
+          hideBelow: "xl",
           value: (r) => r.ngayHetHan ?? "",
           cell: (r) => (
             <div className="space-y-1">
@@ -72,16 +74,12 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           key: "trang_thai",
           label: "Trạng thái",
           filter: "cat",
+          hideBelow: "sm",
           value: (r) => {
             const labels: any = { valid: 'Còn hiệu lực', expiring: 'Sắp hết hạn', expired: 'Đã hết hạn', none: 'Chưa có' };
             return labels[r.trangThai] ?? r.trangThai;
           },
           cell: (r) => {
-            // "valid", "expiring", "expired", "none" aren't standard MIRATS status codes yet
-            // but we use StatusBadge with domain 'thiet_bi' if we had them or 'health'
-            // For now, mapping manually to StatusBadge for consistency if possible, 
-            // or use a temporary local registry.
-            // Let's assume 'valid' -> DANG_KHAI_THAC, 'expired' -> HONG for colors.
             const map: any = { valid: 'DANG_KHAI_THAC', expiring: 'CHO_XU_LY', expired: 'HONG', none: 'NGUNG_KHAI_THAC' };
             const labels: any = { valid: 'Còn hiệu lực', expiring: 'Sắp hết hạn', expired: 'Đã hết hạn', none: 'Chưa có' };
             return <StatusBadge domain="thiet_bi" code={map[r.trangThai]} label={labels[r.trangThai]} />;

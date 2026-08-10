@@ -42,6 +42,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           key: "loai",
           label: "Loại",
           filter: "cat",
+          hideBelow: "sm",
           value: (r) => LOAI_VAT_TU_META[r.loai].label,
           cell: (r) => {
             const m = LOAI_VAT_TU_META[r.loai];
@@ -56,6 +57,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           key: "kho",
           label: "Kho",
           filter: "cat",
+          hideBelow: "md",
           value: (r) => r.ten_kho,
           cell: (r) => <span className="text-sm">{r.ten_kho}</span>,
         },

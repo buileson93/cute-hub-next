@@ -80,7 +80,7 @@ function BaoTriPage() {
       ),
     },
     {
-      key: "ngay_bat_dau", label: "Ngày bắt đầu", sortable: true,
+      key: "ngay_bat_dau", label: "Ngày bắt đầu", sortable: true, hideBelow: "xl",
       value: (b) => b.ngay_bat_dau,
       cell: (b) => <span className="whitespace-nowrap text-xs text-muted-foreground">{b.ngay_bat_dau}</span>,
     },
@@ -99,22 +99,22 @@ function BaoTriPage() {
       },
     },
     {
-      key: "he_thong", label: "Hệ thống", filter: "cat",
+      key: "he_thong", label: "Hệ thống", filter: "cat", hideBelow: "md",
       value: (b) => heThongMap.get(b.he_thong)?.ten ?? "—",
       cell: (b) => <span className="text-sm">{heThongMap.get(b.he_thong)?.ten ?? "—"}</span>,
     },
     {
-      key: "loai_bao_tri", label: "Loại", filter: "cat",
+      key: "loai_bao_tri", label: "Loại", filter: "cat", hideBelow: "lg",
       value: (b) => b.loai_bao_tri,
       cell: (b) => <StatusBadge domain="bao_tri" code={b.loai_bao_tri} label={b.loai_bao_tri} />,
     },
     {
-      key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat",
+      key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat", hideBelow: "md",
       value: (b) => b.don_vi_thuc_hien,
       cell: (b) => <span className="text-sm">{b.don_vi_thuc_hien}</span>,
     },
     {
-      key: "trang_thai", label: "Trạng thái", filter: "cat",
+      key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
       value: (b) => b.trang_thai,
       cell: (b) => <StatusBadge domain="bao_tri" code={b.trang_thai} />,
     },
