@@ -336,7 +336,7 @@ function Dashboard() {
           label="Sự cố đang mở"
           value={openIncidents.length}
           desc={`${openIncidents.filter(s => s.muc_do === 'Nghiêm trọng' || s.muc_do === 'Cao').length} vụ mức độ Cao/Nghiêm trọng`}
-          href="/su-co"
+          href="/su-co/moi"
           color="text-orange-600"
           bg="bg-orange-500/10"
         />
@@ -345,7 +345,7 @@ function Dashboard() {
           label="Bảo trì đến hạn"
           value={pmDueSoon.length}
           desc="Trong vòng 30 ngày tới"
-          href="/bao-tri"
+          href="/bao-tri/moi"
           color="text-blue-600"
           bg="bg-blue-500/10"
         />
@@ -368,6 +368,7 @@ function Dashboard() {
           bg="bg-slate-500/10"
         />
       </div>
+
 
       <Tabs defaultValue="tasks" className="space-y-5 sm:space-y-6">
         <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
