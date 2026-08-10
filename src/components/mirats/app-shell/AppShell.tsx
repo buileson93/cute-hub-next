@@ -86,18 +86,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("mirats-sidebar-collapsed");
-    // Mặc định là co lại (1), trừ khi người dùng đã mở rộng (0)
-    if (saved === "0") setIsCollapsed(false);
-    else setIsCollapsed(true);
+    // Mặc định là thu gọn (true)
+    if (saved === "0") {
+      setIsCollapsed(false);
+    } else {
+      setIsCollapsed(true);
+    }
   }, []);
-
-  const toggleCollapsed = () => {
-    setIsCollapsed(prev => {
-      const next = !prev;
-      localStorage.setItem("mirats-sidebar-collapsed", next ? "1" : "0");
-      return next;
-    });
-  };
 
   useEffect(() => {
     try {
@@ -195,7 +190,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={cn(
-              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-300 ease-in-out",
+              "hidden h-dvh sticky top-0 shrink-0 flex-col border-r border-border bg-sidebar/30 md:flex transition-[width] duration-300 ease-in-out overflow-hidden z-20",
               (isCollapsed && !isHovered) ? "w-[3.25rem]" : "w-64"
             )}
           >
