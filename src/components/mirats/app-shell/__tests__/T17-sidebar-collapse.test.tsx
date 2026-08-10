@@ -11,16 +11,14 @@ import React from 'react';
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: any) => <div>{children}</div>,
   useRouterState: vi.fn((selector?: any) => {
-    const state = { location: { pathname: '/' } };
+    // Luôn cung cấp pathname là string '/'
     if (typeof selector === 'function') {
-      const result = selector(state);
-      // Nếu selector(state) trả về state object thay vì pathname string
-      if (result && typeof result === 'object' && result.location) {
-        return result.location.pathname;
-      }
-      return result;
+      // Dựa trên AppShell.tsx: const pathname = useRouterState({ select: (s) => s.location.pathname });
+      // Ở đây, state truyền vào selector phải có s.location.pathname
+      const mockRouterState = { location: { pathname: '/' } };
+      return selector(mockRouterState);
     }
-    return '/'; // Fallback to string
+    return '/';
   }),
   useNavigate: vi.fn(() => vi.fn()),
 }));
