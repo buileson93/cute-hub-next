@@ -60,7 +60,7 @@ export interface StandardTableProps<T> {
   countUnit?: string;
   requireFilterToShow?: boolean;
   gated?: boolean;
-  presets?: { id: string; label: string; visibleKeys: string[]; orderKeys?: string[] }[];
+  presets?: any[];
   activePreset?: string;
   hideReorderToggle?: boolean;
 }
