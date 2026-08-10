@@ -15,7 +15,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 
-import { EmptyState } from "@/components/mirats/EmptyState";
+import { DataState } from "@/components/mirats/DataState";
 import { cn } from "@/lib/utils";
 import { useScope } from "@/lib/mirats/scope";
 import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
@@ -304,16 +304,9 @@ function ThietBiPage() {
   }, [taxo, filtered, histMap, htName, viTriByHt, scopeAll, donViCode]);
 
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center gap-2 p-16 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" /> Đang tải sổ lý lịch từ cơ sở dữ liệu…
-      </div>
-    );
-  }
-  if (error) {
-    return <div className="p-8 text-sm text-destructive">Không tải được dữ liệu: {error instanceof Error ? error.message : "Lỗi"}</div>;
-  }
+  const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
+  const isFiltering = query.trim() !== "" || onlyAllocated || showRetired;
+
 
   // Lấy danh sách thành phần hiển thị nhanh trên mobile
   const mobileTps = useMemo(() => {
@@ -425,39 +418,66 @@ function ThietBiPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isMobile ? (
-            <div className="grid grid-cols-1 gap-4">
-              {mobileTps.map(n => (
-                <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
-                  <CardContent className="p-4 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-sm">{n.label}</h3>
-                      <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
-                    </div>
-                    <div className="flex gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Wrench className="w-3 h-3" /> {n.hist.bt} bảo dưỡng
+          <DataState
+            state={state}
+            loadingType="table"
+            title={isFiltering ? "Không tìm thấy tài sản" : "Không có dữ liệu tài sản"}
+            description={
+              isFiltering
+                ? "Thử thay đổi từ khoá hoặc xoá các bộ lọc để tìm kiếm rộng hơn."
+                : "Hệ thống chưa có dữ liệu tài sản nào được đăng ký."
+            }
+            onRetry={() => window.location.reload()}
+            emptyAction={
+              isFiltering ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setQuery("");
+                    setOnlyAllocated(false);
+                    setShowRetired(false);
+                  }}
+                >
+                  Xoá tất cả bộ lọc
+                </Button>
+              ) : undefined
+            }
+          >
+            {isMobile ? (
+              <div className="grid grid-cols-1 gap-4">
+                {mobileTps.map(n => (
+                  <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-sm">{n.label}</h3>
+                        <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
                       </div>
-                      <div className="flex items-center gap-1 text-amber-500">
-                        <AlertTriangle className="w-3 h-3" /> {n.hist.sc} sự cố
+                      <div className="flex gap-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Wrench className="w-3 h-3" /> {n.hist.bt} bảo dưỡng
+                        </div>
+                        <div className="flex items-center gap-1 text-amber-500">
+                          <AlertTriangle className="w-3 h-3" /> {n.hist.sc} sự cố
+                        </div>
                       </div>
-                    </div>
-                    <div className="pt-2 border-t mt-2 flex justify-between items-center">
-                      <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
-                         <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              <div className="text-center py-6 bg-muted/30 rounded-lg border border-dashed">
-                <p className="text-xs text-muted-foreground italic">Sử dụng thanh tìm kiếm để tra cứu nhanh Tài sản hoặc Hệ thống trên điện thoại</p>
+                      <div className="pt-2 border-t mt-2 flex justify-between items-center">
+                        <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
+                        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
+                           <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                <div className="text-center py-6 bg-muted/30 rounded-lg border border-dashed">
+                  <p className="text-xs text-muted-foreground italic">Sử dụng thanh tìm kiếm để tra cứu nhanh Tài sản hoặc Hệ thống trên điện thoại</p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <TreeView tree={tree} total={filtered.length} histMap={histMap} />
-          )}
+            ) : (
+              <TreeView tree={tree} total={filtered.length} histMap={histMap} />
+            )}
+          </DataState>
         </CardContent>
       </Card>
     </PageBody>
