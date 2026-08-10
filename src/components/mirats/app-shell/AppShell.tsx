@@ -187,9 +187,6 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Sub-sidebar (Desktop) */}
           <aside 
-            onMouseEnter={() => {}} 
-            onMouseLeave={() => {}} 
-            onClick={() => setIsHovered(!isHovered)} 
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => setIsHovered(false)}
             className={cn(
