@@ -13,6 +13,8 @@ import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/
 import { CompatibilityManager, type CompatibilityItem } from "@/components/mirats/CompatibilityManager";
 import { supabase } from "@/integrations/backend/client";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
+import { useUserPref } from "@/hooks/use-user-pref";
+
 
 
 const formSchema = z.object({
