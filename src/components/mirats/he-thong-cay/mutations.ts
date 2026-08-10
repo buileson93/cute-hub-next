@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 export const saveNode = createServerFn({ method: "POST" })
-  .inputValidator((input: any) => 
+  .validator((input: any) => 
     z.object({
       kind: z.string(),
       ma: z.string(),
@@ -28,7 +28,7 @@ export const saveNode = createServerFn({ method: "POST" })
   });
 
 export const reorderNodes = createServerFn({ method: "POST" })
-  .inputValidator((input: any) => 
+  .validator((input: any) => 
     z.object({
       parentKind: z.string(),
       parentMa: z.string(),
