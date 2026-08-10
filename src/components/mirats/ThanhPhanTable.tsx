@@ -220,19 +220,6 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
       </span>
     </EntityHoverCard>
   );
-}
-
-    );
-  }
-
-  return (
-    <EntityHoverCard loai="dm_model" row={modelData}>
-      <span className="line-clamp-2 break-words text-sm leading-snug text-primary hover:underline underline-offset-4 decoration-primary/30 cursor-pointer">
-        {model}
-      </span>
-    </EntityHoverCard>
-  );
-}
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
 const LY_DO_KHOA =
