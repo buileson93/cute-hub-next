@@ -670,7 +670,7 @@ export function StandardTable<T>({
                             onToggleCat={(v) => toggleCat(c.key, v)}
                             onClearCat={() => clearCat(c.key)}
                             textVal={textFilters[c.key] ?? ""}
-                            onText={(v) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
+                            onText={(v: string) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
                           />
                         )}
                       </div>
