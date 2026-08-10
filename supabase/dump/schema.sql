@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict dzbQPflgRWDcJr2K8SRxxiim6cdj4ZbXmrKtIZO5QtjyYcRmyNYTyxwABzQxGcW
+\restrict CmS8kCR51KBn0tfTCyUYARe8XzalJfuUad5FzeNUuTaiJNGgnLLAJWgsrIcvh7r
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.9
@@ -24,6 +24,13 @@ SET row_security = off;
 --
 
 CREATE SCHEMA public;
+
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
@@ -69,7 +76,10 @@ CREATE TYPE public.change_request_loai AS ENUM (
     'danh_muc.merge',
     'danh_muc.deactivate',
     'role.grant',
-    'role.revoke'
+    'role.revoke',
+    'thiet_bi.propose_field',
+    'he_thong.propose_field',
+    'dm.propose_new'
 );
 
 
@@ -83,6 +93,47 @@ CREATE TYPE public.change_request_status AS ENUM (
     'rejected',
     'cancelled',
     'applied_failed'
+);
+
+
+--
+-- Name: cong_van_lien_ket_loai; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.cong_van_lien_ket_loai AS ENUM (
+    'tra_loi',
+    'can_cu',
+    'lien_quan',
+    'dinh_kem'
+);
+
+
+--
+-- Name: cong_van_loai; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.cong_van_loai AS ENUM (
+    'den',
+    'di',
+    'to_trinh',
+    'bao_cao',
+    'quyet_dinh',
+    'khac'
+);
+
+
+--
+-- Name: cong_van_trang_thai; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.cong_van_trang_thai AS ENUM (
+    'moi',
+    'dang_xu_ly',
+    'cho_duyet',
+    'da_duyet',
+    'da_phat_hanh',
+    'hoan_tat',
+    'huy'
 );
 
 
@@ -110,6 +161,52 @@ CREATE TYPE public.don_vi_code AS ENUM (
     'PCA',
     'PBA',
     'PLK'
+);
+
+
+--
+-- Name: dot_bao_duong_hm_ket_qua; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dot_bao_duong_hm_ket_qua AS ENUM (
+    'dat',
+    'khong_dat',
+    'khac'
+);
+
+
+--
+-- Name: dot_bao_duong_hm_nguon; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dot_bao_duong_hm_nguon AS ENUM (
+    'kt_khoi_tao',
+    'don_vi_bo_sung'
+);
+
+
+--
+-- Name: dot_bao_duong_hm_trang_thai; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dot_bao_duong_hm_trang_thai AS ENUM (
+    'chua_bat_dau',
+    'dang_lam',
+    'hoan_thanh',
+    'khong_thuc_hien'
+);
+
+
+--
+-- Name: dot_bao_duong_trang_thai; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dot_bao_duong_trang_thai AS ENUM (
+    'nhap',
+    'mo',
+    'dang_thuc_hien',
+    'dong',
+    'huy'
 );
 
 
@@ -547,6 +644,25 @@ $$;
 
 
 --
+-- Name: _dbd_object_allowed(text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public._dbd_object_allowed(_name text) RETURNS boolean
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+  SELECT public.has_role(auth.uid(),'admin')
+      OR public.has_role(auth.uid(),'phong_kt')
+      OR EXISTS (
+           SELECT 1
+             FROM public.dot_bao_duong_hang_muc h
+            WHERE h.id::text = split_part(_name, '/', 1)
+              AND h.don_vi_id = public.get_user_don_vi_id(auth.uid())
+         );
+$$;
+
+
+--
 -- Name: _debug_test_insert(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -612,6 +728,35 @@ BEGIN
     INSERT INTO public.thiet_bi_vong_doi(thiet_bi_id, tu_trang_thai_id, den_trang_thai_id, thoi_diem, ly_do, nguoi_thuc_hien)
     VALUES (v_tb, v_cu, p_trang_thai_moi, now(), COALESCE(p_ly_do_vd,'Cập nhật trạng thái'), public.current_uid());
   END IF;
+END;
+$$;
+
+
+--
+-- Name: _gen_ma_dac_tinh(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public._gen_ma_dac_tinh() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  candidate text;
+  i int := 0;
+BEGIN
+  IF NEW.ma IS NOT NULL AND length(btrim(NEW.ma)) > 0 THEN
+    RETURN NEW;
+  END IF;
+  LOOP
+    candidate := 'DT_' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
+    EXIT WHEN NOT EXISTS (SELECT 1 FROM public.dm_dac_tinh WHERE ma = candidate);
+    i := i + 1;
+    IF i > 8 THEN
+      RAISE EXCEPTION 'Không sinh được mã nhãn tài sản duy nhất sau 8 lần thử';
+    END IF;
+  END LOOP;
+  NEW.ma := candidate;
+  RETURN NEW;
 END;
 $$;
 
@@ -852,6 +997,22 @@ BEGIN
   END IF;
 END;
 $$;
+
+
+--
+-- Name: _try_date(text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public._try_date(txt text) RETURNS date
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+DECLARE d date;
+BEGIN
+  IF txt IS NULL OR btrim(txt) = '' THEN RETURN NULL; END IF;
+  BEGIN d := to_date(txt, 'DD/MM/YYYY'); RETURN d; EXCEPTION WHEN OTHERS THEN NULL; END;
+  BEGIN d := to_date(txt, 'YYYY-MM-DD'); RETURN d; EXCEPTION WHEN OTHERS THEN NULL; END;
+  RETURN NULL;
+END $$;
 
 
 --
@@ -1212,6 +1373,59 @@ BEGIN
 
   PERFORM set_config('session_replication_role', 'origin', true);
   RETURN jsonb_build_object('ok', true, 'restored', restored);
+END;
+$_$;
+
+
+--
+-- Name: admin_restore_table(text, jsonb, boolean); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.admin_restore_table(p_table text, p_rows jsonb, p_truncate boolean DEFAULT false) RETURNS jsonb
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $_$
+DECLARE
+  blocklist text[] := ARRAY['backup_lich_su','audit_log','user_roles','profiles',
+                            'ai_config','ai_conversation','ai_message',
+                            'messages','conversations','conversation_participant','notifications'];
+  n integer := 0;
+BEGIN
+  IF NOT public.has_role(public.current_uid(), 'admin') THEN
+    RAISE EXCEPTION 'Forbidden: chỉ Admin được khôi phục dữ liệu';
+  END IF;
+
+  IF p_table = ANY(blocklist) THEN
+    RETURN jsonb_build_object('ok', false, 'skipped', true, 'reason', 'blocked', 'rows', 0);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace nsp ON nsp.oid = c.relnamespace
+    WHERE nsp.nspname = 'public' AND c.relkind = 'r' AND c.relname = p_table
+  ) THEN
+    RAISE EXCEPTION 'Bảng không hợp lệ: %', p_table;
+  END IF;
+
+  IF jsonb_typeof(p_rows) <> 'array' THEN
+    RAISE EXCEPTION 'Dữ liệu phải là mảng JSON';
+  END IF;
+
+  PERFORM set_config('session_replication_role', 'replica', true);
+
+  IF p_truncate THEN
+    EXECUTE format('DELETE FROM public.%I', p_table);
+  END IF;
+
+  IF jsonb_array_length(p_rows) > 0 THEN
+    EXECUTE format(
+      'INSERT INTO public.%I SELECT * FROM jsonb_populate_recordset(NULL::public.%I, $1)',
+      p_table, p_table
+    ) USING p_rows;
+    GET DIAGNOSTICS n = ROW_COUNT;
+  END IF;
+
+  PERFORM set_config('session_replication_role', 'origin', true);
+  RETURN jsonb_build_object('ok', true, 'table', p_table, 'rows', n);
 END;
 $_$;
 
@@ -1721,7 +1935,6 @@ BEGIN
   v_pl := v_row.payload;
 
   BEGIN
-    -- Dispatch theo loai. Các nhánh chưa hỗ trợ → RAISE để rơi vào EXCEPTION dưới.
     IF v_row.loai = 'danh_muc.merge' THEN
       PERFORM public.merge_danh_muc(
         (v_pl->>'entity')::text,
@@ -1758,6 +1971,15 @@ BEGIN
       UPDATE public.dm_he_thong
          SET don_vi_id = (v_pl->>'to_don_vi_id')::uuid
        WHERE id = (v_pl->>'he_thong_id')::uuid;
+
+    -- NEW: Propose field update support
+    ELSIF v_row.loai = 'thiet_bi.propose_field' THEN
+      EXECUTE format('UPDATE public.thiet_bi SET %I = $1 WHERE id = $2', v_pl->>'field')
+        USING (v_pl->>'value'), (v_pl->>'thiet_bi_id')::uuid;
+        
+    ELSIF v_row.loai = 'he_thong.propose_field' THEN
+      EXECUTE format('UPDATE public.dm_he_thong SET %I = $1 WHERE id = $2', v_pl->>'field')
+        USING (v_pl->>'value'), (v_pl->>'he_thong_id')::uuid;
 
     ELSE
       RAISE EXCEPTION 'loai_not_supported: %', v_row.loai USING ERRCODE='0A000';
@@ -1874,6 +2096,58 @@ BEGIN
   WHERE tc.constraint_type='FOREIGN KEY' AND tc.table_schema='public';
 
   RETURN jsonb_build_object('tables', COALESCE(v_tables,'[]'::jsonb), 'foreign_keys', COALESCE(v_fks,'[]'::jsonb));
+END;
+$$;
+
+
+--
+-- Name: ban_quyen_tong_hop(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ban_quyen_tong_hop() RETURNS TABLE(tong_ban_quyen bigint, sap_het_han bigint, da_het_han bigint, tong_ghe bigint, ghe_da_dung bigint, tong_gia_tri numeric)
+    LANGUAGE sql STABLE
+    SET search_path TO 'public'
+    AS $$
+  SELECT
+    count(*)::bigint,
+    count(*) FILTER (WHERE bq.ngay_het_han IS NOT NULL
+      AND bq.ngay_het_han >= CURRENT_DATE
+      AND bq.ngay_het_han <= CURRENT_DATE + 60)::bigint,
+    count(*) FILTER (WHERE bq.ngay_het_han IS NOT NULL AND bq.ngay_het_han < CURRENT_DATE)::bigint,
+    COALESCE(sum(bq.so_ghe), 0)::bigint,
+    COALESCE((SELECT count(*) FROM public.phan_mem_ban_quyen_cap_phat cp WHERE cp.ngay_thu_hoi IS NULL), 0)::bigint,
+    COALESCE(sum(bq.gia_tri), 0)
+  FROM public.phan_mem_ban_quyen bq;
+$$;
+
+
+--
+-- Name: calculate_completeness(text, jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.calculate_completeness(p_entity text, p_row jsonb) RETURNS integer
+    LANGUAGE plpgsql STABLE
+    AS $$
+DECLARE
+  v_fields text[];
+  v_filled_count integer := 0;
+  v_field text;
+BEGIN
+  IF p_entity = 'thiet_bi' THEN
+    v_fields := ARRAY['ten_thiet_bi', 'ma_serial', 'model_id', 'trang_thai_id', 'he_thong_id', 'don_vi_id'];
+  ELSIF p_entity = 'dm_he_thong' THEN
+    v_fields := ARRAY['ten', 'ma', 'loai_he_thong_id', 'don_vi_id', 'nhom_he_thong_id'];
+  ELSE
+    RETURN 0;
+  END IF;
+
+  FOREACH v_field IN ARRAY v_fields LOOP
+    IF (p_row->>v_field) IS NOT NULL AND (p_row->>v_field) != '' THEN
+      v_filled_count := v_filled_count + 1;
+    END IF;
+  END LOOP;
+
+  RETURN ROUND((v_filled_count::float / array_length(v_fields, 1)::float) * 100);
 END;
 $$;
 
@@ -2157,6 +2431,7 @@ CREATE TABLE public.thiet_bi (
     attrs jsonb DEFAULT '{}'::jsonb NOT NULL,
     che_do_kd_hc text DEFAULT 'KHONG'::text NOT NULL,
     field_set_id uuid,
+    completeness_pct integer DEFAULT 0,
     CONSTRAINT thiet_bi_che_do_kd_hc_chk CHECK ((che_do_kd_hc = ANY (ARRAY['KHONG'::text, 'KIEM_DINH'::text, 'HIEU_CHUAN'::text])))
 );
 
@@ -2448,6 +2723,28 @@ $$;
 
 
 --
+-- Name: dashboard_activity_feed(uuid[], integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dashboard_activity_feed(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_limit integer DEFAULT 20) RETURNS TABLE(at timestamp with time zone, loai text, tieu_de text, ref_route text, ref_id uuid)
+    LANGUAGE sql STABLE
+    AS $$
+  (SELECT ngay_phat_hien, 'su_co'::text, ('Sự cố: ' || COALESCE(thiet_bi, ma_su_co)), '/su-co'::text, id
+     FROM public.su_co ORDER BY ngay_phat_hien DESC LIMIT p_limit)
+  UNION ALL
+  (SELECT updated_at, 'bao_tri'::text, ('Bảo trì: ' || COALESCE(thiet_bi, ma_bao_tri)), '/bao-tri'::text, id
+     FROM public.bao_tri WHERE ngay_hoan_thanh IS NOT NULL ORDER BY updated_at DESC LIMIT p_limit)
+  UNION ALL
+  (SELECT created_at, 'ban_giao'::text, 'Bàn giao thiết bị', '/ban-giao'::text, id
+     FROM public.ban_giao ORDER BY created_at DESC LIMIT p_limit)
+  UNION ALL
+  (SELECT thoi_diem, 'kiem_ke'::text, 'Kiểm kê thiết bị', '/kiem-ke'::text, id
+     FROM public.kiem_ke ORDER BY thoi_diem DESC LIMIT p_limit)
+  ORDER BY 1 DESC LIMIT p_limit;
+$$;
+
+
+--
 -- Name: dashboard_asset_status(uuid[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2465,6 +2762,128 @@ CREATE FUNCTION public.dashboard_asset_status(p_don_vi_ids uuid[] DEFAULT NULL::
   GROUP BY tt.ma, tt.ten
   ORDER BY count(t.id) DESC;
 $$;
+
+
+--
+-- Name: dashboard_brief_today(uuid[]); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dashboard_brief_today(p_don_vi_ids uuid[] DEFAULT NULL::uuid[]) RETURNS jsonb
+    LANGUAGE plpgsql STABLE
+    AS $$
+DECLARE
+  today date := (now() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date;
+BEGIN
+  RETURN jsonb_build_object(
+    'su_co_khan', COALESCE((
+      SELECT count(*) FROM public.su_co
+      WHERE trang_thai NOT IN ('Đã xử lý','Đã đóng','Hoàn thành','hoan_thanh','dong')
+        AND lower(coalesce(muc_do,'')) IN ('cao','nghiem_trong','nghiêm trọng','critical','high')
+    ),0),
+    'pm_hom_nay', COALESCE((
+      SELECT count(*) FROM public.pm_cong_viec
+      WHERE han = today AND trang_thai NOT IN ('hoan_thanh','bo_qua')
+        AND (p_don_vi_ids IS NULL OR don_vi_id = ANY(p_don_vi_ids))
+    ),0),
+    'pm_qua_han', COALESCE((
+      SELECT count(*) FROM public.pm_cong_viec
+      WHERE han < today AND trang_thai NOT IN ('hoan_thanh','bo_qua')
+        AND (p_don_vi_ids IS NULL OR don_vi_id = ANY(p_don_vi_ids))
+    ),0),
+    'han_7_ngay',
+      COALESCE((SELECT count(*) FROM public.chung_chi_thiet_bi WHERE ngay_het_han BETWEEN today AND today + 7),0)
+      + COALESCE((SELECT count(*) FROM public.giay_phep_khai_thac WHERE public._try_date(gp_han) BETWEEN today AND today + 7),0),
+    'sap_het_han_30',
+      COALESCE((SELECT count(*) FROM public.chung_chi_thiet_bi WHERE ngay_het_han BETWEEN today AND today + 30),0)
+      + COALESCE((SELECT count(*) FROM public.giay_phep_khai_thac WHERE public._try_date(gp_han) BETWEEN today AND today + 30),0),
+    'generated_at', now()
+  );
+END $$;
+
+
+--
+-- Name: dashboard_expiry_timeline(uuid[], integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dashboard_expiry_timeline(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_days integer DEFAULT 90) RETURNS TABLE(loai text, ref_id uuid, ten text, ngay_het date, days_left integer)
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT 'giay_phep'::text, g.id, COALESCE(g.ten_he_thong_theo_gp, g.gp_so, 'Giấy phép'),
+         public._try_date(g.gp_han), (public._try_date(g.gp_han) - CURRENT_DATE)::int
+    FROM public.giay_phep_khai_thac g
+   WHERE public._try_date(g.gp_han) IS NOT NULL
+     AND public._try_date(g.gp_han) BETWEEN CURRENT_DATE - 30 AND CURRENT_DATE + p_days
+  UNION ALL
+  SELECT c.loai, c.id, ('CC ' || COALESCE(t.ma_thiet_bi, 'TB')),
+         c.ngay_het_han, (c.ngay_het_han - CURRENT_DATE)::int
+    FROM public.chung_chi_thiet_bi c LEFT JOIN public.thiet_bi t ON t.id = c.thiet_bi_id
+   WHERE c.ngay_het_han IS NOT NULL
+     AND c.ngay_het_han BETWEEN CURRENT_DATE - 30 AND CURRENT_DATE + p_days
+   ORDER BY 5 ASC;
+$$;
+
+
+--
+-- Name: dashboard_health(uuid[], date, date); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dashboard_health(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_from date DEFAULT (CURRENT_DATE - 30), p_to date DEFAULT CURRENT_DATE) RETURNS jsonb
+    LANGUAGE plpgsql STABLE
+    AS $$
+DECLARE
+  span int := GREATEST((p_to - p_from), 1);
+  prev_from date := p_from - span;
+  prev_to date := p_from;
+  mttr_h numeric; mtbf_h numeric; mttr_prev_h numeric;
+  n_closed int; n_closed_prev int;
+  n_open_time_h numeric; n_total_h numeric;
+  n_gp_valid int; n_gp_total int; n_cc_valid int; n_cc_total int;
+  today date := CURRENT_DATE;
+BEGIN
+  SELECT COALESCE(avg(EXTRACT(EPOCH FROM (thoi_diem_khac_phuc - ngay_phat_hien))/3600.0), 0), count(*)
+    INTO mttr_h, n_closed FROM public.su_co
+    WHERE thoi_diem_khac_phuc IS NOT NULL AND ngay_phat_hien::date BETWEEN p_from AND p_to;
+
+  SELECT COALESCE(avg(EXTRACT(EPOCH FROM (thoi_diem_khac_phuc - ngay_phat_hien))/3600.0), 0), count(*)
+    INTO mttr_prev_h, n_closed_prev FROM public.su_co
+    WHERE thoi_diem_khac_phuc IS NOT NULL AND ngay_phat_hien::date BETWEEN prev_from AND prev_to;
+
+  SELECT (span::numeric * 24.0 * GREATEST(count(*),1)) / GREATEST(n_closed,1)
+    INTO mtbf_h FROM public.thiet_bi tb
+    LEFT JOIN public.dm_trang_thai_thiet_bi t ON t.id = tb.trang_thai_id
+    WHERE COALESCE(t.la_ngung_khai_thac,false) = false;
+
+  WITH win AS (SELECT p_from::timestamp AS f, (p_to + 1)::timestamp AS t),
+  segs AS (
+    SELECT v.thiet_bi_id, v.thoi_diem AS seg_start,
+           COALESCE(lead(v.thoi_diem) OVER (PARTITION BY v.thiet_bi_id ORDER BY v.thoi_diem), now()) AS seg_end,
+           t.la_ngung_khai_thac AS ngung
+      FROM public.thiet_bi_vong_doi v
+      LEFT JOIN public.dm_trang_thai_thiet_bi t ON t.id = v.den_trang_thai_id
+  )
+  SELECT COALESCE(sum(EXTRACT(EPOCH FROM (LEAST(seg_end, (SELECT t FROM win)) - GREATEST(seg_start, (SELECT f FROM win))))/3600.0)
+                    FILTER (WHERE ngung IS TRUE), 0),
+         COALESCE(sum(EXTRACT(EPOCH FROM (LEAST(seg_end, (SELECT t FROM win)) - GREATEST(seg_start, (SELECT f FROM win))))/3600.0), 0)
+    INTO n_open_time_h, n_total_h FROM segs
+    WHERE seg_start < (SELECT t FROM win) AND seg_end > (SELECT f FROM win);
+
+  SELECT count(*) FILTER (WHERE public._try_date(gp_han) >= today), count(*)
+    INTO n_gp_valid, n_gp_total FROM public.giay_phep_khai_thac WHERE gp_han IS NOT NULL;
+  SELECT count(*) FILTER (WHERE ngay_het_han >= today), count(*)
+    INTO n_cc_valid, n_cc_total FROM public.chung_chi_thiet_bi WHERE ngay_het_han IS NOT NULL;
+
+  RETURN jsonb_build_object(
+    'availability_pct', CASE WHEN n_total_h > 0 THEN round((1.0 - n_open_time_h/n_total_h) * 100, 2) ELSE NULL END,
+    'mtbf_h', round(mtbf_h::numeric, 1),
+    'mttr_h', round(mttr_h::numeric, 2),
+    'mttr_prev_h', round(mttr_prev_h::numeric, 2),
+    'compliance_pct', CASE WHEN (n_gp_total + n_cc_total) > 0
+                           THEN round(((n_gp_valid + n_cc_valid)::numeric / (n_gp_total + n_cc_total)) * 100, 1) ELSE NULL END,
+    'n_closed', n_closed, 'n_closed_prev', n_closed_prev,
+    'downtime_h', round(n_open_time_h::numeric, 1), 'total_h', round(n_total_h::numeric, 1),
+    'period_days', span
+  );
+END $$;
 
 
 --
@@ -2545,24 +2964,56 @@ $$;
 
 
 --
+-- Name: dashboard_su_co_heatmap(uuid[], integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dashboard_su_co_heatmap(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_days integer DEFAULT 90) RETURNS TABLE(dow integer, hour integer, so_luong integer)
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT EXTRACT(DOW FROM (ngay_phat_hien AT TIME ZONE 'Asia/Ho_Chi_Minh'))::int,
+         EXTRACT(HOUR FROM (ngay_phat_hien AT TIME ZONE 'Asia/Ho_Chi_Minh'))::int,
+         count(*)::int
+    FROM public.su_co
+   WHERE ngay_phat_hien >= now() - make_interval(days => p_days)
+   GROUP BY 1, 2 ORDER BY 1, 2;
+$$;
+
+
+--
 -- Name: dashboard_top_he_thong_su_co(uuid[], integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.dashboard_top_he_thong_su_co(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_limit integer DEFAULT 5) RETURNS TABLE(he_thong_id uuid, ten_he_thong text, so_su_co_mo integer)
+CREATE FUNCTION public.dashboard_top_he_thong_su_co(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_limit integer DEFAULT 5) RETURNS TABLE(he_thong_id uuid, ten_he_thong text, so_su_co_mo integer, mttr_h numeric)
     LANGUAGE sql STABLE
-    SET search_path TO 'public'
     AS $$
-  SELECT
-    h.id                       AS he_thong_id,
-    COALESCE(h.ten, '(không tên)') AS ten_he_thong,
-    count(s.id)::int           AS so_su_co_mo
-  FROM su_co s
-  JOIN dm_he_thong h ON h.id = s.he_thong_id
-  WHERE s.trang_thai IN ('bao_cao','tiep_nhan','dang_xu_ly','cho_vat_tu')
-    AND (p_don_vi_ids IS NULL OR h.don_vi_id = ANY(p_don_vi_ids))
-  GROUP BY h.id, h.ten
-  ORDER BY count(s.id) DESC
-  LIMIT GREATEST(p_limit, 1);
+  SELECT s.he_thong_id,
+         COALESCE(h.ten, s.he_thong, 'Không xác định'),
+         count(*) FILTER (WHERE s.thoi_diem_khac_phuc IS NULL)::int,
+         round(COALESCE(avg(EXTRACT(EPOCH FROM (s.thoi_diem_khac_phuc - s.ngay_phat_hien))/3600.0)
+                        FILTER (WHERE s.thoi_diem_khac_phuc IS NOT NULL), 0)::numeric, 1)
+    FROM public.su_co s LEFT JOIN public.dm_he_thong h ON h.id = s.he_thong_id
+   WHERE s.he_thong_id IS NOT NULL AND s.ngay_phat_hien >= now() - interval '90 days'
+   GROUP BY s.he_thong_id, COALESCE(h.ten, s.he_thong, 'Không xác định')
+  HAVING count(*) FILTER (WHERE s.thoi_diem_khac_phuc IS NULL) > 0
+   ORDER BY 3 DESC LIMIT p_limit;
+$$;
+
+
+--
+-- Name: dashboard_top_thiet_bi_hong_lap(uuid[], integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dashboard_top_thiet_bi_hong_lap(p_don_vi_ids uuid[] DEFAULT NULL::uuid[], p_limit integer DEFAULT 5) RETURNS TABLE(thiet_bi_id uuid, ma text, ten text, so_lan integer, mttr_h numeric)
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT s.thiet_bi_id, t.ma_thiet_bi, t.ten_thiet_bi, count(*)::int,
+         round(COALESCE(avg(EXTRACT(EPOCH FROM (s.thoi_diem_khac_phuc - s.ngay_phat_hien))/3600.0)
+                        FILTER (WHERE s.thoi_diem_khac_phuc IS NOT NULL), 0)::numeric, 1)
+    FROM public.su_co s LEFT JOIN public.thiet_bi t ON t.id = s.thiet_bi_id
+   WHERE s.thiet_bi_id IS NOT NULL AND s.ngay_phat_hien >= now() - interval '90 days'
+   GROUP BY s.thiet_bi_id, t.ma_thiet_bi, t.ten_thiet_bi
+  HAVING count(*) >= 2
+   ORDER BY 4 DESC, 5 DESC LIMIT p_limit;
 $$;
 
 
@@ -2854,6 +3305,293 @@ END; $$;
 
 
 --
+-- Name: dot_bao_cao_tong_hop(uuid); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_bao_cao_tong_hop(p_dot_id uuid) RETURNS jsonb
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE v JSONB;
+BEGIN
+  SELECT jsonb_build_object(
+    'tong', COUNT(*),
+    'hoan_thanh', COUNT(*) FILTER (WHERE trang_thai='hoan_thanh'),
+    'dat', COUNT(*) FILTER (WHERE ket_qua='dat'),
+    'khong_dat', COUNT(*) FILTER (WHERE ket_qua='khong_dat'),
+    'theo_don_vi', (
+      SELECT jsonb_agg(row_to_json(x)) FROM (
+        SELECT dv.id AS don_vi_id, dv.ten AS don_vi_ten, dv.ma AS don_vi_ma,
+               COUNT(h.*) AS tong,
+               COUNT(h.*) FILTER (WHERE h.trang_thai='hoan_thanh') AS hoan_thanh,
+               COUNT(h.*) FILTER (WHERE h.ket_qua='dat') AS dat,
+               COUNT(h.*) FILTER (WHERE h.ket_qua='khong_dat') AS khong_dat
+        FROM public.dot_bao_duong_hang_muc h
+        JOIN public.dm_don_vi dv ON dv.id = h.don_vi_id
+        WHERE h.dot_id = p_dot_id
+        GROUP BY dv.id, dv.ten, dv.ma
+        ORDER BY dv.ma
+      ) x
+    ),
+    'ton_tai', (
+      SELECT jsonb_agg(row_to_json(y)) FROM (
+        SELECT h.id, ht.ten AS he_thong_ten, dv.ten AS don_vi_ten, h.ton_tai, h.kien_nghi
+        FROM public.dot_bao_duong_hang_muc h
+        JOIN public.dm_he_thong ht ON ht.id = h.he_thong_id
+        JOIN public.dm_don_vi dv ON dv.id = h.don_vi_id
+        WHERE h.dot_id = p_dot_id AND (h.ton_tai IS NOT NULL AND h.ton_tai <> '')
+        ORDER BY dv.ma
+      ) y
+    )
+  ) INTO v
+  FROM public.dot_bao_duong_hang_muc WHERE dot_id = p_dot_id;
+  RETURN v;
+END$$;
+
+
+--
+-- Name: dot_bao_duong_canh_bao(uuid, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_bao_duong_canh_bao(p_dot_id uuid, p_sap_han_ngay integer DEFAULT 3) RETURNS TABLE(don_vi_id uuid, don_vi_ma text, don_vi_ten text, han_ngay date, tong integer, hoan_thanh integer, cho_duyet integer, da_duyet integer, qua_han integer, sap_han integer, muc_do text)
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+  WITH items AS (
+    SELECT hm.*,
+           COALESCE(hm.han_hoan_thanh, h.han_ngay) AS eff_han
+    FROM public.dot_bao_duong_hang_muc hm
+    LEFT JOIN public.dot_bao_duong_han h
+      ON h.dot_id = hm.dot_id AND h.don_vi_id = hm.don_vi_id
+    WHERE hm.dot_id = p_dot_id
+  ),
+  agg AS (
+    SELECT
+      i.don_vi_id,
+      MAX(i.eff_han) AS eff_han,
+      COUNT(*)::int AS tong,
+      COUNT(*) FILTER (WHERE i.trang_thai = 'hoan_thanh')::int AS hoan_thanh,
+      COUNT(*) FILTER (WHERE i.duyet_trang_thai = 'cho_duyet')::int AS cho_duyet,
+      COUNT(*) FILTER (WHERE i.duyet_trang_thai = 'da_duyet')::int AS da_duyet,
+      COUNT(*) FILTER (WHERE i.eff_han IS NOT NULL
+                         AND i.eff_han < CURRENT_DATE
+                         AND i.duyet_trang_thai <> 'da_duyet'
+                         AND i.trang_thai <> 'hoan_thanh')::int AS qua_han,
+      COUNT(*) FILTER (WHERE i.eff_han IS NOT NULL
+                         AND i.eff_han >= CURRENT_DATE
+                         AND i.eff_han <= (CURRENT_DATE + (p_sap_han_ngay || ' days')::interval)::date
+                         AND i.duyet_trang_thai <> 'da_duyet'
+                         AND i.trang_thai <> 'hoan_thanh')::int AS sap_han
+    FROM items i
+    GROUP BY i.don_vi_id
+  )
+  SELECT
+    a.don_vi_id,
+    dv.ma AS don_vi_ma,
+    dv.ten AS don_vi_ten,
+    a.eff_han AS han_ngay,
+    a.tong, a.hoan_thanh, a.cho_duyet, a.da_duyet,
+    a.qua_han, a.sap_han,
+    CASE
+      WHEN a.qua_han > 0 THEN 'qua_han'
+      WHEN a.sap_han > 0 THEN 'sap_han'
+      WHEN a.tong > 0 AND a.tong = a.da_duyet THEN 'hoan_tat'
+      ELSE 'on_track'
+    END AS muc_do
+  FROM agg a
+  JOIN public.dm_don_vi dv ON dv.id = a.don_vi_id
+  ORDER BY dv.ma;
+$$;
+
+
+--
+-- Name: dot_hm_approve(uuid, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_hm_approve(p_hang_muc_id uuid, p_note text DEFAULT NULL::text) RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE v_user uuid := auth.uid();
+BEGIN
+  IF v_user IS NULL THEN RAISE EXCEPTION 'unauthorized'; END IF;
+  IF NOT (has_role(v_user,'admin') OR has_role(v_user,'phong_kt')) THEN
+    RAISE EXCEPTION 'forbidden_only_kt';
+  END IF;
+  UPDATE public.dot_bao_duong_hang_muc
+     SET duyet_trang_thai = 'da_duyet',
+         approved_at = now(),
+         approved_by = v_user,
+         approval_note = p_note,
+         trang_thai = CASE WHEN trang_thai::text = 'chua_bat_dau'
+                           THEN 'hoan_thanh'::dot_bao_duong_hm_trang_thai
+                           ELSE trang_thai END
+   WHERE id = p_hang_muc_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'hang_muc_not_found'; END IF;
+END; $$;
+
+
+--
+-- Name: dot_hm_reject(uuid, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_hm_reject(p_hang_muc_id uuid, p_note text DEFAULT NULL::text) RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE v_user uuid := auth.uid();
+BEGIN
+  IF v_user IS NULL THEN RAISE EXCEPTION 'unauthorized'; END IF;
+  IF NOT (has_role(v_user,'admin') OR has_role(v_user,'phong_kt')) THEN
+    RAISE EXCEPTION 'forbidden_only_kt';
+  END IF;
+  UPDATE public.dot_bao_duong_hang_muc
+     SET duyet_trang_thai = 'tu_choi',
+         approval_note = p_note,
+         approved_at = NULL,
+         approved_by = NULL
+   WHERE id = p_hang_muc_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'hang_muc_not_found'; END IF;
+END; $$;
+
+
+--
+-- Name: dot_hm_submit(uuid); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_hm_submit(p_hang_muc_id uuid) RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE v_dv uuid; v_user uuid := auth.uid(); v_dot_status text; v_duyet text;
+BEGIN
+  IF v_user IS NULL THEN RAISE EXCEPTION 'unauthorized'; END IF;
+  SELECT hm.don_vi_id, hm.duyet_trang_thai, d.trang_thai::text
+    INTO v_dv, v_duyet, v_dot_status
+  FROM public.dot_bao_duong_hang_muc hm
+  JOIN public.dot_bao_duong d ON d.id = hm.dot_id
+  WHERE hm.id = p_hang_muc_id;
+  IF v_dv IS NULL THEN RAISE EXCEPTION 'hang_muc_not_found'; END IF;
+  IF v_dot_status IN ('dong','huy') THEN RAISE EXCEPTION 'dot_closed'; END IF;
+  IF v_duyet = 'da_duyet' THEN RAISE EXCEPTION 'already_approved'; END IF;
+  IF NOT (has_role(v_user,'admin') OR has_role(v_user,'phong_kt')
+          OR v_dv = get_user_don_vi_id(v_user)) THEN
+    RAISE EXCEPTION 'forbidden';
+  END IF;
+  UPDATE public.dot_bao_duong_hang_muc
+     SET duyet_trang_thai = 'cho_duyet',
+         submitted_at = now(),
+         submitted_by = v_user
+   WHERE id = p_hang_muc_id;
+END; $$;
+
+
+--
+-- Name: dot_hm_unlock(uuid); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_hm_unlock(p_hang_muc_id uuid) RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE v_user uuid := auth.uid();
+BEGIN
+  IF NOT has_role(v_user,'admin') THEN RAISE EXCEPTION 'forbidden_admin_only'; END IF;
+  UPDATE public.dot_bao_duong_hang_muc
+     SET duyet_trang_thai = 'chua_gui',
+         approved_at = NULL, approved_by = NULL,
+         submitted_at = NULL, submitted_by = NULL,
+         approval_note = NULL
+   WHERE id = p_hang_muc_id;
+END; $$;
+
+
+--
+-- Name: dot_them_hang_muc_hang_loat(uuid, uuid, uuid[]); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.dot_them_hang_muc_hang_loat(p_dot_id uuid, p_don_vi_id uuid, p_he_thong_ids uuid[]) RETURNS integer
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE v_count INT := 0;
+BEGIN
+  IF NOT (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'phong_kt')
+          OR p_don_vi_id = public.get_user_don_vi_id(auth.uid())) THEN
+    RAISE EXCEPTION 'Không có quyền';
+  END IF;
+  INSERT INTO public.dot_bao_duong_hang_muc(dot_id, don_vi_id, he_thong_id, nguon)
+  SELECT p_dot_id, p_don_vi_id, unnest(p_he_thong_ids),
+    CASE WHEN public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'phong_kt')
+         THEN 'kt_khoi_tao'::public.dot_bao_duong_hm_nguon
+         ELSE 'don_vi_bo_sung'::public.dot_bao_duong_hm_nguon END
+  ON CONFLICT (dot_id, he_thong_id) DO NOTHING;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  RETURN v_count;
+END$$;
+
+
+--
+-- Name: fsir_enrich(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.fsir_enrich() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_item public.form_check_item%ROWTYPE;
+  v_sub  public.form_submission%ROWTYPE;
+  v_op   text;
+  v_ok   boolean;
+BEGIN
+  -- Lấy metadata từ form_check_item (theo template + item_code)
+  SELECT fci.* INTO v_item
+  FROM public.form_check_item fci
+  JOIN public.form_submission s ON s.id = NEW.submission_id
+  WHERE fci.template_id = s.template_id AND fci.item_code = NEW.item_code
+  LIMIT 1;
+
+  IF FOUND THEN
+    NEW.metric_key := COALESCE(NEW.metric_key, v_item.metric_key);
+    NEW.nguong_min := COALESCE(NEW.nguong_min, v_item.nguong_min);
+    NEW.nguong_max := COALESCE(NEW.nguong_max, v_item.nguong_max);
+    NEW.nguong_op  := COALESCE(NEW.nguong_op,  v_item.nguong_op);
+    NEW.don_vi     := COALESCE(NEW.don_vi,     v_item.don_vi);
+    NEW.tieu_chuan := COALESCE(NEW.tieu_chuan, v_item.tieu_chuan);
+  END IF;
+
+  -- Kế thừa liên kết từ submission
+  SELECT * INTO v_sub FROM public.form_submission WHERE id = NEW.submission_id;
+  IF FOUND THEN
+    NEW.thiet_bi_id  := COALESCE(NEW.thiet_bi_id,  v_sub.thiet_bi_id);
+    NEW.he_thong_id  := COALESCE(NEW.he_thong_id,  v_sub.he_thong_id);
+    NEW.don_vi_id    := COALESCE(NEW.don_vi_id,    v_sub.don_vi_id);
+    NEW.submitted_at := COALESCE(NEW.submitted_at, v_sub.submitted_at, v_sub.created_at);
+  END IF;
+
+  -- Tự chấm Đạt/Không đạt nếu có giá trị số + ngưỡng và chưa có ket_qua
+  IF NEW.ket_qua IS NULL
+     AND NEW.result_kind = 'so'
+     AND NEW.gia_tri_so IS NOT NULL
+     AND (NEW.nguong_min IS NOT NULL OR NEW.nguong_max IS NOT NULL) THEN
+    v_op := COALESCE(NEW.nguong_op, 'between');
+    v_ok := CASE v_op
+      WHEN 'ge' THEN NEW.nguong_min IS NULL OR NEW.gia_tri_so >= NEW.nguong_min
+      WHEN 'le' THEN NEW.nguong_max IS NULL OR NEW.gia_tri_so <= NEW.nguong_max
+      WHEN 'eq' THEN NEW.nguong_min IS NOT NULL AND NEW.gia_tri_so = NEW.nguong_min
+      ELSE (NEW.nguong_min IS NULL OR NEW.gia_tri_so >= NEW.nguong_min)
+       AND (NEW.nguong_max IS NULL OR NEW.gia_tri_so <= NEW.nguong_max)
+    END;
+    NEW.ket_qua := CASE WHEN v_ok THEN 'dat'::form_ket_qua ELSE 'khong_dat'::form_ket_qua END;
+    NEW.auto_ket_qua := true;
+  END IF;
+
+  RETURN NEW;
+END$$;
+
+
+--
 -- Name: ftinc_parent_must_be_draft(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2932,6 +3670,40 @@ $$;
 
 
 --
+-- Name: get_completeness_stats(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_completeness_stats() RETURNS jsonb
+    LANGUAGE plpgsql STABLE SECURITY DEFINER
+    AS $$
+DECLARE
+  v_result jsonb;
+BEGIN
+  SELECT jsonb_build_object(
+    'avg_thiet_bi', ROUND(AVG(completeness_pct)),
+    'avg_he_thong', (SELECT ROUND(AVG(completeness_pct)) FROM public.dm_he_thong),
+    'total_tb', COUNT(*),
+    'low_pct_tb', COUNT(*) FILTER (WHERE completeness_pct < 50),
+    'perfect_tb', COUNT(*) FILTER (WHERE completeness_pct = 100),
+    'total_tasks', (SELECT COUNT(*) FROM public.nhiem_vu_nhap_lieu WHERE trang_thai = 'moi'),
+    'top_contributors', (
+      SELECT jsonb_agg(sub) FROM (
+        SELECT user_id, SUM(diem) as total_diem 
+        FROM public.dong_gop_diem 
+        GROUP BY user_id 
+        ORDER BY total_diem DESC 
+        LIMIT 5
+      ) sub
+    )
+  ) INTO v_result
+  FROM public.thiet_bi;
+  
+  RETURN v_result;
+END;
+$$;
+
+
+--
 -- Name: get_user_don_vi_id(uuid); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2956,6 +3728,273 @@ CREATE FUNCTION public.get_user_don_vi_ma(_user_id uuid) RETURNS text
     SET search_path TO 'public'
     AS $$
   SELECT (p.don_vi)::text FROM public.profiles p WHERE p.id = _user_id LIMIT 1
+$$;
+
+
+--
+-- Name: ghi_bao_duong_atomic(jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ghi_bao_duong_atomic(p_payload jsonb) RETURNS jsonb
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_sub jsonb := p_payload->'submission';
+  v_sub_id uuid;
+  v_dev jsonb; v_it jsonb; v_vt jsonb;
+  v_i int := 0; v_id uuid; v_ids uuid[] := '{}';
+  v_ma_base text := nullif(p_payload->>'ma_base','');
+  v_nguoi text[];
+BEGIN
+  IF v_uid IS NULL THEN RAISE EXCEPTION 'Chưa đăng nhập'; END IF;
+  IF has_role(v_uid, 'readonly'::app_role) AND NOT has_role(v_uid, 'admin'::app_role) THEN
+    RAISE EXCEPTION 'Tài khoản chỉ đọc không được ghi bảo dưỡng';
+  END IF;
+  IF v_sub IS NULL THEN RAISE EXCEPTION 'Thiếu submission'; END IF;
+  IF v_ma_base IS NULL THEN RAISE EXCEPTION 'Thiếu ma_base'; END IF;
+
+  IF jsonb_typeof(p_payload->'nguoi_thuc_hien') = 'array' THEN
+    SELECT array_agg(x) INTO v_nguoi FROM jsonb_array_elements_text(p_payload->'nguoi_thuc_hien') x;
+  ELSE
+    v_nguoi := ARRAY[coalesce(p_payload->>'nguoi_thuc_hien','')];
+  END IF;
+
+  INSERT INTO public.form_submission (
+    template_id, template_code, template_version, template_version_id, template_snapshot,
+    he_thong_id, tieu_de, data, status, submitted_at, created_by
+  ) VALUES (
+    (v_sub->>'template_id')::uuid,
+    v_sub->>'template_code',
+    coalesce((v_sub->>'template_version')::int, 1),
+    nullif(v_sub->>'template_version_id','')::uuid,
+    v_sub->'template_snapshot',
+    nullif(v_sub->>'he_thong_id','')::uuid,
+    v_sub->>'tieu_de',
+    coalesce(v_sub->'data', '{}'::jsonb),
+    'submitted'::form_submission_status,
+    coalesce(nullif(v_sub->>'submitted_at','')::timestamptz, now()),
+    v_uid
+  ) RETURNING id INTO v_sub_id;
+
+  FOR v_dev IN SELECT * FROM jsonb_array_elements(coalesce(p_payload->'devices','[]'::jsonb)) LOOP
+    v_i := v_i + 1;
+    INSERT INTO public.form_submission_thiet_bi (submission_id, thiet_bi_id)
+    VALUES (v_sub_id, (v_dev->>'id')::uuid) ON CONFLICT DO NOTHING;
+
+    INSERT INTO public.bao_tri (
+      ma_bao_tri, thiet_bi, thiet_bi_id, he_thong, he_thong_id, don_vi,
+      loai_bao_tri, ngay_bat_dau, ngay_hoan_thanh, ket_qua, trang_thai,
+      nguoi_thuc_hien, don_vi_thuc_hien, mo_ta_cong_viec
+    ) VALUES (
+      v_ma_base || '-' || lpad(v_i::text, 2, '0'),
+      v_dev->>'ma_thiet_bi',
+      nullif(v_dev->>'id','')::uuid,
+      nullif(p_payload->>'he_thong_ten',''),
+      nullif(v_sub->>'he_thong_id','')::uuid,
+      nullif(v_dev->>'don_vi',''),
+      nullif(p_payload->>'loai_bao_tri',''),
+      nullif(p_payload->>'ngay_bat_dau','')::date,
+      nullif(p_payload->>'ngay_hoan_thanh','')::date,
+      nullif(p_payload->>'ket_qua',''),
+      nullif(p_payload->>'trang_thai',''),
+      v_nguoi,
+      nullif(p_payload->>'don_vi_thuc_hien',''),
+      nullif(p_payload->>'mo_ta_cong_viec','')
+    ) RETURNING id INTO v_id;
+    v_ids := v_ids || v_id;
+  END LOOP;
+
+  FOR v_it IN SELECT * FROM jsonb_array_elements(coalesce(p_payload->'item_results','[]'::jsonb)) LOOP
+    INSERT INTO public.form_submission_item_result (
+      submission_id, section_code, section_ten, item_code, ten, result_kind,
+      gia_tri_so, gia_tri_text, don_vi, tieu_chuan, ket_qua, ghi_chu, hanh_dong,
+      position, metric_key, nguong_min, nguong_max, nguong_op,
+      thanh_phan_id, thiet_bi_id, he_thong_id, submitted_at
+    ) VALUES (
+      v_sub_id,
+      coalesce(v_it->>'section_code',''),
+      nullif(v_it->>'section_ten',''),
+      coalesce(v_it->>'item_code',''),
+      coalesce(v_it->>'ten',''),
+      coalesce(nullif(v_it->>'result_kind',''), 'text')::form_result_kind,
+      nullif(v_it->>'gia_tri_so','')::numeric,
+      nullif(v_it->>'gia_tri_text',''),
+      nullif(v_it->>'don_vi',''),
+      nullif(v_it->>'tieu_chuan',''),
+      nullif(v_it->>'ket_qua','')::form_ket_qua,
+      nullif(v_it->>'ghi_chu',''),
+      nullif(v_it->>'hanh_dong',''),
+      nullif(v_it->>'position','')::int,
+      nullif(v_it->>'metric_key',''),
+      nullif(v_it->>'nguong_min','')::numeric,
+      nullif(v_it->>'nguong_max','')::numeric,
+      nullif(v_it->>'nguong_op',''),
+      nullif(v_it->>'thanh_phan_id','')::uuid,
+      nullif(v_it->>'thiet_bi_id','')::uuid,
+      nullif(v_it->>'he_thong_id','')::uuid,
+      now()
+    );
+  END LOOP;
+
+  FOR v_vt IN SELECT * FROM jsonb_array_elements(coalesce(p_payload->'vat_tu','[]'::jsonb)) LOOP
+    PERFORM kho_xuat((v_vt->>'vat_tu_id')::uuid, (v_vt->>'kho_id')::uuid,
+                     (v_vt->>'so_luong')::numeric, NULL,
+                     'Tiêu hao khi bảo dưỡng ' || v_ma_base, NULL, NULL, NULL, false);
+  END LOOP;
+
+  INSERT INTO public.audit_log (user_id, action, entity, entity_id, detail)
+  VALUES (v_uid, 'ghi_bao_duong', 'form_submission', v_sub_id::text,
+          jsonb_build_object('nguon_nhap','khai_form','ma_base',v_ma_base,'bao_tri_ids',to_jsonb(v_ids)));
+
+  RETURN jsonb_build_object('submission_id', v_sub_id, 'bao_tri_ids', to_jsonb(coalesce(v_ids,'{}'::uuid[])));
+END;
+$$;
+
+
+--
+-- Name: ghi_bao_duong_atomic(uuid, text, timestamp with time zone, jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ghi_bao_duong_atomic(p_thiet_bi_id uuid, p_mo_ta text, p_ngay_bat_dau timestamp with time zone DEFAULT NULL::timestamp with time zone, p_vat_tu jsonb DEFAULT '[]'::jsonb) RETURNS uuid
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_tb record; v_id uuid; v_vt jsonb; v_ma text;
+BEGIN
+  IF v_uid IS NULL THEN RAISE EXCEPTION 'Chưa đăng nhập'; END IF;
+  SELECT ma_thiet_bi, don_vi, he_thong_id INTO v_tb FROM public.thiet_bi WHERE id = p_thiet_bi_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Không tìm thấy tài sản %', p_thiet_bi_id; END IF;
+  v_ma := 'BD-' || to_char(coalesce(p_ngay_bat_dau, now()), 'YYYYMMDDHH24MISS') || '-' || left(replace(p_thiet_bi_id::text,'-',''), 6);
+
+  INSERT INTO public.bao_tri (ma_bao_tri, thiet_bi, thiet_bi_id, don_vi, he_thong_id,
+                              ngay_bat_dau, mo_ta_cong_viec, trang_thai)
+  VALUES (v_ma, v_tb.ma_thiet_bi, p_thiet_bi_id, v_tb.don_vi, v_tb.he_thong_id,
+          coalesce(p_ngay_bat_dau, now())::date, p_mo_ta, 'Đang thực hiện')
+  RETURNING id INTO v_id;
+
+  FOR v_vt IN SELECT * FROM jsonb_array_elements(coalesce(p_vat_tu,'[]'::jsonb)) LOOP
+    PERFORM kho_xuat((v_vt->>'vat_tu_id')::uuid, (v_vt->>'kho_id')::uuid,
+                     (v_vt->>'so_luong')::numeric, NULL, 'Tiêu hao khi bảo dưỡng ' || v_ma, NULL, NULL, NULL, false);
+  END LOOP;
+
+  INSERT INTO public.audit_log (user_id, action, entity, entity_id, detail)
+  VALUES (v_uid, 'ghi_bao_duong', 'bao_tri', v_id::text, jsonb_build_object('nguon_nhap','khai_form'));
+  RETURN v_id;
+END;
+$$;
+
+
+--
+-- Name: ghi_hong_hoc_atomic(jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ghi_hong_hoc_atomic(p_payload jsonb) RETURNS jsonb
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_ma text := nullif(p_payload->>'ma_hong_hoc','');
+  v_tbid uuid; v_id uuid; v_ids uuid[] := '{}'; v_i int := 0;
+  v_vt jsonb; v_ma_tb text; v_don_vi text; v_nguoi text[];
+  v_tt_ma text;
+BEGIN
+  IF v_uid IS NULL THEN RAISE EXCEPTION 'Chưa đăng nhập'; END IF;
+  IF has_role(v_uid, 'readonly'::app_role) AND NOT has_role(v_uid, 'admin'::app_role) THEN
+    RAISE EXCEPTION 'Tài khoản chỉ đọc không được ghi hỏng hóc';
+  END IF;
+  IF v_ma IS NULL THEN RAISE EXCEPTION 'Thiếu ma_hong_hoc'; END IF;
+
+  SELECT array_agg(x) INTO v_nguoi
+    FROM jsonb_array_elements_text(coalesce(p_payload->'nguoi_thuc_hien','[]'::jsonb)) x;
+
+  SELECT ma_thiet_bi INTO v_tt_ma FROM public.thiet_bi
+   WHERE id = nullif(p_payload->>'thiet_bi_thay_the_id','')::uuid;
+
+  FOR v_tbid IN SELECT (x)::uuid FROM jsonb_array_elements_text(coalesce(p_payload->'thiet_bi_hong_ids','[]'::jsonb)) x LOOP
+    v_i := v_i + 1;
+    SELECT ma_thiet_bi, don_vi INTO v_ma_tb, v_don_vi FROM public.thiet_bi WHERE id = v_tbid;
+    INSERT INTO public.hong_hoc (
+      ma_hong_hoc, thiet_bi_hong, thiet_bi_hong_id, he_thong_id, thanh_phan_id,
+      su_co, ngay_hong, bo_phan_hong, mo_ta_hong_hoc, phuong_an,
+      thiet_bi_thay_the, thiet_bi_thay_the_id, nguoi_thuc_hien, don_vi_thuc_hien,
+      trang_thai, nguoi_bao_cao_id, at_bao_cao
+    ) VALUES (
+      CASE WHEN v_i = 1 THEN v_ma ELSE v_ma || '-' || lpad(v_i::text,2,'0') END,
+      coalesce(v_ma_tb, v_tbid::text), v_tbid,
+      nullif(p_payload->>'he_thong_id','')::uuid,
+      nullif(p_payload->>'thanh_phan_id','')::uuid,
+      nullif(p_payload->>'su_co',''),
+      nullif(p_payload->>'ngay_hong','')::date,
+      nullif(p_payload->>'bo_phan_hong',''),
+      nullif(p_payload->>'mo_ta_hong_hoc',''),
+      nullif(p_payload->>'phuong_an',''),
+      v_tt_ma,
+      nullif(p_payload->>'thiet_bi_thay_the_id','')::uuid,
+      coalesce(v_nguoi, '{}'::text[]),
+      v_don_vi,
+      coalesce(nullif(p_payload->>'trang_thai',''), 'Mới'),
+      v_uid, now()
+    ) RETURNING id INTO v_id;
+    v_ids := v_ids || v_id;
+  END LOOP;
+
+  IF array_length(v_ids,1) IS NULL THEN
+    RAISE EXCEPTION 'Không có tài sản hỏng nào để ghi';
+  END IF;
+
+  FOR v_vt IN SELECT * FROM jsonb_array_elements(coalesce(p_payload->'vat_tu','[]'::jsonb)) LOOP
+    PERFORM kho_xuat((v_vt->>'vat_tu_id')::uuid, (v_vt->>'kho_id')::uuid,
+                     (v_vt->>'so_luong')::numeric, NULL, 'Tiêu hao khi ghi hỏng hóc ' || v_ma,
+                     NULL, NULL, v_ids[1], false);
+  END LOOP;
+
+  INSERT INTO public.audit_log (user_id, action, entity, entity_id, detail)
+  VALUES (v_uid, 'ghi_hong_hoc', 'hong_hoc', v_ids[1]::text,
+          jsonb_build_object('nguon_nhap','khai_form','ma_hong_hoc',v_ma,'ids',to_jsonb(v_ids)));
+
+  RETURN jsonb_build_object('ids', to_jsonb(v_ids), 'ma_hong_hoc', v_ma);
+END;
+$$;
+
+
+--
+-- Name: ghi_hong_hoc_atomic(uuid, text, timestamp with time zone, jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ghi_hong_hoc_atomic(p_thiet_bi_id uuid, p_mo_ta_hong_hoc text, p_ngay_hong timestamp with time zone DEFAULT NULL::timestamp with time zone, p_vat_tu jsonb DEFAULT '[]'::jsonb) RETURNS uuid
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_tb record; v_id uuid; v_vt jsonb; v_ma text;
+BEGIN
+  IF v_uid IS NULL THEN RAISE EXCEPTION 'Chưa đăng nhập'; END IF;
+  SELECT ma_thiet_bi, don_vi, he_thong_id INTO v_tb FROM public.thiet_bi WHERE id = p_thiet_bi_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Không tìm thấy tài sản %', p_thiet_bi_id; END IF;
+  v_ma := 'HH-' || to_char(coalesce(p_ngay_hong, now()), 'YYYYMMDDHH24MISS') || '-' || left(replace(p_thiet_bi_id::text,'-',''), 6);
+
+  INSERT INTO public.hong_hoc (ma_hong_hoc, thiet_bi_hong, thiet_bi_hong_id, he_thong_id,
+                               ngay_hong, mo_ta_hong_hoc, trang_thai, don_vi_thuc_hien,
+                               nguoi_bao_cao_id, at_bao_cao)
+  VALUES (v_ma, v_tb.ma_thiet_bi, p_thiet_bi_id, v_tb.he_thong_id,
+          coalesce(p_ngay_hong, now())::date, p_mo_ta_hong_hoc, 'Mới', v_tb.don_vi, v_uid, now())
+  RETURNING id INTO v_id;
+
+  FOR v_vt IN SELECT * FROM jsonb_array_elements(coalesce(p_vat_tu,'[]'::jsonb)) LOOP
+    PERFORM kho_xuat((v_vt->>'vat_tu_id')::uuid, (v_vt->>'kho_id')::uuid,
+                     (v_vt->>'so_luong')::numeric, NULL, 'Tiêu hao khi ghi hỏng hóc ' || v_ma, NULL, NULL, v_id, false);
+  END LOOP;
+
+  INSERT INTO public.audit_log (user_id, action, entity, entity_id, detail)
+  VALUES (v_uid, 'ghi_hong_hoc', 'hong_hoc', v_id::text, jsonb_build_object('nguon_nhap','khai_form'));
+  RETURN v_id;
+END;
 $$;
 
 
@@ -3014,6 +4053,123 @@ BEGIN
   WHERE id = _thiet_bi_id;
 
   RETURN _row;
+END;
+$$;
+
+
+--
+-- Name: ghi_su_co_atomic(jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ghi_su_co_atomic(p_payload jsonb) RETURNS jsonb
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_ma_nhom text := nullif(p_payload->>'ma_nhom_bc','');
+  v_dev jsonb;
+  v_vt jsonb;
+  v_i int := 0;
+  v_id uuid;
+  v_ids uuid[] := '{}';
+BEGIN
+  IF v_uid IS NULL THEN RAISE EXCEPTION 'Chưa đăng nhập'; END IF;
+  IF has_role(v_uid, 'readonly'::app_role) AND NOT has_role(v_uid, 'admin'::app_role) THEN
+    RAISE EXCEPTION 'Tài khoản chỉ đọc không được ghi sự cố';
+  END IF;
+  IF v_ma_nhom IS NULL THEN RAISE EXCEPTION 'Thiếu ma_nhom_bc'; END IF;
+
+  FOR v_dev IN SELECT * FROM jsonb_array_elements(coalesce(p_payload->'devices','[]'::jsonb)) LOOP
+    v_i := v_i + 1;
+    INSERT INTO public.su_co (
+      ma_su_co, thiet_bi, thiet_bi_id, he_thong, he_thong_id, don_vi,
+      ngay_phat_hien, nguoi_bao_cao, muc_do, anh_huong_dhb, hien_tuong,
+      nguyen_nhan, bien_phap_xu_ly, trang_thai, ma_nhom_bc, bao_cao_ban_dau,
+      van_de_id, nguoi_bao_cao_id, at_bao_cao
+    ) VALUES (
+      v_ma_nhom || '-' || lpad(v_i::text, 2, '0'),
+      v_dev->>'ma_thiet_bi',
+      nullif(v_dev->>'id','')::uuid,
+      nullif(v_dev->>'he_thong_ten',''),
+      nullif(v_dev->>'he_thong_id','')::uuid,
+      nullif(v_dev->>'don_vi',''),
+      coalesce(nullif(p_payload->>'ngay_phat_hien','')::timestamptz, now()),
+      nullif(p_payload->>'nguoi_bao_cao',''),
+      nullif(p_payload->>'muc_do',''),
+      nullif(p_payload->>'anh_huong_dhb',''),
+      nullif(p_payload->>'hien_tuong',''),
+      nullif(p_payload->>'nguyen_nhan',''),
+      nullif(p_payload->>'bien_phap_xu_ly',''),
+      coalesce(nullif(p_payload->>'trang_thai',''), 'Mới'),
+      v_ma_nhom,
+      p_payload->'bao_cao_ban_dau',
+      nullif(p_payload->>'van_de_id','')::uuid,
+      v_uid,
+      now()
+    ) RETURNING id INTO v_id;
+    v_ids := v_ids || v_id;
+  END LOOP;
+
+  IF array_length(v_ids, 1) IS NULL THEN
+    RAISE EXCEPTION 'Không có tài sản nào để ghi sự cố';
+  END IF;
+
+  FOR v_vt IN SELECT * FROM jsonb_array_elements(coalesce(p_payload->'vat_tu','[]'::jsonb)) LOOP
+    PERFORM kho_xuat(
+      (v_vt->>'vat_tu_id')::uuid,
+      (v_vt->>'kho_id')::uuid,
+      (v_vt->>'so_luong')::numeric,
+      NULL, 'Tiêu hao khi ghi sự cố ' || v_ma_nhom, NULL, v_ids[1], NULL, false
+    );
+  END LOOP;
+
+  INSERT INTO public.audit_log (user_id, action, entity, entity_id, detail)
+  VALUES (v_uid, 'ghi_su_co', 'su_co', v_ids[1]::text,
+          jsonb_build_object('nguon_nhap','khai_form','ma_nhom_bc',v_ma_nhom,'ids',to_jsonb(v_ids)));
+
+  RETURN jsonb_build_object('ids', to_jsonb(v_ids), 'ma_nhom_bc', v_ma_nhom);
+END;
+$$;
+
+
+--
+-- Name: ghi_su_co_atomic(uuid, text, timestamp with time zone, jsonb); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.ghi_su_co_atomic(p_thiet_bi_id uuid, p_hien_tuong text, p_ngay_phat_hien timestamp with time zone DEFAULT NULL::timestamp with time zone, p_vat_tu jsonb DEFAULT '[]'::jsonb) RETURNS uuid
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := auth.uid();
+  v_tb record;
+  v_id uuid;
+  v_vt jsonb;
+  v_ma text;
+BEGIN
+  IF v_uid IS NULL THEN RAISE EXCEPTION 'Chưa đăng nhập'; END IF;
+  SELECT ma_thiet_bi, don_vi, he_thong_id INTO v_tb FROM public.thiet_bi WHERE id = p_thiet_bi_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Không tìm thấy tài sản %', p_thiet_bi_id; END IF;
+
+  v_ma := 'SC-' || to_char(coalesce(p_ngay_phat_hien, now()), 'YYYYMMDDHH24MISS') || '-' || left(replace(p_thiet_bi_id::text,'-',''), 6);
+
+  INSERT INTO public.su_co (ma_su_co, thiet_bi, thiet_bi_id, don_vi, he_thong_id,
+                            ngay_phat_hien, hien_tuong, trang_thai, nguoi_bao_cao_id, at_bao_cao)
+  VALUES (v_ma, v_tb.ma_thiet_bi, p_thiet_bi_id, v_tb.don_vi, v_tb.he_thong_id,
+          coalesce(p_ngay_phat_hien, now()), p_hien_tuong, 'Mới', v_uid, now())
+  RETURNING id INTO v_id;
+
+  FOR v_vt IN SELECT * FROM jsonb_array_elements(coalesce(p_vat_tu,'[]'::jsonb)) LOOP
+    PERFORM kho_xuat((v_vt->>'vat_tu_id')::uuid, (v_vt->>'kho_id')::uuid,
+                     (v_vt->>'so_luong')::numeric, NULL, 'Tiêu hao khi ghi sự cố ' || v_ma,
+                     NULL, v_id, NULL, false);
+  END LOOP;
+
+  INSERT INTO public.audit_log (user_id, action, entity, entity_id, detail)
+  VALUES (v_uid, 'ghi_su_co', 'su_co', v_id::text, jsonb_build_object('nguon_nhap','khai_form'));
+
+  RETURN v_id;
 END;
 $$;
 
@@ -4329,53 +5485,201 @@ $_$;
 
 
 --
--- Name: mirats_apply_public_grants(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: metric_summary(text, timestamp with time zone, timestamp with time zone, uuid); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.mirats_apply_public_grants() RETURNS event_trigger
-    LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
+CREATE FUNCTION public.metric_summary(_metric_key text, _from timestamp with time zone DEFAULT NULL::timestamp with time zone, _to timestamp with time zone DEFAULT NULL::timestamp with time zone, _he_thong_id uuid DEFAULT NULL::uuid) RETURNS TABLE(n_samples bigint, n_dat bigint, n_khong_dat bigint, pct_dat numeric, gt_min numeric, gt_max numeric, gt_avg numeric, gt_p95 numeric)
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
     AS $$
+  SELECT
+    COUNT(*)::bigint,
+    COUNT(*) FILTER (WHERE ket_qua = 'dat')::bigint,
+    COUNT(*) FILTER (WHERE ket_qua = 'khong_dat')::bigint,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE ket_qua = 'dat')
+      / NULLIF(COUNT(*) FILTER (WHERE ket_qua IN ('dat','khong_dat')), 0), 2),
+    MIN(gia_tri_so),
+    MAX(gia_tri_so),
+    ROUND(AVG(gia_tri_so)::numeric, 4),
+    percentile_cont(0.95) WITHIN GROUP (ORDER BY gia_tri_so)::numeric
+  FROM public.v_metric_timeseries
+  WHERE metric_key = _metric_key
+    AND (_from IS NULL OR thoi_diem >= _from)
+    AND (_to   IS NULL OR thoi_diem <= _to)
+    AND (_he_thong_id IS NULL OR he_thong_id = _he_thong_id);
+$$;
+
+
+--
+-- Name: mirats_ddl_dong_bo(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.mirats_ddl_dong_bo() RETURNS text[]
+    LANGUAGE plpgsql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $_$
 DECLARE
-  obj record;
+  v text[] := '{}';
+  r record;
+  v_cols text;
+  v_pk text;
+  v_fn text[] := '{}';
 BEGIN
-  GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role, sandbox_exec, postgres;
-  GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA public TO authenticated;
-  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO service_role;
-  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO sandbox_exec;
-  GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
-
-  GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO service_role;
-  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO sandbox_exec;
-  GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres;
-
-  GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
-  GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO service_role;
-  GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO sandbox_exec;
-  GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO postgres;
-
-  FOR obj IN
-    SELECT p.oid::regprocedure AS signature
-    FROM pg_proc p
-    JOIN pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname = 'public'
-      AND p.proname IN (
-        'khai_them_thanh_phan_he_thong',
-        'gan_tai_san_vao_thanh_phan',
-        'thao_tai_san_khoi_thanh_phan',
-        'merge_danh_muc',
-        'rpc_thanh_phan_toan_cuc'
-      )
+  v := v || ARRAY['CREATE SCHEMA IF NOT EXISTS extensions'];
+  FOR r IN
+    SELECT e.extname, n.nspname FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
+    WHERE e.extname NOT IN ('plpgsql')
   LOOP
-    EXECUTE format('ALTER FUNCTION %s OWNER TO postgres', obj.signature);
-    EXECUTE format('ALTER FUNCTION %s SECURITY DEFINER', obj.signature);
-    EXECUTE format('ALTER FUNCTION %s SET search_path = public', obj.signature);
-    EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated', obj.signature);
-    EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO service_role', obj.signature);
-    EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO sandbox_exec', obj.signature);
+    v := v || format('CREATE EXTENSION IF NOT EXISTS %I WITH SCHEMA %I', r.extname, r.nspname);
   END LOOP;
+
+  FOR r IN
+    SELECT t.typname,
+           string_agg(quote_literal(el.enumlabel), ', ' ORDER BY el.enumsortorder) AS labels
+    FROM pg_type t
+    JOIN pg_namespace n ON n.oid = t.typnamespace
+    JOIN pg_enum el ON el.enumtypid = t.oid
+    WHERE n.nspname = 'public' AND t.typtype = 'e'
+    GROUP BY t.typname
+  LOOP
+    v := v || format(
+      'DO $mig$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname=''public'' AND t.typname=%L) THEN CREATE TYPE public.%I AS ENUM (%s); END IF; END $mig$;',
+      r.typname, r.typname, r.labels);
+  END LOOP;
+
+  FOR r IN
+    SELECT pg_get_functiondef(p.oid) AS def
+    FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.prokind = 'f'
+      AND p.proname NOT LIKE 'mirats\_%'
+  LOOP
+    v_fn := v_fn || r.def;
+  END LOOP;
+  v := v || v_fn;
+
+  FOR r IN
+    SELECT c.oid, c.relname
+    FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relkind = 'r'
+    ORDER BY c.relname
+  LOOP
+    SELECT string_agg(
+      format('%I %s%s%s', a.attname, format_type(a.atttypid, a.atttypmod),
+             CASE WHEN d.adbin IS NOT NULL THEN ' DEFAULT ' || pg_get_expr(d.adbin, d.adrelid) ELSE '' END,
+             CASE WHEN a.attnotnull THEN ' NOT NULL' ELSE '' END),
+      ', ' ORDER BY a.attnum)
+    INTO v_cols
+    FROM pg_attribute a
+    LEFT JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum
+    WHERE a.attrelid = r.oid AND a.attnum > 0 AND NOT a.attisdropped;
+
+    SELECT string_agg(quote_ident(att.attname), ', ' ORDER BY k.ord)
+    INTO v_pk
+    FROM pg_constraint pc
+    CROSS JOIN LATERAL unnest(pc.conkey) WITH ORDINALITY AS k(attnum, ord)
+    JOIN pg_attribute att ON att.attrelid = r.oid AND att.attnum = k.attnum
+    WHERE pc.conrelid = r.oid AND pc.contype = 'p';
+
+    v := v || format('CREATE TABLE IF NOT EXISTS public.%I (%s%s)', r.relname, v_cols,
+                     CASE WHEN v_pk IS NOT NULL THEN format(', PRIMARY KEY (%s)', v_pk) ELSE '' END);
+
+    FOR v_cols IN
+      SELECT format('ALTER TABLE public.%I ADD COLUMN IF NOT EXISTS %I %s%s', r.relname, a.attname,
+                    format_type(a.atttypid, a.atttypmod),
+                    CASE WHEN d.adbin IS NOT NULL THEN ' DEFAULT ' || pg_get_expr(d.adbin, d.adrelid) ELSE '' END)
+      FROM pg_attribute a
+      LEFT JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum
+      WHERE a.attrelid = r.oid AND a.attnum > 0 AND NOT a.attisdropped
+    LOOP
+      v := v || v_cols;
+    END LOOP;
+
+    v := v || format('GRANT SELECT, INSERT, UPDATE, DELETE ON public.%I TO authenticated', r.relname);
+    v := v || format('GRANT ALL ON public.%I TO service_role', r.relname);
+  END LOOP;
+
+  v := v || v_fn;
+
+  FOR r IN
+    SELECT c.relname, c.relrowsecurity
+    FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relkind = 'r' AND c.relrowsecurity
+  LOOP
+    v := v || format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', r.relname);
+  END LOOP;
+
+  FOR r IN SELECT * FROM pg_policies WHERE schemaname = 'public' ORDER BY tablename, policyname
+  LOOP
+    v := v || format('DROP POLICY IF EXISTS %I ON public.%I', r.policyname, r.tablename);
+    v := v || format('CREATE POLICY %I ON public.%I AS %s FOR %s TO %s%s%s',
+      r.policyname, r.tablename,
+      CASE WHEN r.permissive = 'PERMISSIVE' THEN 'PERMISSIVE' ELSE 'RESTRICTIVE' END,
+      r.cmd,
+      array_to_string(r.roles, ', '),
+      CASE WHEN r.qual IS NOT NULL THEN format(' USING (%s)', r.qual) ELSE '' END,
+      CASE WHEN r.with_check IS NOT NULL THEN format(' WITH CHECK (%s)', r.with_check) ELSE '' END);
+  END LOOP;
+
+  RETURN v;
 END;
+$_$;
+
+
+--
+-- Name: mirats_schema_snapshot(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.mirats_schema_snapshot() RETURNS jsonb
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+  SELECT jsonb_build_object(
+    'extensions', (
+      SELECT COALESCE(jsonb_agg(jsonb_build_object('name', e.extname, 'schema', n.nspname) ORDER BY e.extname), '[]'::jsonb)
+      FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
+      WHERE e.extname NOT IN ('plpgsql')
+    ),
+    'enums', (
+      SELECT COALESCE(jsonb_agg(jsonb_build_object(
+        'name', t.typname,
+        'labels', (SELECT jsonb_agg(el.enumlabel ORDER BY el.enumsortorder) FROM pg_enum el WHERE el.enumtypid = t.oid)
+      ) ORDER BY t.typname), '[]'::jsonb)
+      FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace
+      WHERE n.nspname = 'public' AND t.typtype = 'e'
+    ),
+    'tables', (
+      SELECT COALESCE(jsonb_agg(jsonb_build_object(
+        'name', c.relname,
+        'rls', c.relrowsecurity,
+        'columns', (
+          SELECT jsonb_agg(jsonb_build_object(
+            'name', a.attname,
+            'type', format_type(a.atttypid, a.atttypmod),
+            'nullable', NOT a.attnotnull,
+            'default', pg_get_expr(d.adbin, d.adrelid),
+            'is_pk', COALESCE(a.attnum = ANY (pk.conkey), false)
+          ) ORDER BY a.attnum)
+          FROM pg_attribute a
+          LEFT JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum
+          WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+        ),
+        'pk', (SELECT COALESCE(jsonb_agg(att.attname ORDER BY att.attnum), '[]'::jsonb)
+               FROM unnest(COALESCE(pk.conkey, '{}'::smallint[])) k
+               JOIN pg_attribute att ON att.attrelid = c.oid AND att.attnum = k)
+      ) ORDER BY c.relname), '[]'::jsonb)
+      FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      LEFT JOIN pg_constraint pk ON pk.conrelid = c.oid AND pk.contype = 'p'
+      WHERE n.nspname = 'public' AND c.relkind = 'r'
+    ),
+    'policies', (
+      SELECT COALESCE(jsonb_agg(jsonb_build_object(
+        'table', p.tablename, 'name', p.policyname, 'cmd', p.cmd,
+        'roles', p.roles, 'using', p.qual, 'check', p.with_check, 'permissive', p.permissive
+      ) ORDER BY p.tablename, p.policyname), '[]'::jsonb)
+      FROM pg_policies p WHERE p.schemaname = 'public'
+    )
+  );
 $$;
 
 
@@ -4976,6 +6280,63 @@ BEGIN
 
   RETURN jsonb_build_object('created', created_count, 'updated', updated_count, 'as_of', _as_of);
 END $$;
+
+
+--
+-- Name: pmbq_auto_ma(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.pmbq_auto_ma() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF NEW.ma_ban_quyen IS NULL OR NEW.ma_ban_quyen = '' THEN
+    NEW.ma_ban_quyen := 'BQ_' || upper(substring(replace(gen_random_uuid()::text, '-', ''), 1, 8));
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: pmbq_check_seats(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.pmbq_check_seats() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_so_ghe int;
+  v_dang_dung int;
+BEGIN
+  IF NEW.ngay_thu_hoi IS NOT NULL THEN
+    RETURN NEW;
+  END IF;
+
+  -- Khóa hàng bản quyền để tránh race condition
+  SELECT so_ghe INTO v_so_ghe 
+  FROM public.phan_mem_ban_quyen 
+  WHERE id = NEW.ban_quyen_id 
+  FOR UPDATE;
+
+  IF v_so_ghe IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  SELECT count(*) INTO v_dang_dung
+  FROM public.phan_mem_ban_quyen_cap_phat
+  WHERE ban_quyen_id = NEW.ban_quyen_id
+    AND ngay_thu_hoi IS NULL
+    AND id IS DISTINCT FROM NEW.id;
+
+  IF v_dang_dung >= v_so_ghe THEN
+    RAISE EXCEPTION 'Bản quyền đã dùng hết % ghế, không thể cấp phát thêm', v_so_ghe;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$;
 
 
 --
@@ -6150,6 +7511,73 @@ END $$;
 
 
 --
+-- Name: storage_don_vi_allowed(text, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.storage_don_vi_allowed(_bucket text, _name text) RETURNS boolean
+    LANGUAGE plpgsql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_uid uuid := public.current_uid();
+  v_dv_id uuid;
+  v_dv_ma text;
+  v_found boolean := false;
+  v_ok boolean := false;
+BEGIN
+  IF v_uid IS NULL THEN
+    RETURN false;
+  END IF;
+  -- Quản lý thiết bị / admin: xem toàn bộ
+  IF public.can_manage_equipment(v_uid) THEN
+    RETURN true;
+  END IF;
+  v_dv_id := public.get_user_don_vi_id(v_uid);
+  v_dv_ma := public.get_user_don_vi_ma(v_uid);
+
+  IF _bucket IN ('thiet-bi-tai-lieu', 'thiet-bi-hinh-anh') THEN
+    SELECT true, bool_or(tb.don_vi_id IS NOT DISTINCT FROM v_dv_id)
+      INTO v_found, v_ok
+      FROM public.thiet_bi_tep_dinh_kem t
+      JOIN public.thiet_bi tb ON tb.id = t.thiet_bi_id
+     WHERE t.file_path = _name OR t.file_path LIKE '%' || _name;
+
+  ELSIF _bucket = 'su-co-images' THEN
+    SELECT true, bool_or(s.don_vi IS NOT DISTINCT FROM v_dv_ma)
+      INTO v_found, v_ok
+      FROM public.su_co s
+     WHERE s.file_dinh_kem = _name OR s.file_dinh_kem LIKE '%' || _name;
+
+  ELSIF _bucket = 'vi-tri-media' THEN
+    SELECT true, bool_or(m.don_vi IS NOT DISTINCT FROM v_dv_ma)
+      INTO v_found, v_ok
+      FROM public.vi_tri_media m
+     WHERE m.duong_dan = _name OR m.duong_dan LIKE '%' || _name;
+
+  ELSIF _bucket IN ('form-pdf', 'form-attachments') THEN
+    SELECT true, bool_or(f.don_vi_id IS NOT DISTINCT FROM v_dv_id)
+      INTO v_found, v_ok
+      FROM public.form_submission f
+     WHERE f.pdf_path = _name OR f.pdf_path LIKE '%' || _name;
+
+  ELSIF _bucket = 'du-an-cong-van' THEN
+    SELECT true, bool_or(public.can_access_du_an(cv.du_an_id))
+      INTO v_found, v_ok
+      FROM public.du_an_cong_van_tep t
+      JOIN public.du_an_cong_van cv ON cv.id = t.cong_van_id
+     WHERE t.file_path = _name OR t.file_path LIKE '%' || _name;
+  END IF;
+
+  -- Không tìm thấy bản ghi tham chiếu (tệp mồ côi / vừa tải lên) → chỉ quản lý xem.
+  IF v_found IS NOT TRUE THEN
+    RETURN false;
+  END IF;
+  RETURN COALESCE(v_ok, false);
+END;
+$$;
+
+
+--
 -- Name: su_co_check_transition(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -6689,50 +8117,6 @@ $$;
 
 
 --
--- Name: tb_serial_khong_trung(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.tb_serial_khong_trung() RETURNS trigger
-    LANGUAGE plpgsql
-    SET search_path TO 'public'
-    AS $$
-DECLARE
-  v_serial text;
-  v_trung text;
-BEGIN
-  -- Chuẩn hoá: trim khoảng trắng; chuỗi rỗng coi như NULL.
-  v_serial := NULLIF(btrim(COALESCE(NEW.ma_serial, '')), '');
-  NEW.ma_serial := v_serial;
-
-  -- Ô trống thì bỏ qua kiểm tra.
-  IF v_serial IS NULL THEN
-    RETURN NEW;
-  END IF;
-
-  -- Chỉ kiểm tra khi có thay đổi serial (INSERT hoặc UPDATE đổi serial).
-  IF TG_OP = 'UPDATE'
-     AND NULLIF(btrim(COALESCE(OLD.ma_serial, '')), '') IS NOT DISTINCT FROM v_serial THEN
-    RETURN NEW;
-  END IF;
-
-  -- So khớp không phân biệt hoa/thường, bỏ khoảng trắng thừa hai đầu.
-  SELECT ma_thiet_bi INTO v_trung
-  FROM public.thiet_bi
-  WHERE id <> NEW.id
-    AND lower(btrim(ma_serial)) = lower(v_serial)
-  LIMIT 1;
-
-  IF v_trung IS NOT NULL THEN
-    RAISE EXCEPTION 'Số serial "%" đã tồn tại ở thiết bị %', v_serial, v_trung
-      USING ERRCODE = 'unique_violation';
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
-
-
---
 -- Name: tg_bao_cao_annotation_updated(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -6772,6 +8156,122 @@ BEGIN
   NEW.updated_at = now();
   RETURN NEW;
 END$$;
+
+
+--
+-- Name: thanh_phan_kpi(uuid); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.thanh_phan_kpi(_tp_id uuid) RETURNS jsonb
+    LANGUAGE plpgsql STABLE
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_so_su_co_12m int := 0;
+  v_so_su_co_mo  int := 0;
+  v_so_bao_tri_12m int := 0;
+  v_so_hong_hoc  int := 0;
+  v_so_gan_tong  int := 0;
+  v_so_gan_active int := 0;
+  v_mtbf_days   numeric;
+  v_mttr_hours  numeric;
+  v_ti_le_dat   numeric;
+  v_by_month    jsonb;
+BEGIN
+  IF _tp_id IS NULL THEN RETURN '{}'::jsonb; END IF;
+
+  -- Sự cố: đếm trong 12 tháng + đang mở.
+  SELECT
+    count(*) FILTER (WHERE ngay_phat_hien >= (now() - interval '12 months')),
+    count(*) FILTER (WHERE trang_thai IN ('moi','dang_xu_ly') OR thoi_diem_khac_phuc IS NULL)
+  INTO v_so_su_co_12m, v_so_su_co_mo
+  FROM su_co WHERE thanh_phan_id = _tp_id;
+
+  -- MTBF (ngày) = khoảng giữa các lần sự cố trong 12 tháng.
+  SELECT CASE WHEN count(*) > 1
+      THEN EXTRACT(EPOCH FROM (max(ngay_phat_hien) - min(ngay_phat_hien))) / 86400.0 / (count(*) - 1)
+      ELSE NULL END
+  INTO v_mtbf_days
+  FROM su_co
+  WHERE thanh_phan_id = _tp_id
+    AND ngay_phat_hien >= (now() - interval '12 months');
+
+  -- MTTR (giờ) = thời gian TB từ phát hiện đến khắc phục.
+  SELECT avg(EXTRACT(EPOCH FROM (thoi_diem_khac_phuc - ngay_phat_hien)) / 3600.0)
+  INTO v_mttr_hours
+  FROM su_co
+  WHERE thanh_phan_id = _tp_id
+    AND thoi_diem_khac_phuc IS NOT NULL
+    AND ngay_phat_hien IS NOT NULL
+    AND ngay_phat_hien >= (now() - interval '12 months');
+
+  -- Bảo dưỡng 12 tháng.
+  SELECT count(*) INTO v_so_bao_tri_12m
+  FROM bao_tri
+  WHERE thanh_phan_id = _tp_id
+    AND coalesce(ngay_bat_dau, ngay_hoan_thanh) >= (now() - interval '12 months');
+
+  -- Hỏng hóc (tổng).
+  SELECT count(*) INTO v_so_hong_hoc
+  FROM hong_hoc WHERE thanh_phan_id = _tp_id;
+
+  -- Số lần gắn tài sản.
+  SELECT count(*), count(*) FILTER (WHERE den_ngay IS NULL)
+  INTO v_so_gan_tong, v_so_gan_active
+  FROM gan_chuc_nang WHERE thanh_phan_id = _tp_id;
+
+  -- Tỉ lệ Đạt của các phiếu bảo dưỡng liên kết thành phần này (nếu có form_submission_item_result).
+  SELECT CASE WHEN count(*) > 0
+      THEN 100.0 * count(*) FILTER (WHERE ket_qua = 'dat') / count(*)
+      ELSE NULL END
+  INTO v_ti_le_dat
+  FROM form_submission_item_result
+  WHERE thanh_phan_id = _tp_id AND ket_qua IS NOT NULL;
+
+  -- Chuỗi sự cố theo tháng (12 tháng gần nhất).
+  SELECT coalesce(jsonb_agg(jsonb_build_object('thang', thang, 'so_su_co', c) ORDER BY thang), '[]'::jsonb)
+  INTO v_by_month
+  FROM (
+    SELECT to_char(date_trunc('month', ngay_phat_hien), 'YYYY-MM') AS thang, count(*) AS c
+    FROM su_co
+    WHERE thanh_phan_id = _tp_id
+      AND ngay_phat_hien >= (now() - interval '12 months')
+    GROUP BY 1
+  ) t;
+
+  RETURN jsonb_build_object(
+    'so_su_co_12m', v_so_su_co_12m,
+    'so_su_co_mo',  v_so_su_co_mo,
+    'so_bao_tri_12m', v_so_bao_tri_12m,
+    'so_hong_hoc',  v_so_hong_hoc,
+    'so_gan_tong',  v_so_gan_tong,
+    'so_gan_active', v_so_gan_active,
+    'mtbf_days',    v_mtbf_days,
+    'mttr_hours',   v_mttr_hours,
+    'ti_le_dat',    v_ti_le_dat,
+    'su_co_by_month', v_by_month
+  );
+END;
+$$;
+
+
+--
+-- Name: thanh_phan_tai_san_history(uuid); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.thanh_phan_tai_san_history(_tp_id uuid) RETURNS TABLE(gan_id uuid, thiet_bi_id uuid, ma_thiet_bi text, ten_thiet_bi text, ma_serial text, tu_ngay timestamp with time zone, den_ngay timestamp with time zone, ly_do text, ghi_chu text, dang_lap boolean)
+    LANGUAGE sql STABLE
+    SET search_path TO 'public'
+    AS $$
+  SELECT g.id, g.thiet_bi_id,
+         tb.ma_thiet_bi, tb.ten_thiet_bi, tb.ma_serial,
+         g.tu_ngay, g.den_ngay, g.ly_do, g.ghi_chu,
+         (g.den_ngay IS NULL) AS dang_lap
+  FROM gan_chuc_nang g
+  JOIN thiet_bi tb ON tb.id = g.thiet_bi_id
+  WHERE g.thanh_phan_id = _tp_id
+  ORDER BY g.tu_ngay DESC NULLS LAST;
+$$;
 
 
 --
@@ -7299,6 +8799,104 @@ $$;
 
 
 --
+-- Name: trg_dbd_bb_audit(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.trg_dbd_bb_audit() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_hm RECORD;
+  v_fs_id uuid;
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    SELECT dot_id, don_vi_id INTO v_hm FROM public.dot_bao_duong_hang_muc WHERE id = NEW.hang_muc_id;
+    INSERT INTO public.dot_bao_duong_audit_log(hang_muc_id, dot_id, don_vi_id, action, actor, changes)
+    VALUES (NEW.hang_muc_id, v_hm.dot_id, v_hm.don_vi_id, 'gan_bien_ban', auth.uid(),
+      jsonb_build_object('form_submission_id', NEW.form_submission_id));
+    RETURN NEW;
+  ELSIF TG_OP = 'DELETE' THEN
+    SELECT dot_id, don_vi_id INTO v_hm FROM public.dot_bao_duong_hang_muc WHERE id = OLD.hang_muc_id;
+    IF FOUND THEN
+      INSERT INTO public.dot_bao_duong_audit_log(hang_muc_id, dot_id, don_vi_id, action, actor, changes)
+      VALUES (OLD.hang_muc_id, v_hm.dot_id, v_hm.don_vi_id, 'go_bien_ban', auth.uid(),
+        jsonb_build_object('form_submission_id', OLD.form_submission_id));
+    END IF;
+    RETURN OLD;
+  END IF;
+  RETURN NULL;
+END;
+$$;
+
+
+--
+-- Name: trg_dbd_hm_audit(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.trg_dbd_hm_audit() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+DECLARE
+  v_action text;
+  v_changes jsonb := '{}'::jsonb;
+  v_note text;
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO public.dot_bao_duong_audit_log(hang_muc_id, dot_id, don_vi_id, action, actor, changes)
+    VALUES (NEW.id, NEW.dot_id, NEW.don_vi_id, 'tao', auth.uid(),
+      jsonb_build_object('he_thong_id', NEW.he_thong_id, 'nguon', NEW.nguon, 'han_hoan_thanh', NEW.han_hoan_thanh));
+    RETURN NEW;
+  END IF;
+
+  -- UPDATE: detect state transitions first
+  IF NEW.duyet_trang_thai IS DISTINCT FROM OLD.duyet_trang_thai THEN
+    v_action := CASE NEW.duyet_trang_thai
+      WHEN 'cho_duyet' THEN 'gui_duyet'
+      WHEN 'da_duyet' THEN 'duyet'
+      WHEN 'tu_choi' THEN 'tra_lai'
+      WHEN 'chua_gui' THEN 'mo_khoa'
+      ELSE 'cap_nhat'
+    END;
+    v_note := NEW.approval_note;
+  ELSE
+    v_action := 'cap_nhat';
+  END IF;
+
+  IF NEW.trang_thai IS DISTINCT FROM OLD.trang_thai THEN
+    v_changes := v_changes || jsonb_build_object('trang_thai', jsonb_build_array(OLD.trang_thai, NEW.trang_thai));
+  END IF;
+  IF NEW.ket_qua IS DISTINCT FROM OLD.ket_qua THEN
+    v_changes := v_changes || jsonb_build_object('ket_qua', jsonb_build_array(OLD.ket_qua, NEW.ket_qua));
+  END IF;
+  IF NEW.duyet_trang_thai IS DISTINCT FROM OLD.duyet_trang_thai THEN
+    v_changes := v_changes || jsonb_build_object('duyet_trang_thai', jsonb_build_array(OLD.duyet_trang_thai, NEW.duyet_trang_thai));
+  END IF;
+  IF NEW.han_hoan_thanh IS DISTINCT FROM OLD.han_hoan_thanh THEN
+    v_changes := v_changes || jsonb_build_object('han_hoan_thanh', jsonb_build_array(OLD.han_hoan_thanh, NEW.han_hoan_thanh));
+  END IF;
+  IF NEW.ton_tai IS DISTINCT FROM OLD.ton_tai THEN
+    v_changes := v_changes || jsonb_build_object('ton_tai', jsonb_build_array(COALESCE(OLD.ton_tai,''), COALESCE(NEW.ton_tai,'')));
+  END IF;
+  IF NEW.kien_nghi IS DISTINCT FROM OLD.kien_nghi THEN
+    v_changes := v_changes || jsonb_build_object('kien_nghi', jsonb_build_array(COALESCE(OLD.kien_nghi,''), COALESCE(NEW.kien_nghi,'')));
+  END IF;
+
+  -- Skip pure no-op updates
+  IF v_action = 'cap_nhat' AND v_changes = '{}'::jsonb THEN
+    RETURN NEW;
+  END IF;
+
+  INSERT INTO public.dot_bao_duong_audit_log(hang_muc_id, dot_id, don_vi_id, action, actor, changes, note)
+  VALUES (NEW.id, NEW.dot_id, NEW.don_vi_id, v_action, auth.uid(), v_changes, v_note);
+
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: trg_detect_bulk_delete(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -7652,6 +9250,24 @@ END; $$;
 
 
 --
+-- Name: trg_update_completeness(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.trg_update_completeness() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  IF TG_TABLE_NAME = 'thiet_bi' THEN
+    NEW.completeness_pct := public.calculate_completeness('thiet_bi', to_jsonb(NEW));
+  ELSIF TG_TABLE_NAME = 'dm_he_thong' THEN
+    NEW.completeness_pct := public.calculate_completeness('dm_he_thong', to_jsonb(NEW));
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+
+--
 -- Name: undo_merge_danh_muc(text, uuid); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -7959,21 +9575,27 @@ CREATE FUNCTION public.validate_thiet_bi_he_thong_khi_lap() RETURNS trigger
     SET search_path TO 'public'
     AS $$
 DECLARE
-  v_he_thong_id uuid;
-  v_ma text;
+  v_tb_he_thong_id uuid;
+  v_tp_he_thong_id uuid;
 BEGIN
-  -- Chỉ kiểm tra khi bản ghi lắp còn hiệu lực (chưa tháo)
+  -- Bỏ qua khi bản ghi đã tháo
   IF NEW.den_ngay IS NOT NULL THEN
     RETURN NEW;
   END IF;
 
-  SELECT he_thong_id, ma_thiet_bi INTO v_he_thong_id, v_ma
-  FROM public.thiet_bi
-  WHERE id = NEW.thiet_bi_id;
+  SELECT he_thong_id INTO v_tb_he_thong_id
+  FROM public.thiet_bi WHERE id = NEW.thiet_bi_id;
 
-  IF v_he_thong_id IS NULL THEN
-    RAISE EXCEPTION 'Tài sản % chưa gán hệ thống — không thể lắp vào thành phần. Vui lòng cập nhật hệ thống cho tài sản trước.', COALESCE(v_ma, NEW.thiet_bi_id::text)
-      USING ERRCODE = 'check_violation';
+  -- Nếu tài sản chưa có hệ thống mặc định → tự gán theo hệ thống của thành phần đích
+  IF v_tb_he_thong_id IS NULL THEN
+    SELECT he_thong_id INTO v_tp_he_thong_id
+    FROM public.he_thong_thanh_phan WHERE id = NEW.thanh_phan_id;
+
+    IF v_tp_he_thong_id IS NOT NULL THEN
+      UPDATE public.thiet_bi
+      SET he_thong_id = v_tp_he_thong_id
+      WHERE id = NEW.thiet_bi_id AND he_thong_id IS NULL;
+    END IF;
   END IF;
 
   RETURN NEW;
@@ -8127,12 +9749,12 @@ END $$;
 
 
 --
--- Name: _dbg_tmp; Type: TABLE; Schema: public; Owner: -
+-- Name: unaccent; Type: TEXT SEARCH DICTIONARY; Schema: public; Owner: -
 --
 
-CREATE TABLE public._dbg_tmp (
-    msg text
-);
+CREATE TEXT SEARCH DICTIONARY public.unaccent (
+    TEMPLATE = extensions.unaccent,
+    rules = 'unaccent' );
 
 
 --
@@ -8737,7 +10359,8 @@ CREATE TABLE public.dm_he_thong (
     to_chuc_id uuid,
     attrs jsonb DEFAULT '{}'::jsonb NOT NULL,
     merged_into uuid,
-    deactivated_at timestamp with time zone
+    deactivated_at timestamp with time zone,
+    completeness_pct integer DEFAULT 0
 );
 
 ALTER TABLE ONLY public.dm_he_thong REPLICA IDENTITY FULL;
@@ -8748,6 +10371,22 @@ ALTER TABLE ONLY public.dm_he_thong REPLICA IDENTITY FULL;
 --
 
 COMMENT ON COLUMN public.dm_he_thong.ma_tai_san_bravo IS 'Mã tài sản Bravo (cột vật lý cố định, áp dụng cho mọi hệ thống)';
+
+
+--
+-- Name: dm_loai_ban_quyen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dm_loai_ban_quyen (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ma text NOT NULL,
+    ten text NOT NULL,
+    mo_ta text,
+    thu_tu integer DEFAULT 0 NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 
 
 --
@@ -8806,7 +10445,8 @@ CREATE TABLE public.dm_loai_thiet_bi (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     mau text,
     merged_into uuid,
-    deactivated_at timestamp with time zone
+    deactivated_at timestamp with time zone,
+    la_may_tinh boolean DEFAULT false NOT NULL
 );
 
 
@@ -9020,6 +10660,147 @@ ALTER TABLE ONLY public.dm_vi_tri REPLICA IDENTITY FULL;
 
 
 --
+-- Name: dong_gop_diem; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dong_gop_diem (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    change_request_id uuid,
+    nhiem_vu_id uuid,
+    loai_dong_gop text NOT NULL,
+    diem integer NOT NULL,
+    ky text NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: dot_bao_duong; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ten text NOT NULL,
+    nam integer NOT NULL,
+    ky smallint NOT NULL,
+    tu_ngay date,
+    den_ngay date,
+    mo_ta text,
+    trang_thai public.dot_bao_duong_trang_thai DEFAULT 'nhap'::public.dot_bao_duong_trang_thai NOT NULL,
+    nguoi_tao uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT dot_bao_duong_ky_check CHECK ((ky = ANY (ARRAY[1, 2])))
+);
+
+
+--
+-- Name: dot_bao_duong_audit_log; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong_audit_log (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hang_muc_id uuid NOT NULL,
+    dot_id uuid NOT NULL,
+    don_vi_id uuid,
+    action text NOT NULL,
+    actor uuid,
+    changes jsonb,
+    note text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: dot_bao_duong_bien_ban; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong_bien_ban (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hang_muc_id uuid NOT NULL,
+    form_submission_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: dot_bao_duong_han; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong_han (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    dot_id uuid NOT NULL,
+    don_vi_id uuid NOT NULL,
+    han_ngay date NOT NULL,
+    mo_ta text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: dot_bao_duong_hang_muc; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong_hang_muc (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    dot_id uuid NOT NULL,
+    don_vi_id uuid NOT NULL,
+    he_thong_id uuid NOT NULL,
+    nguon public.dot_bao_duong_hm_nguon DEFAULT 'kt_khoi_tao'::public.dot_bao_duong_hm_nguon NOT NULL,
+    bat_buoc boolean DEFAULT true NOT NULL,
+    ghi_chu_kt text,
+    trang_thai public.dot_bao_duong_hm_trang_thai DEFAULT 'chua_bat_dau'::public.dot_bao_duong_hm_trang_thai NOT NULL,
+    ket_qua public.dot_bao_duong_hm_ket_qua,
+    ton_tai text,
+    kien_nghi text,
+    nguoi_thuc_hien uuid,
+    ngay_hoan_thanh timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    duyet_trang_thai text DEFAULT 'chua_gui'::text NOT NULL,
+    submitted_at timestamp with time zone,
+    submitted_by uuid,
+    approved_at timestamp with time zone,
+    approved_by uuid,
+    approval_note text,
+    han_hoan_thanh date,
+    CONSTRAINT dot_bao_duong_hang_muc_duyet_chk CHECK ((duyet_trang_thai = ANY (ARRAY['chua_gui'::text, 'cho_duyet'::text, 'da_duyet'::text, 'tu_choi'::text])))
+);
+
+
+--
+-- Name: dot_bao_duong_su_co; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong_su_co (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hang_muc_id uuid NOT NULL,
+    su_co_id uuid,
+    hong_hoc_id uuid,
+    ghi_chu text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT dot_bao_duong_su_co_check CHECK (((su_co_id IS NOT NULL) OR (hong_hoc_id IS NOT NULL)))
+);
+
+
+--
+-- Name: dot_bao_duong_tep; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dot_bao_duong_tep (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    hang_muc_id uuid NOT NULL,
+    duong_dan text NOT NULL,
+    ten_goc text,
+    loai text,
+    nguoi_up uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: du_an; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -9039,6 +10820,67 @@ CREATE TABLE public.du_an (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     attrs jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT du_an_tien_do_check CHECK (((tien_do >= 0) AND (tien_do <= 100)))
+);
+
+
+--
+-- Name: du_an_cong_van; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.du_an_cong_van (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    du_an_id uuid NOT NULL,
+    parent_id uuid,
+    so_cong_van text NOT NULL,
+    loai public.cong_van_loai DEFAULT 'den'::public.cong_van_loai NOT NULL,
+    trich_yeu text,
+    co_quan_ban_hanh text,
+    co_quan_nhan text,
+    ngay_ban_hanh date,
+    ngay_tiep_nhan date,
+    han_phuc_dap date,
+    trang_thai public.cong_van_trang_thai DEFAULT 'moi'::public.cong_van_trang_thai NOT NULL,
+    can_cu_text text,
+    ghi_chu text,
+    nguoi_tao_id uuid DEFAULT auth.uid() NOT NULL,
+    attrs jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: du_an_cong_van_lien_ket; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.du_an_cong_van_lien_ket (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    tu_id uuid NOT NULL,
+    den_id uuid NOT NULL,
+    loai public.cong_van_lien_ket_loai DEFAULT 'tra_loi'::public.cong_van_lien_ket_loai NOT NULL,
+    ghi_chu text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT dacvlk_khac_nhau CHECK ((tu_id <> den_id))
+);
+
+
+--
+-- Name: du_an_cong_van_tep; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.du_an_cong_van_tep (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    cong_van_id uuid NOT NULL,
+    bucket text DEFAULT 'tai-lieu'::text NOT NULL,
+    file_path text NOT NULL,
+    file_name text NOT NULL,
+    mime_type text,
+    kich_thuoc bigint,
+    mo_ta text,
+    uploaded_by uuid DEFAULT auth.uid(),
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -9160,7 +11002,12 @@ CREATE TABLE public.form_check_item (
     bat_buoc boolean DEFAULT false NOT NULL,
     "position" integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    metric_key text,
+    nguong_min numeric,
+    nguong_max numeric,
+    nguong_op text,
+    chu_ky text
 );
 
 
@@ -9354,6 +11201,16 @@ CREATE TABLE public.form_submission_item_result (
     "position" integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    metric_key text,
+    nguong_min numeric,
+    nguong_max numeric,
+    nguong_op text,
+    thanh_phan_id uuid,
+    thiet_bi_id uuid,
+    he_thong_id uuid,
+    don_vi_id uuid,
+    submitted_at timestamp with time zone,
+    auto_ket_qua boolean DEFAULT false NOT NULL,
     CONSTRAINT chk_khong_dat_can_hanh_dong CHECK (((ket_qua IS DISTINCT FROM 'khong_dat'::public.form_ket_qua) OR ((hanh_dong IS NOT NULL) AND (btrim(hanh_dong) <> ''::text))))
 );
 
@@ -9563,7 +11420,9 @@ CREATE TABLE public.giay_phep_khai_thac (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     attrs jsonb DEFAULT '{}'::jsonb NOT NULL,
-    luu_tru boolean DEFAULT false NOT NULL
+    luu_tru boolean DEFAULT false NOT NULL,
+    file_gpkt text,
+    created_by uuid
 );
 
 
@@ -9836,6 +11695,25 @@ CREATE TABLE public.lien_ket_he_thong (
 
 
 --
+-- Name: luu_tru_health_log; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.luu_tru_health_log (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    backend text NOT NULL,
+    ok boolean NOT NULL,
+    latency_ms integer,
+    message text,
+    error_code text,
+    detail jsonb,
+    nguon text DEFAULT 'manual'::text NOT NULL,
+    checked_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT luu_tru_health_log_backend_check CHECK ((backend = ANY (ARRAY['cloud'::text, 'r2'::text])))
+);
+
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -9996,7 +11874,27 @@ CREATE TABLE public.nhan_vien (
     dien_thoai text,
     hoat_dong boolean DEFAULT true NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    ngay_sinh date
+);
+
+
+--
+-- Name: nhiem_vu_nhap_lieu; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nhiem_vu_nhap_lieu (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    loai text NOT NULL,
+    entity text NOT NULL,
+    target_id uuid NOT NULL,
+    field_key text,
+    don_vi_id uuid,
+    nguoi_nhan uuid,
+    trang_thai text DEFAULT 'moi'::text NOT NULL,
+    do_uu_tien integer DEFAULT 0,
+    created_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT nhiem_vu_nhap_lieu_trang_thai_check CHECK ((trang_thai = ANY (ARRAY['moi'::text, 'dang_lam'::text, 'da_gui'::text, 'hoan_thanh'::text, 'bo_qua'::text])))
 );
 
 
@@ -10030,6 +11928,71 @@ CREATE TABLE public.notifications (
     ref_id uuid,
     read_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: phan_mem_ban_quyen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.phan_mem_ban_quyen (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ma_ban_quyen text NOT NULL,
+    ten_phan_mem text NOT NULL,
+    nha_phat_hanh text,
+    phien_ban text,
+    loai_ban_quyen_id uuid,
+    license_key text,
+    so_ghe integer,
+    ngay_mua date,
+    ngay_bat_dau date,
+    ngay_het_han date,
+    gia_tri numeric,
+    so_hop_dong text,
+    don_vi_id uuid,
+    nha_cung_cap_id uuid,
+    ghi_chu text,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT phan_mem_ban_quyen_so_ghe_check CHECK (((so_ghe IS NULL) OR (so_ghe > 0)))
+);
+
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.phan_mem_ban_quyen_cap_phat (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ban_quyen_id uuid NOT NULL,
+    thiet_bi_id uuid NOT NULL,
+    ngay_cai_dat date DEFAULT CURRENT_DATE NOT NULL,
+    nguoi_cai text,
+    ngay_thu_hoi date,
+    ghi_chu text,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: phan_mem_ban_quyen_tep; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.phan_mem_ban_quyen_tep (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ban_quyen_id uuid NOT NULL,
+    ten_tep text NOT NULL,
+    duong_dan text NOT NULL,
+    mime_type text,
+    kich_thuoc bigint,
+    storage_provider text DEFAULT 'supabase'::text NOT NULL,
+    ghi_chu text,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -10073,6 +12036,86 @@ CREATE TABLE public.profiles (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     avatar_url text,
     tour_hoan_thanh boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: r2_access_log; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.r2_access_log (
+    id bigint NOT NULL,
+    user_id uuid,
+    key text NOT NULL,
+    action text NOT NULL,
+    category text,
+    expires_in integer,
+    ok boolean DEFAULT true NOT NULL,
+    reason text,
+    ip text,
+    user_agent text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: r2_access_log_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.r2_access_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: r2_access_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.r2_access_log_id_seq OWNED BY public.r2_access_log.id;
+
+
+--
+-- Name: r2_cau_hinh; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.r2_cau_hinh (
+    id integer DEFAULT 1 NOT NULL,
+    enabled boolean DEFAULT false NOT NULL,
+    endpoint text,
+    account_id text,
+    bucket_name text,
+    key_prefix text,
+    public_base_url text,
+    access_key_id text,
+    secret_access_key text,
+    updated_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT r2_cau_hinh_id_check CHECK ((id = 1))
+);
+
+
+--
+-- Name: r2_file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.r2_file (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    key text NOT NULL,
+    size bigint,
+    content_type text,
+    category text DEFAULT 'other'::text NOT NULL,
+    status text DEFAULT 'temp'::text NOT NULL,
+    original_name text,
+    meta jsonb DEFAULT '{}'::jsonb NOT NULL,
+    expires_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT r2_file_status_check CHECK ((status = ANY (ARRAY['temp'::text, 'ready'::text, 'failed'::text])))
 );
 
 
@@ -10152,6 +12195,68 @@ CREATE TABLE public.so_do_thu_vien_hinh (
     duong_dan text NOT NULL,
     created_by uuid DEFAULT public.current_uid() NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: supabase_ngoai; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.supabase_ngoai (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ten text NOT NULL,
+    url text NOT NULL,
+    publishable_key text NOT NULL,
+    service_role_key text,
+    ghi_chu text,
+    kich_hoat boolean DEFAULT false NOT NULL,
+    kiem_tra_luc timestamp with time zone,
+    kiem_tra_ket_qua jsonb,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: supabase_ngoai_job; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.supabase_ngoai_job (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    ngoai_id uuid NOT NULL,
+    che_do text DEFAULT 'that'::text NOT NULL,
+    trang_thai text DEFAULT 'dang_chay'::text NOT NULL,
+    tong_dong bigint DEFAULT 0 NOT NULL,
+    da_chuyen bigint DEFAULT 0 NOT NULL,
+    bat_dau timestamp with time zone DEFAULT now() NOT NULL,
+    ket_thuc timestamp with time zone,
+    loi text,
+    nhat_ky jsonb DEFAULT '[]'::jsonb NOT NULL,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT supabase_ngoai_job_che_do_check CHECK ((che_do = ANY (ARRAY['dry_run'::text, 'that'::text]))),
+    CONSTRAINT supabase_ngoai_job_trang_thai_check CHECK ((trang_thai = ANY (ARRAY['dang_chay'::text, 'tam_dung'::text, 'hoan_thanh'::text, 'that_bai'::text, 'da_hoan_tac'::text])))
+);
+
+
+--
+-- Name: supabase_ngoai_job_bang; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.supabase_ngoai_job_bang (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    job_id uuid NOT NULL,
+    ten_bang text NOT NULL,
+    tong_dong bigint DEFAULT 0 NOT NULL,
+    da_chuyen bigint DEFAULT 0 NOT NULL,
+    offset_tiep bigint DEFAULT 0 NOT NULL,
+    dich_dong_truoc bigint,
+    trang_thai text DEFAULT 'cho'::text NOT NULL,
+    loi text,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT supabase_ngoai_job_bang_trang_thai_check CHECK ((trang_thai = ANY (ARRAY['cho'::text, 'dang_chay'::text, 'hoan_thanh'::text, 'that_bai'::text, 'bo_qua'::text])))
 );
 
 
@@ -10240,6 +12345,28 @@ CREATE TABLE public.thiet_bi_do_dac (
     created_by uuid,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.thiet_bi_he_thong_tuong_thich (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    thiet_bi_id uuid NOT NULL,
+    he_thong_id uuid NOT NULL,
+    phan_loai text DEFAULT 'Thay thế trực tiếp'::text,
+    danh_gia text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE thiet_bi_he_thong_tuong_thich; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.thiet_bi_he_thong_tuong_thich IS 'Lưu thông tin tương thích giữa tài sản (vật tư dự phòng) và các hệ thống kỹ thuật.';
 
 
 --
@@ -10661,8 +12788,8 @@ CREATE VIEW public.v_giay_phep WITH (security_invoker='on') AS
             'gpkt'::text AS text,
             k.gp_so,
             k.gp_so,
-            'Giấy phép khai thác'::text,
-            'GPKT'::text,
+            'Giấy phép khai thác'::text AS text,
+            'GPKT'::text AS text,
             public.parse_vn_date(k.gp_ngay) AS parse_vn_date,
             public.parse_vn_date(k.gp_han) AS parse_vn_date,
             k.dia_diem,
@@ -11071,6 +13198,40 @@ CREATE VIEW public.v_menu_badges WITH (security_invoker='true') AS
 
 
 --
+-- Name: v_metric_timeseries; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.v_metric_timeseries WITH (security_invoker='on') AS
+ SELECT r.id,
+    r.submission_id,
+    r.metric_key,
+    r.section_code,
+    r.item_code,
+    r.ten,
+    r.result_kind,
+    r.gia_tri_so,
+    r.gia_tri_text,
+    r.don_vi,
+    r.tieu_chuan,
+    r.nguong_min,
+    r.nguong_max,
+    r.nguong_op,
+    r.ket_qua,
+    r.auto_ket_qua,
+    r.thanh_phan_id,
+    r.thiet_bi_id,
+    r.he_thong_id,
+    r.don_vi_id,
+    COALESCE(r.submitted_at, r.created_at) AS thoi_diem,
+    s.template_code,
+    s.template_version,
+    s.status
+   FROM (public.form_submission_item_result r
+     JOIN public.form_submission s ON ((s.id = r.submission_id)))
+  WHERE (r.metric_key IS NOT NULL);
+
+
+--
 -- Name: v_nsx_stats; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -11370,6 +13531,41 @@ CREATE TABLE public.webauthn_credentials (
 
 
 --
+-- Name: weekly_report_import; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.weekly_report_import (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    don_vi text,
+    so_van_ban text,
+    ngay_ky text,
+    tuan_tu_ngay text,
+    tuan_den_ngay text,
+    tieu_de text,
+    file_name text,
+    file_size integer,
+    n_incidents_detected integer DEFAULT 0 NOT NULL,
+    n_hong_hoc_detected integer DEFAULT 0 NOT NULL,
+    n_incidents_created integer DEFAULT 0 NOT NULL,
+    n_hong_hoc_created integer DEFAULT 0 NOT NULL,
+    status text DEFAULT 'success'::text NOT NULL,
+    error_message text,
+    details jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_by uuid,
+    created_by_name text,
+    don_vi_ma text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: r2_access_log id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r2_access_log ALTER COLUMN id SET DEFAULT nextval('public.r2_access_log_id_seq'::regclass);
+
+
+--
 -- Name: access_request access_request_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -11586,6 +13782,14 @@ ALTER TABLE ONLY public.conversations
 
 
 --
+-- Name: du_an_cong_van_lien_ket dacvlk_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van_lien_ket
+    ADD CONSTRAINT dacvlk_unique UNIQUE (tu_id, den_id, loai);
+
+
+--
 -- Name: dinh_nghia_truong dinh_nghia_truong_ap_dung_cho_key_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -11663,6 +13867,22 @@ ALTER TABLE ONLY public.dm_he_thong
 
 ALTER TABLE ONLY public.dm_he_thong
     ADD CONSTRAINT dm_he_thong_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dm_loai_ban_quyen dm_loai_ban_quyen_ma_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_loai_ban_quyen
+    ADD CONSTRAINT dm_loai_ban_quyen_ma_key UNIQUE (ma);
+
+
+--
+-- Name: dm_loai_ban_quyen dm_loai_ban_quyen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dm_loai_ban_quyen
+    ADD CONSTRAINT dm_loai_ban_quyen_pkey PRIMARY KEY (id);
 
 
 --
@@ -11855,6 +14075,118 @@ ALTER TABLE ONLY public.dm_vi_tri
 
 ALTER TABLE ONLY public.dm_vi_tri
     ADD CONSTRAINT dm_vi_tri_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dong_gop_diem dong_gop_diem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dong_gop_diem
+    ADD CONSTRAINT dong_gop_diem_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong_audit_log dot_bao_duong_audit_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_audit_log
+    ADD CONSTRAINT dot_bao_duong_audit_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong_bien_ban dot_bao_duong_bien_ban_hang_muc_id_form_submission_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_bien_ban
+    ADD CONSTRAINT dot_bao_duong_bien_ban_hang_muc_id_form_submission_id_key UNIQUE (hang_muc_id, form_submission_id);
+
+
+--
+-- Name: dot_bao_duong_bien_ban dot_bao_duong_bien_ban_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_bien_ban
+    ADD CONSTRAINT dot_bao_duong_bien_ban_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong_han dot_bao_duong_han_dot_id_don_vi_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_han
+    ADD CONSTRAINT dot_bao_duong_han_dot_id_don_vi_id_key UNIQUE (dot_id, don_vi_id);
+
+
+--
+-- Name: dot_bao_duong_han dot_bao_duong_han_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_han
+    ADD CONSTRAINT dot_bao_duong_han_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_dot_id_he_thong_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_dot_id_he_thong_id_key UNIQUE (dot_id, he_thong_id);
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong dot_bao_duong_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong
+    ADD CONSTRAINT dot_bao_duong_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong_su_co dot_bao_duong_su_co_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_su_co
+    ADD CONSTRAINT dot_bao_duong_su_co_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dot_bao_duong_tep dot_bao_duong_tep_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_tep
+    ADD CONSTRAINT dot_bao_duong_tep_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: du_an_cong_van_lien_ket du_an_cong_van_lien_ket_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van_lien_ket
+    ADD CONSTRAINT du_an_cong_van_lien_ket_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: du_an_cong_van du_an_cong_van_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van
+    ADD CONSTRAINT du_an_cong_van_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: du_an_cong_van_tep du_an_cong_van_tep_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van_tep
+    ADD CONSTRAINT du_an_cong_van_tep_pkey PRIMARY KEY (id);
 
 
 --
@@ -12242,6 +14574,14 @@ ALTER TABLE ONLY public.lien_ket_khe
 
 
 --
+-- Name: luu_tru_health_log luu_tru_health_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.luu_tru_health_log
+    ADD CONSTRAINT luu_tru_health_log_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -12274,6 +14614,14 @@ ALTER TABLE ONLY public.nhan_vien
 
 
 --
+-- Name: nhiem_vu_nhap_lieu nhiem_vu_nhap_lieu_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nhiem_vu_nhap_lieu
+    ADD CONSTRAINT nhiem_vu_nhap_lieu_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: node_note node_note_node_type_node_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -12298,6 +14646,38 @@ ALTER TABLE ONLY public.notifications
 
 
 --
+-- Name: phan_mem_ban_quyen_cap_phat phan_mem_ban_quyen_cap_phat_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen_cap_phat
+    ADD CONSTRAINT phan_mem_ban_quyen_cap_phat_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: phan_mem_ban_quyen phan_mem_ban_quyen_ma_ban_quyen_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen
+    ADD CONSTRAINT phan_mem_ban_quyen_ma_ban_quyen_key UNIQUE (ma_ban_quyen);
+
+
+--
+-- Name: phan_mem_ban_quyen phan_mem_ban_quyen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen
+    ADD CONSTRAINT phan_mem_ban_quyen_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: phan_mem_ban_quyen_tep phan_mem_ban_quyen_tep_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen_tep
+    ADD CONSTRAINT phan_mem_ban_quyen_tep_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: pm_cong_viec pm_cong_viec_chinh_sach_id_doi_tuong_id_ky_hieu_han_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -12319,6 +14699,38 @@ ALTER TABLE ONLY public.pm_cong_viec
 
 ALTER TABLE ONLY public.profiles
     ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: r2_access_log r2_access_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r2_access_log
+    ADD CONSTRAINT r2_access_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: r2_cau_hinh r2_cau_hinh_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r2_cau_hinh
+    ADD CONSTRAINT r2_cau_hinh_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: r2_file r2_file_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r2_file
+    ADD CONSTRAINT r2_file_key_key UNIQUE (key);
+
+
+--
+-- Name: r2_file r2_file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r2_file
+    ADD CONSTRAINT r2_file_pkey PRIMARY KEY (id);
 
 
 --
@@ -12394,6 +14806,38 @@ ALTER TABLE ONLY public.su_co
 
 
 --
+-- Name: supabase_ngoai_job_bang supabase_ngoai_job_bang_job_id_ten_bang_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supabase_ngoai_job_bang
+    ADD CONSTRAINT supabase_ngoai_job_bang_job_id_ten_bang_key UNIQUE (job_id, ten_bang);
+
+
+--
+-- Name: supabase_ngoai_job_bang supabase_ngoai_job_bang_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supabase_ngoai_job_bang
+    ADD CONSTRAINT supabase_ngoai_job_bang_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supabase_ngoai_job supabase_ngoai_job_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supabase_ngoai_job
+    ADD CONSTRAINT supabase_ngoai_job_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supabase_ngoai supabase_ngoai_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supabase_ngoai
+    ADD CONSTRAINT supabase_ngoai_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: system_signing_key system_signing_key_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -12447,6 +14891,22 @@ ALTER TABLE ONLY public.thiet_bi_cap_phat
 
 ALTER TABLE ONLY public.thiet_bi_do_dac
     ADD CONSTRAINT thiet_bi_do_dac_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich thiet_bi_he_thong_tuong_thich_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.thiet_bi_he_thong_tuong_thich
+    ADD CONSTRAINT thiet_bi_he_thong_tuong_thich_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich thiet_bi_he_thong_tuong_thich_thiet_bi_id_he_thong_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.thiet_bi_he_thong_tuong_thich
+    ADD CONSTRAINT thiet_bi_he_thong_tuong_thich_thiet_bi_id_he_thong_id_key UNIQUE (thiet_bi_id, he_thong_id);
 
 
 --
@@ -12647,6 +15107,14 @@ ALTER TABLE ONLY public.webauthn_credentials
 
 ALTER TABLE ONLY public.webauthn_credentials
     ADD CONSTRAINT webauthn_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: weekly_report_import weekly_report_import_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.weekly_report_import
+    ADD CONSTRAINT weekly_report_import_pkey PRIMARY KEY (id);
 
 
 --
@@ -13147,6 +15615,48 @@ CREATE INDEX idx_cvbt_trang_thai ON public.cong_viec_bao_tri USING btree (trang_
 
 
 --
+-- Name: idx_dacv_du_an; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dacv_du_an ON public.du_an_cong_van USING btree (du_an_id);
+
+
+--
+-- Name: idx_dacv_ngay; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dacv_ngay ON public.du_an_cong_van USING btree (ngay_ban_hanh);
+
+
+--
+-- Name: idx_dacv_parent; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dacv_parent ON public.du_an_cong_van USING btree (parent_id);
+
+
+--
+-- Name: idx_dacvlk_den; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dacvlk_den ON public.du_an_cong_van_lien_ket USING btree (den_id);
+
+
+--
+-- Name: idx_dacvlk_tu; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dacvlk_tu ON public.du_an_cong_van_lien_ket USING btree (tu_id);
+
+
+--
+-- Name: idx_dacvt_cong_van; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_dacvt_cong_van ON public.du_an_cong_van_tep USING btree (cong_van_id);
+
+
+--
 -- Name: idx_dm_don_vi_parent; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -13259,6 +15769,13 @@ CREATE INDEX idx_duan_attrs_gin ON public.du_an USING gin (attrs jsonb_path_ops)
 
 
 --
+-- Name: idx_form_check_item_metric_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_form_check_item_metric_key ON public.form_check_item USING btree (metric_key) WHERE (metric_key IS NOT NULL);
+
+
+--
 -- Name: idx_form_check_item_section; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -13315,10 +15832,31 @@ CREATE INDEX idx_form_tpl_ht_template ON public.form_template_he_thong USING btr
 
 
 --
+-- Name: idx_fsir_he_thong_metric; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_fsir_he_thong_metric ON public.form_submission_item_result USING btree (he_thong_id, metric_key) WHERE (he_thong_id IS NOT NULL);
+
+
+--
+-- Name: idx_fsir_metric_time; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_fsir_metric_time ON public.form_submission_item_result USING btree (metric_key, submitted_at DESC) WHERE (metric_key IS NOT NULL);
+
+
+--
 -- Name: idx_fsir_submission; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_fsir_submission ON public.form_submission_item_result USING btree (submission_id);
+
+
+--
+-- Name: idx_fsir_thanh_phan_metric; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_fsir_thanh_phan_metric ON public.form_submission_item_result USING btree (thanh_phan_id, metric_key) WHERE (thanh_phan_id IS NOT NULL);
 
 
 --
@@ -13707,6 +16245,13 @@ CREATE INDEX idx_lkk_nguon ON public.lien_ket_khe USING btree (khe_nguon_id);
 
 
 --
+-- Name: idx_luu_tru_health_log_time; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_luu_tru_health_log_time ON public.luu_tru_health_log USING btree (backend, created_at DESC);
+
+
+--
 -- Name: idx_messages_conv; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -13802,6 +16347,55 @@ CREATE INDEX idx_pm_cong_viec_phu_trach ON public.pm_cong_viec USING btree (nguo
 --
 
 CREATE INDEX idx_pm_cong_viec_trang_thai ON public.pm_cong_viec USING btree (trang_thai);
+
+
+--
+-- Name: idx_pmbq_cp_thiet_bi; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pmbq_cp_thiet_bi ON public.phan_mem_ban_quyen_cap_phat USING btree (thiet_bi_id);
+
+
+--
+-- Name: idx_pmbq_don_vi; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pmbq_don_vi ON public.phan_mem_ban_quyen USING btree (don_vi_id);
+
+
+--
+-- Name: idx_pmbq_het_han; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pmbq_het_han ON public.phan_mem_ban_quyen USING btree (ngay_het_han);
+
+
+--
+-- Name: idx_pmbq_loai; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pmbq_loai ON public.phan_mem_ban_quyen USING btree (loai_ban_quyen_id);
+
+
+--
+-- Name: idx_pmbq_tep_bq; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pmbq_tep_bq ON public.phan_mem_ban_quyen_tep USING btree (ban_quyen_id);
+
+
+--
+-- Name: idx_sn_job_bang_job; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sn_job_bang_job ON public.supabase_ngoai_job_bang USING btree (job_id);
+
+
+--
+-- Name: idx_sn_job_ngoai; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sn_job_ngoai ON public.supabase_ngoai_job USING btree (ngoai_id, created_at DESC);
 
 
 --
@@ -14225,6 +16819,34 @@ CREATE INDEX idx_webauthn_credentials_user ON public.webauthn_credentials USING 
 
 
 --
+-- Name: ix_dbd_audit_dot; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_dbd_audit_dot ON public.dot_bao_duong_audit_log USING btree (dot_id, created_at DESC);
+
+
+--
+-- Name: ix_dbd_audit_hm; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_dbd_audit_hm ON public.dot_bao_duong_audit_log USING btree (hang_muc_id, created_at DESC);
+
+
+--
+-- Name: ix_dbd_hm_dot; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_dbd_hm_dot ON public.dot_bao_duong_hang_muc USING btree (dot_id);
+
+
+--
+-- Name: ix_dbd_hm_dv; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_dbd_hm_dv ON public.dot_bao_duong_hang_muc USING btree (don_vi_id);
+
+
+--
 -- Name: ix_lkht_dich_active; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -14267,6 +16889,20 @@ CREATE INDEX ix_mdt_dac_tinh ON public.dm_model_dac_tinh USING btree (dac_tinh_i
 
 
 --
+-- Name: ix_wri_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_wri_created_at ON public.weekly_report_import USING btree (created_at DESC);
+
+
+--
+-- Name: ix_wri_created_by; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_wri_created_by ON public.weekly_report_import USING btree (created_by);
+
+
+--
 -- Name: mv_asset_anomaly_asset_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -14285,6 +16921,34 @@ CREATE INDEX mv_asset_anomaly_z_idx ON public.mv_asset_anomaly USING btree (z_sc
 --
 
 CREATE UNIQUE INDEX mv_dashboard_overview_uniq ON public.mv_dashboard_overview USING btree (((payload ->> 'refreshed_at'::text)));
+
+
+--
+-- Name: r2_file_status_exp_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX r2_file_status_exp_idx ON public.r2_file USING btree (status, expires_at);
+
+
+--
+-- Name: r2_file_user_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX r2_file_user_idx ON public.r2_file USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: r2_log_key_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX r2_log_key_idx ON public.r2_access_log USING btree (key, created_at DESC);
+
+
+--
+-- Name: r2_log_user_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX r2_log_user_idx ON public.r2_access_log USING btree (user_id, created_at DESC);
 
 
 --
@@ -14341,6 +17005,13 @@ CREATE INDEX su_co_thiet_bi_id_idx ON public.su_co USING btree (thiet_bi_id);
 --
 
 CREATE INDEX su_co_van_de_id_idx ON public.su_co USING btree (van_de_id);
+
+
+--
+-- Name: supabase_ngoai_mot_kich_hoat; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX supabase_ngoai_mot_kich_hoat ON public.supabase_ngoai USING btree (kich_hoat) WHERE kich_hoat;
 
 
 --
@@ -14425,6 +17096,13 @@ CREATE UNIQUE INDEX uq_glk_linh_kien_active ON public.gan_linh_kien USING btree 
 --
 
 CREATE UNIQUE INDEX uq_import_alias ON public.import_alias USING btree (entity, COALESCE(scope, ''::text), alias_norm);
+
+
+--
+-- Name: uq_pmbq_cap_phat_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX uq_pmbq_cap_phat_active ON public.phan_mem_ban_quyen_cap_phat USING btree (ban_quyen_id, thiet_bi_id) WHERE (ngay_thu_hoi IS NULL);
 
 
 --
@@ -14659,6 +17337,34 @@ CREATE TRIGGER cvbt_updated_at BEFORE UPDATE ON public.cong_viec_bao_tri FOR EAC
 
 
 --
+-- Name: dot_bao_duong_bien_ban dbd_bb_audit_del; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER dbd_bb_audit_del AFTER DELETE ON public.dot_bao_duong_bien_ban FOR EACH ROW EXECUTE FUNCTION public.trg_dbd_bb_audit();
+
+
+--
+-- Name: dot_bao_duong_bien_ban dbd_bb_audit_ins; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER dbd_bb_audit_ins AFTER INSERT ON public.dot_bao_duong_bien_ban FOR EACH ROW EXECUTE FUNCTION public.trg_dbd_bb_audit();
+
+
+--
+-- Name: dot_bao_duong_hang_muc dbd_hm_audit_ins; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER dbd_hm_audit_ins AFTER INSERT ON public.dot_bao_duong_hang_muc FOR EACH ROW EXECUTE FUNCTION public.trg_dbd_hm_audit();
+
+
+--
+-- Name: dot_bao_duong_hang_muc dbd_hm_audit_upd; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER dbd_hm_audit_upd AFTER UPDATE ON public.dot_bao_duong_hang_muc FOR EACH ROW EXECUTE FUNCTION public.trg_dbd_hm_audit();
+
+
+--
 -- Name: gan_chuc_nang gcn_sync_thiet_bi; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -14754,6 +17460,13 @@ CREATE TRIGGER profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW
 --
 
 CREATE TRIGGER su_co_3lop BEFORE INSERT OR UPDATE ON public.su_co FOR EACH ROW EXECUTE FUNCTION public.trg_su_co_3lop();
+
+
+--
+-- Name: supabase_ngoai supabase_ngoai_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER supabase_ngoai_updated_at BEFORE UPDATE ON public.supabase_ngoai FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -14883,6 +17596,55 @@ CREATE TRIGGER trg_cv_updated BEFORE UPDATE ON public.du_an_cong_viec FOR EACH R
 
 
 --
+-- Name: du_an_cong_van trg_dacv_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dacv_updated BEFORE UPDATE ON public.du_an_cong_van FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+
+--
+-- Name: du_an_cong_van_lien_ket trg_dacvlk_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dacvlk_updated BEFORE UPDATE ON public.du_an_cong_van_lien_ket FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+
+--
+-- Name: du_an_cong_van_tep trg_dacvt_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dacvt_updated BEFORE UPDATE ON public.du_an_cong_van_tep FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+
+--
+-- Name: dot_bao_duong_han trg_dbd_han_upd; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dbd_han_upd BEFORE UPDATE ON public.dot_bao_duong_han FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: dot_bao_duong_hang_muc trg_dbd_hm_upd; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dbd_hm_upd BEFORE UPDATE ON public.dot_bao_duong_hang_muc FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: dot_bao_duong trg_dbd_upd; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dbd_upd BEFORE UPDATE ON public.dot_bao_duong FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: dm_dac_tinh trg_dm_dac_tinh_gen_ma; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dm_dac_tinh_gen_ma BEFORE INSERT ON public.dm_dac_tinh FOR EACH ROW EXECUTE FUNCTION public._gen_ma_dac_tinh();
+
+
+--
 -- Name: dm_dac_tinh trg_dm_dac_tinh_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -14901,6 +17663,13 @@ CREATE TRIGGER trg_dm_don_vi_updated_at BEFORE UPDATE ON public.dm_don_vi FOR EA
 --
 
 CREATE TRIGGER trg_dm_he_thong_updated_at BEFORE UPDATE ON public.dm_he_thong FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+
+--
+-- Name: dm_loai_ban_quyen trg_dm_loai_ban_quyen_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_dm_loai_ban_quyen_updated_at BEFORE UPDATE ON public.dm_loai_ban_quyen FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -15058,6 +17827,13 @@ CREATE TRIGGER trg_form_template_updated_at BEFORE UPDATE ON public.form_templat
 
 
 --
+-- Name: form_submission_item_result trg_fsir_enrich; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_fsir_enrich BEFORE INSERT OR UPDATE ON public.form_submission_item_result FOR EACH ROW EXECUTE FUNCTION public.fsir_enrich();
+
+
+--
 -- Name: form_submission_item_result trg_fsir_updated; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -15104,6 +17880,13 @@ CREATE TRIGGER trg_gpkt_updated_at BEFORE UPDATE ON public.giay_phep_khai_thac F
 --
 
 CREATE TRIGGER trg_he_thong_cascade_thiet_bi AFTER UPDATE ON public.dm_he_thong FOR EACH ROW EXECUTE FUNCTION public.he_thong_cascade_thiet_bi();
+
+
+--
+-- Name: dm_he_thong trg_he_thong_completeness; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_he_thong_completeness BEFORE INSERT OR UPDATE ON public.dm_he_thong FOR EACH ROW EXECUTE FUNCTION public.trg_update_completeness();
 
 
 --
@@ -15226,6 +18009,41 @@ CREATE TRIGGER trg_pm_cong_viec_updated_at BEFORE UPDATE ON public.pm_cong_viec 
 
 
 --
+-- Name: phan_mem_ban_quyen trg_pmbq_auto_ma; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_pmbq_auto_ma BEFORE INSERT ON public.phan_mem_ban_quyen FOR EACH ROW EXECUTE FUNCTION public.pmbq_auto_ma();
+
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat trg_pmbq_check_seats; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_pmbq_check_seats BEFORE INSERT OR UPDATE ON public.phan_mem_ban_quyen_cap_phat FOR EACH ROW EXECUTE FUNCTION public.pmbq_check_seats();
+
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat trg_pmbq_cp_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_pmbq_cp_updated_at BEFORE UPDATE ON public.phan_mem_ban_quyen_cap_phat FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: phan_mem_ban_quyen_tep trg_pmbq_tep_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_pmbq_tep_updated_at BEFORE UPDATE ON public.phan_mem_ban_quyen_tep FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: phan_mem_ban_quyen trg_pmbq_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_pmbq_updated_at BEFORE UPDATE ON public.phan_mem_ban_quyen FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: profiles trg_protect_profile_privileged_fields; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -15303,6 +18121,20 @@ CREATE TRIGGER trg_search_index_vat_tu AFTER INSERT OR DELETE OR UPDATE ON publi
 
 
 --
+-- Name: supabase_ngoai_job_bang trg_sn_job_bang_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_sn_job_bang_updated BEFORE UPDATE ON public.supabase_ngoai_job_bang FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: supabase_ngoai_job trg_sn_job_updated; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_sn_job_updated BEFORE UPDATE ON public.supabase_ngoai_job FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
 -- Name: so_do_he_thong trg_so_do_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -15324,13 +18156,6 @@ CREATE TRIGGER trg_sync_thanh_phan_don_vi BEFORE INSERT OR UPDATE OF he_thong_id
 
 
 --
--- Name: thiet_bi trg_tb_serial_khong_trung; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER trg_tb_serial_khong_trung BEFORE INSERT OR UPDATE OF ma_serial ON public.thiet_bi FOR EACH ROW EXECUTE FUNCTION public.tb_serial_khong_trung();
-
-
---
 -- Name: telegram_subscriber trg_tele_sub_updated; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -15342,6 +18167,13 @@ CREATE TRIGGER trg_tele_sub_updated BEFORE UPDATE ON public.telegram_subscriber 
 --
 
 CREATE TRIGGER trg_tep_updated BEFORE UPDATE ON public.thiet_bi_tep_dinh_kem FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+
+--
+-- Name: thiet_bi trg_thiet_bi_completeness; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_thiet_bi_completeness BEFORE INSERT OR UPDATE ON public.thiet_bi FOR EACH ROW EXECUTE FUNCTION public.trg_update_completeness();
 
 
 --
@@ -15851,6 +18683,214 @@ ALTER TABLE ONLY public.dm_vi_tri
 
 
 --
+-- Name: dong_gop_diem dong_gop_diem_change_request_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dong_gop_diem
+    ADD CONSTRAINT dong_gop_diem_change_request_id_fkey FOREIGN KEY (change_request_id) REFERENCES public.change_request(id);
+
+
+--
+-- Name: dong_gop_diem dong_gop_diem_nhiem_vu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dong_gop_diem
+    ADD CONSTRAINT dong_gop_diem_nhiem_vu_id_fkey FOREIGN KEY (nhiem_vu_id) REFERENCES public.nhiem_vu_nhap_lieu(id);
+
+
+--
+-- Name: dong_gop_diem dong_gop_diem_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dong_gop_diem
+    ADD CONSTRAINT dong_gop_diem_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id);
+
+
+--
+-- Name: dot_bao_duong_audit_log dot_bao_duong_audit_log_dot_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_audit_log
+    ADD CONSTRAINT dot_bao_duong_audit_log_dot_id_fkey FOREIGN KEY (dot_id) REFERENCES public.dot_bao_duong(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_audit_log dot_bao_duong_audit_log_hang_muc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_audit_log
+    ADD CONSTRAINT dot_bao_duong_audit_log_hang_muc_id_fkey FOREIGN KEY (hang_muc_id) REFERENCES public.dot_bao_duong_hang_muc(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_bien_ban dot_bao_duong_bien_ban_form_submission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_bien_ban
+    ADD CONSTRAINT dot_bao_duong_bien_ban_form_submission_id_fkey FOREIGN KEY (form_submission_id) REFERENCES public.form_submission(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_bien_ban dot_bao_duong_bien_ban_hang_muc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_bien_ban
+    ADD CONSTRAINT dot_bao_duong_bien_ban_hang_muc_id_fkey FOREIGN KEY (hang_muc_id) REFERENCES public.dot_bao_duong_hang_muc(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_han dot_bao_duong_han_don_vi_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_han
+    ADD CONSTRAINT dot_bao_duong_han_don_vi_id_fkey FOREIGN KEY (don_vi_id) REFERENCES public.dm_don_vi(id);
+
+
+--
+-- Name: dot_bao_duong_han dot_bao_duong_han_dot_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_han
+    ADD CONSTRAINT dot_bao_duong_han_dot_id_fkey FOREIGN KEY (dot_id) REFERENCES public.dot_bao_duong(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_approved_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_approved_by_fkey FOREIGN KEY (approved_by) REFERENCES auth.users(id);
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_don_vi_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_don_vi_id_fkey FOREIGN KEY (don_vi_id) REFERENCES public.dm_don_vi(id);
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_dot_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_dot_id_fkey FOREIGN KEY (dot_id) REFERENCES public.dot_bao_duong(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_he_thong_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_he_thong_id_fkey FOREIGN KEY (he_thong_id) REFERENCES public.dm_he_thong(id);
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_nguoi_thuc_hien_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_nguoi_thuc_hien_fkey FOREIGN KEY (nguoi_thuc_hien) REFERENCES auth.users(id);
+
+
+--
+-- Name: dot_bao_duong_hang_muc dot_bao_duong_hang_muc_submitted_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_hang_muc
+    ADD CONSTRAINT dot_bao_duong_hang_muc_submitted_by_fkey FOREIGN KEY (submitted_by) REFERENCES auth.users(id);
+
+
+--
+-- Name: dot_bao_duong dot_bao_duong_nguoi_tao_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong
+    ADD CONSTRAINT dot_bao_duong_nguoi_tao_fkey FOREIGN KEY (nguoi_tao) REFERENCES auth.users(id);
+
+
+--
+-- Name: dot_bao_duong_su_co dot_bao_duong_su_co_hang_muc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_su_co
+    ADD CONSTRAINT dot_bao_duong_su_co_hang_muc_id_fkey FOREIGN KEY (hang_muc_id) REFERENCES public.dot_bao_duong_hang_muc(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_su_co dot_bao_duong_su_co_hong_hoc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_su_co
+    ADD CONSTRAINT dot_bao_duong_su_co_hong_hoc_id_fkey FOREIGN KEY (hong_hoc_id) REFERENCES public.hong_hoc(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_su_co dot_bao_duong_su_co_su_co_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_su_co
+    ADD CONSTRAINT dot_bao_duong_su_co_su_co_id_fkey FOREIGN KEY (su_co_id) REFERENCES public.su_co(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_tep dot_bao_duong_tep_hang_muc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_tep
+    ADD CONSTRAINT dot_bao_duong_tep_hang_muc_id_fkey FOREIGN KEY (hang_muc_id) REFERENCES public.dot_bao_duong_hang_muc(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dot_bao_duong_tep dot_bao_duong_tep_nguoi_up_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dot_bao_duong_tep
+    ADD CONSTRAINT dot_bao_duong_tep_nguoi_up_fkey FOREIGN KEY (nguoi_up) REFERENCES auth.users(id);
+
+
+--
+-- Name: du_an_cong_van du_an_cong_van_du_an_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van
+    ADD CONSTRAINT du_an_cong_van_du_an_id_fkey FOREIGN KEY (du_an_id) REFERENCES public.du_an(id) ON DELETE CASCADE;
+
+
+--
+-- Name: du_an_cong_van_lien_ket du_an_cong_van_lien_ket_den_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van_lien_ket
+    ADD CONSTRAINT du_an_cong_van_lien_ket_den_id_fkey FOREIGN KEY (den_id) REFERENCES public.du_an_cong_van(id) ON DELETE CASCADE;
+
+
+--
+-- Name: du_an_cong_van_lien_ket du_an_cong_van_lien_ket_tu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van_lien_ket
+    ADD CONSTRAINT du_an_cong_van_lien_ket_tu_id_fkey FOREIGN KEY (tu_id) REFERENCES public.du_an_cong_van(id) ON DELETE CASCADE;
+
+
+--
+-- Name: du_an_cong_van du_an_cong_van_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van
+    ADD CONSTRAINT du_an_cong_van_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.du_an_cong_van(id) ON DELETE SET NULL;
+
+
+--
+-- Name: du_an_cong_van_tep du_an_cong_van_tep_cong_van_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.du_an_cong_van_tep
+    ADD CONSTRAINT du_an_cong_van_tep_cong_van_id_fkey FOREIGN KEY (cong_van_id) REFERENCES public.du_an_cong_van(id) ON DELETE CASCADE;
+
+
+--
 -- Name: du_an_cong_viec du_an_cong_viec_du_an_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -16075,6 +19115,30 @@ ALTER TABLE ONLY public.form_template_version
 
 
 --
+-- Name: form_submission_item_result fsir_he_thong_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submission_item_result
+    ADD CONSTRAINT fsir_he_thong_fk FOREIGN KEY (he_thong_id) REFERENCES public.dm_he_thong(id) ON DELETE SET NULL;
+
+
+--
+-- Name: form_submission_item_result fsir_thanh_phan_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submission_item_result
+    ADD CONSTRAINT fsir_thanh_phan_fk FOREIGN KEY (thanh_phan_id) REFERENCES public.he_thong_thanh_phan(id) ON DELETE SET NULL;
+
+
+--
+-- Name: form_submission_item_result fsir_thiet_bi_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.form_submission_item_result
+    ADD CONSTRAINT fsir_thiet_bi_fk FOREIGN KEY (thiet_bi_id) REFERENCES public.thiet_bi(id) ON DELETE SET NULL;
+
+
+--
 -- Name: gan_chuc_nang gan_chuc_nang_hong_hoc_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -16120,6 +19184,14 @@ ALTER TABLE ONLY public.gan_linh_kien
 
 ALTER TABLE ONLY public.gan_linh_kien
     ADD CONSTRAINT gan_linh_kien_linh_kien_id_fkey FOREIGN KEY (linh_kien_id) REFERENCES public.thiet_bi(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: giay_phep_khai_thac giay_phep_khai_thac_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.giay_phep_khai_thac
+    ADD CONSTRAINT giay_phep_khai_thac_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL;
 
 
 --
@@ -16331,6 +19403,70 @@ ALTER TABLE ONLY public.model_tai_lieu
 
 
 --
+-- Name: nhiem_vu_nhap_lieu nhiem_vu_nhap_lieu_don_vi_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nhiem_vu_nhap_lieu
+    ADD CONSTRAINT nhiem_vu_nhap_lieu_don_vi_id_fkey FOREIGN KEY (don_vi_id) REFERENCES public.dm_don_vi(id);
+
+
+--
+-- Name: nhiem_vu_nhap_lieu nhiem_vu_nhap_lieu_nguoi_nhan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nhiem_vu_nhap_lieu
+    ADD CONSTRAINT nhiem_vu_nhap_lieu_nguoi_nhan_fkey FOREIGN KEY (nguoi_nhan) REFERENCES auth.users(id);
+
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat phan_mem_ban_quyen_cap_phat_ban_quyen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen_cap_phat
+    ADD CONSTRAINT phan_mem_ban_quyen_cap_phat_ban_quyen_id_fkey FOREIGN KEY (ban_quyen_id) REFERENCES public.phan_mem_ban_quyen(id) ON DELETE CASCADE;
+
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat phan_mem_ban_quyen_cap_phat_thiet_bi_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen_cap_phat
+    ADD CONSTRAINT phan_mem_ban_quyen_cap_phat_thiet_bi_id_fkey FOREIGN KEY (thiet_bi_id) REFERENCES public.thiet_bi(id) ON DELETE CASCADE;
+
+
+--
+-- Name: phan_mem_ban_quyen phan_mem_ban_quyen_don_vi_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen
+    ADD CONSTRAINT phan_mem_ban_quyen_don_vi_id_fkey FOREIGN KEY (don_vi_id) REFERENCES public.dm_don_vi(id) ON DELETE SET NULL;
+
+
+--
+-- Name: phan_mem_ban_quyen phan_mem_ban_quyen_loai_ban_quyen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen
+    ADD CONSTRAINT phan_mem_ban_quyen_loai_ban_quyen_id_fkey FOREIGN KEY (loai_ban_quyen_id) REFERENCES public.dm_loai_ban_quyen(id) ON DELETE SET NULL;
+
+
+--
+-- Name: phan_mem_ban_quyen phan_mem_ban_quyen_nha_cung_cap_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen
+    ADD CONSTRAINT phan_mem_ban_quyen_nha_cung_cap_id_fkey FOREIGN KEY (nha_cung_cap_id) REFERENCES public.dm_nha_cung_cap(id) ON DELETE SET NULL;
+
+
+--
+-- Name: phan_mem_ban_quyen_tep phan_mem_ban_quyen_tep_ban_quyen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.phan_mem_ban_quyen_tep
+    ADD CONSTRAINT phan_mem_ban_quyen_tep_ban_quyen_id_fkey FOREIGN KEY (ban_quyen_id) REFERENCES public.phan_mem_ban_quyen(id) ON DELETE CASCADE;
+
+
+--
 -- Name: pm_cong_viec pm_cong_viec_bao_tri_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -16376,6 +19512,22 @@ ALTER TABLE ONLY public.so_do_he_thong
 
 ALTER TABLE ONLY public.so_do_tep_dinh_kem
     ADD CONSTRAINT so_do_tep_dinh_kem_so_do_id_fkey FOREIGN KEY (so_do_id) REFERENCES public.so_do_he_thong(id) ON DELETE CASCADE;
+
+
+--
+-- Name: supabase_ngoai_job_bang supabase_ngoai_job_bang_job_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supabase_ngoai_job_bang
+    ADD CONSTRAINT supabase_ngoai_job_bang_job_id_fkey FOREIGN KEY (job_id) REFERENCES public.supabase_ngoai_job(id) ON DELETE CASCADE;
+
+
+--
+-- Name: supabase_ngoai_job supabase_ngoai_job_ngoai_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supabase_ngoai_job
+    ADD CONSTRAINT supabase_ngoai_job_ngoai_id_fkey FOREIGN KEY (ngoai_id) REFERENCES public.supabase_ngoai(id) ON DELETE CASCADE;
 
 
 --
@@ -16448,6 +19600,22 @@ ALTER TABLE ONLY public.thiet_bi
 
 ALTER TABLE ONLY public.thiet_bi
     ADD CONSTRAINT thiet_bi_he_thong_id_fkey FOREIGN KEY (he_thong_id) REFERENCES public.dm_he_thong(id) ON DELETE SET NULL;
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich thiet_bi_he_thong_tuong_thich_he_thong_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.thiet_bi_he_thong_tuong_thich
+    ADD CONSTRAINT thiet_bi_he_thong_tuong_thich_he_thong_id_fkey FOREIGN KEY (he_thong_id) REFERENCES public.dm_he_thong(id) ON DELETE CASCADE;
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich thiet_bi_he_thong_tuong_thich_thiet_bi_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.thiet_bi_he_thong_tuong_thich
+    ADD CONSTRAINT thiet_bi_he_thong_tuong_thich_thiet_bi_id_fkey FOREIGN KEY (thiet_bi_id) REFERENCES public.thiet_bi(id) ON DELETE CASCADE;
 
 
 --
@@ -16737,6 +19905,13 @@ CREATE POLICY "Admin sửa lịch sử backup" ON public.backup_lich_su FOR UPDA
 
 
 --
+-- Name: supabase_ngoai_job_bang Admin xem chi tiet phien; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admin xem chi tiet phien" ON public.supabase_ngoai_job_bang FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
 -- Name: backup_lich_su Admin xem lịch sử backup; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -16744,10 +19919,38 @@ CREATE POLICY "Admin xem lịch sử backup" ON public.backup_lich_su FOR SELECT
 
 
 --
+-- Name: luu_tru_health_log Admin xem nhat ky health check; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admin xem nhat ky health check" ON public.luu_tru_health_log FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: supabase_ngoai_job Admin xem phien di chuyen; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Admin xem phien di chuyen" ON public.supabase_ngoai_job FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
 -- Name: backup_lich_su Admin xoá lịch sử backup; Type: POLICY; Schema: public; Owner: -
 --
 
 CREATE POLICY "Admin xoá lịch sử backup" ON public.backup_lich_su FOR DELETE TO authenticated USING (public.has_role(public.current_uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich Allow authenticated users to manage compatibility; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Allow authenticated users to manage compatibility" ON public.thiet_bi_he_thong_tuong_thich TO authenticated USING (true) WITH CHECK (true);
+
+
+--
+-- Name: thiet_bi_he_thong_tuong_thich Allow authenticated users to read compatibility; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Allow authenticated users to read compatibility" ON public.thiet_bi_he_thong_tuong_thich FOR SELECT TO authenticated USING (true);
 
 
 --
@@ -16797,6 +20000,27 @@ CREATE POLICY "Quản trị xoá lịch sử cấp phát" ON public.thiet_bi_cap
 --
 
 CREATE POLICY "Users can delete their own passkeys" ON public.webauthn_credentials FOR DELETE TO authenticated USING ((public.current_uid() = user_id));
+
+
+--
+-- Name: nhiem_vu_nhap_lieu Users can see their assigned tasks; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can see their assigned tasks" ON public.nhiem_vu_nhap_lieu FOR SELECT TO authenticated USING (((nguoi_nhan = auth.uid()) OR (nguoi_nhan IS NULL)));
+
+
+--
+-- Name: dong_gop_diem Users can see their scores; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can see their scores" ON public.dong_gop_diem FOR SELECT TO authenticated USING ((user_id = auth.uid()));
+
+
+--
+-- Name: nhiem_vu_nhap_lieu Users can update their assigned tasks; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can update their assigned tasks" ON public.nhiem_vu_nhap_lieu FOR UPDATE TO authenticated USING ((nguoi_nhan = auth.uid()));
 
 
 --
@@ -16933,10 +20157,13 @@ CREATE POLICY annotation_insert_kt_admin ON public.bao_cao_annotation FOR INSERT
 
 
 --
--- Name: bao_cao_annotation annotation_select_all_auth; Type: POLICY; Schema: public; Owner: -
+-- Name: bao_cao_annotation annotation_select_scoped; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY annotation_select_all_auth ON public.bao_cao_annotation FOR SELECT TO authenticated USING (true);
+CREATE POLICY annotation_select_scoped ON public.bao_cao_annotation FOR SELECT TO authenticated USING ((public.is_active_user(public.current_uid()) AND (public.can_manage_equipment(public.current_uid()) OR (tao_boi = auth.uid()) OR ((he_thong_id IS NOT NULL) AND (EXISTS ( SELECT 1
+   FROM public.thiet_bi tb
+  WHERE ((tb.he_thong_id = bao_cao_annotation.he_thong_id) AND public.can_view_thiet_bi(tb.id, public.current_uid()))
+ LIMIT 1))))));
 
 
 --
@@ -17318,6 +20545,157 @@ CREATE POLICY cvbt_write ON public.cong_viec_bao_tri TO authenticated USING (pub
 
 
 --
+-- Name: du_an_cong_van dacv_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dacv_select ON public.du_an_cong_van FOR SELECT TO authenticated USING (public.can_access_du_an(du_an_id, public.current_uid()));
+
+
+--
+-- Name: du_an_cong_van dacv_write; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dacv_write ON public.du_an_cong_van TO authenticated USING (public.can_manage_du_an(du_an_id, public.current_uid())) WITH CHECK (public.can_manage_du_an(du_an_id, public.current_uid()));
+
+
+--
+-- Name: du_an_cong_van_lien_ket dacvlk_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dacvlk_select ON public.du_an_cong_van_lien_ket FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.du_an_cong_van cv
+  WHERE ((cv.id = du_an_cong_van_lien_ket.tu_id) AND public.can_access_du_an(cv.du_an_id, public.current_uid())))));
+
+
+--
+-- Name: du_an_cong_van_lien_ket dacvlk_write; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dacvlk_write ON public.du_an_cong_van_lien_ket TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.du_an_cong_van cv
+  WHERE ((cv.id = du_an_cong_van_lien_ket.tu_id) AND public.can_manage_du_an(cv.du_an_id, public.current_uid()))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.du_an_cong_van cv
+  WHERE ((cv.id = du_an_cong_van_lien_ket.tu_id) AND public.can_manage_du_an(cv.du_an_id, public.current_uid())))));
+
+
+--
+-- Name: du_an_cong_van_tep dacvt_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dacvt_select ON public.du_an_cong_van_tep FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.du_an_cong_van cv
+  WHERE ((cv.id = du_an_cong_van_tep.cong_van_id) AND public.can_access_du_an(cv.du_an_id, public.current_uid())))));
+
+
+--
+-- Name: du_an_cong_van_tep dacvt_write; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dacvt_write ON public.du_an_cong_van_tep TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.du_an_cong_van cv
+  WHERE ((cv.id = du_an_cong_van_tep.cong_van_id) AND public.can_manage_du_an(cv.du_an_id, public.current_uid()))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.du_an_cong_van cv
+  WHERE ((cv.id = du_an_cong_van_tep.cong_van_id) AND public.can_manage_du_an(cv.du_an_id, public.current_uid())))));
+
+
+--
+-- Name: dot_bao_duong_audit_log dbd_audit_insert; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_audit_insert ON public.dot_bao_duong_audit_log FOR INSERT TO authenticated WITH CHECK (((actor = auth.uid()) AND (EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_audit_log.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid())) OR (dot_bao_duong_audit_log.don_vi_id = public.get_user_don_vi_id(auth.uid()))))))));
+
+
+--
+-- Name: dot_bao_duong_audit_log dbd_audit_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_audit_select ON public.dot_bao_duong_audit_log FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (don_vi_id = public.get_user_don_vi_id(auth.uid()))));
+
+
+--
+-- Name: dot_bao_duong_bien_ban dbd_bb_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_bb_all ON public.dot_bao_duong_bien_ban TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_bien_ban.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid()))))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_bien_ban.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid())))))));
+
+
+--
+-- Name: dot_bao_duong_han dbd_han_read; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_han_read ON public.dot_bao_duong_han FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role)));
+
+
+--
+-- Name: dot_bao_duong_han dbd_han_write_kt; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_han_write_kt ON public.dot_bao_duong_han TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role))) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role)));
+
+
+--
+-- Name: dot_bao_duong_hang_muc dbd_hm_read; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_hm_read ON public.dot_bao_duong_hang_muc FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (don_vi_id = public.get_user_don_vi_id(auth.uid()))));
+
+
+--
+-- Name: dot_bao_duong_hang_muc dbd_hm_write_dv; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_hm_write_dv ON public.dot_bao_duong_hang_muc TO authenticated USING (((don_vi_id = public.get_user_don_vi_id(auth.uid())) AND (duyet_trang_thai <> 'da_duyet'::text) AND (EXISTS ( SELECT 1
+   FROM public.dot_bao_duong d
+  WHERE ((d.id = dot_bao_duong_hang_muc.dot_id) AND (d.trang_thai <> ALL (ARRAY['dong'::public.dot_bao_duong_trang_thai, 'huy'::public.dot_bao_duong_trang_thai]))))))) WITH CHECK (((don_vi_id = public.get_user_don_vi_id(auth.uid())) AND (duyet_trang_thai <> 'da_duyet'::text) AND (EXISTS ( SELECT 1
+   FROM public.dot_bao_duong d
+  WHERE ((d.id = dot_bao_duong_hang_muc.dot_id) AND (d.trang_thai <> ALL (ARRAY['dong'::public.dot_bao_duong_trang_thai, 'huy'::public.dot_bao_duong_trang_thai])))))));
+
+
+--
+-- Name: dot_bao_duong_hang_muc dbd_hm_write_kt; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_hm_write_kt ON public.dot_bao_duong_hang_muc TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role))) WITH CHECK ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role)));
+
+
+--
+-- Name: dot_bao_duong dbd_read; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_read ON public.dot_bao_duong FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.dot_id = dot_bao_duong.id) AND (h.don_vi_id = public.get_user_don_vi_id(auth.uid())))))));
+
+
+--
+-- Name: dot_bao_duong_su_co dbd_sc_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_sc_all ON public.dot_bao_duong_su_co TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_su_co.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid()))))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_su_co.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid())))))));
+
+
+--
+-- Name: dot_bao_duong_tep dbd_tep_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dbd_tep_all ON public.dot_bao_duong_tep TO authenticated USING ((EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_tep.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid()))))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.dot_bao_duong_hang_muc h
+  WHERE ((h.id = dot_bao_duong_tep.hang_muc_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (h.don_vi_id = public.get_user_don_vi_id(auth.uid())))))));
+
+
+--
 -- Name: dinh_nghia_truong; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -17366,6 +20744,26 @@ ALTER TABLE public.dm_he_thong ENABLE ROW LEVEL SECURITY;
 --
 
 CREATE POLICY dm_he_thong_read_scope ON public.dm_he_thong FOR SELECT TO authenticated USING ((public.is_active_user(public.current_uid()) AND (public.can_manage_equipment(public.current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = public.get_user_don_vi_id(public.current_uid())))));
+
+
+--
+-- Name: dm_loai_ban_quyen; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dm_loai_ban_quyen ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dm_loai_ban_quyen dm_loai_ban_quyen_read; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dm_loai_ban_quyen_read ON public.dm_loai_ban_quyen FOR SELECT TO authenticated USING (public.is_active_user(public.current_uid()));
+
+
+--
+-- Name: dm_loai_ban_quyen dm_loai_ban_quyen_write; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dm_loai_ban_quyen_write ON public.dm_loai_ban_quyen TO authenticated USING (public.can_manage_equipment(public.current_uid())) WITH CHECK (public.can_manage_equipment(public.current_uid()));
 
 
 --
@@ -17475,10 +20873,83 @@ CREATE POLICY dnt_write_admin ON public.dinh_nghia_truong TO authenticated USING
 
 
 --
+-- Name: dong_gop_diem; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dong_gop_diem ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong_audit_log; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong_audit_log ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong_bien_ban; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong_bien_ban ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong_han; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong_han ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong_hang_muc; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong_hang_muc ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong_su_co; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong_su_co ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong_tep; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dot_bao_duong_tep ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: dot_bao_duong dot_bd_write_kt; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY dot_bd_write_kt ON public.dot_bao_duong TO authenticated USING (((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role)) AND ((trang_thai <> 'dong'::public.dot_bao_duong_trang_thai) OR public.has_role(auth.uid(), 'admin'::public.app_role)))) WITH CHECK (((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role)) AND ((trang_thai <> 'dong'::public.dot_bao_duong_trang_thai) OR public.has_role(auth.uid(), 'admin'::public.app_role))));
+
+
+--
 -- Name: du_an; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
 ALTER TABLE public.du_an ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: du_an_cong_van; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.du_an_cong_van ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: du_an_cong_van_lien_ket; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.du_an_cong_van_lien_ket ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: du_an_cong_van_tep; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.du_an_cong_van_tep ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: du_an_cong_viec; Type: ROW SECURITY; Schema: public; Owner: -
@@ -17762,12 +21233,12 @@ CREATE POLICY fsir_write_owner_or_kt ON public.form_submission_item_result TO au
 
 
 --
--- Name: form_submission_signature fss_read_via_submission; Type: POLICY; Schema: public; Owner: -
+-- Name: form_submission_signature fss_read_scope; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY fss_read_via_submission ON public.form_submission_signature FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
+CREATE POLICY fss_read_scope ON public.form_submission_signature FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.form_submission s
-  WHERE (s.id = form_submission_signature.submission_id))));
+  WHERE ((s.id = form_submission_signature.submission_id) AND public.is_active_user(public.current_uid()) AND (public.can_manage_equipment(public.current_uid()) OR (s.created_by = public.current_uid()) OR ((s.status <> 'draft'::public.form_submission_status) AND (s.don_vi_id IS NOT NULL) AND (s.don_vi_id = public.get_user_don_vi_id(public.current_uid()))))))));
 
 
 --
@@ -18327,6 +21798,12 @@ CREATE POLICY lookup_write_manager ON public.dm_vi_tri TO authenticated USING (p
 
 
 --
+-- Name: luu_tru_health_log; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.luu_tru_health_log ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: messages; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -18434,6 +21911,12 @@ CREATE POLICY "nhan_vien write admin" ON public.nhan_vien TO authenticated USING
 
 CREATE POLICY nhan_vien_select ON public.nhan_vien FOR SELECT TO authenticated USING (public.can_manage_equipment(public.current_uid()));
 
+
+--
+-- Name: nhiem_vu_nhap_lieu; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.nhiem_vu_nhap_lieu ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: node_note; Type: ROW SECURITY; Schema: public; Owner: -
@@ -18602,6 +22085,24 @@ CREATE POLICY "own recent update" ON public.user_recent FOR UPDATE TO authentica
 
 
 --
+-- Name: phan_mem_ban_quyen; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.phan_mem_ban_quyen ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.phan_mem_ban_quyen_cap_phat ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: phan_mem_ban_quyen_tep; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.phan_mem_ban_quyen_tep ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: du_an_cong_viec_phoi_hop phoi_hop_delete; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -18651,6 +22152,52 @@ CREATE POLICY pm_cv_update ON public.pm_cong_viec FOR UPDATE TO authenticated US
 
 
 --
+-- Name: phan_mem_ban_quyen_cap_phat pmbq_cp_read_scope; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY pmbq_cp_read_scope ON public.phan_mem_ban_quyen_cap_phat FOR SELECT TO authenticated USING ((public.is_active_user(public.current_uid()) AND (EXISTS ( SELECT 1
+   FROM public.phan_mem_ban_quyen bq
+  WHERE ((bq.id = phan_mem_ban_quyen_cap_phat.ban_quyen_id) AND (public.can_manage_equipment(public.current_uid()) OR ((bq.don_vi_id IS NOT NULL) AND (bq.don_vi_id = public.get_user_don_vi_id(public.current_uid())))))))));
+
+
+--
+-- Name: phan_mem_ban_quyen_cap_phat pmbq_cp_write_manager; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY pmbq_cp_write_manager ON public.phan_mem_ban_quyen_cap_phat TO authenticated USING (public.can_manage_equipment(public.current_uid())) WITH CHECK (public.can_manage_equipment(public.current_uid()));
+
+
+--
+-- Name: phan_mem_ban_quyen pmbq_read_scope; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY pmbq_read_scope ON public.phan_mem_ban_quyen FOR SELECT TO authenticated USING ((public.is_active_user(public.current_uid()) AND (public.can_manage_equipment(public.current_uid()) OR ((don_vi_id IS NOT NULL) AND (don_vi_id = public.get_user_don_vi_id(public.current_uid()))))));
+
+
+--
+-- Name: phan_mem_ban_quyen_tep pmbq_tep_read_scope; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY pmbq_tep_read_scope ON public.phan_mem_ban_quyen_tep FOR SELECT TO authenticated USING ((public.is_active_user(public.current_uid()) AND (EXISTS ( SELECT 1
+   FROM public.phan_mem_ban_quyen bq
+  WHERE ((bq.id = phan_mem_ban_quyen_tep.ban_quyen_id) AND (public.can_manage_equipment(public.current_uid()) OR (bq.don_vi_id IS NULL) OR (bq.don_vi_id = public.get_user_don_vi_id(public.current_uid()))))))));
+
+
+--
+-- Name: phan_mem_ban_quyen_tep pmbq_tep_write_manager; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY pmbq_tep_write_manager ON public.phan_mem_ban_quyen_tep TO authenticated USING (public.can_manage_equipment(public.current_uid())) WITH CHECK (public.can_manage_equipment(public.current_uid()));
+
+
+--
+-- Name: phan_mem_ban_quyen pmbq_write_manager; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY pmbq_write_manager ON public.phan_mem_ban_quyen TO authenticated USING (public.can_manage_equipment(public.current_uid())) WITH CHECK (public.can_manage_equipment(public.current_uid()));
+
+
+--
 -- Name: profiles; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -18689,6 +22236,66 @@ CREATE POLICY profiles_self_select ON public.profiles FOR SELECT TO authenticate
 --
 
 CREATE POLICY profiles_self_update ON public.profiles FOR UPDATE USING ((id = public.current_uid())) WITH CHECK ((id = public.current_uid()));
+
+
+--
+-- Name: r2_access_log; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.r2_access_log ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: r2_cau_hinh; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.r2_cau_hinh ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: r2_cau_hinh r2_cau_hinh_admin_all; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY r2_cau_hinh_admin_all ON public.r2_cau_hinh TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
+
+
+--
+-- Name: r2_file; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.r2_file ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: r2_file r2_file_owner_del; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY r2_file_owner_del ON public.r2_file FOR DELETE TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
+
+
+--
+-- Name: r2_file r2_file_owner_ins; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY r2_file_owner_ins ON public.r2_file FOR INSERT TO authenticated WITH CHECK ((user_id = auth.uid()));
+
+
+--
+-- Name: r2_file r2_file_owner_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY r2_file_owner_select ON public.r2_file FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
+
+
+--
+-- Name: r2_file r2_file_owner_upd; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY r2_file_owner_upd ON public.r2_file FOR UPDATE TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role))) WITH CHECK (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
+
+
+--
+-- Name: r2_access_log r2_log_admin_select; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY r2_log_admin_select ON public.r2_access_log FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role)));
 
 
 --
@@ -18750,6 +22357,13 @@ ALTER TABLE public.search_index ENABLE ROW LEVEL SECURITY;
 --
 
 CREATE POLICY search_index_read_mgr ON public.search_index FOR SELECT TO authenticated USING (public.can_manage_equipment(public.current_uid()));
+
+
+--
+-- Name: supabase_ngoai service role only; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "service role only" ON public.supabase_ngoai TO service_role USING (true) WITH CHECK (true);
 
 
 --
@@ -18849,7 +22463,11 @@ CREATE POLICY su_co_lich_su_no_write ON public.su_co_lich_su TO authenticated US
 -- Name: su_co_lich_su su_co_lich_su_select; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY su_co_lich_su_select ON public.su_co_lich_su FOR SELECT TO authenticated USING (true);
+CREATE POLICY su_co_lich_su_select ON public.su_co_lich_su FOR SELECT TO authenticated USING ((public.is_active_user(public.current_uid()) AND (public.can_manage_equipment(public.current_uid()) OR ((doi_tuong_bang = 'su_co'::text) AND (EXISTS ( SELECT 1
+   FROM public.su_co s
+  WHERE ((s.id = su_co_lich_su.doi_tuong_id) AND (s.thiet_bi_id IS NOT NULL) AND public.can_view_thiet_bi(s.thiet_bi_id, public.current_uid()))))) OR ((doi_tuong_bang = 'hong_hoc'::text) AND (EXISTS ( SELECT 1
+   FROM public.hong_hoc h
+  WHERE ((h.id = su_co_lich_su.doi_tuong_id) AND (h.thiet_bi_hong_id IS NOT NULL) AND public.can_view_thiet_bi(h.thiet_bi_hong_id, public.current_uid()))))))));
 
 
 --
@@ -18865,6 +22483,24 @@ CREATE POLICY su_co_select ON public.su_co FOR SELECT TO authenticated USING ((p
 
 CREATE POLICY su_co_write ON public.su_co TO authenticated USING ((public.has_role(public.current_uid(), 'admin'::public.app_role) OR public.has_role(public.current_uid(), 'phong_kt'::public.app_role))) WITH CHECK ((public.has_role(public.current_uid(), 'admin'::public.app_role) OR public.has_role(public.current_uid(), 'phong_kt'::public.app_role)));
 
+
+--
+-- Name: supabase_ngoai; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.supabase_ngoai ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: supabase_ngoai_job; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.supabase_ngoai_job ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: supabase_ngoai_job_bang; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.supabase_ngoai_job_bang ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: system_signing_key; Type: ROW SECURITY; Schema: public; Owner: -
@@ -19010,6 +22646,12 @@ CREATE POLICY thiet_bi_do_dac_write ON public.thiet_bi_do_dac USING (public.can_
 
 
 --
+-- Name: thiet_bi_he_thong_tuong_thich; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.thiet_bi_he_thong_tuong_thich ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: thiet_bi_ket_noi; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -19077,7 +22719,7 @@ ALTER TABLE public.thong_bao_cau_hinh ENABLE ROW LEVEL SECURITY;
 -- Name: thong_bao_cau_hinh thong_bao_cau_hinh_read; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY thong_bao_cau_hinh_read ON public.thong_bao_cau_hinh FOR SELECT TO authenticated USING (true);
+CREATE POLICY thong_bao_cau_hinh_read ON public.thong_bao_cau_hinh FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR (don_vi_id = public.get_user_don_vi_id(auth.uid())) OR (don_vi_id IS NULL)));
 
 
 --
@@ -19341,8 +22983,28 @@ CREATE POLICY vi_tri_media_update ON public.vi_tri_media FOR UPDATE TO authentic
 ALTER TABLE public.webauthn_credentials ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: weekly_report_import; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.weekly_report_import ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: weekly_report_import wri_insert_self; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY wri_insert_self ON public.weekly_report_import FOR INSERT TO authenticated WITH CHECK (((created_by = auth.uid()) OR (created_by IS NULL)));
+
+
+--
+-- Name: weekly_report_import wri_select_scope; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY wri_select_scope ON public.weekly_report_import FOR SELECT TO authenticated USING (((created_by = auth.uid()) OR public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'phong_kt'::public.app_role) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = public.get_user_don_vi_ma(auth.uid())))));
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict dzbQPflgRWDcJr2K8SRxxiim6cdj4ZbXmrKtIZO5QtjyYcRmyNYTyxwABzQxGcW
+\unrestrict CmS8kCR51KBn0tfTCyUYARe8XzalJfuUad5FzeNUuTaiJNGgnLLAJWgsrIcvh7r
 
