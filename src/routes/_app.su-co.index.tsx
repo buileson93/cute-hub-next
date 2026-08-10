@@ -339,7 +339,7 @@ function SuCoPage() {
       value: (s) => s.muc_do,
       cell: (s) => {
         const token = getMucDoSuCoToken(s.muc_do);
-        return <Badge variant="secondary" className={token?.class}>{s.muc_do}</Badge>;
+        return <StatusBadge domain="su_co" code={s.muc_do} label={s.muc_do} />;
       },
     },
     {

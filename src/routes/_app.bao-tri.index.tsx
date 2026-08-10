@@ -106,7 +106,7 @@ function BaoTriPage() {
     {
       key: "loai_bao_tri", label: "Loại", filter: "cat",
       value: (b) => b.loai_bao_tri,
-      cell: (b) => <Badge variant="secondary" className={getLoaiBaoTriToken(b.loai_bao_tri)?.class}>{b.loai_bao_tri}</Badge>,
+      cell: (b) => <StatusBadge domain="bao_tri" code={b.loai_bao_tri} label={b.loai_bao_tri} />,
     },
     {
       key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat",
