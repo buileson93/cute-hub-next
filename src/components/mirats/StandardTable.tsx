@@ -194,7 +194,7 @@ export function StandardTable<T>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 48,
     overscan: isTest ? rows.length : 10,
-    initialRect: isTest ? { width: 1280, height: 800 } : undefined,
+    initialRect: { width: 1280, height: 800 },
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
