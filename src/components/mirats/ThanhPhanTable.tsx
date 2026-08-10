@@ -220,6 +220,8 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
       </span>
     </EntityHoverCard>
   );
+}
+
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
 const LY_DO_KHOA =
