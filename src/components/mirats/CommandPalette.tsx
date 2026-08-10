@@ -399,6 +399,29 @@ export function CommandPalette() {
   });
   const aiEnabled = !!aiCfg?.enabled;
 
+  // Phân nhóm kết quả và thêm 5 mục truy cập gần nhất khi rỗng.
+  const [recentHits, setRecentHits] = useState<Hit[]>([]);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem("mirats:recent-commands");
+    if (saved) {
+      try {
+        setRecentHits(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse recent commands", e);
+      }
+    }
+  }, []);
+
+  const saveRecent = (hit: Hit) => {
+    setRecentHits(prev => {
+      const next = [hit, ...prev.filter(h => h.id !== hit.id)].slice(0, 5);
+      localStorage.setItem("mirats:recent-commands", JSON.stringify(next));
+      return next;
+    });
+  };
+
+
   // Global hotkey: Alt+Space (và Cmd/Ctrl+K) + custom event từ nút gọi nhanh
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
