@@ -240,7 +240,7 @@ const R: Record<EntityLoai, EntityView> = {
     phu: (r) => joinNonEmpty([str(r.ma), str(r.so_model), str(r.p_n)]),
     highlight: [
       { key: "so_model", nhan: "Số model", loai: "text", highlight: true },
-      { key: "p_n", nhan: "Part Number", loai: "text", highlight: true },
+      { key: "p_n", nhan: "P/N", loai: "text", highlight: true },
       { key: "nha_san_xuat", nhan: "Nhà sản xuất", loai: "text" },
       { key: "loai_thiet_bi", nhan: "Chủng loại", loai: "text" },
     ],
