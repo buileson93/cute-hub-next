@@ -1793,6 +1793,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "dm_model_merged_into_fkey"
+            columns: ["merged_into"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+          {
             foreignKeyName: "dm_model_nha_san_xuat_id_fkey"
             columns: ["nha_san_xuat_id"]
             isOneToOne: false
@@ -1838,6 +1845,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dm_model_dac_tinh_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
           },
         ]
       }
@@ -5374,6 +5388,13 @@ export type Database = {
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "model_tai_lieu_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
         ]
       }
       nhan_vien: {
@@ -6893,6 +6914,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+          {
             foreignKeyName: "thiet_bi_nha_cung_cap_id_fkey"
             columns: ["nha_cung_cap_id"]
             isOneToOne: false
@@ -8045,6 +8073,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vat_tu_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+          {
             foreignKeyName: "vat_tu_nha_cung_cap_id_fkey"
             columns: ["nha_cung_cap_id"]
             isOneToOne: false
@@ -8448,13 +8483,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
-            columns: ["he_thong_dich_id"]
-            isOneToOne: false
-            referencedRelation: "dm_he_thong"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
             columns: ["he_thong_nguon_id"]
             isOneToOne: false
             referencedRelation: "dm_he_thong"
@@ -8463,13 +8491,20 @@ export type Database = {
           {
             foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
             columns: ["he_thong_dich_id"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
+            columns: ["he_thong_nguon_id"]
             isOneToOne: false
             referencedRelation: "v_do_thi_toan_canh"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
-            columns: ["he_thong_nguon_id"]
+            columns: ["he_thong_dich_id"]
             isOneToOne: false
             referencedRelation: "v_do_thi_toan_canh"
             referencedColumns: ["id"]
@@ -8991,6 +9026,19 @@ export type Database = {
             referencedColumns: ["thiet_bi_id"]
           },
         ]
+      }
+      view_ton_kho_model: {
+        Row: {
+          bulk_quantity: number | null
+          combined_total: number | null
+          model_id: string | null
+          model_ten: string | null
+          serial_ccdc: number | null
+          serial_spare: number | null
+          serial_system: number | null
+          serial_total: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
