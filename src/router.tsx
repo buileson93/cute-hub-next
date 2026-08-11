@@ -42,8 +42,10 @@ export const getRouter = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 30_000,
-        gcTime: 5 * 60_000,
+        // T47: Giảm staleTime xuống 15s nếu chưa có dữ liệu danh mục để UI nhanh nhạy hơn.
+        // Dữ liệu danh mục sẽ được ghi đè bên dưới.
+        staleTime: 15_000,
+        gcTime: 2 * 60_000,
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
         // Task 39 — retry có backoff, bỏ qua lỗi 4xx.
