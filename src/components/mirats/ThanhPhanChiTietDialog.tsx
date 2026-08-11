@@ -6,6 +6,8 @@
 //   - Bật "Chỉnh sửa" để đổi/lắp/tháo tài sản (ghi lịch sử gan_chuc_nang).
 // ============================================================================
 import { useMemo, useState } from "react";
+import { useTonKhoModel } from "@/lib/mirats/kho";
+
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -330,26 +332,35 @@ function ChangeDeviceForm({
   const [ghiChu, setGhiChu] = useState("");
   const [viTriTaiSanCu, setViTriTaiSanCu] = useState("");
   const [dangXuLy, setDangXuLy] = useState(false);
+  // T44: Tồn kho model
+  const { data: tonKhoModel } = useTonKhoModel(viTri.loai_thiet_bi_yeu_cau || undefined);
+
   // Hộp thoại xác nhận khi tài sản được chọn đang lắp ở vị trí khác:
+
   // - "Chuyển sang đây" → dieu_chuyen (đóng vai trò cũ, mở vai trò mới)
   // - "Gán thêm vai trò" → lap_thiet_bi (giữ nguyên vai trò cũ, mở thêm)
   const [swapAsk, setSwapAsk] = useState<ThietBiChon | null>(null);
 
   const options = useMemo(
-    () => rankChonDevices(all, viTri.loai_thiet_bi_yeu_cau).map((r) => ({
-      value: r.id,
-      label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
-      hint: [
-        r.ma_serial ? "SN " + r.ma_serial : "",
-        (r as any).vai_tro === "ccdc" ? "CÔNG CỤ DỤNG CỤ" : "",
-        (r as any).vai_tro === "vat_tu" ? "VẬT TƯ DỰ PHÒNG" : "",
-        r.khopLoai ? "" : "khác phân loại",
-        r.dangLap ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác") : (r.trang_thai_ten ?? "rảnh"),
-      ].filter(Boolean).join(" · "),
-    })),
+    () => rankChonDevices(all, viTri.loai_thiet_bi_yeu_cau).map((r) => {
+      const modelStock = tonKhoModel?.find(t => t.model_id === r.loai_thiet_bi_id);
+      return {
+        value: r.id,
+        label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
+        hint: [
+          r.ma_serial ? "SN " + r.ma_serial : "",
+          (r as any).vai_tro === "ccdc" ? "CÔNG CỤ DỤNG CỤ" : "",
+          (r as any).vai_tro === "vat_tu" ? "VẬT TƯ DỰ PHÒNG" : "",
+          r.khopLoai ? "" : "khác phân loại",
+          r.dangLap ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác") : (r.trang_thai_ten ?? "rảnh"),
+          modelStock ? `Tồn kho model: ${modelStock.serial_total} serial, ${modelStock.bulk_quantity} SL` : "",
+        ].filter(Boolean).join(" · "),
+      };
+    }),
 
-    [all, viTri.loai_thiet_bi_yeu_cau],
+    [all, viTri.loai_thiet_bi_yeu_cau, tonKhoModel],
   );
+
 
   const viTriOptions = useMemo(
     () => viTriList
