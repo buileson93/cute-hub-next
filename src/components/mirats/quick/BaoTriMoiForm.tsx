@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { rpcErrorToast } from "@/lib/mirats/rpc-error";
-import { Loader2, Save, Search, Wrench, FileText, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Loader2, Save, Search, Wrench, FileText, CheckCircle2, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
