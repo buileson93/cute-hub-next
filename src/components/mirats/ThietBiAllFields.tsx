@@ -58,6 +58,7 @@ const FIELD_LABELS: Record<string, string> = {
   ngay_bao_tri_gan_nhat: "Ngày bảo trì gần nhất",
   ngay_bao_tri_ke_tiep: "Ngày bảo trì kế tiếp",
   ghi_chu: "Ghi chú",
+  vai_tro: "Vai trò",
   file_tai_lieu: "File tài liệu",
   hinh_anh: "Hình ảnh",
   
@@ -65,6 +66,7 @@ const FIELD_LABELS: Record<string, string> = {
   updated_at: "Cập nhật gần nhất",
   id: "ID Hệ thống (UUID)",
 };
+
 
 const HIDDEN_COLS = new Set<string>([
   "search_text",

@@ -49,7 +49,9 @@ const formSchema = z.object({
       })
     )
     .default([]),
+  vai_tro: z.enum(["he_thong", "ccdc", "vat_tu"]).default("he_thong"),
 });
+
 
 
 type FormValues = z.infer<typeof formSchema>;
@@ -121,8 +123,10 @@ export function ThietBiFormDialog({
       nam_san_xuat: device?._namSanXuat ?? undefined,
       ghi_chu: extra?.ghi_chu ?? "",
       he_thong_tuong_thich: extra?.thiet_bi_he_thong_tuong_thich ?? [],
+      vai_tro: (device as any)?.vai_tro ?? "he_thong",
       ...(draft as any || {}),
     }),
+
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [device, open, draftKey],
@@ -220,7 +224,21 @@ export function ThietBiFormDialog({
         priority: "later",
       },
       {
+        key: "vai_tro",
+        type: "select",
+        label: "Vai trò tài sản",
+        help: "Phân biệt tài sản hệ thống, công cụ dụng cụ và vật tư dự phòng",
+        options: [
+          { value: "he_thong", label: "Tài sản hệ thống" },
+          { value: "ccdc", label: "Công cụ dụng cụ" },
+          { value: "vat_tu", label: "Vật tư dự phòng" },
+        ],
+        wizardStep: 1,
+        priority: "core",
+      },
+      {
         key: "he_thong_tuong_thich",
+
         type: "custom",
         label: "Hệ thống tương thích",
         colSpan: 2,

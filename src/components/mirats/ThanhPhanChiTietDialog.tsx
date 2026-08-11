@@ -310,8 +310,13 @@ function ChangeDeviceForm({
   isReplace: boolean;
   onDone: () => void;
 }) {
-  const { data: all = [], isLoading } = useThietBiChon();
+  const { data: allRaw = [], isLoading } = useThietBiChon();
+  
+  // T45: Lọc cấm lắp CCDC/Vật tư vào thành phần hệ thống
+  const all = useMemo(() => allRaw.filter(r => (r as any).vai_tro === "he_thong" || !(r as any).vai_tro), [allRaw]);
+
   const lapMut = useLapThietBi(heThongId);
+
   const thayMut = useThayTheThietBi(heThongId);
   const thaoMut = useThaoThietBi(heThongId);
   const chuyenMut = useDieuChuyen(heThongId);
@@ -336,10 +341,13 @@ function ChangeDeviceForm({
       label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
       hint: [
         r.ma_serial ? "SN " + r.ma_serial : "",
+        (r as any).vai_tro === "ccdc" ? "CÔNG CỤ DỤNG CỤ" : "",
+        (r as any).vai_tro === "vat_tu" ? "VẬT TƯ DỰ PHÒNG" : "",
         r.khopLoai ? "" : "khác phân loại",
         r.dangLap ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác") : (r.trang_thai_ten ?? "rảnh"),
       ].filter(Boolean).join(" · "),
     })),
+
     [all, viTri.loai_thiet_bi_yeu_cau],
   );
 
