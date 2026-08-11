@@ -218,7 +218,7 @@ function Dashboard() {
             <div className="space-y-1 min-h-[100px]">
               <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
               {lowCompleteness.map((tb: any) => (
-                <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id }} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
+                <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
                   <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
                   <span className="font-bold text-red-500 tabular-nums">{tb.completeness_pct}%</span>
                 </Link>
