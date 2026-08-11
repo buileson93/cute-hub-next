@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Route as AppRoute } from "./_app";
 import { useMemo } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
@@ -45,7 +44,6 @@ const STATUS_COLORS = [
 ];
 
 export const Route = createFileRoute("/_app/")({
-  getParentRoute: () => AppRoute,
   loader: async ({ context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({
