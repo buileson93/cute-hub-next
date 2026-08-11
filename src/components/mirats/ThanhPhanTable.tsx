@@ -308,6 +308,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
     qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
   }
 
+  const { data: modelRegistry = {} } = useModelRegistry();
+
   const filtered = useMemo(() => {
     const t = normalize(q).trim();
     if (!t) return rows;
