@@ -44,7 +44,7 @@ const STATUS_COLORS = [
 ];
 
 export const Route = createFileRoute("/_app/")({
-  loader: async ({ context }) => {
+  loader: async ({ context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({
         queryKey: ['completeness-stats'],
