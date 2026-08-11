@@ -350,7 +350,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const soLap = useMemo(() => filtered.filter((r) => r.daLap).length, [filtered]);
   const soTaiSanCoLap = useMemo(() => filteredTaiSan.filter((r) => r.soThanhPhanDangGan > 0).length, [filteredTaiSan]);
 
-  const { data: modelRegistry = {} } = useModelRegistry();
 
   // ---- Phân trang phía client ----
   // `filteredTotal` = tổng số dòng SAU khi StandardTable áp dụng bộ lọc cột (nhận qua callback).
