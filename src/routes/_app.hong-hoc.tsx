@@ -318,9 +318,18 @@ function EditDialog({ row, onClose, onDone }: { row: HongHocThayThe | null; onCl
           </div>
           {paNorm === "thay_the" && (
             <div>
-              <Label>Tài sản thay thế (UUID)</Label>
-              <Input value={thayTheId} onChange={(e) => setThayTheId(e.target.value)} placeholder="UUID tài sản thay thế" />
+              <Label>Tài sản thay thế (UUID/Mã)</Label>
+              <Input value={thayTheId} onChange={(e) => setThayTheId(e.target.value)} placeholder="Nhập mã tài sản hoặc UUID" />
               <p className="mt-1 text-xs text-muted-foreground">Cần chọn tài sản thay thế trước khi hoàn thành phiếu.</p>
+              {row?.vat_tu_su_dung && row.vat_tu_su_dung.length > 0 && (
+                <div className="mt-2 rounded bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                  <div className="font-semibold uppercase">Dữ liệu cũ (Legacy):</div>
+                  <ul className="list-inside list-disc">
+                    {row.vat_tu_su_dung.map((v, i) => <li key={i}>{v}</li>)}
+                  </ul>
+                </div>
+              )}
+
             </div>
           )}
           <div>
