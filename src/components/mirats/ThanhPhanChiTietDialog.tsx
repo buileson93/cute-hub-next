@@ -246,7 +246,14 @@ function errMsg(e: unknown, fallback: string): string {
   if (!e) return fallback;
   if (typeof e === "string") return e;
   if (typeof e === "object") {
-    const anyErr = e as { message?: unknown; details?: unknown; hint?: unknown };
+    const anyErr = e as { message?: unknown; details?: unknown; hint?: unknown; code?: string };
+    
+    // T43: Bắt lỗi UNIQUE constraint của Postgres (23505) 
+    // liên quan đến uq_gcn_thiet_bi_active.
+    if (anyErr.code === "23505" && typeof anyErr.message === "string" && anyErr.message.includes("uq_gcn_thiet_bi_active")) {
+      return "Tài sản này đang được lắp ở một vị trí khác. Vui lòng tháo tài sản ra trước khi lắp vào vị trí mới.";
+    }
+
     if (typeof anyErr.message === "string" && anyErr.message.trim()) return anyErr.message;
     if (typeof anyErr.details === "string" && anyErr.details.trim()) return anyErr.details;
     if (typeof anyErr.hint === "string" && anyErr.hint.trim()) return anyErr.hint;
