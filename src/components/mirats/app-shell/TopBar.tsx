@@ -63,6 +63,8 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
       </div>
     </div>
   );
+}
+
 function RealtimeStatusIndicator() {
   const { status } = useRealtimeStatus();
 
