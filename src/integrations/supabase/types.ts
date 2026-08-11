@@ -9854,6 +9854,7 @@ export type Database = {
         Args: { _label: string; _path: string }
         Returns: undefined
       }
+      refresh_dashboard_overview: { Args: never; Returns: undefined }
       refresh_mv_asset_anomaly: { Args: never; Returns: undefined }
       reject_change_request: {
         Args: { p_id: string; p_ly_do: string }
