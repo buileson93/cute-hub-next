@@ -66,5 +66,19 @@ Khi có cột `vai_tro`, ta sẽ áp dụng các quy tắc sau:
 2. **Lọc cảnh báo giấy phép:** Chỉ kiểm tra thiếu giấy phép khai thác cho tài sản `vai_tro = 'he_thong'` và `phan_loai_id` là Nhóm 1.
 3. **Quản lý vật tư:** Tài sản `vai_tro = 'vat_tu'` sẽ được ưu tiên hiển thị trong các module quản lý kho, thay vì hiện trong cây hệ thống.
 
----
-**Tôi đã dừng lại ở đây để chờ duyệt thiết kế.**
+## Giai đoạn 2: Triển khai (Đã được duyệt)
+
+### 1. Migration CSDL
+- Tạo file migration:
+  - Thêm cột `vai_tro` vào `thiet_bi`.
+  - Thêm `CHECK` constraint.
+  - Gán giá trị mặc định `'he_thong'`.
+  - Cập nhật toàn bộ dữ liệu hiện có thành `'he_thong'`.
+  - Cập nhật GRANT trên bảng `thiet_bi`.
+
+### 2. Cập nhật mã nguồn
+- Cập nhật `src/integrations/supabase/types.ts` (nếu cần thiết, hoặc chờ hệ thống tự gen).
+- Cập nhật các component hiển thị chi tiết tài sản để hiển thị/chỉnh sửa `vai_tro`.
+- Cập nhật logic lọc cảnh báo giấy phép.
+- Cập nhật logic tạo `gan_chuc_nang` để kiểm tra `vai_tro`.
+
