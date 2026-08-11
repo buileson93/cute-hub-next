@@ -26,17 +26,13 @@ export function AssetPicker({
   disabled,
   className,
 }: AssetPickerProps) {
-  // Lấy danh sách tài sản (dùng cache db_taxonomy nếu có thể, hoặc fetch trực tiếp)
   const { data: assets, isLoading } = useQuery({
     queryKey: ["asset-picker-list", heThongId, thanhPhanId],
     queryFn: async () => {
       let query = supabase
         .from("thiet_bi")
         .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, he_thong_id, trang_thai_id, dm_trang_thai_thiet_bi:trang_thai_id(ma)")
-        .neq("trang_thai_id", "00000000-0000-0000-0000-000000000000"); // Giả định ID thanh lý hoặc filter logic
-
-      // Nếu có heThongId, ưu tiên đưa lên đầu hoặc lọc? 
-      // T46 yêu cầu "không cho gõ chữ tự do", nên ta show list phù hợp.
+        .neq("trang_thai_id", "00000000-0000-0000-0000-000000000000"); // Placeholder check
       
       const { data, error } = await query.order("ma_thiet_bi");
       if (error) throw error;
@@ -53,20 +49,22 @@ export function AssetPicker({
   }, [assets]);
 
   return (
-    <Combobox
-      options={options}
-      value={value}
-      onChange={(val) => {
-        const selected = assets?.find((a) => a.id === val);
-        if (selected) {
-          onChange(selected.id, selected.ma_thiet_bi, selected.ten_thiet_bi || "");
-        } else {
-          onChange("", "", "");
-        }
-      }}
-      placeholder={isLoading ? "Đang tải..." : placeholder}
-      disabled={disabled}
-      className={className}
-    />
+    <div className={className}>
+      <Combobox
+        options={options}
+        value={value}
+        onChange={(val) => {
+          const selected = assets?.find((a) => a.id === val);
+          if (selected) {
+            onChange(selected.id, selected.ma_thiet_bi, selected.ten_thiet_bi || "");
+          } else {
+            onChange("", "", "");
+          }
+        }}
+        placeholder={isLoading ? "Đang tải..." : placeholder}
+        loading={isLoading}
+      />
+      {disabled && <div className="pointer-events-none absolute inset-0 opacity-50 bg-background/50" />}
+    </div>
   );
 }
