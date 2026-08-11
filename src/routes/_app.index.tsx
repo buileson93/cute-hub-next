@@ -43,7 +43,7 @@ const STATUS_COLORS = [
   "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)",
 ];
 
-export const Route = createFileRoute("/_app/")({
+export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({
