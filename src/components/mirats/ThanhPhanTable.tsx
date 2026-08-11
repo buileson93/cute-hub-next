@@ -153,8 +153,6 @@ async function copyCodes(codes: string[]) {
   }
 }
 
-
-
 /** Model Registry Map dùng cho ModelCell */
 type ModelRegistry = Record<string, {
   id: string;
@@ -224,6 +222,7 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
     </EntityHoverCard>
   );
 }
+
 
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
@@ -309,6 +308,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
     qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
   }
 
+  const { data: modelRegistry = {} } = useModelRegistry();
+
   const filtered = useMemo(() => {
     const t = normalize(q).trim();
     if (!t) return rows;
@@ -349,7 +350,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const soLap = useMemo(() => filtered.filter((r) => r.daLap).length, [filtered]);
   const soTaiSanCoLap = useMemo(() => filteredTaiSan.filter((r) => r.soThanhPhanDangGan > 0).length, [filteredTaiSan]);
 
-  const { data: modelRegistry = {} } = useModelRegistry();
 
   // ---- Phân trang phía client ----
   // `filteredTotal` = tổng số dòng SAU khi StandardTable áp dụng bộ lọc cột (nhận qua callback).

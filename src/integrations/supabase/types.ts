@@ -9885,8 +9885,8 @@ export type Database = {
           so_su_co: number
         }[]
       }
-      rpc_tai_san_toan_cuc: { Args: never; Returns: Json }
-      rpc_thanh_phan_toan_cuc: { Args: never; Returns: Json }
+      rpc_tai_san_toan_cuc: { Args: never; Returns: Json[] }
+      rpc_thanh_phan_toan_cuc: { Args: never; Returns: Json[] }
       run_audit_daily_digest: { Args: never; Returns: number }
       run_audit_retention: { Args: never; Returns: number }
       sinh_canh_bao_het_han: { Args: never; Returns: Json }
