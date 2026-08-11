@@ -46,11 +46,20 @@ export function AssetPicker({
   });
 
   const options = useMemo(() => {
-    return (assets || []).map((a) => ({
-      value: a.id,
-      label: `${a.ma_thiet_bi} — ${a.ten_thiet_bi}`,
-      hint: a.ma_serial ? `S/N: ${a.ma_serial}` : undefined,
-    }));
+    return (assets || []).map((a) => {
+      const status = a.dm_trang_thai_thiet_bi as any;
+      const canSlot = status?.yeu_cau_gan_slot;
+      
+      return {
+        value: a.id,
+        label: `${a.ma_thiet_bi} — ${a.ten_thiet_bi}`,
+        hint: [
+          a.ma_serial ? `S/N: ${a.ma_serial}` : "",
+          status?.ten ? `TT: ${status.ten}` : "",
+          canSlot === false ? "⚠️ Chưa sẵn sàng lắp" : ""
+        ].filter(Boolean).join(" · "),
+      };
+    });
   }, [assets]);
 
   return (
