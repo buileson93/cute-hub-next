@@ -153,8 +153,6 @@ async function copyCodes(codes: string[]) {
   }
 }
 
-
-
 /** Model Registry Map dùng cho ModelCell */
 type ModelRegistry = Record<string, {
   id: string;
@@ -224,6 +222,7 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
     </EntityHoverCard>
   );
 }
+
 
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
