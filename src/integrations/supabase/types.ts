@@ -6677,6 +6677,7 @@ export type Database = {
           trang_thai_id: string | null
           ty_le_tuoi_tho: number | null
           updated_at: string
+          vai_tro: string | null
           vat_tu_du_phong: string | null
           vi_tri: string | null
           vi_tri_id: string | null
@@ -6749,6 +6750,7 @@ export type Database = {
           trang_thai_id?: string | null
           ty_le_tuoi_tho?: number | null
           updated_at?: string
+          vai_tro?: string | null
           vat_tu_du_phong?: string | null
           vi_tri?: string | null
           vi_tri_id?: string | null
@@ -6821,6 +6823,7 @@ export type Database = {
           trang_thai_id?: string | null
           ty_le_tuoi_tho?: number | null
           updated_at?: string
+          vai_tro?: string | null
           vat_tu_du_phong?: string | null
           vi_tri?: string | null
           vi_tri_id?: string | null
@@ -9292,6 +9295,7 @@ export type Database = {
           trang_thai_id: string | null
           ty_le_tuoi_tho: number | null
           updated_at: string
+          vai_tro: string | null
           vat_tu_du_phong: string | null
           vi_tri: string | null
           vi_tri_id: string | null
