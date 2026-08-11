@@ -2,7 +2,9 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal } from "lucide-react";
+import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal, Info } from "lucide-react";
+import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
+
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { StandardTable } from "@/components/mirats/StandardTable";
@@ -37,6 +39,7 @@ export type TaiSanRow = {
   ten: string;
   serial: string;
   model: string;
+  modelId: string | null;
   chungLoai: string;
   nhaSanXuat: string;
   nhaCungCap: string;
@@ -62,6 +65,7 @@ export type TaiSanRow = {
   soSuCo90n: number;
   anomalyScore: number;
 };
+
 
 
 export function useTaiSanRows() {
@@ -94,6 +98,8 @@ export type ThanhPhanRow = {
   thietBiTen: string;
   thietBiSerial: string;
   model: string;
+  modelId: string | null;
+
   chungLoai: string;
   nhaSanXuat: string;
   nhaCungCap: string;
@@ -115,6 +121,7 @@ export type ThanhPhanRow = {
   taiSanViTri: string;
   taiSanDonViQuanLy: string;
 };
+
 
 const TT_LABEL: Record<string, string> = { hoat_dong: "Hoạt động", ngung: "Đã ngừng" };
 
@@ -146,6 +153,79 @@ async function copyCodes(codes: string[]) {
   }
 }
 
+
+
+/** Model Registry Map dùng cho ModelCell */
+type ModelRegistry = Record<string, {
+  id: string;
+  ma: string;
+  ten: string;
+  so_model: string | null;
+  p_n: string | null;
+  hinh_anh: string | null;
+  mo_ta: string | null;
+  nha_san_xuat: string;
+  loai_thiet_bi: string;
+}>;
+
+/** Hook lấy toàn bộ danh mục model để dùng cho hover card */
+function useModelRegistry() {
+  return useQuery({
+    queryKey: ["dm_model_registry"],
+    queryFn: async (): Promise<ModelRegistry> => {
+      const { data, error } = await supabase
+        .from("dm_model")
+        .select(`
+          id, ma, ten, so_model, p_n, hinh_anh, mo_ta, 
+          nsx:nha_san_xuat_id(ten), 
+          loai:loai_thiet_bi_id(ten)
+        `)
+        .eq("active", true);
+      if (error) throw error;
+      
+      const map: ModelRegistry = {};
+      (data ?? []).forEach((m: any) => {
+        map[m.id] = {
+          id: m.id,
+          ma: m.ma,
+          ten: m.ten,
+          so_model: m.so_model,
+          p_n: m.p_n,
+          hinh_anh: m.hinh_anh,
+          mo_ta: m.mo_ta,
+          nha_san_xuat: m.nsx?.ten || "",
+          loai_thiet_bi: m.loai?.ten || "",
+        };
+      });
+      return map;
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+function ModelCell({ model, modelId, registry }: { model: string, modelId: string | null, registry: ModelRegistry }) {
+  if (!model) return <span className="text-xs text-muted-foreground">—</span>;
+  
+  const modelData = modelId ? registry[modelId] : null;
+  
+  if (!modelData) {
+    return (
+      <span title={model} className="line-clamp-2 break-words text-sm leading-snug">
+        {model}
+      </span>
+    );
+  }
+
+  return (
+    <EntityHoverCard loai="dm_model" row={modelData}>
+      <span className="line-clamp-2 cursor-pointer break-words text-sm leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
+        {model}
+      </span>
+    </EntityHoverCard>
+  );
+}
+
+
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
 const LY_DO_KHOA =
   "Vai trò của bạn chỉ được xem: cần quyền sửa dữ liệu Hệ thống kỹ thuật (Admin / Phòng KT / Phụ trách đơn vị) để đổi trạng thái hàng loạt.";
@@ -166,9 +246,6 @@ function MoTaXacNhan({ rows, tt }: { rows: readonly { ma: string }[]; tt: string
   );
 }
 
-
-
-
 export type ThanhPhanTableProps = {
   /** Ẩn khối header (tiêu đề + mô tả) khi nhúng vào trang khác */
   hideHeader?: boolean;
@@ -179,6 +256,7 @@ export type ThanhPhanTableProps = {
 };
 
 export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-phan-toan-cuc", externalEditMode }: ThanhPhanTableProps) {
+
   const { data: rows = [], isLoading, error } = useThanhPhanRows();
   const { data: taiSanRows = [], isLoading: loadingTS, error: errorTS } = useTaiSanRows();
   const { data: multiRoleMap } = useMultiRoleMap();
@@ -271,10 +349,12 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const soLap = useMemo(() => filtered.filter((r) => r.daLap).length, [filtered]);
   const soTaiSanCoLap = useMemo(() => filteredTaiSan.filter((r) => r.soThanhPhanDangGan > 0).length, [filteredTaiSan]);
 
+  const { data: modelRegistry = {} } = useModelRegistry();
+
   // ---- Phân trang phía client ----
   // `filteredTotal` = tổng số dòng SAU khi StandardTable áp dụng bộ lọc cột (nhận qua callback).
-  // Nhờ vậy bộ lọc chạy trên TOÀN BỘ dữ liệu, không chỉ trang hiện tại.
   const [pageSize, setPageSize] = useState<number>(50);
+
   const [page, setPage] = useState(1);
   const [filteredTotal, setFilteredTotal] = useState(0);
   useEffect(() => { setPage(1); }, [q, pageSize, viewMode, bucket]);
@@ -669,7 +749,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   <span className="text-xs text-muted-foreground">—</span>
                 ),
             },
-            { key: "model", label: "Model", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "lg", inherited: true, value: (r) => r.model, cell: (r) => r.model ? <span title={r.model} className="line-clamp-2 break-words text-sm leading-snug">{r.model}</span> : <span className="text-xs text-muted-foreground">—</span> },
+            { key: "model", label: "Model", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "lg", inherited: true, value: (r) => r.model, cell: (r) => <ModelCell model={r.model} modelId={r.modelId} registry={modelRegistry} /> },
             { key: "chungLoai", label: "Chủng loại", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "xl", inherited: true, value: (r) => r.chungLoai, cell: (r) => r.chungLoai ? <span title={r.chungLoai} className="line-clamp-2 break-words text-sm leading-snug">{r.chungLoai}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "nhaSanXuat", label: "Nhà sản xuất", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, value: (r) => r.nhaSanXuat, cell: (r) => r.nhaSanXuat ? <span title={r.nhaSanXuat} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaSanXuat}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "nhaCungCap", label: "Nhà cung cấp", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, value: (r) => r.nhaCungCap, cell: (r) => r.nhaCungCap ? <span title={r.nhaCungCap} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaCungCap}</span> : <span className="text-xs text-muted-foreground">—</span> },
@@ -921,7 +1001,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               ),
             },
             { key: "serial", label: "Serial", minW: "min-w-[130px]", cellClassName: "max-w-[180px]", filter: "text", hideBelow: "lg", value: (r) => r.serial, cell: (r) => r.serial ? <span className="break-all font-mono text-xs text-muted-foreground">{r.serial}</span> : <span className="text-xs text-muted-foreground">—</span> },
-            { key: "model", label: "Model", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "lg", value: (r) => r.model, cell: (r) => r.model ? <span title={r.model} className="line-clamp-2 break-words text-sm leading-snug">{r.model}</span> : <span className="text-xs text-muted-foreground">—</span> },
+            { key: "model", label: "Model", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "lg", value: (r) => r.model, cell: (r) => <ModelCell model={r.model} modelId={r.modelId} registry={modelRegistry} /> },
             { key: "chungLoai", label: "Chủng loại", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "xl", value: (r) => r.chungLoai, cell: (r) => r.chungLoai ? <span title={r.chungLoai} className="line-clamp-2 break-words text-sm leading-snug">{r.chungLoai}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "nhaSanXuat", label: "Nhà sản xuất", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", value: (r) => r.nhaSanXuat, cell: (r) => r.nhaSanXuat ? <span title={r.nhaSanXuat} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaSanXuat}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "nhaCungCap", label: "Nhà cung cấp", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", value: (r) => r.nhaCungCap, cell: (r) => r.nhaCungCap ? <span title={r.nhaCungCap} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaCungCap}</span> : <span className="text-xs text-muted-foreground">—</span> },
@@ -941,7 +1021,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             { key: "ngayBaoTriGanNhat", label: "BT gần nhất", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", value: (r) => r.ngayBaoTriGanNhat },
             { key: "ngayBaoTriKeTiep", label: "BT kế tiếp", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", value: (r) => r.ngayBaoTriKeTiep },
             {
-
               key: "actions",
               label: "Hành động",
               minW: "min-w-[150px]",
@@ -964,6 +1043,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
           ]}
         />
+
       )}
     </div>
   );
