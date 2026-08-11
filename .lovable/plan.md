@@ -39,9 +39,34 @@ Dựa trên dữ liệu thực tế và cấu trúc CSDL trong `supabase/dump/sc
 6.  **Xử lý cột cũ (Bước 5):**
     *   Giữ nguyên `vat_tu_du_phong` và `vat_tu_su_dung` để bảo tồn lịch sử. Trong UI, các trường này sẽ được ẩn hoặc để ở chế độ "Read-only" đối với dữ liệu cũ, thay thế bằng các UI Picker chọn từ danh sách `model` hoặc `thiet_bi`.
 
-## Giai đoạn 2 — Thực thi (Chờ duyệt)
+## Giai đoạn 2 — Thực thi
 
-*   Sẽ cập nhật chi tiết sau khi Giai đoạn 1 được duyệt.
+### 1. Cấu trúc CSDL (Migration)
+*   **CẤM** tạo cột mới hay bảng mới như đã thỏa thuận.
+*   Tạo `VIEW view_ton_kho_model` tổng hợp:
+    *   Nhóm `thiet_bi` theo `model_id` (với `vai_tro = 'vat_tu'` và trạng thái `san_sang`).
+    *   Nhóm `vat_tu` theo `model_id` (tổng `so_luong` khả dụng từ `view_ton_kho` hiện có).
+*   Mục tiêu: Trả lời câu hỏi "Model này còn bao nhiêu cái (cả serial và số lượng)?"
+
+### 2. Cập nhật Logic & UI (Frontend)
+*   **Asset Picker (ThanhPhanChiTietDialog.tsx):** 
+    *   Khi chọn tài sản để lắp, hiển thị thêm thông tin tồn kho của `model` tương ứng để người dùng biết có lựa chọn thay thế không.
+*   **Repair/Failure Flow (HongHoc.tsx):**
+    *   Thay thế trường nhập chữ `vat_tu_su_dung` bằng một `VatTuPicker` thông minh.
+    *   Picker này sẽ ưu tiên hiển thị các `model` có tồn kho (cả loại serial và loại số lượng).
+*   **Inventory Integration:**
+    *   Trong chi tiết một hỏng hóc, cho phép tạo nhanh một "Phiếu xuất kho" (`kho_giao_dich`) có nối với `lien_ket_hong_hoc_id`.
+
+### 3. Xử lý dữ liệu cũ
+*   Giữ nguyên các cột `text` và `text[]`.
+*   Thêm nhãn "Dữ liệu cũ (Legacy)" trong UI khi hiển thị các giá trị từ các cột này.
 
 ---
-*Dừng lại tại đây để chờ duyệt bằng văn bản.*
+
+**CÁC CÂU HỎI NGHIỆP VỤ SẼ ĐƯỢC GIẢI QUYẾT:**
+1.  **"Cái máy đang hỏng này trong kho còn mấy cái thay thế?":** Giải quyết qua `view_ton_kho_model` lọc theo `model_id` của máy hỏng.
+2.  **"Vật tư này dùng được cho những tài sản nào?":** Giải quyết qua quan hệ `model_id` chung.
+3.  **"Lần trước thay cái này là khi nào, lấy từ kho nào?":** Giải quyết qua `kho_giao_dich` nối `lien_ket_hong_hoc_id`.
+
+---
+*Vui lòng duyệt Giai đoạn 2 để bắt đầu thực hiện.*
