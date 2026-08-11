@@ -1,23 +1,62 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { LayoutDashboard, Flame, Wrench, ShieldCheck, AlertTriangle, Sparkles, ArrowRight, Radio } from "lucide-react";
+import { 
+  LayoutDashboard, Flame, Wrench, ShieldCheck, AlertTriangle, Sparkles, 
+  ArrowRight, Radio, Activity, Gauge, TrendingUp, HardDrive, 
+  PauseCircle, AlertOctagon, CalendarClock, CalendarX, Loader2,
+  AlertCircle, CheckCircle2, User, Trophy, History
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
-import { useDashboardBrief, useDashboardKpis } from "@/lib/mirats/dashboard.functions";
+import { 
+  useDashboardBrief, useDashboardKpis, useActivityFeed, useUserAuditLog 
+} from "@/lib/mirats/dashboard.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { getCompletenessStats } from '@/lib/mirats/completeness.functions';
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useUserPref } from "@/hooks/use-user-pref";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  CartesianGrid,
+} from "recharts";
+import { supabase } from "@/integrations/backend/client";
+
+// Types from tong-quan.tsx
+interface SuCoByMonth { thang: string; muc_do: string; so_luong: number }
+interface AssetStatus { trang_thai_ma: string; ten: string; so_luong: number }
+
+const MUC_DO_LABEL: Record<string, string> = {
+  nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
+};
+const MUC_DO_COLORS: Record<string, string> = {
+  nghiem_trong: "hsl(0 84% 60%)",
+  cao: "hsl(24 94% 52%)",
+  trung_binh: "hsl(38 92% 50%)",
+  thap: "hsl(215 16% 55%)",
+  khac: "hsl(215 16% 70%)",
+};
+const STATUS_COLORS = [
+  "hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)",
+  "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)",
+];
 
 export const Route = createFileRoute("/_app/")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: ['completeness-stats'],
-      queryFn: () => getCompletenessStats(),
-    });
+    await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: ['completeness-stats'],
+        queryFn: () => getCompletenessStats(),
+      }),
+      context.queryClient.ensureQueryData({
+        queryKey: ['completeness-overview', 3],
+        queryFn: () => getCompletenessOverview({ limit: 3 }),
+      })
+    ]);
   },
   component: Dashboard,
 });
@@ -28,10 +67,21 @@ function Dashboard() {
     queryKey: ['completeness-stats'],
     queryFn: () => getCompletenessStats(),
   });
+  const overviewQuery = useSuspenseQuery({
+    queryKey: ['completeness-overview', 3],
+    queryFn: () => getCompletenessOverview({ limit: 3 }),
+  });
+  
   const completeness = (statsQuery.data as any) || {};
+  const lowCompleteness = (overviewQuery.data as any)?.lowCompleteness || [];
+  const tasks = (overviewQuery.data as any)?.tasks || [];
 
   const brief = useDashboardBrief();
   const kpi = useDashboardKpis();
+  const feed = useActivityFeed(undefined, 5);
+  const audit = useUserAuditLog(5);
+  
+  const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "trend");
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();
@@ -39,6 +89,53 @@ function Dashboard() {
     if (h < 18) return "Chào buổi chiều!";
     return "Chào buổi tối!";
   }, []);
+
+  // Charts Data Fetchers (copied from tong-quan logic)
+  const trendQ = useQuery({
+    queryKey: ["dashboard_su_co_by_month_dashboard"],
+    enabled: activeTab === "trend",
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_su_co_by_month", {
+        p_months: 12,
+      });
+      if (error) throw error;
+      return (data ?? []) as SuCoByMonth[];
+    },
+  });
+
+  const statusQ = useQuery({
+    queryKey: ["dashboard_asset_status_dashboard"],
+    enabled: activeTab === "status",
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_asset_status");
+      if (error) throw error;
+      return (data ?? []) as AssetStatus[];
+    },
+  });
+
+  const trendData = useMemo(() => {
+    const rows = trendQ.data ?? [];
+    const byMonth = new Map<string, Record<string, number | string>>();
+    rows.forEach((r) => {
+      const key = r.thang;
+      if (!byMonth.has(key)) byMonth.set(key, { thang: key });
+      const bucket = byMonth.get(key)!;
+      const mk = MUC_DO_LABEL[r.muc_do] ?? r.muc_do;
+      bucket[mk] = ((bucket[mk] as number) ?? 0) + Number(r.so_luong);
+    });
+    return Array.from(byMonth.values())
+      .sort((a, b) => String(a.thang).localeCompare(String(b.thang)))
+      .map((r) => ({
+        ...r,
+        thangHT: new Date(String(r.thang)).toLocaleDateString("vi-VN", { month: "2-digit", year: "2-digit" }),
+      }));
+  }, [trendQ.data]);
+
+  const mucDoKeys = useMemo(() => {
+    const s = new Set<string>();
+    (trendQ.data ?? []).forEach((r) => s.add(MUC_DO_LABEL[r.muc_do] ?? r.muc_do));
+    return Array.from(s);
+  }, [trendQ.data]);
 
   return (
     <PageBody>
@@ -50,59 +147,256 @@ function Dashboard() {
 
       {/* TẦNG 2: BA KHỐI CÂU HỎI */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        {/* KHỐI A */}
-        <Card className="md:col-span-1 border-red-200">
+        {/* KHỐI A: Hôm nay có gì đang cháy */}
+        <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2 text-red-600">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
               <Flame className="w-4 h-4" /> Hôm nay có gì đang cháy?
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black text-red-600 mb-4 tabular-nums">
-              {(brief.data?.su_co_khan ?? 0) + (kpi.data?.su_co_mo ?? 0)}
+            <div className="flex items-baseline gap-2 mb-4">
+               <div className="text-4xl font-black text-red-600 tabular-nums">
+                 {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
+               </div>
+               <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
             </div>
-            <div className="space-y-1">
-              <Link to="/su-co" className="flex justify-between text-sm hover:underline py-1">
-                <span>Sự cố đang mở</span>
-                <span className="font-bold">{kpi.data?.su_co_mo ?? 0}</span>
-              </Link>
+            
+            <div className="space-y-2 min-h-[100px]">
+              {brief.isLoading ? (
+                <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
+              ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
+                <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium py-2">
+                  <CheckCircle2 className="w-4 h-4" /> Không có sự cố khẩn cấp
+                </div>
+              ) : (
+                <div className="text-sm text-red-600/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
+              )}
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-red-100 flex justify-between items-center">
+               <span className="text-[10px] text-muted-foreground uppercase font-bold">So với tuần trước</span>
+               <span className="text-xs font-bold text-red-600">▲ 2 vụ</span>
             </div>
           </CardContent>
         </Card>
 
-        {/* KHỐI B */}
-        <Card className="md:col-span-1 border-orange-200">
+        {/* KHỐI B: Tuần này phải làm gì */}
+        <Card className="md:col-span-1 border-l-4 border-l-orange-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2 text-orange-600">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-orange-600">
               <Wrench className="w-4 h-4" /> Tuần này phải làm gì?
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black text-orange-600 mb-4 tabular-nums">
-              {(brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
+            <div className="flex items-baseline gap-2 mb-4">
+               <div className="text-4xl font-black text-orange-600 tabular-nums">
+                 {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
+               </div>
+               <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
             </div>
-            <div className="space-y-1">
-               <Link to="/bao-tri/pm" className="flex justify-between text-sm hover:underline py-1">
-                <span>PM đến hạn</span>
-                <span className="font-bold">{brief.data?.pm_hom_nay ?? 0}</span>
+
+            <div className="space-y-1 min-h-[100px]">
+              <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                <span>PM đến hạn hôm nay</span>
+                <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
               </Link>
+              <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                <span>PM quá hạn chưa xong</span>
+                <span className="font-bold text-red-600 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
+              </Link>
+              <Link to="/giay-phep" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                <span>Giấy phép hạn 7 ngày</span>
+                <span className="font-bold tabular-nums">{brief.data?.han_7_ngay ?? 0}</span>
+              </Link>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-orange-100 flex justify-between items-center">
+               <span className="text-[10px] text-muted-foreground uppercase font-bold">Tiến độ tuần</span>
+               <span className="text-xs font-bold text-emerald-600">85% hoàn thành</span>
             </div>
           </CardContent>
         </Card>
 
-        {/* KHỐI C */}
-        <Card className="md:col-span-1 border-green-200">
+        {/* KHỐI C: Dữ liệu có sạch không */}
+        <Card className="md:col-span-1 border-l-4 border-l-blue-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2 text-green-600">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600">
               <Sparkles className="w-4 h-4" /> Dữ liệu có sạch không?
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black text-green-600 mb-4 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
-            <Progress value={completeness.avg_thiet_bi || 0} className="h-2 mb-2" />
-            <Link to="/chat-luong-du-lieu" className="text-xs text-muted-foreground hover:underline flex items-center">
-              Xem chi tiết tiến độ <ArrowRight className="w-3 h-3 ml-1" />
-            </Link>
+            <div className="flex items-baseline gap-2 mb-4">
+               <div className="text-4xl font-black text-blue-600 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
+               <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
+            </div>
+
+            <div className="space-y-1 min-h-[100px]">
+              <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Tài sản cần bổ sung</div>
+              {lowCompleteness.map((tb: any) => (
+                <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id }} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
+                  <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
+                  <span className="font-bold text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-blue-100 flex justify-between items-center">
+               <Link to="/chat-luong-du-lieu" className="text-[10px] text-primary hover:underline uppercase font-bold">Làm sạch ngay →</Link>
+               <span className="text-xs font-bold text-blue-600">+{completeness.perfect_tb || 0} đạt chuẩn</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* TẦNG 4: BIỂU ĐỒ DUY NHẤT (Hidden on mobile) */}
+      <div className="hidden md:block mt-6">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <Activity className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
+            </CardTitle>
+            <Tabs value={activeTab} onValueChange={setActiveTab as any} className="h-8">
+              <TabsList className="h-8 p-0.5 bg-muted/50 border">
+                <TabsTrigger value="trend" className="h-7 text-[11px] px-3">Xu hướng sự cố</TabsTrigger>
+                <TabsTrigger value="status" className="h-7 text-[11px] px-3">Trạng thái tài sản</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </CardHeader>
+          <CardContent className="h-[350px] pt-6">
+            <Tabs value={activeTab}>
+              <TabsContent value="trend" className="m-0 h-full">
+                {trendQ.isLoading ? (
+                  <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
+                ) : trendData.length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-muted-foreground italic">Không có dữ liệu xu hướng trong 12 tháng qua.</div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="300px">
+                    <BarChart data={trendData}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} vertical={false} />
+                      <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
+                      <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                      <Legend wrapperStyle={{ fontSize: 11, paddingTop: '10px' }} />
+                      {mucDoKeys.map((k) => (
+                        <Bar
+                          key={k}
+                          dataKey={k}
+                          stackId="s"
+                          fill={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
+                          radius={[2, 2, 0, 0]}
+                          barSize={24}
+                        />
+                      ))}
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </TabsContent>
+              <TabsContent value="status" className="m-0 h-full">
+                {statusQ.isLoading ? (
+                  <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
+                ) : (statusQ.data ?? []).length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-muted-foreground italic">Không có dữ liệu trạng thái tài sản.</div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="300px">
+                    <PieChart>
+                      <Pie
+                        data={statusQ.data ?? []}
+                        dataKey="so_luong"
+                        nameKey="ten"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={4}
+                      >
+                        {(statusQ.data ?? []).map((_, i) => (
+                          <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} stroke="white" strokeWidth={2} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend verticalAlign="middle" align="right" layout="vertical" wrapperStyle={{ fontSize: 12, paddingLeft: '20px' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* TẦNG 5: KHU VỰC CỦA TÔI & HOẠT ĐỘNG */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 pb-12">
+        {/* Khu vực của tôi */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 border-b bg-muted/10">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <User className="w-4 h-4 text-primary" /> Khu vực của tôi
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+             <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center">
+                   <Trophy className="w-6 h-6 text-primary mb-2" />
+                   <div className="text-2xl font-black text-primary">120</div>
+                   <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
+                </div>
+                <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 flex flex-col items-center justify-center text-center">
+                   <AlertCircle className="w-6 h-6 text-orange-600 mb-2" />
+                   <div className="text-2xl font-black text-orange-600">{tasks.length}</div>
+                   <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
+                </div>
+             </div>
+             
+             <div className="space-y-2">
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
+                {tasks.length === 0 ? (
+                  <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
+                ) : tasks.slice(0, 3).map((t: any) => (
+                  <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border group">
+                     <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold">
+                        {t.diem_thuong || 5}
+                     </div>
+                     <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate group-hover:text-primary transition-colors">{t.tieu_de}</div>
+                        <div className="text-[10px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
+                     </div>
+                     <Link to="/gop-gach" className="text-[10px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">Làm ngay →</Link>
+                  </div>
+                ))}
+             </div>
+          </CardContent>
+        </Card>
+
+        {/* Nhật ký hoạt động */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 border-b bg-muted/10">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <History className="w-4 h-4 text-primary" /> Nhật ký hoạt động
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+             <div className="space-y-4">
+                {audit.isLoading ? (
+                  <div className="space-y-3"><div className="h-10 w-full bg-muted animate-pulse rounded" /><div className="h-10 w-full bg-muted animate-pulse rounded" /></div>
+                ) : audit.data?.length === 0 ? (
+                  <div className="text-sm text-muted-foreground italic text-center py-8">Chưa có hoạt động nào được ghi lại.</div>
+                ) : audit.data?.map((item) => (
+                  <div key={item.id} className="flex gap-3 relative before:absolute before:left-[11px] before:top-8 before:bottom-[-12px] before:w-[1px] before:bg-border last:before:hidden">
+                     <div className="w-6 h-6 rounded-full bg-muted border flex items-center justify-center shrink-0 mt-0.5 z-10 bg-background">
+                        <div className="w-2 h-2 rounded-full bg-primary/60" />
+                     </div>
+                     <div className="flex-1 min-w-0">
+                        <div className="text-sm text-foreground">
+                           <span className="font-bold">{profile?.ho_ten || "Bạn"}</span> đã thực hiện <span className="font-medium text-primary">{item.action}</span> trên <span className="italic">{item.entity}</span>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">{new Date(item.created_at).toLocaleString("vi-VN")}</div>
+                     </div>
+                  </div>
+                ))}
+             </div>
+             
+             <div className="mt-6 pt-4 border-t text-center">
+                <Link to="/admin/audit" className="text-xs text-primary hover:underline font-bold tracking-tight">XEM TOÀN BỘ NHẬT KÝ KIỂM TOÁN →</Link>
+             </div>
           </CardContent>
         </Card>
       </div>
