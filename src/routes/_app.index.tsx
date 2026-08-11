@@ -1,20 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { 
-  LayoutDashboard, Flame, Wrench, ShieldCheck, AlertTriangle, Sparkles, 
-  ArrowRight, Radio, Activity, Gauge, TrendingUp, HardDrive, 
-  PauseCircle, AlertOctagon, CalendarClock, CalendarX, Loader2,
-  AlertCircle, CheckCircle2, User, Trophy, History
+  LayoutDashboard, Flame, Wrench, Sparkles, 
+  ArrowRight, Activity, User, Trophy, History,
+  CheckCircle2, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
 import { 
-  useDashboardBrief, useDashboardKpis, useActivityFeed, useUserAuditLog 
+  useDashboardBrief, useDashboardKpis, useUserAuditLog 
 } from "@/lib/mirats/dashboard.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
@@ -26,7 +24,7 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/backend/client";
 
-// Types from tong-quan.tsx
+// Types
 interface SuCoByMonth { thang: string; muc_do: string; so_luong: number }
 interface AssetStatus { trang_thai_ma: string; ten: string; so_luong: number }
 
@@ -78,7 +76,6 @@ function Dashboard() {
 
   const brief = useDashboardBrief();
   const kpi = useDashboardKpis();
-  const feed = useActivityFeed(undefined, 5);
   const audit = useUserAuditLog(5);
   
   const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "trend");
@@ -90,7 +87,6 @@ function Dashboard() {
     return "Chào buổi tối!";
   }, []);
 
-  // Charts Data Fetchers (copied from tong-quan logic)
   const trendQ = useQuery({
     queryKey: ["dashboard_su_co_by_month_dashboard"],
     enabled: activeTab === "trend",
@@ -147,7 +143,6 @@ function Dashboard() {
 
       {/* TẦNG 2: BA KHỐI CÂU HỎI */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        {/* KHỐI A: Hôm nay có gì đang cháy */}
         <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
@@ -161,7 +156,6 @@ function Dashboard() {
                </div>
                <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
             </div>
-            
             <div className="space-y-2 min-h-[100px]">
               {brief.isLoading ? (
                 <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
@@ -173,15 +167,13 @@ function Dashboard() {
                 <div className="text-sm text-red-600/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
               )}
             </div>
-            
-            <div className="mt-4 pt-4 border-t border-red-100 flex justify-between items-center">
-               <span className="text-[10px] text-muted-foreground uppercase font-bold">So với tuần trước</span>
-               <span className="text-xs font-bold text-red-600">▲ 2 vụ</span>
+            <div className="mt-4 pt-4 border-t border-red-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+               <span>Nhấn để xem sự cố</span>
+               <Link to="/su-co" className="text-primary hover:underline">Chi tiết →</Link>
             </div>
           </CardContent>
         </Card>
 
-        {/* KHỐI B: Tuần này phải làm gì */}
         <Card className="md:col-span-1 border-l-4 border-l-orange-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-orange-600">
@@ -195,7 +187,6 @@ function Dashboard() {
                </div>
                <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
             </div>
-
             <div className="space-y-1 min-h-[100px]">
               <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
                 <span>PM đến hạn hôm nay</span>
@@ -205,20 +196,14 @@ function Dashboard() {
                 <span>PM quá hạn chưa xong</span>
                 <span className="font-bold text-red-600 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
               </Link>
-              <Link to="/giay-phep" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
-                <span>Giấy phép hạn 7 ngày</span>
-                <span className="font-bold tabular-nums">{brief.data?.han_7_ngay ?? 0}</span>
-              </Link>
             </div>
-
-            <div className="mt-4 pt-4 border-t border-orange-100 flex justify-between items-center">
-               <span className="text-[10px] text-muted-foreground uppercase font-bold">Tiến độ tuần</span>
-               <span className="text-xs font-bold text-emerald-600">85% hoàn thành</span>
+            <div className="mt-4 pt-4 border-t border-orange-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+               <span>Lịch bảo trì</span>
+               <Link to="/bao-tri" className="text-primary hover:underline">Xem tất cả →</Link>
             </div>
           </CardContent>
         </Card>
 
-        {/* KHỐI C: Dữ liệu có sạch không */}
         <Card className="md:col-span-1 border-l-4 border-l-blue-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600">
@@ -230,9 +215,8 @@ function Dashboard() {
                <div className="text-4xl font-black text-blue-600 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
                <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
             </div>
-
             <div className="space-y-1 min-h-[100px]">
-              <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Tài sản cần bổ sung</div>
+              <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
               {lowCompleteness.map((tb: any) => (
                 <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id }} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
                   <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
@@ -240,16 +224,15 @@ function Dashboard() {
                 </Link>
               ))}
             </div>
-
-            <div className="mt-4 pt-4 border-t border-blue-100 flex justify-between items-center">
-               <Link to="/chat-luong-du-lieu" className="text-[10px] text-primary hover:underline uppercase font-bold">Làm sạch ngay →</Link>
-               <span className="text-xs font-bold text-blue-600">+{completeness.perfect_tb || 0} đạt chuẩn</span>
+            <div className="mt-4 pt-4 border-t border-blue-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+               <span>Tiến độ tổng</span>
+               <Link to="/chat-luong-du-lieu" className="text-primary hover:underline">Chi tiết →</Link>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* TẦNG 4: BIỂU ĐỒ DUY NHẤT (Hidden on mobile) */}
+      {/* TẦNG 4: BIỂU ĐỒ DUY NHẤT */}
       <div className="hidden md:block mt-6">
         <Card className="shadow-sm">
           <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
@@ -268,8 +251,6 @@ function Dashboard() {
               <TabsContent value="trend" className="m-0 h-full">
                 {trendQ.isLoading ? (
                   <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
-                ) : trendData.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-muted-foreground italic">Không có dữ liệu xu hướng trong 12 tháng qua.</div>
                 ) : (
                   <ResponsiveContainer width="100%" height="300px">
                     <BarChart data={trendData}>
@@ -295,8 +276,6 @@ function Dashboard() {
               <TabsContent value="status" className="m-0 h-full">
                 {statusQ.isLoading ? (
                   <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
-                ) : (statusQ.data ?? []).length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-muted-foreground italic">Không có dữ liệu trạng thái tài sản.</div>
                 ) : (
                   <ResponsiveContainer width="100%" height="300px">
                     <PieChart>
@@ -325,7 +304,6 @@ function Dashboard() {
 
       {/* TẦNG 5: KHU VỰC CỦA TÔI & HOẠT ĐỘNG */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 pb-12">
-        {/* Khu vực của tôi */}
         <Card className="shadow-sm">
           <CardHeader className="pb-2 border-b bg-muted/10">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -345,14 +323,13 @@ function Dashboard() {
                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
                 </div>
              </div>
-             
              <div className="space-y-2">
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
                 {tasks.length === 0 ? (
                   <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
                 ) : tasks.slice(0, 3).map((t: any) => (
                   <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border group">
-                     <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold">
+                     <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold shrink-0">
                         {t.diem_thuong || 5}
                      </div>
                      <div className="flex-1 min-w-0">
@@ -366,7 +343,6 @@ function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Nhật ký hoạt động */}
         <Card className="shadow-sm">
           <CardHeader className="pb-2 border-b bg-muted/10">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
@@ -381,7 +357,7 @@ function Dashboard() {
                   <div className="text-sm text-muted-foreground italic text-center py-8">Chưa có hoạt động nào được ghi lại.</div>
                 ) : audit.data?.map((item) => (
                   <div key={item.id} className="flex gap-3 relative before:absolute before:left-[11px] before:top-8 before:bottom-[-12px] before:w-[1px] before:bg-border last:before:hidden">
-                     <div className="w-6 h-6 rounded-full bg-muted border flex items-center justify-center shrink-0 mt-0.5 z-10 bg-background">
+                     <div className="w-6 h-6 rounded-full bg-background border flex items-center justify-center shrink-0 mt-0.5 z-10">
                         <div className="w-2 h-2 rounded-full bg-primary/60" />
                      </div>
                      <div className="flex-1 min-w-0">
@@ -393,14 +369,12 @@ function Dashboard() {
                   </div>
                 ))}
              </div>
-             
              <div className="mt-6 pt-4 border-t text-center">
                 <Link to="/admin/audit" className="text-xs text-primary hover:underline font-bold tracking-tight">XEM TOÀN BỘ NHẬT KÝ KIỂM TOÁN →</Link>
              </div>
           </CardContent>
         </Card>
       </div>
-
     </PageBody>
   );
 }
