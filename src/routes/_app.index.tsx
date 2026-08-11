@@ -54,7 +54,7 @@ export const Route = createFileRoute("/_app/")({
       }),
       context.queryClient.ensureQueryData({
         queryKey: ['completeness-overview', 3],
-        queryFn: () => getCompletenessOverview({ limit: 3 }),
+        queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
       })
     ]);
   },
@@ -69,7 +69,7 @@ function Dashboard() {
   });
   const overviewQuery = useSuspenseQuery({
     queryKey: ['completeness-overview', 3],
-    queryFn: () => getCompletenessOverview({ limit: 3 }),
+    queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
   });
   
   const completeness = (statsQuery.data as any) || {};
