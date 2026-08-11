@@ -1,11 +1,19 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { NotificationBell } from "../NotificationBell";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
 import { DesktopOnly } from "../DesktopOnly";
+import { useRealtimeStatus } from "@/hooks/use-realtime-status";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
@@ -40,6 +48,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
+        <RealtimeStatusIndicator />
         <QrScanButton />
         
         <div className="hidden md:block">
@@ -55,4 +64,33 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
     </div>
   );
 }
+
+function RealtimeStatusIndicator() {
+  const { status } = useRealtimeStatus();
+
+  const config = {
+    connecting: { icon: Loader2, color: "text-muted-foreground animate-spin", label: "Đang kết nối realtime..." },
+    connected: { icon: Wifi, color: "text-emerald-500", label: "Realtime trực tuyến" },
+    disconnected: { icon: WifiOff, color: "text-orange-500", label: "Realtime ngoại tuyến (đang dùng fallback)" },
+    error: { icon: Activity, color: "text-destructive", label: "Lỗi kết nối Realtime" },
+  }[status];
+
+  const Icon = config.icon;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted/50 cursor-help transition-colors">
+            <Icon className={cn("h-4 w-4", config.color)} />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p className="text-xs font-medium">{config.label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 
