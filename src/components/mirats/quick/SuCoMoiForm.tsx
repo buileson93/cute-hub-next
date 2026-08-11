@@ -39,6 +39,7 @@ import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefi
 import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { cn } from "@/lib/utils";
+import { AssetPicker } from "@/components/mirats/AssetPicker";
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
@@ -162,9 +163,26 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
             <div className="space-y-4">
               <Card>
                 <CardHeader><CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle></CardHeader>
-                <CardContent className="space-y-3">
-                  <Label>Sự cố *</Label><Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} />
-                  <Label>Hệ thống bị sự cố *</Label><Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                <CardContent className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label>Sự cố *</Label>
+                    <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả ngắn gọn hiện tượng..." />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Hệ thống bị sự cố *</Label>
+                    <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Tài sản chính liên quan *</Label>
+                    <AssetPicker 
+                      value={heThongDichVu} // Dùng cột chữ thiet_bi/he_thong_dich_vu làm nơi lưu ID tạm thời trong form
+                      onChange={(id, ma, ten) => setHeThongDichVu(id)} 
+                      heThongId={heThongId}
+                    />
+                    <p className="text-[10px] text-muted-foreground italic">
+                      Lưu ý: Bạn vẫn có thể chọn nhiều thành phần ở bước tiếp theo.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>

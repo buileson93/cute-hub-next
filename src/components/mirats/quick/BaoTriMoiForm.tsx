@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { rpcErrorToast } from "@/lib/mirats/rpc-error";
-import { Loader2, Save, Search, Wrench, FileText, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Loader2, Save, Search, Wrench, FileText, CheckCircle2, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import { ghiBaoDuongFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
 import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
+import { AssetPicker } from "@/components/mirats/AssetPicker";
 
 const TT_OPTIONS = ["Kế hoạch", "Đang thực hiện", "Hoàn thành", "Hoãn"];
 
@@ -155,11 +156,40 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
           <Card>
             <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Chọn tài sản</CardTitle></CardHeader>
             <CardContent>
-              {(taxo?.devices ?? []).filter(d => d._htId === heThongId).map(d => (
-                <div key={d.id} className="flex items-center gap-2">
-                  <Checkbox checked={selected.some(s => s.id === d.id)} onCheckedChange={v => setSelected(v ? [...selected, d] : selected.filter(s => s.id !== d.id))} /> {d.ma_thiet_bi} - {d.ten}
-                </div>
-              ))}
+              <div className="space-y-4">
+                <Label>Chọn tài sản bảo dưỡng *</Label>
+                <AssetPicker
+                  value="" // AssetPicker này dùng để thêm vào danh sách `selected`
+                  onChange={(id, ma, ten) => {
+                    if (id && !selected.some(s => s.id === id)) {
+                      // Fetch full data if needed, or assume partial suffices for this flow
+                      setSelected([...selected, { id, ma_thiet_bi: ma, ten_thiet_bi: ten } as any]);
+                    }
+                  }}
+                  heThongId={heThongId}
+                />
+                
+                {selected.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <Label className="text-xs text-muted-foreground uppercase">Danh sách đã chọn ({selected.length})</Label>
+                    <div className="border rounded-md divide-y max-h-40 overflow-y-auto">
+                      {selected.map(d => (
+                        <div key={d.id} className="flex items-center justify-between p-2 text-sm">
+                          <span className="truncate">{d.ma_thiet_bi} — {d.ten}</span>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6 text-destructive"
+                            onClick={() => setSelected(selected.filter(s => s.id !== d.id))}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}

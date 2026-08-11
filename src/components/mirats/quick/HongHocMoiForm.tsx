@@ -22,6 +22,7 @@ import { ghiHongHocFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
 import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
+import { AssetPicker } from "@/components/mirats/AssetPicker";
 
 const PHUONG_AN = [
   { code: "sua_chua", label: "Sửa chữa" },
@@ -105,8 +106,13 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
             <CardContent className="space-y-4">
               <Label>Vị trí / Thành phần</Label>
               <Combobox options={(tpList ?? []).map(t => ({ value: t.id, label: t.ten }))} value={thanhPhanId} onChange={setThanhPhanId} />
-              <Label>Tài sản hỏng</Label>
-              <Combobox options={(tbAll ?? []).map(t => ({ value: t.id, label: t.ma_thiet_bi }))} value={thietBiHongId} onChange={setThietBiHongId} />
+              <Label>Tài sản hỏng *</Label>
+              <AssetPicker 
+                value={thietBiHongId} 
+                onChange={(id) => setThietBiHongId(id)}
+                heThongId={heThongId}
+                thanhPhanId={thanhPhanId}
+              />
               <Label>Phương án</Label>
               <Select value={phuongAn} onValueChange={setPhuongAn}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
