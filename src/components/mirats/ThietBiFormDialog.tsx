@@ -302,8 +302,9 @@ export function ThietBiFormDialog({
         nhan_vien_id: d.nhan_vien_id || null,
         nam_san_xuat: d.nam_san_xuat ?? null,
         ghi_chu: d.ghi_chu || null,
-
+        vai_tro: d.vai_tro,
       };
+
       const items = d.he_thong_tuong_thich || [];
 
       if (mode === "create") {
