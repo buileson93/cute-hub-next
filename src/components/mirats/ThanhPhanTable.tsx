@@ -120,6 +120,7 @@ export type ThanhPhanRow = {
   cheDoKdHc: string;
   taiSanViTri: string;
   taiSanDonViQuanLy: string;
+  anomalyScore: number | null;
 };
 
 
