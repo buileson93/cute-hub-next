@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useLayoutEffect, useRef } fr
 import {
   ReactFlow, Controls, MiniMap, Panel, useReactFlow,
   useNodesState, useEdgesState,
-  Handle, Position,
+  Handle, Position, Background, BackgroundVariant,
   type Node, type Edge, type NodeTypes, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
