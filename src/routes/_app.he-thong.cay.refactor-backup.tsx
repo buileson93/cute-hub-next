@@ -40,7 +40,7 @@ import type {
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
 
-export const Route = createFileRoute("/_app/he-thong/cay")({
+export const Route = createFileRoute("/_app/he-thong/cay/refactor-backup")({
   validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string } => ({
     editTb: typeof search.editTb === "string" ? search.editTb : undefined,
     view: typeof search.view === "string" ? search.view : undefined,

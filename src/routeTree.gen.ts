@@ -81,7 +81,6 @@ import { Route as AppHongHocMaHongHocRouteImport } from './routes/_app.hong-hoc.
 import { Route as AppHeThongThungRacRouteImport } from './routes/_app.he-thong.thung-rac'
 import { Route as AppHeThongThanhPhanRouteImport } from './routes/_app.he-thong.thanh-phan'
 import { Route as AppHeThongLienKetRouteImport } from './routes/_app.he-thong.lien-ket'
-import { Route as AppHeThongCayRouteImport } from './routes/_app.he-thong.cay'
 import { Route as AppHeThongIdRouteImport } from './routes/_app.he-thong.$id'
 import { Route as AppDuAnIdRouteImport } from './routes/_app.du-an.$id'
 import { Route as AppDanhMucViTriRouteImport } from './routes/_app.danh-muc.vi-tri'
@@ -128,6 +127,7 @@ import { Route as ApiPublicHooksPmGenerateRouteImport } from './routes/api/publi
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCanhBaoHetHanRouteImport } from './routes/api/public/hooks/canh-bao-het-han'
 import { Route as ApiPublicHooksBootstrapAdminRouteImport } from './routes/api/public/hooks/bootstrap-admin'
+import { Route as AppHeThongCayRefactorBackupRouteImport } from './routes/_app.he-thong.cay.refactor-backup'
 import { Route as AppFormsSubmissionsIdRouteImport } from './routes/_app.forms.submissions.$id'
 import { Route as AppFormsNewCodeRouteImport } from './routes/_app.forms.new.$code'
 import { Route as AppBaoTriDotIdRouteImport } from './routes/_app.bao-tri.dot.$id'
@@ -497,11 +497,6 @@ const AppHeThongLienKetRoute = AppHeThongLienKetRouteImport.update({
   path: '/he-thong/lien-ket',
   getParentRoute: () => AppRoute,
 } as any)
-const AppHeThongCayRoute = AppHeThongCayRouteImport.update({
-  id: '/he-thong/cay',
-  path: '/he-thong/cay',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppHeThongIdRoute = AppHeThongIdRouteImport.update({
   id: '/he-thong/$id',
   path: '/he-thong/$id',
@@ -742,6 +737,12 @@ const ApiPublicHooksBootstrapAdminRoute =
     path: '/api/public/hooks/bootstrap-admin',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppHeThongCayRefactorBackupRoute =
+  AppHeThongCayRefactorBackupRouteImport.update({
+    id: '/he-thong/cay/refactor-backup',
+    path: '/he-thong/cay/refactor-backup',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppFormsSubmissionsIdRoute = AppFormsSubmissionsIdRouteImport.update({
   id: '/submissions/$id',
   path: '/submissions/$id',
@@ -853,7 +854,6 @@ export interface FileRoutesByFullPath {
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
-  '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
   '/he-thong/thung-rac': typeof AppHeThongThungRacRoute
@@ -883,6 +883,7 @@ export interface FileRoutesByFullPath {
   '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/he-thong/cay/refactor-backup': typeof AppHeThongCayRefactorBackupRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -972,7 +973,6 @@ export interface FileRoutesByTo {
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
-  '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
   '/he-thong/thung-rac': typeof AppHeThongThungRacRoute
@@ -1002,6 +1002,7 @@ export interface FileRoutesByTo {
   '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/he-thong/cay/refactor-backup': typeof AppHeThongCayRefactorBackupRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -1100,7 +1101,6 @@ export interface FileRoutesById {
   '/_app/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/_app/du-an/$id': typeof AppDuAnIdRoute
   '/_app/he-thong/$id': typeof AppHeThongIdRouteWithChildren
-  '/_app/he-thong/cay': typeof AppHeThongCayRoute
   '/_app/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/_app/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
   '/_app/he-thong/thung-rac': typeof AppHeThongThungRacRoute
@@ -1130,6 +1130,7 @@ export interface FileRoutesById {
   '/_app/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/_app/forms/new/$code': typeof AppFormsNewCodeRoute
   '/_app/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/_app/he-thong/cay/refactor-backup': typeof AppHeThongCayRefactorBackupRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -1228,7 +1229,6 @@ export interface FileRouteTypes {
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
     | '/he-thong/$id'
-    | '/he-thong/cay'
     | '/he-thong/lien-ket'
     | '/he-thong/thanh-phan'
     | '/he-thong/thung-rac'
@@ -1258,6 +1258,7 @@ export interface FileRouteTypes {
     | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
+    | '/he-thong/cay/refactor-backup'
     | '/api/public/hooks/bootstrap-admin'
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
@@ -1347,7 +1348,6 @@ export interface FileRouteTypes {
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
     | '/he-thong/$id'
-    | '/he-thong/cay'
     | '/he-thong/lien-ket'
     | '/he-thong/thanh-phan'
     | '/he-thong/thung-rac'
@@ -1377,6 +1377,7 @@ export interface FileRouteTypes {
     | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
+    | '/he-thong/cay/refactor-backup'
     | '/api/public/hooks/bootstrap-admin'
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
@@ -1474,7 +1475,6 @@ export interface FileRouteTypes {
     | '/_app/danh-muc/vi-tri'
     | '/_app/du-an/$id'
     | '/_app/he-thong/$id'
-    | '/_app/he-thong/cay'
     | '/_app/he-thong/lien-ket'
     | '/_app/he-thong/thanh-phan'
     | '/_app/he-thong/thung-rac'
@@ -1504,6 +1504,7 @@ export interface FileRouteTypes {
     | '/_app/bao-tri/dot/$id'
     | '/_app/forms/new/$code'
     | '/_app/forms/submissions/$id'
+    | '/_app/he-thong/cay/refactor-backup'
     | '/api/public/hooks/bootstrap-admin'
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
@@ -2061,13 +2062,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHeThongLienKetRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/he-thong/cay': {
-      id: '/_app/he-thong/cay'
-      path: '/he-thong/cay'
-      fullPath: '/he-thong/cay'
-      preLoaderRoute: typeof AppHeThongCayRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/he-thong/$id': {
       id: '/_app/he-thong/$id'
       path: '/he-thong/$id'
@@ -2390,6 +2384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksBootstrapAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/he-thong/cay/refactor-backup': {
+      id: '/_app/he-thong/cay/refactor-backup'
+      path: '/he-thong/cay/refactor-backup'
+      fullPath: '/he-thong/cay/refactor-backup'
+      preLoaderRoute: typeof AppHeThongCayRefactorBackupRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/forms/submissions/$id': {
       id: '/_app/forms/submissions/$id'
       path: '/submissions/$id'
@@ -2672,7 +2673,6 @@ interface AppRouteChildren {
   AppDanhMucViTriRoute: typeof AppDanhMucViTriRoute
   AppDuAnIdRoute: typeof AppDuAnIdRoute
   AppHeThongIdRoute: typeof AppHeThongIdRouteWithChildren
-  AppHeThongCayRoute: typeof AppHeThongCayRoute
   AppHeThongLienKetRoute: typeof AppHeThongLienKetRoute
   AppHeThongThanhPhanRoute: typeof AppHeThongThanhPhanRoute
   AppHeThongThungRacRoute: typeof AppHeThongThungRacRoute
@@ -2681,6 +2681,7 @@ interface AppRouteChildren {
   AppThongKeLaptopRoute: typeof AppThongKeLaptopRoute
   AppDuAnIndexRoute: typeof AppDuAnIndexRoute
   AppSoDoIndexRoute: typeof AppSoDoIndexRoute
+  AppHeThongCayRefactorBackupRoute: typeof AppHeThongCayRefactorBackupRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -2736,7 +2737,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppDanhMucViTriRoute: AppDanhMucViTriRoute,
   AppDuAnIdRoute: AppDuAnIdRoute,
   AppHeThongIdRoute: AppHeThongIdRouteWithChildren,
-  AppHeThongCayRoute: AppHeThongCayRoute,
   AppHeThongLienKetRoute: AppHeThongLienKetRoute,
   AppHeThongThanhPhanRoute: AppHeThongThanhPhanRoute,
   AppHeThongThungRacRoute: AppHeThongThungRacRoute,
@@ -2745,6 +2745,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppThongKeLaptopRoute: AppThongKeLaptopRoute,
   AppDuAnIndexRoute: AppDuAnIndexRoute,
   AppSoDoIndexRoute: AppSoDoIndexRoute,
+  AppHeThongCayRefactorBackupRoute: AppHeThongCayRefactorBackupRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
