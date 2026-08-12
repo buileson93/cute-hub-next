@@ -258,7 +258,7 @@ function TongQuanPage() {
   };
 
   return (
-    <PageBody>
+    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 overflow-auto">
       {/* Thanh tiêu đề + bộ lọc */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="mr-auto">
@@ -315,7 +315,7 @@ function TongQuanPage() {
       )}
 
       {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
-      <div className="space-y-4">
+      <div>
         <div className="flex items-center justify-between">
           <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Đi tới Sự cố" />
         </div>
@@ -339,7 +339,7 @@ function TongQuanPage() {
       </div>
 
       {/* ROW 2 — SỨC KHOẺ KHAI THÁC */}
-      <div className="space-y-4">
+      <div>
         <SectionHeader icon={<HeartPulse className="h-3.5 w-3.5" />} title={`Sức khoẻ khai thác (${days} ngày)`} to="/bao-tri/pm" more="Kế hoạch bảo trì" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <HealthTile
@@ -375,7 +375,7 @@ function TongQuanPage() {
           />
           <HealthTile
             icon={<ShieldCheck className="h-4 w-4" />}
-            label="Compliance"
+            label="Tuân thủ (Compliance)"
             value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
             hint="Tỷ lệ giấy phép/chứng chỉ còn hiệu lực"
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
@@ -504,7 +504,7 @@ function TongQuanPage() {
       {/* Top hệ thống */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm">Top 5 hệ thống có nhiều sự cố đang mở</CardTitle>
+          <CardTitle className="text-sm font-semibold">Top 5 hệ thống có nhiều sự cố đang mở</CardTitle>
           <Link to="/he-thong/cay" className="text-[11px] text-primary hover:underline">Cây hệ thống →</Link>
         </CardHeader>
         <CardContent>
@@ -557,18 +557,8 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-1.5">
+            <CardTitle className="text-sm font-semibold">
               Heatmap sự cố (90 ngày) — thứ × giờ
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs text-xs">Phân tích tần suất sự cố theo thời gian trong tuần để phát hiện quy luật phát sinh.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
@@ -578,18 +568,8 @@ function TongQuanPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm flex items-center gap-1.5">
+            <CardTitle className="text-sm font-semibold">
               Top thiết bị hỏng lặp (90 ngày)
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs text-xs">Danh sách các thiết bị có tần suất hỏng hóc cao bất thường cần kiểm tra chuyên sâu.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             </CardTitle>
             <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
           </CardHeader>
@@ -623,19 +603,9 @@ function TongQuanPage() {
       {/* ROW — Timeline hạn */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-1.5">
-            Hạn giấy phép & kiểm định (90 ngày tới)
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-xs">Lộ trình các mốc thời gian hết hạn giấy phép, kiểm định và bảo trì sắp tới.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              Hạn giấy phép & kiểm định (90 ngày tới)
+            </CardTitle>
           <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
         </CardHeader>
         <CardContent>
@@ -678,7 +648,7 @@ function TongQuanPage() {
           )}
         </CardContent>
       </Card>
-    </PageBody>
+    </div>
   );
 }
 
@@ -701,7 +671,7 @@ function KpiCard({
     danger: "text-destructive",
   };
   const body = (
-    <Card className={cn(link && "cursor-pointer transition-shadow hover:shadow-md hover:border-primary/40")}>
+    <Card className={cn(link && "cursor-pointer hover:border-primary/40")}>
       <CardContent className="flex flex-col gap-1 p-3">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className={toneClasses[tone]}>{icon}</span>
@@ -776,8 +746,8 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
     danger: "text-destructive",
   };
   const content = (
-    <Card className={cn(to && "cursor-pointer transition-shadow hover:shadow-md")}>
-      <CardContent className="flex flex-col gap-1 p-3 transition-colors hover:bg-accent/40">
+    <Card className={cn(to && "cursor-pointer")}>
+      <CardContent className="flex flex-col gap-1 p-3 transition-colors">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className={toneClasses[tone]}>{icon}</span>
           <span className="truncate">{label}</span>
@@ -790,18 +760,7 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
     </Card>
   );
 
-  const inner = description ? (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div>{content}</div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="max-w-xs text-xs">{description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  ) : content;
+  const inner = content;
 
   if (to) return <Link to={to as never} className="block">{inner}</Link>;
   return inner;
