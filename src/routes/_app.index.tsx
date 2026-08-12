@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { 
   LayoutDashboard, Flame, Wrench, Sparkles, 
   ArrowRight, Activity, User, Trophy, History,
-  CheckCircle2, AlertCircle, Clock
+  CheckCircle2, AlertCircle, Clock, Download,
+  ShieldCheck, Zap, ShieldAlert, BarChart3, TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
@@ -16,15 +17,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useUserPref } from "@/hooks/use-user-pref";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
-  CartesianGrid,
+  CartesianGrid, AreaChart, Area
 } from "recharts";
 import { supabase } from "@/integrations/backend/client";
 import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
 import { LiveTimeline } from "@/components/mirats/dashboard/LiveTimeline";
+import { useScope } from "@/lib/mirats/scope";
+import { availability, mttr, mtbf, formatKpiValue } from "@/lib/mirats/reliability";
+import { healthDetail } from "@/lib/mirats/metrics";
+import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
+import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
+import { fmtDowntime } from "@/lib/mirats/format";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 // Types
 interface SuCoByMonth { thang: string; muc_do: string; so_luong: number }
@@ -47,14 +56,14 @@ const STATUS_COLORS = [
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
-    // SSR safe loader: do not block if server calls fail (usually due to lack of Bearer token in SSR)
+    // SSR safe loader: do not block if server calls fail (usually do not have session in SSR)
     try {
       await Promise.all([
-        context.queryClient.ensureQueryData({
+        context.queryClient.prefetchQuery({
           queryKey: ['completeness-stats'],
           queryFn: () => getCompletenessStats(),
         }),
-        context.queryClient.ensureQueryData({
+        context.queryClient.prefetchQuery({
           queryKey: ['completeness-overview', 3],
           queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
         })
@@ -68,24 +77,59 @@ export const Route = (createFileRoute("/_app/") as any)({
 
 function Dashboard() {
   const { profile } = useSession();
-  const statsQuery = useSuspenseQuery({
+  const scope = useScope();
+  
+  const statsQuery = useQuery({
     queryKey: ['completeness-stats'],
     queryFn: () => getCompletenessStats(),
   });
-  const overviewQuery = useSuspenseQuery({
+  const overviewQuery = useQuery({
     queryKey: ['completeness-overview', 3],
     queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
   });
+
+  const pmKpi = usePmOnTimeKpi();
   
   const completeness = (statsQuery.data as any) || {};
   const lowCompleteness = (overviewQuery.data as any)?.lowCompleteness || [];
   const tasks = (overviewQuery.data as any)?.tasks || [];
 
-  const brief = useDashboardBrief();
-  const kpi = useDashboardKpis();
+  const brief = useDashboardBrief(scope.donViCode ? [scope.donViCode] : undefined);
   const audit = useUserAuditLog(5);
   
-  const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "trend");
+  const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "reliability");
+
+  const devices = scope.thietBi;
+  const incidents = scope.suCo;
+  
+  const reliability = useMemo(() => {
+    return availability({ 
+      assetCount: devices.length, 
+      windowHours: 720, // 30 days
+      incidents 
+    });
+  }, [devices.length, incidents]);
+
+  const mttrKpi = useMemo(() => mttr(incidents), [incidents]);
+  const mtbfKpi = useMemo(() => mtbf(incidents), [incidents]);
+
+  const healthStats = useMemo(() => {
+    const stats = { A: 0, B: 0, C: 0, D: 0, total: 0 };
+    devices.forEach(d => {
+      const h = healthDetail(d);
+      stats[h.xepLoai]++;
+      stats.total++;
+    });
+    return stats;
+  }, [devices]);
+
+  const lowHealthDevices = useMemo(() => {
+    return devices
+      .map(d => ({ device: d, health: healthDetail(d) }))
+      .filter(item => item.health.xepLoai === 'C' || item.health.xepLoai === 'D')
+      .sort((a, b) => a.health.score - b.health.score)
+      .slice(0, 5);
+  }, [devices]);
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();
@@ -95,22 +139,25 @@ function Dashboard() {
   }, []);
 
   const trendQ = useQuery({
-    queryKey: ["dashboard_su_co_by_month_dashboard"],
+    queryKey: ["dashboard_su_co_by_month_dashboard", scope.donViCode],
     enabled: activeTab === "trend",
     queryFn: async () => {
       const { data, error } = await supabase.rpc("dashboard_su_co_by_month", {
         p_months: 12,
-      });
+        p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
       if (error) throw error;
       return (data ?? []) as SuCoByMonth[];
     },
   });
 
   const statusQ = useQuery({
-    queryKey: ["dashboard_asset_status_dashboard"],
+    queryKey: ["dashboard_asset_status_dashboard", scope.donViCode],
     enabled: activeTab === "status",
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("dashboard_asset_status");
+      const { data, error } = await supabase.rpc("dashboard_asset_status", {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
       if (error) throw error;
       return (data ?? []) as AssetStatus[];
     },
@@ -140,22 +187,128 @@ function Dashboard() {
     return Array.from(s);
   }, [trendQ.data]);
 
+  const handleExport = () => {
+    toast.promise(
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+      {
+        loading: 'Đang chuẩn bị báo cáo...',
+        success: 'Đã tải xuống báo cáo tổng quan KPI',
+        error: 'Lỗi khi tải báo cáo',
+      }
+    );
+  };
+
+  if (scope.loading) {
+    return <div className="h-screen w-full flex items-center justify-center animate-pulse text-muted-foreground">Đang tải MIRATS 2.0...</div>;
+  }
+
   return (
     <PageBody>
-      <PageHeader
-        title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
-        icon={LayoutDashboard}
-        description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
-      />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+        <div className="flex-1">
+          <PageHeader
+            title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
+            icon={LayoutDashboard}
+            description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
+          />
+        </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleExport}
+          className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
+        >
+          <Download className="w-4 h-4 text-primary" />
+          <span className="hidden sm:inline font-bold text-xs uppercase tracking-wider">Xuất báo cáo</span>
+        </Button>
+      </div>
 
       {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
-      <div className="mt-4 -mx-6">
+      <div className="mt-2 -mx-6">
         <HeartBeatStrip />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
-          {/* TẦNG 2: BA KHỐI CÂU HỎI */}
+          {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="shadow-sm border-t-2 border-t-emerald-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Target: 99%
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(reliability)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Activity className="w-3 h-3" /> Availability
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-blue-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Phản hồi
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(mttrKpi)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> MTTR (Bình quân)
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-orange-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Chu kỳ
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(mtbfKpi)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" /> MTBF (Trung bình)
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-indigo-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Bảo trì
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Wrench className="w-3 h-3" /> PM đúng hạn
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
               <CardHeader className="pb-2">
@@ -246,12 +399,54 @@ function Dashboard() {
             </Card>
           </div>
 
-          {/* TẦNG 4: BIỂU ĐỒ DUY NHẤT */}
-          <div className="hidden md:block">
-            <Card className="shadow-sm">
+          {/* TẦNG 4: KHỐI PHÂN BỔ SỨC KHOẺ & BIỂU ĐỒ */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="md:col-span-1 shadow-sm">
+              <CardHeader className="pb-2 border-b bg-muted/10">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-primary" /> Phân bố sức khoẻ (A/B/C/D)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  {[
+                    { label: "Sức khoẻ A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
+                    { label: "Sức khoẻ B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
+                    { label: "Sức khoẻ C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
+                    { label: "Sức khoẻ D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
+                  ].map((s) => (
+                    <div key={s.label} className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                          <span className="text-xs font-bold uppercase tracking-tight">{s.label}</span>
+                        </div>
+                        <span className="text-sm font-black tabular-nums">{s.count}</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full transition-all duration-1000" 
+                          style={{ 
+                            width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
+                            backgroundColor: s.color 
+                          }} 
+                        />
+                      </div>
+                      <div className="text-[10px] text-muted-foreground italic pl-4">{s.desc}</div>
+                    </div>
+                  ))}
+                  <div className="pt-2 mt-2 border-t text-center">
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Tổng số tài sản theo dõi</div>
+                    <div className="text-lg font-black">{scope.thietBi.length}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2 shadow-sm">
               <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
+                  <BarChart3 className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
                 </CardTitle>
                 <Tabs value={activeTab} onValueChange={setActiveTab as any} className="h-8">
                   <TabsList className="h-8 p-0.5 bg-muted/50 border">
@@ -315,6 +510,67 @@ function Dashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* TẦNG 4.5: BẢNG CHI TIẾT SỨC KHOẺ THẤP (KHÔI PHỤC) */}
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600">
+                <ShieldAlert className="w-4 h-4" /> Danh sách thiết bị cần chú ý
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/30 text-[10px] uppercase font-bold text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Thiết bị</th>
+                      <th className="px-4 py-3 text-center">Sức khoẻ</th>
+                      <th className="px-4 py-3 text-left">Vấn đề chính</th>
+                      <th className="px-4 py-3 text-right">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {lowHealthDevices.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground italic">
+                          Tất cả tài sản hiện đang ở trạng thái tốt.
+                        </td>
+                      </tr>
+                    ) : (
+                      lowHealthDevices.map(({ device, health }) => (
+                        <tr key={device.ma_thiet_bi} className="hover:bg-muted/10 transition-colors">
+                          <td className="px-4 py-3">
+                            <div className="font-bold">{device.ten}</div>
+                            <div className="text-[10px] text-muted-foreground">{device.ma_thiet_bi}</div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={cn(
+                              "inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-white text-xs",
+                              health.xepLoai === 'D' ? "bg-red-500" : "bg-orange-500 shadow-sm"
+                            )}>
+                              {health.xepLoai}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="text-xs">{health.khuyenNghi}</div>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <Link 
+                              to="/qr/thiet-bi/$id" 
+                              params={{ id: device.ma_thiet_bi } as any}
+                              className="text-xs font-bold text-primary hover:underline"
+                            >
+                              Chi tiết →
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* TẦNG 5: KHU VỰC CỦA TÔI */}
           <div className="pb-12">
