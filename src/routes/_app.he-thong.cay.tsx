@@ -127,16 +127,26 @@ function HeThongCayPage() {
     setFocus,
     badgeFilter, setBadgeFilter,
     groupMode,
+    setViewTree,
   } = useCayContext();
   
   const { renameEntity } = useCayMutations();
 
   // Sync display with search param
   useEffect(() => {
+    // Nếu URL có view khác với state hiện tại, cập nhật state
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
-  }, [search.view, setDisplay, display]);
+    // Ngược lại, nếu URL KHÔNG có view nhưng state đang là mindmap, cập nhật URL
+    else if (!search.view && display === "mindmap") {
+      nav({ 
+        to: "/he-thong/cay", 
+        search: (prev: any) => ({ ...prev, view: "mindmap" }),
+        replace: true 
+      });
+    }
+  }, [search.view, setDisplay, display, nav]);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") {
@@ -278,6 +288,11 @@ function HeThongCayPage() {
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
+
+  // Sync viewTree to context for MindMap and other consumers
+  useEffect(() => {
+    setViewTree(viewTree as any);
+  }, [viewTree, setViewTree]);
 
   const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
   const error = errorOverrides || errorTaxo || errorDevices;

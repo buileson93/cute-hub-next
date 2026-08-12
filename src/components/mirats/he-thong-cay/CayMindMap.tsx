@@ -308,21 +308,13 @@ export function CayMindMap({
     return set;
   }, [tree]);
 
-  const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
+  const { expandedNodes, toggleNode } = useCayContext();
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
 
-  const seededRef = useRef(false);
-
-  useEffect(() => {
-    // Reset seededRef when tree data is completely gone to allow re-seeding
-    if (tree.length === 0) {
-      seededRef.current = false;
-      return;
-    }
-    if (seededRef.current) return;
-    setExpanded(initialExpanded);
-    seededRef.current = true;
-  }, [tree.length, initialExpanded]);
+  const toggle = useCallback((id: string) => {
+    toggleNode(id);
+    setActiveId(id === "root" ? null : id);
+  }, [toggleNode]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
@@ -346,11 +338,10 @@ export function CayMindMap({
       }
     }
 
-    setExpanded(prev => {
-      const next = new Set(prev);
-      path.forEach(id => next.add(id));
-      return next;
-    });
+    // Instead of local state, we should ideally trigger toggleNode via context, 
+    // but for search-focus we can just expand locally if needed, 
+    // though CayContext already seeds expandedNodes.
+    path.forEach(id => toggleNode(id));
 
     const targetId = focus.kind === "tb" ? `tb:${focus.ma}` : 
                      focus.kind === "ht" ? `ht:${focus.plId}:${focus.nhMa}:${focus.ma}` :
@@ -387,15 +378,7 @@ export function CayMindMap({
     }
   }, [rfNodes.length, fitView, finiteNodes]);
 
-  const toggle = useCallback((id: string) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); justOpenedRef.current = null; }
-      else { next.add(id); justOpenedRef.current = id; }
-      return next;
-    });
-    setActiveId(id === "root" ? null : id);
-  }, []);
+  // Using toggle from context now
 
   const moveTargets = useMemo<MoveTarget[]>(() => {
     const out: MoveTarget[] = [];
@@ -407,6 +390,7 @@ export function CayMindMap({
   }, [tree, plMind, nhMind]);
 
   const { nodes, edges } = useMemo(() => {
+    const expanded = expandedNodes; // Use context state
     const COL_GAP = 96;
     const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
     const ROW_GAP = 16;
@@ -597,7 +581,7 @@ export function CayMindMap({
     }
 
     return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
-  }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
+  }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);

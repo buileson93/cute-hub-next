@@ -41,17 +41,24 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const [viewTree, setViewTree] = useState<PlGroup[]>([]);
   const [reorgOpen, setReorgOpen] = useState(false);
 
-  const initialSeedRef = React.useRef(false);
+  const seededTreeRef = React.useRef<string>("");
   React.useEffect(() => {
-    if (!initialSeedRef.current && viewTree.length > 0) {
-      initialSeedRef.current = true;
+    // Generate a simple fingerprint of the tree structure to detect real changes
+    const fingerprint = viewTree.map(pl => `${pl.id}:${pl.count}`).join("|");
+    if (viewTree.length > 0 && seededTreeRef.current !== fingerprint) {
+      seededTreeRef.current = fingerprint;
       setExpandedNodes(prev => {
         const next = new Set(prev);
+        // Always ensure root and stopped are expanded
+        next.add("root");
+        next.add("root-stopped");
+        
         viewTree.forEach(pl => {
           next.add(`pl:${pl.id}`);
           pl.fields.forEach(lv => {
-            if (lv.id) next.add(`lv:${pl.id}:${lv.id}`);
-            lv.groups.slice(0, 5).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
+            if (lv.id && lv.id !== "all") next.add(`lv:${pl.id}:${lv.id}`);
+            // Expand first few groups by default to show some data
+            lv.groups.slice(0, 3).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
           });
         });
         return next;
