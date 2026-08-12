@@ -45,7 +45,7 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
     const { fields } = resolveSubmissionFields({
       snapshot: parseCompiledSchema(sub.template_snapshot),
       versionSchema,
-      currentFields: (currentFields ?? []).map((f, i) => compileField(f, i)),
+      currentFields: (currentFields ?? []).map((f: any, i: number) => compileField(f, i)),
     });
 
     const { data: links } = await supabase
@@ -133,7 +133,7 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
     );
 
     const deviceRows: InstanceType<typeof TableRow>[] = [];
-    const deviceList = links?.map((l) => l.thiet_bi).filter(Boolean) ?? [];
+    const deviceList = links?.map((l: any) => l.thiet_bi).filter(Boolean) ?? [];
     if (singleDevice) deviceList.unshift(singleDevice);
     if (deviceList.length > 0) {
       deviceRows.push(

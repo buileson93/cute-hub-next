@@ -34,11 +34,22 @@ const saveSchema = z.object({
 });
 
 async function assertAdmin(context: any) {
-  const { data: isAdmin } = await context.supabase.rpc("has_role", {
+  const { data: isAdmin, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
   });
+  if (error) throw new Error(error.message);
   if (!isAdmin) throw new Error("Chỉ quản trị viên mới được xem/sửa cấu hình R2");
+}
+
+async function logR2ConfigAction(supabaseAdmin: any, userId: string, action: string, detail: any) {
+  await supabaseAdmin.from("audit_log").insert({
+    user_id: userId,
+    action,
+    entity: "r2_config",
+    detail,
+    severity: "info"
+  });
 }
 
 function mask(secret: string | null | undefined): string {
@@ -103,6 +114,7 @@ export const saveR2Config = createServerFn({ method: "POST" })
       .upsert(patch as any, { onConflict: "id" });
     if (error) throw new Error(error.message);
 
+    await logR2ConfigAction(supabaseAdmin, context.userId, "save_r2_config", { enabled: data.enabled });
     resetR2Cache();
     return { ok: true, issues };
   });

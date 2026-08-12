@@ -10,6 +10,7 @@
 // tự cập nhật.
 // ============================================================================
 import { workspaces, isItemActive as isItemActiveContract, type NavItem as ContractNavItem } from "@/lib/mirats/nav-contract";
+import type { AppRole } from "@/hooks/use-session";
 
 export type NavBadgeKey = "su_co_mo" | "sap_het_han" | "hong_hoc_mo" | "kd_hc_sap_het_han";
 
@@ -28,6 +29,8 @@ export interface NavItem {
   exact?: boolean;
   /** Nếu có, sidebar sẽ tra cứu số liệu tương ứng để hiển thị badge. */
   badgeKey?: NavBadgeKey;
+  /** Nếu set, chỉ hiện khi user có ÍT NHẤT 1 role trong danh sách. */
+  roles?: AppRole[];
 }
 
 export interface NavGroup {
@@ -60,6 +63,7 @@ function toItem(nhomKey: string, source: ContractNavItem): NavItem {
     nhom: nhomKey,
     exact: source.exact,
     badgeKey: BADGE_BY_ROUTE[source.to],
+    roles: source.roles,
   };
 }
 

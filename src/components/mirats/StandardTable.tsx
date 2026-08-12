@@ -1,289 +1,214 @@
-// ============================================================================
-// StandardTable — bảng dữ liệu chuẩn dùng chung cho toàn hệ thống.
-//
-// Lấy TableView của "Hệ Thống" làm chuẩn giao diện:
-//   • Khung Card, header dính (sticky) khi cuộn.
-//   • Bộ lọc ngay trên tiêu đề từng cột (danh mục nhiều lựa chọn hoặc tìm chữ).
-//   • Nút "Cột hiển thị" để bật/tắt cột.
-//   • KÉO-THẢ tiêu đề cột để đổi thứ tự — CHỈ khi bật chế độ chỉnh sửa (editMode).
-//   • Thứ tự & cột ẩn được lưu theo TÀI KHOẢN (đồng bộ mọi tài sản) qua
-//     useColumnPrefs.
-//
-// Dùng generic <T> nên mọi trang chỉ cần khai cột (key/label/value/cell).
-// ============================================================================
-
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Filter, SlidersHorizontal, GripVertical, ArrowLeftRight, ArrowUp, ArrowDown, ChevronsUpDown } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
-  DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
-import { TableExportDialog } from "@/components/mirats/TableExportDialog";
-import { normalize } from "@/lib/mirats/global-search";
-
-import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
-import { useColumnWidths } from "@/lib/mirats/use-column-widths";
-import { tongSoTrang } from "@/lib/mirats/ui/list-controls";
-import type { UseListControlsReturn } from "@/lib/mirats/ui/use-list-controls";
 import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableSkeleton } from "@/components/mirats/Skeletons";
+import { EmptyState } from "@/components/mirats/EmptyState";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
+import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search } from "lucide-react";
+import { normalize } from "@/lib/mirats/global-search";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 
-export type StdColumn<T> = {
+export interface StdColumn<T> {
   key: string;
   label: string;
-  group?: string;
-  minW?: string;
-  align?: "left" | "right" | "center";
-  filter?: "cat" | "text";
-  value?: (row: T) => string | number | null | undefined;
-  cell?: (row: T) => ReactNode;
-  defaultHidden?: boolean;
-  /** Tự ẩn khi viewport nhỏ hơn breakpoint (sm=640, md=768, lg=1024, xl=1280, 2xl=1536). */
-  hideBelow?: "sm" | "md" | "lg" | "xl" | "2xl";
-  /** Đánh dấu cột có giá trị KẾ THỪA (từ hệ thống/thành phần/tài sản) — tô nền vàng nhạt để nhận diện. */
-  inherited?: boolean;
-  cellClassName?: string;
+  value?: (r: T) => any;
+  cell?: (r: T) => React.ReactNode;
+  filter?: "text" | "cat";
+  align?: "left" | "center" | "right";
   sticky?: boolean;
+  minW?: string;
+  cellClassName?: string;
+  hidden?: boolean;
+  group?: string;
+  inherited?: boolean;
+  hideBelow?: number | string;
+  defaultHidden?: boolean;
   sortable?: boolean;
-  sortValue?: (row: T) => string | number | null | undefined;
-  exportHeader?: string;
-  exportValue?: (row: T) => string | number | null | undefined;
-};
-
-const BP_PX = { sm: 640, md: 768, lg: 1024, xl: 1280, "2xl": 1536 } as const;
-
-function useViewportWidth() {
-  const [w, setW] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1280));
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const on = () => setW(window.innerWidth);
-    window.addEventListener("resize", on);
-    return () => window.removeEventListener("resize", on);
-  }, []);
-  return w;
+  sortValue?: (r: T) => any;
+  lineClamp?: number;
 }
 
-/** Ngữ cảnh xuất: các dòng ĐANG hiển thị (đã lọc/sắp xếp) & các cột ĐANG bật (đúng thứ tự). */
-export type ExportContext<T> = {
-  visibleRows: T[];
-  visibleColumns: StdColumn<T>[];
-};
-
-export type BulkContext<T> = {
-  /** Các dòng đang được tích chọn (GIỮ nguyên khi chuyển trang / đổi lọc). */
-  selectedRows: T[];
-  /** Id các dòng đang chọn. */
-  selectedIds: string[];
-  /** Các cột ĐANG bật (đúng thứ tự) — để xuất đúng cài đặt cột. */
-  visibleColumns: StdColumn<T>[];
-  /** Toàn bộ cột khai báo (kể cả cột đang ẩn) — cho hộp thoại xuất. */
-  allColumns: StdColumn<T>[];
-  /** Toàn bộ dòng sau khi lọc/sắp xếp (mọi trang). */
-  filteredRows: T[];
-  /** Các dòng của trang đang xem. */
-  pageRows: T[];
-  /** Bỏ chọn tất cả. */
-  clear: () => void;
-  /** Chọn toàn bộ dòng sau lọc (mọi trang). */
-  selectAllFiltered: () => void;
-};
-
-
-type Props<T> = {
-  tableKey: string;
-  columns: StdColumn<T>[];
+export interface StandardTableProps<T> {
   rows: T[];
-  getRowId: (row: T) => string;
-  /** Bật sẵn kéo-thả đổi thứ tự cột (ngoài nút bật/tắt trong thanh công cụ). */
-  editMode?: boolean;
-  /** Ẩn nút bật kéo-thả nội bộ (khi trang tự quản lý editMode). */
-  hideReorderToggle?: boolean;
-  toolbarLeft?: ReactNode;
-  /** Nội dung góc phải thanh công cụ. Hàm nhận ngữ cảnh xuất (dòng đang lọc + cột đang bật). */
-  toolbarRight?: ReactNode | ((ctx: ExportContext<T>) => ReactNode);
-  onRowClick?: (row: T) => void;
-  emptyText?: string;
-  maxHeightClass?: string;
-  rowClassName?: (row: T) => string;
-  countUnit?: string;
-  /** Bảng để trống cho tới khi chọn/lọc (mặc định bật). */
-  requireFilterToShow?: boolean;
-  /** Bật cột tích chọn dòng để thao tác hàng loạt (bulk). */
+  columns: StdColumn<T>[];
+  getRowId?: (r: T) => string;
   selectable?: boolean;
-  /** Thanh hành động hàng loạt hiện ra khi có dòng được chọn. */
-  bulkActions?: (ctx: BulkContext<T>) => ReactNode;
-  /** Tên gợi ý cho file CSV khi xuất (mặc định lấy theo tableKey). */
-  exportName?: string;
-  /** Ẩn nút "Xuất CSV" mặc định trên thanh công cụ. */
-  hideExport?: boolean;
+  selected?: Set<string>;
+  setSelected?: (val: any) => void;
+  maxHeightClass?: string;
+  emptyText?: string;
+  emptyContent?: React.ReactNode;
+  errorContent?: React.ReactNode;
+  trangThai?: { dangTai?: boolean; loi?: any };
+  loadingContent?: React.ReactNode;
+  onRowClick?: (r: T) => void;
+  rowClassName?: (r: T) => string;
+  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
+  bulkActions?: (ctx: {
+    selectedRows: T[];
+    visibleColumns: StdColumn<T>[];
+    allColumns: StdColumn<T>[];
+    filteredRows: T[];
+    pageRows: T[];
+    clear: () => void;
+  }) => React.ReactNode;
 
-  /** Cờ trạng thái ngoài (loading / lỗi) — dùng khi nguồn dữ liệu bất đồng bộ. */
-  trangThai?: { dangTai?: boolean; loi?: string | null };
-  /** Slot tuỳ chỉnh khi rỗng (thay `emptyText`). */
-  emptyContent?: ReactNode;
-  /** Slot tuỳ chỉnh khi đang tải (mặc định = skeleton). */
-  loadingContent?: ReactNode;
-  /** Slot tuỳ chỉnh khi có lỗi (mặc định = dòng chữ đỏ). */
-  errorContent?: ReactNode;
-  /** Bật thanh phân trang ngoài (Trước/Sau) dựa vào useListControls + tổng. */
-  pagination?: { controls: UseListControlsReturn; tong: number };
-  /** Phân trang phía client SAU khi đã lọc/sắp xếp. Callback trả tổng số dòng sau lọc để cha cập nhật UI phân trang. */
-  clientPagination?: {
-    page: number;
-    pageSize: number;
-    onFilteredTotalChange?: (n: number) => void;
-  };
-  /** Tự căn độ rộng cột theo nội dung (auto-fit). */
-  autoFit?: boolean;
-};
-
-
-function colText<T>(col: StdColumn<T>, row: T): string {
-  const v = col.value ? col.value(row) : "";
-  return v == null ? "" : String(v);
+  pagination?: any;
+  clientPagination?: any;
+  tableKey?: string;
+  countUnit?: string;
+  requireFilterToShow?: boolean;
+  gated?: boolean;
+  presets?: any[];
+  activePreset?: string;
+  hideReorderToggle?: boolean;
 }
 
 export function StandardTable<T>({
-  tableKey, columns, rows, getRowId, editMode = false, hideReorderToggle = false,
-  toolbarLeft, toolbarRight, onRowClick, emptyText = "Không có dữ liệu phù hợp.",
-  maxHeightClass = "h-[calc(100vh-16rem)] min-h-[320px]", rowClassName, countUnit = "dòng",
-  requireFilterToShow = true, selectable = false, bulkActions, exportName, hideExport = false,
-  trangThai, emptyContent, loadingContent, errorContent, pagination, clientPagination,
-  autoFit = false,
-}: Props<T>) {
-
-  const [internalEdit, setInternalEdit] = useState(false);
-  const reorder = editMode || internalEdit;
-  const allKeys = useMemo(() => columns.map((c) => c.key), [columns]);
-  const vw = useViewportWidth();
-  // Mặc định ẩn: cột `defaultHidden`, cột "mã ...", HOẶC cột có `hideBelow` mà
-  // viewport hiện tại nhỏ hơn breakpoint. `hideBelow` chỉ ảnh hưởng lần khởi tạo —
-  // nếu user đã bật hiện trong menu "Cột hiển thị" thì phải tôn trọng lựa chọn đó.
-  const defaultHidden = useMemo(
-    () =>
-      columns
-        .filter(
-          (c) =>
-            c.defaultHidden ||
-            /^mã\b/i.test((c.label ?? "").trim()) ||
-            (c.hideBelow && vw > 0 && vw < BP_PX[c.hideBelow]),
-        )
-        .map((c) => c.key),
-    // Không phụ thuộc vw để tránh ép ẩn lại khi resize sau khi user đã bật.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [columns],
-  );
-  const colMap = useMemo(() => new Map(columns.map((c) => [c.key, c])), [columns]);
-
-  const { order, hidden, setOrder, toggle, setHidden, reset, isHidden } =
-    useColumnPrefs(tableKey, allKeys, defaultHidden);
-
-  // Độ rộng cột tuỳ chỉnh (kéo mép phải tiêu đề cột để đổi).
-  const { widths: colWidths, setWidth: setColWidth, resetWidth: resetColWidth, resetAll: resetAllWidths, MIN_W: MIN_COL_W } =
-    useColumnWidths(tableKey);
-  const resizeRef = useRef<{ key: string; startX: number; startW: number } | null>(null);
-  const [resizingKey, setResizingKey] = useState<string | null>(null);
-  const tableRef = useRef<HTMLTableElement | null>(null);
-
-  const onResizeStart = useCallback((key: string, e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const th = (e.currentTarget.parentElement as HTMLElement | null);
-    const startW = colWidths[key] ?? th?.getBoundingClientRect().width ?? 120;
-    resizeRef.current = { key, startX: e.clientX, startW };
-    setResizingKey(key);
-    const onMove = (ev: MouseEvent) => {
-      const r = resizeRef.current;
-      if (!r) return;
-      setColWidth(r.key, r.startW + (ev.clientX - r.startX));
-    };
-    const onUp = () => {
-      resizeRef.current = null;
-      setResizingKey(null);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-    };
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  }, [colWidths, setColWidth]);
-
-  // Cột hiển thị theo đúng thứ tự đã lưu. `hideBelow` KHÔNG ép ẩn khi user đã chọn hiện.
-  const shownCols = useMemo(
-    () => order.map((k) => colMap.get(k)).filter((c): c is StdColumn<T> => {
-      if (!c) return false;
-      if (isHidden(c.key)) return false;
-      return true;
-    }),
-    [order, colMap, isHidden],
-  );
-
-  // Tự căn độ rộng mọi cột theo nội dung thực tế đang hiển thị.
-  // Đo scrollWidth của tiêu đề + các ô body (cộng padding an toàn cho filter/sort/handle).
-  const autoFitWidths = useCallback(() => {
-    const table = tableRef.current;
-    if (!table) return;
-    const offset = selectable ? 1 : 0;
-    // Xoá style width tạm thời để đo đúng nội dung tự nhiên.
-    const tempClear = (el: HTMLElement) => {
-      const prev = el.style.width;
-      el.style.width = "auto";
-      return () => { el.style.width = prev; };
-    };
-    const cols = Array.from(table.querySelectorAll<HTMLTableColElement>("colgroup > col"));
-    const restores = cols.map(tempClear);
-    const next: Record<string, number> = {};
-    shownCols.forEach((c, idx) => {
-      const colIdx = idx + offset;
-      let max = 0;
-      const th = table.querySelector<HTMLTableCellElement>(
-        `thead tr > th:nth-child(${colIdx + 1})`,
-      );
-      if (th) {
-        const inner = th.firstElementChild as HTMLElement | null;
-        max = Math.max(max, (inner?.scrollWidth ?? th.scrollWidth) + 40);
-      }
-      const cells = table.querySelectorAll<HTMLTableCellElement>(
-        `tbody tr > td:nth-child(${colIdx + 1})`,
-      );
-      cells.forEach((td) => {
-        max = Math.max(max, td.scrollWidth + 16);
-      });
-      if (max > 0) next[c.key] = Math.max(80, Math.min(600, Math.round(max)));
-    });
-    restores.forEach((fn) => fn());
-    Object.entries(next).forEach(([k, w]) => setColWidth(k, w));
-  }, [selectable, shownCols, setColWidth]);
-
-  // Tự động căn chỉnh nếu bật autoFit
-  useEffect(() => {
-    if (autoFit && shownCols.length > 0 && !trangThai?.dangTai) {
-      // Đợi table render xong
-      const timer = setTimeout(autoFitWidths, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [autoFit, shownCols.length, trangThai?.dangTai, autoFitWidths]);
-
-  // Bộ lọc.
+  rows = [],
+  columns = [],
+  getRowId,
+  selectable,
+  selected,
+  setSelected,
+  maxHeightClass = "max-h-[600px]",
+  emptyText = "Không có dữ liệu",
+  emptyContent,
+  errorContent,
+  trangThai,
+  loadingContent,
+  onRowClick,
+  rowClassName,
+  toolbarRight,
+  toolbarLeft,
+  bulkActions,
+  tableKey,
+  countUnit = "bản ghi",
+  requireFilterToShow,
+  pagination,
+  clientPagination,
+  presets,
+  activePreset,
+}: StandardTableProps<T>) {
+  const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
+  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
+  useEffect(() => {
+    const handleResize = () => setVw(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  // Kiểm tra một dòng có khớp toàn bộ bộ lọc (có thể loại trừ một cột) hay không.
-  // Dùng cho cả `filtered` (không loại trừ) và `catValues` (loại trừ chính cột đang
-  // dựng danh sách giá trị) — nhờ vậy bộ lọc sau kế thừa kết quả của bộ lọc trước:
-  // dropdown chỉ hiện những giá trị còn xuất hiện trong tập đã lọc.
+  // --- Tầng 1: Column Prefs (User Settings) ---
+  const allKeys = useMemo(() => columns.map(c => c.key), [columns]);
+  const defaultHidden = useMemo(() => 
+    columns.filter(c => c.defaultHidden).map(c => c.key), 
+    [columns]
+  );
+  
+  const prefs = useColumnPrefs(tableKey || "default", allKeys, defaultHidden);
+  
+  // Nối presets vào useColumnPrefs khi component mount/update
+  useEffect(() => {
+    if (presets && prefs.setPreset && prefs.ready) {
+      const currentPreset = presets.find(p => p.id === activePreset);
+      if (currentPreset && !prefs.isCustomized && prefs.activePreset !== activePreset) {
+        const visibleKeys = currentPreset.visibleKeys || currentPreset.columns || currentPreset.cot || [];
+        prefs.setPreset(currentPreset.id, visibleKeys, currentPreset.orderKeys || visibleKeys);
+      }
+    }
+  }, [presets, activePreset, prefs.ready, prefs.isCustomized, prefs.activePreset]);
+
+  const isMobile = vw > 0 && vw < BP_PX.md;
+  
+  // Sắp xếp cột theo thứ tự người dùng đã chọn
+  const sortedColumns = useMemo(() => {
+    if (!tableKey) return columns;
+    const order = prefs.order;
+    return [...columns].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+  }, [columns, tableKey, prefs.order]);
+
+  const shownCols = useMemo(() => {
+    return sortedColumns.filter((c) => {
+      // Tầng 1: Người dùng ẩn cột cố tình -> Ẩn mọi nơi
+      if (tableKey && (prefs.hidden as Set<string>).has(c.key)) return false;
+      
+      // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn mọi nơi
+      if (c.hidden) return false;
+
+      // Tầng 2: Ẩn theo bề rộng màn hình (hideBelow) -> Chỉ ẩn trên UI
+      if (!c.hideBelow) return true;
+      const threshold = typeof c.hideBelow === "number" 
+        ? c.hideBelow 
+        : (BP_PX as any)[c.hideBelow] || BP_PX.md;
+      return vw >= threshold;
+    });
+  }, [sortedColumns, tableKey, prefs.hidden, vw]);
+
+  // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
+  // bỏ qua Tầng 2 (hideBelow) nhưng vẫn áp dụng Tầng 1 (User Prefs) và Tầng 3 (Hardcoded hidden)
+  const exportCols = useMemo(() => {
+    return sortedColumns.filter(c => {
+      // Tầng 1: Người dùng ẩn cột cố tình -> Ẩn cả trong tệp xuất
+      if (tableKey && (prefs.hidden as Set<string>).has(c.key)) return false;
+
+      // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn cả trong tệp xuất
+      if (c.hidden) return false;
+
+      // Bỏ qua Tầng 2 (hideBelow) để đảm bảo toàn vẹn dữ liệu báo cáo
+      return true;
+    });
+  }, [sortedColumns, tableKey, prefs.hidden]);
+  const getRowIdInternal = (r: T): string => (getRowId ? getRowId(r) : (r as any).id);
+
+  const toggleRow = (id: string) => {
+    if (!setSelected) return;
+    setSelected((prev: Set<string>) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => {
+    if (setSelected) setSelected(new Set());
+  };
+
+  const renderToolbar = (
+    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
+    ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
+  ) => {
+    if (typeof toolbar === "function") {
+      return toolbar(ctx);
+    }
+    return toolbar;
+  };
+
+  const colText = useCallback((col: StdColumn<T>, row: T): string => {
+    const v = col.value ? col.value(row) : "";
+    return v == null ? "" : String(v);
+  }, []);
+
   const matchesFilters = useCallback(
     (r: T, exceptKey?: string) => {
       for (const c of columns) {
@@ -292,48 +217,57 @@ export function StandardTable<T>({
           const sel = catFilters[c.key];
           if (sel && sel.size > 0 && !sel.has(colText(c, r))) return false;
         } else if (c.filter === "text") {
-          const t = normalize(textFilters[c.key] ?? "").trim();
-          if (t && !normalize(colText(c, r)).includes(t)) return false;
+          const val = textFilters[c.key];
+          if (val) {
+            const t = normalize(val).trim();
+            if (t && !normalize(colText(c, r)).includes(t)) return false;
+          }
         }
       }
       return true;
     },
-    [columns, catFilters, textFilters],
+    [columns, catFilters, textFilters, colText],
   );
 
   const catValues = useMemo(() => {
-    const map: Record<string, string[]> = {};
+    const map: Record<string, { value: string; count: number }[]> = {};
     for (const c of columns.filter((c) => c.filter === "cat")) {
-      const s = new Set<string>();
+      const counts = new Map<string, number>();
       for (const r of rows) {
         if (!matchesFilters(r, c.key)) continue;
-        s.add(colText(c, r));
+        const val = colText(c, r);
+        counts.set(val, (counts.get(val) ?? 0) + 1);
       }
-      map[c.key] = Array.from(s).filter(Boolean).sort((a, b) => a.localeCompare(b, "vi"));
+      map[c.key] = Array.from(counts.entries())
+        .filter(([v]) => Boolean(v))
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => a.value.localeCompare(b.value, "vi"));
     }
     return map;
-  }, [columns, rows, matchesFilters]);
+  }, [columns, rows, matchesFilters, colText]);
 
   const filtered = useMemo(
     () => rows.filter((r) => matchesFilters(r)),
     [rows, matchesFilters],
   );
 
-  const hasFilter = columns.some((c) =>
-    c.filter === "cat" ? (catFilters[c.key]?.size ?? 0) > 0
-      : (textFilters[c.key] ?? "").trim().length > 0);
+  const hasFilter = useMemo(() => {
+    return columns.some((c) =>
+      c.filter === "cat" ? (catFilters[c.key]?.size ?? 0) > 0
+        : (textFilters[c.key] ?? "").trim().length > 0
+    );
+  }, [columns, catFilters, textFilters]);
 
-  // ---- Sắp xếp theo cột (bấm tiêu đề để đổi asc/desc/tắt) ----
-  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const sortableKey = useCallback((c: StdColumn<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
   const cycleSort = useCallback((key: string) => setSort((prev) => {
     if (!prev || prev.key !== key) return { key, dir: "asc" };
     if (prev.dir === "asc") return { key, dir: "desc" };
     return null;
   }), []);
+
   const sorted = useMemo(() => {
     if (!sort) return filtered;
-    const col = colMap.get(sort.key);
+    const col = columns.find(c => c.key === sort.key);
     if (!col) return filtered;
     const get = (r: T) => {
       const v = col.sortValue ? col.sortValue(r) : col.value ? col.value(r) : "";
@@ -345,20 +279,16 @@ export function StandardTable<T>({
       if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
       return String(va).localeCompare(String(vb), "vi", { numeric: true }) * dir;
     });
-  }, [filtered, sort, colMap]);
+  }, [filtered, sort, columns]);
 
-  // Mặc định bảng để TRỐNG — chỉ hiển thị khi đã lọc.
   const gated = requireFilterToShow && !hasFilter;
   const fullDisplay = useMemo(() => (gated ? [] : sorted), [gated, sorted]);
 
-  // Thông báo tổng số dòng SAU khi lọc/sắp xếp cho cha (dùng cho UI phân trang bên ngoài).
   const notifyFilteredTotal = clientPagination?.onFilteredTotalChange;
   useEffect(() => {
     notifyFilteredTotal?.(fullDisplay.length);
   }, [fullDisplay.length, notifyFilteredTotal]);
 
-  // Cắt trang phía client SAU khi đã lọc — nhờ vậy bộ lọc/sắp xếp áp dụng cho TOÀN BỘ dữ liệu,
-  // không chỉ trang hiện tại.
   const display = useMemo(() => {
     if (!clientPagination) return fullDisplay;
     const { page, pageSize } = clientPagination;
@@ -367,525 +297,618 @@ export function StandardTable<T>({
     return fullDisplay.slice(start, start + pageSize);
   }, [fullDisplay, clientPagination]);
 
-  // ---- Tích chọn dòng (bulk) ----
-  // Lựa chọn được GIỮ khi chuyển trang / đổi bộ lọc: chỉ loại bỏ những id không
-  // còn tồn tại trong nguồn dữ liệu. Mọi bulk action luôn chạy đúng tập đã tick.
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const rowById = useMemo(() => {
-    const m = new Map<string, T>();
-    for (const r of rows) m.set(getRowId(r), r);
-    return m;
-  }, [rows, getRowId]);
-  const displayIds = useMemo(() => display.map((r) => getRowId(r)), [display, getRowId]);
-  useEffect(() => {
-    if (!selectable) return;
-    setSelected((prev) => {
-      if (prev.size === 0) return prev;
-      const next = new Set([...prev].filter((id) => rowById.has(id)));
-      return next.size === prev.size ? prev : next;
+  const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
+
+  const toggleCat = (key: string, val: string) => {
+    setCatFilters(prev => {
+      const next = new Map(Object.entries(prev).map(([k, v]) => [k, new Set(v)]));
+      const s = next.get(key) || new Set<string>();
+      if (s.has(val)) s.delete(val);
+      else s.add(val);
+      next.set(key, s);
+      return Object.fromEntries(next);
     });
-  }, [selectable, rowById]);
-  const selectedRows = useMemo(
-    () => (selectable
-      ? [...selected].map((id) => rowById.get(id)).filter((r): r is T => r !== undefined)
-      : []),
-    [selectable, selected, rowById],
-  );
-  const allSelected = displayIds.length > 0 && displayIds.every((id) => selected.has(id));
-  const someSelected = selected.size > 0 && !allSelected;
-  const toggleRow = (id: string) => setSelected((prev) => {
-    const n = new Set(prev);
-    n.has(id) ? n.delete(id) : n.add(id);
-    return n;
+  };
+
+  const clearCat = (key: string) => {
+    setCatFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const clearAllFilters = () => {
+    setCatFilters({});
+    setTextFilters({});
+  };
+
+  const removeFilter = (key: string) => {
+    setCatFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+    setTextFilters(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const isTest = typeof window !== 'undefined' && (window as any).process?.env?.NODE_ENV === 'test';
+  const rowVirtualizer = useVirtualizer({
+    count: display.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 48,
+    overscan: isTest ? display.length : 10,
   });
-  // Checkbox đầu bảng: chọn/bỏ chọn các dòng của TRANG hiện tại (không đụng trang khác).
-  const toggleAll = () => setSelected((prev) => {
-    const n = new Set(prev);
-    if (displayIds.every((id) => n.has(id))) displayIds.forEach((id) => n.delete(id));
-    else displayIds.forEach((id) => n.add(id));
-    return n;
-  });
-  const selectAllFiltered = useCallback(
-    () => setSelected(new Set(fullDisplay.map((r) => getRowId(r)))),
-    [fullDisplay, getRowId],
-  );
-  const clearSel = useCallback(() => setSelected(new Set()), []);
-  const soNgoaiTrang = useMemo(
-    () => selectedRows.filter((r) => !displayIds.includes(getRowId(r))).length,
-    [selectedRows, displayIds, getRowId],
-  );
 
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const totalSize = rowVirtualizer.getTotalSize();
+  const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
+      : 0;
 
-  const toggleCat = (key: string, v: string) => setCatFilters((prev) => {
-    const next = new Set(prev[key] ?? []);
-    next.has(v) ? next.delete(v) : next.add(v);
-    return { ...prev, [key]: next };
-  });
-  const clearCat = (key: string) => setCatFilters((prev) => ({ ...prev, [key]: new Set() }));
+  // --- Kéo đổi độ rộng cột ---
+  const isDragging = useRef<string | null>(null);
+  const startX = useRef(0);
+  const startW = useRef(0);
 
-  // Kéo-thả đổi thứ tự cột.
-  const [dragKey, setDragKey] = useState<string | null>(null);
-  const [overKey, setOverKey] = useState<string | null>(null);
-  const onDrop = useCallback((target: string) => {
-    if (!dragKey || dragKey === target) { setDragKey(null); setOverKey(null); return; }
-    const next = [...order];
-    const from = next.indexOf(dragKey);
-    const to = next.indexOf(target);
-    if (from < 0 || to < 0) return;
-    next.splice(from, 1);
-    next.splice(to, 0, dragKey);
-    setOrder(next);
-    setDragKey(null);
-    setOverKey(null);
-  }, [dragKey, order, setOrder]);
+  const onHandleMouseDown = useCallback((e: React.MouseEvent, key: string, currentWidth: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isDragging.current = key;
+    startX.current = e.pageX;
+    startW.current = currentWidth;
+    document.body.style.cursor = "col-resize";
+    document.addEventListener("mousemove", onHandleMouseMove);
+    document.addEventListener("mouseup", onHandleMouseUp);
+  }, []);
 
-  const firstKey = shownCols[0]?.key;
-  const alignClass = (a?: string) => a === "right" ? "text-right" : a === "center" ? "text-center" : "";
+  const onHandleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging.current) return;
+    const delta = e.pageX - startX.current;
+    const nextW = Math.max(60, startW.current + delta);
+    prefs.setWidth(isDragging.current, nextW);
+  }, [prefs]);
 
-  const groups = useMemo(() => {
-    const seen: string[] = [];
-    for (const c of columns) if (c.group && !seen.includes(c.group)) seen.push(c.group);
-    return seen;
-  }, [columns]);
+  const onHandleMouseUp = useCallback(() => {
+    isDragging.current = null;
+    document.body.style.cursor = "";
+    document.removeEventListener("mousemove", onHandleMouseMove);
+    document.removeEventListener("mouseup", onHandleMouseUp);
+    // Sau khi đổi độ rộng, có thể chữ xuống dòng khác đi -> báo ảo hoá đo lại
+    rowVirtualizer.measure();
+  }, [rowVirtualizer]);
+
+  const autoFitWidths = () => {
+    // Logic tự căn: reset về mặc định của browser (xóa prefs.widths)
+    prefs.reset();
+  };
+
+  const resetAllWidths = () => {
+    allKeys.forEach(k => prefs.resetWidth(k));
+  };
 
   return (
-    <div className="flex min-h-0 flex-col gap-2">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>
-            {gated
-              ? `Chọn bộ lọc ở tiêu đề cột để hiển thị (${rows.length.toLocaleString("vi-VN")} ${countUnit})`
-              : `${filtered.length.toLocaleString("vi-VN")} / ${rows.length.toLocaleString("vi-VN")} ${countUnit}`}
-          </span>
-          {hasFilter && (
-            <button className="text-primary hover:underline"
-              onClick={() => { setCatFilters({}); setTextFilters({}); }}>
-              Xoá lọc
-            </button>
-          )}
-          {reorder && (
-            <span className="hidden items-center gap-1 text-primary/70 sm:inline-flex">
-              <GripVertical className="h-3 w-3" /> Kéo tiêu đề cột để đổi thứ tự
-            </span>
-          )}
-          {toolbarLeft}
-        </div>
-        <div className="flex items-center gap-2">
-          {typeof toolbarRight === "function"
-            ? toolbarRight({ visibleRows: display, visibleColumns: shownCols })
-            : toolbarRight}
-          {!hideExport && (
-            <TableExportDialog<T>
-              ten={exportName ?? tableKey.replace(/[:/]/g, "-")}
-              visibleColumns={shownCols}
-              allColumns={columns}
-              countUnit={countUnit}
-              rowsByScope={{ selected: selectedRows, filtered: fullDisplay, page: display }}
-            />
-          )}
+    <div className="space-y-3">
+      {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
+        <div className="flex items-center justify-between gap-2 px-1">
+          <div className="flex items-center gap-2">
+            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: fullDisplay, visibleColumns: shownCols })}
+            {selectable && selectedRows.length > 0 && bulkActions && (
+              bulkActions({
+                selectedRows,
+                visibleColumns: shownCols,
+                allColumns: exportCols,
+                filteredRows: fullDisplay,
+                pageRows: display,
+                clear: clearSelection
+              })
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            {tableKey && (
+              <>
+                {!isMobile && (
+                  <DropdownMenu>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-8 gap-2 ml-1"
+                              disabled={!prefs.ready}
+                            >
+                              <SlidersHorizontal className="h-4 w-4" />
+                              <span className="hidden sm:inline">Cột hiển thị</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Tuỳ chỉnh các cột hiển thị</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>Hiển thị cột</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      
+                      {/* Nhóm các cột theo 'group' nếu có, hoặc không nhóm */}
+                      {Object.entries(
+                        sortedColumns.reduce((acc, col) => {
+                          const g = col.group || "Khác";
+                          if (!acc[g]) acc[g] = [];
+                          acc[g].push(col);
+                          return acc;
+                        }, {} as Record<string, StdColumn<T>[]>)
+                      ).map(([group, cols], idx, arr) => (
+                        <div key={group}>
+                          {group !== "Khác" && <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
+                          {cols.map((col) => {
+                            const isCurrentlyVisible = !prefs.isHidden(col.key);
+                            // Chặn việc ẩn cột cuối cùng
+                            const canToggle = !isCurrentlyVisible || shownCols.length > 1;
+                            
+                            return (
+                              <DropdownMenuCheckboxItem
+                                key={col.key}
+                                checked={isCurrentlyVisible}
+                                onCheckedChange={() => prefs.toggle(col.key)}
+                                 onSelect={(e: Event) => e.preventDefault()}
+                                disabled={!canToggle}
+                              >
+                                {col.label}
+                              </DropdownMenuCheckboxItem>
+                            );
+                          })}
+                          {idx < arr.length - 1 && <DropdownMenuSeparator />}
+                        </div>
+                      ))}
 
-          {!hideReorderToggle && !editMode && (
-            <Button
-              variant={internalEdit ? "default" : "outline"}
-              size="sm"
-              className="h-8 gap-1.5"
-              onClick={() => setInternalEdit((v) => !v)}
-              title="Bật/tắt kéo-thả đổi thứ tự cột"
-            >
-              <ArrowLeftRight className="h-3.5 w-3.5" /> {internalEdit ? "Xong sắp xếp" : "Sắp xếp cột"}
-            </Button>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1.5">
-                <SlidersHorizontal className="h-3.5 w-3.5" /> Cột hiển thị
-                <Badge variant="secondary" className="ml-0.5 h-4 px-1 text-[10px]">{shownCols.length}</Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="max-h-[70vh] w-56 overflow-auto">
-              <div className="flex items-center justify-between px-2 py-1">
-                <span className="text-xs text-muted-foreground">Chọn cột hiển thị</span>
-                <div className="flex gap-2 text-xs">
-                  <button className="text-primary hover:underline"
-                    onClick={() => setHidden([])}>Tất cả</button>
-                  <button className="text-primary hover:underline"
-                    onClick={autoFitWidths} title="Tự căn theo nội dung đang hiển thị">Tự căn</button>
-                  <button className="text-primary hover:underline"
-                    onClick={resetAllWidths} title="Đặt lại độ rộng mọi cột">Độ rộng</button>
-                  <button className="text-primary hover:underline"
-                    onClick={reset}>Mặc định</button>
-                </div>
-              </div>
-              {groups.length > 0 ? groups.map((g) => (
-                <div key={g}>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-[11px] uppercase tracking-wide text-muted-foreground/70">{g}</DropdownMenuLabel>
-                  {columns.filter((c) => c.group === g).map((c) => (
-                    <DropdownMenuCheckboxItem key={c.key} checked={!isHidden(c.key)}
-                      onCheckedChange={() => toggle(c.key)} onSelect={(e) => e.preventDefault()}>
-                      {c.label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                </div>
-              )) : (
-                <>
-                  <DropdownMenuSeparator />
-                  {columns.map((c) => (
-                    <DropdownMenuCheckboxItem key={c.key} checked={!isHidden(c.key)}
-                      onCheckedChange={() => toggle(c.key)} onSelect={(e) => e.preventDefault()}>
-                      {c.label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuCheckboxItem 
+                        className="text-primary focus:text-primary font-medium"
+                        onSelect={(e: Event) => {
+                          e.preventDefault();
+                          prefs.reset();
+                        }}
+                      >
+                        Đặt lại mặc định
+                      </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
 
-      {selectable && selected.size > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/40 bg-primary/5 px-3 py-2 text-sm">
-          <Badge className="gap-1">{selected.size}</Badge>
-          <span className="text-muted-foreground">
-            đã chọn
-            {soNgoaiTrang > 0 && ` (${soNgoaiTrang} dòng ở trang khác)`}
-          </span>
-          {fullDisplay.length > selected.size && (
-            <button className="text-xs text-primary hover:underline" onClick={selectAllFiltered}>
-              Chọn tất cả {fullDisplay.length.toLocaleString("vi-VN")} {countUnit} sau lọc
-            </button>
-          )}
-          <button className="text-xs text-primary hover:underline" onClick={clearSel}>Bỏ chọn</button>
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            {bulkActions?.({
-              selectedRows, selectedIds: [...selected], visibleColumns: shownCols,
-              allColumns: columns, filteredRows: fullDisplay, pageRows: display,
-              clear: clearSel, selectAllFiltered,
-            })}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 ml-1" onClick={autoFitWidths}>
+                        <Maximize2 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Tự căn theo nội dung</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Đặt lại độ rộng mọi cột</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </>
+            )}
+            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: fullDisplay, visibleColumns: shownCols })}
           </div>
         </div>
       )}
 
 
-      <Card className={cn("relative min-h-0 overflow-auto", maxHeightClass)}>
-        {trangThai?.dangTai && (
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 z-40 h-0.5 overflow-hidden"
-            role="status"
-            aria-label="Đang tải lại"
-          >
-            <div className="h-full w-1/3 animate-[indeterminate_1.2s_ease-in-out_infinite] bg-primary/70 motion-reduce:animate-pulse" />
-          </div>
-        )}
-        <table ref={tableRef} className="w-full caption-bottom text-sm">
-          <colgroup>
-            {selectable && <col style={{ width: 40 }} />}
-            {shownCols.map((c) => {
-              const w = colWidths[c.key];
-              return <col key={c.key} style={w ? { width: w } : undefined} />;
-            })}
-          </colgroup>
-          <TableHeader>
-            <TableRow className="[&>th]:bg-card">
-              {selectable && (
-                <TableHead className="sticky top-0 z-20 w-10">
-                  <Checkbox
-                    checked={allSelected ? true : someSelected ? "indeterminate" : false}
-                    onCheckedChange={toggleAll}
-                    aria-label="Chọn tất cả"
-                    disabled={displayIds.length === 0}
-                  />
-                </TableHead>
-              )}
-              {shownCols.map((c) => {
-                const canSort = !reorder && sortableKey(c);
-                const sortActive = sort?.key === c.key;
-                const wPx = colWidths[c.key];
-                return (
-                <TableHead
-                  key={c.key}
-                  draggable={reorder}
-                  onDragStart={reorder ? () => setDragKey(c.key) : undefined}
-                  onDragOver={reorder ? (e) => { e.preventDefault(); setOverKey(c.key); } : undefined}
-                  onDrop={reorder ? () => onDrop(c.key) : undefined}
-                  onDragEnd={reorder ? () => { setDragKey(null); setOverKey(null); } : undefined}
-                  className={cn(
-                    "sticky top-0 z-20 border-r border-border/50 last:border-r-0 shadow-[inset_0_-1px_0_hsl(var(--border))] relative group/th",
-                    (c.sticky || c.key === firstKey) && c.sticky && "left-0 z-30",
-                    !wPx && c.minW,
-                    alignClass(c.align),
-                    sortActive && "bg-primary/5",
-                    c.inherited && "bg-amber-500/[0.06] border-l-2 border-l-amber-500/50",
-                    reorder && "cursor-grab select-none",
-                    reorder && overKey === c.key && dragKey !== c.key && "bg-primary/10",
-                    reorder && dragKey === c.key && "opacity-50",
-                    resizingKey === c.key && "bg-primary/10",
-                  )}
-                  style={wPx ? { width: wPx, minWidth: MIN_COL_W } : undefined}
+      {hasFilter && (
+        <div className="flex flex-wrap items-center gap-2 px-1">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
+          {Object.entries(textFilters).map(([key, val]) => {
+            if (!val) return null;
+            const col = columns.find(c => c.key === key);
+            return (
+              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="truncate max-w-[120px]">{val}</span>
+                <button 
+                  onClick={() => setTextFilters(prev => {
+                    const { [key]: _, ...rest } = prev;
+                    return rest;
+                  })}
+                  className="hover:text-destructive transition-colors"
                 >
-                  <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
-                    {reorder && <GripVertical className="h-3 w-3 shrink-0 text-muted-foreground/50" />}
-                    {canSort ? (
-                      <button
-                        type="button"
-                        onClick={() => cycleSort(c.key)}
-                        className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground"
-                        title="Bấm để sắp xếp"
-                      >
-                        <span className="truncate">{c.label}</span>
-                        {sortActive ? (
-                          sort!.dir === "asc"
-                            ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" />
-                            : <ArrowDown className="h-3 w-3 shrink-0 text-primary" />
-                        ) : (
-                          <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" />
-                        )}
-                      </button>
-                    ) : (
-                      <span className="truncate">{c.label}</span>
-                    )}
-                    {c.filter && (
-                      <ColFilter
-                        type={c.filter}
-                        label={c.label}
-                        catValues={catValues[c.key] ?? []}
-                        catSel={catFilters[c.key] ?? new Set()}
-                        onToggleCat={(v) => toggleCat(c.key, v)}
-                        onClearCat={() => clearCat(c.key)}
-                        textVal={textFilters[c.key] ?? ""}
-                        onText={(v) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
-                      />
-                    )}
-                  </div>
-                  {/* Tay cầm kéo mép phải để đổi độ rộng cột. Bấm đúp để đặt lại. */}
-                  <div
-                    role="separator"
-                    aria-orientation="vertical"
-                    aria-label={`Đổi độ rộng cột ${c.label}`}
-                    onMouseDown={(e) => onResizeStart(c.key, e)}
-                    onDoubleClick={(e) => { e.stopPropagation(); resetColWidth(c.key); }}
-                    onDragStart={(e) => e.preventDefault()}
-                    draggable={false}
-                    className={cn(
-                      "absolute right-0 top-0 z-30 h-full w-1.5 cursor-col-resize select-none",
-                      "opacity-0 hover:opacity-100 group-hover/th:opacity-60",
-                      "bg-primary/60 transition-opacity",
-                      resizingKey === c.key && "opacity-100",
-                    )}
-                    title="Kéo để đổi độ rộng — bấm đúp để đặt lại"
-                  />
-                </TableHead>
-                );
-              })}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(() => {
-              const totalCols = (shownCols.length || 1) + (selectable ? 1 : 0);
-              if (trangThai?.loi) {
-                return (
-                  <TableRow>
-                    <TableCell colSpan={totalCols} className="py-8">
-                      {errorContent ?? (
-                        <div className="mx-auto flex max-w-md flex-col items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-4 text-center">
-                          <div className="text-sm font-medium text-destructive">Không tải được dữ liệu</div>
-                          <div className="text-xs text-destructive/80 whitespace-pre-wrap">{trangThai.loi}</div>
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-              if (trangThai?.dangTai && display.length === 0) {
-                if (loadingContent) {
-                  return (
-                    <TableRow>
-                      <TableCell colSpan={totalCols} className="py-6">{loadingContent}</TableCell>
-                    </TableRow>
-                  );
-                }
-                return Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={`sk-${i}`}>
-                    {selectable && (
-                      <TableCell className="w-10"><Skeleton className="h-4 w-4" /></TableCell>
-                    )}
-                    {shownCols.map((c) => (
-                      <TableCell key={c.key}><Skeleton className="h-4 w-full" /></TableCell>
-                    ))}
-                  </TableRow>
-                ));
-              }
-              if (display.length === 0) {
-                return (
-                  <TableRow>
-                    <TableCell colSpan={totalCols} className="h-24 text-center text-sm text-muted-foreground">
-                      {gated
-                        ? "Bảng đang trống — chọn bộ lọc ở tiêu đề cột để bắt đầu hiển thị dữ liệu."
-                        : (emptyContent ?? emptyText)}
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-              return display.map((r) => {
-                const rid = getRowId(r);
-                const isSel = selectable && selected.has(rid);
-                return (
-                  <TableRow
-                    key={rid}
-                    onClick={onRowClick ? () => onRowClick(r) : undefined}
-                    data-state={isSel ? "selected" : undefined}
-                    className={cn(onRowClick && "cursor-pointer", "hover:bg-muted/40", isSel && "bg-primary/5", rowClassName?.(r))}
-                  >
-                    {selectable && (
-                      <TableCell className="w-10" onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={selected.has(rid)}
-                          onCheckedChange={() => toggleRow(rid)}
-                          aria-label="Chọn dòng"
-                        />
-                      </TableCell>
-                    )}
-                    {shownCols.map((c) => (
-                      <TableCell
-                        key={c.key}
-                        className={cn(
-                          "border-r border-border/40 last:border-r-0 align-top",
-                          "[&_span]:break-words [overflow-wrap:anywhere] [word-break:break-word]",
-                          c.sticky && "sticky left-0 z-10 bg-card",
-                          c.inherited && "bg-amber-500/[0.04] border-l-2 border-l-amber-500/40",
-                          alignClass(c.align),
-                          c.cellClassName,
-                        )}
-                      >
-                        {c.cell ? c.cell(r) : (colText(c, r) || <span className="text-muted-foreground/40">—</span>)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                );
-              });
-            })()}
-          </TableBody>
-        </table>
-      </Card>
-
-      {pagination && (
-        <div className="flex items-center justify-between px-1 py-1 text-sm text-muted-foreground">
-          <span>
-            {pagination.tong === 0
-              ? "0 bản ghi"
-              : `${(pagination.controls.state.trang - 1) * pagination.controls.state.kichThuoc + 1}–${Math.min(
-                  pagination.controls.state.trang * pagination.controls.state.kichThuoc,
-                  pagination.tong,
-                )} / ${pagination.tong}`}
-          </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={pagination.controls.state.trang <= 1}
-              onClick={() => pagination.controls.setTrang(pagination.controls.state.trang - 1)}
-            >
-              Trước
-            </Button>
-            <span>
-              Trang {pagination.controls.state.trang}/{tongSoTrang(pagination.tong, pagination.controls.state.kichThuoc)}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={pagination.controls.state.trang >= tongSoTrang(pagination.tong, pagination.controls.state.kichThuoc)}
-              onClick={() => pagination.controls.setTrang(pagination.controls.state.trang + 1)}
-            >
-              Sau
-            </Button>
-          </div>
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            );
+          })}
+          {Object.entries(catFilters).map(([key, sel]) => {
+            if (!sel || sel.size === 0) return null;
+            const col = columns.find(c => c.key === key);
+            return (
+              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
+                <button 
+                  onClick={() => clearCat(key)}
+                  className="hover:text-destructive transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            );
+          })}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={clearAllFilters}
+            className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-destructive"
+          >
+            Xoá tất cả bộ lọc
+          </Button>
         </div>
+      )}
+
+      {isMobile ? (
+        <div className="space-y-3">
+          {fullDisplay.length === 0 ? (
+            <div className="py-20 text-center text-sm text-muted-foreground border rounded-lg bg-card">
+              {hasFilter ? "Không có dòng nào khớp bộ lọc" : (gated ? "Bảng đang trống." : (emptyContent ?? emptyText))}
+            </div>
+          ) : (
+            display.map((r) => {
+              const rid = getRowIdInternal(r);
+              const isSel = selectable && selected?.has(rid);
+              return (
+                <Card
+                  key={rid}
+                  className={cn(
+                    "relative cursor-pointer transition-colors hover:bg-muted/50",
+                    isSel && "border-primary bg-primary/5",
+                    rowClassName?.(r)
+                  )}
+                  onClick={() => onRowClick?.(r)}
+                >
+                  <CardContent className="p-4">
+                    {selectable && (
+                      <div className="absolute right-3 top-3">
+                        <Checkbox
+                          checked={isSel}
+                          onCheckedChange={() => toggleRow(rid)}
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                        />
+                      </div>
+                    )}
+                    <div className="space-y-3">
+                      {shownCols.slice(0, 5).map((col) => (
+                        <div key={col.key} className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            {col.label}
+                          </span>
+                          <div className={cn("text-sm", col.cellClassName)}>
+                            {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
+        </div>
+      ) : (
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-sm", maxHeightClass)}>
+          <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-sm">
+            <TableHeader className="bg-muted sticky top-0 z-20 shadow-[0_1px_0_hsl(var(--border))]">
+              <TableRow className="hover:bg-transparent">
+                {selectable && (
+                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted border-r border-border/50"></TableHead>
+                )}
+                {shownCols.map((c) => {
+                  const savedW = prefs.widths[c.key];
+                  const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
+                  const currentWidth = savedW || parseInt(minWVal || "100") || 120;
+                  const canSort = sortableKey(c);
+                  const sortActive = sort?.key === c.key;
+
+                  return (
+                    <TableHead
+                      key={c.key}
+                      className={cn(
+                        "group relative bg-muted border-r border-border/50 last:border-r-0",
+                        c.sticky && "sticky left-0 z-30",
+                        selectable && c.sticky && "left-10",
+                        c.align === "center" && "text-center",
+                        c.align === "right" && "text-right",
+                        sortActive && "bg-primary/5"
+                      )}
+                      style={{ 
+                        width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
+                        minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                      }}
+                    >
+                      <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                        {canSort ? (
+                          <button
+                            type="button"
+                            onClick={() => cycleSort(c.key)}
+                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left"
+                            title="Bấm để sắp xếp"
+                          >
+                            <span className="truncate">{c.label}</span>
+                            {sortActive ? (
+                              sort!.dir === "asc"
+                                ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" />
+                                : <ArrowDown className="h-3 w-3 shrink-0 text-primary" />
+                            ) : (
+                              <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" />
+                            )}
+                          </button>
+                        ) : (
+                          <span className="truncate">{c.label}</span>
+                        )}
+
+                        {c.filter && (
+                          <ColFilter
+                            type={c.filter}
+                            label={c.label}
+                            catValues={catValues[c.key] ?? []}
+                            catSel={catFilters[c.key] ?? new Set()}
+                            onToggleCat={(v: string) => toggleCat(c.key, v)}
+                            onClearCat={() => clearCat(c.key)}
+                            textVal={textFilters[c.key] ?? ""}
+                            onText={(v: string) => setTextFilters((p) => ({ ...p, [c.key]: v }))}
+                          />
+                        )}
+                      </div>
+
+                      {/* Resizer handle */}
+                      <div
+                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-primary/30 transition-opacity z-10"
+                        onMouseDown={(e) => onHandleMouseDown(e, c.key, currentWidth)}
+                        onDoubleClick={() => prefs.resetWidth(c.key)}
+                        title="Kéo để đổi độ rộng — bấm đúp để đặt lại"
+                      />
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {trangThai?.loi ? (
+                <TableRow>
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
+                    {errorContent ?? (
+                      <div className="flex h-full items-center justify-center text-sm text-destructive">
+                        {String(trangThai.loi)}
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ) : trangThai?.dangTai ? (
+                <TableRow>
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
+                    {loadingContent ?? <TableSkeleton cols={shownCols.length} />}
+                  </TableCell>
+                </TableRow>
+              ) : rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
+                    <EmptyState
+                      title={hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyContent ? undefined : emptyText)}
+                      description={hasFilter ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật" : (typeof emptyContent === "string" ? emptyContent : undefined)}
+                      action={hasFilter ? (
+                        <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
+                          Xoá tất cả bộ lọc
+                        </Button>
+                      ) : undefined}
+                    />
+                    {!hasFilter && typeof emptyContent !== "string" && emptyContent}
+                  </TableCell>
+                </TableRow>
+              ) : (
+
+                <>
+                  {paddingTop > 0 && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
+                    </TableRow>
+                  )}
+                  {virtualRows.map((virtualRow) => {
+                    const r = rows[virtualRow.index];
+                    const rid = getRowIdInternal(r);
+                    const isSel = selectable && selected?.has(rid);
+                    return (
+                      <TableRow
+                        key={rid}
+                        data-index={virtualRow.index}
+                        ref={rowVirtualizer.measureElement}
+                        className={cn(onRowClick && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
+                        onClick={() => onRowClick?.(r)}
+                      >
+                        {selectable && (
+                          <TableCell
+                            onClick={(e) => e.stopPropagation()}
+                            className="sticky left-0 z-10 bg-card border-r border-border/50"
+                          >
+                            <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
+                          </TableCell>
+                        )}
+                        {shownCols.map((c) => {
+                          const savedW = prefs.widths[c.key];
+                          return (
+                            <TableCell
+                              key={c.key}
+                              className={cn(
+                                c.cellClassName,
+                                c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
+                                selectable && c.sticky && "left-10",
+                                c.align === "center" && "text-center",
+                                c.align === "right" && "text-right tabular-nums",
+                                c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
+                              )}
+                              style={{ 
+                                width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
+                                minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                              }}
+                            >
+                            {c.cell ? (
+                              c.cell(r)
+                            ) : (
+                              <div
+                                className={cn(
+                                  "break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                                  (c.lineClamp ?? 1) > 1
+                                    ? `line-clamp-${c.lineClamp}`
+                                    : "truncate"
+                                )}
+                                title={String(c.value?.(r) ?? "")}
+                              >
+                                {String(c.value?.(r) ?? "")}
+                              </div>
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                      </TableRow>
+                    );
+                  })}
+                  {paddingBottom > 0 && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
+                    </TableRow>
+                  )}
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   );
 }
 
-
-/** Bộ lọc gắn trên tiêu đề cột (danh mục nhiều lựa chọn / tìm chữ). */
 function ColFilter({
-  type, label, catValues, catSel, onToggleCat, onClearCat, textVal, onText,
+  type,
+  label,
+  catValues,
+  catSel,
+  onToggleCat,
+  onClearCat,
+  textVal,
+  onText,
 }: {
-  type: "cat" | "text";
+  type: "text" | "cat";
   label: string;
-  catValues: string[];
+  catValues: { value: string; count: number }[];
   catSel: Set<string>;
   onToggleCat: (v: string) => void;
   onClearCat: () => void;
   textVal: string;
   onText: (v: string) => void;
 }) {
-  const active = type === "cat" ? catSel.size > 0 : textVal.trim().length > 0;
-  const [catQ, setCatQ] = useState("");
-  const filteredCatValues = useMemo(() => {
-    const q = normalize(catQ).trim();
-    if (!q) return catValues;
-    return catValues.filter((v) => normalize(v).includes(q));
-  }, [catValues, catQ]);
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const active = type === "text" ? textVal.length > 0 : catSel.size > 0;
+
   return (
-    <DropdownMenu onOpenChange={(o) => { if (!o) setCatQ(""); }}>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <button
-          className={cn("rounded p-0.5 transition-colors hover:bg-muted",
-            active ? "text-primary" : "text-muted-foreground/50")}
-          title="Lọc"
-          onClick={(e) => e.stopPropagation()}
-          onDragStart={(e) => e.preventDefault()}
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-6 w-6 ml-auto shrink-0 transition-colors",
+            active ? "text-primary bg-primary/10" : "text-muted-foreground/30 hover:text-muted-foreground hover:bg-muted"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
-          <Filter className="h-3 w-3" />
-        </button>
+          <Filter className={cn("h-3 w-3", active && "fill-current")} />
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-64 p-0">
+      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
+          {active && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 px-1.5 text-[10px] text-destructive hover:bg-destructive/10"
+              onClick={() => {
+                if (type === "text") onText("");
+                else onClearCat();
+              }}
+            >
+              Xoá lọc
+            </Button>
+          )}
+        </div>
+
         {type === "text" ? (
-          <div className="p-2">
-            <Input autoFocus value={textVal} onChange={(e) => onText(e.target.value)}
-              placeholder={`Tìm ${label.toLowerCase()}…`} className="h-8" />
-            {textVal && (
-              <button className="mt-2 text-xs text-primary hover:underline" onClick={() => onText("")}>Xoá lọc</button>
-            )}
-          </div>
-        ) : (
-          <Fragment>
-            <div className="p-2">
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 autoFocus
-                value={catQ}
-                onChange={(e) => setCatQ(e.target.value)}
-                placeholder={`Tìm ${label.toLowerCase()}…`}
-                className="h-8"
-                onKeyDown={(e) => e.stopPropagation()}
+                placeholder="Tìm nội dung..."
+                value={textVal}
+                onChange={(e) => onText(e.target.value)}
+                className="h-8 pl-8 text-sm"
               />
             </div>
-            <div className="flex items-center justify-between px-2 pb-1">
-              <span className="text-xs text-muted-foreground">
-                {catSel.size ? `${catSel.size} đã chọn` : `${filteredCatValues.length} giá trị`}
-              </span>
-              {catSel.size > 0 && (
-                <button className="text-xs text-primary hover:underline" onClick={onClearCat}>Xoá</button>
-              )}
+            <p className="text-[10px] text-muted-foreground px-1 italic">
+              * Lọc theo từ khóa chứa trong cột
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                autoFocus
+                placeholder="Tìm giá trị..."
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                className="h-8 pl-8 text-sm"
+              />
             </div>
-            <DropdownMenuSeparator />
-            <div className="max-h-64 overflow-auto pb-1">
-              {filteredCatValues.length === 0 && (
-                <div className="px-2 py-2 text-xs text-muted-foreground">
-                  {catValues.length === 0 ? "Không có giá trị" : "Không khớp"}
+            <div className="max-h-[300px] overflow-y-auto pr-1">
+              {catValues
+                .filter((v) => !q || normalize(v.value).includes(normalize(q)))
+                .map((v) => (
+                  <DropdownMenuCheckboxItem
+                    key={v.value}
+                    checked={catSel.has(v.value)}
+                    onCheckedChange={() => onToggleCat(v.value)}
+                    onSelect={(e) => e.preventDefault()}
+                    className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
+                  >
+                    <span className="truncate mr-2">{v.value}</span>
+                    <Badge variant="outline" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
+                      {v.count}
+                    </Badge>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              {catValues.length === 0 && (
+                <div className="py-6 text-center text-xs text-muted-foreground italic">
+                  Không có giá trị khả dụng
                 </div>
               )}
-              {filteredCatValues.map((v) => (
-                <DropdownMenuCheckboxItem key={v} checked={catSel.has(v)}
-                  onCheckedChange={() => onToggleCat(v)} onSelect={(e) => e.preventDefault()}>
-                  <span className="truncate">{v || "—"}</span>
-                </DropdownMenuCheckboxItem>
-              ))}
             </div>
-          </Fragment>
+          </div>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
-

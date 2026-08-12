@@ -234,6 +234,26 @@ const R: Record<EntityLoai, EntityView> = {
       { key: "ghi_chu", nhan: "Ghi chú", loai: "text" },
     ],
   },
+  dm_model: {
+    ten: "Model tài sản",
+    tieuDe: (r) => nonEmpty(r.ten),
+    phu: (r) => joinNonEmpty([str(r.ma), str(r.so_model), str(r.p_n)]),
+    highlight: [
+      { key: "so_model", nhan: "Số model", loai: "text", highlight: true },
+      { key: "p_n", nhan: "P/N", loai: "text", highlight: true },
+      { key: "nha_san_xuat", nhan: "Nhà sản xuất", loai: "text" },
+      { key: "loai_thiet_bi", nhan: "Chủng loại", loai: "text" },
+    ],
+    chiTiet: [
+      { key: "ten", nhan: "Tên model", loai: "text", highlight: true },
+      { key: "ma", nhan: "Mã model", loai: "text" },
+      { key: "so_model", nhan: "Số model", loai: "text" },
+      { key: "p_n", nhan: "P/N", loai: "text" },
+      { key: "nha_san_xuat", nhan: "Nhà sản xuất", loai: "text" },
+      { key: "loai_thiet_bi", nhan: "Chủng loại", loai: "text" },
+      { key: "mo_ta", nhan: "Mô tả", loai: "text" },
+    ],
+  },
 };
 
 /** Trả về EntityView cho một loại thực thể. Ném lỗi nếu không có trong registry. */

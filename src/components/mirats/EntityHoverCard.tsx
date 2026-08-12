@@ -19,6 +19,22 @@ import {
 } from "@/lib/mirats/display/registry";
 import type { EntityLoai } from "@/lib/mirats/display/types";
 import { cn } from "@/lib/utils";
+import { Package } from "lucide-react";
+
+/** Thumb cho model - dùng lại logic từ catalog model */
+function ModelThumbSmall({ url, ten }: { url?: string | null; ten: string }) {
+  if (!url) return null;
+  return (
+    <div className="shrink-0">
+      <img
+        src={url}
+        alt={ten}
+        className="h-12 w-12 rounded border bg-white object-contain p-0.5 shadow-sm"
+      />
+    </div>
+  );
+}
+
 
 export interface EntityHoverCardProps {
   loai: EntityLoai;
@@ -72,23 +88,32 @@ export function EntityHoverCard({
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-3 border-b bg-muted/40 px-4 py-3">
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {view.ten}
-            </div>
-            <div className="mt-0.5 truncate text-sm font-semibold text-foreground">
-              {tieuDe}
-            </div>
-            {phu && (
-              <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                {phu}
-              </div>
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            {loai === "dm_model" && (
+              <ModelThumbSmall 
+                url={row.hinh_anh as string | null} 
+                ten={tieuDe} 
+              />
             )}
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {view.ten}
+              </div>
+              <div className="mt-0.5 truncate text-sm font-semibold text-foreground">
+                {tieuDe}
+              </div>
+              {phu && (
+                <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                  {phu}
+                </div>
+              )}
+            </div>
           </div>
           {view.badgeTrangThai && (
             <StatusBadge domain={view.badgeTrangThai.domain} code={badgeCode ?? null} />
           )}
         </div>
+
 
         {/* Highlight strip */}
         {highlightFields.length > 0 && (
@@ -103,7 +128,21 @@ export function EntityHoverCard({
             <InfoGrid fields={chiTietFields} />
           </div>
         )}
+
+        {/* Footer: Link sang trang chi tiết (Giai đoạn 2 - Mục 8) */}
+        {loai === "dm_model" && (
+          <div className="border-t bg-muted/20 px-4 py-2 text-right">
+            <a 
+              href={`/danh-muc/model?q=${encodeURIComponent(tieuDe)}`}
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primary hover:underline"
+            >
+              Xem model này trong danh mục
+              <Package className="h-3 w-3" />
+            </a>
+          </div>
+        )}
       </HoverCardContent>
+
     </HoverCard>
   );
 }

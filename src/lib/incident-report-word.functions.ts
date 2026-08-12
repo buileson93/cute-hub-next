@@ -40,7 +40,7 @@ export const exportBaoCaoBanDauToWord = createServerFn({ method: "POST" })
     const bc = (first.bao_cao_ban_dau ?? {}) as Partial<BaoCaoBanDau>;
 
     // Tên đầy đủ các tài sản bị ảnh hưởng
-    const maList = Array.from(new Set(rows.map((r) => r.thiet_bi).filter(Boolean))) as string[];
+    const maList = Array.from(new Set(rows.map((r: any) => r.thiet_bi).filter(Boolean))) as string[];
     const tenMap = new Map<string, string>();
     if (maList.length) {
       const { data: tbs } = await supabase

@@ -556,12 +556,12 @@ function ModelCatalogPage() {
             { key: "info", label: "", align: "center" as const,
               cell: (m: ModelRow) => (
                 <div className="flex items-center justify-center gap-0.5">
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={(e) => showGoogleSearch(e, m)} title="Tạo link tìm sản phẩm trên Google">
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={(e) => showGoogleSearch(e, m)} title="Tạo link tìm sản phẩm trên Google" aria-label="Tìm trên Google">
                     <Search className="h-3.5 w-3.5" />
                   </Button>
                   <HoverCard openDelay={120} closeDelay={60}>
                     <HoverCardTrigger asChild>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={() => setInfoModel(m)} title="Xem thông số & tài sản đang dùng mẫu này">
+                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={() => setInfoModel(m)} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
                         <Info className="h-3.5 w-3.5" />
                       </Button>
                     </HoverCardTrigger>
@@ -576,10 +576,10 @@ function ModelCatalogPage() {
               key: "actions", label: "", align: "right" as const,
               cell: (m: ModelRow) => (
                 <div className="flex justify-end gap-1 whitespace-nowrap">
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(m)} title="Sửa">
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(m)} title="Sửa" aria-label="Sửa mẫu">
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(m)} title="Xoá">
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(m)} title="Xoá" aria-label="Xoá mẫu">
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -696,6 +696,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
             className="h-7 w-7"
             onClick={(e) => onGoogleSearch(e, m)}
             title="Tạo link tìm sản phẩm trên Google"
+            aria-label="Tìm trên Google"
           >
             <Search className="h-3.5 w-3.5" />
           </Button>
@@ -704,7 +705,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
               <Button
                 size="icon" variant="secondary"
                 className="h-7 w-7"
-                onClick={onInfo} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin">
+                onClick={onInfo} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
                 <Info className="h-3.5 w-3.5" />
               </Button>
             </HoverCardTrigger>
@@ -715,10 +716,10 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
         </div>
         {canManage && (
           <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/50 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onEdit} title="Sửa" aria-label="Sửa">
+            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onEdit} title="Sửa" aria-label="Sửa mẫu">
               <Pencil className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onDelete} title="Xoá" aria-label="Xoá">
+            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onDelete} title="Xoá" aria-label="Xoá mẫu">
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>

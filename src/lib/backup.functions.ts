@@ -5,9 +5,19 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 const BUCKET = "database-backups";
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: chỉ Admin được thực hiện");
+  if (!isAdmin) throw new Error("Forbidden: chỉ Admin được thực hiện");
+}
+
+async function logBackupAction(supabaseAdmin: any, userId: string, action: string, detail: any) {
+  await supabaseAdmin.from("audit_log").insert({
+    user_id: userId,
+    action,
+    entity: "backup",
+    detail,
+    severity: "info"
+  });
 }
 
 // ==================== TRẠNG THÁI CLOUD ====================
@@ -48,7 +58,7 @@ export const runBackup = createServerFn({ method: "POST" })
     // Lấy lược đồ (kiểu cột) để sinh tệp .sql chuẩn — dùng client của người dùng (admin)
     const { data: schema } = await context.supabase.rpc("admin_list_schema");
 
-    return performBackup(supabaseAdmin, {
+    const result = await performBackup(supabaseAdmin, {
       loai: data.loai,
       dich: data.dich,
       ghi_chu: data.ghi_chu ?? null,
@@ -57,6 +67,9 @@ export const runBackup = createServerFn({ method: "POST" })
       schema: (schema as any) ?? null,
       includeStorage: data.include_storage,
     });
+
+    await logBackupAction(supabaseAdmin, context.userId, "run_backup", { loai: data.loai, dich: data.dich });
+    return result;
   });
 
 // ==================== DANH SÁCH BACKUP ====================
@@ -113,6 +126,7 @@ export const deleteBackup = createServerFn({ method: "POST" })
     }
     const { error } = await supabaseAdmin.from("backup_lich_su").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    await logBackupAction(supabaseAdmin, context.userId, "delete_backup", { id: data.id });
     return { ok: true };
   });
 
@@ -142,6 +156,7 @@ export const restoreFromBackup = createServerFn({ method: "POST" })
       payload: dump.data,
     });
     if (rErr) throw new Error("Khôi phục lỗi: " + rErr.message);
+    await logBackupAction(supabaseAdmin, context.userId, "restore_backup", { id: data.id });
     return result;
   });
 
@@ -160,6 +175,7 @@ export const restoreFromUpload = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     let payload: any;
     const name = (data.filename ?? "").toLowerCase();
@@ -183,6 +199,7 @@ export const restoreFromUpload = createServerFn({ method: "POST" })
     if (!payload || typeof payload !== "object") throw new Error("Tệp backup không hợp lệ");
     const { data: result, error } = await context.supabase.rpc("admin_restore_database", { payload });
     if (error) throw new Error("Khôi phục lỗi: " + error.message);
+    await logBackupAction(supabaseAdmin, context.userId, "restore_upload", { filename: data.filename });
     return result;
   });
 

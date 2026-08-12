@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Building2 } from "lucide-react";
 import { CatalogTable } from "@/components/mirats/CatalogTable";
+import { PageHeader } from "@/components/mirats/PageHeader";
+
 
 export const Route = createFileRoute("/_app/danh-muc/don-vi")({
   head: () => ({
@@ -14,6 +16,14 @@ export const Route = createFileRoute("/_app/danh-muc/don-vi")({
 
 function DonViPage() {
   return (
+    <div className="flex h-full flex-col">
+      <PageHeader
+        title="Danh mục đơn vị"
+        icon={Building2}
+        description="Quản lý danh sách các đơn vị trong hệ thống MIRATS."
+      />
+
+
     <CatalogTable
       table="dm_don_vi"
       usageColumn="don_vi_id"
@@ -24,5 +34,6 @@ function DonViPage() {
       namePlaceholder="VD: Đài Thông tin Duyên hải…"
       hiddenCols={["ma", "mo_ta", "active"]}
     />
+    </div>
   );
 }
