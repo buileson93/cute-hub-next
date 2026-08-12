@@ -308,9 +308,6 @@ export function CayMindMap({
     return set;
   }, [tree]);
 
-  const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
-  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
-
   const { expandedNodes, toggleNode } = useCayContext();
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
 
