@@ -264,6 +264,7 @@ export function CayMindMap({
   nhMind,
   htMind,
   tbMind,
+  devices,
 }: { 
   tree: PlGroup[]; 
   posByHt: Map<string, any>; 
@@ -282,6 +283,7 @@ export function CayMindMap({
   nhMind: (ma: string) => string;
   htMind: (ma: string) => string;
   tbMind: (t: any) => string;
+  devices: any[];
 }) {
   const { searchQuery, focus } = useCayContext();
 
@@ -311,17 +313,12 @@ export function CayMindMap({
 
   const seededRef = useRef(false);
 
-  // Sync expanded from context to local state for initial load
   useEffect(() => {
-    if (initialExpanded.size > 0 && !seededRef.current) {
-      setExpanded(prev => {
-        const next = new Set(prev);
-        initialExpanded.forEach(id => next.add(id));
-        return next;
-      });
-      seededRef.current = true;
-    }
-  }, [initialExpanded]);
+    if (seededRef.current) return;
+    if (tree.length === 0) return;
+    setExpanded(initialExpanded);
+    seededRef.current = true;
+  }, [tree, initialExpanded]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
@@ -371,15 +368,20 @@ export function CayMindMap({
     fitView({ duration: 400, padding: 0.2 });
   }, [fitView]);
 
+  const { finiteNodes } = useMemo(() => {
+    const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
+    return { finiteNodes: fn };
+  }, [rfNodes]);
+
   useEffect(() => {
-    if (rfNodes.length > 0) {
+    if (rfNodes.length > 0 && finiteNodes) {
       // Delay slightly to ensure layout is applied
       const timer = setTimeout(() => {
         fitView({ duration: 600, padding: 0.1 });
       }, 350);
       return () => clearTimeout(timer);
     }
-  }, [rfNodes.length, fitView]);
+  }, [rfNodes.length, fitView, finiteNodes]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
@@ -578,14 +580,23 @@ export function CayMindMap({
         data: { label }, selectable: false, draggable: false, focusable: false,
       }));
 
+    const finiteNodes = nodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
 
-    return { nodes: [...layerNodes, ...nodes], edges };
-  }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
+    if (process.env.NODE_ENV === "development") {
+      console.debug("[CayMindMap]", {
+        deviceCount: devices.length,
+        treeCount: tree.length,
+        nodeCount: nodes.length,
+        finiteNodes,
+        errorNodes: finiteNodes ? [] : nodes.filter(n => !Number.isFinite(n.position?.x) || !Number.isFinite(n.position?.y)).map(n => n.id)
+      });
+    }
+
+    return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
+  }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
-
-
 
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
 

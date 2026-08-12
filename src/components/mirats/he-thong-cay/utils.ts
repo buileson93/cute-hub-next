@@ -4,6 +4,7 @@ import {
 } from "./types";
 import { DbDevice, DbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { htSysMa, parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
+export { htSysMa };
 
 export const DUNG_KHAI_THAC_TEN = "Dừng khai thác";
 export const NONE_HT = "__none__";

@@ -34,7 +34,7 @@ import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
-import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, htSysMa } from "@/components/mirats/he-thong-cay/utils";
 import type { 
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
@@ -217,12 +217,45 @@ function HeThongCayPage() {
   });
 
 
-  const { tree } = useMemo(() => buildTree(
-    devices as any,
-    taxonomy?.plList || [],
-    htMind,
-    nhMind
-  ), [devices, taxonomy, htMind, nhMind]);
+  const { tree } = useMemo(() => {
+    const realSystems = taxonomy?.htList.map(h => ({
+      ma: h.ma,
+      ten: h.ten,
+      nhMa: h.nhomId || "KHAC",
+      nhTen: taxonomy.nhomNameMap.get(h.nhomId || "KHAC") || h.nhomId || "Khác",
+      plId: h.phanLoaiId || taxonomy.plList[0]?.id || "KHAC"
+    })) || [];
+
+    const htDonViMap = (htId: string) => taxonomy?.htList.find(h => h.id === htId)?.donViId || null;
+    
+    const ordNh = (ma: string) => {
+      const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
+      return d?.thu_tu;
+    };
+    const ordHt = (ma: string) => {
+      const d = overrides?.get(okey("ht", ma))?.du_lieu as any;
+      return d?.thu_tu;
+    };
+    const colNh = (ma: string) => {
+      const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
+      return d?.mau;
+    };
+
+    return buildTree(
+      devices as any,
+      taxonomy?.plList || [],
+      htMind,
+      nhMind,
+      groupMode === "donvi",
+      [], // customGroups
+      ordNh,
+      ordHt,
+      colNh,
+      [], // customSystems
+      htDonViMap,
+      realSystems
+    );
+  }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
 
@@ -418,6 +451,7 @@ function HeThongCayPage() {
                 nhMind={nhMind}
                 htMind={htMind}
                 tbMind={tbMind}
+                devices={devices}
               />
             </div>
           )}
