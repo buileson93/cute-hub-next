@@ -95,19 +95,14 @@ export function useCayMutations() {
   });
 
   const deleteNode = useMutation({
-    mutationFn: async ({ kind, ma, mas }: { kind: string; ma: string; mas?: string[] }) => {
+    mutationFn: async ({ kind, ma, mas, userRoles }: { kind: string; ma: string; mas?: string[]; userRoles: string[] }) => {
       if (kind === "tb") {
         return xoaThietBiAnToan(mas || [ma]);
       }
       
-      if (kind === "ht") {
-        // Use RPC submit for soft delete if possible, or direct update if admin
-        const { error } = await supabase.from("dm_he_thong").update({ active: false, deactivated_at: new Date().toISOString() } as any).eq("ma", ma);
-        if (error) throw error;
-      } else if (kind === "nh") {
-        const { error } = await supabase.from("dm_nhom_he_thong").update({ active: false, deactivated_at: new Date().toISOString() } as any).eq("ma", ma);
-        if (error) throw error;
-      }
+      const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
+      // For groups/systems, we set active = false
+      return saveEntityFieldSecurely({ kind: kind as any, id: ma, field: "active", value: false, userRoles });
     },
     onSuccess: (res: any) => {
       invalidate();
