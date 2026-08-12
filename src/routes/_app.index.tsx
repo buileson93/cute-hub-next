@@ -538,9 +538,9 @@ function Dashboard() {
                       </tr>
                     ) : (
                       lowHealthDevices.map(({ device, health }) => (
-                        <tr key={device.id} className="hover:bg-muted/10 transition-colors">
+                        <tr key={device.ma_thiet_bi} className="hover:bg-muted/10 transition-colors">
                           <td className="px-4 py-3">
-                            <div className="font-bold">{device.ten_thiet_bi}</div>
+                            <div className="font-bold">{device.ten}</div>
                             <div className="text-[10px] text-muted-foreground">{device.ma_thiet_bi}</div>
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -552,12 +552,12 @@ function Dashboard() {
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="text-xs">{health.label}</div>
+                            <div className="text-xs">{health.khuyenNghi}</div>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <Link 
                               to="/qr/thiet-bi/$id" 
-                              params={{ id: device.id } as any}
+                              params={{ id: device.ma_thiet_bi } as any}
                               className="text-xs font-bold text-primary hover:underline"
                             >
                               Chi tiết →
