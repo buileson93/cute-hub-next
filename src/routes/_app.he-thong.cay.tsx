@@ -7,7 +7,7 @@ import {
 import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { useSession } from "@/hooks/use-session";
+import { useSession } from "@/hooks/use-auth";
 
 
 
