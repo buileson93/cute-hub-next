@@ -126,18 +126,12 @@ export function NodeEditorSheet({
           {target?.kind === "pl" && (
             <div className="space-y-3 rounded-md border p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
-                <FolderTree className="h-4 w-4 text-violet-600" /> Nhóm hệ thống ({plGroups.length})
+                <FolderTree className="h-4 w-4 text-violet-600" /> Nhóm hệ thống
               </div>
-              <ul className="space-y-1">
-                {plGroups.map((g) => (
-                  <li key={g.ma} className="flex items-center gap-2 rounded-md border bg-muted/30 px-2.5 py-1.5 text-sm">
-                    <span className="truncate">{g.ten}</span>
-                  </li>
-                ))}
-              </ul>
               {canManage && (
                 <div className="space-y-2 border-t pt-3">
                   <Input value={newGroupTen} onChange={(e) => setNewGroupTen(e.target.value)} placeholder="Tên nhóm mới..." />
+                  <Input value={newGroupMa} onChange={(e) => setNewGroupMa(e.target.value.toUpperCase())} placeholder="Mã nhóm..." />
                   <Button size="sm" onClick={() => { addGroup.mutate({ plId: target.ma, ten: newGroupTen, ma: newGroupMa }); setNewGroupTen(""); setNewGroupMa(""); }}>
                     <Plus className="h-4 w-4 mr-1" /> Thêm
                   </Button>
