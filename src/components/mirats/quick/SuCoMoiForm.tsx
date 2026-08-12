@@ -109,12 +109,13 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
 
   const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
     if (!heThongDichVu) return null;
+    const found = selected.find(d => d.id === heThongDichVu);
     return {
       loai: "SU_CO",
       thiet_bi_id: heThongDichVu,
       moTa: hienTuong,
       thoiGian: thoiGianBatDau || new Date().toISOString(),
-      tenThietBi: selected.find(d => d.id === heThongDichVu)?.ten_thiet_bi
+      tenThietBi: found?.ten ?? ""
     };
   }, [heThongDichVu, hienTuong, thoiGianBatDau, selected]);
 
