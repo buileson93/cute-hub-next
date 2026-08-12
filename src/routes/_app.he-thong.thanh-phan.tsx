@@ -2,9 +2,12 @@ import { createFileRoute, useRouter, Link, useNavigate } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Puzzle, List, ListTree, GitFork, Activity, ClipboardList } from "lucide-react";
+import { AlertTriangle, RefreshCw, Puzzle, List, ListTree, GitFork, Activity, ClipboardList, Pencil, Check } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { useCan } from "@/hooks/use-permissions";
+import { useUserPref } from "@/hooks/use-user-pref";
+
 
 
 export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
@@ -24,6 +27,9 @@ export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
 
 function ThanhPhanListPage() {
   const nav = useNavigate();
+  const canManage = useCan("he-thong", "manage");
+  const [editMode, setEditMode] = useUserPref<boolean>("he-thong:edit-mode", false);
+
   return (
     <div className="flex h-full flex-col">
       <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
@@ -43,10 +49,23 @@ function ThanhPhanListPage() {
             </TabsList>
           </Tabs>
         </div>
+
+        {canManage && (
+          <Button
+            variant={editMode ? "default" : "outline"}
+            size="sm"
+            className="gap-2"
+            onClick={() => setEditMode(!editMode)}
+          >
+            {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+            {editMode ? "Đang sửa" : "Chỉnh sửa"}
+          </Button>
+        )}
       </div>
       <div className="flex-1 overflow-hidden">
-        <ThanhPhanTable />
+        <ThanhPhanTable externalEditMode={editMode} />
       </div>
+
     </div>
   );
 }

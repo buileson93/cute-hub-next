@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search } from "lucide-react";
+import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical } from "lucide-react";
 import { normalize } from "@/lib/mirats/global-search";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+
 
 
 export interface StdColumn<T> {
@@ -80,7 +81,9 @@ export interface StandardTableProps<T> {
   presets?: any[];
   activePreset?: string;
   hideReorderToggle?: boolean;
+  editMode?: boolean;
 }
+
 
 export function StandardTable<T>({
   rows = [],
@@ -107,11 +110,17 @@ export function StandardTable<T>({
   clientPagination,
   presets,
   activePreset,
+  hideReorderToggle,
+  editMode,
 }: StandardTableProps<T>) {
+
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
+  const [internalReorder, setInternalReorder] = useState(false);
+  const reorder = (editMode || internalReorder) && !hideReorderToggle;
+
   useEffect(() => {
     const handleResize = () => setVw(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -611,8 +620,23 @@ export function StandardTable<T>({
             <TableHeader className="bg-muted sticky top-0 z-20 shadow-[0_1px_0_hsl(var(--border))]">
               <TableRow className="hover:bg-transparent">
                 {selectable && (
-                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted border-r border-border/50"></TableHead>
+                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted border-r border-border/50">
+                    <div className="flex justify-center">
+                      {!hideReorderToggle && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn("h-6 w-6 transition-colors", internalReorder && "text-primary bg-primary/10")}
+                          onClick={() => setInternalReorder(!internalReorder)}
+                          title="Bật/tắt chế độ kéo thả đổi thứ tự cột"
+                        >
+                          <GripVertical className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  </TableHead>
                 )}
+
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
                   const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
@@ -637,6 +661,46 @@ export function StandardTable<T>({
                       }}
                     >
                       <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                        {reorder && (
+                          <div
+                            className="h-6 w-4 flex items-center justify-center cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData("text/plain", c.key);
+                              e.currentTarget.parentElement?.parentElement?.classList.add("opacity-50");
+                            }}
+                            onDragEnd={(e) => {
+                              e.currentTarget.parentElement?.parentElement?.classList.remove("opacity-50");
+                            }}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              e.currentTarget.parentElement?.parentElement?.classList.add("bg-primary/10");
+                            }}
+                            onDragLeave={(e) => {
+                              e.currentTarget.parentElement?.parentElement?.classList.remove("bg-primary/10");
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.currentTarget.parentElement?.parentElement?.classList.remove("bg-primary/10");
+                              const fromKey = e.dataTransfer.getData("text/plain");
+                              const toKey = c.key;
+                              if (fromKey && fromKey !== toKey) {
+                                const newOrder = [...prefs.order];
+                                const fromIdx = newOrder.indexOf(fromKey);
+                                const toIdx = newOrder.indexOf(toKey);
+                                if (fromIdx > -1 && toIdx > -1) {
+                                  newOrder.splice(fromIdx, 1);
+                                  newOrder.splice(toIdx, 0, fromKey);
+                                  prefs.setOrder(newOrder);
+                                }
+                              }
+
+                            }}
+                          >
+                            <GripVertical className="h-3 w-3" />
+                          </div>
+                        )}
+
                         {canSort ? (
                           <button
                             type="button"
