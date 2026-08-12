@@ -294,6 +294,14 @@ function HeThongCayPage() {
               }, [viewTree])} 
               onPick={(it) => {
                 setSearchQuery(it.label);
+                if (it.kind === "ht" || it.kind === "tb" || it.kind === "nh" || it.kind === "pl") {
+                  setDisplay("mindmap");
+                  nav({ 
+                    to: "/he-thong/cay", 
+                    search: (prev: any) => ({ ...prev, view: "mindmap" }),
+                    replace: true 
+                  });
+                }
                 setFocus({ ...it, nonce: Math.random() });
               }}
             />
