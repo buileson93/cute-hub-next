@@ -22,9 +22,10 @@ export const getCompletenessOverview = createServerFn({ method: "GET" })
     }).parse(d)
   )
   .handler(async ({ data, context }) => {
-    const { supabase } = context as any;
-
-    // Lấy top thiết bị hoàn thiện kém nhất
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) {
+      return { lowCompleteness: [], tasks: [] };
+    }
     const { data: lowCompleteness, error: err1 } = await supabase
       .from("thiet_bi")
       .select("id, ten_thiet_bi, completeness_pct, he_thong_id, don_vi_id, dm_he_thong(ten)")
