@@ -274,7 +274,7 @@ export function CayMindMap({
   tbMind: (t: any) => string;
 }) {
 
-  const { fitView, zoomTo } = useReactFlow();
+  const { fitView, zoomTo, getIntersectingNodes } = useReactFlow();
   
   const initialExpanded = useMemo(() => {
     const set = new Set(["root"]);
@@ -559,7 +559,7 @@ export function CayMindMap({
           const reset = () => setRfNodes(nodes);
 
           const hitFirst = (prefixes: string[]) =>
-            getIntersectingNodes(node).find((n) => prefixes.some((p) => String(n.id).startsWith(p)));
+            getIntersectingNodes(node).find((n: ReactFlowNode) => prefixes.some((p) => String(n.id).startsWith(p)));
 
           if (d.kind === "ht" && d.ma) {
             const sysId = parseHtSysMa(d.ma).sysName;
