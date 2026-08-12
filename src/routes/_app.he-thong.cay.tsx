@@ -413,12 +413,7 @@ function HeThongCayPage() {
                 }}
                 onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
-                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
-                  ).then(() => {
-                    refetchOverrides();
-                    refetchDevices();
-                  }).catch(e => toast.error(e.message));
+                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
                 }}
                 onMoveSystem={(req) => {
                   nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
@@ -442,12 +437,7 @@ function HeThongCayPage() {
                 scopeText="Toàn hệ thống"
                 canManage={canManage && editMode}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
-                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
-                  ).then(() => {
-                    refetchOverrides();
-                    refetchDevices();
-                  }).catch(e => toast.error(e.message));
+                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
                 }}
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}
