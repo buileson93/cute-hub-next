@@ -51,7 +51,7 @@ export async function saveEntityFieldSecurely(args: {
   } else {
     // KTV tạo đề xuất thay đổi
     await createChangeRequest({
-      loai: config.proposeLoai as any,
+      loai: config.proposeLoai as "thiet_bi.propose_field" | "he_thong.propose_field" | "dm.propose_new",
       entity_id: args.id,
       noi_dung: {
         field: targetField,
