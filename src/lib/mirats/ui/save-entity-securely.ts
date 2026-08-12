@@ -41,9 +41,9 @@ export async function saveEntityFieldSecurely(args: {
 
   if (isAdmin) {
     // Admin ghi trực tiếp
-    const { error } = await supabase
-      .from(config.table)
-      .update({ [targetField]: args.value } as any)
+    const { error } = await (supabase
+      .from(config.table as any)
+      .update({ [targetField]: args.value } as any) as any)
       .eq(config.keyCol, args.id);
     
     if (error) throw error;
