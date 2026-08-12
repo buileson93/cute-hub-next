@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
-import { AssetPicker } from "@/components/mirats/AssetPicker";
 
 import { useScope } from "@/lib/mirats/scope";
 import { detectHoldingConflict, type DangLapRow } from "@/lib/mirats/ban-giao-validate";
@@ -77,7 +76,7 @@ function BanGiaoMoiPage() {
   }, []);
 
   const selectedTB = useMemo(
-    () => thietBi.find((t) => (t as any).id === form.thiet_bi_id || t.ma_thiet_bi === form.thiet_bi_id),
+    () => thietBi.find((t) => t.ma_thiet_bi === form.thiet_bi_id),
     [thietBi, form.thiet_bi_id],
   );
 
@@ -110,8 +109,8 @@ function BanGiaoMoiPage() {
       const payload = {
         ma_ban_giao: ma,
         loai_ban_giao: form.loai_ban_giao,
-        thiet_bi: selectedTB?.ma_thiet_bi ?? form.thiet_bi_id,
-        thiet_bi_id: form.thiet_bi_id || null,
+        thiet_bi: form.thiet_bi_id,
+        thiet_bi_id: (selectedTB as unknown as { id?: string } | undefined)?.id ?? null,
         nguoi_giao_id: form.nguoi_giao_id || null,
         nguoi_nhan_id: form.nguoi_nhan_id || null,
         nguoi_giao: nvGiao?.ho_ten ?? null,
@@ -181,11 +180,13 @@ function BanGiaoMoiPage() {
           </div>
 
           <div className="space-y-1.5 md:col-span-2">
-            <Label>Tài sản *</Label>
-            <AssetPicker
+            <Label>Tài sản</Label>
+            <Combobox
               value={form.thiet_bi_id}
-              onChange={(id, ma) => setForm((f) => ({ ...f, thiet_bi_id: id }))} // Ở đây đổi sang lưu ID UUID thay vì mã
+              onChange={(v) => setForm((f) => ({ ...f, thiet_bi_id: v }))}
               placeholder="Chọn tài sản…"
+              searchPlaceholder="Tìm mã / tên…"
+              options={thietBi.map((t) => ({ value: t.ma_thiet_bi, label: `${t.ma_thiet_bi} — ${t.ten}` }))}
             />
           </div>
 

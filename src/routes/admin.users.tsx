@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   UserPlus, KeyRound, Lock, Unlock, Search, ShieldAlert, Loader2, ArrowLeft,
 } from "lucide-react";
-import { AppShell } from "@/components/mirats/app-shell/AppShell";
+import { AppShell } from "@/components/mirats/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

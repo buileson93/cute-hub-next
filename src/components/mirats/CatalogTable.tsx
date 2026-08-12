@@ -506,7 +506,6 @@ export function CatalogTable({
               },
             }] : []),
             { key: "ma", label: "Mã", minW: "min-w-[100px]", filter: "text", value: (r) => r.ma ?? "",
-              defaultHidden: true,
               cell: (r) => r.ma ? <CodeBadge code={r.ma} /> : <span className="text-muted-foreground">—</span> },
             { key: "ten", label: "Tên", minW: "min-w-[180px]", filter: "text", value: (r) => r.ten,
               cell: (r) => supportsMau

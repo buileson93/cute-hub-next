@@ -1,6 +1,6 @@
 import { Outlet, createFileRoute, useNavigate, useLocation, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { AppShell } from "@/components/mirats/app-shell/AppShell";
+import { AppShell } from "@/components/mirats/AppShell";
 import { PageTransition } from "@/components/mirats/PageTransition";
 import { useSession } from "@/hooks/use-session";
 import { useIdleLogout } from "@/hooks/use-idle-logout";

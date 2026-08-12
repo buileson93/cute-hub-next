@@ -9,19 +9,9 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
  */
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error) throw new Error(error.message);
-  if (!isAdmin) throw new Error("Forbidden: chỉ Admin được thực hiện");
-}
-
-async function logDumpAction(supabaseAdmin: any, userId: string, action: string, detail: any) {
-  await supabaseAdmin.from("audit_log").insert({
-    user_id: userId,
-    action,
-    entity: "full_dump",
-    detail,
-    severity: "info"
-  });
+  if (!data) throw new Error("Forbidden: chỉ Admin được thực hiện");
 }
 
 const SKIP_BUCKETS = new Set(["database-backups"]);
@@ -94,7 +84,7 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
       authUsers = (u as any)?.total ?? 0;
     } catch { /* bỏ qua */ }
 
-    const manifest = {
+    return {
       created_at: new Date().toISOString(),
       tables,
       schema: schema ?? null,
@@ -102,8 +92,6 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
       r2,
       auth_users: authUsers,
     };
-    await logDumpAction(supabaseAdmin, context.userId, "full_dump_manifest", { tableCount: tables.length, fileCount: storage.length + r2.length });
-    return manifest;
   });
 
 /** Bước 2 — đọc dữ liệu một bảng theo lô */

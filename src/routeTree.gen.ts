@@ -47,11 +47,9 @@ import { Route as AppMessagesRouteImport } from './routes/_app.messages'
 import { Route as AppKiemKeRouteImport } from './routes/_app.kiem-ke'
 import { Route as AppKiemDinhRouteImport } from './routes/_app.kiem-dinh'
 import { Route as AppHongHocRouteImport } from './routes/_app.hong-hoc'
-import { Route as AppGopGachRouteImport } from './routes/_app.gop-gach'
 import { Route as AppGiayPhepRouteImport } from './routes/_app.giay-phep'
 import { Route as AppFormsRouteImport } from './routes/_app.forms'
 import { Route as AppChoDuyetRouteImport } from './routes/_app.cho-duyet'
-import { Route as AppChatLuongDuLieuRouteImport } from './routes/_app.chat-luong-du-lieu'
 import { Route as AppBaoTriRouteImport } from './routes/_app.bao-tri'
 import { Route as AppBanGiaoRouteImport } from './routes/_app.ban-giao'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -324,11 +322,6 @@ const AppHongHocRoute = AppHongHocRouteImport.update({
   path: '/hong-hoc',
   getParentRoute: () => AppRoute,
 } as any)
-const AppGopGachRoute = AppGopGachRouteImport.update({
-  id: '/gop-gach',
-  path: '/gop-gach',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppGiayPhepRoute = AppGiayPhepRouteImport.update({
   id: '/giay-phep',
   path: '/giay-phep',
@@ -342,11 +335,6 @@ const AppFormsRoute = AppFormsRouteImport.update({
 const AppChoDuyetRoute = AppChoDuyetRouteImport.update({
   id: '/cho-duyet',
   path: '/cho-duyet',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppChatLuongDuLieuRoute = AppChatLuongDuLieuRouteImport.update({
-  id: '/chat-luong-du-lieu',
-  path: '/chat-luong-du-lieu',
   getParentRoute: () => AppRoute,
 } as any)
 const AppBaoTriRoute = AppBaoTriRouteImport.update({
@@ -786,11 +774,9 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ban-giao': typeof AppBanGiaoRouteWithChildren
   '/bao-tri': typeof AppBaoTriRouteWithChildren
-  '/chat-luong-du-lieu': typeof AppChatLuongDuLieuRoute
   '/cho-duyet': typeof AppChoDuyetRoute
   '/forms': typeof AppFormsRouteWithChildren
   '/giay-phep': typeof AppGiayPhepRoute
-  '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
@@ -910,10 +896,8 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/ban-giao': typeof AppBanGiaoRouteWithChildren
-  '/chat-luong-du-lieu': typeof AppChatLuongDuLieuRoute
   '/cho-duyet': typeof AppChoDuyetRoute
   '/giay-phep': typeof AppGiayPhepRoute
-  '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
@@ -1032,11 +1016,9 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_app/ban-giao': typeof AppBanGiaoRouteWithChildren
   '/_app/bao-tri': typeof AppBaoTriRouteWithChildren
-  '/_app/chat-luong-du-lieu': typeof AppChatLuongDuLieuRoute
   '/_app/cho-duyet': typeof AppChoDuyetRoute
   '/_app/forms': typeof AppFormsRouteWithChildren
   '/_app/giay-phep': typeof AppGiayPhepRoute
-  '/_app/gop-gach': typeof AppGopGachRoute
   '/_app/hong-hoc': typeof AppHongHocRouteWithChildren
   '/_app/kiem-dinh': typeof AppKiemDinhRoute
   '/_app/kiem-ke': typeof AppKiemKeRoute
@@ -1161,11 +1143,9 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/ban-giao'
     | '/bao-tri'
-    | '/chat-luong-du-lieu'
     | '/cho-duyet'
     | '/forms'
     | '/giay-phep'
-    | '/gop-gach'
     | '/hong-hoc'
     | '/kiem-dinh'
     | '/kiem-ke'
@@ -1285,10 +1265,8 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/ban-giao'
-    | '/chat-luong-du-lieu'
     | '/cho-duyet'
     | '/giay-phep'
-    | '/gop-gach'
     | '/hong-hoc'
     | '/kiem-dinh'
     | '/kiem-ke'
@@ -1406,11 +1384,9 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_app/ban-giao'
     | '/_app/bao-tri'
-    | '/_app/chat-luong-du-lieu'
     | '/_app/cho-duyet'
     | '/_app/forms'
     | '/_app/giay-phep'
-    | '/_app/gop-gach'
     | '/_app/hong-hoc'
     | '/_app/kiem-dinh'
     | '/_app/kiem-ke'
@@ -1823,13 +1799,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHongHocRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/gop-gach': {
-      id: '/_app/gop-gach'
-      path: '/gop-gach'
-      fullPath: '/gop-gach'
-      preLoaderRoute: typeof AppGopGachRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/giay-phep': {
       id: '/_app/giay-phep'
       path: '/giay-phep'
@@ -1849,13 +1818,6 @@ declare module '@tanstack/react-router' {
       path: '/cho-duyet'
       fullPath: '/cho-duyet'
       preLoaderRoute: typeof AppChoDuyetRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/chat-luong-du-lieu': {
-      id: '/_app/chat-luong-du-lieu'
-      path: '/chat-luong-du-lieu'
-      fullPath: '/chat-luong-du-lieu'
-      preLoaderRoute: typeof AppChatLuongDuLieuRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/bao-tri': {
@@ -2622,11 +2584,9 @@ const AppHeThongIdRouteWithChildren = AppHeThongIdRoute._addFileChildren(
 interface AppRouteChildren {
   AppBanGiaoRoute: typeof AppBanGiaoRouteWithChildren
   AppBaoTriRoute: typeof AppBaoTriRouteWithChildren
-  AppChatLuongDuLieuRoute: typeof AppChatLuongDuLieuRoute
   AppChoDuyetRoute: typeof AppChoDuyetRoute
   AppFormsRoute: typeof AppFormsRouteWithChildren
   AppGiayPhepRoute: typeof AppGiayPhepRoute
-  AppGopGachRoute: typeof AppGopGachRoute
   AppHongHocRoute: typeof AppHongHocRouteWithChildren
   AppKiemDinhRoute: typeof AppKiemDinhRoute
   AppKiemKeRoute: typeof AppKiemKeRoute
@@ -2686,11 +2646,9 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppBanGiaoRoute: AppBanGiaoRouteWithChildren,
   AppBaoTriRoute: AppBaoTriRouteWithChildren,
-  AppChatLuongDuLieuRoute: AppChatLuongDuLieuRoute,
   AppChoDuyetRoute: AppChoDuyetRoute,
   AppFormsRoute: AppFormsRouteWithChildren,
   AppGiayPhepRoute: AppGiayPhepRoute,
-  AppGopGachRoute: AppGopGachRoute,
   AppHongHocRoute: AppHongHocRouteWithChildren,
   AppKiemDinhRoute: AppKiemDinhRoute,
   AppKiemKeRoute: AppKiemKeRoute,

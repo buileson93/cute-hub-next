@@ -10,7 +10,7 @@ import {
   ArrowLeft, ArrowRight, ArrowRightLeft, ExternalLink, HardDrive, History,
   Loader2, Plug, RefreshCw, Search, ShieldAlert,
 } from "lucide-react";
-import { AppShell } from "@/components/mirats/app-shell/AppShell";
+import { AppShell } from "@/components/mirats/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

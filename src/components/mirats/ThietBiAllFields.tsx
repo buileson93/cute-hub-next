@@ -1,18 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
-import { Loader2, Settings2, Info } from "lucide-react";
-import { useState, useMemo } from "react";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Loader2 } from "lucide-react";
 
 // Nhãn tiếng Việt cho toàn bộ cột vật lý của bảng thiet_bi (nguồn: schema DB).
+// Cột nào không có trong map sẽ được "humanize" từ tên cột.
 const FIELD_LABELS: Record<string, string> = {
   ma_thiet_bi: "Mã tài sản",
   ma_thiet_bi_cu: "Mã cũ (trước khi chuẩn hoá)",
@@ -58,24 +49,25 @@ const FIELD_LABELS: Record<string, string> = {
   ngay_bao_tri_gan_nhat: "Ngày bảo trì gần nhất",
   ngay_bao_tri_ke_tiep: "Ngày bảo trì kế tiếp",
   ghi_chu: "Ghi chú",
-  vai_tro: "Vai trò",
   file_tai_lieu: "File tài liệu",
   hinh_anh: "Hình ảnh",
   
   created_at: "Ngày tạo",
   updated_at: "Cập nhật gần nhất",
-  id: "ID Hệ thống (UUID)",
 };
 
-
+// Cột nội bộ / kỹ thuật không hiển thị.
 const HIDDEN_COLS = new Set<string>([
   "search_text",
   "search_tsv",
   "created_by",
+  // UUID khoá ngoại đã có nhãn tên đọc được ở khối trên của Drawer → không cần lộ UUID
   "nhom_he_thong_id",
   "he_thong_id",
 ]);
 
+// Master-data (Task 10): FK *_id là chuẩn — các cột text dưới đây chỉ là
+// snapshot hiển thị, được trigger CSDL đồng bộ từ FK. Không nhập trực tiếp.
 const SNAPSHOT_COLS = new Set<string>([
   "nha_san_xuat",
   "nha_cung_cap",
@@ -84,6 +76,8 @@ const SNAPSHOT_COLS = new Set<string>([
   "vi_tri",
 ]);
 
+
+// Cột UUID khoá ngoại — gom thành nhóm riêng, hiển thị dạng mã kỹ thuật.
 const FK_COLS = new Set<string>([
   "id",
   "loai_thiet_bi_id",
@@ -92,6 +86,7 @@ const FK_COLS = new Set<string>([
   "nha_san_xuat_id",
   "nha_cung_cap_id",
   "vi_tri_id",
+  
   "don_vi_id",
   "danh_gia_nien_han_id",
   "model_id",
@@ -99,6 +94,7 @@ const FK_COLS = new Set<string>([
   "field_set_id",
   "don_vi_giu_id",
 ]);
+
 
 function humanize(key: string): string {
   return key.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
@@ -109,6 +105,7 @@ function fmt(v: unknown): string {
   if (typeof v === "boolean") return v ? "Có" : "Không";
   if (typeof v === "number") return v.toLocaleString("vi-VN");
   const s = String(v);
+  // ISO datetime → giờ VN
   if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
     const d = new Date(s);
     if (!Number.isNaN(d.getTime())) return d.toLocaleString("vi-VN");
@@ -117,9 +114,6 @@ function fmt(v: unknown): string {
 }
 
 export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
-  const [techMode, setTechMode] = useState(false);
-  const [showEmpty, setShowEmpty] = useState(false);
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["tb_all_fields", maThietBi],
     queryFn: async () => {
@@ -133,156 +127,85 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
     },
   });
 
-  const displayRows = useMemo(() => {
-    if (!data) return [];
-    const thuocTinh = (data.thuoc_tinh && typeof data.thuoc_tinh === "object" ? data.thuoc_tinh : {}) as Record<string, unknown>;
-    
-    const allKeys = Object.keys(data).filter(k => k !== "thuoc_tinh");
-    const dynKeys = Object.keys(thuocTinh);
-
-    const mapRow = (k: string, isDyn = false) => {
-      const val = isDyn ? thuocTinh[k] : data[k];
-      return {
-        key: k,
-        label: isDyn ? humanize(k) : (FIELD_LABELS[k] ?? humanize(k)),
-        value: fmt(val),
-        raw: val,
-        isFK: !isDyn && FK_COLS.has(k),
-        isSnapshot: !isDyn && SNAPSHOT_COLS.has(k),
-        isHidden: !isDyn && HIDDEN_COLS.has(k),
-        isEmpty: val == null || val === "" || val === undefined,
-        isDyn
-      };
-    };
-
-    let rows = [
-      ...allKeys.map(k => mapRow(k)),
-      ...dynKeys.map(k => mapRow(k, true))
-    ];
-
-    // Lọc theo chế độ
-    if (!techMode) {
-      // Chế độ thường: Ẩn ID kỹ thuật, ẩn cột nội bộ
-      rows = rows.filter(r => !r.isFK && !r.isHidden);
-    }
-
-    if (!showEmpty) {
-      // Ẩn các trường trống
-      rows = rows.filter(r => !r.isEmpty);
-    }
-
-    return rows;
-  }, [data, techMode, showEmpty]);
-
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin" /> Đang tải dữ liệu…
+        <Loader2 className="h-4 w-4 animate-spin" /> Đang tải toàn bộ trường dữ liệu…
       </div>
     );
   }
-  if (error || !data) {
-    return <p className="text-sm text-destructive">Lỗi: {String(error || "Không tìm thấy")}</p>;
+  if (error) {
+    return <p className="text-sm text-destructive">Không tải được dữ liệu: {error instanceof Error ? error.message : "Lỗi"}</p>;
+  }
+  if (!data) {
+    return <p className="text-sm text-muted-foreground">Không tìm thấy bản ghi.</p>;
   }
 
-  const sections = [
-    { 
-      title: "Thông tin chính", 
-      rows: displayRows.filter(r => !r.isFK && !r.isSnapshot && !r.isDyn && !r.isHidden) 
-    },
-    { 
-      title: "Trường mở rộng (Dynamic)", 
-      rows: displayRows.filter(r => r.isDyn) 
-    },
-    { 
-      title: "Snapshot Dữ liệu", 
-      rows: displayRows.filter(r => r.isSnapshot) 
-    },
-    { 
-      title: "Kỹ thuật & Liên kết", 
-      rows: displayRows.filter(r => r.isFK || r.isHidden) 
-    },
-  ].filter(s => s.rows.length > 0);
+  const thuocTinh = (data.thuoc_tinh && typeof data.thuoc_tinh === "object" ? data.thuoc_tinh : {}) as Record<string, unknown>;
+
+  const businessCols = Object.keys(data).filter(
+    (k) => !HIDDEN_COLS.has(k) && !FK_COLS.has(k) && !SNAPSHOT_COLS.has(k) && k !== "thuoc_tinh",
+  );
+  const snapshotCols = Object.keys(data).filter((k) => SNAPSHOT_COLS.has(k));
+  const fkCols = Object.keys(data).filter((k) => FK_COLS.has(k));
+  const dynKeys = Object.keys(thuocTinh);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-muted/20 p-3">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center space-x-2">
-            <Switch 
-              id="tech-mode" 
-              checked={techMode} 
-              onCheckedChange={setTechMode}
-            />
-            <Label htmlFor="tech-mode" className="flex items-center gap-1.5 cursor-pointer text-xs font-medium">
-              <Settings2 className="h-3.5 w-3.5" /> Chế độ kỹ thuật
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch 
-              id="show-empty" 
-              checked={showEmpty} 
-              onCheckedChange={setShowEmpty}
-            />
-            <Label htmlFor="show-empty" className="flex items-center gap-1.5 cursor-pointer text-xs font-medium">
-              <Info className="h-3.5 w-3.5" /> Hiện trường trống
-            </Label>
-          </div>
-        </div>
-        <div className="text-[11px] text-muted-foreground italic">
-          Đang hiển thị {displayRows.length} trường
-        </div>
-      </div>
+    <div className="space-y-6">
+      <FieldTable
+        title={`Trường nghiệp vụ (${businessCols.length})`}
+        rows={businessCols.map((k) => ({ label: FIELD_LABELS[k] ?? humanize(k), key: k, value: fmt(data[k]) }))}
+      />
 
-      <div className="space-y-6">
-        {sections.map((s) => (
-          <div key={s.title}>
-            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground/80 flex items-center gap-2">
-              <span className="w-1 h-3 bg-primary/40 rounded-full" />
-              {s.title}
-            </h3>
-            <div className="overflow-hidden rounded-md border bg-card">
-              <table className="w-full text-sm">
-                <tbody>
-                  {s.rows.map((r, i) => (
-                    <tr key={r.key} className={cn(
-                      "group hover:bg-muted/50 transition-colors border-b last:border-0",
-                      i % 2 === 0 ? "bg-background" : "bg-muted/20"
-                    )}>
-                      <td className="w-1/3 min-w-[160px] border-r px-4 py-2.5 align-top">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground">{r.label}</span>
-                          {r.isSnapshot && (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <Info className="h-3 w-3 text-sky-500" />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="text-xs">Dữ liệu snapshot từ bảng danh mục</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          )}
-                        </div>
-                        <div className="font-mono text-[10px] text-muted-foreground group-hover:text-muted-foreground/80 mt-0.5">
-                          {r.key}
-                        </div>
-                      </td>
-                      <td className={cn(
-                        "px-4 py-2.5 align-top break-all font-medium",
-                        (r.isFK || r.isHidden) ? "font-mono text-[11px] text-muted-foreground bg-muted/10" : "text-foreground",
-                        r.isEmpty && "text-muted-foreground/40 italic font-normal"
-                      )}>
-                        {r.value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ))}
+      {snapshotCols.length > 0 && (
+        <FieldTable
+          title={`Snapshot hiển thị — đồng bộ từ FK, không nhập tay (${snapshotCols.length})`}
+          rows={snapshotCols.map((k) => ({ label: FIELD_LABELS[k] ?? humanize(k), key: k, value: fmt(data[k]) }))}
+        />
+      )}
+
+      {dynKeys.length > 0 && (
+        <FieldTable
+          title={`Trường động (khai thêm theo hệ thống) (${dynKeys.length})`}
+          rows={dynKeys.map((k) => ({ label: humanize(k), key: k, value: fmt(thuocTinh[k]) }))}
+        />
+      )}
+
+      <FieldTable
+        title={`Định danh & khoá liên kết (${fkCols.length})`}
+        rows={fkCols.map((k) => ({ label: FIELD_LABELS[k] ?? humanize(k), key: k, value: fmt(data[k]) }))}
+        mono
+      />
+    </div>
+  );
+}
+
+function FieldTable({
+  title,
+  rows,
+  mono,
+}: {
+  title: string;
+  rows: { label: string; key: string; value: string }[];
+  mono?: boolean;
+}) {
+  return (
+    <div>
+      <h3 className="mb-2 text-sm font-semibold text-muted-foreground">{title}</h3>
+      <div className="overflow-hidden rounded-md border">
+        <table className="w-full text-sm">
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={r.key} className={i % 2 ? "bg-muted/30" : ""}>
+                <td className="w-1/3 min-w-[160px] border-r px-3 py-2 align-top">
+                  <div className="font-medium">{r.label}</div>
+                  <div className="font-mono text-[11px] text-muted-foreground">{r.key}</div>
+                </td>
+                <td className={`px-3 py-2 align-top break-words ${mono ? "font-mono text-xs" : ""}`}>{r.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

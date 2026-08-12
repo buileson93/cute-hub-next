@@ -78,7 +78,7 @@ export const ensureSigningKey = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { data: roles } = await context.supabase
       .from("user_roles").select("role").eq("user_id", context.userId);
-    const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
+    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
     if (!isAdmin) throw new Error("Chỉ admin mới được sinh khoá ký.");
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const key = await getActiveKey(supabaseAdmin);
@@ -188,7 +188,7 @@ export const signSubmission = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: roles } = await context.supabase
       .from("user_roles").select("role").eq("user_id", context.userId);
-    const roleList = (roles ?? []).map((r: any) => r.role);
+    const roleList = (roles ?? []).map((r) => r.role);
     if (!roleList.length) throw new Error("Tài khoản không có vai trò để ký.");
     return performSign(context.userId, data.submission_id, data.signer_role, data.note, context.supabase as never);
   });

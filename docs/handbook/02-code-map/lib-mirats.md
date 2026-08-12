@@ -1,6 +1,6 @@
 # 02 — Code map: `src/lib/mirats/`
 
-154 module logic domain thuần TypeScript (unit-test được, không side-effect trừ khi tên có `.functions.ts`/`.server.ts`).
+141 module logic domain thuần TypeScript (unit-test được, không side-effect trừ khi tên có `.functions.ts`/`.server.ts`).
 
 ## Nhóm theo chức năng
 

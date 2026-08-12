@@ -6,8 +6,6 @@ import {
   type OutboxItem,
   type Storage,
 } from "@/lib/mirats/offline-queue";
-import { offlineStorage } from "@/lib/mirats/indexeddb-storage";
-
 
 /**
  * N11 — Hook UI cho hàng chờ offline.
@@ -51,11 +49,7 @@ let sharedQueue: OfflineQueue | null = null;
 
 export function getOfflineQueue(handlers: HandlerMap = {}): OfflineQueue {
   if (!sharedQueue) {
-    const isBrowser = typeof window !== "undefined";
-    // T8: Nối IndexedDBStorage đã viết sẵn vào hàng đợi ngoại tuyến.
-    // Dùng SessionStorageAdapter cho SSR/preview để tránh lỗi ReferenceError: IDBDatabase
-    const storage = isBrowser ? offlineStorage : new SessionStorageAdapter();
-    sharedQueue = new OfflineQueue(storage, handlers);
+    sharedQueue = new OfflineQueue(new SessionStorageAdapter(), handlers);
   }
   return sharedQueue;
 }

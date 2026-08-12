@@ -32,29 +32,18 @@ const _newRow = (): DongForm => ({ key: crypto.randomUUID(), vat_tu_id: "", kho_
 export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
   const [rows, setRows] = useState<DongForm[]>([_newRow()]);
   const [busy, setBusy] = useState(false);
-  const { data: tonKhoModel } = useQuery({
-    queryKey: ["view_ton_kho_model"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("view_ton_kho_model").select("*");
-      if (error) throw error;
-      return data ?? [];
-    },
-    staleTime: 30_000,
-  });
-
 
   const { data: vatTuList } = useQuery({
     queryKey: ["vat_tu", "pick"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vat_tu")
-        .select("id, ma_vat_tu, ten, don_vi_tinh, don_gia, model_id")
+        .select("id, ma_vat_tu, ten, don_vi_tinh, don_gia")
         .eq("kich_hoat", true)
         .order("ten");
       if (error) throw error;
       return data ?? [];
     },
-
     staleTime: 60_000,
   });
   const { data: khoList } = useQuery({
@@ -121,16 +110,11 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
                 <Select value={r.vat_tu_id} onValueChange={(v) => update(r.key, { vat_tu_id: v, don_gia: vatTuList?.find((x) => x.id === v)?.don_gia ?? undefined })}>
                   <SelectTrigger className="h-9"><SelectValue placeholder="Chọn vật tư" /></SelectTrigger>
                   <SelectContent>
-                    {(vatTuList ?? []).map((v) => {
-                      const stk = tonKhoModel?.find(t => t.model_id === v.model_id);
-                      const tonText = stk ? ` (Còn ${stk.combined_total})` : "";
-                      return (
-                        <SelectItem key={v.id} value={v.id}>
-                          <span className="font-mono text-xs mr-1">{v.ma_vat_tu}</span> {v.ten}{tonText}
-                        </SelectItem>
-                      );
-                    })}
-
+                    {(vatTuList ?? []).map((v) => (
+                      <SelectItem key={v.id} value={v.id}>
+                        <span className="font-mono text-xs mr-1">{v.ma_vat_tu}</span> {v.ten}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

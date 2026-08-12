@@ -164,7 +164,7 @@ function renderInner(f: PreviewField, ph: string | undefined) {
       );
     case "measure":
       return (
-        <div className="grid grid-cols-1 @md:grid-cols-3 gap-1">
+        <div className="grid grid-cols-3 gap-1">
           <Input disabled placeholder={ph ?? "Giá trị đo"} />
           <div className="flex items-center rounded-md border bg-muted px-2 text-xs text-muted-foreground">
             {f.unit || "—"}
