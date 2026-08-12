@@ -341,7 +341,6 @@ export function StandardTable<T>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 48,
     overscan: isTest ? display.length : 10,
-    scrollToAlignment: "center",
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
