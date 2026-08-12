@@ -12,8 +12,9 @@ export interface HeartBeatGroup {
 }
 
 export const getHeartBeatData = createServerFn({ method: "GET" })
-  .handler(async (): Promise<HeartBeatGroup[]> => {
-    // 1. Fetch groups and their active systems
+  .handler(async ({ context }): Promise<HeartBeatGroup[]> => {
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) return [];
     const { data: groups, error } = await supabase
       .from("dm_nhom_he_thong")
       .select(`
@@ -89,8 +90,9 @@ export interface AuditTimelineItem {
 }
 
 export const getAuditTimeline = createServerFn({ method: "GET" })
-  .handler(async (): Promise<AuditTimelineItem[]> => {
-    // 1. Fetch audit logs
+  .handler(async ({ context }): Promise<AuditTimelineItem[]> => {
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) return [];
     const { data: logs, error } = await supabase
       .from("audit_log")
       .select("id, created_at, action, entity, detail, user_id")

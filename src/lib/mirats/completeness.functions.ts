@@ -11,7 +11,7 @@ export const getCompletenessStats = createServerFn({ method: "GET" })
     }
     const { data, error } = await supabase.rpc("get_completeness_stats");
     if (error) throw new Error(error.message);
-    return data;
+    return (data || {}) as any;
   });
 
 export const getCompletenessOverview = createServerFn({ method: "GET" })
@@ -44,7 +44,7 @@ export const getCompletenessOverview = createServerFn({ method: "GET" })
     if (err2) throw new Error(err2.message);
 
     return {
-      lowCompleteness: lowCompleteness || [],
-      tasks: tasks || []
+      lowCompleteness: (lowCompleteness || []) as any[],
+      tasks: (tasks || []) as any[]
     };
   });

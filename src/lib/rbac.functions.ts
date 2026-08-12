@@ -32,10 +32,10 @@ export const getMyPermissions = createServerFn({ method: "GET" })
     const permsByModule: Record<string, string[]> = {};
     for (const [m, s] of Object.entries(allowed)) permsByModule[m] = [...s];
     return {
-      roles: [...myRoles],
+      roles: Array.from(myRoles) as string[],
       permissions: permsByModule,
-      scope: scopeRes.data ?? [],
-      isGlobal: (scopeRes.data ?? []).some((s: any) => !s.to_chuc_id && !s.don_vi_id),
+      scope: (scopeRes.data ?? []) as any[],
+      isGlobal: (scopeRes.data ?? []).some((s: any) => !s.to_chuc_id && !s.don_vi_id) as boolean,
     };
   });
 
