@@ -147,6 +147,12 @@ export function TreeView({
           <Badge variant="outline" className="shrink-0">{ht.count}</Badge>
           
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
+             <button onClick={() => onIncident(ht.ma)} className="rounded p-1 hover:bg-muted" title="Sự cố">
+               <AlertTriangle className="h-4 w-4" />
+             </button>
+             <button onClick={() => onMaint(ht.ma)} className="rounded p-1 hover:bg-muted" title="Bảo trì">
+               <Wrench className="h-4 w-4" />
+             </button>
              <button onClick={() => onHistory(ht.ma)} className="rounded p-1 hover:bg-muted" title="Lịch sử">
                <History className="h-4 w-4" />
              </button>
