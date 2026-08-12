@@ -367,14 +367,14 @@ export function CayMindMap({
   }, [fitView]);
 
   useEffect(() => {
-    if (rfNodes.length > 0) {
+    if (rfNodes.length > 0 && finiteNodes) {
       // Delay slightly to ensure layout is applied
       const timer = setTimeout(() => {
         fitView({ duration: 600, padding: 0.1 });
       }, 350);
       return () => clearTimeout(timer);
     }
-  }, [rfNodes.length, fitView]);
+  }, [rfNodes.length, fitView, finiteNodes]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
