@@ -220,8 +220,12 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       </div>
       <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
         <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
-        {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()}>Ghi phiếu</Button>}
+        <div className="flex gap-2">
+           {step === 3 && <Button variant="secondary" onClick={() => setPreviewOpen(true)}>Xem trước</Button>}
+           {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}</Button>}
+        </div>
       </div>
+      <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
     </div>
   );
 }
