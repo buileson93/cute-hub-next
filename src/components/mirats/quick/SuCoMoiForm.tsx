@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Plus, Trash2, FileText, Loader2, Save, FileDown,
   Wand2, Bot, Sparkles, CheckCircle2, Layers, MapPin, Lock,
-  ArrowRight, ArrowLeft
+  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle, Info
 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
@@ -18,28 +18,23 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
-import { normalize } from "@/lib/mirats/global-search";
 import { exportBaoCaoBanDauToWord } from "@/lib/incident-report-word.functions";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
-import { parseIncidentText, type ParsedIncident } from "@/lib/ai/incident-parse.functions";
-import { parseIncidentByRules } from "@/lib/ai/incident-parse-rules";
-import { detectSuCoAnomalies, anomalyFieldSet, type Anomaly } from "@/lib/mirats/su-co-anomalies";
-import { AlertTriangle } from "lucide-react";
-import { popVoiceDraft } from "@/lib/mirats/voice-recognition";
+import { parseIncidentText } from "@/lib/ai/incident-parse.functions";
+import { detectSuCoAnomalies } from "@/lib/mirats/su-co-anomalies";
+import { createVoiceRecognition, popVoiceDraft } from "@/lib/mirats/voice-recognition";
 import { buildSuCoPayload } from "@/lib/mirats/ghi-payload";
 import { ghiSuCoFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
-import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
-import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
-import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
-import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
+import { type KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { cn } from "@/lib/utils";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
+import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
+import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
@@ -55,7 +50,7 @@ function fmtDateTime(v: string): string {
 }
 
 interface KipRow { ho_ten: string; chuc_vu: string; nang_dinh: string }
-interface ThanhPhanRow { id: string; ma: string; ten: string; vi_tri_ten: string | null; he_thong_id: string }
+interface ThanhPhanRow { id: string; ma_thanh_phan: string; ten: string; he_thong_id: string }
 interface MountedAsset { thanh_phan_id: string; device: DbDevice }
 
 export interface SuCoMoiFormProps {
@@ -108,11 +103,87 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
 
   const selected = useMemo(() => Array.from(new Set(mounted.map(m => m.device.id))).map(id => mounted.find(m => m.device.id === id)!.device), [mounted]);
 
+  const anomalies = useMemo(() => detectSuCoAnomalies({
+    thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb,
+    heThongId, selectedTpCount: selectedTpIds.size, mountedAssetsCount: selected.length
+  }), [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, selected]);
+
+  const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
+    if (!heThongDichVu) return null;
+    const found = selected.find(d => d.id === heThongDichVu);
+    return {
+      loai: "SU_CO",
+      thiet_bi_id: heThongDichVu,
+      moTa: hienTuong,
+      thoiGian: thoiGianBatDau || new Date().toISOString(),
+      tenThietBi: found?.ten ?? ""
+    };
+  }, [heThongDichVu, hienTuong, thoiGianBatDau, selected]);
+
+  const parseFn = useServerFn(parseIncidentText);
+  const parseMutation = useMutation({
+    mutationFn: async (text: string) => parseFn({ data: { text } }),
+    onSuccess: (p) => {
+      setHienTuong(p.hien_tuong);
+      setHeThongDichVu(p.he_thong_goi_y);
+      setTomTat(p.tom_tat);
+      setThoiGianBatDau(p.thoi_gian_bat_dau);
+      setAnhHuongDhb(p.anh_huong_dhb);
+      setNguyenNhan(p.nguyen_nhan);
+      setBienPhap(p.bien_phap_xu_ly);
+      setTinhHinh(p.tinh_hinh_hien_tai);
+      setKetQua(p.ket_qua_khac_phuc);
+      setPhanLoai(p.phan_loai);
+      setAiFilled(true);
+      toast.success("Đã bóc tách thông tin sự cố");
+    },
+    onError: (e: Error) => toast.error(e.message)
+  });
+
+  const [voiceActive, setVoiceActive] = useState(false);
+  const voice = useMemo(() => createVoiceRecognition({
+    onTranscript: (text, isFinal) => { setAiText(text); if (isFinal) parseMutation.mutate(text); },
+    onEnd: () => setVoiceActive(false),
+    onError: (m) => { setVoiceActive(false); toast.error("Lỗi voice: " + m); }
+  }), [parseMutation]);
+
+  useEffect(() => {
+    if (voiceActive) {
+      voice?.start();
+    } else {
+      voice?.stop();
+    }
+  }, [voiceActive, voice]);
+
+  useEffect(() => {
+    const d = popVoiceDraft();
+    if (d?.transcript) { setAiText(d.transcript); parseMutation.mutate(d.transcript); }
+    if (defaultVoice) { setAiText(defaultVoice); parseMutation.mutate(defaultVoice); }
+  }, [defaultVoice, parseMutation]);
+
   useEffect(() => {
     supabase.from("v_van_de").select("id, ma_van_de, tieu_de, trang_thai").neq("trang_thai", "dong").order("created_at", { ascending: false }).then(({ data }) => {
       setVanDeOptions((data ?? []).map(v => ({ value: v.id!, label: v.tieu_de ?? "(không tiêu đề)", hint: v.ma_van_de ?? undefined })));
     });
   }, []);
+
+  useEffect(() => {
+    if (!heThongId) { setTpList([]); return; }
+    setTpLoading(true);
+    supabase.from("he_thong_thanh_phan").select("id, ma_thanh_phan, ten, he_thong_id").eq("he_thong_id", heThongId).is("deleted_at", null).then(({ data }) => {
+      setTpList((data ?? []) as ThanhPhanRow[]);
+      setTpLoading(false);
+    });
+  }, [heThongId]);
+
+  useEffect(() => {
+    if (tpList.length === 0 || selectedTpIds.size === 0) { setMounted([]); return; }
+    const tps = Array.from(selectedTpIds);
+    supabase.from("gan_chuc_nang").select("thanh_phan_id, thiet_bi(*)").in("thanh_phan_id", tps).is("den_ngay", null).then(({ data }) => {
+      const list: MountedAsset[] = (data ?? []).filter(d => d.thiet_bi).map(d => ({ thanh_phan_id: d.thanh_phan_id!, device: d.thiet_bi as unknown as DbDevice }));
+      setMounted(list);
+    });
+  }, [tpList, selectedTpIds]);
 
   function nextStep() { if (step < 3) setStep(s => s + 1); }
   function prevStep() { if (step > 1) setStep(s => s - 1); }
@@ -159,55 +230,97 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
        {!embedded && <FormPageHeader backTo="/su-co" backLabel="Nhật ký sự cố" icon={FileText} title="Báo cáo ban đầu" />}
        <FormWizardSteps steps={steps} currentStep={step} />
        <div className="flex-1 overflow-y-auto px-4">
-         {step === 1 && (
-            <div className="space-y-4">
-              <Card>
-                <CardHeader><CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label>Sự cố *</Label>
-                    <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả ngắn gọn hiện tượng..." />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Hệ thống bị sự cố *</Label>
-                    <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Tài sản chính liên quan *</Label>
-                    <AssetPicker 
-                      value={heThongDichVu} // Dùng cột chữ thiet_bi/he_thong_dich_vu làm nơi lưu ID tạm thời trong form
-                      onChange={(id, ma, ten) => setHeThongDichVu(id)} 
-                      heThongId={heThongId}
-                    />
-                    <p className="text-[10px] text-muted-foreground italic">
-                      Lưu ý: Bạn vẫn có thể chọn nhiều thành phần ở bước tiếp theo.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-         )}
-         {step === 2 && (
-            <Card>
-                <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Thành phần</CardTitle></CardHeader>
-                <CardContent>
-                  {tpList.map(tp => <div key={tp.id} className="flex items-center gap-2"><Checkbox checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} /> {tp.ten}</div>)}
-                </CardContent>
-            </Card>
-         )}
-         {step === 3 && (
-            <Card>
-                <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến</CardTitle></CardHeader>
-                <CardContent>
-                    <Label>Tóm tắt</Label><Textarea value={tomTat} onChange={e => setTomTat(e.target.value)} />
-                </CardContent>
-            </Card>
-         )}
-       </div>
-       <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
-         <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
-         {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()}>Ghi sự cố</Button>}
-       </div>
+          {step === 1 && (
+             <div className="space-y-4">
+               <Card>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                   <CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle>
+                   <div className="flex gap-2">
+                     <Button variant="outline" size="sm" onClick={() => setVoiceActive(!voiceActive)} className={voiceActive ? "bg-red-50 text-red-600" : ""}>
+                       {voiceActive ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                     </Button>
+                     <Button variant="outline" size="sm" onClick={() => parseMutation.mutate(aiText)}>
+                       <Sparkles className="h-4 w-4 mr-1" /> AI Bóc tách
+                     </Button>
+                   </div>
+                 </CardHeader>
+                 <CardContent className="space-y-4">
+                   <div className="space-y-1.5">
+                     <Label>Sự cố / Hiện tượng *</Label>
+                     <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả hiện tượng..." className="min-h-[100px]" />
+                   </div>
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label>Hệ thống bị sự cố *</Label>
+                        <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Phân loại mức độ</Label>
+                        <Select value={phanLoai} onValueChange={setPhanLoai}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                             {["A", "B", "C", "D", "E"].map(l => <SelectItem key={l} value={l}>Mức {l}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                   </div>
+                   <div className="space-y-1.5">
+                     <Label>Tài sản chính liên quan *</Label>
+                     <AssetPicker value={heThongDichVu} onChange={(id) => setHeThongDichVu(id)} heThongId={heThongId} />
+                   </div>
+                 </CardContent>
+               </Card>
+             </div>
+          )}
+          {step === 2 && (
+             <Card>
+                 <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Chọn thành phần hệ thống & Tài sản</CardTitle></CardHeader>
+                 <CardContent className="space-y-4">
+                   {tpLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto" /> : (
+                     tpList.map(tp => (
+                        <div key={tp.id} className="flex items-center gap-2">
+                          <Checkbox checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} />
+                          <Label>{tp.ten}</Label>
+                        </div>
+                     ))
+                   )}
+                   {selected.length > 0 && <div className="p-2 bg-muted rounded text-xs">Đã chọn: {selected.length} tài sản</div>}
+                 </CardContent>
+             </Card>
+          )}
+          {step === 3 && (
+             <div className="space-y-4">
+                <Card>
+                    <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến & Xử lý</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <Label>Tóm tắt sự cố</Label><Textarea value={tomTat} onChange={e => setTomTat(e.target.value)} />
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-1">
+                              <Label>Bắt đầu</Label><Input type="datetime-local" value={thoiGianBatDau.slice(0, 16)} onChange={e => setThoiGianBatDau(e.target.value)} />
+                           </div>
+                           <div className="space-y-1">
+                              <Label>Kết thúc</Label><Input type="datetime-local" value={thoiGianKetThuc.slice(0, 16)} onChange={e => setThoiGianKetThuc(e.target.value)} />
+                           </div>
+                        </div>
+                        <Label>Nguyên nhân</Label><Textarea value={nguyenNhan} onChange={e => setNguyenNhan(e.target.value)} />
+                        <Label>Biện pháp xử lý</Label><Textarea value={bienPhap} onChange={e => setBienPhap(e.target.value)} />
+                        <div className="flex items-center gap-2">
+                           <Checkbox checked={closingIntent} onCheckedChange={(v: boolean) => setClosingIntent(v)} />
+                           <Label>Đóng sự cố ngay (hoàn thành)</Label>
+                        </div>
+                    </CardContent>
+                </Card>
+             </div>
+          )}
+        </div>
+        <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
+          <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
+          <div className="flex gap-2">
+             <Button variant="secondary" onClick={() => setPreviewOpen(true)}><FileDown className="h-4 w-4 mr-1" /> Xem trước</Button>
+             {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
+          </div>
+        </div>
+        <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
     </div>
   );
 }

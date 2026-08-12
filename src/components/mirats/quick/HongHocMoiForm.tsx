@@ -38,6 +38,9 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   const { roles, profile } = useSession();
   const { suCo, heThong: heThongScope, inScope } = useScope();
   const qc = useQueryClient();
+  const { data: htList } = useQuery({ queryKey: ["dm_he_thong_min_for_hh"], queryFn: async () => (await supabase.from("dm_he_thong").select("id, ma, ten")).data ?? [] });
+  const { data: tbAll } = useQuery({ queryKey: ["thiet_bi_min_for_hh"], queryFn: async () => (await supabase.from("thiet_bi").select("id, ma_thiet_bi, ten_thiet_bi")).data ?? [] });
+  
   const [step, setStep] = useState(1);
   const [suCoMa, setSuCoMa] = useState(defaultSuCo ?? "");
   const [heThongId, setHeThongId] = useState(defaultHeThongId ?? "");
@@ -50,15 +53,24 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   const [moTa, setMoTa] = useState<string>("");
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
+    if (!thietBiHongId) return null;
+    return {
+      loai: "HONG_HOC",
+      thiet_bi_id: thietBiHongId,
+      moTa: moTa || "Báo cáo hỏng hóc",
+      thoiGian: ngayHong || new Date().toISOString(),
+      tenThietBi: tbAll?.find(d => d.id === thietBiHongId)?.ten_thiet_bi
+    };
+  }, [thietBiHongId, moTa, ngayHong, tbAll]);
+
   useEffect(() => {
     if (!defaultSuCo) return;
     const sc = suCo.find(x => x.ma_su_co === defaultSuCo);
     if (sc && !moTa) setMoTa(sc.hien_tuong);
   }, [defaultSuCo, suCo, moTa]);
 
-  const { data: htList } = useQuery({ queryKey: ["dm_he_thong_min_for_hh"], queryFn: async () => (await supabase.from("dm_he_thong").select("id, ma, ten")).data ?? [] });
   const { data: tpList } = useQuery({ queryKey: ["he_thong_thanh_phan_for_hh", heThongId], enabled: !!heThongId, queryFn: async () => (await supabase.from("he_thong_thanh_phan").select("id, ma_thanh_phan, ten").eq("he_thong_id", heThongId).is("deleted_at", null)).data ?? [] });
-  const { data: tbAll } = useQuery({ queryKey: ["thiet_bi_min_for_hh"], queryFn: async () => (await supabase.from("thiet_bi").select("id, ma_thiet_bi, ten_thiet_bi")).data ?? [] });
 
   const { data: currentDevice } = useQuery({
     queryKey: ["gan_chuc_nang_hien_hanh", thanhPhanId],
@@ -133,8 +145,12 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
       </div>
       <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
         <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
-        {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()}>Ghi phiếu</Button>}
+        <div className="flex gap-2">
+           {step === 3 && <Button variant="secondary" onClick={() => setPreviewOpen(true)}>Xem trước</Button>}
+           {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}</Button>}
+        </div>
       </div>
+      <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
     </div>
   );
 }
