@@ -506,7 +506,6 @@ export function CayMindMap({
   }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
 
 
-  const [rfNodes, setRfNodes, onNodesChange] = useNodesState(nodes);
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
 
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
