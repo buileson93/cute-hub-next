@@ -124,6 +124,7 @@ export function buildTree(
   plList: DbTaxonomy["plList"],
   htLabel: (ma: string) => string,
   nhLabel: (ma: string) => string,
+  groupByLoai: boolean = false,
   customGroups: Array<{ ma: string; ten: string; plId: string }> = [],
   ordNh: (ma: string) => number | undefined = () => undefined,
   ordHt: (ma: string) => number | undefined = () => undefined,
@@ -161,7 +162,10 @@ export function buildTree(
     for (const [nhKey, m2] of m1) {
       const systems: HtGroup[] = [];
       for (const [htId, devs] of m2) {
-        devs.sort(cmpDeviceByLoai);
+        if (groupByLoai) {
+          devs.sort(cmpDeviceByLoai);
+        }
+
         const ma = htSysMa(nhKey, htId);
         const dvCount = new Map<string, number>();
         for (const d of devs) {

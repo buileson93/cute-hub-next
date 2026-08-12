@@ -38,6 +38,7 @@ export function CayProvider({ children, initialDisplay = "tree" }: { children: R
   const [groupMode, setGroupMode] = useState<"phanloai" | "donvi">("phanloai");
   const [groupByLoai, setGroupByLoai] = useState(false);
   const [viewTree, setViewTree] = useState<PlGroup[]>([]);
+  const [reorgOpen, setReorgOpen] = useState(false);
 
   const toggleNode = (id: string) => {
     setExpandedNodes((prev) => {
@@ -60,6 +61,7 @@ export function CayProvider({ children, initialDisplay = "tree" }: { children: R
         groupMode, setGroupMode,
         groupByLoai, setGroupByLoai,
         viewTree, setViewTree,
+        reorgOpen, setReorgOpen,
       }}
     >
       {children}
