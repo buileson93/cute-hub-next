@@ -451,6 +451,7 @@ function HeThongCayPage() {
                 nhMind={nhMind}
                 htMind={htMind}
                 tbMind={tbMind}
+                devices={devices}
               />
             </div>
           )}

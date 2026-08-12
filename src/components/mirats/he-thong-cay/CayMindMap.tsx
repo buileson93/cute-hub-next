@@ -264,6 +264,7 @@ export function CayMindMap({
   nhMind,
   htMind,
   tbMind,
+  devices,
 }: { 
   tree: PlGroup[]; 
   posByHt: Map<string, any>; 
@@ -282,6 +283,7 @@ export function CayMindMap({
   nhMind: (ma: string) => string;
   htMind: (ma: string) => string;
   tbMind: (t: any) => string;
+  devices: any[];
 }) {
   const { searchQuery, focus } = useCayContext();
 
