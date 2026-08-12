@@ -410,10 +410,10 @@ function Dashboard() {
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   {[
-                    { label: "Sức khoẻ A - Tốt", count: hStats.a, color: "#10b981", desc: "Vận hành ổn định" },
-                    { label: "Sức khoẻ B - Khá", count: hStats.b, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
-                    { label: "Sức khoẻ C - TB", count: hStats.c, color: "#f59e0b", desc: "Cần bảo trì sớm" },
-                    { label: "Sức khoẻ D - Yếu", count: hStats.d, color: "#ef4444", desc: "Nguy cơ dừng máy" },
+                    { label: "Sức khoẻ A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
+                    { label: "Sức khoẻ B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
+                    { label: "Sức khoẻ C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
+                    { label: "Sức khoẻ D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
                   ].map((s) => (
                     <div key={s.label} className="flex flex-col gap-1.5">
                       <div className="flex justify-between items-end">
