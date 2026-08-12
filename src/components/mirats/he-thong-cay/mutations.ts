@@ -191,6 +191,30 @@ export function useCayMutations() {
     setNhColor,
     bulkSaveCell,
     reorderSiblings,
-    hoanTac
+    hoanTac,
+    renameEntity: useMutation({
+      mutationFn: async ({ kind, id, ten, userRoles }: { kind: any, id: string, ten: string, userRoles: string[] }) => {
+        const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
+        return saveEntityFieldSecurely({ kind, id, field: "ten", value: ten, userRoles });
+      },
+      onSuccess: (res) => {
+        invalidate();
+        if (res.mode === "proposed") toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
+        else toast.success("Đã đổi tên thành công");
+      },
+      onError: (e: any) => toast.error(e.message)
+    }),
+    saveCell: useMutation({
+      mutationFn: async ({ ma, col, value, userRoles }: { ma: string, col: string, value: any, userRoles: string[] }) => {
+        const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
+        return saveEntityFieldSecurely({ kind: "tb", id: ma, field: col, value, userRoles });
+      },
+      onSuccess: (res) => {
+        invalidate();
+        if (res.mode === "proposed") toast.success("Đã tạo đề xuất cập nhật (chờ phê duyệt)");
+        else toast.success("Đã lưu thành công");
+      },
+      onError: (e: any) => toast.error(e.message)
+    })
   };
 }
