@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   Plus, Trash2, FileText, Loader2, Save, FileDown,
   Wand2, Bot, Sparkles, CheckCircle2, Layers, MapPin, Lock,
-  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle
+  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle, Info
 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
