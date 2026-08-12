@@ -47,16 +47,21 @@ const STATUS_COLORS = [
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData({
-        queryKey: ['completeness-stats'],
-        queryFn: () => getCompletenessStats(),
-      }),
-      context.queryClient.ensureQueryData({
-        queryKey: ['completeness-overview', 3],
-        queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
-      })
-    ]);
+    // SSR safe loader: do not block if server calls fail (usually due to lack of Bearer token in SSR)
+    try {
+      await Promise.all([
+        context.queryClient.ensureQueryData({
+          queryKey: ['completeness-stats'],
+          queryFn: () => getCompletenessStats(),
+        }),
+        context.queryClient.ensureQueryData({
+          queryKey: ['completeness-overview', 3],
+          queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
+        })
+      ]);
+    } catch (e) {
+      console.warn("Dashboard SSR prefetch skipped:", e instanceof Error ? e.message : e);
+    }
   },
   component: Dashboard,
 });
