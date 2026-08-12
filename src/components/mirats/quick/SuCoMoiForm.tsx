@@ -102,6 +102,44 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
 
   const selected = useMemo(() => Array.from(new Set(mounted.map(m => m.device.id))).map(id => mounted.find(m => m.device.id === id)!.device), [mounted]);
 
+  const anomalies = useMemo(() => detectSuCoAnomalies({
+    thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb,
+    heThongId, selectedTpCount: selectedTpIds.size, mountedAssetsCount: selected.length
+  }), [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, selected]);
+
+  const parseFn = useServerFn(parseIncidentText);
+  const parseMutation = useMutation({
+    mutationFn: async (text: string) => parseFn({ data: { text } }),
+    onSuccess: (p) => {
+      setHienTuong(p.hien_tuong);
+      setHeThongDichVu(p.he_thong_goi_y);
+      setTomTat(p.tom_tat);
+      setThoiGianBatDau(p.thoi_gian_bat_dau);
+      setAnhHuongDhb(p.anh_huong_dhb);
+      setNguyenNhan(p.nguyen_nhan);
+      setBienPhap(p.bien_phap_xu_ly);
+      setTinhHinh(p.tinh_hinh_hien_tai);
+      setKetQua(p.ket_qua_khac_phuc);
+      setPhanLoai(p.phan_loai);
+      setAiFilled(true);
+      toast.success("Đã bóc tách thông tin sự cố");
+    },
+    onError: (e: Error) => toast.error(e.message)
+  });
+
+  const [voiceActive, setVoiceActive] = useState(false);
+  const voice = useMemo(() => createVoiceRecognition({
+    onTranscript: (text, isFinal) => { setAiText(text); if (isFinal) parseMutation.mutate(text); },
+    onEnd: () => setVoiceActive(false),
+    onError: (m) => { setVoiceActive(false); toast.error("Lỗi voice: " + m); }
+  }), [parseMutation]);
+
+  useEffect(() => {
+    const d = popVoiceDraft();
+    if (d?.transcript) { setAiText(d.transcript); parseMutation.mutate(d.transcript); }
+    if (defaultVoice) { setAiText(defaultVoice); parseMutation.mutate(defaultVoice); }
+  }, [defaultVoice, parseMutation]);
+
   useEffect(() => {
     supabase.from("v_van_de").select("id, ma_van_de, tieu_de, trang_thai").neq("trang_thai", "dong").order("created_at", { ascending: false }).then(({ data }) => {
       setVanDeOptions((data ?? []).map(v => ({ value: v.id!, label: v.tieu_de ?? "(không tiêu đề)", hint: v.ma_van_de ?? undefined })));
