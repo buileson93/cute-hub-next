@@ -35,6 +35,7 @@ import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, htSysMa } from "@/components/mirats/he-thong-cay/utils";
+import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import type { 
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
@@ -127,6 +128,8 @@ function HeThongCayPage() {
     badgeFilter, setBadgeFilter,
     groupMode,
   } = useCayContext();
+  
+  const { renameEntity } = useCayMutations();
 
   // Sync display with search param
   useEffect(() => {
@@ -218,40 +221,57 @@ function HeThongCayPage() {
 
 
   const { tree } = useMemo(() => {
-    const realSystems = taxonomy?.htList.map(h => ({
-      ma: h.ma,
-      ten: h.ten,
-      nhMa: h.nhomId || "KHAC",
-      nhTen: taxonomy.nhomNameMap.get(h.nhomId || "KHAC") || h.nhomId || "Khác",
-      plId: h.phanLoaiId || taxonomy.plList[0]?.id || "KHAC"
-    })) || [];
+    const plList = taxonomy?.plList || [];
+    const htList = taxonomy?.htList || [];
+    const nhomList = taxonomy?.nhomList || [];
 
-    const htDonViMap = (htId: string) => taxonomy?.htList.find(h => h.id === htId)?.donViId || null;
+    const realSystems = htList.map(h => {
+      const nhom = nhomList.find(n => n.id === h.nhomId);
+      return {
+        ma: h.ma,
+        ten: h.ten,
+        nhMa: nhom?.ma || h.nhomId || "KHAC",
+        nhTen: nhom?.ten || taxonomy?.nhomNameMap.get(h.nhomId || "KHAC") || "Khác",
+        plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC"
+      };
+    });
+
+    const customGroups = Array.from(overrides?.entries() || [])
+      .filter(([k]) => k.startsWith("nh:"))
+      .map(([k, v]) => ({
+        ma: k.split(":")[1],
+        ten: v.ten || "",
+        plId: (v.du_lieu as any)?.phan_loai_id || ""
+      }))
+      .filter(g => g.plId);
+
+    const customSystems = Array.from(overrides?.entries() || [])
+      .filter(([k]) => k.startsWith("ht:"))
+      .map(([k, v]) => ({
+        ma: k.split(":")[1],
+        ten: v.ten || "",
+        nhMa: (v.du_lieu as any)?.nhom_ma || "",
+        plId: (v.du_lieu as any)?.phan_loai_id || ""
+      }))
+      .filter(s => s.nhMa && s.plId);
+
+    const htDonViMap = (htId: string) => htList.find(h => h.id === htId || h.ma === htId)?.donViId || null;
     
-    const ordNh = (ma: string) => {
-      const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
-      return d?.thu_tu;
-    };
-    const ordHt = (ma: string) => {
-      const d = overrides?.get(okey("ht", ma))?.du_lieu as any;
-      return d?.thu_tu;
-    };
-    const colNh = (ma: string) => {
-      const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
-      return d?.mau;
-    };
+    const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
+    const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
+    const colNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.mau;
 
     return buildTree(
       devices as any,
-      taxonomy?.plList || [],
+      plList,
       htMind,
       nhMind,
       groupMode === "donvi",
-      [], // customGroups
+      customGroups,
       ordNh,
       ordHt,
       colNh,
-      [], // customSystems
+      customSystems,
       htDonViMap,
       realSystems
     );
@@ -396,12 +416,7 @@ function HeThongCayPage() {
                 }}
                 onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
-                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
-                  ).then(() => {
-                    refetchOverrides();
-                    refetchDevices();
-                  }).catch(e => toast.error(e.message));
+                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
                 }}
                 onMoveSystem={(req) => {
                   nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
@@ -425,12 +440,7 @@ function HeThongCayPage() {
                 scopeText="Toàn hệ thống"
                 canManage={canManage && editMode}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
-                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
-                  ).then(() => {
-                    refetchOverrides();
-                    refetchDevices();
-                  }).catch(e => toast.error(e.message));
+                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
                 }}
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}

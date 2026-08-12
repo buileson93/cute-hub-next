@@ -134,7 +134,10 @@ export function buildTree(
   htDonVi: (htId: string) => string | null = () => null,
   realSystems: Array<{ ma: string; ten: string; nhMa: string; nhTen: string; plId: string }> = [],
 ): { tree: PlGroup[]; total: number } {
+  // acc: plId -> nhMa -> htId -> devices
   const acc = new Map<string, Map<string, Map<string, DevNode[]>>>();
+  
+  // 1. Phân bổ tài sản hiện có
   for (const t of devices) {
     const pl = t._pl || "__nopl__";
     const nh = t._nhKey || "KHAC";
@@ -150,36 +153,65 @@ export function buildTree(
   const plTenMap = new Map(plList.map((p) => [p.id, p.ten]));
   const plToneMap = new Map(plList.map((p) => [p.id, p.tone]));
 
-  const tree: PlGroup[] = [];
-  let total = 0;
+  // Tập hợp tất cả PL ID cần hiển thị
   const plIdSet = new Set<string>(acc.keys());
   for (const rs of realSystems) if (rs.plId) plIdSet.add(rs.plId);
   for (const cg of customGroups) if (cg.plId) plIdSet.add(cg.plId);
   for (const cs of customSystems) if (cs.plId) plIdSet.add(cs.plId);
+  
   const plIds = [...plIdSet].sort((a, b) => (plOrder.get(a) ?? 999) - (plOrder.get(b) ?? 999));
+
+  const tree: PlGroup[] = [];
+  let total = 0;
+
   for (const plId of plIds) {
     const m1 = acc.get(plId) ?? new Map<string, Map<string, DevNode[]>>();
     const groups: NhGroup[] = [];
-    for (const [nhKey, m2] of m1) {
-      const systems: HtGroup[] = [];
-      for (const [htId, devs] of m2) {
-        if (groupByLoai) {
-          devs.sort(cmpDeviceByLoai);
-        }
 
-        const ma = htSysMa(nhKey, htId);
-        const dvCount = new Map<string, number>();
-        for (const d of devs) {
-          const dv = (d.tb.don_vi ?? "").trim();
-          if (dv) dvCount.set(dv, (dvCount.get(dv) ?? 0) + 1);
-        }
-        let donViMa: string | null = htDonVi(htId);
-        if (!donViMa) {
+    // Lấy tập hợp NH Mã từ tài sản + custom + real
+    const nhMaSet = new Set<string>(m1.keys());
+    for (const rs of realSystems) if (rs.plId === plId) nhMaSet.add(rs.nhMa);
+    for (const cg of customGroups) if (cg.plId === plId) nhMaSet.add(cg.ma);
+
+    for (const nhMa of nhMaSet) {
+      const m2 = m1.get(nhMa) ?? new Map<string, DevNode[]>();
+      const systems: HtGroup[] = [];
+
+      // Lấy tập hợp HT Id từ tài sản + custom + real
+      const htIdSet = new Set<string>(m2.keys());
+      for (const rs of realSystems) if (rs.plId === plId && rs.nhMa === nhMa) htIdSet.add(parseHtSysMa(rs.ma).sysName);
+      for (const cs of customSystems) if (cs.plId === plId && cs.nhMa === nhMa) htIdSet.add(parseHtSysMa(cs.ma).sysName);
+
+      for (const sysId of htIdSet) {
+        const devs = m2.get(sysId) ?? [];
+        if (groupByLoai) devs.sort(cmpDeviceByLoai);
+
+        const ma = htSysMa(nhMa, sysId);
+        let donViMa: string | null = htDonVi(sysId);
+        
+        // Dự phòng đơn vị từ tài sản bên trong nếu htDonVi không trả về
+        if (!donViMa && devs.length > 0) {
+          const dvCount = new Map<string, number>();
+          for (const d of devs) {
+            const dv = (d.tb.don_vi ?? "").trim();
+            if (dv) dvCount.set(dv, (dvCount.get(dv) ?? 0) + 1);
+          }
           let best = 0;
           for (const [dv, n] of dvCount) if (n > best) { best = n; donViMa = dv; }
         }
-        systems.push({ ma, ten: htLabel(ma), devices: devs, count: totalOf(devs), donViMa });
+
+        const isCustom = customSystems.some(cs => cs.ma === ma);
+        systems.push({ 
+          ma, 
+          ten: htLabel(ma), 
+          devices: devs, 
+          count: totalOf(devs), 
+          donViMa,
+          isCustom 
+        });
       }
+
+      // Sắp xếp HT theo đơn vị -> thứ tự thủ công -> tên
       systems.sort((a, b) => {
         const da = (a.donViMa ?? "").trim();
         const db = (b.donViMa ?? "").trim();
@@ -190,35 +222,39 @@ export function buildTree(
         }
         return (ordHt(a.ma) ?? 1e9) - (ordHt(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi");
       });
-      groups.push({ ma: nhKey, ten: nhLabel(nhKey), systems, count: systems.reduce((n, s) => n + s.count, 0), mau: colNh(nhKey) });
+
+      const isCustomNh = customGroups.some(cg => cg.ma === nhMa);
+      const nhTen = nhLabel(nhMa) || realSystems.find(rs => rs.nhMa === nhMa)?.nhTen || nhMa;
+      
+      groups.push({ 
+        ma: nhMa, 
+        ten: nhTen, 
+        systems, 
+        count: systems.reduce((n, s) => n + s.count, 0), 
+        mau: colNh(nhMa),
+        isCustom: isCustomNh 
+      });
     }
-    for (const cg of customGroups) {
-      if (cg.plId !== plId) continue;
-      if (groups.some((g) => g.ma === cg.ma)) continue;
-      groups.push({ ma: cg.ma, ten: nhLabel(cg.ma), systems: [], count: 0, mau: colNh(cg.ma), isCustom: true });
-    }
-    for (const cs of customSystems) {
-      if (cs.plId !== plId) continue;
-      const g = groups.find((gr) => gr.ma === cs.nhMa);
-      if (g && !g.systems.some((s) => s.ma === cs.ma)) {
-        g.systems.push({ ma: cs.ma, ten: htLabel(cs.ma), devices: [], count: 0, donViMa: null, isCustom: true });
-      }
-    }
-    for (const rs of realSystems) {
-      if (rs.plId !== plId) continue;
-      let g = groups.find((gr) => gr.ma === rs.nhMa);
-      if (!g) {
-        g = { ma: rs.nhMa, ten: rs.nhTen, systems: [], count: 0, mau: colNh(rs.nhMa) };
-        groups.push(g);
-      }
-      if (!g.systems.some((s) => s.ma === rs.ma)) {
-        g.systems.push({ ma: rs.ma, ten: rs.ten, devices: [], count: 0, donViMa: htDonVi(parseHtSysMa(rs.ma).sysName) });
-      }
-    }
+
+    // Sắp xếp NH theo thứ tự thủ công -> tên
     groups.sort((a, b) => (ordNh(a.ma) ?? 1e9) - (ordNh(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi"));
-    const fields: LvGroup[] = [{ id: "all", ten: "Tất cả", groups, count: groups.reduce((n, g) => n + g.count, 0), passthrough: true }];
+
+    const fields: LvGroup[] = [{ 
+      id: "all", 
+      ten: "Tất cả", 
+      groups, 
+      count: groups.reduce((n, g) => n + g.count, 0), 
+      passthrough: true 
+    }];
+    
     const count = fields.reduce((n, lv) => n + lv.count, 0);
-    tree.push({ id: plId, ten: plTenMap.get(plId) || plId, tone: plToneMap.get(plId) || "", fields, count });
+    tree.push({ 
+      id: plId, 
+      ten: plTenMap.get(plId) || plId, 
+      tone: plToneMap.get(plId) || "", 
+      fields, 
+      count 
+    });
     total += count;
   }
   return { tree, total };
