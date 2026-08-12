@@ -573,12 +573,28 @@ export function CayMindMap({
         data: { label }, selectable: false, draggable: false, focusable: false,
       }));
 
+    const finiteNodes = nodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
 
-    return { nodes: [...layerNodes, ...nodes], edges };
-  }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
+    if (process.env.NODE_ENV === "development") {
+      console.debug("[CayMindMap]", {
+        deviceCount: devices.length,
+        treeCount: tree.length,
+        nodeCount: nodes.length,
+        finiteNodes,
+        errorNodes: finiteNodes ? [] : nodes.filter(n => !Number.isFinite(n.position?.x) || !Number.isFinite(n.position?.y)).map(n => n.id)
+      });
+    }
+
+    return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
+  }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
+
+  const { finiteNodes } = useMemo(() => {
+    const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
+    return { finiteNodes: fn };
+  }, [rfNodes]);
 
 
 
