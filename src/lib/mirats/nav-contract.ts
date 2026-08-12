@@ -75,7 +75,7 @@ export const workspaces: Workspace[] = [
           { to: "/", label: "Overview", icon: LayoutDashboard, exact: true },
           { to: "/he-thong/cay", label: "Hệ thống", icon: Network },
           { to: "/he-thong/lien-ket", label: "Liên kết", icon: Link2 },
-          { to: "/so-do", label: "Sơ đồ hệ thống", icon: Waypoints, hideOnMobile: true },
+          { to: "/he-thong/cay?view=mindmap", label: "Sơ đồ hệ thống", icon: Waypoints, hideOnMobile: true },
           { to: "/giay-phep", label: "Giấy phép", icon: ShieldCheck },
           { to: "/kiem-dinh", label: "Kiểm định & Hiệu chuẩn", icon: ShieldCheck },
           { to: "/phan-mem-ban-quyen", label: "Bản quyền phần mềm", icon: KeyRound },

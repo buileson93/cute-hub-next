@@ -294,6 +294,14 @@ function HeThongCayPage() {
               }, [viewTree])} 
               onPick={(it) => {
                 setSearchQuery(it.label);
+                if (it.kind === "ht" || it.kind === "tb" || it.kind === "nh" || it.kind === "pl") {
+                  setDisplay("mindmap");
+                  nav({ 
+                    to: "/he-thong/cay", 
+                    search: (prev: any) => ({ ...prev, view: "mindmap" }),
+                    replace: true 
+                  });
+                }
                 setFocus({ ...it, nonce: Math.random() });
               }}
             />
@@ -310,7 +318,7 @@ function HeThongCayPage() {
          </div>
       </div>
 
-      <PageBody noPadding className="min-h-0 flex-1 flex flex-col bg-muted/10">
+      <PageBody noPadding className="min-h-0 flex-1 flex flex-col bg-muted/10 relative">
         <DataState
           state={state}
           loadingType="drawer"
@@ -371,7 +379,7 @@ function HeThongCayPage() {
           )}
           
           {display === "mindmap" && (
-            <div className="h-full w-full">
+            <div className="flex-1 w-full min-h-[500px] md:min-h-[600px]">
               <CayMindMap 
                 tree={viewTree as any}
                 posByHt={posByHt || new Map()}
