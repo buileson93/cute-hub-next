@@ -15,6 +15,7 @@ import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw } fro
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCayMutations } from "./mutations";
 import { useCayContext } from "./CayContext";
+import { useSession } from "@/hooks/use-session";
 
 export function NodeEditorSheet({
   target, onClose, plLabel, nhLabel, htLabel, tbMap,
@@ -45,8 +46,9 @@ export function NodeEditorSheet({
   onRenameGroupCode: (ma: string, newMa: string) => void;
   slugMa: (s: string) => string;
 }) {
-  const { addGroup, addSystem, deleteNode } = useCayMutations();
+  const { addGroup, addSystem, deleteNode, renameEntity, saveCell } = useCayMutations();
   const { setReorgOpen } = useCayContext();
+  const { roles } = useSession();
 
   const [ten, setTen] = useState("");
   const [tenMindmap, setTenMindmap] = useState("");
@@ -190,16 +192,32 @@ export function NodeEditorSheet({
             <Button 
               className="w-full" 
               onClick={() => {
-                if (target?.kind === "tb") {
-                  // Gọi saveCell cho ten_thiet_bi qua Change Request logic nếu cần
-                  onSave({ ten });
+                if (!target) return;
+                
+                if (target.kind === "tb") {
+                  saveCell.mutate({ 
+                    ma: target.ma, 
+                    col: "ten", 
+                    value: ten, 
+                    userRoles: roles 
+                  });
                 } else {
-                  submit();
+                  renameEntity.mutate({ 
+                    kind: target.kind, 
+                    id: target.ma, // uuid cho pl/nh/ht
+                    ten, 
+                    userRoles: roles 
+                  });
                 }
               }} 
-              disabled={saving}
+              disabled={saving || renameEntity.isPending || saveCell.isPending}
             >
-              {saving ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Save className="mr-1.5 h-4 w-4" />} Lưu thay đổi
+              {(saving || renameEntity.isPending || saveCell.isPending) ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-1.5 h-4 w-4" />
+              )} 
+              Lưu thay đổi
             </Button>
           )}
 

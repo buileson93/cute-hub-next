@@ -396,9 +396,12 @@ function HeThongCayPage() {
                 }}
                 onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-cell-securely").then(m => 
-                    m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
-                  ).catch(e => toast.error(e.message));
+                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
+                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
+                  ).then(() => {
+                    refetchOverrides();
+                    refetchDevices();
+                  }).catch(e => toast.error(e.message));
                 }}
                 onMoveSystem={(req) => {
                   nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
@@ -422,9 +425,12 @@ function HeThongCayPage() {
                 scopeText="Toàn hệ thống"
                 canManage={canManage && editMode}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-cell-securely").then(m => 
-                    m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
-                  ).catch(e => toast.error(e.message));
+                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
+                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
+                  ).then(() => {
+                    refetchOverrides();
+                    refetchDevices();
+                  }).catch(e => toast.error(e.message));
                 }}
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}
@@ -484,18 +490,8 @@ function HeThongCayPage() {
         htLabel={htMind}
         tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
         canManage={canManage && editMode}
-        saving={false}
-        onSave={(payload) => {
-          if (target?.kind === "tb" && payload.ten) {
-            import("@/lib/mirats/ui/save-cell-securely").then(m => 
-              m.saveCellSecurely({ maThietBi: target.ma, field: "ten_thiet_bi", value: payload.ten, userRoles: roles })
-            ).then(res => {
-              if (res.mode === "proposed") toast.success("Đã tạo đề xuất thay đổi tên");
-              else toast.success("Đã cập nhật tên tài sản");
-              setTarget(null);
-            }).catch(e => toast.error(e.message));
-          }
-        }}
+        saving={false} // Chuyển sang dùng state pending của mutation trong Sheet
+        onSave={() => {}} // Đã handle bên trong Sheet qua renameEntity/saveCell mutation
         unitCodeOf={() => null}
         isCustomNode={() => false}
         isRealNode={() => true}
