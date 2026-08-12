@@ -369,13 +369,13 @@ export function CayMindMap({
 
   useEffect(() => {
     if (rfNodes.length > 0) {
-      // Small delay to allow layout to settle
+      // Delay slightly to ensure layout is applied
       const timer = setTimeout(() => {
-        recenter();
-      }, 250);
+        fitView({ duration: 600, padding: 0.1 });
+      }, 350);
       return () => clearTimeout(timer);
     }
-  }, [rfNodes.length, recenter]);
+  }, [rfNodes.length, fitView]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
