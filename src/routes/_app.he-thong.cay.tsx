@@ -127,6 +127,7 @@ function HeThongCayPage() {
     setFocus,
     badgeFilter, setBadgeFilter,
     groupMode,
+    setViewTree,
   } = useCayContext();
   
   const { renameEntity } = useCayMutations();
@@ -278,6 +279,11 @@ function HeThongCayPage() {
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
+
+  // Sync viewTree to context for MindMap and other consumers
+  useEffect(() => {
+    setViewTree(viewTree as any);
+  }, [viewTree, setViewTree]);
 
   const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
   const error = errorOverrides || errorTaxo || errorDevices;
