@@ -315,7 +315,7 @@ function HeThongCayPage() {
   }, [nav]);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden min-h-0 flex-1">
       <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
          <div className="flex items-center gap-4">
             <PageHeader
@@ -389,7 +389,7 @@ function HeThongCayPage() {
          </div>
       </div>
 
-      <PageBody noPadding className={cn("min-h-0 flex-1 flex flex-col bg-muted/10 relative", display === "mindmap" && "overflow-hidden")}>
+      <PageBody noPadding className={cn("flex-1 min-h-0 relative flex flex-col bg-muted/10 overflow-hidden")}>
         <DataState
           state={state}
           loadingType="drawer"
@@ -407,10 +407,10 @@ function HeThongCayPage() {
               </Button>
             ) : undefined
           }
-          className="flex-1 flex flex-col min-h-0 h-full w-full"
+          className="flex-1 min-h-0 w-full flex flex-col"
         >
           {display === "tree" && (
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar h-full">
               <TreeView 
                 tree={viewTree as any}
                 plLabel={plMind}
@@ -448,7 +448,7 @@ function HeThongCayPage() {
           )}
           
           {display === "mindmap" && (
-            <div className="flex-1 w-full min-h-[500px] md:min-h-[600px] relative">
+            <div className="flex-1 w-full min-h-[600px] relative">
               <CayMindMap 
                 tree={viewTree as any}
                 posByHt={posByHt || new Map()}
