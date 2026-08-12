@@ -273,6 +273,7 @@ export function CayMindMap({
   htMind: (ma: string) => string;
   tbMind: (t: any) => string;
 }) {
+  const { searchQuery, focus } = useCayContext();
 
   const { fitView, zoomTo, getIntersectingNodes } = useReactFlow();
   
@@ -290,8 +291,63 @@ export function CayMindMap({
   }, [tree]);
 
   const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
+  const treeSigRef = useRef("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
+
+  // LỖI 1: Đồng bộ expanded khi tree đổi nhưng không ghi đè thao tác người dùng
+  useEffect(() => {
+    const sig = tree.map(p => p.id).join(",");
+    if (sig !== treeSigRef.current) {
+      treeSigRef.current = sig;
+      if (!justOpenedRef.current) {
+        setExpanded(initialExpanded);
+      }
+    }
+  }, [tree, initialExpanded]);
+
+  // LỖI 5: Nối focus target vào sơ đồ
+  useEffect(() => {
+    if (!focus) return;
+    
+    const path: string[] = ["root"];
+    if (focus.plId) {
+      const plId = `pl:${focus.plId}`;
+      path.push(plId);
+      if (focus.nhMa) {
+        const nhId = `nh:${focus.plId}:${focus.nhMa}`;
+        path.push(nhId);
+        if (focus.htMa) {
+          const htId = `ht:${focus.plId}:${focus.nhMa}:${focus.htMa}`;
+          path.push(htId);
+        }
+      }
+    }
+
+    setExpanded(prev => {
+      const next = new Set(prev);
+      path.forEach(id => next.add(id));
+      return next;
+    });
+
+    const targetId = focus.kind === "tb" ? `tb:${focus.ma}` : 
+                     focus.kind === "ht" ? `ht:${focus.plId}:${focus.nhMa}:${focus.ma}` :
+                     focus.kind === "nh" ? `nh:${focus.plId}:${focus.ma}` :
+                     focus.kind === "pl" ? `pl:${focus.ma}` : "root";
+    
+    setActiveId(targetId);
+
+    // Zoom to node after expansion settles
+    setTimeout(() => {
+      const node = rfNodes.find(n => n.id === targetId);
+      if (node && node.position) {
+        // center node
+        const x = node.position.x + (KIND_W[focus.kind] || 200) / 2;
+        const y = node.position.y + (KIND_H[focus.kind] || 40) / 2;
+        fitView({ nodes: [node], duration: 800, padding: 0.5 });
+      }
+    }, 300);
+  }, [focus, rfNodes, fitView]);
 
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
   
@@ -531,7 +587,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full min-h-0">
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
