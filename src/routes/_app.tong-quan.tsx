@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
   CartesianGrid,
 } from "recharts";
 import {
@@ -446,7 +446,7 @@ function TongQuanPage() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis dataKey="thangHT" fontSize={11} />
                   <YAxis fontSize={11} allowDecimals={false} />
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   {mucDoKeys.map((k) => (
                     <Bar
@@ -492,7 +492,7 @@ function TongQuanPage() {
                       <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
