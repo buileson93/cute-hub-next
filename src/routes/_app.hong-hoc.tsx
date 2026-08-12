@@ -40,11 +40,8 @@ export const Route = createFileRoute("/_app/hong-hoc")({
   component: HongHocPage,
 });
 
-const paColor: Record<string, string> = {
-  "Sửa chữa": "bg-sky-100 text-sky-700",
-  "Thay thế": "bg-amber-100 text-amber-700",
-  "Thanh lý": "bg-red-100 text-red-700",
-};
+import { getPhuongAnHongHocToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
@@ -103,7 +100,7 @@ function HongHocPage() {
         ),
       },
       {
-        key: "ngay_hong", label: "Ngày", sortable: true,
+        key: "ngay_hong", label: "Ngày", sortable: true, hideBelow: "xl",
         value: (h) => h.ngay_hong,
         cell: (h) => <span className="whitespace-nowrap text-xs text-muted-foreground">{h.ngay_hong}</span>,
       },
@@ -127,12 +124,12 @@ function HongHocPage() {
         cell: (h) => <span className="text-sm">{h.bo_phan_hong}</span>,
       },
       {
-        key: "phuong_an", label: "Phương án", filter: "cat",
+        key: "phuong_an", label: "Phương án", filter: "cat", hideBelow: "sm",
         value: (h) => h.phuong_an,
-        cell: (h) => <Badge variant="secondary" className={paColor[h.phuong_an] ?? ""}>{h.phuong_an}</Badge>,
+        cell: (h) => <Badge variant="secondary" className={getPhuongAnHongHocToken(h.phuong_an)?.class}>{h.phuong_an}</Badge>,
       },
       {
-        key: "thay_the", label: "Thay bằng",
+        key: "thay_the", label: "Thay bằng", hideBelow: "2xl",
         value: (h) => (h.thiet_bi_thay_the ? thietBiMap.get(h.thiet_bi_thay_the)?.ma_thiet_bi ?? "" : ""),
         cell: (h) => {
           const tbT = h.thiet_bi_thay_the ? thietBiMap.get(h.thiet_bi_thay_the) : null;
@@ -144,13 +141,13 @@ function HongHocPage() {
         },
       },
       {
-        key: "chi_phi", label: "Chi phí", align: "right", sortable: true,
+        key: "chi_phi", label: "Chi phí", align: "right", sortable: true, hideBelow: "2xl",
         value: (h) => h.chi_phi,
         sortValue: (h) => h.chi_phi,
         cell: (h) => <span className="text-right text-sm tabular-nums">{fmtVND(h.chi_phi)}</span>,
       },
       {
-        key: "trang_thai", label: "Trạng thái", filter: "cat",
+        key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
         value: (h) => h.trang_thai,
         cell: (h) => <StatusBadge domain="hong_hoc" code={h.trang_thai} />,
       },
@@ -188,9 +185,9 @@ function HongHocPage() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Kpi icon={Replace} label="Phiếu hỏng hóc" value={stats.total} tone="text-foreground/70" />
-        <Kpi icon={AlertTriangle} label="Đang xử lý" value={stats.mo} tone="text-amber-600" />
-        <Kpi icon={Replace} label="Thay thế linh kiện" value={stats.thay} tone="text-sky-600" />
-        <Kpi icon={DollarSign} label="Chi phí sửa/thay" value={`${fmtVND(stats.chi_phi)} đ`} tone="text-emerald-600" />
+        <Kpi icon={AlertTriangle} label="Đang xử lý" value={stats.mo} tone="text-amber-600 dark:text-amber-400" />
+        <Kpi icon={Replace} label="Thay thế linh kiện" value={stats.thay} tone="text-sky-600 dark:text-sky-400" />
+        <Kpi icon={DollarSign} label="Chi phí sửa/thay" value={`${fmtVND(stats.chi_phi)} đ`} tone="text-emerald-600 dark:text-emerald-400" />
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -223,7 +220,7 @@ function HongHocPage() {
                     <SelectTrigger><SelectValue placeholder="Phương án" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi phương án</SelectItem>
-                      {Object.keys(paColor).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      {["Sửa chữa", "Thay thế", "Thanh lý"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Select value={tt} onValueChange={(v) => setTt(v)}>
@@ -321,9 +318,18 @@ function EditDialog({ row, onClose, onDone }: { row: HongHocThayThe | null; onCl
           </div>
           {paNorm === "thay_the" && (
             <div>
-              <Label>Tài sản thay thế (UUID)</Label>
-              <Input value={thayTheId} onChange={(e) => setThayTheId(e.target.value)} placeholder="UUID tài sản thay thế" />
+              <Label>Tài sản thay thế (UUID/Mã)</Label>
+              <Input value={thayTheId} onChange={(e) => setThayTheId(e.target.value)} placeholder="Nhập mã tài sản hoặc UUID" />
               <p className="mt-1 text-xs text-muted-foreground">Cần chọn tài sản thay thế trước khi hoàn thành phiếu.</p>
+              {row?.vat_tu_su_dung && row.vat_tu_su_dung.length > 0 && (
+                <div className="mt-2 rounded bg-muted/50 p-2 text-[10px] text-muted-foreground">
+                  <div className="font-semibold uppercase">Dữ liệu cũ (Legacy):</div>
+                  <ul className="list-inside list-disc">
+                    {row.vat_tu_su_dung.map((v, i) => <li key={i}>{v}</li>)}
+                  </ul>
+                </div>
+              )}
+
             </div>
           )}
           <div>

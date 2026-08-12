@@ -187,9 +187,10 @@ export function useThietBiRanh() {
           dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
         }>((from, to) =>
           supabase
-            .from("thiet_bi")
-            .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
-            .order("ma_thiet_bi")
+        .from("thiet_bi")
+        .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, vai_tro, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
+        .order("ma_thiet_bi")
+
             .range(from, to),
         ),
       ]);
@@ -206,7 +207,8 @@ export function useThietBiRanh() {
         .map((r) => ({
           id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
           loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
-          he_thong_id: r.he_thong_id,
+          he_thong_id: r.he_thong_id, vai_tro: (r as any).vai_tro,
+
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
           soLanLap: busyCount.get(r.id) ?? 0,
@@ -244,9 +246,10 @@ export function useThietBiChon() {
           dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
         }>((from, to) =>
           supabase
-            .from("thiet_bi")
-            .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
-            .order("ma_thiet_bi")
+        .from("thiet_bi")
+        .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, vai_tro, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
+        .order("ma_thiet_bi")
+
             .range(from, to),
         ),
       ]);
@@ -263,7 +266,8 @@ export function useThietBiChon() {
         .map((r) => ({
           id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
           loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
-          he_thong_id: r.he_thong_id,
+          he_thong_id: r.he_thong_id, vai_tro: (r as any).vai_tro,
+
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
           soLanLap: busyCount.get(r.id) ?? 0,

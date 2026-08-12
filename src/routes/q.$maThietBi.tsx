@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useEffect, useMemo } from "react";
 import {
-  Loader2, QrCode, ArrowLeft, AlertTriangle, BookOpen, Wrench, FileBadge, MapPin, WifiOff, History,
+  Loader2, QrCode, ArrowLeft, AlertTriangle, BookOpen, Wrench, FileBadge, MapPin, WifiOff, History, Camera, Check,
 } from "lucide-react";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
+import { calculateCompleteness } from "@/lib/mirats/completeness";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +68,7 @@ function QuetQrLanding() {
     queryFn: async () => {
       const { data: tb, error } = await supabase
         .from("thiet_bi")
-        .select("id, ma_thiet_bi, ten_thiet_bi, don_vi_id, vi_tri_id, trang_thai_id, he_thong_id")
+        .select("id, ma_thiet_bi, ten_thiet_bi, don_vi_id, vi_tri_id, trang_thai_id, he_thong_id, ma_serial, model_id, nam_san_xuat")
         .eq("ma_thiet_bi", maThietBi)
         .maybeSingle();
       if (error) throw error;
@@ -199,31 +201,45 @@ function QuetQrLanding() {
               </CardContent>
             </Card>
 
-            <div className="grid gap-2">
-              <Button asChild size="lg" className="h-12 text-base">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button asChild size="lg" className="h-16 text-lg font-bold shadow-md active:scale-95 transition-transform bg-red-600 hover:bg-red-700">
                 <Link to="/su-co/moi" search={{ thietBi: data.ma_thiet_bi, from: "qr" } as never}>
-                  <AlertTriangle className="h-5 w-5 mr-2" /> Báo sự cố
+                  <AlertTriangle className="h-6 w-6 mr-2" /> Báo sự cố
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 text-base">
-                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }}>
-                  <BookOpen className="h-5 w-5 mr-2" /> Xem lý lịch đầy đủ
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 text-base">
+              <Button asChild size="lg" variant="secondary" className="h-16 text-lg font-bold shadow-md active:scale-95 transition-transform border-2 border-primary/20">
                 <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} hash="bao-tri">
-                  <Wrench className="h-5 w-5 mr-2" /> Bảo trì gần nhất
+                  <Wrench className="h-6 w-6 mr-2" /> Ghi bảo trì
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 text-base">
+              <Button asChild variant="outline" size="lg" className="h-14 text-base shadow-sm">
+                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }}>
+                  <BookOpen className="h-5 w-5 mr-2" /> Xem lý lịch
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-14 text-base shadow-sm">
                 <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} hash="chung-chi">
                   <FileBadge className="h-5 w-5 mr-2" /> Giấy phép / Chứng chỉ
                 </Link>
               </Button>
             </div>
 
-            <VoiceQuickLog maThietBi={data.ma_thiet_bi} />
+            <Card className="mt-4 border-emerald-500/20 bg-emerald-500/5">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <CompletenessRing value={calculateCompleteness("thiet_bi", fresh || ({} as any))} showText size={48} />
+                  <div>
+                    <h3 className="text-sm font-bold">Góp dữ liệu tài sản</h3>
+                    <p className="text-[10px] text-muted-foreground uppercase">Giúp hệ thống hoàn thiện dữ liệu</p>
+                  </div>
+                </div>
+                <Button asChild size="sm" variant="outline" className="border-emerald-500/50 text-emerald-700 hover:bg-emerald-100">
+                  <Link to="/gop-gach">Bắt đầu</Link>
+                </Button>
+              </CardContent>
+            </Card>
 
+            <VoiceQuickLog maThietBi={data.ma_thiet_bi} />
           </>
         )}
       </div>

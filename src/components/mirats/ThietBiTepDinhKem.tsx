@@ -17,9 +17,9 @@ import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
+import { MAX_MB } from "@/lib/mirats/storage-config";
 
 const BUCKET = { hinh_anh: "thiet-bi-hinh-anh", tai_lieu: "thiet-bi-tai-lieu" } as const;
-const MAX_MB = 20;
 
 type TepRow = {
   id: string;

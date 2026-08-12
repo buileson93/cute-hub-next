@@ -1367,6 +1367,7 @@ export type Database = {
         Row: {
           active: boolean
           attrs: Json
+          completeness_pct: number | null
           created_at: string
           deactivated_at: string | null
           dia_diem_dat_gp: string | null
@@ -1404,6 +1405,7 @@ export type Database = {
         Insert: {
           active?: boolean
           attrs?: Json
+          completeness_pct?: number | null
           created_at?: string
           deactivated_at?: string | null
           dia_diem_dat_gp?: string | null
@@ -1441,6 +1443,7 @@ export type Database = {
         Update: {
           active?: boolean
           attrs?: Json
+          completeness_pct?: number | null
           created_at?: string
           deactivated_at?: string | null
           dia_diem_dat_gp?: string | null
@@ -1790,6 +1793,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "dm_model_merged_into_fkey"
+            columns: ["merged_into"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+          {
             foreignKeyName: "dm_model_nha_san_xuat_id_fkey"
             columns: ["nha_san_xuat_id"]
             isOneToOne: false
@@ -1835,6 +1845,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dm_model_dac_tinh_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
           },
         ]
       }
@@ -2271,6 +2288,54 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "dm_vi_tri"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dong_gop_diem: {
+        Row: {
+          change_request_id: string | null
+          created_at: string | null
+          diem: number
+          id: string
+          ky: string
+          loai_dong_gop: string
+          nhiem_vu_id: string | null
+          user_id: string
+        }
+        Insert: {
+          change_request_id?: string | null
+          created_at?: string | null
+          diem: number
+          id?: string
+          ky: string
+          loai_dong_gop: string
+          nhiem_vu_id?: string | null
+          user_id: string
+        }
+        Update: {
+          change_request_id?: string | null
+          created_at?: string | null
+          diem?: number
+          id?: string
+          ky?: string
+          loai_dong_gop?: string
+          nhiem_vu_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dong_gop_diem_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "change_request"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dong_gop_diem_nhiem_vu_id_fkey"
+            columns: ["nhiem_vu_id"]
+            isOneToOne: false
+            referencedRelation: "nhiem_vu_nhap_lieu"
             referencedColumns: ["id"]
           },
         ]
@@ -5323,6 +5388,13 @@ export type Database = {
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "model_tai_lieu_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
         ]
       }
       nhan_vien: {
@@ -5366,6 +5438,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      nhiem_vu_nhap_lieu: {
+        Row: {
+          created_at: string | null
+          do_uu_tien: number | null
+          don_vi_id: string | null
+          entity: string
+          field_key: string | null
+          id: string
+          loai: string
+          nguoi_nhan: string | null
+          target_id: string
+          trang_thai: string
+        }
+        Insert: {
+          created_at?: string | null
+          do_uu_tien?: number | null
+          don_vi_id?: string | null
+          entity: string
+          field_key?: string | null
+          id?: string
+          loai: string
+          nguoi_nhan?: string | null
+          target_id: string
+          trang_thai?: string
+        }
+        Update: {
+          created_at?: string | null
+          do_uu_tien?: number | null
+          don_vi_id?: string | null
+          entity?: string
+          field_key?: string | null
+          id?: string
+          loai?: string
+          nguoi_nhan?: string | null
+          target_id?: string
+          trang_thai?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nhiem_vu_nhap_lieu_don_vi_id_fkey"
+            columns: ["don_vi_id"]
+            isOneToOne: false
+            referencedRelation: "dm_don_vi"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       node_note: {
         Row: {
@@ -6514,6 +6633,7 @@ export type Database = {
         Row: {
           attrs: Json
           che_do_kd_hc: string
+          completeness_pct: number | null
           created_at: string
           created_by: string | null
           danh_gia_nien_han_id: string | null
@@ -6578,6 +6698,7 @@ export type Database = {
           trang_thai_id: string | null
           ty_le_tuoi_tho: number | null
           updated_at: string
+          vai_tro: string | null
           vat_tu_du_phong: string | null
           vi_tri: string | null
           vi_tri_id: string | null
@@ -6585,6 +6706,7 @@ export type Database = {
         Insert: {
           attrs?: Json
           che_do_kd_hc?: string
+          completeness_pct?: number | null
           created_at?: string
           created_by?: string | null
           danh_gia_nien_han_id?: string | null
@@ -6649,6 +6771,7 @@ export type Database = {
           trang_thai_id?: string | null
           ty_le_tuoi_tho?: number | null
           updated_at?: string
+          vai_tro?: string | null
           vat_tu_du_phong?: string | null
           vi_tri?: string | null
           vi_tri_id?: string | null
@@ -6656,6 +6779,7 @@ export type Database = {
         Update: {
           attrs?: Json
           che_do_kd_hc?: string
+          completeness_pct?: number | null
           created_at?: string
           created_by?: string | null
           danh_gia_nien_han_id?: string | null
@@ -6720,6 +6844,7 @@ export type Database = {
           trang_thai_id?: string | null
           ty_le_tuoi_tho?: number | null
           updated_at?: string
+          vai_tro?: string | null
           vat_tu_du_phong?: string | null
           vi_tri?: string | null
           vi_tri_id?: string | null
@@ -6787,6 +6912,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
           },
           {
             foreignKeyName: "thiet_bi_nha_cung_cap_id_fkey"
@@ -6958,6 +7090,72 @@ export type Database = {
           },
           {
             foreignKeyName: "thiet_bi_do_dac_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_thiet_bi_dac_tinh"
+            referencedColumns: ["thiet_bi_id"]
+          },
+        ]
+      }
+      thiet_bi_he_thong_tuong_thich: {
+        Row: {
+          created_at: string
+          danh_gia: string | null
+          he_thong_id: string
+          id: string
+          phan_loai: string | null
+          thiet_bi_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          danh_gia?: string | null
+          he_thong_id: string
+          id?: string
+          phan_loai?: string | null
+          thiet_bi_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          danh_gia?: string | null
+          he_thong_id?: string
+          id?: string
+          phan_loai?: string | null
+          thiet_bi_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thiet_bi_he_thong_tuong_thich_he_thong_id_fkey"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_he_thong_tuong_thich_he_thong_id_fkey"
+            columns: ["he_thong_id"]
+            isOneToOne: false
+            referencedRelation: "v_do_thi_toan_canh"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_he_thong_tuong_thich_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "mv_asset_anomaly"
+            referencedColumns: ["asset_id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_he_thong_tuong_thich_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_he_thong_tuong_thich_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
@@ -7875,6 +8073,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "vat_tu_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+          {
             foreignKeyName: "vat_tu_nha_cung_cap_id_fkey"
             columns: ["nha_cung_cap_id"]
             isOneToOne: false
@@ -8278,13 +8483,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
-            columns: ["he_thong_dich_id"]
-            isOneToOne: false
-            referencedRelation: "dm_he_thong"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
             columns: ["he_thong_nguon_id"]
             isOneToOne: false
             referencedRelation: "dm_he_thong"
@@ -8293,13 +8491,20 @@ export type Database = {
           {
             foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
             columns: ["he_thong_dich_id"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
+            columns: ["he_thong_nguon_id"]
             isOneToOne: false
             referencedRelation: "v_do_thi_toan_canh"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
-            columns: ["he_thong_nguon_id"]
+            columns: ["he_thong_dich_id"]
             isOneToOne: false
             referencedRelation: "v_do_thi_toan_canh"
             referencedColumns: ["id"]
@@ -8822,6 +9027,19 @@ export type Database = {
           },
         ]
       }
+      view_ton_kho_model: {
+        Row: {
+          bulk_quantity: number | null
+          combined_total: number | null
+          model_id: string | null
+          model_ten: string | null
+          serial_ccdc: number | null
+          serial_spare: number | null
+          serial_system: number | null
+          serial_total: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       _admin_check_ident: { Args: { _ident: string }; Returns: undefined }
@@ -9011,6 +9229,10 @@ export type Database = {
           tong_gia_tri: number
         }[]
       }
+      calculate_completeness: {
+        Args: { p_entity: string; p_row: Json }
+        Returns: number
+      }
       can_access_du_an: {
         Args: { _du_an_id: string; _user: string }
         Returns: boolean
@@ -9056,6 +9278,7 @@ export type Database = {
         Returns: {
           attrs: Json
           che_do_kd_hc: string
+          completeness_pct: number | null
           created_at: string
           created_by: string | null
           danh_gia_nien_han_id: string | null
@@ -9120,6 +9343,7 @@ export type Database = {
           trang_thai_id: string | null
           ty_le_tuoi_tho: number | null
           updated_at: string
+          vai_tro: string | null
           vat_tu_du_phong: string | null
           vi_tri: string | null
           vi_tri_id: string | null
@@ -9310,6 +9534,7 @@ export type Database = {
           model: string
         }[]
       }
+      get_completeness_stats: { Args: never; Returns: Json }
       get_user_don_vi_id: { Args: { _user_id: string }; Returns: string }
       get_user_don_vi_ma: { Args: { _user_id: string }; Returns: string }
       ghi_bao_duong_atomic:
@@ -9629,6 +9854,7 @@ export type Database = {
         Args: { _label: string; _path: string }
         Returns: undefined
       }
+      refresh_dashboard_overview: { Args: never; Returns: undefined }
       refresh_mv_asset_anomaly: { Args: never; Returns: undefined }
       reject_change_request: {
         Args: { p_id: string; p_ly_do: string }
@@ -9712,8 +9938,8 @@ export type Database = {
           so_su_co: number
         }[]
       }
-      rpc_tai_san_toan_cuc: { Args: never; Returns: Json }
-      rpc_thanh_phan_toan_cuc: { Args: never; Returns: Json }
+      rpc_tai_san_toan_cuc: { Args: never; Returns: Json[] }
+      rpc_thanh_phan_toan_cuc: { Args: never; Returns: Json[] }
       run_audit_daily_digest: { Args: never; Returns: number }
       run_audit_retention: { Args: never; Returns: number }
       sinh_canh_bao_het_han: { Args: never; Returns: Json }
@@ -9905,6 +10131,9 @@ export type Database = {
         | "danh_muc.deactivate"
         | "role.grant"
         | "role.revoke"
+        | "thiet_bi.propose_field"
+        | "he_thong.propose_field"
+        | "dm.propose_new"
       change_request_status:
         | "pending"
         | "approved"
@@ -10160,6 +10389,9 @@ export const Constants = {
         "danh_muc.deactivate",
         "role.grant",
         "role.revoke",
+        "thiet_bi.propose_field",
+        "he_thong.propose_field",
+        "dm.propose_new",
       ],
       change_request_status: [
         "pending",

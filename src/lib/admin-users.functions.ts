@@ -6,9 +6,20 @@ const ROLES = ["admin", "phong_kt", "phu_trach_dv", "ktv", "readonly", "quan_ly_
 const DON_VI = ["CRA", "CLA", "THO", "PCA", "PBA", "PLK"] as const;
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: chỉ Admin được thực hiện");
+  if (!isAdmin) throw new Error("Forbidden: chỉ Admin được thực hiện");
+}
+
+async function logAdminAction(supabaseAdmin: any, actorId: string, action: string, entity: string, entityId: string | null, detail: any) {
+  await supabaseAdmin.from("audit_log").insert({
+    user_id: actorId,
+    action,
+    entity,
+    entity_id: entityId,
+    detail,
+    severity: "info"
+  });
 }
 
 // ==================== LIST USERS ====================
