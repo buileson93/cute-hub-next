@@ -399,12 +399,54 @@ function Dashboard() {
             </Card>
           </div>
 
-          {/* TẦNG 4: BIỂU ĐỒ DUY NHẤT */}
-          <div className="hidden md:block">
-            <Card className="shadow-sm">
+          {/* TẦNG 4: KHỐI PHÂN BỔ SỨC KHOẺ & BIỂU ĐỒ */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="md:col-span-1 shadow-sm">
+              <CardHeader className="pb-2 border-b bg-muted/10">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-primary" /> Phân bố sức khoẻ (A/B/C/D)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  {[
+                    { label: "Sức khoẻ A - Tốt", count: hStats.a, color: "#10b981", desc: "Vận hành ổn định" },
+                    { label: "Sức khoẻ B - Khá", count: hStats.b, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
+                    { label: "Sức khoẻ C - TB", count: hStats.c, color: "#f59e0b", desc: "Cần bảo trì sớm" },
+                    { label: "Sức khoẻ D - Yếu", count: hStats.d, color: "#ef4444", desc: "Nguy cơ dừng máy" },
+                  ].map((s) => (
+                    <div key={s.label} className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                          <span className="text-xs font-bold uppercase tracking-tight">{s.label}</span>
+                        </div>
+                        <span className="text-sm font-black tabular-nums">{s.count}</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full transition-all duration-1000" 
+                          style={{ 
+                            width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
+                            backgroundColor: s.color 
+                          }} 
+                        />
+                      </div>
+                      <div className="text-[10px] text-muted-foreground italic pl-4">{s.desc}</div>
+                    </div>
+                  ))}
+                  <div className="pt-2 mt-2 border-t text-center">
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Tổng số tài sản theo dõi</div>
+                    <div className="text-lg font-black">{scope.thietBi.length}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2 shadow-sm">
               <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
+                  <BarChart3 className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
                 </CardTitle>
                 <Tabs value={activeTab} onValueChange={setActiveTab as any} className="h-8">
                   <TabsList className="h-8 p-0.5 bg-muted/50 border">
