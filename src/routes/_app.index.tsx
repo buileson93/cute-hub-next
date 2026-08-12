@@ -204,13 +204,14 @@ function Dashboard() {
 
   return (
     <PageBody>
-      <div className="flex items-center justify-between mb-2">
-        <PageHeader
-          title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
-          icon={LayoutDashboard}
-          description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
-          className="flex-1"
-        />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+        <div className="flex-1">
+          <PageHeader
+            title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
+            icon={LayoutDashboard}
+            description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
+          />
+        </div>
         <Button 
           variant="outline" 
           size="sm" 
