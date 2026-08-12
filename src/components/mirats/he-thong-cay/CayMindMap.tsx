@@ -570,15 +570,13 @@ export function CayMindMap({
 
     const finiteNodes = nodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
 
-    if (process.env.NODE_ENV === "development") {
-      console.debug("[CayMindMap]", {
-        deviceCount: devices.length,
-        treeCount: tree.length,
-        nodeCount: nodes.length,
-        finiteNodes,
-        errorNodes: finiteNodes ? [] : nodes.filter(n => !Number.isFinite(n.position?.x) || !Number.isFinite(n.position?.y)).map(n => n.id)
-      });
-    }
+    console.debug("[CayMindMap] buildNodes", {
+      deviceCount: devices.length,
+      treeCount: tree.length,
+      nodeCount: nodes.length,
+      finiteNodes,
+      errorNodes: finiteNodes ? [] : nodes.filter(n => !Number.isFinite(n.position?.x) || !Number.isFinite(n.position?.y)).map(n => n.id)
+    });
 
     return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
