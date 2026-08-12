@@ -39,9 +39,11 @@ import type {
 } from "@/components/mirats/he-thong-cay/types";
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
-  validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string; moveHt?: string; moveTb?: string } => ({
     editTb: typeof search.editTb === "string" ? search.editTb : undefined,
     view: typeof search.view === "string" ? search.view : undefined,
+    moveHt: typeof search.moveHt === "string" ? search.moveHt : undefined,
+    moveTb: typeof search.moveTb === "string" ? search.moveTb : undefined,
   }),
   head: () => ({
     meta: [
