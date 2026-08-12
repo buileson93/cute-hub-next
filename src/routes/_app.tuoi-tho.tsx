@@ -11,10 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
-import { getXepLoaiHealthToken, XEP_LOAI_HEALTH_TOKEN } from "@/lib/mirats/ui/status-tokens";
-import { cn } from "@/lib/utils";
-
-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -41,6 +37,12 @@ export const Route = createFileRoute("/_app/tuoi-tho")({
   component: TuoiThoPage,
 });
 
+const loaiColors: Record<string, { bg: string; text: string; ring: string; hex: string }> = {
+  A: { bg: "bg-emerald-500/10", text: "text-emerald-700 dark:text-emerald-300", ring: "border-emerald-500/20", hex: "#10b981" },
+  B: { bg: "bg-blue-500/10", text: "text-blue-700 dark:text-blue-300", ring: "border-blue-500/20", hex: "#3b82f6" },
+  C: { bg: "bg-amber-500/10", text: "text-amber-700 dark:text-amber-300", ring: "border-amber-500/20", hex: "#f59e0b" },
+  D: { bg: "bg-red-500/10", text: "text-red-700 dark:text-red-300", ring: "border-red-500/20", hex: "#ef4444" },
+};
 
 function TuoiThoPage() {
   const { thietBi, donVi } = useScope();
@@ -87,8 +89,7 @@ function TuoiThoPage() {
     const buckets: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
     for (const r of rows) buckets[r.h.xepLoai]++;
     return (["A", "B", "C", "D"] as const).map((k) => ({
-      loai: k, count: buckets[k], hex: XEP_LOAI_HEALTH_TOKEN[k].hex,
-
+      loai: k, count: buckets[k], hex: loaiColors[k].hex,
     }));
   }, [rows]);
 
@@ -211,7 +212,7 @@ function TuoiThoPage() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-2 grid grid-cols-2 @sm:grid-cols-4 gap-2 text-center text-xs">
+            <div className="mt-2 grid grid-cols-4 gap-2 text-center text-xs">
               {distribution.map((d) => (
                 <div key={d.loai}>
                   <div className="mx-auto h-2 w-2 rounded-full" style={{ background: d.hex }} />
@@ -341,9 +342,9 @@ function TuoiThoPage() {
                   </div>
                 ),
               },
-              { key: "don_vi", label: "Đơn vị", hideBelow: "md", value: (r) => donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi, cell: (r) => <span className="text-sm">{donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi}</span> },
+              { key: "don_vi", label: "Đơn vị", value: (r) => donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi, cell: (r) => <span className="text-sm">{donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi}</span> },
               {
-                key: "he_thong", label: "Hệ thống", hideBelow: "md",
+                key: "he_thong", label: "Hệ thống",
                 value: (r) => {
                   const nht = heThongMap.get(r.t.he_thong)?.nhom;
                   return nht ? (nhomHeThongMap.get(nht)?.ten ?? "") : "";
@@ -354,7 +355,7 @@ function TuoiThoPage() {
                 },
               },
               {
-                key: "health", label: "Health", sortable: true, minW: "min-w-[140px]", hideBelow: "2xl",
+                key: "health", label: "Health", sortable: true, minW: "min-w-[140px]",
                 sortValue: (r) => r.h.score,
                 value: (r) => r.h.score,
                 cell: (r) => (
@@ -365,26 +366,26 @@ function TuoiThoPage() {
                 ),
               },
               {
-                key: "xep_loai", label: "Xếp loại", filter: "cat", hideBelow: "sm",
+                key: "xep_loai", label: "Xếp loại", filter: "cat",
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
-                  const token = getXepLoaiHealthToken(r.h.xepLoai);
-                  return <Badge variant="outline" className={cn(token?.class, "font-mono border")}>{r.h.xepLoai}</Badge>;
+                  const c = loaiColors[r.h.xepLoai];
+                  return <Badge variant="outline" className={`${c.bg} ${c.text} ${c.ring} font-mono`}>{r.h.xepLoai}</Badge>;
                 },
               },
-              { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, hideBelow: "2xl", sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
+              { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
               {
-                key: "su_co_12t", label: "Sự cố 12t", align: "right", sortable: true, hideBelow: "2xl",
+                key: "su_co_12t", label: "Sự cố 12t", align: "right", sortable: true,
                 sortValue: (r) => r.h.suCo12t, value: (r) => r.h.suCo12t,
                 cell: (r) => r.h.suCo12t > 0 ? <span className="text-orange-600 tabular-nums text-sm">{r.h.suCo12t}</span> : <span className="text-muted-foreground tabular-nums text-sm">0</span>,
               },
-              { key: "downtime", label: "Downtime", align: "right", sortable: true, hideBelow: "2xl", sortValue: (r) => r.h.downtime12t, value: (r) => r.h.downtime12t, cell: (r) => <span className="text-sm text-muted-foreground">{fmtDowntime(r.h.downtime12t) || "—"}</span> },
+              { key: "downtime", label: "Downtime", align: "right", sortable: true, sortValue: (r) => r.h.downtime12t, value: (r) => r.h.downtime12t, cell: (r) => <span className="text-sm text-muted-foreground">{fmtDowntime(r.h.downtime12t) || "—"}</span> },
               {
-                key: "con_lai", label: "Còn lại", align: "right", sortable: true, hideBelow: "2xl",
+                key: "con_lai", label: "Còn lại", align: "right", sortable: true,
                 sortValue: (r) => r.conLai, value: (r) => r.conLai,
                 cell: (r) => r.conLai > 0 ? <span className="tabular-nums text-sm">{r.conLai} năm</span> : <span className="text-red-600 font-semibold tabular-nums text-sm">Hết</span>,
               },
-              { key: "khuyen_nghi", label: "Khuyến nghị", hideBelow: "2xl", value: (r) => r.h.khuyenNghi, cell: (r) => <span className="text-xs">{r.h.khuyenNghi}</span> },
+              { key: "khuyen_nghi", label: "Khuyến nghị", value: (r) => r.h.khuyenNghi, cell: (r) => <span className="text-xs">{r.h.khuyenNghi}</span> },
             ]}
           />
           {filtered.length > 200 && (
@@ -410,9 +411,9 @@ function TuoiThoPage() {
                   </div>
                 ),
               },
-              { key: "don_vi", label: "Đơn vị", hideBelow: "md", value: (r) => donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi, cell: (r) => <span className="text-sm">{donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi}</span> },
+              { key: "don_vi", label: "Đơn vị", value: (r) => donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi, cell: (r) => <span className="text-sm">{donViMap.get(r.t.don_vi)?.ten ?? r.t.don_vi}</span> },
               {
-                key: "health", label: "Health", sortable: true, minW: "min-w-[140px]", hideBelow: "2xl",
+                key: "health", label: "Health", sortable: true, minW: "min-w-[140px]",
                 sortValue: (r) => r.h.score, value: (r) => r.h.score,
                 cell: (r) => (
                   <div className="flex items-center gap-2">
@@ -422,26 +423,25 @@ function TuoiThoPage() {
                 ),
               },
               {
-                key: "xep_loai", label: "Loại", filter: "cat", hideBelow: "sm",
+                key: "xep_loai", label: "Loại", filter: "cat",
                 value: (r) => r.h.xepLoai,
                 cell: (r) => {
-                  const token = getXepLoaiHealthToken(r.h.xepLoai);
-                  return <Badge variant="outline" className={cn(token?.class, "font-mono border")}>{r.h.xepLoai}</Badge>;
-
+                  const c = loaiColors[r.h.xepLoai];
+                  return <Badge variant="outline" className={`${c.bg} ${c.text} ${c.ring} font-mono`}>{r.h.xepLoai}</Badge>;
                 },
               },
-              { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, hideBelow: "2xl", sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
+              { key: "pt_vong_doi", label: "% Vòng đời", align: "right", sortable: true, sortValue: (r) => r.h.ptVongDoi, value: (r) => r.h.ptVongDoi, cell: (r) => <span className="tabular-nums text-sm">{r.h.ptVongDoi}%</span> },
               {
-                key: "ty_le_chi_phi", label: "Chi phí BT / Giá trị", align: "right", sortable: true, hideBelow: "2xl",
+                key: "ty_le_chi_phi", label: "Chi phí BT / Giá trị", align: "right", sortable: true,
                 sortValue: (r) => r.h.tyLeChiPhi, value: (r) => r.h.tyLeChiPhi,
                 cell: (r) => <span className={`tabular-nums text-sm ${r.h.tyLeChiPhi > 30 ? "text-orange-600" : ""}`}>{r.h.tyLeChiPhi.toFixed(1)}%</span>,
               },
               {
-                key: "nam_thay", label: "Năm thay dự kiến", align: "right", sortable: true, hideBelow: "xl",
+                key: "nam_thay", label: "Năm thay dự kiến", align: "right", sortable: true,
                 sortValue: (r) => r.namThay, value: (r) => r.namThay,
                 cell: (r) => r.namThay <= new Date().getFullYear() + 1 ? <span className="text-red-600 tabular-nums text-sm font-semibold">{r.namThay}</span> : <span className="tabular-nums text-sm font-semibold">{r.namThay}</span>,
               },
-              { key: "gia_tri", label: "Giá trị gốc", align: "right", sortable: true, hideBelow: "2xl", sortValue: (r) => r.t.gia_tri_mua ?? 0, value: (r) => r.t.gia_tri_mua ?? 0, cell: (r) => <span className="tabular-nums text-sm">{fmtVND(r.t.gia_tri_mua ?? 0)}</span> },
+              { key: "gia_tri", label: "Giá trị gốc", align: "right", sortable: true, sortValue: (r) => r.t.gia_tri_mua ?? 0, value: (r) => r.t.gia_tri_mua ?? 0, cell: (r) => <span className="tabular-nums text-sm">{fmtVND(r.t.gia_tri_mua ?? 0)}</span> },
             ]}
           />
         </TabsContent>

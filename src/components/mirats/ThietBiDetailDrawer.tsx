@@ -27,7 +27,17 @@ import { sortDacTinh, type DacTinh } from "@/lib/mirats/dac-tinh";
 import { MauChip } from "@/components/mirats/MauChip";
 import { cn } from "@/lib/utils";
 
-import { StatusBadge } from "@/components/mirats/StatusBadge";
+const ttColor: Record<string, string> = {
+  "Đang khai thác": "bg-emerald-100 text-emerald-700",
+  "Đang sử dụng": "bg-emerald-100 text-emerald-700",
+  "Đang hoạt động": "bg-emerald-100 text-emerald-700",
+  "Dự phòng": "bg-sky-100 text-sky-700",
+  "Đang sửa chữa": "bg-amber-100 text-amber-700",
+  "Hỏng": "bg-red-100 text-red-700",
+  "Chờ thanh lý": "bg-orange-100 text-orange-700",
+  "Đã thanh lý": "bg-slate-200 text-slate-700",
+  "Ngừng hoạt động": "bg-slate-200 text-slate-700",
+};
 
 function SummaryRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -182,7 +192,11 @@ function ThanhPhanSection({ device }: { device: DbDevice }) {
           </SummaryRow>
           <SummaryRow label="Vị trí">{device._viTriTen || device.vi_tri || "—"}</SummaryRow>
           <SummaryRow label="Trạng thái">
-            <StatusBadge domain="thiet_bi" code={device.trang_thai} />
+            {device.trang_thai ? (
+              <Badge variant="secondary" className={cn("font-medium", ttColor[device.trang_thai] ?? "")}>
+                {device.trang_thai}
+              </Badge>
+            ) : "—"}
           </SummaryRow>
         </div>
       )}
@@ -243,7 +257,11 @@ export function ThietBiDetailDrawer({
                   <div className="mt-0.5 flex flex-wrap items-center gap-2">
                     <CodeBadge code={device.ma_thiet_bi} title={`Mã tài sản: ${device.ma_thiet_bi}`} />
                     {device.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {device.serial}</span>}
-                    <StatusBadge domain="thiet_bi" code={device.trang_thai} />
+                    {device.trang_thai && (
+                      <Badge variant="secondary" className={cn("font-medium", ttColor[device.trang_thai] ?? "")}>
+                        {device.trang_thai}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>

@@ -6,8 +6,6 @@
 //   - Bật "Chỉnh sửa" để đổi/lắp/tháo tài sản (ghi lịch sử gan_chuc_nang).
 // ============================================================================
 import { useMemo, useState } from "react";
-import { useTonKhoModel } from "@/lib/mirats/kho";
-
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -248,14 +246,7 @@ function errMsg(e: unknown, fallback: string): string {
   if (!e) return fallback;
   if (typeof e === "string") return e;
   if (typeof e === "object") {
-    const anyErr = e as { message?: unknown; details?: unknown; hint?: unknown; code?: string };
-    
-    // T43: Bắt lỗi UNIQUE constraint của Postgres (23505) 
-    // liên quan đến uq_gcn_thiet_bi_active.
-    if (anyErr.code === "23505" && typeof anyErr.message === "string" && anyErr.message.includes("uq_gcn_thiet_bi_active")) {
-      return "Tài sản này đang được lắp ở một vị trí khác. Vui lòng tháo tài sản ra trước khi lắp vào vị trí mới.";
-    }
-
+    const anyErr = e as { message?: unknown; details?: unknown; hint?: unknown };
     if (typeof anyErr.message === "string" && anyErr.message.trim()) return anyErr.message;
     if (typeof anyErr.details === "string" && anyErr.details.trim()) return anyErr.details;
     if (typeof anyErr.hint === "string" && anyErr.hint.trim()) return anyErr.hint;
@@ -312,13 +303,8 @@ function ChangeDeviceForm({
   isReplace: boolean;
   onDone: () => void;
 }) {
-  const { data: allRaw = [], isLoading } = useThietBiChon();
-  
-  // T45: Lọc cấm lắp CCDC/Vật tư vào thành phần hệ thống
-  const all = useMemo(() => allRaw.filter(r => (r as any).vai_tro === "he_thong" || !(r as any).vai_tro), [allRaw]);
-
+  const { data: all = [], isLoading } = useThietBiChon();
   const lapMut = useLapThietBi(heThongId);
-
   const thayMut = useThayTheThietBi(heThongId);
   const thaoMut = useThaoThietBi(heThongId);
   const chuyenMut = useDieuChuyen(heThongId);
@@ -332,35 +318,23 @@ function ChangeDeviceForm({
   const [ghiChu, setGhiChu] = useState("");
   const [viTriTaiSanCu, setViTriTaiSanCu] = useState("");
   const [dangXuLy, setDangXuLy] = useState(false);
-  // T44: Tồn kho model
-  const { data: tonKhoModel } = useTonKhoModel(viTri.loai_thiet_bi_yeu_cau || undefined);
-
   // Hộp thoại xác nhận khi tài sản được chọn đang lắp ở vị trí khác:
-
   // - "Chuyển sang đây" → dieu_chuyen (đóng vai trò cũ, mở vai trò mới)
   // - "Gán thêm vai trò" → lap_thiet_bi (giữ nguyên vai trò cũ, mở thêm)
   const [swapAsk, setSwapAsk] = useState<ThietBiChon | null>(null);
 
   const options = useMemo(
-    () => rankChonDevices(all, viTri.loai_thiet_bi_yeu_cau).map((r) => {
-      const modelStock = tonKhoModel?.find(t => t.model_id === r.loai_thiet_bi_id);
-      return {
-        value: r.id,
-        label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
-        hint: [
-          r.ma_serial ? "SN " + r.ma_serial : "",
-          (r as any).vai_tro === "ccdc" ? "CÔNG CỤ DỤNG CỤ" : "",
-          (r as any).vai_tro === "vat_tu" ? "VẬT TƯ DỰ PHÒNG" : "",
-          r.khopLoai ? "" : "khác phân loại",
-          r.dangLap ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác") : (r.trang_thai_ten ?? "rảnh"),
-          modelStock ? `Tồn kho model: ${modelStock.serial_total} serial, ${modelStock.bulk_quantity} SL` : "",
-        ].filter(Boolean).join(" · "),
-      };
-    }),
-
-    [all, viTri.loai_thiet_bi_yeu_cau, tonKhoModel],
+    () => rankChonDevices(all, viTri.loai_thiet_bi_yeu_cau).map((r) => ({
+      value: r.id,
+      label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
+      hint: [
+        r.ma_serial ? "SN " + r.ma_serial : "",
+        r.khopLoai ? "" : "khác phân loại",
+        r.dangLap ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác") : (r.trang_thai_ten ?? "rảnh"),
+      ].filter(Boolean).join(" · "),
+    })),
+    [all, viTri.loai_thiet_bi_yeu_cau],
   );
-
 
   const viTriOptions = useMemo(
     () => viTriList
@@ -612,7 +586,7 @@ function ThanhPhanFieldsForm({
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Mã</Label>
           <div className="flex items-center gap-1">
@@ -660,7 +634,7 @@ function ThanhPhanFieldsForm({
           <Combobox options={ttOptions} value={ttId} onChange={setTtId} placeholder="Chọn trạng thái" emptyText="Không có trạng thái" />
         </div>
       </div>
-      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Thứ tự</Label>
           <Input value={thuTu} onChange={(e) => setThuTu(e.target.value)} inputMode="numeric" placeholder="1" />
@@ -753,7 +727,7 @@ function SoLyLichThanhPhanSection({
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 @md:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all">Tất cả</TabsTrigger>
           <TabsTrigger value="lap-thao">Tháo–lắp</TabsTrigger>
           <TabsTrigger value="su-co">Sự cố</TabsTrigger>

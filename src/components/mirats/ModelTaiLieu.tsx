@@ -16,9 +16,9 @@ import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { MAX_MB } from "@/lib/mirats/storage-config";
 
 const BUCKET = "model-tai-lieu";
+const MAX_MB = 20;
 
 /** Các loại/định nghĩa tài liệu gợi ý (vẫn cho nhập tự do). */
 const LOAI_GOI_Y = [

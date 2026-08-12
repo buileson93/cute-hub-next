@@ -349,18 +349,6 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
 }
 
 
-type Hit = {
-  entity: any;
-  id: string;
-  title: string;
-  subtitle?: string;
-  to: string;
-  sysName?: string;
-  count?: number;
-};
-
-
-
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -368,14 +356,11 @@ export function CommandPalette() {
   const navigate = useNavigate();
   const { session, roles } = useSession();
 
-  const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q) as any;
-
+  const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
-
   // Không lặp lại kết quả đã hiển thị bởi useGlobalSearch (theo cặp loai:id / entity:id)
-  const daHienThi = new Set(rows.map((r: any) => `${r.entity}:${r.id}`));
-  const rowsMoRong = rowsToanCuc.filter((r: any) => !daHienThi.has(`${r.loai}:${r.id}`));
-
+  const daHienThi = new Set(rows.map((r) => `${r.entity}:${r.id}`));
+  const rowsMoRong = rowsToanCuc.filter((r) => !daHienThi.has(`${r.loai}:${r.id}`));
 
   // Dữ liệu danh mục (đã cache bởi react-query — không phát sinh truy vấn thừa)
   // dùng để làm giàu khung xem trước với thông tin THẬT của tài sản/hệ thống.
@@ -413,29 +398,6 @@ export function CommandPalette() {
     staleTime: 60_000,
   });
   const aiEnabled = !!aiCfg?.enabled;
-
-  // Phân nhóm kết quả và thêm 5 mục truy cập gần nhất khi rỗng.
-  const [recentHits, setRecentHits] = useState<Hit[]>([]);
-  
-  useEffect(() => {
-    const saved = localStorage.getItem("mirats:recent-commands");
-    if (saved) {
-      try {
-        setRecentHits(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse recent commands", e);
-      }
-    }
-  }, []);
-
-  const saveRecent = (hit: Hit) => {
-    setRecentHits(prev => {
-      const next = [hit, ...prev.filter(h => h.id !== hit.id)].slice(0, 5);
-      localStorage.setItem("mirats:recent-commands", JSON.stringify(next));
-      return next;
-    });
-  };
-
 
   // Global hotkey: Alt+Space (và Cmd/Ctrl+K) + custom event từ nút gọi nhanh
   useEffect(() => {
@@ -477,12 +439,6 @@ export function CommandPalette() {
     queryKey: ["cmdk_nav_stats"],
     enabled: open,
     staleTime: 60_000,
-    initialData: {
-      tbTong: 1200, tbHd: 1150, htTong: 45, scMo: 12,
-      gpTong: 85, gpSapHet: 5, gpDaHet: 2,
-      dvTong: 12, vtTong: 156, bbTong: 850, mauTong: 25,
-      duAnTong: 8, duAnChay: 3, userTong: 50, auditToday: 120
-    },
     queryFn: async () => {
       const today = new Date().toISOString().slice(0, 10);
       const in90 = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
@@ -581,11 +537,10 @@ export function CommandPalette() {
     }
     if (v.startsWith("hit-")) {
       const row = rows.find(
-        (h: any) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
+        (h) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
       );
       if (!row) return null;
-      const meta = (ENTITY_META as any)[row.entity];
-
+      const meta = ENTITY_META[row.entity];
 
       // Tài sản: hiển thị thông tin thật lấy từ CSDL (danh mục tài sản).
       if (row.entity === "thiet_bi") {
@@ -655,9 +610,8 @@ export function CommandPalette() {
     const v = activeValue;
     if (!v?.startsWith("hit-")) return null;
     const row = rows.find(
-      (h: any) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
+      (h) => `hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}` === v,
     );
-
     if (!row) return null;
     if (row.entity === "thiet_bi" || row.entity === "he_thong") {
       return { type: row.entity, id: row.id };
@@ -857,34 +811,6 @@ export function CommandPalette() {
           </div>
         )}
 
-        {!hasQuery && recentHits.length > 0 && (
-          <>
-            <CommandGroup heading="Truy cập gần đây">
-              {recentHits.map((h) => {
-                const meta = (ENTITY_META as any)[h.entity];
-                const Icon = meta?.icon || Search;
-                return (
-                  <CommandItem
-                    key={`recent-${h.entity}-${h.id}`}
-                    value={`recent-${h.entity}-${h.id}-${h.title}`}
-                    onSelect={() => go(h.to)}
-                  >
-                    <Icon className="h-4 w-4 text-muted-foreground" />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium">{h.title}</div>
-                      {h.subtitle && <div className="truncate text-xs text-muted-foreground">{h.subtitle}</div>}
-                    </div>
-                    <span className="ml-auto shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                      {meta?.label || "Tài sản"}
-                    </span>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-            <CommandSeparator />
-          </>
-        )}
-
         {aiEnabled && hasQuery && (
           <>
             <CommandGroup heading="Trợ lý AI">
@@ -906,24 +832,18 @@ export function CommandPalette() {
           </>
         )}
 
-
         {rows.length > 0 && (
           <>
-            <CommandGroup heading="Tài sản & Hệ thống">
-              {rows.filter((h: any) => h.entity === 'thiet_bi' || h.entity === 'he_thong').map((h: any) => {
-                const meta = (ENTITY_META as any)[h.entity];
-
+            <CommandGroup heading="Kết quả tìm kiếm">
+              {rows.map((h) => {
+                const meta = ENTITY_META[h.entity];
                 const Icon = meta.icon;
                 return (
                   <CommandItem
                     key={`${h.entity}-${h.id}`}
                     value={`hit-${h.entity}-${h.id}-${h.title}-${h.subtitle ?? ""}`}
-                    onSelect={() => {
-                      saveRecent(h);
-                      go(h.to);
-                    }}
+                    onSelect={() => go(h.to)}
                   >
-
                     <Icon className={h.entity === "he_thong" ? "h-4 w-4 text-primary" : "h-4 w-4"} />
                     <div className="min-w-0 flex-1">
                       <div className="truncate">

@@ -1347,7 +1347,7 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
 
         <div className="mt-4 flex-1 overflow-y-auto pr-1">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hình có sẵn</p>
-          <div className="grid grid-cols-2 @sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {DEFAULT_LIB.map((it) => (
               <button
                 key={it.key}
@@ -1367,7 +1367,7 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
           ) : uploaded.length === 0 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">Chưa có hình tải lên.</p>
           ) : (
-            <div className="grid grid-cols-2 @sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {uploaded.map((r) => (
                 <div
                   key={r.id}

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 /** Trạng thái "nghỉ khai thác" — mặc định ẩn khỏi danh sách nhưng vẫn lọc xem được. */
-export const RETIRED_STATUSES = new Set(["Ngừng khai thác", "Thanh lý", "NGUNG_KHAI_THAC", "THANH_LY"]);
+export const RETIRED_STATUSES = new Set(["Ngừng khai thác", "Thanh lý"]);
 /** true nếu tài sản đang ở trạng thái nghỉ khai thác. */
 export function isRetiredStatus(trangThai?: string | null): boolean {
   return RETIRED_STATUSES.has((trangThai ?? "").trim());
@@ -27,7 +27,7 @@ export function ThietBiLifecycleActions({ ma, trangThai }: { ma: string; trangTh
 
   const [lyDo, setLyDo] = useState("");
   const [thanhLy, setThanhLy] = useState(false);
-  const isRetired = isRetiredStatus(trangThai);
+  const isRetired = RETIRED_STATUSES.has((trangThai ?? "").trim());
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["db_taxonomy"] });

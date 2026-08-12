@@ -4,10 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft, AlertTriangle, Clock, Activity, ShieldAlert, Wrench, User, Calendar,
   HardDrive, Network, Building2, FileText, Package, Sparkles, Link2, Unlink,
-  History, Info, Files, Settings, LayoutList,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DetailLayout, DetailCard, DetailInfoGrid } from "@/components/mirats/DetailLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
@@ -22,7 +20,6 @@ import { useSession } from "@/hooks/use-session";
 import { canManageSuCoState } from "@/lib/mirats/su-co-state";
 import { VongDoiPanel } from "@/components/mirats/VongDoiPanel";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/su-co/$maSuCo")({
   head: () => ({
@@ -35,8 +32,23 @@ export const Route = createFileRoute("/_app/su-co/$maSuCo")({
   component: SuCoDetail,
 });
 
-import { StatusBadge } from "@/components/mirats/StatusBadge";
-
+const mucColor: Record<string, string> = {
+  "Nghiêm trọng": "bg-red-100 text-red-700",
+  "Cao": "bg-orange-100 text-orange-700",
+  "Trung bình": "bg-amber-100 text-amber-700",
+  "Thấp": "bg-slate-100 text-slate-700",
+};
+const ttColor: Record<string, string> = {
+  "Mới": "bg-sky-100 text-sky-700",
+  "Đang xử lý": "bg-amber-100 text-amber-700",
+  "Đã khắc phục": "bg-emerald-100 text-emerald-700",
+  "Đóng": "bg-slate-200 text-slate-700",
+};
+const ahColor: Record<string, string> = {
+  "Có gián đoạn ĐHB": "bg-red-100 text-red-700",
+  "Ảnh hưởng một phần": "bg-amber-100 text-amber-700",
+  "Không ảnh hưởng": "bg-slate-100 text-slate-600",
+};
 
 function SuCoDetail() {
   const { maSuCo } = Route.useParams();
@@ -112,188 +124,200 @@ function SuCoDetail() {
   if (!inScope(sc.don_vi)) return <AccessDenied backTo="/su-co" backLabel="Về danh sách sự cố" />;
 
   return (
-    <DetailLayout
-      title={sc.ma_su_co}
-      subtitle={sc.hien_tuong}
-      headerIcon={<AlertTriangle className={cn("h-6 w-6", sc.muc_do === "Nghiêm trọng" ? "text-destructive" : "text-primary")} />}
-      badges={[
-        { component: <StatusBadge domain="su_co" code={sc.muc_do} label={sc.muc_do} /> },
-        { component: <StatusBadge domain="thiet_bi" code={sc.trang_thai} label={sc.trang_thai} /> },
-        { component: <StatusBadge domain="su_co" code={sc.anh_huong_dhb} label={sc.anh_huong_dhb} /> }
-      ]}
-      actions={
-        <div className="flex gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/su-co"><ArrowLeft className="mr-2 h-4 w-4" /> Nhật ký</Link>
-          </Button>
-          <Button variant="outline" size="sm" disabled>
-            <FileText className="mr-2 h-4 w-4" /> In phiếu
-          </Button>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Button asChild variant="ghost" size="sm"><Link to="/su-co"><ArrowLeft className="mr-1 h-4 w-4" /> Nhật ký</Link></Button>
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-semibold font-mono">{sc.ma_su_co}</h1>
+            <Badge variant="secondary" className={mucColor[sc.muc_do] ?? ""}>{sc.muc_do}</Badge>
+            <Badge variant="secondary" className={ttColor[sc.trang_thai] ?? ""}>{sc.trang_thai}</Badge>
+            <Badge variant="secondary" className={ahColor[sc.anh_huong_dhb] ?? ""}>{sc.anh_huong_dhb}</Badge>
+            {(sc.bao_cao_ban_dau as { nguon?: string } | null)?.nguon === "AI" && (
+              <Badge variant="secondary" className="gap-1 border-primary/30 bg-primary/10 text-primary">
+                <Sparkles className="h-3 w-3" /> AI hỗ trợ nhập
+              </Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">{sc.hien_tuong}</p>
         </div>
-      }
-      kpiCards={
-        <>
-          <KpiCard icon={Clock} label="Downtime" value={fmtDowntime(sc.thoi_gian_gian_doan)} tone={sc.thoi_gian_gian_doan ? "text-amber-600" : "text-muted-foreground"} />
-          <KpiCard icon={Activity} label="TB — Sự cố lũy kế" value={String(tbHistory.length)} />
-          <KpiCard icon={Clock} label="TB — MTTR" value={formatKpiValue(mttr, fmtDowntime)} />
-          <KpiCard icon={Calendar} label="TB — MTBF" value={formatKpiValue(mtbf)} />
-        </>
-      }
-      tabs={[
-        {
-          id: "tong-quan",
-          label: "Tổng quan",
-          icon: <LayoutList className="h-4 w-4" />,
-          content: (
-            <div className="space-y-6">
-              {sc.muc_do === "Nghiêm trọng" && (
-                <div className="flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-                  <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-                  <div>
-                    <div className="font-semibold">Sự cố nghiêm trọng — đã thông báo</div>
-                    <div>Đã gửi cảnh báo cho phụ trách đơn vị {dv?.ten ?? sc.don_vi} và Phòng Kỹ thuật.</div>
-                  </div>
-                </div>
-              )}
+      </div>
 
-              {suCoId && <VongDoiPanel bang="su_co" id={suCoId} trangThaiHienTai={sc.trang_thai} />}
+      {sc.muc_do === "Nghiêm trọng" && (
+        <div className="flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
+          <div>
+            <div className="font-semibold">Sự cố nghiêm trọng — đã thông báo</div>
+            <div>Đã gửi cảnh báo cho phụ trách đơn vị {dv?.ten ?? sc.don_vi} và Phòng Kỹ thuật ngay khi phát sinh.</div>
+          </div>
+        </div>
+      )}
 
-              <DetailInfoGrid>
-                <DetailCard title="Thông tin phiếu" icon={Info}>
-                  <div className="space-y-3 text-sm">
-                    <InfoRow icon={Calendar} label="Ngày phát hiện" value={sc.ngay_phat_hien.replace("T", " ")} />
-                    <InfoRow icon={Calendar} label="Thời điểm khắc phục" value={sc.thoi_diem_khac_phuc ? sc.thoi_diem_khac_phuc.replace("T", " ") : "Chưa khắc phục"} />
-                    <InfoRow icon={User} label="Người báo cáo" value={sc.nguoi_bao_cao || "—"} />
-                    <InfoRow icon={Building2} label="Đơn vị" value={dv?.ten ?? sc.don_vi} />
-                    <InfoRow icon={Network} label="Hệ thống" value={ht?.ten ?? sc.he_thong} />
-                    <InfoRow icon={HardDrive} label="Tài sản" value={
-                      tb ? (
-                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} className="text-primary hover:underline">
-                          {tb.ma_thiet_bi} — {tb.ten}
-                        </Link>
-                      ) : sc.thiet_bi
-                    } />
-                  </div>
-                </DetailCard>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <KpiCard icon={Clock} label="Downtime" value={fmtDowntime(sc.thoi_gian_gian_doan)} tone={sc.thoi_gian_gian_doan ? "text-amber-600" : "text-muted-foreground"} />
+        <KpiCard icon={Activity} label="TB — Sự cố lũy kế" value={String(tbHistory.length)} />
+        <KpiCard icon={Clock} label="TB — MTTR" value={formatKpiValue(mttr, fmtDowntime)} />
+        <KpiCard icon={Calendar} label="TB — MTBF" value={formatKpiValue(mtbf)} />
+      </div>
 
-                <DetailCard title="Xử lý kỹ thuật" icon={Wrench} className="md:col-span-2">
-                  <div className="space-y-4 text-sm">
-                    <Section icon={AlertTriangle} title="Hiện tượng" tone="text-red-600" body={sc.hien_tuong} />
-                    <Section icon={FileText} title="Nguyên nhân" tone="text-amber-600" body={sc.nguyen_nhan ?? "Chưa xác định."} />
-                    <Section icon={Wrench} title="Biện pháp xử lý" tone="text-emerald-600" body={sc.bien_phap_xu_ly ?? "Đang cập nhật."} />
-                  </div>
-                </DetailCard>
-              </DetailInfoGrid>
+      {suCoId && <VongDoiPanel bang="su_co" id={suCoId} trangThaiHienTai={sc.trang_thai} />}
+
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Link2 className="h-4 w-4 text-primary" /> Vấn đề (RCA) liên quan
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          {sc.van_de_id ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                {linkedVd?.hint ?? sc.van_de_id.slice(0, 8)}
+              </Badge>
+              <span className="text-muted-foreground">{linkedVd?.label ?? "(vấn đề)"}</span>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/van-de">Mở trang RCA</Link>
+              </Button>
             </div>
-          )
-        },
-        {
-          id: "vat-tu",
-          label: "Vật tư & Tiêu hao",
-          icon: <Package className="h-4 w-4" />,
-          content: (
-            <Card>
-              <CardContent className="space-y-4 pt-6">
-                <VatTuTieuHaoView
-                  cot="lien_ket_su_co_id"
-                  id={suCoId ?? null}
-                  empty={<p className="text-sm text-muted-foreground">Chưa có bút toán xuất kho cho sự cố này.</p>}
-                />
-                {coQuyenGhi && suCoId && (
-                  <div className="rounded-md border bg-muted/20 p-3">
-                    <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Ghi vật tư sử dụng</div>
-                    <VatTuTieuHaoInline
-                      lienKet={{ suCoId }}
-                      hideTitle
-                      onXong={(ids) => {
-                        if (ids.length > 0) toast.success(`Đã liên kết ${ids.length} bút toán`);
-                      }}
-                    />
-                  </div>
-                )}
-                <div className="flex gap-2 pt-2">
-                  {!sc.lien_ket_hong_hoc ? (
-                    <Button asChild variant="outline" size="sm">
-                      <Link to="/hong-hoc/moi" search={{ suCo: sc.ma_su_co, heThong: sc.he_thong_id ?? undefined, thietBi: sc.thiet_bi }}>
-                        <Package className="mr-2 h-4 w-4" /> Ghi nhận hỏng hóc
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button asChild variant="outline" size="sm">
-                      <Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: sc.lien_ket_hong_hoc }}>
-                        <Package className="mr-2 h-4 w-4" /> Xem phiếu hỏng hóc
-                      </Link>
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )
-        },
-        {
-          id: "lien-ket",
-          label: "Liên kết & RCA",
-          icon: <Link2 className="h-4 w-4" />,
-          content: (
-            <Card>
-              <CardContent className="space-y-4 pt-6 text-sm">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
-                    {linkedVd?.hint ?? sc.van_de_id?.slice(0, 8) ?? "Chưa liên kết"}
-                  </Badge>
-                  <span className="text-muted-foreground">{linkedVd?.label ?? "Chưa gắn vào vấn đề (RCA) nào"}</span>
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/van-de">Mở trang RCA</Link>
-                  </Button>
-                </div>
-                <div className="flex flex-wrap items-end gap-2">
-                  <div className="min-w-[280px] flex-1">
-                    <Combobox
-                      options={[{ value: "", label: "— Không liên kết —" }, ...vdOpts]}
-                      value={vdPick}
-                      onChange={setVdPick}
-                      placeholder="Chọn vấn đề…"
-                    />
-                  </div>
-                  <Button size="sm" disabled={!dirty || saving} onClick={() => saveVanDe(vdPick || null)}>
-                    {saving ? "Đang lưu…" : "Lưu"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        },
-        {
-          id: "lich-su",
-          label: "Lịch sử tài sản",
-          icon: <History className="h-4 w-4" />,
-          content: (
-            <div className="space-y-3">
-              {tbHistory.map((x) => (
-                <Link key={x.ma_su_co} to="/su-co/$maSuCo" params={{ maSuCo: x.ma_su_co }}
-                  className={cn(
-                    "flex flex-wrap items-center justify-between gap-2 rounded-md border p-3 text-sm hover:bg-muted/50",
-                    x.ma_su_co === sc.ma_su_co && "border-primary bg-primary/5"
-                  )}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-primary">{x.ma_su_co}</span>
-                    <span className="text-xs text-muted-foreground">{x.ngay_phat_hien.replace("T", " ")}</span>
-                  </div>
-                  <div className="min-w-0 flex-1 truncate px-2 text-muted-foreground">{x.hien_tuong}</div>
-                  <div className="flex items-center gap-2">
-                    <StatusBadge domain="su_co" code={x.muc_do} label={x.muc_do} />
-                    <span className="text-xs tabular-nums text-muted-foreground">{fmtDowntime(x.thoi_gian_gian_doan)}</span>
-                  </div>
+          ) : (
+            <p className="text-muted-foreground">Chưa gắn vào vấn đề nào — hãy chọn để đối chiếu số sự cố ở trang Vấn đề.</p>
+          )}
+          <div className="flex flex-wrap items-end gap-2">
+            <div className="min-w-[280px] flex-1">
+              <Combobox
+                options={[{ value: "", label: "— Không liên kết —" }, ...vdOpts]}
+                value={vdPick}
+                onChange={setVdPick}
+                placeholder="Chọn vấn đề…"
+                searchPlaceholder="Tìm mã / tiêu đề vấn đề…"
+              />
+            </div>
+            <Button size="sm" disabled={!dirty || saving} onClick={() => saveVanDe(vdPick || null)}>
+              {saving ? "Đang lưu…" : "Lưu"}
+            </Button>
+            {sc.van_de_id && (
+              <Button size="sm" variant="outline" disabled={saving} onClick={() => { setVdPick(""); saveVanDe(null); }}>
+                <Unlink className="mr-1 h-4 w-4" /> Gỡ liên kết
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
+          <CardHeader><CardTitle className="text-base">Thông tin phiếu</CardTitle></CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <InfoRow icon={Calendar} label="Ngày phát hiện" value={sc.ngay_phat_hien.replace("T", " ")} />
+            <InfoRow icon={Calendar} label="Thời điểm khắc phục" value={sc.thoi_diem_khac_phuc ? sc.thoi_diem_khac_phuc.replace("T", " ") : "Chưa khắc phục"} />
+            <InfoRow icon={User} label="Người báo cáo" value={sc.nguoi_bao_cao || "—"} />
+            <InfoRow icon={User} label="Người xử lý" value={sc.nguoi_xu_ly.length ? sc.nguoi_xu_ly.join(", ") : "—"} />
+            <InfoRow icon={Building2} label="Đơn vị" value={`${dv?.ma ?? sc.don_vi} — ${dv?.ten ?? ""}`} />
+            <InfoRow icon={Network} label="Hệ thống" value={ht?.ten ?? sc.he_thong} />
+            <InfoRow icon={HardDrive} label="Tài sản" value={
+              tb ? (
+                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} className="text-primary hover:underline">
+                  {tb.ma_thiet_bi} — {tb.ten}
                 </Link>
-              ))}
+              ) : sc.thiet_bi
+            } />
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader><CardTitle className="text-base">Nội dung xử lý</CardTitle></CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <Section icon={AlertTriangle} title="Hiện tượng" tone="text-red-600" body={sc.hien_tuong} />
+            <Section icon={FileText} title="Nguyên nhân" tone="text-amber-600" body={sc.nguyen_nhan ?? "Chưa xác định — đang phân tích."} />
+            <Section icon={Wrench} title="Biện pháp xử lý" tone="text-emerald-600" body={sc.bien_phap_xu_ly ?? "Chưa cập nhật biện pháp khắc phục."} />
+            {sc.lien_ket_hong_hoc && (
+              <div className="flex items-center gap-2 rounded-md border border-orange-200 bg-orange-50 p-3 text-orange-700">
+                <Package className="h-4 w-4" />
+                <span>Liên kết phiếu Hỏng hóc & Thay thế: <span className="font-mono">{sc.lien_ket_hong_hoc}</span></span>
+              </div>
+            )}
+            <div className="flex flex-wrap gap-2 pt-2">
+              {!sc.lien_ket_hong_hoc && (
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/hong-hoc/moi" search={{ suCo: sc.ma_su_co, heThong: sc.he_thong_id ?? undefined, thietBi: sc.thiet_bi }}>
+                    <Package className="mr-1 h-4 w-4" /> Ghi nhận hỏng hóc
+                  </Link>
+                </Button>
+              )}
+              {sc.lien_ket_hong_hoc && (
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: sc.lien_ket_hong_hoc }}>
+                    <Package className="mr-1 h-4 w-4" /> Xem phiếu hỏng hóc
+                  </Link>
+                </Button>
+              )}
+              <Button variant="outline" size="sm" disabled><FileText className="mr-1 h-4 w-4" /> In phiếu sự cố</Button>
             </div>
-          )
-        }
-      ]}
-    />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Task 53 — Vật tư đã tiêu hao cho sự cố (đồng bộ Bảo dưỡng / Hỏng hóc). */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Package className="h-4 w-4" /> Vật tư đã tiêu hao
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <VatTuTieuHaoView
+            cot="lien_ket_su_co_id"
+            id={suCoId ?? null}
+            empty={<p className="text-sm text-muted-foreground">Chưa có bút toán xuất kho cho sự cố này.</p>}
+          />
+          {coQuyenGhi && suCoId && (
+            <div className="rounded-md border bg-muted/20 p-3">
+              <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Ghi vật tư sử dụng
+              </div>
+              <VatTuTieuHaoInline
+                lienKet={{ suCoId }}
+                hideTitle
+                onXong={(ids) => {
+                  if (ids.length > 0) toast.success(`Đã liên kết ${ids.length} bút toán vào sự cố`);
+                }}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+
+
+      {tbHistory.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Lịch sử sự cố của tài sản</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {tbHistory.map((x) => (
+              <Link key={x.ma_su_co} to="/su-co/$maSuCo" params={{ maSuCo: x.ma_su_co }}
+                className={`flex flex-wrap items-center justify-between gap-2 rounded-md border p-3 text-sm hover:bg-muted/50 ${x.ma_su_co === sc.ma_su_co ? "border-primary bg-primary/5" : ""}`}>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs text-primary">{x.ma_su_co}</span>
+                  <span className="text-xs text-muted-foreground">{x.ngay_phat_hien.replace("T", " ")}</span>
+                </div>
+                <div className="min-w-0 flex-1 truncate text-muted-foreground px-2">{x.hien_tuong}</div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className={mucColor[x.muc_do] ?? ""}>{x.muc_do}</Badge>
+                  <Badge variant="secondary" className={ttColor[x.trang_thai] ?? ""}>{x.trang_thai}</Badge>
+                  <span className="text-xs tabular-nums text-muted-foreground">{fmtDowntime(x.thoi_gian_gian_doan)}</span>
+                </div>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
-
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: React.ReactNode }) {
   return (

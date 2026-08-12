@@ -54,7 +54,7 @@ export const exportSubmissionPdf = createServerFn({ method: "POST" })
     const { fields } = resolveSubmissionFields({
       snapshot: parseCompiledSchema(sub.template_snapshot),
       versionSchema,
-      currentFields: (currentFields ?? []).map((f: any, i: number) => compileField(f, i)),
+      currentFields: (currentFields ?? []).map((f, i) => compileField(f, i)),
     });
 
     const { data: sigs } = await supabase
@@ -63,7 +63,7 @@ export const exportSubmissionPdf = createServerFn({ method: "POST" })
       .eq("submission_id", data.submission_id)
       .order("signed_at", { ascending: true });
 
-    const signatures: PdfSignatureRow[] = (sigs ?? []).map((s: any) => ({
+    const signatures: PdfSignatureRow[] = (sigs ?? []).map((s) => ({
       signer_name: s.signer_name,
       signer_role: s.signer_role,
       signed_at: s.signed_at,

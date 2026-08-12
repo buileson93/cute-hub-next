@@ -22,8 +22,16 @@ export const Route = createFileRoute("/_app/hong-hoc/$maHongHoc")({
   component: HongHocDetail,
 });
 
-import { StatusBadge } from "@/components/mirats/StatusBadge";
-
+const paColor: Record<string, string> = {
+  "Sửa chữa": "bg-sky-100 text-sky-700",
+  "Thay thế": "bg-amber-100 text-amber-700",
+  "Thanh lý": "bg-red-100 text-red-700",
+};
+const ttColor: Record<string, string> = {
+  "Mới": "bg-sky-100 text-sky-700",
+  "Đang xử lý": "bg-amber-100 text-amber-700",
+  "Hoàn thành": "bg-emerald-100 text-emerald-700",
+};
 
 function HongHocDetail() {
   const { maHongHoc } = Route.useParams();
@@ -59,8 +67,8 @@ function HongHocDetail() {
           <div>
             <h1 className="text-xl font-semibold flex items-center gap-2">
               <span className="font-mono">{h.ma_hong_hoc}</span>
-              <StatusBadge domain="hong_hoc" code={h.phuong_an} label={h.phuong_an} />
-              <StatusBadge domain="thiet_bi" code={h.trang_thai} label={h.trang_thai} />
+              <Badge variant="secondary" className={paColor[h.phuong_an]}>{h.phuong_an}</Badge>
+              <Badge variant="secondary" className={ttColor[h.trang_thai]}>{h.trang_thai}</Badge>
             </h1>
             <p className="text-sm text-muted-foreground">Bộ phận hỏng: <strong>{h.bo_phan_hong}</strong> · {dvo?.ten ?? "—"}</p>
           </div>
@@ -186,9 +194,9 @@ function HongHocDetail() {
                       <TableCell><Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: x.ma_hong_hoc }} className="font-mono text-xs text-primary hover:underline">{x.ma_hong_hoc}</Link></TableCell>
                       <TableCell className="text-xs text-muted-foreground">{x.ngay_hong}</TableCell>
                       <TableCell className="text-sm">{x.bo_phan_hong}</TableCell>
-                      <TableCell><StatusBadge domain="hong_hoc" code={x.phuong_an} label={x.phuong_an} /></TableCell>
+                      <TableCell><Badge variant="secondary" className={paColor[x.phuong_an]}>{x.phuong_an}</Badge></TableCell>
                       <TableCell className="text-right text-sm tabular-nums">{fmtVND(x.chi_phi)}</TableCell>
-                      <TableCell><StatusBadge domain="thiet_bi" code={x.trang_thai} label={x.trang_thai} /></TableCell>
+                      <TableCell><Badge variant="secondary" className={ttColor[x.trang_thai]}>{x.trang_thai}</Badge></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

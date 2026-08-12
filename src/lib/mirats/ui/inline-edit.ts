@@ -153,8 +153,7 @@ export function buildUpdatePayload(
 // ============================================================================
 
 /** Layer nghiệp vụ cho cây hệ thống — khớp với `EditKind` ở route. */
-export type CayKind = "pl" | "nh" | "ht" | "tb" | "tp" | "root" | "vtg" | "vt";
-
+export type CayKind = "pl" | "nh" | "ht" | "tb";
 
 /** View gốc chỉ để log/telemetry; KHÔNG dùng để đổi đích ghi. */
 export type CayView = "tree" | "table" | "mindmap";

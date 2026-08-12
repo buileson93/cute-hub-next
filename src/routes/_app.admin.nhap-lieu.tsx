@@ -4,9 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/backend/client";
 import {
   Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, AlertTriangle, Plus, RefreshCw, ArrowRightLeft,
-  FileUp, Columns3, ClipboardCheck, ChevronRight, ChevronLeft, X, Wand2, Table2, ShieldCheck, Monitor
+  FileUp, Columns3, ClipboardCheck, ChevronRight, ChevronLeft, X, Wand2, Table2, ShieldCheck,
 } from "lucide-react";
-import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -69,26 +68,6 @@ function download(name: string, content: string) {
 }
 
 function NhapLieuPage() {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
-  if (isMobile) {
-    return (
-      <div className="p-4">
-        <PageHeader 
-          icon={Monitor} 
-          title="Nhập/Xuất hàng loạt" 
-          description="Công cụ quản trị dữ liệu chuyên sâu."
-        />
-        <DesktopOnly 
-          featureName="Nhập/Xuất hàng loạt"
-          reason="Việc nhập dữ liệu từ file CSV/Excel và đối chiếu cột (mapping) cần không gian màn hình lớn và độ chính xác của con trỏ chuột để tránh sai sót dữ liệu hệ thống. Vui lòng thực hiện trên máy tính."
-        >
-          <div />
-        </DesktopOnly>
-      </div>
-    );
-  }
-
   const runImport = useServerFn(runBulkImport);
   const [entity, setEntity] = useState("thiet_bi");
   const [catTable, setCatTable] = useState("dm_don_vi");

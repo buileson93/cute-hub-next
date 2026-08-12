@@ -144,7 +144,7 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "don_vi", label: "Đơn vị / Hệ thống", hideBelow: "md",
+      key: "don_vi", label: "Đơn vị / Hệ thống",
       value: (r) => `${donViMap.get(r.don_vi_id ?? "") ?? ""} ${heThongMap.get(r.he_thong_id ?? "") ?? ""}`,
       cell: (r) => (
         <div className="text-xs text-muted-foreground">
@@ -154,7 +154,7 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "loai", label: "Loại", sortable: true, hideBelow: "sm",
+      key: "loai", label: "Loại", sortable: true,
       value: (r) => r.che_do,
       cell: (r) => (
         <Badge
@@ -180,17 +180,17 @@ function KiemDinhPage() {
         ),
     },
     {
-      key: "ngay_bat_dau", label: "Bắt đầu", hideBelow: "xl",
+      key: "ngay_bat_dau", label: "Bắt đầu",
       value: (r) => r.cc?.ngay_bat_dau ?? "",
       cell: (r) => (r.cc?.ngay_bat_dau ? fmtNgay(r.cc.ngay_bat_dau) : "—"),
     },
     {
-      key: "ngay_het_han", label: "Hết hạn", sortable: true, hideBelow: "xl",
+      key: "ngay_het_han", label: "Hết hạn", sortable: true,
       value: (r) => r.cc?.ngay_het_han ?? "",
       cell: (r) => (r.cc?.ngay_het_han ? fmtNgay(r.cc.ngay_het_han) : "—"),
     },
     {
-      key: "canh_bao", label: "Cảnh báo", hideBelow: "2xl",
+      key: "canh_bao", label: "Cảnh báo",
       value: (r) => (r.soNgay ?? ""),
       cell: (r) =>
         r.cc?.ngay_het_han ? (
@@ -223,7 +223,7 @@ function KiemDinhPage() {
       />
 
 
-      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-medium text-muted-foreground">

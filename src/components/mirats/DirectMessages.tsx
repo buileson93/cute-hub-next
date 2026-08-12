@@ -139,7 +139,7 @@ function ConversationList({ onOpen }: { onOpen: (id: string, title: string) => v
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
         <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hội thoại</div>
-        <Button size="icon" variant="ghost" className="h-8 w-8" title="Hội thoại mới" aria-label="Hội thoại mới" onClick={() => setNewOpen(true)}>
+        <Button size="icon" variant="ghost" className="h-8 w-8" title="Hội thoại mới" onClick={() => setNewOpen(true)}>
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -264,7 +264,7 @@ function NewConversationDialog({
   return (
     <div className="absolute inset-0 z-20 flex flex-col bg-background">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onOpenChange(false)} aria-label="Quay lại">
+        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onOpenChange(false)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="text-sm font-semibold">Bắt đầu hội thoại</div>

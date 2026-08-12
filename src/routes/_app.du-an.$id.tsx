@@ -740,7 +740,7 @@ function EditCongViecDialog({
         </DialogHeader>
 
         <div className="grid gap-3">
-          <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <Label>Mốc chính *</Label>
               <Combobox
@@ -784,7 +784,7 @@ function EditCongViecDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <Label>Bắt đầu</Label>
               <Input type="date" value={form.ngay_bat_dau} onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })} />

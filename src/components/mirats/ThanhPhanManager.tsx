@@ -586,7 +586,7 @@ function ViTriFormDialog({
           <DialogDescription>Chỉ khai chức năng — không nhập serial. Gán tài sản cụ thể là thao tác riêng.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3">
-          <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label>Mã thành phần</Label>
               <div className="flex items-center gap-1">
@@ -610,7 +610,7 @@ function ViTriFormDialog({
             <Label>Thuộc thành phần cha (tuỳ chọn)</Label>
             <Combobox options={chaOptions} value={cha} onChange={setCha} placeholder="Không có" emptyText="Chưa có thành phần khác" />
           </div>
-          <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label>Thứ tự</Label>
               <Input value={thuTu} onChange={(e) => setThuTu(e.target.value)} inputMode="numeric" placeholder="1" />

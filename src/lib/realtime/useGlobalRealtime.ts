@@ -151,21 +151,10 @@ export function useGlobalRealtime(enabled: boolean) {
 
   useEffect(() => {
     if (!enabled) return;
-    
-    // T47: Rút gọn danh sách bảng quan trọng để tối ưu hóa kết nối
-    const CORE_TABLES = [
-      "su_co", "bao_tri", "hong_hoc", "van_de", "ban_giao", 
-      "thiet_bi", "he_thong_thanh_phan", "gan_chuc_nang", 
-      "access_request", "user_roles", "messages", "notifications"
-    ];
-
     let ch: ReturnType<typeof freshChannel> | null = null;
     try {
       ch = freshChannel("mirats-global");
-      
-      for (const table of CORE_TABLES) {
-        if (!TABLE_TO_KEYS[table]) continue;
-
+      for (const table of Object.keys(TABLE_TO_KEYS)) {
         ch = ch.on(
           "postgres_changes",
           { event: "*", schema: "public", table },
@@ -175,7 +164,6 @@ export function useGlobalRealtime(enabled: boolean) {
             const evt = p2.eventType as RtEvent | undefined;
             const newRow = (p2.new ?? null) as Record<string, unknown> | null;
             const oldRow = (p2.old ?? null) as Record<string, unknown> | null;
-            
             if (evt === "INSERT" || evt === "UPDATE" || evt === "DELETE") {
               patchPagedForTable(qc, t, evt, newRow, oldRow);
             }
@@ -183,12 +171,9 @@ export function useGlobalRealtime(enabled: boolean) {
           },
         );
       }
-      ch.subscribe((status) => {
-        if (status === "CHANNEL_ERROR") {
-          console.warn("Global realtime subscription channel error");
-        }
-      });
+      ch.subscribe();
     } catch (e) {
+      // Realtime chỉ là nâng cao — không được crash trang khi lỗi
       console.warn("Global realtime subscribe failed", e);
     }
     return () => {

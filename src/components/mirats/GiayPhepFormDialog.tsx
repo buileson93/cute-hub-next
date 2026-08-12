@@ -17,8 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/mirats/Combobox";
-import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
-import { DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
 import type { LicenseRow } from "@/lib/mirats/db-licenses";
 import { saveGpktRecord } from "@/lib/mirats/gpkt-import.functions";
 
@@ -193,20 +194,18 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
   const disabled = isEdit && row?.nguon === "gpkt";
 
   return (
-    <ResponsiveDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={isEdit ? "Sửa giấy phép" : "Thêm giấy phép"}
-      description={
-        disabled
-          ? "Giấy phép khai thác (GPKT) gắn hệ thống — hiện chưa hỗ trợ sửa trực tiếp trong dialog này."
-          : nguon === "gpkt"
-            ? "GPKT — Giấy phép khai thác gắn HỆ THỐNG (bảng giay_phep_khai_thac)."
-            : "Giấy phép gắn TÀI SẢN (bảng giay_phep). Ngưỡng cảnh báo mặc định 90 ngày trước hạn."
-      }
-      className="max-w-2xl"
-    >
-      <div className="flex flex-col gap-6 h-full">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? "Sửa giấy phép" : "Thêm giấy phép"}</DialogTitle>
+          <DialogDescription>
+            {disabled
+              ? "Giấy phép khai thác (GPKT) gắn hệ thống — hiện chưa hỗ trợ sửa trực tiếp trong dialog này."
+              : nguon === "gpkt"
+                ? "GPKT — Giấy phép khai thác gắn HỆ THỐNG (bảng giay_phep_khai_thac)."
+                : "Giấy phép gắn TÀI SẢN (bảng giay_phep). Ngưỡng cảnh báo mặc định 90 ngày trước hạn."}
+          </DialogDescription>
+        </DialogHeader>
 
         {disabled ? (
           <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
@@ -299,8 +298,8 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
             {isEdit ? "Lưu thay đổi" : "Tạo giấy phép"}
           </Button>
         </DialogFooter>
-      </div>
-    </ResponsiveDialog>
+      </DialogContent>
+    </Dialog>
   );
 }
 
