@@ -606,7 +606,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="h-full w-full min-h-[500px] md:min-h-[600px] relative">
+    <div className="absolute inset-0 w-full h-full">
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
