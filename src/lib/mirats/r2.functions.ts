@@ -125,7 +125,7 @@ export const r2DeleteObject = createServerFn({ method: "POST" })
     }
     await r2Delete(data.key);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    await supabaseAdmin.from("r2_file").delete().eq("key", data.key);
+    await supabaseAdmin.from("r2_file").delete().eq("key", data.key).eq("user_id", context.userId);
     await logAccess({ user_id: context.userId, key: data.key, action: "delete", ok: true });
     return { ok: true };
   });
