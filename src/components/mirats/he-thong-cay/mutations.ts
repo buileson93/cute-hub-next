@@ -2,19 +2,20 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { useCayContext } from "./CayContext";
-import { xoaThietBiAnToan } from "@/lib/mirats/cay-delete";
+import { xoaThietBiAnToan, xemTruocXoaThietBi } from "@/lib/mirats/cay-delete";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 
 export function useCayMutations() {
   const qc = useQueryClient();
   const { setEditMode } = useCayContext();
-  const { hoanTac } = useCayRpc();
+  const { submit, hoanTac, submitMany } = useCayRpc();
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["cay_node_edit"] });
     qc.invalidateQueries({ queryKey: ["thiet_bi_cay"] });
     qc.invalidateQueries({ queryKey: ["he_thong_thanh_phan_count"] });
     qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
+    qc.invalidateQueries({ queryKey: ["cay_thay_doi"] });
   };
 
   const addGroup = useMutation({
@@ -93,27 +94,6 @@ export function useCayMutations() {
     onError: (e: any) => toast.error(e.message)
   });
 
-  const renameGroupCode = useMutation({
-    mutationFn: async ({ oldMa, newMa }: { oldMa: string; newMa: string }) => {
-      const { error: upErr } = await supabase.from("dm_nhom_he_thong").update({ ma: newMa } as any).eq("ma", oldMa);
-      if (upErr) throw upErr;
-
-      const { data: edits } = await supabase.from("cay_node_edit").select("*").in("kind", ["nh", "ht"]).like("ma", `${oldMa}%`);
-      if (edits?.length) {
-        for (const edit of edits) {
-          const newEditMa = edit.ma.replace(oldMa, newMa);
-          await supabase.from("cay_node_edit").upsert({ ...edit, ma: newEditMa } as any, { onConflict: "kind,ma" });
-          await supabase.from("cay_node_edit").delete().match({ kind: edit.kind, ma: edit.ma });
-        }
-      }
-    },
-    onSuccess: () => {
-      invalidate();
-      toast.success("Đã đổi mã nhóm và đồng bộ dữ liệu cây");
-    },
-    onError: (e: any) => toast.error(e.message)
-  });
-
   const deleteNode = useMutation({
     mutationFn: async ({ kind, ma, mas }: { kind: string; ma: string; mas?: string[] }) => {
       if (kind === "tb") {
@@ -121,6 +101,7 @@ export function useCayMutations() {
       }
       
       if (kind === "ht") {
+        // Use RPC submit for soft delete if possible, or direct update if admin
         const { error } = await supabase.from("dm_he_thong").update({ active: false, deactivated_at: new Date().toISOString() } as any).eq("ma", ma);
         if (error) throw error;
       } else if (kind === "nh") {
@@ -182,15 +163,50 @@ export function useCayMutations() {
     onError: (e: any) => toast.error(e.message)
   });
 
+  const moveSystem = useMutation({
+    mutationFn: async (req: { heThongId: string; tenHeThong: string; toNhomId: string; toLvId: string; toNhKey: string; toNhTen: string }) => {
+      return submit.mutateAsync({
+        loai: "move_system",
+        he_thong_id: req.heThongId,
+        mo_ta: `Di chuyển hệ thống "${req.tenHeThong}" sang nhóm "${req.toNhTen}"`,
+        payload: {
+          to_nhom_id: req.toNhomId,
+          to_lv_id: req.toLvId,
+          to_nh_key: req.toNhKey
+        }
+      });
+    },
+    onSuccess: () => {
+      invalidate();
+    }
+  });
+
+  const moveDevice = useMutation({
+    mutationFn: async (req: { maThietBi: string; tenThietBi: string; toHtId: string; toHtTen: string }) => {
+      return submit.mutateAsync({
+        loai: "move_device",
+        he_thong_id: req.toHtId, // target system
+        mo_ta: `Di chuyển tài sản "${req.tenThietBi}" sang hệ thống "${req.toHtTen}"`,
+        payload: {
+          ma_thiet_bi: req.maThietBi
+        }
+      });
+    },
+    onSuccess: () => {
+      invalidate();
+    }
+  });
+
   return {
     addGroup,
     addSystem,
     addDevice,
-    renameGroupCode,
     deleteNode,
     setNhColor,
     bulkSaveCell,
     reorderSiblings,
+    moveSystem,
+    moveDevice,
     hoanTac,
     renameEntity: useMutation({
       mutationFn: async ({ kind, id, ten, userRoles }: { kind: any, id: string, ten: string, userRoles: string[] }) => {
