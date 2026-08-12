@@ -175,6 +175,7 @@ export function NodeEditorSheet({
             </div>
           )}
 
+          {target?.kind === "ht" && !isCustomNode("ht", target.ma) && (
             <div className="space-y-2 rounded-md border p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
                 <Cpu className="h-4 w-4 text-sky-600" /> Thành phần hệ thống
