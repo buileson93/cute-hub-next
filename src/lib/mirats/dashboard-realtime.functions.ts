@@ -110,7 +110,9 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
       .in("id", userIds);
     
     const profileMap: Record<string, string> = {};
-    profiles?.forEach(p => { profileMap[p.id] = p.ho_ten; });
+    profiles?.forEach(p => { 
+      if (p.id && p.ho_ten) profileMap[p.id] = p.ho_ten; 
+    });
 
     const formatAction = (item: any): string => {
       const user = profileMap[item.user_id] || "Hệ thống";
@@ -141,12 +143,12 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
       return `${user} ${action} ${entity}${detailStr}`;
     };
 
-    return (data || []).map(item => ({
+    return (logs || []).map((item: any) => ({
       id: item.id,
       created_at: item.created_at,
       action: item.action,
-      entity: item.entity,
-      user_ho_ten: item.profiles?.ho_ten || null,
+      entity: item.entity || null,
+      user_ho_ten: profileMap[item.user_id] || null,
       description: formatAction(item)
     }));
   });
