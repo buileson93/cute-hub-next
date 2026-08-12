@@ -222,7 +222,7 @@ export function NodeEditorSheet({
           )}
 
           {target && (target.kind === "nh" || target.kind === "ht") && canManage && target.ma !== HT_KHAC && (
-            <Button variant="outline" className="w-full text-destructive" onClick={() => deleteNode.mutate({ kind: target.kind, ma: target.ma })}>
+            <Button variant="outline" className="w-full text-destructive" onClick={() => deleteNode.mutate({ kind: target.kind, ma: target.ma, userRoles: roles })}>
               <Trash2 className="mr-1.5 h-4 w-4" /> Xoá {title}
             </Button>
           )}
