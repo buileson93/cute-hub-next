@@ -15,6 +15,7 @@ import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw } fro
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCayMutations } from "./mutations";
 import { useCayContext } from "./CayContext";
+import { useSession } from "@/hooks/use-session";
 
 export function NodeEditorSheet({
   target, onClose, plLabel, nhLabel, htLabel, tbMap,
