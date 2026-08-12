@@ -81,6 +81,7 @@ import { Route as AppHongHocMaHongHocRouteImport } from './routes/_app.hong-hoc.
 import { Route as AppHeThongThungRacRouteImport } from './routes/_app.he-thong.thung-rac'
 import { Route as AppHeThongThanhPhanRouteImport } from './routes/_app.he-thong.thanh-phan'
 import { Route as AppHeThongLienKetRouteImport } from './routes/_app.he-thong.lien-ket'
+import { Route as AppHeThongCayRouteImport } from './routes/_app.he-thong.cay'
 import { Route as AppHeThongIdRouteImport } from './routes/_app.he-thong.$id'
 import { Route as AppDuAnIdRouteImport } from './routes/_app.du-an.$id'
 import { Route as AppDanhMucViTriRouteImport } from './routes/_app.danh-muc.vi-tri'
@@ -497,6 +498,11 @@ const AppHeThongLienKetRoute = AppHeThongLienKetRouteImport.update({
   path: '/he-thong/lien-ket',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHeThongCayRoute = AppHeThongCayRouteImport.update({
+  id: '/he-thong/cay',
+  path: '/he-thong/cay',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHeThongIdRoute = AppHeThongIdRouteImport.update({
   id: '/he-thong/$id',
   path: '/he-thong/$id',
@@ -739,9 +745,9 @@ const ApiPublicHooksBootstrapAdminRoute =
   } as any)
 const AppHeThongCayRefactorBackupRoute =
   AppHeThongCayRefactorBackupRouteImport.update({
-    id: '/he-thong/cay/refactor-backup',
-    path: '/he-thong/cay/refactor-backup',
-    getParentRoute: () => AppRoute,
+    id: '/refactor-backup',
+    path: '/refactor-backup',
+    getParentRoute: () => AppHeThongCayRoute,
   } as any)
 const AppFormsSubmissionsIdRoute = AppFormsSubmissionsIdRouteImport.update({
   id: '/submissions/$id',
@@ -854,6 +860,7 @@ export interface FileRoutesByFullPath {
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
+  '/he-thong/cay': typeof AppHeThongCayRouteWithChildren
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
   '/he-thong/thung-rac': typeof AppHeThongThungRacRoute
@@ -973,6 +980,7 @@ export interface FileRoutesByTo {
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
+  '/he-thong/cay': typeof AppHeThongCayRouteWithChildren
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
   '/he-thong/thung-rac': typeof AppHeThongThungRacRoute
@@ -1101,6 +1109,7 @@ export interface FileRoutesById {
   '/_app/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/_app/du-an/$id': typeof AppDuAnIdRoute
   '/_app/he-thong/$id': typeof AppHeThongIdRouteWithChildren
+  '/_app/he-thong/cay': typeof AppHeThongCayRouteWithChildren
   '/_app/he-thong/lien-ket': typeof AppHeThongLienKetRoute
   '/_app/he-thong/thanh-phan': typeof AppHeThongThanhPhanRoute
   '/_app/he-thong/thung-rac': typeof AppHeThongThungRacRoute
@@ -1229,6 +1238,7 @@ export interface FileRouteTypes {
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
     | '/he-thong/$id'
+    | '/he-thong/cay'
     | '/he-thong/lien-ket'
     | '/he-thong/thanh-phan'
     | '/he-thong/thung-rac'
@@ -1348,6 +1358,7 @@ export interface FileRouteTypes {
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
     | '/he-thong/$id'
+    | '/he-thong/cay'
     | '/he-thong/lien-ket'
     | '/he-thong/thanh-phan'
     | '/he-thong/thung-rac'
@@ -1475,6 +1486,7 @@ export interface FileRouteTypes {
     | '/_app/danh-muc/vi-tri'
     | '/_app/du-an/$id'
     | '/_app/he-thong/$id'
+    | '/_app/he-thong/cay'
     | '/_app/he-thong/lien-ket'
     | '/_app/he-thong/thanh-phan'
     | '/_app/he-thong/thung-rac'
@@ -2062,6 +2074,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHeThongLienKetRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/he-thong/cay': {
+      id: '/_app/he-thong/cay'
+      path: '/he-thong/cay'
+      fullPath: '/he-thong/cay'
+      preLoaderRoute: typeof AppHeThongCayRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/he-thong/$id': {
       id: '/_app/he-thong/$id'
       path: '/he-thong/$id'
@@ -2386,10 +2405,10 @@ declare module '@tanstack/react-router' {
     }
     '/_app/he-thong/cay/refactor-backup': {
       id: '/_app/he-thong/cay/refactor-backup'
-      path: '/he-thong/cay/refactor-backup'
+      path: '/refactor-backup'
       fullPath: '/he-thong/cay/refactor-backup'
       preLoaderRoute: typeof AppHeThongCayRefactorBackupRouteImport
-      parentRoute: typeof AppRoute
+      parentRoute: typeof AppHeThongCayRoute
     }
     '/_app/forms/submissions/$id': {
       id: '/_app/forms/submissions/$id'
@@ -2620,6 +2639,18 @@ const AppHeThongIdRouteWithChildren = AppHeThongIdRoute._addFileChildren(
   AppHeThongIdRouteChildren,
 )
 
+interface AppHeThongCayRouteChildren {
+  AppHeThongCayRefactorBackupRoute: typeof AppHeThongCayRefactorBackupRoute
+}
+
+const AppHeThongCayRouteChildren: AppHeThongCayRouteChildren = {
+  AppHeThongCayRefactorBackupRoute: AppHeThongCayRefactorBackupRoute,
+}
+
+const AppHeThongCayRouteWithChildren = AppHeThongCayRoute._addFileChildren(
+  AppHeThongCayRouteChildren,
+)
+
 interface AppRouteChildren {
   AppBanGiaoRoute: typeof AppBanGiaoRouteWithChildren
   AppBaoTriRoute: typeof AppBaoTriRouteWithChildren
@@ -2673,6 +2704,7 @@ interface AppRouteChildren {
   AppDanhMucViTriRoute: typeof AppDanhMucViTriRoute
   AppDuAnIdRoute: typeof AppDuAnIdRoute
   AppHeThongIdRoute: typeof AppHeThongIdRouteWithChildren
+  AppHeThongCayRoute: typeof AppHeThongCayRouteWithChildren
   AppHeThongLienKetRoute: typeof AppHeThongLienKetRoute
   AppHeThongThanhPhanRoute: typeof AppHeThongThanhPhanRoute
   AppHeThongThungRacRoute: typeof AppHeThongThungRacRoute
@@ -2681,7 +2713,6 @@ interface AppRouteChildren {
   AppThongKeLaptopRoute: typeof AppThongKeLaptopRoute
   AppDuAnIndexRoute: typeof AppDuAnIndexRoute
   AppSoDoIndexRoute: typeof AppSoDoIndexRoute
-  AppHeThongCayRefactorBackupRoute: typeof AppHeThongCayRefactorBackupRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -2737,6 +2768,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDanhMucViTriRoute: AppDanhMucViTriRoute,
   AppDuAnIdRoute: AppDuAnIdRoute,
   AppHeThongIdRoute: AppHeThongIdRouteWithChildren,
+  AppHeThongCayRoute: AppHeThongCayRouteWithChildren,
   AppHeThongLienKetRoute: AppHeThongLienKetRoute,
   AppHeThongThanhPhanRoute: AppHeThongThanhPhanRoute,
   AppHeThongThungRacRoute: AppHeThongThungRacRoute,
@@ -2745,7 +2777,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppThongKeLaptopRoute: AppThongKeLaptopRoute,
   AppDuAnIndexRoute: AppDuAnIndexRoute,
   AppSoDoIndexRoute: AppSoDoIndexRoute,
-  AppHeThongCayRefactorBackupRoute: AppHeThongCayRefactorBackupRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
