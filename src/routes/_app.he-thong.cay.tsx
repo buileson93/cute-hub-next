@@ -396,8 +396,8 @@ function HeThongCayPage() {
                 }}
                 onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
-                  import("@/lib/mirats/ui/save-cell-securely").then(m => 
-                    m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
+                  import("@/lib/mirats/ui/save-entity-securely").then(m => 
+                    m.saveEntityFieldSecurely({ kind, id: ma, field: "ten", value: ten, userRoles: roles })
                   ).catch(e => toast.error(e.message));
                 }}
                 onMoveSystem={(req) => {
