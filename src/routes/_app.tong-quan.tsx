@@ -317,7 +317,7 @@ function TongQuanPage() {
       {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
       <div>
         <div className="flex items-center justify-between">
-          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Đi tới Sự cố" />
+          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Chi tiết" />
         </div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
@@ -622,7 +622,7 @@ function TongQuanPage() {
       {/* ROW — Feed hoạt động */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm">Hoạt động gần đây</CardTitle>
+          <CardTitle className="text-sm font-semibold">Hoạt động gần đây</CardTitle>
           <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sự cố →</Link>
         </CardHeader>
         <CardContent>
