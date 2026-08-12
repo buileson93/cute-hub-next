@@ -685,8 +685,16 @@ export function StandardTable<T>({
                               const fromKey = e.dataTransfer.getData("text/plain");
                               const toKey = c.key;
                               if (fromKey && fromKey !== toKey) {
-                                prefs.move(fromKey, toKey);
+                                const newOrder = [...prefs.order];
+                                const fromIdx = newOrder.indexOf(fromKey);
+                                const toIdx = newOrder.indexOf(toKey);
+                                if (fromIdx > -1 && toIdx > -1) {
+                                  newOrder.splice(fromIdx, 1);
+                                  newOrder.splice(toIdx, 0, fromKey);
+                                  prefs.setOrder(newOrder);
+                                }
                               }
+
                             }}
                           >
                             <GripVertical className="h-3 w-3" />
