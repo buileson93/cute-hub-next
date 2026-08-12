@@ -123,29 +123,6 @@ function HeThongInner({
   const [tpOpen, setTpOpen] = useState(true);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
   const [thrOpen, setThrOpen] = useState(false);
-  const { data: tuongThich } = useQuery({
-    queryKey: ["he-thong-tuong-thich", id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("thiet_bi_he_thong_tuong_thich")
-        .select(`
-          phan_loai,
-          danh_gia,
-          thiet_bi:thiet_bi_id (
-            id,
-            ma_thiet_bi,
-            ten_thiet_bi,
-            ma_serial,
-            trang_thai:trang_thai_id (ten),
-            model:model_id (ten)
-          )
-        `)
-        .eq("he_thong_id", id);
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const thrKey = `hp-thresholds:${donViMa || "default"}`;
   const [thr, setThr] = useState<{ good: number; ok: number; warn: number }>({ good: 85, ok: 60, warn: 40 });
   useEffect(() => {
@@ -556,8 +533,6 @@ function HeThongInner({
                 <TabsTrigger value="hh"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
                 <TabsTrigger value="bg"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
                 <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết hệ thống</TabsTrigger>
-                <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư dự phòng ({tuongThich?.length || 0})</TabsTrigger>
-
                 {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký thay đổi</TabsTrigger>}
               </TabsList>
 
@@ -641,72 +616,6 @@ function HeThongInner({
               <TabsContent value="lk">
                 <HeThongLienKetTab heThongId={id} />
               </TabsContent>
-
-              <TabsContent value="vt" className="space-y-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <h3 className="text-lg font-semibold">Danh sách vật tư dự phòng tương thích</h3>
-                    <p className="text-sm text-muted-foreground">Các thiết bị/vật tư có thể dùng để thay thế cho hệ thống này theo đánh giá kỹ thuật.</p>
-                  </div>
-                </div>
-
-                {!tuongThich || tuongThich.length === 0 ? (
-                  <div className="text-center py-12 border-2 border-dashed rounded-lg bg-muted/20">
-                    <ShieldCheck className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                    <p className="text-muted-foreground">Chưa ghi nhận vật tư dự phòng tương thích cho hệ thống này.</p>
-                    <p className="text-xs text-muted-foreground/70 mt-1">Cập nhật thông tin này trong phần chỉnh sửa tài sản/vật tư.</p>
-                  </div>
-                ) : (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {tuongThich.map((item: any, idx: number) => {
-                      const tb = item.thiet_bi;
-                      if (!tb) return null;
-                      return (
-                        <Card key={`${tb.id}-${idx}`} className="overflow-hidden hover:border-emerald-500/50 transition-colors">
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start mb-2">
-                              <div>
-                                <Link 
-                                  to="/danh-muc/thiet-bi"
-                                  search={{ q: tb.ma_thiet_bi } as any}
-                                  className="font-bold text-primary hover:underline block"
-                                >
-
-                                  {tb.ten_thiet_bi}
-                                </Link>
-                                <span className="text-xs font-mono text-muted-foreground">
-                                  {tb.ma_thiet_bi} {tb.ma_serial ? `· S/N: ${tb.ma_serial}` : ""}
-                                </span>
-                              </div>
-                              <Badge variant="secondary" className="text-[10px]">
-                                {item.phan_loai}
-                              </Badge>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-2 mt-3 mb-3 text-xs">
-                              <div className="bg-muted/40 p-1.5 rounded">
-                                <span className="text-muted-foreground block mb-0.5">Model</span>
-                                <span className="font-medium truncate block">{tb.model?.ten || "—"}</span>
-                              </div>
-                              <div className="bg-muted/40 p-1.5 rounded">
-                                <span className="text-muted-foreground block mb-0.5">Trạng thái</span>
-                                <span className="font-medium truncate block">{tb.trang_thai?.ten || "—"}</span>
-                              </div>
-                            </div>
-
-                            {item.danh_gia && (
-                              <div className="mt-2 pt-2 border-t border-dashed text-xs italic text-muted-foreground">
-                                “{item.danh_gia}”
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                )}
-              </TabsContent>
-
 
 
 

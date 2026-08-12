@@ -10,10 +10,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/mirats/SchemaDialog";
-import { CompatibilityManager, type CompatibilityItem } from "@/components/mirats/CompatibilityManager";
 import { supabase } from "@/integrations/backend/client";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
-
 
 const formSchema = z.object({
   ten_thiet_bi: z
@@ -34,17 +32,7 @@ const formSchema = z.object({
     .lte(2100, "Năm sản xuất không hợp lệ")
     .optional(),
   ghi_chu: z.string().trim().max(2000, "Ghi chú tối đa 2000 ký tự").optional(),
-  he_thong_tuong_thich: z
-    .array(
-      z.object({
-        he_thong_id: z.string(),
-        phan_loai: z.string(),
-        danh_gia: z.string(),
-      })
-    )
-    .default([]),
 });
-
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -93,11 +81,7 @@ export function ThietBiFormDialog({
     trang_thai_id?: string | null;
     nhan_vien_id?: string | null;
     ghi_chu?: string | null;
-    thiet_bi_he_thong_tuong_thich?: CompatibilityItem[];
   } | null;
-
-  const systemOptsQuery = useQuery(loadOpts("dm_he_thong"));
-
 
 
   const defaultValues = useMemo<Partial<FormValues>>(
@@ -111,9 +95,8 @@ export function ThietBiFormDialog({
       nhan_vien_id: extra?.nhan_vien_id ?? "",
       nam_san_xuat: device?._namSanXuat ?? undefined,
       ghi_chu: extra?.ghi_chu ?? "",
-      he_thong_tuong_thich: extra?.thiet_bi_he_thong_tuong_thich ?? [],
-    }),
 
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [device, open],
   );
@@ -181,22 +164,8 @@ export function ThietBiFormDialog({
         step: 1,
       },
       { key: "ghi_chu", type: "textarea", label: "Ghi chú", placeholder: "Thông tin bổ sung…" },
-      {
-        key: "he_thong_tuong_thich",
-        type: "custom",
-        label: "Hệ thống tương thích",
-        colSpan: 2,
-        render: ({ value, onChange }) => (
-          <CompatibilityManager
-            value={value || []}
-            onChange={onChange}
-            systemOptions={systemOptsQuery.data || []}
-          />
-        ),
-      },
     ],
-    [mode, systemOptsQuery.data],
-
+    [mode],
   );
 
   const save = useMutation({
@@ -244,8 +213,6 @@ export function ThietBiFormDialog({
         ghi_chu: d.ghi_chu || null,
 
       };
-      const items = d.he_thong_tuong_thich || [];
-
       if (mode === "create") {
         const genCode = () => {
           const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -257,20 +224,10 @@ export function ThietBiFormDialog({
         const { data: inserted, error } = await supabase
           .from("thiet_bi")
           .insert(payload as never)
-          .select("id, ma_thiet_bi")
+          .select("ma_thiet_bi")
           .single();
         if (error) throw error;
-
-        // Lưu bảng liên kết
-        if (items.length > 0) {
-          const { error: err2 } = await supabase
-            .from("thiet_bi_he_thong_tuong_thich")
-            .insert(items.map(it => ({ ...it, thiet_bi_id: (inserted as any).id })));
-          if (err2) toast.error("Không lưu được thông tin hệ thống tương thích");
-        }
-
         return (inserted as { ma_thiet_bi: string }).ma_thiet_bi;
-
       } else {
         if (!device?.id) throw new Error("Thiếu id tài sản");
         const { error } = await supabase
@@ -278,23 +235,7 @@ export function ThietBiFormDialog({
           .update(payload as never)
           .eq("id", device.id);
         if (error) throw error;
-
-        // Sync bảng liên kết: Xoá cũ, thêm mới
-        const { error: errDel } = await supabase
-          .from("thiet_bi_he_thong_tuong_thich")
-          .delete()
-          .eq("thiet_bi_id", device.id);
-        if (errDel) console.error("Xoá tương thích cũ lỗi:", errDel);
-
-        if (items.length > 0) {
-          const { error: errIns } = await supabase
-            .from("thiet_bi_he_thong_tuong_thich")
-            .insert(items.map(it => ({ ...it, thiet_bi_id: device.id })));
-          if (errIns) toast.error("Không cập nhật được thông tin hệ thống tương thích");
-        }
-
         return device.ma_thiet_bi;
-
       }
     },
     onSuccess: (ma) => {
