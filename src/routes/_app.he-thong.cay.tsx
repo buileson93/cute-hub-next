@@ -7,9 +7,7 @@ import {
 import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { useSession } from "@/hooks/use-auth";
-
-
+import { useSession } from "@/hooks/use-session";
 
 import { cn } from "@/lib/utils";
 import { ReactFlowProvider } from "@xyflow/react";
@@ -27,14 +25,14 @@ import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useMyPermissions, useCan } from "@/hooks/use-permissions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { parseHtSysMa } from "@/lib/mirats/types";
+import { parseHtSysMa } from "@/lib/mirats/phan-loai";
 
 import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/CayContext";
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
-import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, htSysMa } from "@/components/mirats/he-thong-cay/utils";
+import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import type { 
   EditKind, OverrideMap, SearchItem 
