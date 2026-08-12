@@ -342,17 +342,29 @@ function HeThongCayPage() {
                 canManage={canManage && editMode}
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}
-                onIncident={() => {}}
-                onMaint={() => {}}
+                onIncident={(ma) => {
+                  const id = parseHtSysMa(ma).sysName;
+                  if (id && id !== NONE_HT) nav({ to: "/su-co", search: { heThongId: id } });
+                }}
+                onMaint={(ma) => {
+                  const id = parseHtSysMa(ma).sysName;
+                  if (id && id !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: id } });
+                }}
                 onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
                   import("@/lib/mirats/ui/save-cell-securely").then(m => 
                     m.saveCellSecurely({ maThietBi: ma, field: "ten_thiet_bi", value: ten, userRoles: roles })
                   ).catch(e => toast.error(e.message));
                 }}
-                onMoveSystem={() => {}}
-                onMoveGroup={() => {}}
-                onMoveDevice={() => {}}
+                onMoveSystem={(req) => {
+                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
+                }}
+                onMoveGroup={(req) => {
+                  toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
+                }}
+                onMoveDevice={(req) => {
+                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
+                }}
                 posByHt={posByHt || new Map()}
               />
             </div>
