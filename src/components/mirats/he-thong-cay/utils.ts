@@ -239,7 +239,7 @@ export function buildCsv(tree: PlGroup[]) {
         for (const ht of nh.systems) {
           lines.push(`ht,${ht.ma},${ht.ten},${nh.ma}`);
           for (const d of ht.devices) {
-            lines.push(`tb,${d.tb.ma_thiet_bi},${d.tb.ten_thiet_bi || d.tb.ten},${ht.ma}`);
+            lines.push(`tb,${d.tb.ma_thiet_bi},${d.tb.ten || ""},${ht.ma}`);
           }
         }
       }
