@@ -299,7 +299,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
              {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
           </div>
         </div>
-        <PreviewKhaiDialog open={previewOpen} onOpenChange={setPreviewOpen} payload={buildPayloadForSave(maNhomDraft ?? "Draft", closingIntent)} onConfirm={() => save.mutate()} />
+        <PreviewKhaiDialog open={previewOpen} input={buildPayloadForSave(maNhomDraft ?? "Draft", closingIntent)} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
     </div>
   );
 }
