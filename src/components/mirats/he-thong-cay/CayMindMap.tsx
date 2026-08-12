@@ -301,7 +301,10 @@ export function CayMindMap({
 
   useEffect(() => {
     if (rfNodes.length > 0) {
-      const timer = setTimeout(recenter, 150);
+      // Small delay to allow layout to settle
+      const timer = setTimeout(() => {
+        recenter();
+      }, 250);
       return () => clearTimeout(timer);
     }
   }, [rfNodes.length, recenter]);
