@@ -1,31 +1,28 @@
-# Plan - Khôi phục hiển thị MindMap trong hệ thống
+# Plan - Khôi phục hiển thị và điều hướng MindMap (Sơ đồ hệ thống)
 
-Người dùng phản hồi không tìm thấy MindMap ở trang Hệ thống. Sau khi kiểm tra, MindMap (Sơ đồ) đã có trong code nhưng có thể đang gặp vấn đề về hiển thị hoặc luồng chuyển đổi tab.
+Người dùng phản hồi không tìm thấy MindMap hoặc MindMap bị ẩn. Kế hoạch này tập trung vào việc đảm bảo MindMap luôn có thể truy cập được thông qua nhiều lối tắt (tab, sidebar, search) và khắc phục lỗi hiển thị 0px nếu có.
 
 ## Tình trạng hiện tại
-- Route `/he-thong/cay` đã có `CayMindMap` và tab "Sơ đồ".
-- Route `/he-thong/thanh-phan` (Bảng) có tab "Sơ đồ" nhưng khi bấm vào nó điều hướng sang `/he-thong/cay` với tham số `display=mindmap`.
-- `CayContext` quản lý `display` mode và đồng bộ với URL search param `view`.
+- MindMap nằm ở tab "Sơ đồ" của trang `/he-thong/cay`.
+- Trang `/he-thong/thanh-phan` (Bảng) có nút chuyển sang MindMap nhưng đang dùng tham số `display` thay vì `view`.
+- Sidebar mục "Sơ đồ hệ thống" đang trỏ tới `/so-do` (một trang khác, có thể trống hoặc cũ) thay vì dẫn thẳng tới MindMap của hệ thống tài sản.
 
 ## Các bước thực hiện
 
-### 1. Kiểm tra và sửa lỗi hiển thị CayMindMap
-- Đảm bảo `CayMindMap` có chiều cao cố định hoặc chiếm hết không gian container cha. Hiện tại `src/routes/_app.he-thong.cay.tsx` đang dùng `h-full w-full`, cần kiểm tra xem container cha có `flex-1` và `min-h-0` chưa.
-- Kiểm tra `CayMindMap.tsx` để xem logic render React Flow có bị lỗi 0px height không.
+### 1. Đồng bộ hóa tham số điều hướng
+- Cập nhật `src/routes/_app.he-thong.thanh-phan.tsx`: Đổi `search: { display: v }` thành `search: { view: v }` để khớp với `validateSearch` và logic sync của trang Cây.
 
-### 2. Đồng bộ hóa Tab và Điều hướng
-- Đảm bảo khi ở `/he-thong/thanh-phan` bấm tab "Sơ đồ", trang được chuyển sang `/he-thong/cay?view=mindmap` và hiển thị đúng mode mindmap.
-- Kiểm tra `validateSearch` trong route `/he-thong/cay` để chắc chắn nó nhận tham số `view`.
+### 2. Cập nhật Sidebar để dẫn thẳng tới MindMap
+- Cập nhật `src/lib/mirats/nav-contract.ts`: Đổi link của mục "Sơ đồ hệ thống" từ `/so-do` thành `/he-thong/cay?view=mindmap`. Điều này giúp người dùng tìm thấy MindMap ngay từ menu chính.
 
-### 3. Cải thiện UI Tab Hệ thống
-- Kiểm tra xem tab "Sơ đồ" có bị ẩn trên mobile không (vì React Flow thường khó dùng trên mobile). Nếu có, hãy đảm bảo người dùng biết hoặc cung cấp fallback.
+### 3. Đảm bảo hiển thị MindMap không bị lỗi chiều cao
+- Kiểm tra `src/routes/_app.he-thong.cay.tsx`: Đảm bảo container chứa `CayMindMap` có `min-h-[600px]` hoặc `flex-1` và container cha không bị bó hẹp chiều cao, giúp React Flow luôn hiển thị được.
 
-## Chi tiết kỹ thuật
-- File sửa: `src/routes/_app.he-thong.cay.tsx`, `src/components/mirats/he-thong-cay/CayMindMap.tsx`.
-- Sử dụng `ReactFlow` với container có kích thước xác định.
-- Đảm bảo `display === 'mindmap'` kích hoạt đúng component.
+### 4. Tự động chuyển tab khi tìm kiếm trúng Node
+- Cập nhật logic trong `src/routes/_app.he-thong.cay.tsx`: Nếu người dùng đang ở tab khác (như Cây) mà tìm kiếm một node và bấm vào, nếu MindMap đang được mở ở một context nào đó, hãy đảm bảo người dùng có thể chuyển sang xem node đó trên sơ đồ. (Hiện tại logic focus node trong `CayMindMap` đã khá ổn, chỉ cần đảm bảo tab được active).
 
 ## Kiểm tra
-- Truy cập `/he-thong/thanh-phan`, bấm tab "Sơ đồ".
-- Truy cập trực tiếp `/he-thong/cay?view=mindmap`.
-- Kiểm tra trên các độ phân giải màn hình khác nhau.
+- Bấm vào "Sơ đồ hệ thống" trên Sidebar -> phải ra đúng MindMap.
+- Ở trang "Bảng thành phần", bấm tab "Sơ đồ" -> phải nhảy sang trang MindMap.
+- Kiểm tra trên mobile (mặc dù MindMap bị ẩn trên mobile theo contract, nhưng tab vẫn nên hoạt động nếu user cố ý truy cập).
+
