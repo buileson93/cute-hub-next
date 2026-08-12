@@ -34,7 +34,7 @@ import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
-import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, htSysMa } from "@/components/mirats/he-thong-cay/utils";
 import type { 
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
