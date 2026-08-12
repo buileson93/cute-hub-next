@@ -62,8 +62,8 @@ export type TaiSanRow = {
   ngayBaoTriGanNhat: string;
   ngayBaoTriKeTiep: string;
   // GĐ2-06 anomaly hint
-  soSuCo90n: number;
-  anomalyScore: number;
+  soSuCo90n: number | null;
+  anomalyScore: number | null;
 };
 
 
@@ -120,6 +120,7 @@ export type ThanhPhanRow = {
   cheDoKdHc: string;
   taiSanViTri: string;
   taiSanDonViQuanLy: string;
+  anomalyScore: number | null;
 };
 
 
