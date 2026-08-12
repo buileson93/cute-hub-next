@@ -149,7 +149,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   useEffect(() => {
     if (!heThongId) { setTpList([]); return; }
     setTpLoading(true);
-    supabase.from("he_thong_thanh_phan").select("id, ma_thanh_phan, ten, vi_tri_ten, he_thong_id").eq("he_thong_id", heThongId).is("deleted_at", null).then(({ data }) => {
+    supabase.from("he_thong_thanh_phan").select("id, ma_thanh_phan, ten, he_thong_id").eq("he_thong_id", heThongId).is("deleted_at", null).then(({ data }) => {
       setTpList((data ?? []) as ThanhPhanRow[]);
       setTpLoading(false);
     });
