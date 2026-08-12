@@ -87,6 +87,17 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
   const sections = sectionsData?.sections;
   const isChecklist = isChecklistTemplate(sections);
 
+  const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
+    if (!selected.length) return null;
+    return {
+      loai: "BAO_DUONG",
+      thiet_bi_id: selected[0].id,
+      moTa: templates?.find(t => t.id === templateId)?.ten ?? "Bảo trì định kỳ",
+      thoiGian: ngayBatDau || new Date().toISOString(),
+      tenThietBi: selected[0].ten
+    };
+  }, [selected, templateId, templates, ngayBatDau]);
+
   function nextStep() { if (step < 3) setStep(s => s + 1); }
   function prevStep() { if (step > 1) setStep(s => s - 1); }
 
