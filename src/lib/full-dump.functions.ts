@@ -94,7 +94,7 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
       authUsers = (u as any)?.total ?? 0;
     } catch { /* bỏ qua */ }
 
-    return {
+    const manifest = {
       created_at: new Date().toISOString(),
       tables,
       schema: schema ?? null,
