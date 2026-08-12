@@ -219,14 +219,14 @@ function HeThongCayPage() {
 
   const { tree } = useMemo(() => {
     const realSystems = taxonomy?.htList.map(h => ({
-      ma: htSysMa(h.nhom || "KHAC", h.id),
+      ma: htSysMa(h.nhomId || "KHAC", h.id),
       ten: h.ten,
-      nhMa: h.nhom || "KHAC",
-      nhTen: taxonomy.nhomNameMap.get(h.nhom || "KHAC") || h.nhom || "Khác",
-      plId: h.phan_loai_id || taxonomy.plList[0]?.id || "KHAC"
+      nhMa: h.nhomId || "KHAC",
+      nhTen: taxonomy.nhomNameMap.get(h.nhomId || "KHAC") || h.nhomId || "Khác",
+      plId: h.phanLoaiId || taxonomy.plList[0]?.id || "KHAC"
     })) || [];
 
-    const htDonViMap = (htId: string) => taxonomy?.htList.find(h => h.id === htId)?.don_vi || null;
+    const htDonViMap = (htId: string) => taxonomy?.htList.find(h => h.id === htId)?.donViId || null;
     
     const ordNh = (ma: string) => {
       const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
@@ -246,7 +246,7 @@ function HeThongCayPage() {
       taxonomy?.plList || [],
       htMind,
       nhMind,
-      groupMode === "donvi", // Assume groupMode maps to groupByLoai logic or similar in legacy
+      groupMode === "donvi",
       [], // customGroups
       ordNh,
       ordHt,
