@@ -127,6 +127,8 @@ function HeThongCayPage() {
     badgeFilter, setBadgeFilter,
     groupMode,
   } = useCayContext();
+  
+  const { renameEntity } = useCayMutations();
 
   // Sync display with search param
   useEffect(() => {
