@@ -18,7 +18,7 @@ import "@xyflow/react/dist/style.css";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DataState } from "@/components/mirats/DataState";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import {
   useDbTaxonomy,
   type DbDevice, type DbTaxonomy,
@@ -27,7 +27,7 @@ import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useMyPermissions, useCan } from "@/hooks/use-permissions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { parseHtSysMa } from "@/lib/mirats/phan-loai";
+import { parseHtSysMa } from "@/lib/mirats/types";
 
 import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/CayContext";
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
