@@ -5,7 +5,7 @@ import { fetchAllRows } from "@/lib/mirats/paginate";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
-import { Package, Pencil, Check } from "lucide-react";
+import { Package, Pencil, Check, ShieldCheck, History, Wrench, AlertTriangle, FileText, Ban, Trash2, LayoutGrid } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -14,11 +14,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { useCan } from "@/hooks/use-permissions";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { useSession } from "@/hooks/use-session";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import TabTongQuan from "@/components/mirats/thiet-bi-detail/TabTongQuan";
 import TabVanHanh from "@/components/mirats/thiet-bi-detail/TabVanHanh";
 import TabCauHinh from "@/components/mirats/thiet-bi-detail/TabCauHinh";
 import TabHoSoPhapLy from "@/components/mirats/thiet-bi-detail/TabHoSoPhapLy";
 import TabNangCao from "@/components/mirats/thiet-bi-detail/TabNangCao";
+
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
   component: ThietBiDetailRoute,
@@ -26,9 +35,12 @@ export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
 
 function ThietBiDetailRoute() {
   const { maThietBi: ma } = Route.useParams();
+  const { roles } = useSession();
+  const isAdmin = roles.includes("admin") || roles.includes("phong_kt");
   const canManage = useCan("thiet-bi", "manage");
   const [editMode, setEditMode] = useUserPref<boolean>("thiet-bi-detail:edit-mode", false);
   const canEdit = canManage && editMode;
+
 
   const { data: tb, isLoading } = useQuery({
     queryKey: ["thiet-bi", ma],
@@ -122,48 +134,63 @@ function ThietBiDetailRoute() {
   };
 
   return (
-    <PageBody>
-      <PageHeader
-        icon={Package}
-        title={tb.ten_thiet_bi || tb.ma_thiet_bi}
-        actions={
-          <div className="flex items-center gap-4">
-            {canManage && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-full border border-border/50 transition-all hover:bg-muted">
-                <Switch 
-                  id="edit-mode" 
-                  checked={editMode} 
-                  onCheckedChange={setEditMode}
-                  className="data-[state=checked]:bg-primary"
-                />
-                <label 
-                  htmlFor="edit-mode" 
-                  className="text-xs font-medium cursor-pointer flex items-center gap-1.5 select-none"
+    <div className="flex min-h-screen flex-col bg-muted/20 pb-20 md:pb-0">
+      <div className="p-4 bg-background border-b sticky top-0 z-30">
+        <PageHeader
+          title={tb.ten_thiet_bi || ma}
+          icon={Package}
+          actions={
+            <div className="flex items-center gap-2">
+              {canManage && (
+                <Button
+                  variant={editMode ? "default" : "outline"}
+                  size="sm"
+                  className="gap-1.5 h-8 px-3 transition-all"
+                  onClick={() => setEditMode(!editMode)}
                 >
                   {editMode ? (
-                    <><Check className="h-3 w-3 text-primary" /> Đang chỉnh sửa</>
+                    <>
+                      <Check className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Đang chỉnh sửa</span>
+                      <span className="sm:hidden">Xong</span>
+                    </>
                   ) : (
-                    <><Pencil className="h-3 w-3 text-muted-foreground" /> Bật chỉnh sửa</>
+                    <>
+                      <Pencil className="h-3.5 w-3.5" />
+                      <span>Chỉnh sửa</span>
+                    </>
                   )}
-                </label>
-              </div>
-            )}
-            <div className="flex items-center gap-2">
-              <StatusBadge domain="thiet_bi" code={tb.trang_thai?.ma} />
-              {tb.ma_serial && <Badge variant="secondary" className="font-mono">S/N: {tb.ma_serial}</Badge>}
+                </Button>
+              )}
+              
+              {isAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8">Thao tác</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem className="text-amber-600 cursor-pointer">
+                      <Ban className="mr-2 h-4 w-4" /> Ngừng khai thác
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive cursor-pointer">
+                      <Trash2 className="mr-2 h-4 w-4" /> Thanh lý tài sản
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
-          </div>
-        }
-        description={
-          <div className="flex items-center gap-2 mt-1">
-             <Badge variant="outline" className="text-[10px] font-normal">Tài sản</Badge>
-             <span className="text-muted-foreground">/</span>
-             <span className="text-muted-foreground">{tb.ma_thiet_bi}</span>
-          </div>
-        }
-      />
+          }
+        />
+        <div className="flex items-center gap-3 mt-2">
+          <Badge variant="outline" className="font-mono">{ma}</Badge>
+          <StatusBadge domain="thiet_bi" code={tb._capPhatTrangThai} />
+          {tb.loai?.mau && <Badge style={{ backgroundColor: tb.loai.mau }} className="text-white border-0">{tb.loai.ten}</Badge>}
+        </div>
+      </div>
+      
+      <PageBody>
+        <div className="mt-6">
 
-      <div className="mt-6">
         <Tabs defaultValue="tong-quan" className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="tong-quan">Tổng quan</TabsTrigger>
@@ -191,8 +218,10 @@ function ThietBiDetailRoute() {
         </Tabs>
       </div>
     </PageBody>
+  </div>
   );
 }
+
 
 function InfoItem({ label, value, bold }: { label: string; value: any; bold?: boolean }) {
   return (
