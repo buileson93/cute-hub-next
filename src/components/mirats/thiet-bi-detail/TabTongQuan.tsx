@@ -107,9 +107,9 @@ export default function TabTongQuan({
           <CardHeader><CardTitle className="text-base">Vòng đời & Khai thác</CardTitle></CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div className="space-y-3 text-sm">
-              <InfoRow icon={Calendar} label="Ngày mua" value={tb.ngay_mua || "—"} />
-              <InfoRow icon={Calendar} label="Năm khai thác" value={tb._namKhaiThac ? String(tb._namKhaiThac) : (tb.ngay_dua_vao_su_dung || "—")} />
-              <InfoRow icon={ShieldCheck} label="Hạn bảo hành" value={tb.han_bao_hanh || "—"} />
+              <InfoRow icon={Calendar} label="Ngày mua" value={tb.ngay_mua || "—"} field="ngay_mua" canEdit={canEdit} editor={editor} ma={ma} currentValue={tb.ngay_mua} />
+              <InfoRow icon={Calendar} label="Năm khai thác" value={tb._namKhaiThac ? String(tb._namKhaiThac) : (tb.ngay_dua_vao_su_dung || "—")} field="nam_dua_vao_khai_thac" canEdit={canEdit} editor={editor} ma={ma} currentValue={tb._namKhaiThac || tb.ngay_dua_vao_su_dung} />
+              <InfoRow icon={ShieldCheck} label="Hạn bảo hành" value={tb.han_bao_hanh || "—"} field="han_bao_hanh" canEdit={canEdit} editor={editor} ma={ma} currentValue={tb.han_bao_hanh} />
             </div>
             <div className="space-y-3">
               {pct != null && (
