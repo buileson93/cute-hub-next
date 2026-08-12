@@ -309,8 +309,20 @@ function Dashboard() {
             </Card>
           </div>
 
-          {/* TẦNG 2: BA KHỐI CÂU HỎI */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
+                  <Flame className="w-4 h-4" /> Hôm nay có gì đang cháy?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <div className="text-4xl font-black text-red-600 tabular-nums">
+                    {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
+                </div>
                 <div className="space-y-2 min-h-[100px]">
                   {brief.isLoading ? (
                     <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
