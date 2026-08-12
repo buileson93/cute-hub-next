@@ -134,10 +134,19 @@ function HeThongCayPage() {
 
   // Sync display with search param
   useEffect(() => {
+    // Nếu URL có view khác với state hiện tại, cập nhật state
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
-  }, [search.view, setDisplay, display]);
+    // Ngược lại, nếu URL KHÔNG có view nhưng state đang là mindmap, cập nhật URL
+    else if (!search.view && display === "mindmap") {
+      nav({ 
+        to: "/he-thong/cay", 
+        search: (prev: any) => ({ ...prev, view: "mindmap" }),
+        replace: true 
+      });
+    }
+  }, [search.view, setDisplay, display, nav]);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") {
