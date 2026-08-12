@@ -41,6 +41,24 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const [viewTree, setViewTree] = useState<PlGroup[]>([]);
   const [reorgOpen, setReorgOpen] = useState(false);
 
+  const initialSeedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (!initialSeedRef.current && viewTree.length > 0) {
+      initialSeedRef.current = true;
+      setExpandedNodes(prev => {
+        const next = new Set(prev);
+        viewTree.forEach(pl => {
+          next.add(`pl:${pl.id}`);
+          pl.fields.forEach(lv => {
+            if (lv.id) next.add(`lv:${pl.id}:${lv.id}`);
+            lv.groups.slice(0, 5).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
+          });
+        });
+        return next;
+      });
+    }
+  }, [viewTree]);
+
   const toggleNode = (id: string) => {
     setExpandedNodes((prev) => {
       const next = new Set(prev);

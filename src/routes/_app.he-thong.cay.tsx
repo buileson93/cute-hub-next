@@ -335,12 +335,11 @@ function HeThongCayPage() {
           emptyAction={
             isFiltering ? (
               <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>
-
                 Xoá tìm kiếm
               </Button>
             ) : undefined
           }
-          className="flex-1 flex flex-col min-h-0 h-full"
+          className="flex-1 flex flex-col min-h-0 h-full w-full"
         >
           {display === "tree" && (
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
