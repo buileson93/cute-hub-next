@@ -230,21 +230,87 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
+          {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="shadow-sm border-t-2 border-t-emerald-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Target: 99%
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(reliability)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Activity className="w-3 h-3" /> Availability
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-blue-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Phản hồi
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(mttrKpi)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> MTTR (Bình quân)
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-orange-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Chu kỳ
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(mtbfKpi)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" /> MTBF (Trung bình)
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-indigo-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Bảo trì
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Wrench className="w-3 h-3" /> PM đúng hạn
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* TẦNG 2: BA KHỐI CÂU HỎI */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
-                  <Flame className="w-4 h-4" /> Hôm nay có gì đang cháy?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-red-600 tabular-nums">
-                    {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
-                  </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
-                </div>
                 <div className="space-y-2 min-h-[100px]">
                   {brief.isLoading ? (
                     <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
