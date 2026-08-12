@@ -160,7 +160,7 @@ export function NodeEditorSheet({
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button size="sm" onClick={() => { addSystem.mutate({ nhMa: target.ma, plId: "", ten: newSystemTen, donViId: newSystemDonViId }); setNewSystemTen(""); }}>
+                  <Button size="sm" onClick={() => { addSystem.mutate({ nhMa: target.ma, plId: unitCodeOf("nh", target.ma) || "", ten: newSystemTen, donViId: newSystemDonViId }); setNewSystemTen(""); }}>
                     <Plus className="h-4 w-4 mr-1" /> Thêm HT
                   </Button>
                 </div>

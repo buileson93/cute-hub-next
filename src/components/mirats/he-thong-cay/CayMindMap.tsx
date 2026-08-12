@@ -314,11 +314,15 @@ export function CayMindMap({
   const seededRef = useRef(false);
 
   useEffect(() => {
+    // Reset seededRef when tree data is completely gone to allow re-seeding
+    if (tree.length === 0) {
+      seededRef.current = false;
+      return;
+    }
     if (seededRef.current) return;
-    if (tree.length === 0) return;
     setExpanded(initialExpanded);
     seededRef.current = true;
-  }, [tree, initialExpanded]);
+  }, [tree.length, initialExpanded]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
