@@ -44,7 +44,45 @@ function ThietBiDetailRoute() {
         .eq("ma_thiet_bi", ma)
         .single();
       if (error) throw error;
-      return data;
+      
+      // Khởi tạo các trường DbDevice giả định nếu thiếu
+      const row = data as any;
+      return {
+        ...row,
+        _pl: row.phan_loai_id || "",
+        _plTen: "",
+        _lv: "",
+        _lvTen: "",
+        _htId: row.he_thong_id || "",
+        _htTen: "",
+        _nhKey: "",
+        _nhTen: "",
+        _namSanXuat: row.nam_san_xuat,
+        _namKhaiThac: row.nam_dua_vao_khai_thac,
+        _tyLeTuoiTho: row.ty_le_tuoi_tho,
+        _noiQuanLy: row.noi_quan_ly || "",
+        _phanLoai: row.phan_loai || "",
+        _thanhPhan: row.thanh_phan || "",
+        _donViTen: row.don_vi?.ten || "",
+        _viTriId: row.vi_tri_id || "",
+        _viTriTen: "",
+        _maBravo: row.ma_tai_san_bravo || "",
+        _modelId: row.model_id || "",
+        _modelMa: "",
+        _modelTen: row.model || "",
+        _modelAnh: "",
+        _modelMoTa: "",
+        _modelPn: row.p_n || "",
+        _modelNsxTen: row.nha_san_xuat || "",
+        _loaiTbId: row.loai_thiet_bi_id || "",
+        _loaiTbTen: row.loai?.ten || "",
+        _loaiTbOrder: 0,
+        _capPhatTrangThai: row.trang_thai_cap_phat || "san_sang",
+        _nguoiGiu: row.nguoi_giu || "",
+        _donViGiuId: row.don_vi_giu_id || "",
+        _donViGiuTen: "",
+        _ngayCapPhat: row.ngay_cap_phat || ""
+      };
     },
   });
 
