@@ -434,15 +434,11 @@ function HeThongCayPage() {
             }).catch(e => toast.error(e.message));
           }
         }}
-        onDelete={() => {}}
         unitCodeOf={() => null}
         isCustomNode={() => false}
         isRealNode={() => true}
-        plGroups={[]}
-        onAddGroup={() => {}}
         childInfo={{items: []}}
-        onAddSystem={() => {}}
-        donViList={[]}
+        donViList={taxonomy?.donViList || []}
         physSection={null}
         submit={() => {}}
         renamingGroupCode={false}

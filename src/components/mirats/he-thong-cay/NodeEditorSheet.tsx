@@ -141,7 +141,7 @@ export function NodeEditorSheet({
               {canManage && (
                 <div className="space-y-2 border-t pt-3">
                   <Input value={newGroupTen} onChange={(e) => setNewGroupTen(e.target.value)} placeholder="Tên nhóm mới..." />
-                  <Button size="sm" onClick={() => { onAddGroup(target.ma, newGroupTen, newGroupMa); setNewGroupTen(""); }}>
+                  <Button size="sm" onClick={() => { addGroup.mutate({ plId: target.ma, ten: newGroupTen, ma: newGroupMa }); setNewGroupTen(""); setNewGroupMa(""); }}>
                     <Plus className="h-4 w-4 mr-1" /> Thêm
                   </Button>
                 </div>
@@ -149,7 +149,32 @@ export function NodeEditorSheet({
             </div>
           )}
 
-          {target?.kind === "ht" && !isCustomNode("ht", target.ma) && (
+          {target?.kind === "nh" && (
+            <div className="space-y-3 rounded-md border p-3">
+              <div className="flex items-center gap-1.5 text-sm font-medium">
+                <Network className="h-4 w-4 text-primary" /> Hệ thống con
+              </div>
+              {canManage && (
+                <div className="space-y-2 border-t pt-3">
+                  <Input value={newSystemTen} onChange={(e) => setNewSystemTen(e.target.value)} placeholder="Tên hệ thống mới..." />
+                  <Select value={newSystemDonViId} onValueChange={setNewSystemDonViId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn đơn vị..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {donViList.map(dv => (
+                        <SelectItem key={dv.id} value={dv.id}>{dv.ten}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button size="sm" onClick={() => { addSystem.mutate({ nhMa: target.ma, plId: "", ten: newSystemTen, donViId: newSystemDonViId }); setNewSystemTen(""); }}>
+                    <Plus className="h-4 w-4 mr-1" /> Thêm HT
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
             <div className="space-y-2 rounded-md border p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
                 <Cpu className="h-4 w-4 text-sky-600" /> Thành phần hệ thống
@@ -187,10 +212,14 @@ export function NodeEditorSheet({
           )}
 
           {target && (target.kind === "nh" || target.kind === "ht") && canManage && target.ma !== HT_KHAC && (
-            <Button variant="outline" className="w-full text-destructive" onClick={() => onDelete(target.kind, target.ma, ten, title)}>
+            <Button variant="outline" className="w-full text-destructive" onClick={() => deleteNode.mutate({ kind: target.kind, ma: target.ma })}>
               <Trash2 className="mr-1.5 h-4 w-4" /> Xoá {title}
             </Button>
           )}
+
+          <Button variant="outline" className="w-full" onClick={() => setReorgOpen(true)}>
+            <RefreshCcw className="mr-1.5 h-4 w-4" /> Lịch sử thay đổi
+          </Button>
         </div>
       </SheetContent>
     </Sheet>
