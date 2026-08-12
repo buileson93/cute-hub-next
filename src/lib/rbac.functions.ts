@@ -14,7 +14,10 @@ async function assertAdmin(supabase: any, userId: string) {
 export const getMyPermissions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) {
+      return { roles: [], permissions: {}, scope: [], isGlobal: false };
+    }
     const [rolesRes, permsRes, scopeRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("role_permission").select("role,module,action,allowed").eq("allowed", true),
@@ -29,10 +32,10 @@ export const getMyPermissions = createServerFn({ method: "GET" })
     const permsByModule: Record<string, string[]> = {};
     for (const [m, s] of Object.entries(allowed)) permsByModule[m] = [...s];
     return {
-      roles: [...myRoles],
+      roles: Array.from(myRoles) as string[],
       permissions: permsByModule,
-      scope: scopeRes.data ?? [],
-      isGlobal: (scopeRes.data ?? []).some((s: any) => !s.to_chuc_id && !s.don_vi_id),
+      scope: (scopeRes.data ?? []) as any[],
+      isGlobal: (scopeRes.data ?? []).some((s: any) => !s.to_chuc_id && !s.don_vi_id) as boolean,
     };
   });
 
@@ -101,9 +104,11 @@ export const setUserScope = createServerFn({ method: "POST" })
 export const getRoleMatrix = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.from("role_permission").select("role,module,action,allowed");
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) return [];
+    const { data, error } = await supabase.from("role_permission").select("role,module,action,allowed");
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return (data ?? []) as any[];
   });
 
 export const setRolePermission = createServerFn({ method: "POST" })
@@ -145,10 +150,12 @@ export const createAccessRequest = createServerFn({ method: "POST" })
 export const listAccessRequests = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase, context.userId);
-    const { data, error } = await context.supabase.from("access_request").select("*").order("created_at", { ascending: false }).limit(200);
+    const { supabase, unauthenticated, userId } = context as any;
+    if (unauthenticated || !supabase) return [];
+    await assertAdmin(supabase, userId);
+    const { data, error } = await supabase.from("access_request").select("*").order("created_at", { ascending: false }).limit(200);
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return (data ?? []) as any[];
   });
 
 export const resolveAccessRequest = createServerFn({ method: "POST" })
@@ -233,9 +240,11 @@ export const listFeatureUsageAggregate = createServerFn({ method: "GET" })
 export const listAnomalies = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.from("anomaly_alert").select("*").order("created_at", { ascending: false }).limit(200);
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) return [];
+    const { data, error } = await supabase.from("anomaly_alert").select("*").order("created_at", { ascending: false }).limit(200);
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return (data ?? []) as any[];
   });
 
 export const resolveAnomaly = createServerFn({ method: "POST" })
@@ -270,7 +279,7 @@ export const previewAsUser = createServerFn({ method: "POST" })
       (allowed[p.module] ??= []).push(p.action);
     }
     return {
-      roles: [...myRoles],
+      roles: Array.from(myRoles) as string[],
       permissions: allowed,
       scope: scopeRes.data ?? [],
       isGlobal: (scopeRes.data ?? []).some((s: any) => !s.to_chuc_id && !s.don_vi_id),

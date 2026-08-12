@@ -12,8 +12,9 @@ export interface HeartBeatGroup {
 }
 
 export const getHeartBeatData = createServerFn({ method: "GET" })
-  .handler(async (): Promise<HeartBeatGroup[]> => {
-    // 1. Fetch groups and their active systems
+  .handler(async ({ context }): Promise<HeartBeatGroup[]> => {
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) return [];
     const { data: groups, error } = await supabase
       .from("dm_nhom_he_thong")
       .select(`
@@ -35,7 +36,7 @@ export const getHeartBeatData = createServerFn({ method: "GET" })
 
     const now = new Date();
 
-    return (groups || []).map(g => {
+    return (groups || []).map((g: any) => {
       const systems = (g.systems || []) as any[];
       const activeSystems = systems.filter(s => s.active);
       
@@ -89,8 +90,9 @@ export interface AuditTimelineItem {
 }
 
 export const getAuditTimeline = createServerFn({ method: "GET" })
-  .handler(async (): Promise<AuditTimelineItem[]> => {
-    // 1. Fetch audit logs
+  .handler(async ({ context }): Promise<AuditTimelineItem[]> => {
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) return [];
     const { data: logs, error } = await supabase
       .from("audit_log")
       .select("id, created_at, action, entity, detail, user_id")
@@ -103,14 +105,14 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
     }
 
     // 2. Fetch profiles for user names
-    const userIds = Array.from(new Set(logs.map(l => l.user_id).filter(Boolean))) as string[];
+    const userIds = Array.from(new Set(logs.map((l: any) => l.user_id).filter(Boolean))) as string[];
     const { data: profiles } = await supabase
       .from("profiles")
       .select("id, ho_ten")
       .in("id", userIds);
     
     const profileMap: Record<string, string> = {};
-    profiles?.forEach(p => { 
+    profiles?.forEach((p: any) => { 
       if (p.id && p.ho_ten) profileMap[p.id] = p.ho_ten; 
     });
 

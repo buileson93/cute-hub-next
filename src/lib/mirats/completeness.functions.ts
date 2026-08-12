@@ -5,10 +5,13 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 export const getCompletenessStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase } = context as any;
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) {
+      return { avg_thiet_bi: 0 }; // Return safe default for SSR
+    }
     const { data, error } = await supabase.rpc("get_completeness_stats");
     if (error) throw new Error(error.message);
-    return data;
+    return (data || {}) as any;
   });
 
 export const getCompletenessOverview = createServerFn({ method: "GET" })
@@ -19,9 +22,10 @@ export const getCompletenessOverview = createServerFn({ method: "GET" })
     }).parse(d)
   )
   .handler(async ({ data, context }) => {
-    const { supabase } = context as any;
-
-    // Lấy top thiết bị hoàn thiện kém nhất
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) {
+      return { lowCompleteness: [], tasks: [] };
+    }
     const { data: lowCompleteness, error: err1 } = await supabase
       .from("thiet_bi")
       .select("id, ten_thiet_bi, completeness_pct, he_thong_id, don_vi_id, dm_he_thong(ten)")
@@ -40,7 +44,7 @@ export const getCompletenessOverview = createServerFn({ method: "GET" })
     if (err2) throw new Error(err2.message);
 
     return {
-      lowCompleteness: lowCompleteness || [],
-      tasks: tasks || []
+      lowCompleteness: (lowCompleteness || []) as any[],
+      tasks: (tasks || []) as any[]
     };
   });
