@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useLayoutEffect, useRef } fr
 import {
   ReactFlow, Controls, MiniMap, Panel, useReactFlow,
   useNodesState, useEdgesState,
-  Handle, Position,
+  Handle, Position, Background, BackgroundVariant,
   type Node, type Edge, type NodeTypes, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -275,11 +275,38 @@ export function CayMindMap({
 }) {
 
   const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
+  
+  // Bước 8: Mở sẵn Phân loại (pl) và Nhóm hệ thống (nh)
+  const initialExpanded = useMemo(() => {
+    const set = new Set(["root"]);
+    for (const pl of tree) {
+      set.add(`pl:${pl.id}`);
+      for (const lv of pl.fields) {
+        for (const nh of lv.groups) {
+          set.add(`nh:${nh.ma}`);
+        }
+      }
+    }
+    return set;
+  }, [tree]);
+
+  const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hitId, setHitId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
   const fitSeqRef = useRef(0);
+
+  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
+  
+  // Bước 6: Căn khung LẠI mỗi khi số nút thay đổi
+  useEffect(() => {
+    if (rfNodes.length > 0) {
+      const timer = setTimeout(() => {
+        fitView({ duration: 400, padding: 0.2 });
+      }, 80);
+      return () => clearTimeout(timer);
+    }
+  }, [rfNodes.length, fitView]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
@@ -479,7 +506,6 @@ export function CayMindMap({
   }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
 
 
-  const [rfNodes, setRfNodes, onNodesChange] = useNodesState(nodes);
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
 
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
@@ -566,9 +592,27 @@ export function CayMindMap({
       >
         <Controls showInteractive={false} />
         <MiniMap pannable zoomable className="!hidden sm:!block" />
+        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+
+        {rfNodes.filter(n => n.type === 'mind').length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="flex flex-col items-center gap-4 p-8 bg-card/80 backdrop-blur border rounded-xl shadow-2xl pointer-events-auto">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                <Search className="w-8 h-8 text-muted-foreground opacity-20" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-bold">Chưa có dữ liệu sơ đồ</h3>
+                <p className="text-sm text-muted-foreground max-w-[240px]">Không tìm thấy hệ thống nào khớp với bộ lọc hiện tại.</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => window.location.reload()} className="gap-2">
+                <Loader2 className="w-4 h-4" /> Tải lại trang
+              </Button>
+            </div>
+          </div>
+        )}
 
         <Panel position="top-right">
-           <Button size="sm" variant="outline" onClick={() => fitView()}>Fit View</Button>
+           <Button size="sm" variant="outline" onClick={() => fitView({ duration: 400, padding: 0.2 })}>Fit View</Button>
         </Panel>
       </ReactFlow>
     </div>
