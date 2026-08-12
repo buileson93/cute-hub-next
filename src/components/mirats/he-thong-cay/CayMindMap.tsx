@@ -274,16 +274,15 @@ export function CayMindMap({
   tbMind: (t: any) => string;
 }) {
 
-  const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
+  const { fitView, zoomTo, getIntersectingNodes } = useReactFlow();
   
-  // Bước 8: Mở sẵn Phân loại (pl) và Nhóm hệ thống (nh)
   const initialExpanded = useMemo(() => {
     const set = new Set(["root"]);
     for (const pl of tree) {
       set.add(`pl:${pl.id}`);
       for (const lv of pl.fields) {
         for (const nh of lv.groups) {
-          set.add(`nh:${nh.ma}`);
+          set.add(`nh:${pl.id}:${nh.ma}`);
         }
       }
     }
@@ -292,21 +291,20 @@ export function CayMindMap({
 
   const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [hitId, setHitId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
-  const fitSeqRef = useRef(0);
 
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
   
-  // Bước 6: Căn khung LẠI mỗi khi số nút thay đổi
+  const recenter = useCallback(() => {
+    fitView({ duration: 400, padding: 0.2 });
+  }, [fitView]);
+
   useEffect(() => {
     if (rfNodes.length > 0) {
-      const timer = setTimeout(() => {
-        fitView({ duration: 400, padding: 0.2 });
-      }, 80);
+      const timer = setTimeout(recenter, 150);
       return () => clearTimeout(timer);
     }
-  }, [rfNodes.length, fitView]);
+  }, [rfNodes.length, recenter]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
@@ -561,7 +559,7 @@ export function CayMindMap({
           const reset = () => setRfNodes(nodes);
 
           const hitFirst = (prefixes: string[]) =>
-            getIntersectingNodes(node).find((n) => prefixes.some((p) => String(n.id).startsWith(p)));
+            getIntersectingNodes(node).find((n: ReactFlowNode) => prefixes.some((p) => String(n.id).startsWith(p)));
 
           if (d.kind === "ht" && d.ma) {
             const sysId = parseHtSysMa(d.ma).sysName;
@@ -611,8 +609,27 @@ export function CayMindMap({
           </div>
         )}
 
-        <Panel position="top-right">
-           <Button size="sm" variant="outline" onClick={() => fitView({ duration: 400, padding: 0.2 })}>Fit View</Button>
+        <Panel position="top-right" className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1 rounded-lg border bg-background/95 p-1 shadow-sm backdrop-blur">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={recenter}>
+                    <GitFork className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">Căn giữa sơ đồ</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => zoomTo(1)}>
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">Phóng đại 100%</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </Panel>
       </ReactFlow>
     </div>
