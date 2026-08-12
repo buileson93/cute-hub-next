@@ -296,15 +296,17 @@ export function CayMindMap({
   const justOpenedRef = useRef<string | null>(null);
   const fitSeqRef = useRef(0);
 
+  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
+  
   // Bước 6: Căn khung LẠI mỗi khi số nút thay đổi
   useEffect(() => {
-    if (nodes.length > 0) {
+    if (rfNodes.length > 0) {
       const timer = setTimeout(() => {
         fitView({ duration: 400, padding: 0.2 });
       }, 80);
       return () => clearTimeout(timer);
     }
-  }, [nodes.length, fitView]);
+  }, [rfNodes.length, fitView]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
