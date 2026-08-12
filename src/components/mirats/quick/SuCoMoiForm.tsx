@@ -149,9 +149,9 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
 
   useEffect(() => {
     if (voiceActive) {
-      voice.start();
+      voice?.start();
     } else {
-      voice.stop();
+      voice?.stop();
     }
   }, [voiceActive, voice]);
 
