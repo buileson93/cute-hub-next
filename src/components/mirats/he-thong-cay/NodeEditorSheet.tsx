@@ -33,11 +33,9 @@ export function NodeEditorSheet({
   saving: boolean;
   onSave: (payload: any) => void;
   canManage: boolean;
-  onDelete: (kind: EditKind, ma: string, ten: string, label: string) => void;
   unitCodeOf: (kind: string, ma: string) => string | null;
   isCustomNode: (kind: string, ma: string) => boolean;
   isRealNode: (kind: string, ma: string) => boolean;
-  plGroups: any[];
   childInfo: any;
   donViList: any[];
   physSection: React.ReactNode;
