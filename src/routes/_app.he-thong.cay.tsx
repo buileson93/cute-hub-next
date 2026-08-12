@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -140,7 +140,7 @@ function HeThongCayPage() {
       setDisplay(v as any);
       nav({ 
         to: "/he-thong/cay", 
-        search: (prev) => ({ ...prev, view: v }),
+        search: (prev: any) => ({ ...prev, view: v }),
         replace: true 
       });
     }
