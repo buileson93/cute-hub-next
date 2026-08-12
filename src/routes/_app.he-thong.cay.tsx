@@ -219,7 +219,7 @@ function HeThongCayPage() {
 
   const { tree } = useMemo(() => {
     const realSystems = taxonomy?.htList.map(h => ({
-      ma: htSysMa(h.nhomId || "KHAC", h.id),
+      ma: h.ma,
       ten: h.ten,
       nhMa: h.nhomId || "KHAC",
       nhTen: taxonomy.nhomNameMap.get(h.nhomId || "KHAC") || h.nhomId || "Khác",
