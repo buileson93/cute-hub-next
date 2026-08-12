@@ -5,7 +5,7 @@ import { PageBody } from "@/components/mirats/PageBody";
 import { 
   LayoutDashboard, Flame, Wrench, Sparkles, 
   ArrowRight, Activity, User, Trophy, History,
-  CheckCircle2, AlertCircle
+  CheckCircle2, AlertCircle, Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
@@ -23,6 +23,9 @@ import {
   CartesianGrid,
 } from "recharts";
 import { supabase } from "@/integrations/backend/client";
+import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
+import { LiveTimeline } from "@/components/mirats/dashboard/LiveTimeline";
+
 
 // Types
 interface SuCoByMonth { thang: string; muc_do: string; so_luong: number }
@@ -141,8 +144,15 @@ function Dashboard() {
         description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
       />
 
-      {/* TẦNG 2: BA KHỐI CÂU HỎI */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
+      <div className="mt-4 -mx-6">
+        <HeartBeatStrip />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
+        <div className="lg:col-span-3 space-y-6">
+          {/* TẦNG 2: BA KHỐI CÂU HỎI */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">

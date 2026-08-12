@@ -73,7 +73,6 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
       <TooltipTrigger asChild>
         <Link 
           to="/he-thong/cay" 
-          search={{ nhom_id: group.id }}
           className={cn(
             "w-8 h-8 rounded transition-all duration-300 flex items-center justify-center text-[10px] font-bold text-white cursor-pointer select-none",
             statusColors[group.status],
