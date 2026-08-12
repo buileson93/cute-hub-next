@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -23,7 +23,6 @@ import {
 } from "@/lib/mirats/db-taxonomy";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useMyPermissions, useCan } from "@/hooks/use-permissions";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseHtSysMa } from "@/lib/mirats/phan-loai";
@@ -32,14 +31,16 @@ import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/Cay
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
-import { buildTree, filterTreeByBadge, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
+import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import type { 
-  EditKind, OverrideMap 
+  EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
-  validateSearch: (search: Record<string, unknown>): { editTb?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string } => ({
     editTb: typeof search.editTb === "string" ? search.editTb : undefined,
+    view: typeof search.view === "string" ? search.view : undefined,
   }),
   head: () => ({
     meta: [
@@ -113,21 +114,35 @@ function useTbMind(overrides: OverrideMap | undefined) {
 
 function HeThongCayPage() {
   const nav = useNavigate();
+  const search = Route.useSearch();
   const canManage = useCan("he-thong", "manage");
 
   const {
     display, setDisplay,
     editMode, setEditMode,
     searchQuery, setSearchQuery,
-    badgeFilter,
+    setFocus,
+    badgeFilter, setBadgeFilter,
     groupMode,
   } = useCayContext();
+
+  // Sync display with search param
+  useEffect(() => {
+    if (search.view && search.view !== display) {
+      setDisplay(search.view as any);
+    }
+  }, [search.view, setDisplay, display]);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") {
       nav({ to: "/he-thong/thanh-phan" });
     } else {
       setDisplay(v as any);
+      nav({ 
+        to: "/he-thong/cay", 
+        search: (prev: any) => ({ ...prev, view: v }),
+        replace: true 
+      });
     }
   };
 
@@ -212,7 +227,7 @@ function HeThongCayPage() {
   const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
   const error = errorOverrides || errorTaxo || errorDevices;
   const state = isLoading ? "loading" : error ? "error" : viewTree.length === 0 ? "empty" : "success";
-  const isFiltering = searchQuery.trim() !== "" || (Array.isArray(badgeFilter) ? badgeFilter.length > 0 : !!badgeFilter);
+  const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
 
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => {
@@ -251,15 +266,37 @@ function HeThongCayPage() {
 
          </div>
          <div className="flex items-center gap-2">
-            <div className="relative">
-              <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Tìm kiếm..." 
-                className="w-64 pl-9" 
-                value={searchQuery} 
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-            </div>
+            <NodeSearch 
+              items={useMemo(() => {
+                const list: SearchItem[] = [];
+                for (const pl of viewTree) {
+                  list.push({ kind: "pl", ma: pl.id, label: pl.ten, plId: pl.id, count: pl.count });
+                  for (const lv of pl.fields) {
+                    for (const nh of lv.groups) {
+                      list.push({ kind: "nh", ma: nh.ma, label: nh.ten, plId: pl.id, lvId: lv.id, count: nh.count });
+                      for (const ht of nh.systems) {
+                        list.push({ kind: "ht", ma: ht.ma, label: ht.ten, plId: pl.id, lvId: lv.id, nhMa: nh.ma, count: ht.count });
+                        for (const d of ht.devices) {
+                          list.push({ 
+                            kind: "tb", 
+                            ma: d.tb.ma_thiet_bi, 
+                            label: d.tb.ten || d.tb.ma_thiet_bi, 
+                            code: d.tb.ma_thiet_bi,
+                            plId: pl.id, lvId: lv.id, nhMa: nh.ma, htMa: ht.ma,
+                            sysName: ht.ten
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+                return list;
+              }, [viewTree])} 
+              onPick={(it) => {
+                setSearchQuery(it.label);
+                setFocus({ ...it, nonce: Math.random() });
+              }}
+            />
             {canManage && (
               <Button 
                 variant={editMode ? "default" : "outline"} 
@@ -273,7 +310,7 @@ function HeThongCayPage() {
          </div>
       </div>
 
-      <PageBody noPadding className="relative bg-muted/10">
+      <PageBody noPadding className="min-h-0 flex-1 flex flex-col bg-muted/10">
         <DataState
           state={state}
           loadingType="drawer"
@@ -286,7 +323,7 @@ function HeThongCayPage() {
           onRetry={() => { refetchOverrides(); refetchDevices(); }}
           emptyAction={
             isFiltering ? (
-              <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); /* badgeFilter is context-managed */ }}>
+              <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>
                 Xoá tìm kiếm
               </Button>
             ) : undefined
