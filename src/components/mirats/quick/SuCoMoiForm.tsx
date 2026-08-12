@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Plus, Trash2, FileText, Loader2, Save, FileDown,
   Wand2, Bot, Sparkles, CheckCircle2, Layers, MapPin, Lock,
-  ArrowRight, ArrowLeft
+  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle
 } from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
@@ -18,28 +18,21 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
-import { normalize } from "@/lib/mirats/global-search";
 import { exportBaoCaoBanDauToWord } from "@/lib/incident-report-word.functions";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
-import { parseIncidentText, type ParsedIncident } from "@/lib/ai/incident-parse.functions";
-import { parseIncidentByRules } from "@/lib/ai/incident-parse-rules";
-import { detectSuCoAnomalies, anomalyFieldSet, type Anomaly } from "@/lib/mirats/su-co-anomalies";
-import { AlertTriangle } from "lucide-react";
-import { popVoiceDraft } from "@/lib/mirats/voice-recognition";
+import { parseIncidentText } from "@/lib/ai/incident-parse.functions";
+import { detectSuCoAnomalies } from "@/lib/mirats/su-co-anomalies";
+import { createVoiceRecognition, popVoiceDraft } from "@/lib/mirats/voice-recognition";
 import { buildSuCoPayload } from "@/lib/mirats/ghi-payload";
 import { ghiSuCoFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
-import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
-import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
-import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
-import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { cn } from "@/lib/utils";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
+import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
