@@ -91,13 +91,23 @@ function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const update = () => setTruncated(el.scrollWidth > el.clientWidth + 1);
+    
+    let frameId: number;
+    const update = () => {
+      frameId = requestAnimationFrame(() => {
+        if (!el) return;
+        const isTruncated = el.scrollWidth > el.clientWidth + 1;
+        setTruncated(prev => prev !== isTruncated ? isTruncated : prev);
+      });
+    };
+    
     update();
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
     ro?.observe(el);
     window.addEventListener("resize", update);
     return () => {
       ro?.disconnect();
+      cancelAnimationFrame(frameId);
       window.removeEventListener("resize", update);
     };
   }, [label]);
@@ -278,12 +288,18 @@ export function CayMindMap({
   const { fitView, zoomTo, getIntersectingNodes } = useReactFlow();
   
   const initialExpanded = useMemo(() => {
-    const set = new Set(["root"]);
+    const set = new Set(["root", "root-stopped"]);
     for (const pl of tree) {
       set.add(`pl:${pl.id}`);
       for (const lv of pl.fields) {
+        // Expand levels if they have IDs
+        if (lv.id) set.add(`lv:${pl.id}:${lv.id}`);
         for (const nh of lv.groups) {
           set.add(`nh:${pl.id}:${nh.ma}`);
+          // Deep expand systems for first few groups to show data immediately
+          for (const ht of nh.systems.slice(0, 3)) {
+            set.add(`ht:${pl.id}:${nh.ma}:${ht.ma}`);
+          }
         }
       }
     }
@@ -298,11 +314,17 @@ export function CayMindMap({
 
   // LỖI 1: Đồng bộ expanded khi tree đổi nhưng không ghi đè thao tác người dùng
   useEffect(() => {
+    // Chỉ reset expanded khi danh sách PL thay đổi (cấu trúc lớn)
     const sig = tree.map(p => p.id).join(",");
     if (sig !== treeSigRef.current) {
       treeSigRef.current = sig;
+      // Tránh reset nếu người dùng vừa mới thực hiện thao tác mở rộng thủ công
       if (!justOpenedRef.current) {
-        setExpanded(initialExpanded);
+        setExpanded(prev => {
+          const next = new Set(prev);
+          initialExpanded.forEach(id => next.add(id));
+          return next;
+        });
       }
     }
   }, [tree, initialExpanded]);
