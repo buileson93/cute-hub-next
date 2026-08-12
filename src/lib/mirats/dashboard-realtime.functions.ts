@@ -83,7 +83,7 @@ export interface AuditTimelineItem {
   id: string;
   created_at: string;
   action: string;
-  table_name: string;
+  entity: string | null;
   user_ho_ten: string | null;
   description: string;
 }
@@ -96,22 +96,21 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
         id, 
         created_at, 
         action, 
-        table_name, 
-        payload,
+        entity, 
+        detail,
         profiles!audit_log_user_id_fkey(ho_ten)
       `)
       .order("created_at", { ascending: false })
       .limit(20);
 
     if (error) {
-      // If permission error, return empty or what we can see
       console.error("Audit log fetch error:", error);
       return [];
     }
 
     const formatAction = (item: any): string => {
       const user = item.profiles?.ho_ten || "Hệ thống";
-      const tableMap: Record<string, string> = {
+      const entityMap: Record<string, string> = {
         su_co: "sự cố",
         bao_tri: "bảo trì",
         thiet_bi: "tài sản",
@@ -128,22 +127,21 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
         APPROVE: "phê duyệt"
       };
 
-      const table = tableMap[item.table_name] || item.table_name;
+      const entity = entityMap[item.entity || ""] || item.entity || "bản ghi";
       const action = actionMap[item.action] || item.action.toLowerCase();
       
-      // Try to get more context from payload if available
-      let detail = "";
-      if (item.payload?.ten) detail = ` "${item.payload.ten}"`;
-      else if (item.payload?.ma) detail = ` [${item.payload.ma}]`;
+      let detailStr = "";
+      if (item.detail?.ten) detailStr = ` "${item.detail.ten}"`;
+      else if (item.detail?.ma) detailStr = ` [${item.detail.ma}]`;
 
-      return `${user} ${action} ${table}${detail}`;
+      return `${user} ${action} ${entity}${detailStr}`;
     };
 
     return (data || []).map(item => ({
       id: item.id,
       created_at: item.created_at,
       action: item.action,
-      table_name: item.table_name,
+      entity: item.entity,
       user_ho_ten: item.profiles?.ho_ten || null,
       description: formatAction(item)
     }));
