@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 // nhưng theo file gốc chúng là các panel chuyên biệt.
 
 export default function TabCauHinh({ 
-  tb, ma, canManage, vaiTroList, TelemetryPanel, AllocationPanel, donViTenMap 
+  tb, ma, canManage, canEdit, vaiTroList, TelemetryPanel, AllocationPanel, donViTenMap 
 }: DeviceDetailTabProps & { TelemetryPanel: any, AllocationPanel: any, donViTenMap: any }) {
   return (
     <Tabs defaultValue="linhkien" className="w-full">
@@ -35,7 +35,7 @@ export default function TabCauHinh({
       </TabsList>
 
       <TabsContent value="linhkien" className="mt-4">
-        <KheLinhKienPanel thietBiId={tb.id} canManage={canManage} />
+        <KheLinhKienPanel thietBiId={tb.id} canManage={canEdit} />
       </TabsContent>
 
       <TabsContent value="vaitro" className="mt-4">
@@ -68,14 +68,14 @@ export default function TabCauHinh({
 
       <TabsContent value="dodac" className="mt-4">
         {TelemetryPanel ? (
-          <TelemetryPanel thietBiId={tb.id} canManage={canManage} />
+          <TelemetryPanel thietBiId={tb.id} canManage={canEdit} />
         ) : (
           <p className="py-8 text-center text-sm text-muted-foreground italic">Component TelemetryPanel chưa sẵn sàng.</p>
         )}
       </TabsContent>
 
       <TabsContent value="banquyen" className="mt-4">
-        <ThietBiBanQuyen thietBiId={tb.id} canManage={canManage} />
+        <ThietBiBanQuyen thietBiId={tb.id} canManage={canEdit} />
       </TabsContent>
 
       <TabsContent value="capphat" className="mt-4">

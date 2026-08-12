@@ -1,11 +1,11 @@
-import React from "react";
-import { Clock, Wrench, AlertTriangle, History, ArrowLeftRight } from "lucide-react";
+import React, { useState } from "react";
+import { Clock, Wrench, AlertTriangle, History, ArrowLeftRight, Check, Pencil } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { DeviceDetailTabProps } from "./types";
 
 export default function TabVanHanh({ 
-  timeline, baoTri, suCo, hongHoc, banGiao 
+  timeline, baoTri, suCo, hongHoc, banGiao, canEdit
 }: DeviceDetailTabProps) {
   return (
     <Tabs defaultValue="timeline" className="w-full">

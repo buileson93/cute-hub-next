@@ -19,6 +19,8 @@ export interface DeviceDetailTabProps {
   vaiTroList: any[];
   canEdit: boolean;
   canManage: boolean;
+  editMode: boolean;
+  setEditMode: (val: boolean) => void;
   timeline: TimelineItem[];
   suCo: any[];
   baoTri: any[];

@@ -7,7 +7,7 @@ import { DeviceDetailTabProps } from "./types";
 import { useSession } from "@/hooks/use-session";
 
 export default function TabHoSoPhapLy({ 
-  tb, ma, sysGpSo, sysName, sysGpHan, roles 
+  tb, ma, sysGpSo, sysName, sysGpHan, roles, canEdit
 }: DeviceDetailTabProps & { roles?: any[] }) {
   const hasGp = Boolean(sysGpSo);
   const gpLabel = "Giấy phép khai thác";

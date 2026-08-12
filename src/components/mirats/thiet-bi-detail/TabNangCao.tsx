@@ -6,7 +6,7 @@ import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 import { DeviceDetailTabProps } from "./types";
 
 export default function TabNangCao({ 
-  ma, tb, canEdit, LifecyclePanel 
+  ma, tb, canEdit, LifecyclePanel, editMode
 }: DeviceDetailTabProps & { LifecyclePanel: any }) {
   return (
     <Tabs defaultValue="fields" className="w-full">
