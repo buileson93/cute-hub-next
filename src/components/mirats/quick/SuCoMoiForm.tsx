@@ -209,55 +209,97 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
        {!embedded && <FormPageHeader backTo="/su-co" backLabel="Nhật ký sự cố" icon={FileText} title="Báo cáo ban đầu" />}
        <FormWizardSteps steps={steps} currentStep={step} />
        <div className="flex-1 overflow-y-auto px-4">
-         {step === 1 && (
-            <div className="space-y-4">
-              <Card>
-                <CardHeader><CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle></CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label>Sự cố *</Label>
-                    <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả ngắn gọn hiện tượng..." />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Hệ thống bị sự cố *</Label>
-                    <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Tài sản chính liên quan *</Label>
-                    <AssetPicker 
-                      value={heThongDichVu} // Dùng cột chữ thiet_bi/he_thong_dich_vu làm nơi lưu ID tạm thời trong form
-                      onChange={(id, ma, ten) => setHeThongDichVu(id)} 
-                      heThongId={heThongId}
-                    />
-                    <p className="text-[10px] text-muted-foreground italic">
-                      Lưu ý: Bạn vẫn có thể chọn nhiều thành phần ở bước tiếp theo.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-         )}
-         {step === 2 && (
-            <Card>
-                <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Thành phần</CardTitle></CardHeader>
-                <CardContent>
-                  {tpList.map(tp => <div key={tp.id} className="flex items-center gap-2"><Checkbox checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} /> {tp.ten}</div>)}
-                </CardContent>
-            </Card>
-         )}
-         {step === 3 && (
-            <Card>
-                <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến</CardTitle></CardHeader>
-                <CardContent>
-                    <Label>Tóm tắt</Label><Textarea value={tomTat} onChange={e => setTomTat(e.target.value)} />
-                </CardContent>
-            </Card>
-         )}
-       </div>
-       <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
-         <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
-         {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()}>Ghi sự cố</Button>}
-       </div>
+          {step === 1 && (
+             <div className="space-y-4">
+               <Card>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                   <CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle>
+                   <div className="flex gap-2">
+                     <Button variant="outline" size="sm" onClick={() => setVoiceActive(!voiceActive)} className={voiceActive ? "bg-red-50 text-red-600" : ""}>
+                       {voiceActive ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                     </Button>
+                     <Button variant="outline" size="sm" onClick={() => parseMutation.mutate(aiText)}>
+                       <Sparkles className="h-4 w-4 mr-1" /> AI Bóc tách
+                     </Button>
+                   </div>
+                 </CardHeader>
+                 <CardContent className="space-y-4">
+                   <div className="space-y-1.5">
+                     <Label>Sự cố / Hiện tượng *</Label>
+                     <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả hiện tượng..." className="min-h-[100px]" />
+                   </div>
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label>Hệ thống bị sự cố *</Label>
+                        <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Phân loại mức độ</Label>
+                        <Select value={phanLoai} onValueChange={setPhanLoai}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                             {["A", "B", "C", "D", "E"].map(l => <SelectItem key={l} value={l}>Mức {l}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                   </div>
+                   <div className="space-y-1.5">
+                     <Label>Tài sản chính liên quan *</Label>
+                     <AssetPicker value={heThongDichVu} onChange={(id) => setHeThongDichVu(id)} heThongId={heThongId} />
+                   </div>
+                 </CardContent>
+               </Card>
+             </div>
+          )}
+          {step === 2 && (
+             <Card>
+                 <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Chọn thành phần hệ thống & Tài sản</CardTitle></CardHeader>
+                 <CardContent className="space-y-4">
+                   {tpLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto" /> : (
+                     tpList.map(tp => (
+                        <div key={tp.id} className="flex items-center gap-2">
+                          <Checkbox checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} />
+                          <Label>{tp.ten}</Label>
+                        </div>
+                     ))
+                   )}
+                   {selected.length > 0 && <div className="p-2 bg-muted rounded text-xs">Đã chọn: {selected.length} tài sản</div>}
+                 </CardContent>
+             </Card>
+          )}
+          {step === 3 && (
+             <div className="space-y-4">
+                <Card>
+                    <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến & Xử lý</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <Label>Tóm tắt sự cố</Label><Textarea value={tomTat} onChange={e => setTomTat(e.target.value)} />
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-1">
+                              <Label>Bắt đầu</Label><Input type="datetime-local" value={thoiGianBatDau.slice(0, 16)} onChange={e => setThoiGianBatDau(e.target.value)} />
+                           </div>
+                           <div className="space-y-1">
+                              <Label>Kết thúc</Label><Input type="datetime-local" value={thoiGianKetThuc.slice(0, 16)} onChange={e => setThoiGianKetThuc(e.target.value)} />
+                           </div>
+                        </div>
+                        <Label>Nguyên nhân</Label><Textarea value={nguyenNhan} onChange={e => setNguyenNhan(e.target.value)} />
+                        <Label>Biện pháp xử lý</Label><Textarea value={bienPhap} onChange={e => setBienPhap(e.target.value)} />
+                        <div className="flex items-center gap-2">
+                           <Checkbox checked={closingIntent} onCheckedChange={(v: boolean) => setClosingIntent(v)} />
+                           <Label>Đóng sự cố ngay (hoàn thành)</Label>
+                        </div>
+                    </CardContent>
+                </Card>
+             </div>
+          )}
+        </div>
+        <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
+          <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
+          <div className="flex gap-2">
+             <Button variant="secondary" onClick={() => setPreviewOpen(true)}><FileDown className="h-4 w-4 mr-1" /> Xem trước</Button>
+             {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
+          </div>
+        </div>
+        <PreviewKhaiDialog open={previewOpen} onOpenChange={setPreviewOpen} payload={buildPayloadForSave(maNhomDraft ?? "Draft", closingIntent)} onConfirm={() => save.mutate()} />
     </div>
   );
 }
