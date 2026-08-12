@@ -116,6 +116,12 @@ export function TreeView({
              <button onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)} className="rounded p-1 hover:bg-muted" title="Sửa">
                <Eye className="h-3.5 w-3.5" />
              </button>
+             <button onClick={() => onIncident(htMa)} className="rounded p-1 hover:bg-muted" title="Sự cố">
+               <AlertTriangle className="h-3.5 w-3.5" />
+             </button>
+             <button onClick={() => onMaint(htMa)} className="rounded p-1 hover:bg-muted" title="Bảo trì">
+               <Wrench className="h-3.5 w-3.5" />
+             </button>
              <button onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))} className="rounded p-1 hover:bg-muted" title="Sổ lý lịch">
                <History className="h-3.5 w-3.5" />
              </button>

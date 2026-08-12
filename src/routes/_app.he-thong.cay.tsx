@@ -384,18 +384,23 @@ function HeThongCayPage() {
                 }}
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}
-                onIncident={() => {}}
-                onMaint={() => {}}
+                onIncident={(ma) => {
+                  const id = parseHtSysMa(ma).sysName;
+                  if (id && id !== NONE_HT) nav({ to: "/su-co", search: { heThongId: id } });
+                }}
+                onMaint={(ma) => {
+                  const id = parseHtSysMa(ma).sysName;
+                  if (id && id !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: id } });
+                }}
                 onRecord={onRecord}
                 onMoveSystem={(req) => {
-                  toast.info(`Di chuyển hệ thống ${req.tenHeThong} sang ${req.toNhTen || req.toNhomId}`);
-                  // Implementation for actual move will be added in a separate task or by clarifying MoveSystem dialogs
+                   nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
                 }}
                 onMoveGroup={(req) => {
                   toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
                 }}
                 onMoveDevice={(req) => {
-                  toast.info(`Di chuyển tài sản ${req.label} sang ${req.toHtLabel}`);
+                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
                 }}
 
                 plMind={plMind}
