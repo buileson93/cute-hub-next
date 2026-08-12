@@ -511,6 +511,67 @@ function Dashboard() {
             </Card>
           </div>
 
+          {/* TẦNG 4.5: BẢNG CHI TIẾT SỨC KHOẺ THẤP (KHÔI PHỤC) */}
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600">
+                <ShieldAlert className="w-4 h-4" /> Danh sách thiết bị cần chú ý
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/30 text-[10px] uppercase font-bold text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Thiết bị</th>
+                      <th className="px-4 py-3 text-center">Sức khoẻ</th>
+                      <th className="px-4 py-3 text-left">Vấn đề chính</th>
+                      <th className="px-4 py-3 text-right">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {lowHealthDevices.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground italic">
+                          Tất cả tài sản hiện đang ở trạng thái tốt.
+                        </td>
+                      </tr>
+                    ) : (
+                      lowHealthDevices.map(({ device, health }) => (
+                        <tr key={device.id} className="hover:bg-muted/10 transition-colors">
+                          <td className="px-4 py-3">
+                            <div className="font-bold">{device.ten_thiet_bi}</div>
+                            <div className="text-[10px] text-muted-foreground">{device.ma_thiet_bi}</div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={cn(
+                              "inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-white text-xs",
+                              health.xepLoai === 'D' ? "bg-red-500" : "bg-orange-500 shadow-sm"
+                            )}>
+                              {health.xepLoai}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="text-xs">{health.label}</div>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <Link 
+                              to="/qr/thiet-bi/$id" 
+                              params={{ id: device.id } as any}
+                              className="text-xs font-bold text-primary hover:underline"
+                            >
+                              Chi tiết →
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* TẦNG 5: KHU VỰC CỦA TÔI */}
           <div className="pb-12">
             <Card className="shadow-sm">
