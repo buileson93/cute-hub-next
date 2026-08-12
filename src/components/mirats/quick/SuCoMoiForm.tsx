@@ -29,6 +29,7 @@ import { createVoiceRecognition, popVoiceDraft } from "@/lib/mirats/voice-recogn
 import { buildSuCoPayload } from "@/lib/mirats/ghi-payload";
 import { ghiSuCoFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
+import { type KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { cn } from "@/lib/utils";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
