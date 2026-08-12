@@ -38,6 +38,9 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   const { roles, profile } = useSession();
   const { suCo, heThong: heThongScope, inScope } = useScope();
   const qc = useQueryClient();
+  const { data: htList } = useQuery({ queryKey: ["dm_he_thong_min_for_hh"], queryFn: async () => (await supabase.from("dm_he_thong").select("id, ma, ten")).data ?? [] });
+  const { data: tbAll } = useQuery({ queryKey: ["thiet_bi_min_for_hh"], queryFn: async () => (await supabase.from("thiet_bi").select("id, ma_thiet_bi, ten_thiet_bi")).data ?? [] });
+  
   const [step, setStep] = useState(1);
   const [suCoMa, setSuCoMa] = useState(defaultSuCo ?? "");
   const [heThongId, setHeThongId] = useState(defaultHeThongId ?? "");
