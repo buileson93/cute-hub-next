@@ -58,7 +58,7 @@ export const runBackup = createServerFn({ method: "POST" })
     // Lấy lược đồ (kiểu cột) để sinh tệp .sql chuẩn — dùng client của người dùng (admin)
     const { data: schema } = await context.supabase.rpc("admin_list_schema");
 
-    return performBackup(supabaseAdmin, {
+    const result = await performBackup(supabaseAdmin, {
       loai: data.loai,
       dich: data.dich,
       ghi_chu: data.ghi_chu ?? null,
@@ -175,6 +175,7 @@ export const restoreFromUpload = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
     let payload: any;
     const name = (data.filename ?? "").toLowerCase();
