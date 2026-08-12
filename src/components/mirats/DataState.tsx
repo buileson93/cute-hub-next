@@ -100,5 +100,9 @@ export function DataState({
   }
 
 
+  if (className) {
+    return <div className={className}>{children}</div>;
+  }
+
   return <>{children}</>;
 }
