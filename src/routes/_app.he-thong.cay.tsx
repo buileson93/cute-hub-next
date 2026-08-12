@@ -336,10 +336,10 @@ function HeThongCayPage() {
               </Button>
             ) : undefined
           }
-          className="h-full"
+          className="flex-1 flex flex-col min-h-0 h-full"
         >
           {display === "tree" && (
-            <div className="h-full overflow-y-auto p-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
               <TreeView 
                 tree={viewTree as any}
                 plLabel={plMind}
