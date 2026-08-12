@@ -217,12 +217,45 @@ function HeThongCayPage() {
   });
 
 
-  const { tree } = useMemo(() => buildTree(
-    devices as any,
-    taxonomy?.plList || [],
-    htMind,
-    nhMind
-  ), [devices, taxonomy, htMind, nhMind]);
+  const { tree } = useMemo(() => {
+    const realSystems = taxonomy?.htList.map(h => ({
+      ma: htSysMa(h.nhom || "KHAC", h.id),
+      ten: h.ten,
+      nhMa: h.nhom || "KHAC",
+      nhTen: taxonomy.nhomNameMap.get(h.nhom || "KHAC") || h.nhom || "Khác",
+      plId: h.phan_loai_id || taxonomy.plList[0]?.id || "KHAC"
+    })) || [];
+
+    const htDonViMap = (htId: string) => taxonomy?.htList.find(h => h.id === htId)?.don_vi || null;
+    
+    const ordNh = (ma: string) => {
+      const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
+      return d?.thu_tu;
+    };
+    const ordHt = (ma: string) => {
+      const d = overrides?.get(okey("ht", ma))?.du_lieu as any;
+      return d?.thu_tu;
+    };
+    const colNh = (ma: string) => {
+      const d = overrides?.get(okey("nh", ma))?.du_lieu as any;
+      return d?.mau;
+    };
+
+    return buildTree(
+      devices as any,
+      taxonomy?.plList || [],
+      htMind,
+      nhMind,
+      groupMode === "donvi", // Assume groupMode maps to groupByLoai logic or similar in legacy
+      [], // customGroups
+      ordNh,
+      ordHt,
+      colNh,
+      [], // customSystems
+      htDonViMap,
+      realSystems
+    );
+  }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
 

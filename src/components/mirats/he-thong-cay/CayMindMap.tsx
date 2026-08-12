@@ -311,17 +311,12 @@ export function CayMindMap({
 
   const seededRef = useRef(false);
 
-  // Sync expanded from context to local state for initial load
   useEffect(() => {
-    if (initialExpanded.size > 0 && !seededRef.current) {
-      setExpanded(prev => {
-        const next = new Set(prev);
-        initialExpanded.forEach(id => next.add(id));
-        return next;
-      });
-      seededRef.current = true;
-    }
-  }, [initialExpanded]);
+    if (seededRef.current) return;
+    if (tree.length === 0) return;
+    setExpanded(initialExpanded);
+    seededRef.current = true;
+  }, [tree, initialExpanded]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
