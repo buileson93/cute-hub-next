@@ -9,6 +9,8 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { useSession } from "@/hooks/use-session";
 
+
+
 import { cn } from "@/lib/utils";
 import { ReactFlowProvider } from "@xyflow/react";
 
@@ -16,7 +18,7 @@ import "@xyflow/react/dist/style.css";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DataState } from "@/components/mirats/DataState";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import {
   useDbTaxonomy,
   type DbDevice, type DbTaxonomy,
@@ -32,18 +34,16 @@ import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
-import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, htSysMa } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import type { 
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
 
-export const Route = createFileRoute("/_app/he-thong/cay")({
-  validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string; moveHt?: string; moveTb?: string } => ({
+export const Route = createFileRoute("/_app/he-thong/cay/refactor-backup")({
+  validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string } => ({
     editTb: typeof search.editTb === "string" ? search.editTb : undefined,
     view: typeof search.view === "string" ? search.view : undefined,
-    moveHt: typeof search.moveHt === "string" ? search.moveHt : undefined,
-    moveTb: typeof search.moveTb === "string" ? search.moveTb : undefined,
   }),
   head: () => ({
     meta: [
