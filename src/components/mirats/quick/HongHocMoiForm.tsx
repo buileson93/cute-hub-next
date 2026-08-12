@@ -70,9 +70,7 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
     if (sc && !moTa) setMoTa(sc.hien_tuong);
   }, [defaultSuCo, suCo, moTa]);
 
-  const { data: htList } = useQuery({ queryKey: ["dm_he_thong_min_for_hh"], queryFn: async () => (await supabase.from("dm_he_thong").select("id, ma, ten")).data ?? [] });
   const { data: tpList } = useQuery({ queryKey: ["he_thong_thanh_phan_for_hh", heThongId], enabled: !!heThongId, queryFn: async () => (await supabase.from("he_thong_thanh_phan").select("id, ma_thanh_phan, ten").eq("he_thong_id", heThongId).is("deleted_at", null)).data ?? [] });
-  const { data: tbAll } = useQuery({ queryKey: ["thiet_bi_min_for_hh"], queryFn: async () => (await supabase.from("thiet_bi").select("id, ma_thiet_bi, ten_thiet_bi")).data ?? [] });
 
   const { data: currentDevice } = useQuery({
     queryKey: ["gan_chuc_nang_hien_hanh", thanhPhanId],
