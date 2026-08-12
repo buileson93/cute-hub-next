@@ -275,11 +275,36 @@ export function CayMindMap({
 }) {
 
   const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
+  
+  // Bước 8: Mở sẵn Phân loại (pl) và Nhóm hệ thống (nh)
+  const initialExpanded = useMemo(() => {
+    const set = new Set(["root"]);
+    for (const pl of tree) {
+      set.add(`pl:${pl.id}`);
+      for (const lv of pl.fields) {
+        for (const nh of lv.groups) {
+          set.add(`nh:${nh.ma}`);
+        }
+      }
+    }
+    return set;
+  }, [tree]);
+
+  const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hitId, setHitId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
   const fitSeqRef = useRef(0);
+
+  // Bước 6: Căn khung LẠI mỗi khi số nút thay đổi
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const timer = setTimeout(() => {
+        fitView({ duration: 400, padding: 0.2 });
+      }, 80);
+      return () => clearTimeout(timer);
+    }
+  }, [nodes.length, fitView]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
