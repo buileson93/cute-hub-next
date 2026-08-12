@@ -146,6 +146,24 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     });
   }, []);
 
+  useEffect(() => {
+    if (!heThongId) { setTpList([]); return; }
+    setTpLoading(true);
+    supabase.from("he_thong_thanh_phan").select("id, ma_thanh_phan, ten, vi_tri_ten, he_thong_id").eq("he_thong_id", heThongId).is("deleted_at", null).then(({ data }) => {
+      setTpList((data ?? []) as ThanhPhanRow[]);
+      setTpLoading(false);
+    });
+  }, [heThongId]);
+
+  useEffect(() => {
+    if (tpList.length === 0 || selectedTpIds.size === 0) { setMounted([]); return; }
+    const tps = Array.from(selectedTpIds);
+    supabase.from("gan_chuc_nang").select("thanh_phan_id, thiet_bi(*)").in("thanh_phan_id", tps).is("den_ngay", null).then(({ data }) => {
+      const list: MountedAsset[] = (data ?? []).filter(d => d.thiet_bi).map(d => ({ thanh_phan_id: d.thanh_phan_id!, device: d.thiet_bi as unknown as DbDevice }));
+      setMounted(list);
+    });
+  }, [tpList, selectedTpIds]);
+
   function nextStep() { if (step < 3) setStep(s => s + 1); }
   function prevStep() { if (step > 1) setStep(s => s - 1); }
 
