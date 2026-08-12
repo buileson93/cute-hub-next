@@ -274,16 +274,15 @@ export function CayMindMap({
   tbMind: (t: any) => string;
 }) {
 
-  const { fitView, getIntersectingNodes, getViewport, setViewport } = useReactFlow();
+  const { fitView, zoomTo } = useReactFlow();
   
-  // Bước 8: Mở sẵn Phân loại (pl) và Nhóm hệ thống (nh)
   const initialExpanded = useMemo(() => {
     const set = new Set(["root"]);
     for (const pl of tree) {
       set.add(`pl:${pl.id}`);
       for (const lv of pl.fields) {
         for (const nh of lv.groups) {
-          set.add(`nh:${nh.ma}`);
+          set.add(`nh:${pl.id}:${nh.ma}`);
         }
       }
     }
@@ -292,21 +291,20 @@ export function CayMindMap({
 
   const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [hitId, setHitId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
-  const fitSeqRef = useRef(0);
 
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
   
-  // Bước 6: Căn khung LẠI mỗi khi số nút thay đổi
+  const recenter = useCallback(() => {
+    fitView({ duration: 400, padding: 0.2 });
+  }, [fitView]);
+
   useEffect(() => {
     if (rfNodes.length > 0) {
-      const timer = setTimeout(() => {
-        fitView({ duration: 400, padding: 0.2 });
-      }, 80);
+      const timer = setTimeout(recenter, 150);
       return () => clearTimeout(timer);
     }
-  }, [rfNodes.length, fitView]);
+  }, [rfNodes.length, recenter]);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
