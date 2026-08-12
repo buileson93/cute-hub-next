@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { 
   LayoutDashboard, Flame, Wrench, Sparkles, 
   ArrowRight, Activity, User, Trophy, History,
-  CheckCircle2, AlertCircle, Clock
+  CheckCircle2, AlertCircle, Clock, Download,
+  ShieldCheck, Zap, ShieldAlert, BarChart3, TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
@@ -16,15 +17,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
-import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useUserPref } from "@/hooks/use-user-pref";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
-  CartesianGrid,
+  CartesianGrid, AreaChart, Area
 } from "recharts";
 import { supabase } from "@/integrations/backend/client";
 import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
 import { LiveTimeline } from "@/components/mirats/dashboard/LiveTimeline";
+import { useScope } from "@/lib/mirats/scope";
+import { availability, mttr, mtbf, formatKpiValue } from "@/lib/mirats/reliability";
+import { healthDetail } from "@/lib/mirats/metrics";
+import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
+import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
+import { fmtDowntime } from "@/lib/mirats/format";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 // Types
 interface SuCoByMonth { thang: string; muc_do: string; so_luong: number }
