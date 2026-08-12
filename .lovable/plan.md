@@ -45,4 +45,3 @@ Phục hồi giao diện nguyên bản (visual contract) của trang Tổng quan
 - Không thêm mô tả/chữ nhỏ/icon mới.
 - Không đổi màu/token đã định nghĩa.
 - Giữ nguyên thứ tự các section.
-
