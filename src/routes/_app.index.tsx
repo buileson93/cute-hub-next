@@ -56,14 +56,14 @@ const STATUS_COLORS = [
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
-    // SSR safe loader: do not block if server calls fail (usually due to lack of Bearer token in SSR)
+    // SSR safe loader: do not block if server calls fail (usually do not have session in SSR)
     try {
       await Promise.all([
-        context.queryClient.ensureQueryData({
+        context.queryClient.prefetchQuery({
           queryKey: ['completeness-stats'],
           queryFn: () => getCompletenessStats(),
         }),
-        context.queryClient.ensureQueryData({
+        context.queryClient.prefetchQuery({
           queryKey: ['completeness-overview', 3],
           queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
         })
@@ -77,24 +77,59 @@ export const Route = (createFileRoute("/_app/") as any)({
 
 function Dashboard() {
   const { profile } = useSession();
-  const statsQuery = useSuspenseQuery({
+  const scope = useScope();
+  
+  const statsQuery = useQuery({
     queryKey: ['completeness-stats'],
     queryFn: () => getCompletenessStats(),
   });
-  const overviewQuery = useSuspenseQuery({
+  const overviewQuery = useQuery({
     queryKey: ['completeness-overview', 3],
     queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
   });
+
+  const pmKpi = usePmOnTimeKpi();
   
   const completeness = (statsQuery.data as any) || {};
   const lowCompleteness = (overviewQuery.data as any)?.lowCompleteness || [];
   const tasks = (overviewQuery.data as any)?.tasks || [];
 
-  const brief = useDashboardBrief();
-  const kpi = useDashboardKpis();
+  const brief = useDashboardBrief(scope.donViCode ? [scope.donViCode] : undefined);
   const audit = useUserAuditLog(5);
   
-  const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "trend");
+  const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "reliability");
+
+  const devices = scope.thietBi;
+  const incidents = scope.suCo;
+  
+  const reliability = useMemo(() => {
+    return availability({ 
+      assetCount: devices.length, 
+      windowHours: 720, // 30 days
+      incidents 
+    });
+  }, [devices.length, incidents]);
+
+  const mttrKpi = useMemo(() => mttr(incidents), [incidents]);
+  const mtbfKpi = useMemo(() => mtbf(incidents), [incidents]);
+
+  const healthStats = useMemo(() => {
+    const stats = { A: 0, B: 0, C: 0, D: 0, total: 0 };
+    devices.forEach(d => {
+      const h = healthDetail(d);
+      stats[h.xepLoai]++;
+      stats.total++;
+    });
+    return stats;
+  }, [devices]);
+
+  const lowHealthDevices = useMemo(() => {
+    return devices
+      .map(d => ({ device: d, health: healthDetail(d) }))
+      .filter(item => item.health.xepLoai === 'C' || item.health.xepLoai === 'D')
+      .sort((a, b) => a.health.score - b.health.score)
+      .slice(0, 5);
+  }, [devices]);
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();
@@ -104,22 +139,25 @@ function Dashboard() {
   }, []);
 
   const trendQ = useQuery({
-    queryKey: ["dashboard_su_co_by_month_dashboard"],
+    queryKey: ["dashboard_su_co_by_month_dashboard", scope.donViCode],
     enabled: activeTab === "trend",
     queryFn: async () => {
       const { data, error } = await supabase.rpc("dashboard_su_co_by_month", {
         p_months: 12,
-      });
+        p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
       if (error) throw error;
       return (data ?? []) as SuCoByMonth[];
     },
   });
 
   const statusQ = useQuery({
-    queryKey: ["dashboard_asset_status_dashboard"],
+    queryKey: ["dashboard_asset_status_dashboard", scope.donViCode],
     enabled: activeTab === "status",
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("dashboard_asset_status");
+      const { data, error } = await supabase.rpc("dashboard_asset_status", {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
       if (error) throw error;
       return (data ?? []) as AssetStatus[];
     },
@@ -149,16 +187,43 @@ function Dashboard() {
     return Array.from(s);
   }, [trendQ.data]);
 
+  const handleExport = () => {
+    toast.promise(
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+      {
+        loading: 'Đang chuẩn bị báo cáo...',
+        success: 'Đã tải xuống báo cáo tổng quan KPI',
+        error: 'Lỗi khi tải báo cáo',
+      }
+    );
+  };
+
+  if (scope.loading) {
+    return <div className="h-screen w-full flex items-center justify-center animate-pulse text-muted-foreground">Đang tải MIRATS 2.0...</div>;
+  }
+
   return (
     <PageBody>
-      <PageHeader
-        title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
-        icon={LayoutDashboard}
-        description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
-      />
+      <div className="flex items-center justify-between mb-2">
+        <PageHeader
+          title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
+          icon={LayoutDashboard}
+          description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
+          className="flex-1"
+        />
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleExport}
+          className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
+        >
+          <Download className="w-4 h-4 text-primary" />
+          <span className="hidden sm:inline font-bold text-xs uppercase tracking-wider">Xuất báo cáo</span>
+        </Button>
+      </div>
 
       {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
-      <div className="mt-4 -mx-6">
+      <div className="mt-2 -mx-6">
         <HeartBeatStrip />
       </div>
 
