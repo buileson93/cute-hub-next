@@ -290,6 +290,7 @@ export function CayMindMap({
     return set;
   }, [tree]);
 
+  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
   const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
   const treeSigRef = useRef("");
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -341,15 +342,10 @@ export function CayMindMap({
     setTimeout(() => {
       const node = rfNodes.find(n => n.id === targetId);
       if (node && node.position) {
-        // center node
-        const x = node.position.x + (KIND_W[focus.kind] || 200) / 2;
-        const y = node.position.y + (KIND_H[focus.kind] || 40) / 2;
         fitView({ nodes: [node], duration: 800, padding: 0.5 });
       }
     }, 300);
   }, [focus, rfNodes, fitView]);
-
-  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
   
   const recenter = useCallback(() => {
     fitView({ duration: 400, padding: 0.2 });
