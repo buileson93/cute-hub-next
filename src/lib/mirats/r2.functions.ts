@@ -48,7 +48,8 @@ function sanitizeKey(userId: string, rawKey: string): string {
 
 async function assertAccess(supabase: any, userId: string, key: string, action: "put"|"get"|"delete") {
   if (key.startsWith(`user/${userId}/`)) return;
-  const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  if (error) throw new Error(error.message);
   if (isAdmin) return;
   const { data: row } = await supabase.from("r2_file").select("user_id").eq("key", key).maybeSingle();
   if (row?.user_id === userId) return;
