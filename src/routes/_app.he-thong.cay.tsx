@@ -156,7 +156,7 @@ function HeThongCayPage() {
   });
 
   const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, error: errorDevices, refetch: refetchDevices } = useQuery({
-    queryKey: ["thiet_bi_cay"],
+    queryKey: ["thiet_bi_cay"], // groupMode is removed from queryKey as it's not used in query
     queryFn: async () => {
       const pageSize = 1000;
       let from = 0;
@@ -184,6 +184,7 @@ function HeThongCayPage() {
       }
 
       if (allData.length > 0 && allData.length % 1000 === 0) {
+        // eslint-disable-next-line no-console
         console.warn(`[MIRATS-T30] Cảnh báo: Số lượng thiết bị (${allData.length}) chia hết cho 1000. Có khả năng dữ liệu bị PostgREST cắt nếu không dùng vòng lặp fetchAll.`);
       }
 
