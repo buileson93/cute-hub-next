@@ -315,7 +315,7 @@ function HeThongCayPage() {
   }, [nav]);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden min-h-[600px]">
       <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
          <div className="flex items-center gap-4">
             <PageHeader
