@@ -486,12 +486,12 @@ function HeThongCayPage() {
         canManage={canManage && editMode}
         saving={false}
         onSave={(payload) => {
-          if (target?.kind === "tb" && payload.ten) {
-            import("@/lib/mirats/ui/save-cell-securely").then(m => 
-              m.saveCellSecurely({ maThietBi: target.ma, field: "ten_thiet_bi", value: payload.ten, userRoles: roles })
+          if (target && payload.ten) {
+            import("@/lib/mirats/ui/save-entity-securely").then(m => 
+              m.saveEntityFieldSecurely({ kind: target.kind, id: target.ma, field: "ten", value: payload.ten, userRoles: roles })
             ).then(res => {
               if (res.mode === "proposed") toast.success("Đã tạo đề xuất thay đổi tên");
-              else toast.success("Đã cập nhật tên tài sản");
+              else toast.success("Đã cập nhật tên");
               setTarget(null);
             }).catch(e => toast.error(e.message));
           }
