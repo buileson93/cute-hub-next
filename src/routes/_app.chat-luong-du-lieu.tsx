@@ -12,14 +12,18 @@ import { Database, AlertTriangle, ClipboardList } from 'lucide-react';
 export const Route = createFileRoute('/_app/chat-luong-du-lieu')({
   component: ChatLuongDuLieu,
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: ['completeness-stats'],
-      queryFn: () => getCompletenessStats(),
-    });
-    await context.queryClient.ensureQueryData({
-      queryKey: ['completeness-overview'],
-      queryFn: () => getCompletenessOverview({ data: { limit: 5 } }),
-    });
+    try {
+      await context.queryClient.ensureQueryData({
+        queryKey: ['completeness-stats'],
+        queryFn: () => getCompletenessStats(),
+      });
+      await context.queryClient.ensureQueryData({
+        queryKey: ['completeness-overview'],
+        queryFn: () => getCompletenessOverview({ data: { limit: 5 } }),
+      });
+    } catch (e) {
+      console.warn("Data Quality SSR prefetch skipped:", e instanceof Error ? e.message : e);
+    }
   },
   head: () => ({
     title: 'Chất lượng dữ liệu | MIRATS 2.0',
