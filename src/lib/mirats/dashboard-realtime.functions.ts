@@ -90,16 +90,10 @@ export interface AuditTimelineItem {
 
 export const getAuditTimeline = createServerFn({ method: "GET" })
   .handler(async (): Promise<AuditTimelineItem[]> => {
-    const { data, error } = await supabase
+    // 1. Fetch audit logs
+    const { data: logs, error } = await supabase
       .from("audit_log")
-      .select(`
-        id, 
-        created_at, 
-        action, 
-        entity, 
-        detail,
-        profiles!audit_log_user_id_fkey(ho_ten)
-      `)
+      .select("id, created_at, action, entity, detail, user_id")
       .order("created_at", { ascending: false })
       .limit(20);
 
@@ -108,8 +102,18 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
       return [];
     }
 
+    // 2. Fetch profiles for user names
+    const userIds = Array.from(new Set(logs.map(l => l.user_id).filter(Boolean))) as string[];
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, ho_ten")
+      .in("id", userIds);
+    
+    const profileMap: Record<string, string> = {};
+    profiles?.forEach(p => { profileMap[p.id] = p.ho_ten; });
+
     const formatAction = (item: any): string => {
-      const user = item.profiles?.ho_ten || "Hệ thống";
+      const user = profileMap[item.user_id] || "Hệ thống";
       const entityMap: Record<string, string> = {
         su_co: "sự cố",
         bao_tri: "bảo trì",
