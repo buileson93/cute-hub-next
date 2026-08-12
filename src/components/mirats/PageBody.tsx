@@ -19,9 +19,9 @@ export function PageBody({ children, className, noPadding }: Props) {
   return (
     <div 
       className={cn(
+        "flex w-full flex-col flex-1 overflow-auto",
         !noPadding && UI_DENSITY.PAGE_PADDING,
         UI_DENSITY.SECTION_GAP,
-        "flex-1 overflow-auto",
         className
       )}
     >

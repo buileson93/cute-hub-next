@@ -5,19 +5,21 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
   CartesianGrid,
 } from "recharts";
 import {
   HardDrive, Activity, PauseCircle, AlertOctagon, CalendarClock, CalendarX,
   BadgeAlert, FileWarning, RefreshCw, Loader2, Flame, HeartPulse, ShieldCheck,
   Gauge, Wrench, TrendingUp, TrendingDown, Repeat2, Radio, ClipboardCheck, ArrowRightLeft,
+  Info,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/backend/client";
 import { useScope } from "@/lib/mirats/scope";
 import { cn } from "@/lib/utils";
@@ -315,10 +317,7 @@ function TongQuanPage() {
       {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Hành động khẩn cấp" to="/su-co" more="Đi tới Sự cố" />
-          <div className="text-xs text-muted-foreground hidden md:block">
-            Theo dõi các chỉ số vận hành quan trọng trong thời gian thực
-          </div>
+          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Đi tới Sự cố" />
         </div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
@@ -371,7 +370,7 @@ function TongQuanPage() {
             hint={healthQ.data ? compareLabel(healthQ.data.mttr_h, healthQ.data.mttr_prev_h, true) : ""}
             tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
             loading={healthQ.isLoading}
-            to="/su-co"
+            to="/bao-tri"
             description="Chỉ số bảo trì: thời gian trung bình để khắc phục một sự cố."
           />
           <HealthTile
@@ -421,9 +420,18 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">
+            <CardTitle className="text-sm flex items-center gap-1.5">
               Xu hướng sự cố theo tháng (12 tháng)
-              <p className="text-[10px] font-normal text-muted-foreground mt-1">Biểu đồ thể hiện số lượng sự cố phân loại theo mức độ nghiêm trọng trong vòng 1 năm qua.</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs text-xs">Biểu đồ thể hiện số lượng sự cố phân loại theo mức độ nghiêm trọng trong vòng 1 năm qua.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
@@ -438,7 +446,7 @@ function TongQuanPage() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis dataKey="thangHT" fontSize={11} />
                   <YAxis fontSize={11} allowDecimals={false} />
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   {mucDoKeys.map((k) => (
                     <Bar
@@ -484,7 +492,7 @@ function TongQuanPage() {
                       <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
@@ -549,9 +557,18 @@ function TongQuanPage() {
       <div className="grid gap-3 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">
+            <CardTitle className="text-sm flex items-center gap-1.5">
               Heatmap sự cố (90 ngày) — thứ × giờ
-              <p className="text-[10px] font-normal text-muted-foreground mt-1">Phân tích tần suất sự cố theo thời gian trong tuần để phát hiện quy luật phát sinh.</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs text-xs">Phân tích tần suất sự cố theo thời gian trong tuần để phát hiện quy luật phát sinh.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
@@ -561,9 +578,18 @@ function TongQuanPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm">
+            <CardTitle className="text-sm flex items-center gap-1.5">
               Top thiết bị hỏng lặp (90 ngày)
-              <p className="text-[10px] font-normal text-muted-foreground mt-1">Danh sách các thiết bị có tần suất hỏng hóc cao bất thường cần kiểm tra chuyên sâu.</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs text-xs">Danh sách các thiết bị có tần suất hỏng hóc cao bất thường cần kiểm tra chuyên sâu.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardTitle>
             <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
           </CardHeader>
@@ -597,9 +623,18 @@ function TongQuanPage() {
       {/* ROW — Timeline hạn */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm">
+          <CardTitle className="text-sm flex items-center gap-1.5">
             Hạn giấy phép & kiểm định (90 ngày tới)
-            <p className="text-[10px] font-normal text-muted-foreground mt-1">Lộ trình các mốc thời gian hết hạn giấy phép, kiểm định và bảo trì sắp tới.</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs text-xs">Lộ trình các mốc thời gian hết hạn giấy phép, kiểm định và bảo trì sắp tới.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </CardTitle>
           <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
         </CardHeader>
@@ -740,7 +775,7 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
     warn: "text-amber-600 dark:text-amber-400",
     danger: "text-destructive",
   };
-  const inner = (
+  const content = (
     <Card className={cn(to && "cursor-pointer transition-shadow hover:shadow-md")}>
       <CardContent className="flex flex-col gap-1 p-3 transition-colors hover:bg-accent/40">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -751,10 +786,23 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
           {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
         </div>
         {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
-        {description && <div className="mt-1 text-[10px] italic text-muted-foreground/80 leading-tight">{description}</div>}
       </CardContent>
     </Card>
   );
+
+  const inner = description ? (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>{content}</div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs text-xs">{description}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ) : content;
+
   if (to) return <Link to={to as never} className="block">{inner}</Link>;
   return inner;
 }
