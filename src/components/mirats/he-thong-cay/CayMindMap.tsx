@@ -608,7 +608,7 @@ export function CayMindMap({
                 <Loader2 className="w-4 h-4" /> Tải lại trang
               </Button>
             </div>
-          </Panel>
+          </div>
         )}
 
         <Panel position="top-right">
