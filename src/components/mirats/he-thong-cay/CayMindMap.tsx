@@ -609,8 +609,27 @@ export function CayMindMap({
           </div>
         )}
 
-        <Panel position="top-right">
-           <Button size="sm" variant="outline" onClick={() => fitView({ duration: 400, padding: 0.2 })}>Fit View</Button>
+        <Panel position="top-right" className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1 rounded-lg border bg-background/95 p-1 shadow-sm backdrop-blur">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={recenter}>
+                    <GitFork className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">Căn giữa sơ đồ</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => zoomTo(1)}>
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">Phóng đại 100%</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </Panel>
       </ReactFlow>
     </div>
