@@ -49,7 +49,7 @@ function fmtDateTime(v: string): string {
 }
 
 interface KipRow { ho_ten: string; chuc_vu: string; nang_dinh: string }
-interface ThanhPhanRow { id: string; ma: string; ten: string; vi_tri_ten: string | null; he_thong_id: string }
+interface ThanhPhanRow { id: string; ma_thanh_phan: string; ten: string; he_thong_id: string }
 interface MountedAsset { thanh_phan_id: string; device: DbDevice }
 
 export interface SuCoMoiFormProps {
