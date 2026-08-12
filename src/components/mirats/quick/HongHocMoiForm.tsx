@@ -50,6 +50,17 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   const [moTa, setMoTa] = useState<string>("");
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
+    if (!thietBiHongId) return null;
+    return {
+      loai: "HONG_HOC",
+      thiet_bi_id: thietBiHongId,
+      moTa: moTa || "Báo cáo hỏng hóc",
+      thoiGian: ngayHong || new Date().toISOString(),
+      tenThietBi: tbAll?.find(d => d.id === thietBiHongId)?.ten_thiet_bi
+    };
+  }, [thietBiHongId, moTa, ngayHong, tbAll]);
+
   useEffect(() => {
     if (!defaultSuCo) return;
     const sc = suCo.find(x => x.ma_su_co === defaultSuCo);
