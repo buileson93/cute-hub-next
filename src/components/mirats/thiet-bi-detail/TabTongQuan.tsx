@@ -13,19 +13,19 @@ import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
 import { useCellEditor } from "@/lib/mirats/ui/use-cell-editor";
 import { Input } from "@/components/ui/input";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
+import { useSession } from "@/hooks/use-session";
 
 export default function TabTongQuan({ 
   tb, ma, tenTb, refInfo, loaiMau, sysName, vaiTroList, pct, canEdit
 }: DeviceDetailTabProps) {
   const mutations = useCayMutations();
+  const { roles: userRoles } = useSession();
   
-  // Lấy roles từ session để truyền vào mutation an toàn
-  // Giả sử có useSession hook (trong mã nguồn có dùng @/hooks/use-session)
   const editor = useCellEditor({
     isRealFor: (kind, id) => (kind === "tb" && id === ma ? { keyVal: id } : null),
     mutations: {
-      renameEntity: async (args) => mutations.renameEntity.mutateAsync({ ...args, userRoles: [] }),
-      saveCell: async (args) => mutations.saveCell.mutateAsync({ ...args, userRoles: [] }),
+      renameEntity: async (args) => mutations.renameEntity.mutateAsync({ ...args, userRoles }),
+      saveCell: async (args) => mutations.saveCell.mutateAsync({ ...args, userRoles }),
       saveNode: async (args) => { /* detail không dùng saveNode */ }
     }
   });
