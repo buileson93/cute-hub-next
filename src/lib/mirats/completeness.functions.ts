@@ -5,7 +5,10 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 export const getCompletenessStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase } = context as any;
+    const { supabase, unauthenticated } = context as any;
+    if (unauthenticated || !supabase) {
+      return { avg_thiet_bi: 0 }; // Return safe default for SSR
+    }
     const { data, error } = await supabase.rpc("get_completeness_stats");
     if (error) throw new Error(error.message);
     return data;
