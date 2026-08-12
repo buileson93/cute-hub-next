@@ -11,7 +11,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
-import { AppShell } from "@/components/mirats/app-shell/AppShell";
+import { AppShell } from "@/components/mirats/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 
 export const Route = createFileRoute("/admin/schema")({
   head: () => ({
@@ -244,19 +243,6 @@ function AdminSchemaPage() {
   const { loading, session, hasRole } = useSession();
   const isAdmin = hasRole("admin");
   const isMobile = useIsMobile();
-  
-  if (isMobile) {
-    return (
-      <AppShell>
-        <DesktopOnly 
-          featureName="Sơ đồ CSDL & Quản trị Schema"
-          reason="Việc quản trị lược đồ cơ sở dữ liệu và xem sơ đồ quan hệ (ERD) cần không gian màn hình lớn để hiển thị các bảng và đường nối phức tạp. Hãy thực hiện thao tác này trên máy tính để tránh sai sót dữ liệu."
-        >
-          <div />
-        </DesktopOnly>
-      </AppShell>
-    );
-  }
 
   useEffect(() => {
     if (loading) return;
@@ -831,10 +817,10 @@ function ColumnRow({
       <td className="py-1.5 text-right">
         {canModify && !isFk && (
           <div className="inline-flex gap-1">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setNewName(col.name); setRenameOpen(true); }} aria-label="Đổi tên cột">
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setNewName(col.name); setRenameOpen(true); }}>
               <Pencil className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-600 hover:text-rose-700" onClick={() => setDropOpen(true)} aria-label="Xoá cột">
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-600 hover:text-rose-700" onClick={() => setDropOpen(true)}>
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>

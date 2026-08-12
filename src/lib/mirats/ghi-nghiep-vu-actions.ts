@@ -151,30 +151,3 @@ export async function ghiHongHocFull(
   }
   return r;
 }
-
-/** 
- * Tạo một yêu cầu thay đổi (Change Request) để đề xuất cập nhật các trường dữ liệu.
- * Dùng khi user không có quyền ghi trực tiếp vào bảng đích (RLS).
- */
-export async function createChangeRequest(args: {
-  loai: "thiet_bi.propose_field" | "he_thong.propose_field" | "dm.propose_new";
-  entity_id?: string;
-  noi_dung: Record<string, any>;
-  ghi_chu?: string;
-}) {
-  const { data, error } = await supabase
-    .from("change_request")
-    .insert({
-      loai: args.loai,
-      entity_id: args.entity_id,
-      noi_dung: args.noi_dung,
-      ghi_chu: args.ghi_chu,
-      status: "pending",
-    } as any)
-    .select("id")
-    .single();
-
-  if (error) throw error;
-  return data.id;
-}
-

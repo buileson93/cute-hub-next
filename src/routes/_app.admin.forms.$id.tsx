@@ -597,7 +597,7 @@ function FormEditor() {
                 <h1 className="text-lg font-bold uppercase">{tpl.ten || "Chưa đặt tên mẫu"}</h1>
                 {tpl.mo_ta && <p className="mt-1 text-xs text-muted-foreground">{tpl.mo_ta}</p>}
               </div>
-              <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3 rounded-md border bg-card p-4">
+              <div className="grid grid-cols-3 gap-3 rounded-md border bg-card p-4">
                 {fields.map((f, i) => {
                   const pv: PreviewField = f as PreviewField;
                   const span = `col-span-${Math.min(3, Math.max(1, f.col_span))}`;
@@ -623,7 +623,7 @@ function FormEditor() {
               {tpl.require_signature && (
                 <div className="mt-4 rounded-md border bg-muted/20 p-3">
                   <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Chữ ký</p>
-                  <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 text-center text-xs">
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div className="rounded border border-dashed p-4">Người lập</div>
                     <div className="rounded border border-dashed p-4">Trưởng phòng KT</div>
                     <div className="rounded border border-dashed p-4">Lãnh đạo</div>

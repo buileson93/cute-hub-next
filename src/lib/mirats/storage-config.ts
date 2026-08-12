@@ -11,8 +11,6 @@ import { supabase } from "@/integrations/backend/client";
  *   dual_write  — true/false          (khi ghi file mới, ghi song song sang bên còn lại)
  */
 
-export const MAX_MB = 20;
-
 export const STORAGE_CONFIG_KEY = "storage.config";
 
 export type StoragePrimary = "supabase" | "r2";

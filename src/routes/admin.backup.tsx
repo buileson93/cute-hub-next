@@ -6,7 +6,7 @@ import {
   DatabaseBackup, Download, Upload, RotateCcw, Trash2, Loader2, ShieldAlert,
   HardDriveDownload, Cloud, Server, CheckCircle2, XCircle, Clock, CalendarClock, Info,
 } from "lucide-react";
-import { AppShell } from "@/components/mirats/app-shell/AppShell";
+import { AppShell } from "@/components/mirats/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

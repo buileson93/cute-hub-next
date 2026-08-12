@@ -164,21 +164,9 @@ export interface GiaoDichRow {
   ngay: string;
   ghi_chu: string | null;
   don_vi_id: string | null;
-  vat_tu?: { ten: string; ma_vat_tu: string | null; don_vi_tinh: string; model_id: string | null } | null;
+  vat_tu?: { ten: string; ma_vat_tu: string | null; don_vi_tinh: string } | null;
   kho?: { ten: string } | null;
 }
-
-export interface TonKhoModelRow {
-  model_id: string;
-  model_ten: string;
-  serial_system: number;
-  serial_ccdc: number;
-  serial_spare: number;
-  serial_total: number;
-  bulk_quantity: number;
-  combined_total: number;
-}
-
 
 // ---------------------------------------------------------------------------
 // Queries
@@ -275,9 +263,8 @@ export function useGiaoDich() {
       const to = from + KHO_PAGE_SIZE - 1;
       const { data, error } = await supabase
         .from("kho_giao_dich")
-        .select("*, vat_tu:vat_tu_id(ten,ma_vat_tu,don_vi_tinh,model_id), kho:kho_id(ten)")
+        .select("*, vat_tu:vat_tu_id(ten,ma_vat_tu,don_vi_tinh), kho:kho_id(ten)")
         .order("ngay", { ascending: false })
-
         .order("id", { ascending: false })
         .range(from, to);
       if (error) throw error;
@@ -347,22 +334,6 @@ export function useDonViOptions() {
     },
   });
 }
-
-/** view_ton_kho_model — tổng hợp tồn theo model. */
-export function useTonKhoModel(modelId?: string) {
-  return useQuery({
-    queryKey: ["view_ton_kho_model", modelId],
-    staleTime: 30_000,
-    queryFn: async (): Promise<TonKhoModelRow[]> => {
-      let query = supabase.from("view_ton_kho_model").select("*");
-      if (modelId) query = query.eq("model_id", modelId);
-      const { data, error } = await query.order("model_ten");
-      if (error) throw error;
-      return (data ?? []) as unknown as TonKhoModelRow[];
-    },
-  });
-}
-
 
 // ---------------------------------------------------------------------------
 // Mutations

@@ -1,13 +1,22 @@
 // ============================================================================
 // DANH MỤC › THIẾT BỊ — bảng phẳng liệt kê TẤT CẢ tài sản trong CSDL.
+//
+// Khác với "Sổ lý lịch" (cây theo hệ thống đang khai thác), trang này coi mọi
+// tài sản như một danh mục tài sản: kể cả tài sản ĐỘC LẬP chưa gán hệ thống
+// (vật tư dự phòng, công cụ dụng cụ, tài sản đo…). Có bộ lọc riêng để lọc
+// nhanh nhóm tài sản độc lập này.
+//
+// Phạm vi RỘNG HƠN TableView "Vận hành › Hệ Thống": đầy đủ cột (định danh, mẫu,
+// loại, nhà SX/CC, trạng thái, cấp phát, vị trí, phân loại, vòng đời…), sắp xếp,
+// lọc, chọn cột, tích chọn dòng và XUẤT .xlsx (theo bộ lọc hoặc dòng đang chọn).
+// Chỉ đọc + điều hướng — mọi chỉnh sửa vẫn qua trang chi tiết / cây Hệ Thống.
 // ============================================================================
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, 
-  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid, Timer, HeartPulse
+  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, Settings2, ShieldCheck,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -35,9 +44,6 @@ import {
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
-import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
-import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
-import { StatusBadge } from "@/components/mirats/StatusBadge";
 
 import { CenterHoverCard } from "@/components/mirats/CenterHoverCard";
 import { AssignSystemDialog } from "@/components/mirats/AssignSystemDialog";
@@ -61,7 +67,6 @@ import {
 import { MauChip } from "@/components/mirats/MauChip";
 import { storage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
-
 
 // Bộ lọc lưu trên URL để "quay lại trang" giữ nguyên trạng thái đã chọn.
 // - q, loai, tt: text đơn trị (bỏ khi rỗng / "all")
@@ -116,6 +121,17 @@ export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
 
 const STANDALONE = "— Độc lập (chưa gán hệ thống) —";
 
+const ttColor: Record<string, string> = {
+  "Đang khai thác": "bg-emerald-100 text-emerald-700",
+  "Đang sử dụng": "bg-emerald-100 text-emerald-700",
+  "Đang hoạt động": "bg-emerald-100 text-emerald-700",
+  "Dự phòng": "bg-sky-100 text-sky-700",
+  "Đang sửa chữa": "bg-amber-100 text-amber-700",
+  "Hỏng": "bg-red-100 text-red-700",
+  "Chờ thanh lý": "bg-orange-100 text-orange-700",
+  "Đã thanh lý": "bg-slate-200 text-slate-700",
+  "Ngừng hoạt động": "bg-slate-200 text-slate-700",
+};
 
 /** Thẻ hover cho model (dm_model) đã gán — có ảnh + thông số cơ bản. */
 function ModelHoverContent({ d }: { d: DbDevice }) {
@@ -635,9 +651,10 @@ function DanhMucThietBiPage() {
     // ---- Trạng thái & cấp phát ----
     {
       key: "tt", label: "Trạng thái", group: "Thành phần hệ thống · Trạng thái", filter: "cat", value: (d) => d.trang_thai,
-      cell: (d) => <StatusBadge domain="thiet_bi" code={d.trang_thai} />,
+      cell: (d) => d.trang_thai ? (
+        <Badge variant="secondary" className={cn("font-medium", ttColor[d.trang_thai] ?? "")}>{d.trang_thai}</Badge>
+      ) : <span className="text-muted-foreground">—</span>,
     },
-
     {
       key: "capphat", label: "Cấp phát", group: "Thành phần hệ thống · Trạng thái", filter: "cat",
       value: (d) => CAP_PHAT_LABEL[d._capPhatTrangThai] ?? d._capPhatTrangThai,
@@ -667,24 +684,8 @@ function DanhMucThietBiPage() {
     { key: "namsx", label: "Năm sản xuất", group: "Tài sản vật lý · Vòng đời", align: "right", filter: "text", value: (d) => num(d._namSanXuat), defaultHidden: true },
     { key: "namkt", label: "Năm khai thác", group: "Tài sản vật lý · Vòng đời", align: "right", filter: "text", value: (d) => num(d._namKhaiThac), defaultHidden: true },
     {
-      key: "tuoitho", label: "Tuổi thọ", group: "Tài sản vật lý · Vòng đời", align: "left" as const, minW: "min-w-[140px]",
-      value: (d) => num(d._tyLeTuoiTho), 
-      sortValue: (d) => d._tyLeTuoiTho ?? -1,
-      cell: (d) => {
-        const pct = d._tyLeTuoiTho;
-        if (pct == null) return <span className="text-muted-foreground">—</span>;
-        const color = pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-500" : "bg-emerald-500";
-        return (
-          <div className="flex w-full flex-col gap-1">
-            <div className="flex justify-between text-[10px] font-medium text-muted-foreground">
-              <span className="flex items-center gap-0.5"><Timer className="h-2.5 w-2.5" /> {pct}%</span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div className={cn("h-full transition-all", color)} style={{ width: `${pct}%` }} />
-            </div>
-          </div>
-        );
-      }
+      key: "tuoitho", label: "Tỷ lệ tuổi thọ (%)", group: "Tài sản vật lý · Vòng đời", align: "right",
+      value: (d) => num(d._tyLeTuoiTho), sortValue: (d) => d._tyLeTuoiTho ?? -1, defaultHidden: true,
     },
     { key: "ngaymua", label: "Ngày mua", group: "Tài sản vật lý · Vòng đời", minW: "min-w-[120px]", filter: "text", value: (d) => d.ngay_mua, defaultHidden: true },
     { key: "baohanh", label: "Hạn bảo hành", group: "Tài sản vật lý · Vòng đời", minW: "min-w-[120px]", filter: "text", value: (d) => d.han_bao_hanh, defaultHidden: true },
@@ -809,50 +810,8 @@ function DanhMucThietBiPage() {
     return <div className="p-8 text-center text-sm text-destructive">Không tải được dữ liệu tài sản.</div>;
   }
 
-  // ---- KPI Stats & Click-to-filter ----
-  const kpiStats = useMemo(() => {
-    const total = devices.length;
-    const inService = devices.filter(d => d.trang_thai === "Đang sử dụng").length;
-    const warranty = devices.filter(d => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date()).length;
-    const lowLife = devices.filter(d => d._tyLeTuoiTho !== null && d._tyLeTuoiTho < 20).length;
-    
-    return [
-      { id: "total", label: "Tổng tài sản", value: total, icon: LayoutGrid, color: "text-blue-600", bg: "bg-blue-50" },
-      { id: "active", label: "Đang khai thác", value: inService, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
-      { id: "warranty", label: "Còn bảo hành", value: warranty, icon: ShieldCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
-      { id: "alert", label: "Sắp hết tuổi thọ", value: lowLife, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
-    ];
-  }, [devices]);
-
   return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden p-4">
-      {/* KPI Header */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {kpiStats.map((kpi) => (
-          <div 
-            key={kpi.id}
-            className={cn(
-              "group relative overflow-hidden rounded-xl border bg-card p-4 transition-all hover:shadow-md",
-              "before:absolute before:inset-y-0 before:left-0 before:w-1",
-              kpi.id === "total" && "before:bg-blue-500",
-              kpi.id === "active" && "before:bg-emerald-500",
-              kpi.id === "warranty" && "before:bg-indigo-500",
-              kpi.id === "alert" && "before:bg-amber-500"
-            )}
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
-                <h3 className="mt-1 text-2xl font-bold tracking-tight">{kpi.value.toLocaleString("vi-VN")}</h3>
-              </div>
-              <div className={cn("rounded-lg p-2.5", kpi.bg)}>
-                <kpi.icon className={cn("h-5 w-5", kpi.color)} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
+    <div className="space-y-4">
       <PageHeader
         icon={HardDrive}
         title="Danh mục tài sản"
@@ -1009,7 +968,6 @@ function DanhMucThietBiPage() {
             tableKey="danh-muc-thiet-bi"
             columns={columns}
             rows={devices}
-            presets={THIET_BI_PRESETS}
             getRowId={(d) => d.ma_thiet_bi}
             requireFilterToShow={false}
             countUnit="tài sản"

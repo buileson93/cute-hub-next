@@ -18,15 +18,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/backend/client";
 
-export type ColumnPrefs = {
-  order: string[];
-  hidden: string[];
-  widths?: Record<string, number>;
-  presetId?: string;
-  customized?: boolean;
-};
+export type ColumnPrefs = { order: string[]; hidden: string[] };
 
-const LS_PREFIX = "mirats:colprefs:v2:";
+const LS_PREFIX = "mirats:colprefs:";
 
 /** Hợp nhất thứ tự đã lưu với danh sách key hiện có (thêm key mới vào cuối,
  *  bỏ key không còn tồn tại). Giữ đúng thứ tự người dùng đã sắp.
@@ -51,9 +45,6 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
   const [order, setOrderState] = useState<string[]>(() => reconcileOrder(undefined, allKeys));
   const [hidden, setHiddenState] = useState<Set<string>>(() => new Set(defaultHidden));
-  const [widths, setWidthsState] = useState<Record<string, number>>({});
-  const [activePreset, setActivePreset] = useState<string | undefined>();
-  const [isCustomized, setIsCustomized] = useState(false);
   const [ready, setReady] = useState(false);
   const userIdRef = useRef<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -66,26 +57,13 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       if (cancelled) return;
       setOrderState(reconcileOrder(p?.order, allKeys));
       setHiddenState(new Set(p?.hidden ?? defaultHidden));
-      setWidthsState(p?.widths ?? {});
-      setActivePreset(p?.presetId);
-      setIsCustomized(p?.customized ?? false);
     };
 
     // 1) localStorage
     try {
-      const rawV2 = typeof window !== "undefined" ? window.localStorage.getItem(lsKey) : null;
-      if (rawV2) {
-        applyPrefs(JSON.parse(rawV2) as ColumnPrefs);
-      } else {
-        // Fallback sang v1 nếu chưa có v2
-        const rawV1 = typeof window !== "undefined" ? window.localStorage.getItem("mirats:colprefs:" + tableKey) : null;
-        if (rawV1) {
-          const v1 = JSON.parse(rawV1) as ColumnPrefs;
-          applyPrefs({ ...v1, customized: true });
-        } else {
-          applyPrefs(null);
-        }
-      }
+      const raw = typeof window !== "undefined" ? window.localStorage.getItem(lsKey) : null;
+      if (raw) applyPrefs(JSON.parse(raw) as ColumnPrefs);
+      else applyPrefs(null);
     } catch {
       applyPrefs(null);
     }
@@ -129,84 +107,36 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
   const setOrder = useCallback((next: string[]) => {
     const reconciled = reconcileOrder(next, allKeys);
     setOrderState(reconciled);
-    setIsCustomized(true);
-    persist({ order: reconciled, hidden: [...hidden], widths, presetId: activePreset, customized: true });
-  }, [allKeys, persist, activePreset, hidden, widths]);
-
-  const setWidth = useCallback((key: string, w: number) => {
-    const nextWidths = { ...widths, [key]: Math.round(w) };
-    setWidthsState(nextWidths);
-    setIsCustomized(true);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true });
-  }, [widths, order, hidden, persist, activePreset]);
-
-  const resetWidth = useCallback((key: string) => {
-    const nextWidths = { ...widths };
-    delete nextWidths[key];
-    setWidthsState(nextWidths);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true });
-  }, [widths, order, hidden, persist, activePreset]);
+    setHiddenState((h) => { persist({ order: reconciled, hidden: [...h] }); return h; });
+  }, [allKeys, persist]);
 
   const toggle = useCallback((key: string) => {
-    const nextHidden = new Set(hidden);
-    nextHidden.has(key) ? nextHidden.delete(key) : nextHidden.add(key);
-    setHiddenState(nextHidden);
-    setIsCustomized(true);
-    persist({ order, hidden: [...nextHidden], widths, presetId: activePreset, customized: true });
-  }, [hidden, order, widths, persist, activePreset]);
+    setHiddenState((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      setOrderState((o) => { persist({ order: o, hidden: [...next] }); return o; });
+      return next;
+    });
+  }, [persist]);
 
   const setHidden = useCallback((keys: string[]) => {
     const next = new Set(keys);
     setHiddenState(next);
-    setIsCustomized(true);
-    setOrderState((o) => {
-      persist({ order: o, hidden: [...next], presetId: activePreset, customized: true });
-      return o;
-    });
-  }, [persist, activePreset]);
+    setOrderState((o) => { persist({ order: o, hidden: [...next] }); return o; });
+  }, [persist]);
 
   const reset = useCallback(() => {
     const o = reconcileOrder(undefined, allKeys);
     const h = new Set(defaultHidden);
     setOrderState(o);
     setHiddenState(h);
-    setWidthsState({});
-    setActivePreset(undefined);
-    setIsCustomized(false);
-    persist({ order: o, hidden: [...h], widths: {}, customized: false });
+    persist({ order: o, hidden: [...h] });
   }, [allKeys, defaultHidden, persist]);
-
-  const setPreset = useCallback((presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
-    const reconciledOrder = reconcileOrder(orderKeys ?? allKeys, allKeys);
-    const hiddenKeys = allKeys.filter(k => !visibleKeys.includes(k));
-    const nextHidden = new Set(hiddenKeys);
-
-    setOrderState(reconciledOrder);
-    setHiddenState(nextHidden);
-    setActivePreset(presetId);
-    setIsCustomized(false);
-    persist({ order: reconciledOrder, hidden: [...nextHidden], presetId, customized: false });
-  }, [allKeys, persist]);
 
   const isHidden = useCallback((key: string) => hidden.has(key), [hidden]);
 
   return useMemo(
-    () => ({
-      order,
-      hidden,
-      widths,
-      ready,
-      activePreset,
-      isCustomized,
-      setOrder,
-      setWidth,
-      resetWidth,
-      toggle,
-      setHidden,
-      reset,
-      isHidden,
-      setPreset,
-    }),
-    [order, hidden, widths, ready, activePreset, isCustomized, setOrder, setWidth, resetWidth, toggle, setHidden, reset, isHidden, setPreset],
+    () => ({ order, hidden, ready, setOrder, toggle, setHidden, reset, isHidden }),
+    [order, hidden, ready, setOrder, toggle, setHidden, reset, isHidden],
   );
 }

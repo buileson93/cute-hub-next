@@ -263,7 +263,7 @@ export function FieldInspector({
                 }} className="h-7 p-0.5" />
                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => {
                   onChange({ ratings: (f.ratings ?? []).filter((_, j) => j !== i) });
-                }} aria-label="Xoá mức đánh giá"><Trash2 className="h-3 w-3 text-rose-600" /></Button>
+                }}><Trash2 className="h-3 w-3 text-rose-600" /></Button>
               </div>
             ))}
             {(f.ratings ?? []).length === 0 && (
@@ -296,7 +296,7 @@ export function FieldInspector({
                   }} className="h-7 font-mono text-xs" placeholder="key" />
                   <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => {
                     onChange({ columns: (f.columns ?? []).filter((_, j) => j !== i) });
-                  }} aria-label="Xoá cột bảng con"><Trash2 className="h-3 w-3 text-rose-600" /></Button>
+                  }}><Trash2 className="h-3 w-3 text-rose-600" /></Button>
                 </div>
                 <div className="mt-1 grid grid-cols-2 gap-1">
                   <Select value={c.kind} onValueChange={(v) => {

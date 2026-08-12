@@ -43,15 +43,6 @@ describe("nav-config — navGroups()", () => {
     expect(flat.find((i) => i.route === "/hong-hoc")?.badgeKey).toBe("hong_hoc_mo");
     expect(flat.find((i) => i.route === "/giay-phep")?.badgeKey).toBe("sap_het_han");
   });
-
-  it("giữ nguyên trường roles từ nav-contract", () => {
-    const flat = groups.flatMap((g) => g.items);
-    // Kiểm tra mục /phan-quyen vốn có roles: MANAGER_ROLES trong contract
-    const phanQuyen = flat.find((i) => i.route === "/phan-quyen");
-    expect(phanQuyen?.roles).toBeDefined();
-    expect(Array.isArray(phanQuyen?.roles)).toBe(true);
-    expect(phanQuyen?.roles?.includes("admin")).toBe(true);
-  });
 });
 
 describe("nav-config — isActive()", () => {

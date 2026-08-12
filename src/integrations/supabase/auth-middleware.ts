@@ -55,17 +55,7 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     const authHeader = request.headers.get('authorization');
 
     if (!authHeader) {
-      // During SSR, the Authorization header might be missing.
-      // Instead of throwing a 500 error, we allow the request to proceed with an unauthenticated context.
-      // The client-side logic (e.g., useSession or route guards) will handle the redirect to /auth.
-      return next({
-        context: {
-          supabase: null as any,
-          userId: null as any,
-          claims: null as any,
-          unauthenticated: true,
-        },
-      });
+      throw new Error('Unauthorized: No authorization header provided');
     }
 
     if (!authHeader.startsWith('Bearer ')) {
@@ -113,7 +103,6 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
         supabase,
         userId: data.claims.sub,
         claims: data.claims,
-        unauthenticated: false,
       },
     });
   },

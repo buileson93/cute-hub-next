@@ -227,7 +227,7 @@ function CreateDuAnDialog({
           <DialogDescription>Bạn tự động trở thành người quản lý dự án.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3">
-          <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
               <Label>Mã dự án</Label>
               <Input value={form.ma} onChange={(e) => setForm({ ...form, ma: e.target.value })} placeholder="VD: DA-2026-01" />

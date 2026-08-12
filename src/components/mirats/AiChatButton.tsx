@@ -199,7 +199,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
               <Plus className="h-4 w-4" />
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} title="Đóng" aria-label="Đóng bảng">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} title="Đóng" aria-label="Nút">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -239,7 +239,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           <div className="hidden w-[140px] shrink-0 flex-col border-r border-border bg-muted/30 py-2 sm:flex">
             <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Lịch sử</div>
             <div className="flex-1 overflow-y-auto">
-              {conversations.map((c: any) => (
+              {conversations.map((c) => (
                 <div key={c.id} className={cn(
                   "group flex items-center gap-1 px-1",
                   activeId === c.id && "bg-accent/60",

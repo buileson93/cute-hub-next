@@ -1,11 +1,8 @@
-import { createFileRoute, useRouter, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Puzzle, List, ListTree, GitFork, Activity, ClipboardList } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageHeader } from "@/components/mirats/PageHeader";
-
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
   head: () => ({
@@ -23,32 +20,7 @@ export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
 });
 
 function ThanhPhanListPage() {
-  const nav = useNavigate();
-  return (
-    <div className="flex h-full flex-col">
-      <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
-        <div className="flex items-center gap-4">
-          <PageHeader
-            title="Bảng thành phần & tài sản"
-            icon={Puzzle}
-            description="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật."
-          />
-          <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })}>
-            <TabsList>
-              <TabsTrigger value="table" className="gap-2"><List className="h-4 w-4"/>Bảng</TabsTrigger>
-              <TabsTrigger value="tree" className="gap-2"><ListTree className="h-4 w-4"/>Cây</TabsTrigger>
-              <TabsTrigger value="mindmap" className="gap-2"><GitFork className="h-4 w-4"/>Sơ đồ</TabsTrigger>
-              <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
-              <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
-      <div className="flex-1 overflow-hidden">
-        <ThanhPhanTable />
-      </div>
-    </div>
-  );
+  return <ThanhPhanTable />;
 }
 
 /**
