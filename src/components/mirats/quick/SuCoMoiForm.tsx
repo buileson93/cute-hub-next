@@ -107,6 +107,17 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     heThongId, selectedTpCount: selectedTpIds.size, mountedAssetsCount: selected.length
   }), [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, selected]);
 
+  const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
+    if (!heThongDichVu) return null;
+    return {
+      loai: "SU_CO",
+      thiet_bi_id: heThongDichVu,
+      moTa: hienTuong,
+      thoiGian: thoiGianBatDau || new Date().toISOString(),
+      tenThietBi: selected.find(d => d.id === heThongDichVu)?.ten_thiet_bi
+    };
+  }, [heThongDichVu, hienTuong, thoiGianBatDau, selected]);
+
   const parseFn = useServerFn(parseIncidentText);
   const parseMutation = useMutation({
     mutationFn: async (text: string) => parseFn({ data: { text } }),
