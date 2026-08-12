@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
-export const getCompletenessStats = createServerFn({ method: "GET" })
+export const getCompletenessStats = createServerFn({ method: "GET" }) as any;
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, unauthenticated } = context as any;
@@ -14,7 +14,7 @@ export const getCompletenessStats = createServerFn({ method: "GET" })
     return (data || {}) as any;
   });
 
-export const getCompletenessOverview = createServerFn({ method: "GET" })
+export const getCompletenessOverview = createServerFn({ method: "GET" }) as any;
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => 
     z.object({

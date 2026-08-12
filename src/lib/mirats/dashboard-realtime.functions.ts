@@ -36,7 +36,7 @@ export const getHeartBeatData = createServerFn({ method: "GET" })
 
     const now = new Date();
 
-    return (groups || []).map(g => {
+    return (groups || []).map((g: any) => {
       const systems = (g.systems || []) as any[];
       const activeSystems = systems.filter(s => s.active);
       
@@ -105,14 +105,14 @@ export const getAuditTimeline = createServerFn({ method: "GET" })
     }
 
     // 2. Fetch profiles for user names
-    const userIds = Array.from(new Set(logs.map(l => l.user_id).filter(Boolean))) as string[];
+    const userIds = Array.from(new Set(logs.map((l: any) => l.user_id).filter(Boolean))) as string[];
     const { data: profiles } = await supabase
       .from("profiles")
       .select("id, ho_ten")
       .in("id", userIds);
     
     const profileMap: Record<string, string> = {};
-    profiles?.forEach(p => { 
+    profiles?.forEach((p: any) => { 
       if (p.id && p.ho_ten) profileMap[p.id] = p.ho_ten; 
     });
 
