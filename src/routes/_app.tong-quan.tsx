@@ -265,7 +265,7 @@ function TongQuanPage() {
           <PageHeader
             icon={Activity}
             title="Tổng quan KPI"
-            help="Số liệu tổng hợp phía CSDL, tôn trọng phạm vi quyền của tài khoản."
+            help=""
           />
         </div>
 
@@ -340,7 +340,7 @@ function TongQuanPage() {
 
       {/* ROW 2 — SỨC KHOẺ KHAI THÁC */}
       <div>
-        <SectionHeader icon={<HeartPulse className="h-3.5 w-3.5" />} title={`Sức khoẻ khai thác (${days} ngày)`} to="/bao-tri/pm" more="Kế hoạch bảo trì" />
+        <SectionHeader icon={<HeartPulse className="h-3.5 w-3.5" />} title={`Sức khoẻ khai thác (${days} ngày)`} to="/bao-tri" more="Chi tiết" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <HealthTile
             icon={<Gauge className="h-4 w-4" />}
@@ -357,7 +357,7 @@ function TongQuanPage() {
             icon={<Repeat2 className="h-4 w-4" />}
             label="MTBF (giờ)"
             value={healthQ.data ? fmtHours(healthQ.data.mtbf_h) : "—"}
-            hint="Thời gian trung bình giữa 2 sự cố"
+            hint="Trung bình giữa 2 sự cố"
             tone="default"
             loading={healthQ.isLoading}
             to="/su-co"
@@ -377,7 +377,7 @@ function TongQuanPage() {
             icon={<ShieldCheck className="h-4 w-4" />}
             label="Tuân thủ (Compliance)"
             value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
-            hint="Tỷ lệ giấy phép/chứng chỉ còn hiệu lực"
+            hint="Giấy phép/chứng chỉ còn hiệu lực"
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
