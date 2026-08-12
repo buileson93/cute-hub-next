@@ -28,8 +28,9 @@ interface CayContextType {
 
 const CayContext = createContext<CayContextType | undefined>(undefined);
 
-export function CayProvider({ children, initialDisplay = "tree" }: { children: ReactNode; initialDisplay?: DisplayMode }) {
-  const [display, setDisplay] = useState<DisplayMode>(initialDisplay);
+export function CayProvider({ children }: { children: ReactNode }) {
+  const [display, setDisplay] = useState<DisplayMode>("tree");
+
   const [editMode, setEditMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["root"]));

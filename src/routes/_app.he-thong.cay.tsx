@@ -11,7 +11,9 @@ import { useSession } from "@/hooks/use-session";
 
 
 
+import { cn } from "@/lib/utils";
 import { ReactFlowProvider } from "@xyflow/react";
+
 import "@xyflow/react/dist/style.css";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -230,6 +232,7 @@ function HeThongCayPage() {
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
 
 
+
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => {
     setTarget({ kind, ma });
   }, []);
@@ -318,7 +321,7 @@ function HeThongCayPage() {
          </div>
       </div>
 
-      <PageBody noPadding className="min-h-0 flex-1 flex flex-col bg-muted/10 relative">
+      <PageBody noPadding className={cn("min-h-0 flex-1 flex flex-col bg-muted/10 relative", display === "mindmap" && "overflow-hidden")}>
         <DataState
           state={state}
           loadingType="drawer"
@@ -332,6 +335,7 @@ function HeThongCayPage() {
           emptyAction={
             isFiltering ? (
               <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>
+
                 Xoá tìm kiếm
               </Button>
             ) : undefined

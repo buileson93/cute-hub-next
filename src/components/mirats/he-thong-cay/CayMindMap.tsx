@@ -306,28 +306,22 @@ export function CayMindMap({
     return set;
   }, [tree]);
 
-  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
   const [expanded, setExpanded] = useState<Set<string>>(initialExpanded);
+  const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
+
+  const seededRef = useRef(false);
+
+  useEffect(() => {
+    if (seededRef.current) return;
+    if (tree.length === 0) return;
+    seededRef.current = true;
+    setExpanded(initialExpanded);
+  }, [tree, initialExpanded]);
+
   const treeSigRef = useRef("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
 
-  // LỖI 1: Đồng bộ expanded khi tree đổi nhưng không ghi đè thao tác người dùng
-  useEffect(() => {
-    // Chỉ reset expanded khi danh sách PL thay đổi (cấu trúc lớn)
-    const sig = tree.map(p => p.id).join(",");
-    if (sig !== treeSigRef.current) {
-      treeSigRef.current = sig;
-      // Tránh reset nếu người dùng vừa mới thực hiện thao tác mở rộng thủ công
-      if (!justOpenedRef.current) {
-        setExpanded(prev => {
-          const next = new Set(prev);
-          initialExpanded.forEach(id => next.add(id));
-          return next;
-        });
-      }
-    }
-  }, [tree, initialExpanded]);
 
   // LỖI 5: Nối focus target vào sơ đồ
   useEffect(() => {
@@ -572,16 +566,22 @@ export function CayMindMap({
       ? ["Toàn hệ thống", "Đơn vị", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"]
       : ["Toàn hệ thống", "Phân loại", "Nhóm hệ thống", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"];
 
-    const layerNodes: ReactFlowNode[] = layerLabels.map((label, i) => ({
-      id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -80 },
-      data: { label }, selectable: false, draggable: false, focusable: false,
-    }));
+    const layerNodes: ReactFlowNode[] = layerLabels
+      .map((label, i) => ({ label, i }))
+      .filter(({ i }) => Number.isFinite(COL[i]))
+      .map(({ label, i }) => ({
+        id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -80 },
+        data: { label }, selectable: false, draggable: false, focusable: false,
+      }));
+
 
     return { nodes: [...layerNodes, ...nodes], edges };
   }, [tree, expanded, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt]);
 
 
   useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
+
+
 
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
 
