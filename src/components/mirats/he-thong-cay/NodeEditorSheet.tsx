@@ -11,15 +11,16 @@ import { HT_KHAC } from "@/lib/mirats/phan-loai";
 import { physKeyValue } from "@/lib/mirats/editable-columns";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { HeThongTruongEditor } from "@/components/mirats/HeThongTruongEditor";
-import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu } from "lucide-react";
+import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCayMutations } from "./mutations";
+import { useCayContext } from "./CayContext";
 
 export function NodeEditorSheet({
   target, onClose, plLabel, nhLabel, htLabel, tbMap,
-  saving, onSave, canManage, onDelete,
+  saving, onSave, canManage,
   unitCodeOf, isCustomNode, isRealNode,
-  plGroups, onAddGroup,
-  childInfo, onAddSystem, donViList,
+  childInfo, donViList,
   physSection, submit, renamingGroupCode, groupCode, setGroupCode, onRenameGroupCode, slugMa
 }: {
   target: { kind: EditKind; ma: string } | null;
@@ -31,14 +32,10 @@ export function NodeEditorSheet({
   saving: boolean;
   onSave: (payload: any) => void;
   canManage: boolean;
-  onDelete: (kind: EditKind, ma: string, ten: string, label: string) => void;
   unitCodeOf: (kind: string, ma: string) => string | null;
   isCustomNode: (kind: string, ma: string) => boolean;
   isRealNode: (kind: string, ma: string) => boolean;
-  plGroups: any[];
-  onAddGroup: (plId: string, ten: string, ma: string) => void;
   childInfo: any;
-  onAddSystem: (nhMa: string, plId: string, ten: string, donViId: string) => void;
   donViList: any[];
   physSection: React.ReactNode;
   submit: () => void;
@@ -48,6 +45,9 @@ export function NodeEditorSheet({
   onRenameGroupCode: (ma: string, newMa: string) => void;
   slugMa: (s: string) => string;
 }) {
+  const { addGroup, addSystem, deleteNode } = useCayMutations();
+  const { setReorgOpen } = useCayContext();
+
   const [ten, setTen] = useState("");
   const [tenMindmap, setTenMindmap] = useState("");
   const [newGroupTen, setNewGroupTen] = useState("");
@@ -126,20 +126,40 @@ export function NodeEditorSheet({
           {target?.kind === "pl" && (
             <div className="space-y-3 rounded-md border p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
-                <FolderTree className="h-4 w-4 text-violet-600" /> Nhóm hệ thống ({plGroups.length})
+                <FolderTree className="h-4 w-4 text-violet-600" /> Nhóm hệ thống
               </div>
-              <ul className="space-y-1">
-                {plGroups.map((g) => (
-                  <li key={g.ma} className="flex items-center gap-2 rounded-md border bg-muted/30 px-2.5 py-1.5 text-sm">
-                    <span className="truncate">{g.ten}</span>
-                  </li>
-                ))}
-              </ul>
               {canManage && (
                 <div className="space-y-2 border-t pt-3">
                   <Input value={newGroupTen} onChange={(e) => setNewGroupTen(e.target.value)} placeholder="Tên nhóm mới..." />
-                  <Button size="sm" onClick={() => { onAddGroup(target.ma, newGroupTen, newGroupMa); setNewGroupTen(""); }}>
+                  <Input value={newGroupMa} onChange={(e) => setNewGroupMa(e.target.value.toUpperCase())} placeholder="Mã nhóm..." />
+                  <Button size="sm" onClick={() => { addGroup.mutate({ plId: target.ma, ten: newGroupTen, ma: newGroupMa }); setNewGroupTen(""); setNewGroupMa(""); }}>
                     <Plus className="h-4 w-4 mr-1" /> Thêm
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {target?.kind === "nh" && (
+            <div className="space-y-3 rounded-md border p-3">
+              <div className="flex items-center gap-1.5 text-sm font-medium">
+                <Network className="h-4 w-4 text-primary" /> Hệ thống con
+              </div>
+              {canManage && (
+                <div className="space-y-2 border-t pt-3">
+                  <Input value={newSystemTen} onChange={(e) => setNewSystemTen(e.target.value)} placeholder="Tên hệ thống mới..." />
+                  <Select value={newSystemDonViId} onValueChange={setNewSystemDonViId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn đơn vị..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {donViList.map(dv => (
+                        <SelectItem key={dv.id} value={dv.id}>{dv.ten}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button size="sm" onClick={() => { addSystem.mutate({ nhMa: target.ma, plId: "", ten: newSystemTen, donViId: newSystemDonViId }); setNewSystemTen(""); }}>
+                    <Plus className="h-4 w-4 mr-1" /> Thêm HT
                   </Button>
                 </div>
               )}
@@ -184,10 +204,14 @@ export function NodeEditorSheet({
           )}
 
           {target && (target.kind === "nh" || target.kind === "ht") && canManage && target.ma !== HT_KHAC && (
-            <Button variant="outline" className="w-full text-destructive" onClick={() => onDelete(target.kind, target.ma, ten, title)}>
+            <Button variant="outline" className="w-full text-destructive" onClick={() => deleteNode.mutate({ kind: target.kind, ma: target.ma })}>
               <Trash2 className="mr-1.5 h-4 w-4" /> Xoá {title}
             </Button>
           )}
+
+          <Button variant="outline" className="w-full" onClick={() => setReorgOpen(true)}>
+            <RefreshCcw className="mr-1.5 h-4 w-4" /> Lịch sử thay đổi
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

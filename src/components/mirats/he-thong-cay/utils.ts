@@ -124,6 +124,7 @@ export function buildTree(
   plList: DbTaxonomy["plList"],
   htLabel: (ma: string) => string,
   nhLabel: (ma: string) => string,
+  groupByLoai: boolean = false,
   customGroups: Array<{ ma: string; ten: string; plId: string }> = [],
   ordNh: (ma: string) => number | undefined = () => undefined,
   ordHt: (ma: string) => number | undefined = () => undefined,
@@ -161,7 +162,10 @@ export function buildTree(
     for (const [nhKey, m2] of m1) {
       const systems: HtGroup[] = [];
       for (const [htId, devs] of m2) {
-        devs.sort(cmpDeviceByLoai);
+        if (groupByLoai) {
+          devs.sort(cmpDeviceByLoai);
+        }
+
         const ma = htSysMa(nhKey, htId);
         const dvCount = new Map<string, number>();
         for (const d of devs) {
@@ -218,3 +222,41 @@ export function buildTree(
   }
   return { tree, total };
 }
+
+export function parseCsv(text: string) {
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  const rows = lines.map(l => l.split(",").map(c => c.trim()));
+  return rows;
+}
+
+export function buildCsv(tree: PlGroup[]) {
+  const lines = ["Kind,Ma,Ten,Parent"];
+  for (const pl of tree) {
+    lines.push(`pl,${pl.id},${pl.ten},root`);
+    for (const lv of pl.fields) {
+      for (const nh of lv.groups) {
+        lines.push(`nh,${nh.ma},${nh.ten},${pl.id}`);
+        for (const ht of nh.systems) {
+          lines.push(`ht,${ht.ma},${ht.ten},${nh.ma}`);
+          for (const d of ht.devices) {
+            lines.push(`tb,${d.tb.ma_thiet_bi},${d.tb.ten || ""},${ht.ma}`);
+          }
+        }
+      }
+    }
+  }
+  return lines.join("\n");
+}
+
+export function downloadCsv(content: string, filename: string) {
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
