@@ -45,24 +45,6 @@ export function NodeEditorSheet({
   onRenameGroupCode: (ma: string, newMa: string) => void;
   slugMa: (s: string) => string;
 }) {
-  htLabel: (ma: string) => string;
-  tbMap: Map<string, any>;
-  saving: boolean;
-  onSave: (payload: any) => void;
-  canManage: boolean;
-  unitCodeOf: (kind: string, ma: string) => string | null;
-  isCustomNode: (kind: string, ma: string) => boolean;
-  isRealNode: (kind: string, ma: string) => boolean;
-  childInfo: any;
-  donViList: any[];
-  physSection: React.ReactNode;
-  submit: () => void;
-  renamingGroupCode: boolean;
-  groupCode: string;
-  setGroupCode: (s: string) => void;
-  onRenameGroupCode: (ma: string, newMa: string) => void;
-  slugMa: (s: string) => string;
-}) {
   const { addGroup, addSystem, deleteNode } = useCayMutations();
   const { setReorgOpen } = useCayContext();
 
