@@ -1,8 +1,10 @@
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useMemo, useState } from "react";
 import { Search, Wrench, CheckCircle2, CalendarClock } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,12 +29,8 @@ export const Route = createFileRoute("/_app/bao-tri/")({
   component: BaoTriPage,
 });
 
-const loaiColor: Record<string, string> = {
-  "Định kỳ": "bg-sky-100 text-sky-700",
-  "Đột xuất": "bg-amber-100 text-amber-700",
-  "Hiệu chuẩn": "bg-violet-100 text-violet-700",
-  "Nâng cấp": "bg-emerald-100 text-emerald-700",
-};
+import { getLoaiBaoTriToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
@@ -82,7 +80,7 @@ function BaoTriPage() {
       ),
     },
     {
-      key: "ngay_bat_dau", label: "Ngày bắt đầu", sortable: true,
+      key: "ngay_bat_dau", label: "Ngày bắt đầu", sortable: true, hideBelow: "xl",
       value: (b) => b.ngay_bat_dau,
       cell: (b) => <span className="whitespace-nowrap text-xs text-muted-foreground">{b.ngay_bat_dau}</span>,
     },
@@ -101,29 +99,29 @@ function BaoTriPage() {
       },
     },
     {
-      key: "he_thong", label: "Hệ thống", filter: "cat",
+      key: "he_thong", label: "Hệ thống", filter: "cat", hideBelow: "md",
       value: (b) => heThongMap.get(b.he_thong)?.ten ?? "—",
       cell: (b) => <span className="text-sm">{heThongMap.get(b.he_thong)?.ten ?? "—"}</span>,
     },
     {
-      key: "loai_bao_tri", label: "Loại", filter: "cat",
+      key: "loai_bao_tri", label: "Loại", filter: "cat", hideBelow: "lg",
       value: (b) => b.loai_bao_tri,
-      cell: (b) => <Badge variant="secondary" className={loaiColor[b.loai_bao_tri] ?? ""}>{b.loai_bao_tri}</Badge>,
+      cell: (b) => <StatusBadge domain="bao_tri" code={b.loai_bao_tri} label={b.loai_bao_tri} />,
     },
     {
-      key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat",
+      key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat", hideBelow: "md",
       value: (b) => b.don_vi_thuc_hien,
       cell: (b) => <span className="text-sm">{b.don_vi_thuc_hien}</span>,
     },
     {
-      key: "trang_thai", label: "Trạng thái", filter: "cat",
+      key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
       value: (b) => b.trang_thai,
       cell: (b) => <StatusBadge domain="bao_tri" code={b.trang_thai} />,
     },
   ], [thietBiMap, heThongMap, donViMap]);
 
   return (
-    <div className="space-y-4">
+    <PageBody>
       <PageHeader
         icon={Wrench}
         title="Bảo dưỡng"
@@ -163,7 +161,7 @@ function BaoTriPage() {
                     <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Loại" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi loại</SelectItem>
-                      {Object.keys(loaiColor).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                      {["Định kỳ", "Đột xuất", "Hiệu chuẩn", "Nâng cấp"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Select value={tt} onValueChange={setTt}>
@@ -208,7 +206,8 @@ function BaoTriPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageBody>
+
   );
 }
 

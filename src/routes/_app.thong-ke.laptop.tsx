@@ -313,7 +313,6 @@ function MayTinhStatsPage() {
             getRowId={(r) => r.id}
             trangThai={{ dangTai: isLoading }}
             requireFilterToShow={false}
-            autoFit={true}
           />
         </CardContent>
       </Card>

@@ -7,7 +7,7 @@ import {
   Plus, Pencil, Trash2, Shield, LogIn, KeyRound, Activity,
   RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle,
 } from "lucide-react";
-import { AppShell } from "@/components/mirats/AppShell";
+import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -471,7 +471,7 @@ function AdminAuditPage() {
         </div>
 
         {/* Severity chips */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 @sm:grid-cols-3 gap-2">
           {(Object.keys(SEVERITY_META) as Severity[]).map((s) => {
             const m = SEVERITY_META[s];
             const active = severityFilter === s;

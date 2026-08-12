@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+
 import { AlertTriangle as AlertTriangleIcon2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { DataState } from "@/components/mirats/DataState";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { ContextualToolbar } from "@/components/mirats/ContextualToolbar";
 import { FileDown as FileDownIcon, XCircle } from "lucide-react";
@@ -49,12 +52,8 @@ export const Route = createFileRoute("/_app/su-co/")({
   component: SuCoPage,
 });
 
-const mucColor: Record<string, string> = {
-  "Nghiêm trọng": "bg-red-100 text-red-700",
-  "Cao": "bg-orange-100 text-orange-700",
-  "Trung bình": "bg-amber-100 text-amber-700",
-  "Thấp": "bg-slate-100 text-slate-700",
-};
+import { getMucDoSuCoToken } from "@/lib/mirats/ui/status-tokens";
+
 
 
 
@@ -101,7 +100,9 @@ function downloadCsv(name: string, content: string) {
 }
 
 function SuCoPage() {
-  const { suCo } = useScope();
+  const { suCo, loading: isLoading } = useScope();
+  const error = null; // useScope currently doesn't expose aggregate error state
+  const refetch = () => qc.invalidateQueries({ queryKey: ["operations_data"] });
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
@@ -133,6 +134,7 @@ function SuCoPage() {
     return d >= from;
   }
 
+  const isFiltering = query.trim() !== "" || tt !== "all" || period !== "all";
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return suCo.filter((s) => {
@@ -149,6 +151,9 @@ function SuCoPage() {
       );
     });
   }, [suCo, query, tt, period, devByMa, htNameOf]);
+
+  const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
+
 
   const stats = useMemo(() => {
     let open = 0, severe = 0, downtime = 0;
@@ -308,7 +313,7 @@ function SuCoPage() {
       cell: (s) => <Link to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }} className="font-mono text-xs text-primary hover:underline">{s.ma_su_co}</Link>,
     },
     {
-      key: "ngay_phat_hien", label: "Thời điểm", sortable: true,
+      key: "ngay_phat_hien", label: "Thời điểm", sortable: true, hideBelow: "xl",
       value: (s) => s.ngay_phat_hien,
       cell: (s) => <span className="whitespace-nowrap text-xs text-muted-foreground">{s.ngay_phat_hien.replace("T", " ")}</span>,
     },
@@ -332,17 +337,20 @@ function SuCoPage() {
       },
     },
     {
-      key: "hien_tuong", label: "Hiện tượng", filter: "text",
+      key: "hien_tuong", label: "Hiện tượng", filter: "text", hideBelow: "md",
       value: (s) => s.hien_tuong,
       cell: (s) => <span className="line-clamp-2 max-w-xs text-sm text-muted-foreground">{s.hien_tuong}</span>,
     },
     {
-      key: "muc_do", label: "Mức độ", filter: "cat",
+      key: "muc_do", label: "Mức độ", filter: "cat", hideBelow: "lg",
       value: (s) => s.muc_do,
-      cell: (s) => <Badge variant="secondary" className={mucColor[s.muc_do] ?? ""}>{s.muc_do}</Badge>,
+      cell: (s) => {
+        const token = getMucDoSuCoToken(s.muc_do);
+        return <StatusBadge domain="su_co" code={s.muc_do} label={s.muc_do} />;
+      },
     },
     {
-      key: "trang_thai", label: "Trạng thái", filter: "cat",
+      key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
       value: (s) => s.trang_thai,
       cell: (s) => <StatusBadge domain="su_co" code={s.trang_thai} />,
     },
@@ -396,7 +404,8 @@ function SuCoPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <PageBody>
+
       <PageHeader
         icon={AlertTriangle}
         title="Sự cố kỹ thuật"
@@ -417,10 +426,10 @@ function SuCoPage() {
       {/* Dải thống kê gọn */}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
         <Stat icon={AlertTriangle} label="Sự cố" value={stats.total} />
-        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600" />
-        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600" />
-        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600" />
-        <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600" />
+        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
+        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600 dark:text-red-400" />
+        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
+        <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600 dark:text-sky-400" />
         <div className="ml-auto">
           <Select value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
             <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
@@ -448,7 +457,7 @@ function SuCoPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     {g.ma_nhom_bc && <span className="font-mono text-xs text-primary">{g.ma_nhom_bc}</span>}
-                    <Badge variant="secondary" className={mucColor[g.muc_do] ?? ""}>{g.muc_do}</Badge>
+                    <Badge variant="secondary" className={getMucDoSuCoToken(g.muc_do)?.class}>{g.muc_do}</Badge>
                     <span className="text-xs text-muted-foreground">{g.ngay_phat_hien.replace("T", " ")}</span>
                   </div>
                   <div className="mt-1 truncate text-sm font-medium">{g.hien_tuong}</div>
@@ -485,7 +494,7 @@ function SuCoPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link to="/su-co/$maSuCo" params={{ maSuCo: s.ma_su_co }} className="font-mono text-xs text-primary hover:underline">{s.ma_su_co}</Link>
-                      <Badge variant="secondary" className={mucColor[s.muc_do] ?? ""}>{s.muc_do}</Badge>
+                      <Badge variant="secondary" className={getMucDoSuCoToken(s.muc_do)?.class}>{s.muc_do}</Badge>
                       <span className="text-xs text-muted-foreground">Khắc phục: {(s.thoi_diem_khac_phuc ?? "").replace("T", " ")}</span>
                     </div>
                     <div className="mt-1 truncate text-sm font-medium">{s.hien_tuong}</div>
@@ -620,66 +629,67 @@ function SuCoPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <StandardTable
-            tableKey="su_co_nhat_ky_list"
-            columns={logColumns}
-            rows={rows}
-            getRowId={(s) => s.ma_su_co}
-            selectable
-            bulkActions={({ selectedRows, clear }) => (
-              <>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                    clear();
-                  }}
-                >
-                  <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
-                </Button>
-                <ContextualToolbar
-                  selectionCount={selectedRows.length}
-                  onDismiss={clear}
-                  actions={[
-                    {
-                      id: "export-word",
-                      label: "Xuất Word",
-                      icon: FileDownIcon,
-                      supportsBulk: true,
-                      onSelect: () => {
-                        exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                        clear();
-                      },
-                    },
-                    {
-                      id: "close",
-                      label: "Đóng sự cố",
-                      icon: XCircle,
-                      supportsBulk: false,
-                      onSelect: () => {
-                        const first = selectedRows[0];
-                        if (!first) return;
-                        if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
-                        else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
-                      },
-                    },
-                  ]}
-                />
-              </>
-            )}
-            emptyContent={
-              <EmptyState
-                icon={AlertTriangle}
-                title="Không có sự cố phù hợp"
-                description="Không có sự cố nào khớp bộ lọc hiện tại. Thử mở rộng khoảng thời gian hoặc tạo báo cáo mới."
-                action={
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Tạo sự cố</Link>
-                  </Button>
-                }
-              />
+          <DataState
+            state={state}
+            isFiltering={isFiltering}
+            onRetry={refetch}
+            emptyAction={
+              <Button onClick={() => { setQuery(""); setTt("all"); setPeriod("all"); }} variant="outline" size="sm">
+                Xoá bộ lọc
+              </Button>
             }
-          />
+          >
+            <StandardTable
+              tableKey="su_co_nhat_ky_list"
+              columns={logColumns}
+              rows={rows}
+              getRowId={(s) => s.ma_su_co}
+              selectable
+              bulkActions={({ selectedRows, clear }) => (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                      clear();
+                    }}
+                  >
+                    <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
+                  </Button>
+                  <ContextualToolbar
+                    selectionCount={selectedRows.length}
+                    onDismiss={clear}
+                    actions={[
+                      {
+                        id: "export-word",
+                        label: "Xuất Word",
+                        icon: FileDownIcon,
+                        supportsBulk: true,
+                        onSelect: () => {
+                          exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                          clear();
+                        },
+                      },
+                      {
+                        id: "close",
+                        label: "Đóng sự cố",
+                        icon: XCircle,
+                        supportsBulk: false,
+                        onSelect: () => {
+                          const first = selectedRows[0];
+                          if (!first) return;
+                          if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
+                          else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
+                        },
+                      },
+                    ]}
+                  />
+                </>
+              )}
+            />
+          </DataState>
+
+
 
           {filtered.length > 40 && (
             <div className="mt-3 text-center">
@@ -727,10 +737,10 @@ function SuCoPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-
+    </PageBody>
   );
 }
+
 
 function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; tone?: string }) {
   return (
@@ -741,3 +751,4 @@ function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ 
     </div>
   );
 }
+

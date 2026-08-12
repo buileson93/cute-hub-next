@@ -162,6 +162,7 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
                   size="icon"
                   className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => remove(item.he_thong_id)}
+                  aria-label="Xoá hệ thống tương thích"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

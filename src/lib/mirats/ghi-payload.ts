@@ -6,7 +6,7 @@
 // RPC nguyên tử (mọi INSERT nằm trong 1 transaction phía DB).
 
 export interface SuCoDeviceRef {
-  id: string;
+  id: string; // Bắt buộc: UUID tài sản
   ma_thiet_bi: string;
   don_vi?: string | null;
   he_thong_id?: string | null;
@@ -56,7 +56,7 @@ export function buildSuCoPayload(a: BuildSuCoPayloadArgs): Record<string, unknow
 }
 
 export interface BaoDuongDeviceRef {
-  id: string;
+  id: string; // Bắt buộc: UUID tài sản
   ma_thiet_bi: string;
   don_vi?: string | null;
 }
@@ -121,7 +121,7 @@ export interface BuildHongHocPayloadArgs {
   ngay_hong: string;
   mo_ta_hong_hoc: string;
   phuong_an: string;
-  thiet_bi_hong_ids: readonly string[];
+  thiet_bi_hong_ids: readonly string[]; // Mảng UUID tài sản hỏng
   thiet_bi_thay_the_id?: string | null;
   he_thong_id?: string | null;
   he_thong_ten?: string | null;

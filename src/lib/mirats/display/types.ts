@@ -16,7 +16,8 @@ export type EntityLoai =
   | "hong_hoc"
   | "ban_giao"
   | "giay_phep"
-  | "vat_tu";
+  | "vat_tu"
+  | "dm_model";
 
 /** Kiểu định dạng của một trường hiển thị. */
 export type FieldLoai =
