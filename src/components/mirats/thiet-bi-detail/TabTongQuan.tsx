@@ -17,12 +17,12 @@ import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 export default function TabTongQuan({ 
   tb, ma, tenTb, refInfo, loaiMau, sysName, vaiTroList, pct, canEdit
 }: DeviceDetailTabProps) {
-  const mutations = useCayMutations({ scope: "all" });
+  const mutations = useCayMutations();
   const editor = useCellEditor({
     isRealFor: (kind, id) => (kind === "tb" && id === ma ? { keyVal: id } : null),
     mutations: {
-      renameEntity: async (args) => mutations.renameEntity.mutateAsync(args),
-      saveCell: async (args) => mutations.saveCell.mutateAsync(args),
+      renameEntity: async (args) => mutations.renameEntity.mutateAsync({ ...args, userRoles: [] }),
+      saveCell: async (args) => mutations.saveCell.mutateAsync({ ...args, userRoles: [] }),
       saveNode: async (args) => { /* detail không dùng saveNode */ }
     }
   });
