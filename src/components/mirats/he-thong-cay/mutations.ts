@@ -2,8 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { useCayContext } from "./CayContext";
-import { okey } from "./utils";
-import { xoaThietBiAnToan, xemTruocXoaThietBi } from "@/lib/mirats/cay-delete";
+import { xoaThietBiAnToan } from "@/lib/mirats/cay-delete";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 
 export function useCayMutations() {
@@ -21,7 +20,7 @@ export function useCayMutations() {
   const addGroup = useMutation({
     mutationFn: async ({ plId, ten, ma }: { plId: string; ten: string; ma: string }) => {
       // Check collision
-      const { data: existing } = await supabase.from("dm_nhom_he_thong").select("id").eq("ma", ma).single();
+      const { data: existing } = await supabase.from("dm_nhom_he_thong").select("id").eq("ma", ma).maybeSingle();
       if (existing) throw new Error(`Mã nhóm ${ma} đã tồn tại`);
 
       const { error } = await supabase.from("dm_nhom_he_thong").insert({
@@ -29,7 +28,7 @@ export function useCayMutations() {
         ten,
         ma,
         active: true
-      });
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -43,7 +42,7 @@ export function useCayMutations() {
     mutationFn: async ({ nhMa, plId, ten, donViId }: { nhMa: string; plId: string; ten: string; donViId: string }) => {
       // Get or create group
       let nhId: string;
-      const { data: grp } = await supabase.from("dm_nhom_he_thong").select("id").eq("ma", nhMa).single();
+      const { data: grp } = await supabase.from("dm_nhom_he_thong").select("id").eq("ma", nhMa).maybeSingle();
       
       if (!grp) {
         const { data: newGrp, error: grpErr } = await supabase.from("dm_nhom_he_thong").insert({
@@ -51,7 +50,7 @@ export function useCayMutations() {
           ten: `Nhóm ${nhMa}`,
           phan_loai_id: plId,
           active: true
-        }).select().single();
+        } as any).select().single();
         if (grpErr) throw grpErr;
         nhId = newGrp.id;
       } else {
@@ -62,10 +61,10 @@ export function useCayMutations() {
         nhom_he_thong_id: nhId,
         phan_loai_id: plId,
         ten,
-        ma: `${nhMa}_${ten.toUpperCase().replace(/\s+/g, "_")}`, // Simple ma generation
+        ma: `${nhMa}_${ten.toUpperCase().replace(/\s+/g, "_")}`,
         don_vi_id: donViId,
         active: true
-      });
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -78,12 +77,13 @@ export function useCayMutations() {
   const addDevice = useMutation({
     mutationFn: async ({ htId, plId, ten, ma }: { htId: string; plId: string; ten: string; ma: string }) => {
       const { error } = await supabase.from("thiet_bi").insert({
-        dm_he_thong_id: htId,
+        he_thong_id: htId,
         phan_loai_id: plId,
-        ten,
+        ten_thiet_bi: ten,
         ma_thiet_bi: ma,
-        trang_thai_id: (await supabase.from("dm_trang_thai_thiet_bi").select("id").eq("ma", "HOAT_DONG").single()).data?.id
-      });
+        che_do_kd_hc: "N/A",
+        trang_thai_cap_phat: "Sẵn sàng"
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -95,15 +95,14 @@ export function useCayMutations() {
 
   const renameGroupCode = useMutation({
     mutationFn: async ({ oldMa, newMa }: { oldMa: string; newMa: string }) => {
-      const { error: upErr } = await supabase.from("dm_nhom_he_thong").update({ ma: newMa }).eq("ma", oldMa);
+      const { error: upErr } = await supabase.from("dm_nhom_he_thong").update({ ma: newMa } as any).eq("ma", oldMa);
       if (upErr) throw upErr;
 
-      // Migrate cay_node_edit
       const { data: edits } = await supabase.from("cay_node_edit").select("*").in("kind", ["nh", "ht"]).like("ma", `${oldMa}%`);
       if (edits?.length) {
         for (const edit of edits) {
           const newEditMa = edit.ma.replace(oldMa, newMa);
-          await supabase.from("cay_node_edit").upsert({ ...edit, ma: newEditMa }, { onConflict: "kind,ma" });
+          await supabase.from("cay_node_edit").upsert({ ...edit, ma: newEditMa } as any, { onConflict: "kind,ma" });
           await supabase.from("cay_node_edit").delete().match({ kind: edit.kind, ma: edit.ma });
         }
       }
@@ -122,10 +121,10 @@ export function useCayMutations() {
       }
       
       if (kind === "ht") {
-        const { error } = await supabase.from("dm_he_thong").update({ active: false, deactivated_at: new Date().toISOString() }).eq("ma", ma);
+        const { error } = await supabase.from("dm_he_thong").update({ active: false, deactivated_at: new Date().toISOString() } as any).eq("ma", ma);
         if (error) throw error;
       } else if (kind === "nh") {
-        const { error } = await supabase.from("dm_nhom_he_thong").update({ active: false, deactivated_at: new Date().toISOString() }).eq("ma", ma);
+        const { error } = await supabase.from("dm_nhom_he_thong").update({ active: false, deactivated_at: new Date().toISOString() } as any).eq("ma", ma);
         if (error) throw error;
       }
     },
@@ -146,7 +145,7 @@ export function useCayMutations() {
         kind: "nh",
         ma,
         du_lieu: { mau }
-      }, { onConflict: "kind,ma" });
+      } as any, { onConflict: "kind,ma" });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -158,7 +157,7 @@ export function useCayMutations() {
 
   const bulkSaveCell = useMutation({
     mutationFn: async ({ mas, field, value }: { mas: string[]; field: string; value: any }) => {
-      const { error } = await supabase.from("thiet_bi").update({ [field]: value }).in("ma_thiet_bi", mas);
+      const { error } = await supabase.from("thiet_bi").update({ [field]: value } as any).in("ma_thiet_bi", mas);
       if (error) throw error;
     },
     onSuccess: (_, v) => {
@@ -174,7 +173,7 @@ export function useCayMutations() {
         kind: parentKind,
         ma: parentMa,
         du_lieu: { thu_tu: order }
-      }, { onConflict: "kind,ma" });
+      } as any, { onConflict: "kind,ma" });
       if (error) throw error;
     },
     onSuccess: () => {
