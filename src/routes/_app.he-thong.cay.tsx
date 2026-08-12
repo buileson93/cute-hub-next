@@ -389,7 +389,7 @@ function HeThongCayPage() {
          </div>
       </div>
 
-      <PageBody noPadding className={cn("flex-1 min-h-0 relative flex flex-col bg-muted/10 overflow-hidden")}>
+      <PageBody noPadding className={cn("flex-1 min-h-0 relative flex flex-col bg-muted/10 overflow-hidden h-full")}>
         <DataState
           state={state}
           loadingType="drawer"
@@ -407,7 +407,7 @@ function HeThongCayPage() {
               </Button>
             ) : undefined
           }
-          className="flex-1 min-h-0 h-full w-full"
+          className="flex-1 min-h-0 h-full w-full flex flex-col"
         >
           {display === "tree" && (
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
