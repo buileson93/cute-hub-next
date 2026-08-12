@@ -22,6 +22,8 @@ interface CayContextType {
   setGroupByLoai: (b: boolean) => void;
   viewTree: PlGroup[];
   setViewTree: (t: PlGroup[]) => void;
+  reorgOpen: boolean;
+  setReorgOpen: (b: boolean) => void;
 }
 
 const CayContext = createContext<CayContextType | undefined>(undefined);
