@@ -448,7 +448,7 @@ function HeThongCayPage() {
           )}
           
           {display === "mindmap" && (
-            <div className="flex-1 w-full min-h-0 relative">
+            <div className="flex-1 w-full min-h-[600px] relative">
               <CayMindMap 
                 tree={viewTree as any}
                 posByHt={posByHt || new Map()}
