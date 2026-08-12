@@ -148,6 +148,14 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   }), [parseMutation]);
 
   useEffect(() => {
+    if (voiceActive) {
+      voice.start();
+    } else {
+      voice.stop();
+    }
+  }, [voiceActive, voice]);
+
+  useEffect(() => {
     const d = popVoiceDraft();
     if (d?.transcript) { setAiText(d.transcript); parseMutation.mutate(d.transcript); }
     if (defaultVoice) { setAiText(defaultVoice); parseMutation.mutate(defaultVoice); }
