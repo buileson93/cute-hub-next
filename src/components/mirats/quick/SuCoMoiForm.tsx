@@ -33,6 +33,7 @@ import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { cn } from "@/lib/utils";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
 import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
+import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
