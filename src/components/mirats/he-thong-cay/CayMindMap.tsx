@@ -311,14 +311,18 @@ export function CayMindMap({
 
   const seededRef = useRef(false);
 
+  // Sync expanded from context to local state for initial load
   useEffect(() => {
-    if (seededRef.current) return;
-    if (tree.length === 0) return;
-    seededRef.current = true;
-    setExpanded(initialExpanded);
-  }, [tree, initialExpanded]);
+    if (initialExpanded.size > 0 && !seededRef.current) {
+      setExpanded(prev => {
+        const next = new Set(prev);
+        initialExpanded.forEach(id => next.add(id));
+        return next;
+      });
+      seededRef.current = true;
+    }
+  }, [initialExpanded]);
 
-  const treeSigRef = useRef("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const justOpenedRef = useRef<string | null>(null);
 
@@ -605,13 +609,14 @@ export function CayMindMap({
 
 
   return (
-    <div className="h-full w-full min-h-0">
+    <div className="h-full w-full min-h-[500px] md:min-h-[600px] relative">
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
         edges={edges} 
         onNodesChange={onNodesChange} 
         fitView
+        fitViewOptions={{ padding: 0.2 }}
         minZoom={0.05}
         maxZoom={1.5}
         onNodeDragStart={(_e, node) => {
