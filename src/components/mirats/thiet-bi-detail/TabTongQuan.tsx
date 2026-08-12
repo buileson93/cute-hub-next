@@ -18,6 +18,9 @@ export default function TabTongQuan({
   tb, ma, tenTb, refInfo, loaiMau, sysName, vaiTroList, pct, canEdit
 }: DeviceDetailTabProps) {
   const mutations = useCayMutations();
+  
+  // Lấy roles từ session để truyền vào mutation an toàn
+  // Giả sử có useSession hook (trong mã nguồn có dùng @/hooks/use-session)
   const editor = useCellEditor({
     isRealFor: (kind, id) => (kind === "tb" && id === ma ? { keyVal: id } : null),
     mutations: {
