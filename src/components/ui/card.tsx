@@ -7,7 +7,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
+      className={cn(UI_DENSITY.CARD_RADIUS, "border bg-card text-card-foreground shadow-sm", className)}
       {...props}
     />
   ),
@@ -25,7 +25,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("font-semibold leading-none tracking-tight", className)}
+      className={cn("text-sm font-semibold leading-none tracking-tight", className)}
       {...props}
     />
   ),
@@ -41,14 +41,14 @@ CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn(UI_DENSITY.CARD_PADDING, "pt-0 md:pt-0 data-[density=compact]:pt-0 md:data-[density=compact]:pt-0", className)} {...props} />
+    <div ref={ref} className={cn(UI_DENSITY.CARD_PADDING, "pt-0", className)} {...props} />
   ),
 );
 CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center", UI_DENSITY.CARD_PADDING, "pt-0 md:pt-0 data-[density=compact]:pt-0 md:data-[density=compact]:pt-0", className)} {...props} />
+    <div ref={ref} className={cn("flex items-center", UI_DENSITY.CARD_PADDING, "pt-0", className)} {...props} />
   ),
 );
 CardFooter.displayName = "CardFooter";
