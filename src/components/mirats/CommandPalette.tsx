@@ -980,19 +980,22 @@ export function CommandPalette() {
                   key={`tkc-${r.loai}-${r.id}`}
                   value={`tkc-${r.loai}-${r.id}-${r.tieuDe}`}
                   onSelect={() => go(r.route)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                 >
-                  <Search className="h-4 w-4 text-muted-foreground" />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+                    <Search className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-0.5">
+                    <div className="truncate text-[13px] font-bold text-foreground">
                       <Highlight text={r.tieuDe} query={activeTerm} />
                     </div>
                     {r.motaNgan && (
-                      <div className="truncate text-xs text-muted-foreground">
+                      <div className="truncate text-[11px] text-muted-foreground/80">
                         <Highlight text={r.motaNgan} query={activeTerm} />
                       </div>
                     )}
                   </div>
-                  <span className="ml-auto shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
                     {nhanLoai(r.loai)}
                   </span>
                 </CommandItem>
