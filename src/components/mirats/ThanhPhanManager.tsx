@@ -103,7 +103,8 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   // Bất kỳ mutation nào ĐANG chạy tại hệ thống này → chặn xoá để tránh xung đột.
   const busy =
     xoaMut.isPending || xoaForceMut.isPending || khoiPhucMut.isPending ||
-    ngungMut.isPending || thaoMut.isPending || doiThuTuMut.isPending;
+    ngungMut.isPending || doiThuTuMut.isPending;
+
   const inflightAll = useIsMutating() > 0;
 
   const openCreate = () => { setEditTarget(null); setFormOpen(true); };
