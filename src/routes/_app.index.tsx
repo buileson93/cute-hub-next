@@ -275,93 +275,21 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
-                  <Flame className="w-4 h-4" /> Hôm nay có gì đang cháy?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-red-600 tabular-nums">
-                    {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
-                  </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
-                </div>
-                <div className="space-y-2 min-h-[100px]">
-                  {brief.isLoading ? (
-                    <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
-                  ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
-                    <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium py-2">
-                      <CheckCircle2 className="w-4 h-4" /> Không có sự cố khẩn cấp
-                    </div>
-                  ) : (
-                    <div className="text-sm text-red-600/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
-                  )}
-                </div>
-                <div className="mt-4 pt-4 border-t border-red-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Nhấn để xem sự cố</span>
-                  <Link to="/su-co" className="text-primary hover:underline">Chi tiết →</Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="md:col-span-1 border-l-4 border-l-orange-500 shadow-sm transition-all hover:shadow-md">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-orange-600">
-                  <Wrench className="w-4 h-4" /> Tuần này phải làm gì?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-orange-600 tabular-nums">
-                    {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
-                  </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
-                </div>
-                <div className="space-y-1 min-h-[100px]">
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
-                    <span>PM đến hạn hôm nay</span>
-                    <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
+            <div className="bg-blue-50/30 rounded-2xl p-6 border border-blue-100/50">
+              <div className="flex items-baseline gap-2 mb-4">
+                <div className="text-4xl font-black text-blue-600 tabular-nums font-mono tracking-tighter">{completeness.avg_thiet_bi || 0}%</div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Data quality</div>
+              </div>
+              <div className="space-y-1">
+                {lowCompleteness.slice(0, 2).map((tb: any) => (
+                  <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded-lg hover:bg-white transition-colors">
+                    <span className="truncate flex-1 pr-2 font-medium">{tb.ten_thiet_bi}</span>
+                    <span className="font-bold text-red-500 tabular-nums font-mono">{tb.completeness_pct}%</span>
                   </Link>
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
-                    <span>PM quá hạn chưa xong</span>
-                    <span className="font-bold text-red-600 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
-                  </Link>
-                </div>
-                <div className="mt-4 pt-4 border-t border-orange-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Lịch bảo trì</span>
-                  <Link to="/bao-tri" className="text-primary hover:underline">Xem tất cả →</Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="md:col-span-1 border-l-4 border-l-blue-500 shadow-sm transition-all hover:shadow-md">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600">
-                  <Sparkles className="w-4 h-4" /> Dữ liệu có sạch không?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-blue-600 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
-                </div>
-                <div className="space-y-1 min-h-[100px]">
-                  <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
-                  {lowCompleteness.map((tb: any) => (
-                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
-                      <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
-                      <span className="font-bold text-red-500 tabular-nums">{tb.completeness_pct}%</span>
-                    </Link>
-                  ))}
-                </div>
-                <div className="mt-4 pt-4 border-t border-blue-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Tiến độ tổng</span>
-                  <Link to="/chat-luong-du-lieu" className="text-primary hover:underline">Chi tiết →</Link>
-                </div>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+              <Link to="/chat-luong-du-lieu" className="block mt-4 text-[10px] font-bold uppercase text-primary hover:underline">Chi tiết chất lượng →</Link>
+            </div>
           </div>
 
           {/* TẦNG 4: KHỐI PHÂN BỔ SỨC KHOẺ & BIỂU ĐỒ */}
