@@ -10,6 +10,7 @@ import { useRouteTracker } from "@/hooks/use-route-tracker";
 import { CommandPalette } from "@/components/mirats/CommandPalette";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
+import { useUserPref } from "@/hooks/use-user-pref";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   TooltipProvider,
@@ -31,6 +32,7 @@ import {
   resolveActiveWorkspace,
   firstItemOf,
 } from "@/lib/mirats/nav-contract";
+import type { UiDensityMode } from "@/lib/mirats/ui/ui-density";
 
 import { 
   SidebarLogoRail, 
@@ -41,6 +43,7 @@ import {
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileNav } from "./MobileNav";
+
 
 
 /** Tự động mở tour MỘT LẦN cho mỗi tài khoản ở lần đăng nhập đầu tiên. */
@@ -84,6 +87,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredWsId, setHoveredWsId] = useState<string | null>(null);
+
+  const [density] = useUserPref<UiDensityMode>("ui-density", "compact");
+
 
   useEffect(() => {
     const saved = localStorage.getItem("mirats-sidebar-collapsed");
@@ -145,7 +151,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         onSeen={refresh}
       />
       <TooltipProvider delayDuration={300}>
-        <div className="flex min-h-dvh w-full bg-gradient-to-br from-background via-background to-primary/[0.045] text-foreground">
+        <div 
+          data-density={density}
+          className="flex min-h-dvh w-full bg-gradient-to-br from-background via-background to-primary/[0.045] text-foreground"
+        >
           {/* Desktop Navigation Container */}
           <div 
             className="hidden md:flex h-dvh sticky top-0 z-30"
