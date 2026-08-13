@@ -2,12 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { 
-  LayoutDashboard, Flame, Wrench, Sparkles, 
-  ArrowRight, Activity, User, Trophy, History,
-  CheckCircle2, AlertCircle, Clock, Download,
-  ShieldCheck, Zap, ShieldAlert, BarChart3, TrendingUp
-} from "lucide-react";
+import { Icon } from "@/components/mirats/ui/Icon";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
 import { 
@@ -208,7 +203,7 @@ function Dashboard() {
         <div className="flex-1">
           <PageHeader
             title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
-            icon={LayoutDashboard}
+            icon="entity.dashboard"
             description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
           />
         </div>
@@ -218,7 +213,7 @@ function Dashboard() {
           onClick={handleExport}
           className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
         >
-          <Download className="w-4 h-4 text-primary" />
+          <Icon name="action.download" className="text-primary" />
           <span className="hidden sm:inline font-bold text-xs uppercase tracking-wider">Xuất báo cáo</span>
         </Button>
       </div>
@@ -236,7 +231,7 @@ function Dashboard() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-                    <ShieldCheck className="w-5 h-5" />
+                    <Icon name="entity.security" size="medium" />
                   </div>
                   <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Target: 99%
@@ -255,7 +250,7 @@ function Dashboard() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-                    <Zap className="w-5 h-5" />
+                    <Icon name="status.power" size="medium" />
                   </div>
                   <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Phản hồi
@@ -274,7 +269,7 @@ function Dashboard() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
-                    <ShieldAlert className="w-5 h-5" />
+                    <Icon name="entity.securityAlert" size="medium" />
                   </div>
                   <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Chu kỳ
@@ -293,7 +288,7 @@ function Dashboard() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
-                    <CheckCircle2 className="w-5 h-5" />
+                    <Icon name="status.success" size="medium" />
                   </div>
                   <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Bảo trì
@@ -313,7 +308,7 @@ function Dashboard() {
             <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
-                  <Flame className="w-4 h-4" /> Hôm nay có gì đang cháy?
+                  <Icon name="status.emergency" /> Hôm nay có gì đang cháy?
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -328,7 +323,7 @@ function Dashboard() {
                     <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
                   ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
                     <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium py-2">
-                      <CheckCircle2 className="w-4 h-4" /> Không có sự cố khẩn cấp
+                      <Icon name="status.success" /> Không có sự cố khẩn cấp
                     </div>
                   ) : (
                     <div className="text-sm text-red-600/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
@@ -344,7 +339,7 @@ function Dashboard() {
             <Card className="md:col-span-1 border-l-4 border-l-orange-500 shadow-sm transition-all hover:shadow-md">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-orange-600">
-                  <Wrench className="w-4 h-4" /> Tuần này phải làm gì?
+                  <Icon name="status.maintenance" /> Tuần này phải làm gì?
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -374,7 +369,7 @@ function Dashboard() {
             <Card className="md:col-span-1 border-l-4 border-l-blue-500 shadow-sm transition-all hover:shadow-md">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600">
-                  <Sparkles className="w-4 h-4" /> Dữ liệu có sạch không?
+                  <Icon name="status.sparkle" /> Dữ liệu có sạch không?
                 </CardTitle>
               </CardHeader>
               <CardContent>
