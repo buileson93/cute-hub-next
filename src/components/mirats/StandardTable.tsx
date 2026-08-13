@@ -1080,7 +1080,7 @@ export function StandardTable<T>({
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0 pointer-events-none" />
                     </TableRow>
                   )}
 
@@ -1092,7 +1092,10 @@ export function StandardTable<T>({
                       <React.Fragment key={rid}>
                         <TableRow
                           data-index={virtualRow.index}
-                          ref={rowVirtualizer.measureElement}
+                          ref={(el) => {
+                            rowVirtualizer.measureElement(el);
+                            // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
+                          }}
                           className={cn(
                             "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
                             (onRowClick || selectable) && "cursor-pointer", 
@@ -1193,7 +1196,7 @@ export function StandardTable<T>({
 
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0 pointer-events-none" />
                     </TableRow>
                   )}
 
