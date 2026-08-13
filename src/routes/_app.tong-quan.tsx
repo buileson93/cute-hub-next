@@ -306,11 +306,8 @@ function TongQuanPage() {
         </Card>
       )}
 
-      {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
       <div>
-        <div className="flex items-center justify-between">
-          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Chi tiết" />
-        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
             value={briefQ.data?.su_co_khan} loading={briefQ.isLoading} tone="danger"
