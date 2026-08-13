@@ -52,6 +52,7 @@ export function NodeEditorSheet({
 
   const [ten, setTen] = useState("");
   const [tenMindmap, setTenMindmap] = useState("");
+  const [tenMindmapTouched, setTenMindmapTouched] = useState(false);
   const [newGroupTen, setNewGroupTen] = useState("");
   const [newGroupMa, setNewGroupMa] = useState("");
   const [newGroupMaTouched, setNewGroupMaTouched] = useState(false);
@@ -62,14 +63,24 @@ export function NodeEditorSheet({
 
   useEffect(() => {
     if (!target) return;
+    const isReal = isRealNode(target.kind, target.ma);
+    const tb = tbMap.get(target.ma);
+    
     const baseTen =
       target.kind === "pl" ? plLabel(target.ma)
-      : target.kind === "lv" ? "Lĩnh vực" // placeholder
+      : target.kind === "lv" ? "Lĩnh vực" 
       : target.kind === "nh" ? nhLabel(target.ma)
       : target.kind === "ht" ? htLabel(target.ma)
-      : tbMap.get(target.ma)?.ten ?? "";
+      : tb?.ten ?? "";
+    
     setTen(baseTen);
-  }, [target, plLabel, nhLabel, htLabel, tbMap]);
+
+    // Chỉ load tenMindmap cho node nháp
+    if (!isReal) {
+      setTenMindmap(target.kind === "tb" ? (tb?.ten_mindmap ?? "") : (target.kind === "ht" ? htLabel(target.ma) : ""));
+      setTenMindmapTouched(false);
+    }
+  }, [target, plLabel, nhLabel, htLabel, tbMap, isRealNode]);
 
   const title = target ? (
     target.kind === "pl" ? "Phân loại"
@@ -120,8 +131,16 @@ export function NodeEditorSheet({
 
           {target && !isRealNode(target.kind, target.ma) && (
             <div className="space-y-1.5">
-              <Label htmlFor="edit-ten-mm">Tên hiển thị trên sơ đồ</Label>
-              <Input id="edit-ten-mm" value={tenMindmap} onChange={(e) => setTenMindmap(e.target.value)} placeholder="Tên ngắn" />
+              <Label htmlFor="edit-ten-mm">Tên hiển thị trên sơ đồ (dành cho node nháp)</Label>
+              <Input 
+                id="edit-ten-mm" 
+                value={tenMindmap} 
+                onChange={(e) => {
+                  setTenMindmap(e.target.value);
+                  setTenMindmapTouched(true);
+                }} 
+                placeholder="Tên ngắn cho node nháp" 
+              />
             </div>
           )}
 
@@ -201,11 +220,22 @@ export function NodeEditorSheet({
                     value: ten, 
                     userRoles: roles 
                   });
+                  // Nếu là node nháp và có đổi tên mindmap -> lưu vào cay_node_edit
+                  if (!isRealNode(target.kind, target.ma) && tenMindmapTouched) {
+                    renameEntity.mutate({
+                      kind: target.kind,
+                      id: target.ma,
+                      ten: tenMindmap,
+                      draft: true,
+                      userRoles: roles
+                    } as any);
+                  }
                 } else {
                   renameEntity.mutate({ 
                     kind: target.kind, 
-                    id: target.ma, // uuid cho pl/nh/ht
+                    id: target.ma, 
                     ten, 
+                    draft: !isRealNode(target.kind, target.ma),
                     userRoles: roles 
                   });
                 }
