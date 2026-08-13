@@ -465,8 +465,7 @@ export function buildSystemNameOverrideMap(
     const sysId = i < 0 ? r.ma : r.ma.slice(i + HT_SEP.length);
     if (!sysId || sysId === "__none__") continue;
     if (realSystemIds.has(sysId)) continue; // node thật → dùng bảng gốc, bỏ qua override
-    const disp = r.du_lieu?.ten_mindmap;
-    const name = typeof disp === "string" && disp.trim() ? disp.trim() : r.ten?.trim() || "";
+    const name = r.ten?.trim() || (typeof r.du_lieu?.ten_mindmap === "string" ? String(r.du_lieu.ten_mindmap).trim() : "");
     if (name) map.set(sysId, name);
   }
   return map;
@@ -484,8 +483,7 @@ export function buildDeviceNameOverrideMap(
   for (const r of rows) {
     if (!r.ma) continue;
     if (realDeviceMa.has(r.ma)) continue;
-    const disp = r.du_lieu?.ten_mindmap;
-    const name = typeof disp === "string" && disp.trim() ? disp.trim() : r.ten?.trim() || "";
+    const name = r.ten?.trim() || (typeof r.du_lieu?.ten_mindmap === "string" ? String(r.du_lieu.ten_mindmap).trim() : "");
     if (name) map.set(r.ma, name);
   }
   return map;

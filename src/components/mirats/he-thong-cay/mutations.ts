@@ -204,13 +204,17 @@ export function useCayMutations() {
     moveDevice,
     hoanTac,
     renameEntity: useMutation({
-      mutationFn: async ({ kind, id, ten, userRoles }: { kind: any, id: string, ten: string, userRoles: string[] }) => {
+      mutationFn: async ({ kind, id, ten, draft, userRoles }: { kind: any, id: string, ten: string, draft?: boolean, userRoles: string[] }) => {
+        if (draft) {
+          const { renameEntity: renameCore } = await import("@/lib/mirats/rename-entity");
+          return renameCore({ kind, id, ten, draft: true });
+        }
         const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
         return saveEntityFieldSecurely({ kind, id, field: "ten", value: ten, userRoles });
       },
       onSuccess: (res) => {
         invalidate();
-        if (res.mode === "proposed") toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
+        if (res && (res as any).mode === "proposed") toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
         else toast.success("Đã đổi tên thành công");
       },
       onError: (e: any) => toast.error(e.message)
