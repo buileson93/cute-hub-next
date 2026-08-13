@@ -301,7 +301,8 @@
    Mục tiêu: thu nhỏ nút / input / icon / padding của bảng
    để hiển thị được nhiều thông tin hơn.
    ========================================================= */
-:root[data-density="compact"] {
+:root[data-density="compact"],
+[data-density="compact"] {
   font-size: 13.5px;
 }
 
