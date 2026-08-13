@@ -293,113 +293,85 @@ function Dashboard() {
           </div>
 
           {/* TẦNG 4: KHỐI PHÂN BỔ SỨC KHOẺ & BIỂU ĐỒ */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="md:col-span-1 shadow-sm">
-              <CardHeader className="pb-2 border-b bg-muted/10">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-primary" /> Phân bố sức khoẻ (A/B/C/D)
+          {/* ANALYTICS SECTION */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="shadow-none border border-border/50 rounded-2xl">
+              <CardHeader className="pb-0 pt-6 px-6">
+                <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <BarChart3 className="w-3.5 h-3.5" /> Fleet Reliability & Health
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  {[
-                    { label: "Sức khoẻ A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
-                    { label: "Sức khoẻ B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
-                    { label: "Sức khoẻ C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
-                    { label: "Sức khoẻ D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
-                  ].map((s) => (
-                    <div key={s.label} className="flex flex-col gap-1.5">
-                      <div className="flex justify-between items-end">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                          <span className="text-xs font-bold uppercase tracking-tight">{s.label}</span>
-                        </div>
-                        <span className="text-sm font-black tabular-nums">{s.count}</span>
-                      </div>
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="h-full transition-all duration-1000" 
-                          style={{ 
-                            width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
-                            backgroundColor: s.color 
-                          }} 
-                        />
-                      </div>
-                      <div className="text-[10px] text-muted-foreground italic pl-4">{s.desc}</div>
-                    </div>
-                  ))}
-                  <div className="pt-2 mt-2 border-t text-center">
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Tổng số tài sản theo dõi</div>
-                    <div className="text-lg font-black">{scope.thietBi.length}</div>
-                  </div>
-                </div>
+              <CardContent className="h-[300px] pt-4 px-6">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: "Tốt (A)", value: healthStats.A, color: "oklch(0.65 0.15 160)" },
+                        { name: "Khá (B)", value: healthStats.B, color: "oklch(0.55 0.20 264)" },
+                        { name: "Trung bình (C)", value: healthStats.C, color: "oklch(0.75 0.12 90)" },
+                        { name: "Yếu (D)", value: healthStats.D, color: "oklch(0.65 0.15 25)" },
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={60}
+                      outerRadius={85}
+                      paddingAngle={5}
+                      stroke="none"
+                    >
+                      {[
+                        { color: "oklch(0.65 0.15 160)" },
+                        { color: "oklch(0.55 0.20 264)" },
+                        { color: "oklch(0.75 0.12 90)" },
+                        { color: "oklch(0.65 0.15 25)" },
+                      ].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontSize: '11px', fontWeight: 'bold' }} 
+                    />
+                    <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }} />
+                  </PieChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            <Card className="md:col-span-2 shadow-sm">
-              <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
+            <Card className="shadow-none border border-border/50 rounded-2xl overflow-hidden">
+              <CardHeader className="pb-0 pt-6 px-6 flex flex-row items-center justify-between">
+                <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <TrendingUp className="w-3.5 h-3.5" /> Incident Trends
                 </CardTitle>
-                <Tabs value={activeTab} onValueChange={setActiveTab as any} className="h-8">
-                  <TabsList className="h-8 p-0.5 bg-muted/50 border">
-                    <TabsTrigger value="trend" className="h-7 text-[11px] px-3">Xu hướng sự cố</TabsTrigger>
-                    <TabsTrigger value="status" className="h-7 text-[11px] px-3">Trạng thái tài sản</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <Link to="/su-co" className="text-[10px] font-bold text-primary/70 uppercase hover:text-primary transition-colors">Sổ sự cố →</Link>
               </CardHeader>
-              <CardContent className="h-[350px] pt-6">
-                <Tabs value={activeTab}>
-                  <TabsContent value="trend" className="m-0 h-full">
-                    {trendQ.isLoading ? (
-                      <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
-                    ) : (
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={trendData}>
-                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} vertical={false} />
-                          <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
-                          <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                          <Legend wrapperStyle={{ fontSize: 11, paddingTop: '10px' }} />
-                          {mucDoKeys.map((k) => (
-                            <Bar
-                              key={k}
-                              dataKey={k}
-                              stackId="s"
-                              fill={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
-                              radius={[2, 2, 0, 0]}
-                              barSize={24}
-                            />
-                          ))}
-                        </BarChart>
-                      </ResponsiveContainer>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="status" className="m-0 h-full">
-                    {statusQ.isLoading ? (
-                      <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
-                    ) : (
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={statusQ.data ?? []}
-                            dataKey="so_luong"
-                            nameKey="ten"
-                            innerRadius={60}
-                            outerRadius={100}
-                            paddingAngle={4}
-                          >
-                            {(statusQ.data ?? []).map((_, i) => (
-                              <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} stroke="white" strokeWidth={2} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                          <Legend verticalAlign="middle" align="right" layout="vertical" wrapperStyle={{ fontSize: 12, paddingLeft: '20px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    )}
-                  </TabsContent>
-                </Tabs>
+              <CardContent className="h-[300px] pt-4 px-6">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={trendData}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.15} vertical={false} />
+                    <XAxis dataKey="thangHT" fontSize={9} axisLine={false} tickLine={false} fontWeight="bold" />
+                    <YAxis fontSize={9} axisLine={false} tickLine={false} allowDecimals={false} fontWeight="bold" />
+                    <Bar
+                      dataKey="Cao"
+                      stackId="a"
+                      fill="oklch(0.65 0.15 25)"
+                      radius={[2, 2, 0, 0]}
+                      barSize={16}
+                    />
+                    <Bar
+                      dataKey="Trung bình"
+                      stackId="a"
+                      fill="oklch(0.75 0.12 90)"
+                      radius={[0, 0, 0, 0]}
+                      barSize={16}
+                    />
+                    <Bar
+                      dataKey="Thấp"
+                      stackId="a"
+                      fill="oklch(0.55 0.20 264)"
+                      radius={[0, 0, 2, 2]}
+                      barSize={16}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
