@@ -59,7 +59,9 @@ export interface StdColumn<T> {
   sortable?: boolean;
   sortValue?: (r: T) => any;
   lineClamp?: number;
+  priority?: "primary" | "secondary" | "detail";
 }
+
 
 
 export interface StandardTableProps<T> {
