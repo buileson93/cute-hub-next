@@ -7,11 +7,13 @@
 
 export type ExportCol<T> = {
   key: string;
-  label: string;
+  label?: string;
+  header?: string;
   value?: (row: T) => unknown;
   exportHeader?: string;
   exportValue?: (row: T) => unknown;
 };
+
 
 export type ExportScope = "selected" | "filtered" | "page";
 
