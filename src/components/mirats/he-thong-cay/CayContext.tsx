@@ -24,6 +24,8 @@ interface CayContextType {
   setViewTree: (t: PlGroup[]) => void;
   reorgOpen: boolean;
   setReorgOpen: (b: boolean) => void;
+  groupCode: string;
+  setGroupCode: (s: string) => void;
 }
 
 const CayContext = createContext<CayContextType | undefined>(undefined);
@@ -40,6 +42,7 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const [groupByLoai, setGroupByLoai] = useState(false);
   const [viewTree, setViewTree] = useState<PlGroup[]>([]);
   const [reorgOpen, setReorgOpen] = useState(false);
+  const [groupCode, setGroupCode] = useState("");
 
   const seededTreeRef = React.useRef<string>("");
   React.useEffect(() => {
@@ -88,6 +91,7 @@ export function CayProvider({ children }: { children: ReactNode }) {
         groupByLoai, setGroupByLoai,
         viewTree, setViewTree,
         reorgOpen, setReorgOpen,
+        groupCode, setGroupCode,
       }}
     >
       {children}
