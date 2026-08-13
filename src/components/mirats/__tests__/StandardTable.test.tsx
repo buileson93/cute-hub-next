@@ -87,21 +87,15 @@ describe("StandardTable — Tương tác và Lọc", () => {
   it("lọc text hoạt động đúng", async () => {
     render(<StandardTable<Row> {...baseProps()} />);
     
-    // Tìm button lọc đầu tiên dựa trên icon lucide-funnel (trong TableHead)
-    const filterButtons = screen.getAllByRole("button").filter(b => 
-      b.querySelector(".lucide-funnel") || b.innerHTML.includes('lucide-funnel')
-    );
-    fireEvent.click(filterButtons[0]);
-    
-    // Kiểm tra render filter component trực tiếp nếu DropdownMenu bị mock hoặc lỗi portal
-    // Vì jsdom có thể không xử lý portal của Radix tốt trong một số trường hợp, 
-    // ta kiểm tra xem component có đang dùng DropdownMenu thực không.
-    const searchInput = await screen.findByPlaceholderText(/Tìm/);
+    // Tìm ô input lọc trực tiếp bằng placeholder (vì nó luôn render trong thead ở bản này)
+    const searchInput = screen.getAllByPlaceholderText(/Tìm/)[0];
     fireEvent.change(searchInput, { target: { value: "Sản phẩm A" } });
     
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
+    // Sản phẩm B sẽ bị ẩn bởi logic filter client-side
     expect(screen.queryByText("Sản phẩm B")).toBeNull();
   });
+
 
 
 
