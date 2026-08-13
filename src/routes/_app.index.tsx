@@ -244,91 +244,87 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
               <div className="absolute top-0 left-0 w-[2px] h-full bg-red-600 dark:bg-red-400" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600 dark:text-red-400">
-                  <Icon name="status.emergency" /> Hôm nay có gì đang cháy?
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 text-red-600 dark:text-red-400">
+                  <Icon name="status.emergency" size="tiny" /> Sự cố khẩn
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-red-600 dark:text-red-400 tabular-nums">
+                  <div className="text-2xl font-black text-red-600 dark:text-red-400 tabular-nums">
                     {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
                   </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold">Vụ việc</div>
                 </div>
-                <div className="space-y-2 min-h-[100px]">
+                <div className="min-h-[80px]">
                   {brief.isLoading ? (
                     <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
                   ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
-                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium py-2">
-                      <Icon name="status.success" /> Không có sự cố khẩn cấp
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-[12px] font-medium py-2">
+                      <Icon name="status.success" size="tiny" /> Hệ thống ổn định
                     </div>
                   ) : (
-                    <div className="text-sm text-red-600/80 dark:text-red-400/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
+                    <div className="text-[12px] text-red-600/80 dark:text-red-400/80 italic">Cần xử lý các sự cố nghiêm trọng ngay.</div>
                   )}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Nhấn để xem sự cố</span>
-                  <Link to="/su-co" className="text-primary hover:underline">Chi tiết →</Link>
+                <div className="mt-4 pt-3 border-t border-border flex justify-between items-center text-[11px] font-bold">
+                  <Link to="/su-co" className="text-primary hover:underline uppercase tracking-tighter">Chi tiết →</Link>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
               <div className="absolute top-0 left-0 w-[2px] h-full bg-amber-600 dark:bg-amber-400" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                  <Icon name="status.maintenance" /> Tuần này phải làm gì?
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                  <Icon name="status.maintenance" size="tiny" /> Lịch bảo trì
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-amber-600 dark:text-amber-400 tabular-nums">
-                    {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
+                  <div className="text-2xl font-black text-amber-600 dark:text-amber-400 tabular-nums">
+                    {brief.isLoading ? "..." : (brief.data?.pm_hom_today ?? 0) + (brief.data?.pm_qua_han ?? 0)}
                   </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold">Công việc</div>
                 </div>
-                <div className="space-y-1 min-h-[100px]">
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-amber-500/5 transition-colors">
-                    <span>PM đến hạn hôm nay</span>
-                    <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
+                <div className="space-y-1 min-h-[80px]">
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-[12px] p-1 rounded hover:bg-amber-500/5 transition-colors">
+                    <span>Đến hạn hôm nay</span>
+                    <span className="font-bold tabular-nums">{brief.data?.pm_hom_today ?? 0}</span>
                   </Link>
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-amber-500/5 transition-colors">
-                    <span>PM quá hạn chưa xong</span>
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-[12px] p-1 rounded hover:bg-amber-500/5 transition-colors">
+                    <span>Quá hạn chưa xong</span>
                     <span className="font-bold text-red-600 dark:text-red-400 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
                   </Link>
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Lịch bảo trì</span>
-                  <Link to="/bao-tri" className="text-primary hover:underline">Xem tất cả →</Link>
+                <div className="mt-4 pt-3 border-t border-border flex justify-between items-center text-[11px] font-bold">
+                  <Link to="/bao-tri" className="text-primary hover:underline uppercase tracking-tighter">Xem tất cả →</Link>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
               <div className="absolute top-0 left-0 w-[2px] h-full bg-blue-600 dark:bg-blue-400" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                  <Icon name="status.sparkle" /> Dữ liệu có sạch không?
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <Icon name="status.sparkle" size="tiny" /> Chất lượng hồ sơ
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-blue-600 dark:text-blue-400 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
+                  <div className="text-2xl font-black text-blue-600 dark:text-blue-400 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold">Hoàn thiện</div>
                 </div>
-                <div className="space-y-1 min-h-[100px]">
-                  <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
-                  {lowCompleteness.map((tb: any) => (
-                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-500/5 transition-colors">
+                <div className="space-y-1 min-h-[80px]">
+                  {lowCompleteness.slice(0, 2).map((tb: any) => (
+                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] p-1 rounded hover:bg-blue-500/5 transition-colors">
                       <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
                       <span className="font-bold text-red-500 dark:text-red-400 tabular-nums">{tb.completeness_pct}%</span>
                     </Link>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Tiến độ tổng</span>
-                  <Link to="/chat-luong-du-lieu" className="text-primary hover:underline">Chi tiết →</Link>
+                <div className="mt-4 pt-3 border-t border-border flex justify-between items-center text-[11px] font-bold">
+                  <Link to="/chat-luong-du-lieu" className="text-primary hover:underline uppercase tracking-tighter">Báo cáo sạch →</Link>
                 </div>
               </CardContent>
             </Card>
