@@ -721,7 +721,44 @@ export function StandardTable<T>({
                       </Tooltip>
                     </TooltipProvider>
                     <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel>Hiển thị cột</DropdownMenuLabel>
+                      <DropdownMenuLabel className="flex items-center justify-between">
+                        <span>Hiển thị cột</span>
+                        <Icon name="table.settings" size="small" className="text-muted-foreground/50" />
+                      </DropdownMenuLabel>
+                      
+                      {presets && presets.length > 0 && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="text-xs">
+                              <Icon name="action.view" size="small" className="mr-2" />
+                              Khung nhìn mẫu
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                              <DropdownMenuSubContent className="w-48">
+                                {presets.map((p) => (
+                                  <DropdownMenuItem 
+                                    key={p.id} 
+                                    className="text-xs flex flex-col items-start gap-0.5"
+                                    onClick={() => {
+                                      const keys = p.columns || p.cot || p.visibleKeys || [];
+                                      const finalKeys = (p.id === "day-du" && keys.length === 0) ? allKeys : keys;
+                                      prefs.setPreset(p.id, finalKeys, p.orderKeys || finalKeys);
+                                    }}
+                                  >
+                                    <div className="flex items-center w-full">
+                                      <span className="font-medium">{p.ten || p.label}</span>
+                                      {prefs.activePreset === p.id && <Check className="ml-auto h-3 w-3 text-primary" />}
+                                    </div>
+                                    {p.moTa && <span className="text-[10px] text-muted-foreground leading-tight">{p.moTa}</span>}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                          </DropdownMenuSub>
+                        </>
+                      )}
+
                       <DropdownMenuSeparator />
                       
                       {/* Nhóm các cột theo 'group' nếu có, hoặc không nhóm */}
@@ -737,7 +774,19 @@ export function StandardTable<T>({
                           {group !== "Khác" && <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
                           {cols.map((col) => {
                             const isCurrentlyVisible = !prefs.isHidden(col.key);
-                            // Chặn việc ẩn cột cuối cùng - Dùng allKeys và hidden Set để tính toán chính xác
+                            
+                            // NGUYÊN NHÂN 1: Xác định cột có đang bị ẩn do bề rộng màn hình không
+                            let isHiddenByWidth = false;
+                            let thresholdLabel = "";
+                            if (col.hideBelow) {
+                              const threshold = typeof col.hideBelow === "number" 
+                                ? col.hideBelow 
+                                : (BP_PX as any)[col.hideBelow] || BP_PX.md;
+                              isHiddenByWidth = containerWidth < threshold;
+                              thresholdLabel = typeof col.hideBelow === "string" ? col.hideBelow : `${threshold}px`;
+                            }
+
+                            // Chặn việc ẩn cột cuối cùng
                             const canToggle = !isCurrentlyVisible || (allKeys.length - prefs.hidden.size > 1);
                             
                             return (
@@ -747,8 +796,20 @@ export function StandardTable<T>({
                                 onCheckedChange={() => prefs.toggle(col.key)}
                                  onSelect={(e: Event) => e.preventDefault()}
                                 disabled={!canToggle}
+                                className="flex items-center justify-between gap-2"
                               >
-                                {col.header || col.label}
+                                <span className={cn(isHiddenByWidth && isCurrentlyVisible && "text-muted-foreground/60")}>
+                                  {col.header || col.label}
+                                </span>
+                                
+                                {isHiddenByWidth && isCurrentlyVisible && (
+                                  <AppTooltip content={`Cột này đang tạm ẩn do màn hình hẹp (< ${thresholdLabel}). Hãy mở rộng trình duyệt hoặc xem ở dòng mở rộng.`}>
+                                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[9px] font-bold uppercase tracking-tighter">
+                                      <Icon name="status.warning" size="tiny" />
+                                      Hẹp
+                                    </div>
+                                  </AppTooltip>
+                                )}
                               </DropdownMenuCheckboxItem>
                             );
                           })}
