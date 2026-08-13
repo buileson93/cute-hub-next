@@ -293,20 +293,36 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   }
 
   async function saveField(id: string, field: "ten" | "trang_thai", value: string) {
-    const payload = (field === "ten" ? { ten: value } : { trang_thai: value }) as {
-      ten?: string;
-      trang_thai?: string;
-    };
-    const { error: e } = await supabase
-      .from("he_thong_thanh_phan")
-      .update(payload)
-      .eq("id", id);
-    if (e) {
-      toast.error(e.message || "Không lưu được thay đổi");
-      throw e;
+    try {
+      if (field === "ten") {
+        const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
+        const res = await saveEntityFieldSecurely({
+          kind: "tb", // Bảng này hiển thị thiết bị (thành phần)
+          id: id,
+          field: "ten",
+          value: value,
+          userRoles: roles || [],
+        });
+
+        if (res.mode === "proposed") {
+          toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
+        } else {
+          toast.success("Đã lưu tên thành công");
+        }
+      } else {
+        // Các trường khác (như trạng thái) vẫn ghi trực tiếp hoặc qua logic riêng
+        const { error: e } = await supabase
+          .from("he_thong_thanh_phan")
+          .update({ trang_thai: value })
+          .eq("id", id);
+        if (e) throw e;
+        toast.success("Đã cập nhật trạng thái");
+      }
+      qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
+    } catch (error: any) {
+      toast.error(error.message || "Không lưu được thay đổi");
+      throw error;
     }
-    toast.success("Đã lưu");
-    qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
   }
 
   const { data: modelRegistry = {} } = useModelRegistry();
