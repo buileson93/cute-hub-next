@@ -170,9 +170,31 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
       }
       
       onSuccess?.();
-      // Don't close immediately if we want to show the post-op view?
-      // For now, let's stick to the plan: close on success but we could show a "View History" link in toast.
+      
+      // Post-operation links
+      const targetId = mode === "thao" ? current?.thiet_bi_id : pickedAssetId;
+      const targetMa = mode === "thao" ? current?.ma_thiet_bi : allAssets.find(a => a.id === pickedAssetId)?.ma_thiet_bi;
+
+      if (targetId) {
+        showUndoToast(`Thao tác thành công`, () => {
+          // Logic for undo would go here if implemented in business hooks
+        }, {
+          description: (
+            <div className="flex flex-col gap-1 mt-1">
+              <Link 
+                to="/thiet-bi/$maThietBi" 
+                params={{ maThietBi: targetMa || "" }}
+                className="flex items-center gap-1 text-primary hover:underline"
+              >
+                <History className="h-3 w-3" /> Xem lý lịch tài sản {targetMa}
+              </Link>
+            </div>
+          )
+        });
+      }
+
       onClose();
+
 
     } catch (e: any) {
       toast.error(e.message || "Thao tác thất bại");
