@@ -1388,23 +1388,7 @@ export function StandardTable<T>({
                                   minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                                 }}
                               >
-                              {c.render ? (
-                                c.render(r)
-                              ) : c.cell ? (
-                                c.cell(r)
-                              ) : (
-                                <div
-                                  className={cn(
-                                    "break-words [overflow-wrap:anywhere] [word-break:break-word]",
-                                    (c.lineClamp ?? 1) > 1
-                                      ? `line-clamp-${c.lineClamp}`
-                                      : "truncate"
-                                  )}
-                                  title={String(c.value?.(r) ?? "")}
-                                >
-                                  {String(c.value?.(r) ?? "")}
-                                </div>
-                              )}
+                              {renderAutoCell(c, r)}
                             </TableCell>
                           )})}
                         </TableRow>
@@ -1425,7 +1409,7 @@ export function StandardTable<T>({
                                         {col.header || col.label}
                                       </span>
                                       <div className="text-[13px] break-words">
-                                             {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                                        {renderAutoCell(col, r)}
                                       </div>
                                     </div>
                                   ))}
