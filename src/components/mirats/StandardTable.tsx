@@ -1228,7 +1228,9 @@ export function StandardTable<T>({
                                   minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                                 }}
                               >
-                              {c.cell ? (
+                              {c.render ? (
+                                c.render(r)
+                              ) : c.cell ? (
                                 c.cell(r)
                               ) : (
                                 <div
