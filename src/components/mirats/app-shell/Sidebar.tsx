@@ -52,8 +52,8 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     to={item.route}
                     onClick={onNavigate}
                     className={cn(
-                      "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 font-medium transition-mirats-fast",
-                      "h-9 data-[density=compact]:h-8 data-[density=compact]:rounded-lg data-[density=compact]:gap-2.5",
+                      "group relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 font-medium transition-mirats-fast",
+                      "h-8 data-[density=comfortable]:h-9 data-[density=comfortable]:rounded-lg data-[density=comfortable]:gap-2.5",
                       UI_DENSITY.TEXT_BODY,
                       active 
                         ? "bg-primary/8 text-primary" 

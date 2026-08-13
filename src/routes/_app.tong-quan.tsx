@@ -258,52 +258,44 @@ function TongQuanPage() {
   };
 
   return (
-    <PageBody className="overflow-auto">
+    <PageBody className="overflow-auto space-y-4">
       {/* Thanh tiêu đề + bộ lọc */}
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="mr-auto">
-          <PageHeader
-            icon={Activity}
-            title="Tổng quan KPI"
-            help=""
-          />
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 h-10">
+        <PageHeader
+          icon={Activity}
+          title="Brief hôm nay"
+        />
 
-        <div>
-          <label className="mb-1 block text-[11px] text-muted-foreground">Đơn vị</label>
+        <div className="flex items-center gap-2">
           <Select
             value={donVi[0] ?? "__all__"}
             onValueChange={setDonVi}
             disabled={scopeLoading || (!scopeAll && scopeDonVi.length <= 1)}
           >
-            <SelectTrigger className="h-9 w-[220px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-8 w-[160px] text-[12px] rounded-full bg-muted/30 border-transparent"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">
-                {scopeAll ? "Tất cả đơn vị" : "Toàn bộ phạm vi của tôi"}
+                {scopeAll ? "Tất cả đơn vị" : "Toàn bộ đơn vị"}
               </SelectItem>
               {scopeDonVi.map((d) => (
                 <SelectItem key={d.ma} value={d.ma}>{d.ten}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
 
-        <div>
-          <label className="mb-1 block text-[11px] text-muted-foreground">Khoảng thời gian</label>
           <Select value={String(days)} onValueChange={setDays}>
-            <SelectTrigger className="h-9 w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-8 w-[110px] text-[12px] rounded-full bg-muted/30 border-transparent"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="30">30 ngày</SelectItem>
               <SelectItem value="90">90 ngày</SelectItem>
               <SelectItem value="365">1 năm</SelectItem>
             </SelectContent>
           </Select>
-        </div>
 
-        <Button variant="outline" size="sm" onClick={refetchAll} disabled={loading}>
-          <RefreshCw className={cn("mr-1 h-4 w-4", loading && "animate-spin")} />
-          Làm mới
-        </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={refetchAll} disabled={loading} title="Làm mới">
+            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+          </Button>
+        </div>
       </div>
 
       {err && (
@@ -314,11 +306,7 @@ function TongQuanPage() {
         </Card>
       )}
 
-      {/* ROW 1 — TRUNG TÂM ĐIỀU HÀNH */}
       <div>
-        <div className="flex items-center justify-between">
-          <SectionHeader icon={<Radio className="h-3.5 w-3.5" />} title="Brief hôm nay" to="/su-co" more="Chi tiết" />
-        </div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <KpiCard icon={<Flame className="h-4 w-4" />} label="Sự cố khẩn (mở)"
             value={briefQ.data?.su_co_khan} loading={briefQ.isLoading} tone="danger"
@@ -674,20 +662,22 @@ function KpiCard({
 
   const body = (
     <Card className={cn("h-full border-none shadow-none transition-all", t.bg, link && "cursor-pointer hover:opacity-80")}>
-      <CardContent className="flex h-full flex-col justify-between p-4 pt-4">
-        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-          <span className={t.text}>{icon}</span>
-          <span className="truncate">{label}</span>
+      <CardContent className="flex h-full items-center gap-4 p-4">
+        <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background/50", t.text)}>
+          {icon}
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <div className={cn("text-[24px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
-            {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted/20" /> : (value ?? 0).toLocaleString("vi-VN")}
+        <div className="flex-1 min-w-0">
+          <div className="text-[12px] text-muted-foreground truncate leading-tight">{label}</div>
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <div className={cn("text-[20px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
+              {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted/20" /> : (value ?? 0).toLocaleString("vi-VN")}
+            </div>
+            {sub && <div className="text-[11px] font-medium opacity-60 truncate">{sub}</div>}
           </div>
-          {sub && <div className="text-[11px] font-medium opacity-70">{sub}</div>}
+          {link && (
+            <div className="text-[10px] font-medium text-primary/70 mt-0.5">{link.label} →</div>
+          )}
         </div>
-        {link && (
-          <div className="mt-1 text-[11px] font-medium text-primary/80">{link.label} →</div>
-        )}
       </CardContent>
     </Card>
   );
@@ -753,31 +743,33 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
 
   const content = (
     <Card className={cn("h-full border-none shadow-none transition-all", t.bg, to && "cursor-pointer hover:opacity-80")}>
-      <CardContent className="flex h-full flex-col justify-between p-4 pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-            <span className={t.text}>{icon}</span>
-            <span className="truncate">{label}</span>
-          </div>
-          {description && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 text-muted-foreground/50 cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-[200px] text-xs">
-                  {description}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+      <CardContent className="flex h-full items-center gap-3 p-3">
+        <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background/50", t.text)}>
+          {icon}
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <div className={cn("text-[24px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
-            {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted/20" /> : value}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] text-muted-foreground truncate leading-tight">{label}</span>
+            {description && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground/40 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[200px] text-xs">
+                    {description}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <div className={cn("text-[18px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
+              {loading ? <span className="inline-block h-5 w-12 animate-pulse rounded bg-muted/20" /> : value}
+            </div>
+            {hint && <div className="text-[10px] font-medium opacity-60 truncate">{hint}</div>}
           </div>
         </div>
-        {hint && <div className="mt-1 text-[11px] font-medium opacity-70 truncate">{hint}</div>}
       </CardContent>
     </Card>
   );

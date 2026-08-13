@@ -182,16 +182,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(ws)}
                         onPointerEnter={() => setHoveredWsId(ws.id)}
                         className={cn(
-                          "group relative flex flex-col items-center justify-center rounded-xl transition-colors",
-                          "w-12 h-12 density-compact:w-[44px] density-compact:h-[44px] density-compact:rounded-[10px]",
-
-
-
-                          ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                          "group relative flex items-center justify-center rounded-lg transition-mirats-fast",
+                          "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
+                          ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                       >
-                        <ws.icon className="h-5 w-5 data-[density=compact]:h-[18px] data-[density=compact]:w-[18px]" />
-                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium data-[density=compact]:hidden">
+                        <ws.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
+                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
                           {ws.short}
                         </span>
                         {ws.id === activeWs.id && (
@@ -214,14 +211,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(adminWs)}
                         onPointerEnter={() => setHoveredWsId(adminWs.id)}
                         className={cn(
-                          "flex flex-col items-center justify-center rounded-xl transition-colors",
-                          "w-12 h-12 density-compact:w-[44px] density-compact:h-[44px] density-compact:rounded-[10px]",
-
-                          adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                          "flex items-center justify-center rounded-lg transition-mirats-fast",
+                          "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
+                          adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                       >
-                        <adminWs.icon className="h-5 w-5 data-[density=compact]:h-[18px] data-[density=compact]:w-[18px]" />
-                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium data-[density=compact]:hidden">
+                        <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
+                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
                           {adminWs.short}
                         </span>
                       </button>

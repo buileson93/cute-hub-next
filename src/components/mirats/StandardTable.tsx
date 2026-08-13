@@ -355,7 +355,7 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
-    overscan: isTest ? display.length : 15,
+    overscan: isTest ? display.length : 10,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
@@ -621,10 +621,10 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none", maxHeightClass)}>
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass)}>
           <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-[13px]">
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
-              <TableRow className="hover:bg-transparent h-9">
+              <TableRow className="hover:bg-transparent h-9 border-b border-border/60">
                 {selectable && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
                     <div className="flex justify-center">
@@ -802,7 +802,7 @@ export function StandardTable<T>({
                         key={rid}
                         data-index={virtualRow.index}
                         ref={rowVirtualizer.measureElement}
-                        className={cn("group border-b transition-mirats-fast hover:bg-muted/60", (onRowClick || selectable) && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
+                        className={cn("group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", (onRowClick || selectable) && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
                         onClick={() => onRowClick?.(r)}
                       >
                         {selectable && (

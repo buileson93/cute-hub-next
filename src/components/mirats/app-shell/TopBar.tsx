@@ -47,24 +47,24 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
   return (
     <div className="flex h-full items-center justify-between gap-4 w-full">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         {renderMobileMenu}
         
         <DesktopOnly>
-          <Breadcrumb className="hidden lg:block mr-2">
+          <Breadcrumb className="hidden xl:block mr-2">
             <BreadcrumbList className="flex-nowrap">
               {breadcrumbs.map((bc, i) => (
                 <div key={bc.href} className="flex items-center">
                   <BreadcrumbItem>
                     {i === breadcrumbs.length - 1 ? (
-                      <BreadcrumbPage className="max-w-[120px] truncate">{bc.label}</BreadcrumbPage>
+                      <BreadcrumbPage className="max-w-[100px] truncate text-[11px]">{bc.label}</BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink asChild>
-                        <Link to={bc.href as any} className="max-w-[100px] truncate">{bc.label}</Link>
+                        <Link to={bc.href as any} className="max-w-[80px] truncate text-[11px]">{bc.label}</Link>
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
-                  {i < breadcrumbs.length - 1 && <BreadcrumbSeparator className="mx-1" />}
+                  {i < breadcrumbs.length - 1 && <BreadcrumbSeparator className="mx-0.5" />}
                 </div>
               ))}
             </BreadcrumbList>
@@ -76,7 +76,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <Input
             type="search"
             placeholder="Tìm tài sản, sự cố..."
-            className="h-8 w-full cursor-pointer rounded-full bg-muted/50 pl-9 pr-4 text-xs focus-visible:ring-1"
+            className="h-8 w-full cursor-pointer rounded-full bg-muted/40 pl-9 pr-4 text-[13px] focus-visible:ring-1 border-transparent hover:border-border transition-mirats-fast"
             readOnly
             onClick={handleOpenSearch}
             onFocus={handleOpenSearch}
