@@ -41,6 +41,8 @@ import { Input } from "@/components/ui/input";
 export interface ColumnDef<T> {
   key: string;
   header: string;
+  /** @deprecated use header instead */
+  label?: string;
   width?: number;
   minWidth?: number;
   maxWidth?: number;
@@ -48,6 +50,8 @@ export interface ColumnDef<T> {
   sortable?: boolean;
   align?: "left" | "center" | "right";
   render?: (row: T) => React.ReactNode;
+  /** @deprecated use render instead */
+  cell?: (row: T) => React.ReactNode;
   value?: (row: T) => any;
   priority?: "primary" | "secondary" | "detail";
   hideBelow?: number | string;
@@ -60,7 +64,13 @@ export interface ColumnDef<T> {
   sortValue?: (r: T) => any;
   group?: string;
   inherited?: boolean;
+  /** @deprecated use minWidth instead */
+  minW?: string;
 }
+
+/** @deprecated Use ColumnDef instead */
+export type StdColumn<T> = ColumnDef<T>;
+
 
 /** @deprecated Use ColumnDef instead */
 export type StdColumn<T> = ColumnDef<T>;
@@ -650,7 +660,7 @@ export function StandardTable<T>({
                             <ColFilter
                               key={c.key}
                               type={c.filter || "text"}
-                              label={c.label}
+                               label={c.header || c.label || ""}
                               catValues={catValues[c.key] || []}
                               catSel={catFilters[c.key] || new Set()}
                               onToggleCat={(val) => toggleCat(c.key, val)}
@@ -713,7 +723,7 @@ export function StandardTable<T>({
                                  onSelect={(e: Event) => e.preventDefault()}
                                 disabled={!canToggle}
                               >
-                                {col.label}
+                                {col.header || col.label}
                               </DropdownMenuCheckboxItem>
                             );
                           })}
@@ -769,7 +779,7 @@ export function StandardTable<T>({
             const col = columns.find(c => c.key === key);
             return (
               <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
-                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{val}</span>
                 <button 
                   onClick={() => setTextFilters(prev => {
@@ -788,7 +798,7 @@ export function StandardTable<T>({
             const col = columns.find(c => c.key === key);
             return (
               <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
-                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
                 <button 
                   onClick={() => clearCat(key)}
@@ -840,7 +850,7 @@ export function StandardTable<T>({
                         <div className="flex-1 space-y-1 min-w-0 pr-6">
                           {primaryCols.map((col, idx) => (
                             <div key={col.key} className={idx === 0 ? "font-semibold text-sm truncate" : "text-[12px] text-muted-foreground truncate"}>
-                              {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                             </div>
                           ))}
                         </div>
@@ -860,10 +870,10 @@ export function StandardTable<T>({
                         {secondaryCols.map((col) => (
                           <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
-                              {col.label}
+                              {col.header || col.label}
                             </span>
                             <div className={cn("text-[13px] truncate", col.cellClassName)}>
-                              {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                             </div>
                           </div>
                         ))}
@@ -875,7 +885,7 @@ export function StandardTable<T>({
                           {detailCols.map((col) => (
                             <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
                               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
-                                {col.label}
+                                {col.header || col.label}
                               </span>
                               <div className={cn("text-[13px] break-words", col.cellClassName)}>
                                 {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
@@ -1252,10 +1262,10 @@ export function StandardTable<T>({
                                   .map(col => (
                                     <div key={col.key} className="flex flex-col gap-1 min-w-0 text-left">
                                       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                                        {col.label}
+                                        {col.header || col.label}
                                       </span>
                                       <div className="text-[13px] break-words">
-                                        {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                                             {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                                       </div>
                                     </div>
                                   ))}
