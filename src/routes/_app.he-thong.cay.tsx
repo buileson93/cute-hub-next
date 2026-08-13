@@ -489,7 +489,7 @@ function HeThongCayPage() {
 
         {display === "health" && (
           <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
-            <Activity className="h-12 w-12 mb-4 opacity-20" />
+            <Icon name="entity.activity" size="large" className="mb-4 opacity-20" />
             <h3 className="text-lg font-medium">Bản đồ sức khỏe hệ thống</h3>
             <p className="max-w-md text-center text-sm mt-2">Tính năng đang được chuyển sang module HealthMonitor chuyên biệt.</p>
           </div>
@@ -497,7 +497,7 @@ function HeThongCayPage() {
 
         {display === "history" && (
           <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
-            <ClipboardList className="h-12 w-12 mb-4 opacity-20" />
+            <Icon name="entity.checklist" size="large" className="mb-4 opacity-20" />
             <h3 className="text-lg font-medium">Nhật ký tác động hệ thống</h3>
             <p className="max-w-md text-center text-sm mt-2">Xem lịch sử thay đổi cấu trúc và điều động thiết bị toàn hệ thống.</p>
           </div>
