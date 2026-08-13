@@ -59,7 +59,14 @@ export function PageHeader({
         {help || description ? (
           <InfoHint>
             <div className="space-y-1.5">
-              {description && <div className="text-sm font-normal text-foreground">{description}</div>}
+              {description && (
+                <div className={cn(
+                  "text-sm font-normal text-foreground",
+                  typeof description === 'string' && description.length > 80 && "text-xs"
+                )}>
+                  {description}
+                </div>
+              )}
               {help && <div className="text-xs text-muted-foreground">{help}</div>}
             </div>
           </InfoHint>
