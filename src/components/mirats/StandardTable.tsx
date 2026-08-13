@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Card, CardContent } from "@/components/ui/card";
