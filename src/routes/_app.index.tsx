@@ -376,15 +376,15 @@ function Dashboard() {
 
           {/* TẦNG 4.5: BẢNG CHI TIẾT SỨC KHOẺ THẤP (KHÔI PHỤC) */}
           {/* FLEET MONITORING */}
-          <div className="bg-white rounded-2xl border border-border/50 overflow-hidden">
-            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-muted/5">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <ShieldAlert className="w-3.5 h-3.5 text-red-500" /> Fleet Attention List
+          <div className="bg-white/50 dark:bg-card/50 backdrop-blur-sm rounded-3xl border border-border/40 overflow-hidden">
+            <div className="px-6 py-5 border-b border-border/40 flex items-center justify-between bg-muted/5">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-red-500" /> Fleet Attention List
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
-                <tbody className="divide-y divide-border/30">
+                <tbody className="divide-y divide-border/20">
                   {lowHealthDevices.length === 0 ? (
                     <tr>
                       <td className="px-6 py-8 text-center text-muted-foreground italic text-xs">
