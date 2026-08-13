@@ -98,6 +98,15 @@ export async function renameEntity(input: RenameInput): Promise<void> {
     .update({ [target.nameCol]: ten } as never)
     .eq(target.keyCol, id);
   if (error) throw error;
+
+  // Xoá override nếu có để đảm bảo SSoT bảng gốc thắng
+  if (input.kind === "ht" || input.kind === "tb" || input.kind === "nh") {
+    await supabase
+      .from("cay_node_edit")
+      .delete()
+      .eq("kind", input.kind)
+      .eq("ma", id);
+  }
 }
 
 // ---------------------------------------------------------------------------
