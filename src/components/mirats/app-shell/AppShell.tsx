@@ -183,7 +183,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onPointerEnter={() => setHoveredWsId(ws.id)}
                         className={cn(
                           "group relative flex flex-col items-center justify-center rounded-xl transition-colors",
-                          "w-12 h-12 data-[density=compact]:w-[44px] data-[density=compact]:h-[44px] data-[density=compact]:rounded-[10px]",
+                          "w-12 h-12 data-[density=compact]:!w-[44px] data-[density=compact]:!h-[44px] data-[density=compact]:rounded-[10px]",
+
 
                           ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                         )}
@@ -213,7 +214,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onPointerEnter={() => setHoveredWsId(adminWs.id)}
                         className={cn(
                           "flex flex-col items-center justify-center rounded-xl transition-colors",
-                          "w-12 h-12 data-[density=compact]:w-[44px] data-[density=compact]:h-[44px] data-[density=compact]:rounded-[10px]",
+                          "w-12 h-12 data-[density=compact]:!w-[44px] data-[density=compact]:!h-[44px] data-[density=compact]:rounded-[10px]",
 
                           adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                         )}
