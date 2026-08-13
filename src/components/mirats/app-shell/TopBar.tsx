@@ -1,20 +1,11 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Search, Activity, Wifi, WifiOff, Loader2, ChevronRight } from "lucide-react";
+import { Search, Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { 
-  Breadcrumb, 
-  BreadcrumbItem, 
-  BreadcrumbLink, 
-  BreadcrumbList, 
-  BreadcrumbPage, 
-  BreadcrumbSeparator 
-} from "@/components/ui/breadcrumb";
+import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
-import { DesktopOnly } from "../DesktopOnly";
 import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import {
   Tooltip,
@@ -36,41 +27,11 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
     window.dispatchEvent(new CustomEvent("mirats:open-command-palette"));
   };
 
-  // Simple breadcrumb logic based on pathname
-  const pathSegments = pathname.split("/").filter(Boolean);
-  const breadcrumbs = pathSegments.map((segment, index) => {
-    const href = "/" + pathSegments.slice(0, index + 1).join("/");
-    // Convert kebab-case to Title Case (simple version)
-    const label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
-    return { href, label };
-  });
-
   return (
     <div className="flex h-full items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {renderMobileMenu}
         
-        <DesktopOnly>
-          <Breadcrumb className="hidden xl:block mr-2">
-            <BreadcrumbList className="flex-nowrap">
-              {breadcrumbs.map((bc, i) => (
-                <div key={bc.href} className="flex items-center">
-                  <BreadcrumbItem>
-                    {i === breadcrumbs.length - 1 ? (
-                      <BreadcrumbPage className="max-w-[100px] truncate text-[11px]">{bc.label}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link to={bc.href as any} className="max-w-[80px] truncate text-[11px]">{bc.label}</Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                  {i < breadcrumbs.length - 1 && <BreadcrumbSeparator className="mx-0.5" />}
-                </div>
-              ))}
-            </BreadcrumbList>
-          </Breadcrumb>
-        </DesktopOnly>
-
         <div className="relative w-full max-w-sm" data-tour="search">
           <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -133,5 +94,3 @@ function RealtimeStatusIndicator() {
     </TooltipProvider>
   );
 }
-
-
