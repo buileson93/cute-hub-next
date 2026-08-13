@@ -1,18 +1,25 @@
+import React, { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
-
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical, Columns, LayoutGrid, Type } from "lucide-react";
+import { 
+  Maximize2, RotateCcw, SlidersHorizontal, Filter, 
+  ArrowUp, ArrowDown, ChevronsUpDown, X, Search, 
+  GripVertical, Columns, LayoutGrid, Type, 
+  ChevronRight, ChevronDown, MoreVertical 
+} from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
+
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -52,7 +59,9 @@ export interface StdColumn<T> {
   sortable?: boolean;
   sortValue?: (r: T) => any;
   lineClamp?: number;
+  priority?: "primary" | "secondary" | "detail";
 }
+
 
 
 export interface StandardTableProps<T> {
@@ -134,18 +143,39 @@ export function StandardTable<T>({
 
   const [containerWidth, setContainerWidth] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!parentRef.current || typeof ResizeObserver === "undefined") return;
+    
+    let frameId: number;
     const observer = new ResizeObserver((entries) => {
-
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        for (const entry of entries) {
+          setContainerWidth(entry.contentRect.width);
+        }
+      });
     });
+    
     observer.observe(parentRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frameId);
+    };
   }, []);
+
+  const toggleExpand = useCallback((rid: string) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(rid)) next.delete(rid);
+      else next.add(rid);
+      return next;
+    });
+  }, []);
+
+
+
 
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
@@ -173,13 +203,34 @@ export function StandardTable<T>({
     }
   }, [presets, activePreset, prefs.ready, prefs.isCustomized, prefs.activePreset]);
 
-  const isMobile = containerWidth > 0 && containerWidth < BP_PX.md;
-  
+  const viewMode = useMemo(() => {
+    if (containerWidth === 0) return "desktop";
+    if (containerWidth < UI_DENSITY.CONT_SM) return "mobile";
+    if (containerWidth < UI_DENSITY.CONT_MD) return "tablet";
+    return "desktop";
+  }, [containerWidth]);
+
+  const isMobile = viewMode === "mobile";
+
   // Sắp xếp cột theo thứ tự người dùng đã chọn
   const sortedColumns = useMemo(() => {
-    if (!tableKey) return columns;
+    const withPriority = columns.map((c, idx) => {
+      if (c.priority) return c;
+      // Quy tắc suy diễn: 
+      // - 2 cột đầu (hoặc ma/ten): primary
+      // - 3 cột tiếp theo: secondary
+      // - còn lại: detail
+      let priority: "primary" | "secondary" | "detail" = "detail";
+      const isCore = ["ma", "ten", "ma_thiet_bi", "ten_thiet_bi"].includes(c.key.toLowerCase());
+      if (isCore || idx < 2) priority = "primary";
+      else if (idx < 5) priority = "secondary";
+      
+      return { ...c, priority };
+    });
+
+    if (!tableKey) return withPriority;
     const order = prefs.order;
-    return [...columns].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+    return [...withPriority].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
   }, [columns, tableKey, prefs.order]);
 
   const shownCols = useMemo(() => {
@@ -190,14 +241,26 @@ export function StandardTable<T>({
       // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn mọi nơi
       if (c.hidden) return false;
 
+      // Priority-based hiding:
+      // Tablet ẩn detail, Mobile chuyển sang Card (handled in render)
+      if (viewMode === "tablet" && c.priority === "detail") return false;
+
       // Tầng 2: Ẩn theo bề rộng màn hình (hideBelow) -> Chỉ ẩn trên UI
       if (!c.hideBelow) return true;
       const threshold = typeof c.hideBelow === "number" 
         ? c.hideBelow 
         : (BP_PX as any)[c.hideBelow] || BP_PX.md;
-      return containerWidth >= threshold;
+      const isShown = containerWidth >= threshold;
+      
+      // TRƯỜNG HỢP ĐẶC BIỆT: Nếu viewMode là tablet và cột là detail, 
+      // ta LUÔN ẩn nó đi để nhường chỗ cho nút mở rộng dòng.
+      if (viewMode === "tablet" && c.priority === "detail") return false;
+      
+      return isShown;
     });
-  }, [sortedColumns, tableKey, prefs.hidden, containerWidth]);
+  }, [sortedColumns, tableKey, prefs.hidden, containerWidth, viewMode]);
+
+
 
   // Sync visible keys ra ngoài nếu có yêu cầu
   useEffect(() => {
@@ -388,6 +451,12 @@ export function StandardTable<T>({
     ...virtualizerOptions,
   });
 
+  // Sync expanded state with virtualizer
+  useEffect(() => {
+    rowVirtualizer.measure();
+  }, [expandedRows, rowVirtualizer]);
+
+
 
 
 
@@ -478,12 +547,50 @@ export function StandardTable<T>({
           <div className="flex items-center gap-1">
             {tableKey && (
               <>
-                {!isMobile && (
+                {isMobile ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-2 ml-1">
+                        <Filter className="h-4 w-4" />
+                        <span>Bộ lọc</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[280px]">
+                      <div className="p-2 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold">Bộ lọc & Sắp xếp</span>
+                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-7 px-2 text-[10px] uppercase font-bold text-destructive">
+                            Xoá hết
+                          </Button>
+                        </div>
+                        
+                        {/* Mobile Column Filters */}
+                        <div className="space-y-3">
+                          {columns.filter(c => c.filter).map(c => (
+                            <ColFilter
+                              key={c.key}
+                              type={c.filter || "text"}
+                              label={c.label}
+                              catValues={catValues[c.key] || []}
+                              catSel={catFilters[c.key] || new Set()}
+                              onToggleCat={(val) => toggleCat(c.key, val)}
+                              onClearCat={() => clearCat(c.key)}
+                              textVal={textFilters[c.key] || ""}
+                              onText={(val) => setTextFilters(prev => ({ ...prev, [c.key]: val }))}
+                            />
+                          ))}
+                        </div>
+
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
                   <DropdownMenu>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <DropdownMenuTrigger asChild>
+
                             <Button 
                               variant="outline" 
                               size="sm" 
@@ -633,37 +740,108 @@ export function StandardTable<T>({
             display.map((r) => {
               const rid = getRowIdInternal(r);
               const isSel = selectable && selected?.has(rid);
+              
+              // Mobile lấy cột theo priority
+              const primaryCols = sortedColumns.filter(c => c.priority === "primary");
+              const secondaryCols = sortedColumns.filter(c => c.priority === "secondary");
+              const detailCols = sortedColumns.filter(c => c.priority === "detail");
+
+
               return (
                 <Card
                   key={rid}
                   className={cn(
-                    "relative cursor-pointer transition-colors hover:bg-muted/50",
-                    isSel && "border-primary bg-primary/5",
+                    "relative cursor-pointer transition-colors hover:bg-muted/50 overflow-hidden",
+                    isSel && "border-primary bg-primary/5 shadow-sm shadow-primary/10",
                     rowClassName?.(r)
                   )}
                   onClick={() => onRowClick?.(r)}
                 >
-                  <CardContent className="p-4">
-                    {selectable && (
-                      <div className="absolute right-3 top-3">
-                        <Checkbox
-                          checked={isSel}
-                          onCheckedChange={() => toggleRow(rid)}
-                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                        />
-                      </div>
-                    )}
-                    <div className="space-y-3">
-                      {shownCols.slice(0, 5).map((col) => (
-                        <div key={col.key} className="flex flex-col gap-0.5">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            {col.label}
-                          </span>
-                          <div className={cn("text-sm", col.cellClassName)}>
-                            {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
-                          </div>
+                  <CardContent className="p-0">
+                    <div className="flex flex-col">
+                      {/* Tiêu đề thẻ (Primary) */}
+                      <div className="flex items-start justify-between p-4 bg-muted/20 border-b border-border/40">
+                        <div className="flex-1 space-y-1 min-w-0 pr-6">
+                          {primaryCols.map((col, idx) => (
+                            <div key={col.key} className={idx === 0 ? "font-semibold text-sm truncate" : "text-[12px] text-muted-foreground truncate"}>
+                              {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                        {selectable && (
+                          <Checkbox
+                            checked={isSel}
+                            onCheckedChange={() => toggleRow(rid)}
+                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            className="mt-1"
+                          />
+                        )}
+                      </div>
+
+                      {/* Nội dung thẻ (Secondary) */}
+                      <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
+                        {secondaryCols.map((col) => (
+                          <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                              {col.label}
+                            </span>
+                            <div className={cn("text-[13px] truncate", col.cellClassName)}>
+                              {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Dòng chi tiết (Detail) - Mobile Expandable */}
+                      {expandedRows.has(rid) && detailCols.length > 0 && (
+                        <div className="px-4 py-3 bg-muted/10 border-t border-border/20 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1">
+                          {detailCols.map((col) => (
+                            <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                                {col.label}
+                              </span>
+                              <div className={cn("text-[13px] break-words", col.cellClassName)}>
+                                {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Hành động (nếu có toolbar hoặc onRowClick) */}
+                      <div className="flex items-center justify-between p-2 bg-muted/5 border-t border-border/30 gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
+                          onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
+                        >
+                          {expandedRows.has(rid) ? (
+                            <>
+                              <ChevronDown className="h-3.5 w-3.5" />
+                              <span>Thu gọn</span>
+                            </>
+                          ) : (
+                            <>
+                              <ChevronRight className="h-3.5 w-3.5" />
+                              <span>Xem thêm ({detailCols.length})</span>
+                            </>
+                          )}
+                        </Button>
+
+                        {(toolbarRight || onRowClick) && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 px-2 text-[12px] gap-1 text-primary"
+                            onClick={() => onRowClick?.(r)}
+                          >
+                            <span>Chi tiết</span>
+                            <ChevronRight className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
+
                     </div>
                   </CardContent>
                 </Card>
@@ -678,9 +856,13 @@ export function StandardTable<T>({
             prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed"
           )}>
             <colgroup>
+              {viewMode === "tablet" && (
+                <col style={{ width: 40, minWidth: 40 }} />
+              )}
               {selectable && (
                 <col style={{ width: 40, minWidth: 40 }} />
               )}
+
               {shownCols.map(c => {
                 const savedW = prefs.widths[c.key];
                 const w = savedW || c.width || (c.minW ? parseMinW(c.minW) : 100);
@@ -701,8 +883,16 @@ export function StandardTable<T>({
 
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className="hover:bg-transparent h-9 border-b border-border/60">
-                {selectable && (
+                {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
+                    {/* Placeholder for expansion column header */}
+                  </TableHead>
+                )}
+                {selectable && (
+                  <TableHead className={cn(
+                    "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50",
+                    viewMode === "tablet" && "left-10"
+                  )}>
                     <div className="flex justify-center">
                       {!hideReorderToggle && (
                         <Button
@@ -718,6 +908,7 @@ export function StandardTable<T>({
                     </div>
                   </TableHead>
                 )}
+
 
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
@@ -869,73 +1060,122 @@ export function StandardTable<T>({
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
                     </TableRow>
                   )}
+
                   {displayItems.map((virtualRow) => {
                     const r = rows[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
                     return (
-                      <TableRow
-                        key={rid}
-                        data-index={virtualRow.index}
-                        ref={rowVirtualizer.measureElement}
-                        className={cn("group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", (onRowClick || selectable) && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
-                        onClick={() => onRowClick?.(r)}
-                      >
-                        {selectable && (
-                          <TableCell
-                            onClick={(e) => e.stopPropagation()}
-                            className="sticky left-0 z-10 bg-card border-r border-border/30"
-                          >
-                            <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
-                          </TableCell>
-                        )}
-                        {shownCols.map((c) => {
-                          const savedW = prefs.widths[c.key];
-                          return (
+                      <React.Fragment key={rid}>
+                        <TableRow
+                          data-index={virtualRow.index}
+                          ref={rowVirtualizer.measureElement}
+                          className={cn(
+                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
+                            (onRowClick || selectable) && "cursor-pointer", 
+                            isSel && "bg-primary/5", 
+                            expandedRows.has(rid) && "bg-muted/40",
+                            rowClassName?.(r)
+                          )}
+                          onClick={() => onRowClick?.(r)}
+                        >
+                          {viewMode === "tablet" && (
                             <TableCell
-                              key={c.key}
-                              className={cn(
-                                c.cellClassName,
-                                c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
-                                selectable && c.sticky && "left-10",
-                                c.align === "center" && "text-center",
-                                c.align === "right" && "text-right tabular-nums",
-                                c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
-                              )}
-                              style={{ 
-                                width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
-                                minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
-                              }}
+                              onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
+                              className="sticky left-0 z-10 bg-card border-r border-border/30 text-center"
                             >
-                            {c.cell ? (
-                              c.cell(r)
-                            ) : (
-                              <div
+                              <Button variant="ghost" size="icon" className="h-6 w-6">
+                                {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                              </Button>
+                            </TableCell>
+                          )}
+                          {selectable && (
+                            <TableCell
+                              onClick={(e) => e.stopPropagation()}
+                              className={cn(
+                                "sticky left-0 z-10 bg-card border-r border-border/30",
+                                viewMode === "tablet" && "left-10"
+                              )}
+                            >
+                              <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
+                            </TableCell>
+                          )}
+
+                          {shownCols.map((c) => {
+                            const savedW = prefs.widths[c.key];
+                            return (
+                              <TableCell
+                                key={c.key}
                                 className={cn(
-                                  "break-words [overflow-wrap:anywhere] [word-break:break-word]",
-                                  (c.lineClamp ?? 1) > 1
-                                    ? `line-clamp-${c.lineClamp}`
-                                    : "truncate"
+                                  c.cellClassName,
+                                  c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
+                                  selectable && c.sticky && "left-10",
+                                  c.align === "center" && "text-center",
+                                  c.align === "right" && "text-right tabular-nums",
+                                  c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
                                 )}
-                                title={String(c.value?.(r) ?? "")}
+                                style={{ 
+                                  width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
+                                  minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                                }}
                               >
-                                {String(c.value?.(r) ?? "")}
+                              {c.cell ? (
+                                c.cell(r)
+                              ) : (
+                                <div
+                                  className={cn(
+                                    "break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                                    (c.lineClamp ?? 1) > 1
+                                      ? `line-clamp-${c.lineClamp}`
+                                      : "truncate"
+                                  )}
+                                  title={String(c.value?.(r) ?? "")}
+                                >
+                                  {String(c.value?.(r) ?? "")}
+                                </div>
+                              )}
+                            </TableCell>
+                          )})}
+                        </TableRow>
+                        
+                        {/* Dòng mở rộng (Expandable Row Content) */}
+                        {expandedRows.has(rid) && (
+                          <TableRow className="bg-muted/10 border-b border-border/20">
+                            <TableCell 
+                              colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)}
+                              className="p-4"
+                            >
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                {sortedColumns
+                                  .filter(c => !shownCols.find(sc => sc.key === c.key)) // Lấy các cột đang bị ẩn
+                                  .map(col => (
+                                    <div key={col.key} className="flex flex-col gap-1 min-w-0 text-left">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                                        {col.label}
+                                      </span>
+                                      <div className="text-[13px] break-words">
+                                        {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                                      </div>
+                                    </div>
+                                  ))}
                               </div>
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                      </TableRow>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
                     );
                   })}
+
+
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
                     </TableRow>
                   )}
+
                 </>
               )}
             </TableBody>
@@ -986,7 +1226,7 @@ function ColFilter({
           <Filter className={cn("h-3 w-3", active && "fill-current")} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()} side="bottom">
         <div className="flex items-center justify-between mb-2 px-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
           {active && (
