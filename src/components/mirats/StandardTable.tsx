@@ -691,6 +691,8 @@ export function StandardTable<T>({
               // Mobile lấy cột theo priority
               const primaryCols = sortedColumns.filter(c => c.priority === "primary");
               const secondaryCols = sortedColumns.filter(c => c.priority === "secondary");
+              const detailCols = sortedColumns.filter(c => c.priority === "detail");
+
 
               return (
                 <Card
