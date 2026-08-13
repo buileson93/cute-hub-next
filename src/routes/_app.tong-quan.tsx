@@ -752,21 +752,27 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
-    ok: "text-emerald-600 dark:text-emerald-400",
-    warn: "text-amber-600 dark:text-amber-400",
-    danger: "text-destructive",
+    ok: "text-emerald-700 dark:text-emerald-400",
+    warn: "text-amber-700 dark:text-amber-400",
+    danger: "text-red-700 dark:text-red-400",
+  };
+  const indicatorClasses: Record<string, string> = {
+    default: "bg-border",
+    ok: "bg-emerald-500",
+    warn: "bg-amber-500",
+    danger: "bg-red-500",
   };
   const content = (
     <Card className={cn(to && "cursor-pointer")}>
       <CardContent className="flex flex-col gap-1 p-3 transition-colors">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className={toneClasses[tone]}>{icon}</span>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
         </div>
-        <div className={cn("text-2xl font-semibold tabular-nums", toneClasses[tone])}>
+        <div className={cn("text-xl font-mono font-semibold tabular-nums", toneClasses[tone])}>
           {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
         </div>
-        {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+        {hint && <div className="text-[10px] text-muted-foreground/80 font-mono tracking-tight">{hint}</div>}
       </CardContent>
     </Card>
   );
@@ -819,7 +825,7 @@ function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
                   <div
                     key={`c-${dow}-${h}`}
                     className="aspect-square rounded-sm"
-                    style={{ backgroundColor: `hsl(0 84% 60% / ${alpha})` }}
+                    style={{ backgroundColor: `oklch(0.55 0.20 264 / ${alpha})` }}
                     title={`${DOW[dow]} ${h}h: ${n} sự cố`}
                   />
                 );
