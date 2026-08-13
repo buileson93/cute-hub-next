@@ -13,7 +13,10 @@ import { useSession } from "@/hooks/use-session";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  Tooltip,
+  TooltipContent,
   TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { 
   Sheet, 
@@ -25,6 +28,7 @@ import {
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+
 import {
   type Workspace,
   workspaces,
@@ -32,7 +36,7 @@ import {
   resolveActiveWorkspace,
   firstItemOf,
 } from "@/lib/mirats/nav-contract";
-import type { UiDensityMode } from "@/lib/mirats/ui/ui-density";
+import { type UiDensityMode, UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 import { 
   SidebarLogoRail, 
