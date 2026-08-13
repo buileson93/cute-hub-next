@@ -317,9 +317,9 @@ function OverviewReport() {
                       <div className="flex justify-between items-end">
                         <div className="flex items-center gap-2">
                           <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                          <span className="text-xs font-bold uppercase tracking-tight">{s.label}</span>
+                          <span className="text-[11px] font-bold uppercase tracking-tight">{s.label}</span>
                         </div>
-                        <span className="text-sm font-black tabular-nums">{s.count}</span>
+                        <span className="text-[13px] font-black tabular-nums">{s.count}</span>
                       </div>
                       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div 
@@ -330,7 +330,7 @@ function OverviewReport() {
                           }} 
                         />
                       </div>
-                      <div className="text-[10px] text-muted-foreground italic pl-4">{s.desc}</div>
+                      <div className="text-[11px] text-muted-foreground italic pl-4">{s.desc}</div>
                     </div>
                   ))}
                 </div>
@@ -356,7 +356,7 @@ function OverviewReport() {
                       </svg>
                       <div className="absolute flex flex-col items-center">
                         <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{completeness.avg_thiet_bi || 0}%</span>
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Toàn hệ thống</span>
+                        <span className="text-[11px] uppercase font-bold text-muted-foreground">Toàn hệ thống</span>
                       </div>
                     </div>
                  </div>
