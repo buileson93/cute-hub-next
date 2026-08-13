@@ -22,10 +22,11 @@ export function AppTooltip({
 
   // Tự động bổ sung aria-label cho các phần tử tương tác nếu chưa có
   const interactiveTypes = ['button', 'a'];
-  const isInteractive = interactiveTypes.includes(children.type as string) || children.props.role === 'button';
+  const childType = children.type as any;
+  const isInteractive = interactiveTypes.includes(childType) || (children.props as any)?.role === 'button';
   
-  const clonedElement = isInteractive && !children.props['aria-label'] && typeof noiDung === 'string'
-    ? React.cloneElement(children, { 'aria-label': noiDung })
+  const clonedElement = isInteractive && !(children.props as any)?.['aria-label'] && typeof noiDung === 'string'
+    ? React.cloneElement(children, { 'aria-label': noiDung } as any)
     : children;
 
   return (
