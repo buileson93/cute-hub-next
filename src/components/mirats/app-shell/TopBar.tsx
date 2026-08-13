@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Search, Activity, Wifi, WifiOff, Loader2, ChevronRight } from "lucide-react";
+import { Search, Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
@@ -27,9 +27,11 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
     window.dispatchEvent(new CustomEvent("mirats:open-command-palette"));
   };
 
+  return (
+    <div className="flex h-full items-center justify-between gap-4 w-full">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         {renderMobileMenu}
         
-
         <div className="relative w-full max-w-sm" data-tour="search">
           <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -92,5 +94,3 @@ function RealtimeStatusIndicator() {
     </TooltipProvider>
   );
 }
-
-
