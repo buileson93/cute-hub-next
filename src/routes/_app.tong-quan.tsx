@@ -76,19 +76,25 @@ interface ExpiryRow { loai: string; ref_id: string; ten: string; ngay_het: strin
 interface TopTbLap { thiet_bi_id: string; ma: string; ten: string; so_lan: number; mttr_h: number }
 interface FeedRow { at: string; loai: string; tieu_de: string; ref_route: string; ref_id: string }
 
+// Muted palette for dashboard metrics
 const MUC_DO_COLORS: Record<string, string> = {
-  nghiem_trong: "hsl(0 84% 60%)",
-  cao: "hsl(24 94% 52%)",
-  trung_binh: "hsl(38 92% 50%)",
-  thap: "hsl(215 16% 55%)",
-  khac: "hsl(215 16% 70%)",
+  nghiem_trong: "oklch(0.65 0.15 25)",   // Muted orange-red
+  cao: "oklch(0.70 0.12 50)",            // Muted orange
+  trung_binh: "oklch(0.75 0.08 80)",     // Muted yellow-gold
+  thap: "oklch(0.70 0.02 260)",          // Muted slate-blue
+  khac: "oklch(0.85 0.02 260)",          // Light slate
 };
 const MUC_DO_LABEL: Record<string, string> = {
   nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
 };
+// Use brand-blue-led palette
 const STATUS_COLORS = [
-  "hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)",
-  "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)",
+  "oklch(0.55 0.20 264)", // Primary Blue
+  "oklch(0.65 0.15 160)", // Teal
+  "oklch(0.75 0.12 90)",  // Gold
+  "oklch(0.60 0.18 20)",  // Orange
+  "oklch(0.60 0.15 300)", // Purple
+  "oklch(0.80 0.02 260)", // Muted Slate
 ];
 
 function TongQuanPage() {
@@ -329,11 +335,11 @@ function TongQuanPage() {
           <KpiCard icon={<CalendarX className="h-4 w-4" />} label="PM quá hạn"
             value={briefQ.data?.pm_qua_han} loading={briefQ.isLoading} tone="danger"
             link={{ to: "/bao-tri/pm", label: "Xử lý" }} />
-          <KpiCard icon={<CalendarClock className="h-4 w-4" />} label="Hạn 7 ngày tới"
+          <KpiCard icon={<CalendarClock className="h-4 w-4" />} label="Hạn 7 ngày"
             value={briefQ.data?.han_7_ngay} loading={briefQ.isLoading} tone="warn"
-            link={{ to: "/giay-phep", label: "Giấy phép" }} />
-          <KpiCard icon={<BadgeAlert className="h-4 w-4" />} label="Sắp hết hạn 30 ngày"
-            value={briefQ.data?.sap_het_han_30} loading={briefQ.isLoading} tone="warn"
+            link={{ to: "/giay-phep", label: "Xem" }} />
+          <KpiCard icon={<BadgeAlert className="h-4 w-4" />} label="Hạn 30 ngày"
+            value={briefQ.data?.sap_het_han_30} loading={briefQ.isLoading} tone="default"
             link={{ to: "/giay-phep", label: "Xem" }} />
         </div>
       </div>
@@ -351,7 +357,6 @@ function TongQuanPage() {
               : healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 95 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/su-co"
-            description="Tỷ lệ thời gian hệ thống sẵn sàng phục vụ trong kỳ quan sát."
           />
           <HealthTile
             icon={<Repeat2 className="h-4 w-4" />}
@@ -361,7 +366,6 @@ function TongQuanPage() {
             tone="default"
             loading={healthQ.isLoading}
             to="/su-co"
-            description="Chỉ số tin cậy: thời gian trung bình giữa hai lần phát sinh sự cố."
           />
           <HealthTile
             icon={<Wrench className="h-4 w-4" />}
@@ -371,18 +375,16 @@ function TongQuanPage() {
             tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
             loading={healthQ.isLoading}
             to="/bao-tri"
-            description="Chỉ số bảo trì: thời gian trung bình để khắc phục một sự cố."
           />
           <HealthTile
             icon={<ShieldCheck className="h-4 w-4" />}
             label="Tuân thủ (Compliance)"
             value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
-            hint="Giấy phép/chứng chỉ còn hiệu lực"
+            hint="Giấy phép/chứng chỉ"
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/giay-phep"
-            description="Tỷ lệ tuân thủ hiệu lực giấy phép khai thác và chứng chỉ."
           />
         </div>
       </div>
@@ -433,7 +435,7 @@ function TongQuanPage() {
                 </Tooltip>
               </TooltipProvider>
             </CardTitle>
-            <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
+            <Link to="/su-co" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {trendQ.isLoading ? (
@@ -470,7 +472,7 @@ function TongQuanPage() {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Phân bổ trạng thái tài sản</CardTitle>
-            <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Tài sản →</Link>
+            <Link to="/thiet-bi" search={{ q: "" }} className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Tài sản →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {statusQ.isLoading ? (
@@ -505,7 +507,7 @@ function TongQuanPage() {
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold">Top 5 hệ thống có nhiều sự cố đang mở</CardTitle>
-          <Link to="/he-thong/cay" className="text-[11px] text-primary hover:underline">Cây hệ thống →</Link>
+          <Link to="/he-thong/cay" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Cây hệ thống →</Link>
         </CardHeader>
         <CardContent>
           {topQ.isLoading ? (
@@ -528,7 +530,7 @@ function TongQuanPage() {
                   <div className="w-40">
                     <div className="h-2 overflow-hidden rounded bg-secondary">
                       <div
-                        className="h-full bg-primary"
+                        className="h-full bg-primary/80"
                         style={{
                           width: `${Math.min(
                             100,
@@ -560,7 +562,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm font-semibold">
               Heatmap sự cố (90 ngày) — thứ × giờ
             </CardTitle>
-            <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
+            <Link to="/su-co" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent>
             <Heatmap data={heatQ.data ?? []} loading={heatQ.isLoading} />
@@ -571,7 +573,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm font-semibold">
               Top thiết bị hỏng lặp (90 ngày)
             </CardTitle>
-            <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
+            <Link to="/thiet-bi" search={{ q: "" }} className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Thiết bị →</Link>
           </CardHeader>
           <CardContent>
             {tbLapQ.isLoading ? (
@@ -606,7 +608,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm font-semibold">
               Hạn giấy phép & kiểm định (90 ngày tới)
             </CardTitle>
-          <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
+          <Link to="/giay-phep" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Giấy phép →</Link>
         </CardHeader>
         <CardContent>
           {expQ.isLoading ? (
@@ -623,7 +625,7 @@ function TongQuanPage() {
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold">Hoạt động gần đây</CardTitle>
-          <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sự cố →</Link>
+          <Link to="/su-co" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Sự cố →</Link>
         </CardHeader>
         <CardContent>
           {feedQ.isLoading ? (
@@ -666,23 +668,28 @@ function KpiCard({
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
-    ok: "text-emerald-600 dark:text-emerald-400",
-    warn: "text-amber-600 dark:text-amber-400",
-    danger: "text-destructive",
+    ok: "text-emerald-700 dark:text-emerald-400",
+    warn: "text-amber-700 dark:text-amber-400",
+    danger: "text-red-700 dark:text-red-400",
+  };
+  const indicatorClasses: Record<string, string> = {
+    default: "bg-border",
+    ok: "bg-emerald-500",
+    warn: "bg-amber-500",
+    danger: "bg-red-500",
   };
   const body = (
     <Card className={cn(link && "cursor-pointer hover:border-primary/40")}>
       <CardContent className="flex flex-col gap-1 p-3">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className={toneClasses[tone]}>{icon}</span>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
         </div>
-        <div className={cn("font-semibold tabular-nums", toneClasses[tone], "text-2xl")}>
+        <div className={cn("font-mono font-semibold tabular-nums", toneClasses[tone], "text-xl")}>
           {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
         </div>
-        {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
         {link && (
-          <span className="mt-1 text-[11px] text-primary">{link.label} →</span>
+          <span className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-primary/70">{link.label} →</span>
         )}
       </CardContent>
     </Card>
@@ -734,28 +741,33 @@ function fmtRelative(iso: string): string {
   return new Date(iso).toLocaleDateString("vi-VN");
 }
 
-function HealthTile({ icon, label, value, hint, tone, loading, to, description }: {
+function HealthTile({ icon, label, value, hint, tone, loading, to }: {
   icon: React.ReactNode; label: string; value: string; hint?: string;
   tone: "default" | "ok" | "warn" | "danger"; loading: boolean; to?: string;
-  description?: string;
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
-    ok: "text-emerald-600 dark:text-emerald-400",
-    warn: "text-amber-600 dark:text-amber-400",
-    danger: "text-destructive",
+    ok: "text-emerald-700 dark:text-emerald-400",
+    warn: "text-amber-700 dark:text-amber-400",
+    danger: "text-red-700 dark:text-red-400",
+  };
+  const indicatorClasses: Record<string, string> = {
+    default: "bg-border",
+    ok: "bg-emerald-500",
+    warn: "bg-amber-500",
+    danger: "bg-red-500",
   };
   const content = (
     <Card className={cn(to && "cursor-pointer")}>
       <CardContent className="flex flex-col gap-1 p-3 transition-colors">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className={toneClasses[tone]}>{icon}</span>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
         </div>
-        <div className={cn("text-2xl font-semibold tabular-nums", toneClasses[tone])}>
+        <div className={cn("text-xl font-mono font-semibold tabular-nums", toneClasses[tone])}>
           {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
         </div>
-        {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+        {hint && <div className="text-[10px] text-muted-foreground/80 font-mono tracking-tight">{hint}</div>}
       </CardContent>
     </Card>
   );
@@ -768,7 +780,7 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
 
 function SectionHeader({ icon, title, to, more }: { icon: React.ReactNode; title: string; to?: string; more?: string }) {
   return (
-    <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+    <div className="mb-3 mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 border-l-2 border-primary/20 pl-2">
       {icon}
       <span>{title}</span>
       {to && more && (
@@ -808,7 +820,7 @@ function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
                   <div
                     key={`c-${dow}-${h}`}
                     className="aspect-square rounded-sm"
-                    style={{ backgroundColor: `hsl(0 84% 60% / ${alpha})` }}
+                    style={{ backgroundColor: `oklch(0.55 0.20 264 / ${alpha})` }}
                     title={`${DOW[dow]} ${h}h: ${n} sự cố`}
                   />
                 );

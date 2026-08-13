@@ -62,10 +62,10 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
   }, [group.status, prevStatus]);
 
   const statusColors = {
-    critical: "bg-red-500 hover:bg-red-600 shadow-[0_0_10px_rgba(239,68,68,0.5)]",
-    warning: "bg-amber-500 hover:bg-amber-600 shadow-[0_0_10px_rgba(245,158,11,0.5)]",
-    normal: "bg-emerald-500 hover:bg-emerald-600 shadow-[0_0_5px_rgba(16,185,129,0.3)]",
-    inactive: "bg-slate-400 hover:bg-slate-500",
+    critical: "bg-red-600/90 hover:bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.2)]",
+    warning: "bg-amber-500/90 hover:bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.2)]",
+    normal: "bg-primary/90 hover:bg-primary shadow-[0_0_4px_rgba(28,81,224,0.15)]",
+    inactive: "bg-slate-300 hover:bg-slate-400 text-slate-700",
   };
 
   return (
