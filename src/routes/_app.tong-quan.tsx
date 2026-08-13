@@ -435,7 +435,7 @@ function TongQuanPage() {
                 </Tooltip>
               </TooltipProvider>
             </CardTitle>
-            <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
+            <Link to="/su-co" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {trendQ.isLoading ? (
@@ -472,7 +472,7 @@ function TongQuanPage() {
         <Card>
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm">Phân bổ trạng thái tài sản</CardTitle>
-            <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Tài sản →</Link>
+            <Link to="/thiet-bi" search={{ q: "" }} className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Tài sản →</Link>
           </CardHeader>
           <CardContent className="h-[280px]">
             {statusQ.isLoading ? (
@@ -507,7 +507,7 @@ function TongQuanPage() {
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold">Top 5 hệ thống có nhiều sự cố đang mở</CardTitle>
-          <Link to="/he-thong/cay" className="text-[11px] text-primary hover:underline">Cây hệ thống →</Link>
+          <Link to="/he-thong/cay" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Cây hệ thống →</Link>
         </CardHeader>
         <CardContent>
           {topQ.isLoading ? (
@@ -562,7 +562,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm font-semibold">
               Heatmap sự cố (90 ngày) — thứ × giờ
             </CardTitle>
-            <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
+            <Link to="/su-co" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Sổ sự cố →</Link>
           </CardHeader>
           <CardContent>
             <Heatmap data={heatQ.data ?? []} loading={heatQ.isLoading} />
@@ -573,7 +573,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm font-semibold">
               Top thiết bị hỏng lặp (90 ngày)
             </CardTitle>
-            <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Thiết bị →</Link>
+            <Link to="/thiet-bi" search={{ q: "" }} className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Thiết bị →</Link>
           </CardHeader>
           <CardContent>
             {tbLapQ.isLoading ? (
@@ -608,7 +608,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm font-semibold">
               Hạn giấy phép & kiểm định (90 ngày tới)
             </CardTitle>
-          <Link to="/giay-phep" className="text-[11px] text-primary hover:underline">Giấy phép →</Link>
+          <Link to="/giay-phep" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Giấy phép →</Link>
         </CardHeader>
         <CardContent>
           {expQ.isLoading ? (
@@ -625,7 +625,7 @@ function TongQuanPage() {
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold">Hoạt động gần đây</CardTitle>
-          <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sự cố →</Link>
+          <Link to="/su-co" className="text-[10px] uppercase font-bold tracking-tight text-primary/70 hover:text-primary transition-colors">Sự cố →</Link>
         </CardHeader>
         <CardContent>
           {feedQ.isLoading ? (
