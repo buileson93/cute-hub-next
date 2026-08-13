@@ -35,10 +35,10 @@ export function PageHeader({
       <div
         className={cn(
           "flex items-center justify-between",
-          UI_DENSITY.HEADER_GAP,
+          "gap-2 data-[density=compact]:gap-1.5",
         )}
       >
-        <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
+        <div className={cn("flex min-w-0 items-center", "gap-2 data-[density=compact]:gap-1.5")}>
           {Icon ? (
             <Icon className="h-5 w-5 shrink-0 text-muted-foreground" />
           ) : null}
