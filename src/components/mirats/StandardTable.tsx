@@ -977,17 +977,37 @@ export function StandardTable<T>({
                         key={rid}
                         data-index={virtualRow.index}
                         ref={rowVirtualizer.measureElement}
-                        className={cn("group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", (onRowClick || selectable) && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
+                        className={cn(
+                          "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
+                          (onRowClick || selectable) && "cursor-pointer", 
+                          isSel && "bg-primary/5", 
+                          expandedRows.has(rid) && "bg-muted/40",
+                          rowClassName?.(r)
+                        )}
                         onClick={() => onRowClick?.(r)}
                       >
+                        {viewMode === "tablet" && (
+                          <TableCell
+                            onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
+                            className="sticky left-0 z-10 bg-card border-r border-border/30 text-center"
+                          >
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                              {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
+                        )}
                         {selectable && (
                           <TableCell
                             onClick={(e) => e.stopPropagation()}
-                            className="sticky left-0 z-10 bg-card border-r border-border/30"
+                            className={cn(
+                              "sticky left-0 z-10 bg-card border-r border-border/30",
+                              viewMode === "tablet" && "left-10"
+                            )}
                           >
                             <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
                           </TableCell>
                         )}
+
                         {shownCols.map((c) => {
                           const savedW = prefs.widths[c.key];
                           return (
