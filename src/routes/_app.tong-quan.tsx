@@ -815,6 +815,7 @@ function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
               })}
             </>
           ))}
+        </div>
       </div>
     </div>
   );
