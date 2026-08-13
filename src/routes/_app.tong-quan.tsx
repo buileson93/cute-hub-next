@@ -674,23 +674,33 @@ function KpiCard({
   };
   const indicatorClasses: Record<string, string> = {
     default: "bg-border",
-    ok: "bg-emerald-500",
-    warn: "bg-amber-500",
-    danger: "bg-red-500",
+    ok: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]",
+    warn: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]",
+    danger: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]",
   };
   const body = (
-    <Card className={cn(link && "cursor-pointer hover:border-primary/40")}>
-      <CardContent className="flex flex-col gap-1 p-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
+    <Card className={cn(link && "cursor-pointer hover:border-primary/40 transition-all hover:shadow-md rounded-2xl border-border/40")}>
+      <CardContent className="flex flex-col gap-1.5 p-4">
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+          <span className={cn("w-2 h-2 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
+          {link && (
+             <TooltipProvider>
+               <Tooltip>
+                 <TooltipTrigger asChild>
+                   <Info className="h-3 w-3 ml-auto opacity-40 hover:opacity-100 transition-opacity" />
+                 </TooltipTrigger>
+                 <TooltipContent>
+                   <p className="text-[10px] uppercase font-bold tracking-tight">Mở {link.label}</p>
+                 </TooltipContent>
+               </Tooltip>
+             </TooltipProvider>
+          )}
         </div>
-        <div className={cn("font-mono font-semibold tabular-nums", toneClasses[tone], "text-xl")}>
-          {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
+        <div className={cn("font-mono font-black tabular-nums tracking-tighter", toneClasses[tone], "text-2xl")}>
+          {loading ? <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
         </div>
-        {link && (
-          <span className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-primary/70">{link.label} →</span>
-        )}
+        {sub && <div className="text-[9px] font-bold uppercase tracking-tight text-muted-foreground/60">{sub}</div>}
       </CardContent>
     </Card>
   );
