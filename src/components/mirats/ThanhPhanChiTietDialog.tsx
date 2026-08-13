@@ -91,7 +91,9 @@ export function ThanhPhanChiTietDialog({
   const handleOpSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ["thanh-phan-chi-tiet", viTri.id] });
     queryClient.invalidateQueries({ queryKey: ["thiet-bi-dang-lap", heThongId] });
+    setOpMode(null);
   };
+
 
 
   // Quyền lắp/tháo/thay tài sản (thu hẹp theo phạm vi của tài khoản con).
