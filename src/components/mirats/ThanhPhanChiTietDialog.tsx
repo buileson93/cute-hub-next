@@ -257,10 +257,19 @@ export function ThanhPhanChiTietDialog({
           />
 
         </div>
+        {opMode && opTarget && (
+          <OperationDialog
+            mode={opMode}
+            target={opTarget}
+            onClose={() => setOpMode(null)}
+            onSuccess={handleOpSuccess}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );
 }
+
 
 /** Trích thông báo lỗi thân thiện từ mọi kiểu error (Error/PostgrestError/plain). */
 function errMsg(e: unknown, fallback: string): string {
@@ -825,15 +834,8 @@ function SoLyLichThanhPhanSection({
           </div>
         </DialogContent>
       </Dialog>
-      {opMode && opTarget && (
-        <OperationDialog
-          mode={opMode}
-          target={opTarget}
-          onClose={() => setOpMode(null)}
-          onSuccess={handleOpSuccess}
-        />
-      )}
     </div>
   );
 }
+
 
