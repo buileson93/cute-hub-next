@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,9 +9,11 @@ import { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } fr
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical } from "lucide-react";
+import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical, Columns, LayoutGrid, Type } from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
+import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -35,7 +38,11 @@ export interface StdColumn<T> {
   filter?: "text" | "cat";
   align?: "left" | "center" | "right";
   sticky?: boolean;
-  minW?: string;
+  minW?: string; // @deprecated: dùng minWidth thay thế
+  width?: number;
+  minWidth?: number;
+  maxWidth?: number;
+  grow?: number;
   cellClassName?: string;
   hidden?: boolean;
   group?: string;
@@ -46,6 +53,7 @@ export interface StdColumn<T> {
   sortValue?: (r: T) => any;
   lineClamp?: number;
 }
+
 
 export interface StandardTableProps<T> {
   rows: T[];
@@ -665,7 +673,32 @@ export function StandardTable<T>({
         </div>
       ) : (
         <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass)}>
-          <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-[13px]">
+          <Table className={cn(
+            "border-separate border-spacing-0 caption-bottom text-[13px]",
+            prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed"
+          )}>
+            <colgroup>
+              {selectable && (
+                <col style={{ width: 40, minWidth: 40 }} />
+              )}
+              {shownCols.map(c => {
+                const savedW = prefs.widths[c.key];
+                const w = savedW || c.width || (c.minW ? parseMinW(c.minW) : 100);
+                const min = c.minWidth || (c.minW ? parseMinW(c.minW) : 100);
+                
+                return (
+                  <col 
+                    key={c.key} 
+                    style={{ 
+                      width: w, 
+                      minWidth: min,
+                      maxWidth: c.maxWidth 
+                    }} 
+                  />
+                );
+              })}
+            </colgroup>
+
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className="hover:bg-transparent h-9 border-b border-border/60">
                 {selectable && (
@@ -705,9 +738,12 @@ export function StandardTable<T>({
                         sortActive && "bg-primary/5"
                       )}
                       style={{ 
-                        width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
-                        minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                        // Cấu trúc colgroup đã lo phần width/minWidth cho layout table-fixed
+                        // Tuy nhiên sticky header vẫn cần width để tính toán offset nếu có nhiều cột sticky
+                        width: "100%", 
+                        height: "100%"
                       }}
+
                     >
                       <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                         {reorder && (

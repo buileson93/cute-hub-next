@@ -24,7 +24,9 @@ export type ColumnPrefs = {
   widths?: Record<string, number>;
   presetId?: string;
   customized?: boolean;
+  layoutMode?: "fluid" | "auto" | "custom";
 };
+
 
 const LS_PREFIX = "mirats:colprefs:v2:";
 
@@ -52,7 +54,9 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
   const [order, setOrderState] = useState<string[]>(() => reconcileOrder(undefined, allKeys));
   const [hidden, setHiddenState] = useState<Set<string>>(() => new Set(defaultHidden));
   const [widths, setWidthsState] = useState<Record<string, number>>({});
+  const [layoutMode, setLayoutModeState] = useState<"fluid" | "auto" | "custom">("fluid");
   const [activePreset, setActivePreset] = useState<string | undefined>();
+
   const [isCustomized, setIsCustomized] = useState(false);
   const [ready, setReady] = useState(false);
   const userIdRef = useRef<string | null>(null);
@@ -67,8 +71,10 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       setOrderState(reconcileOrder(p?.order, allKeys));
       setHiddenState(new Set(p?.hidden ?? defaultHidden));
       setWidthsState(p?.widths ?? {});
+      setLayoutModeState(p?.layoutMode ?? "fluid");
       setActivePreset(p?.presetId);
       setIsCustomized(p?.customized ?? false);
+
     };
 
     // 1) localStorage
@@ -130,21 +136,22 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     const reconciled = reconcileOrder(next, allKeys);
     setOrderState(reconciled);
     setIsCustomized(true);
-    persist({ order: reconciled, hidden: [...hidden], widths, presetId: activePreset, customized: true });
+    persist({ order: reconciled, hidden: [...hidden], widths, presetId: activePreset, customized: true, layoutMode });
   }, [allKeys, persist, activePreset, hidden, widths]);
 
   const setWidth = useCallback((key: string, w: number) => {
     const nextWidths = { ...widths, [key]: Math.round(w) };
     setWidthsState(nextWidths);
     setIsCustomized(true);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true });
+    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true, layoutMode });
+
   }, [widths, order, hidden, persist, activePreset]);
 
   const resetWidth = useCallback((key: string) => {
     const nextWidths = { ...widths };
     delete nextWidths[key];
     setWidthsState(nextWidths);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true });
+    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true, layoutMode });
   }, [widths, order, hidden, persist, activePreset]);
 
   const toggle = useCallback((key: string) => {
@@ -152,7 +159,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     nextHidden.has(key) ? nextHidden.delete(key) : nextHidden.add(key);
     setHiddenState(nextHidden);
     setIsCustomized(true);
-    persist({ order, hidden: [...nextHidden], widths, presetId: activePreset, customized: true });
+    persist({ order, hidden: [...nextHidden], widths, presetId: activePreset, customized: true, layoutMode });
   }, [hidden, order, widths, persist, activePreset]);
 
   const setHidden = useCallback((keys: string[]) => {
@@ -160,7 +167,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     setHiddenState(next);
     setIsCustomized(true);
     setOrderState((o) => {
-      persist({ order: o, hidden: [...next], presetId: activePreset, customized: true });
+      persist({ order: o, hidden: [...next], presetId: activePreset, customized: true, layoutMode });
       return o;
     });
   }, [persist, activePreset]);
@@ -173,7 +180,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     setWidthsState({});
     setActivePreset(undefined);
     setIsCustomized(false);
-    persist({ order: o, hidden: [...h], widths: {}, customized: false });
+    persist({ order: o, hidden: [...h], widths: {}, customized: false, layoutMode: "fluid" });
   }, [allKeys, defaultHidden, persist]);
 
   const setPreset = useCallback((presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
@@ -185,8 +192,20 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     setHiddenState(nextHidden);
     setActivePreset(presetId);
     setIsCustomized(false);
-    persist({ order: reconciledOrder, hidden: [...nextHidden], presetId, customized: false });
+    persist({ order: reconciledOrder, hidden: [...nextHidden], presetId, customized: false, layoutMode });
   }, [allKeys, persist]);
+
+  const setLayoutMode = useCallback((mode: "fluid" | "auto" | "custom") => {
+    setLayoutModeState(mode);
+    setIsCustomized(true);
+    persist({ order, hidden: [...hidden], widths, presetId: activePreset, customized: true, layoutMode: mode });
+  }, [order, hidden, widths, activePreset, persist]);
+
+  const setWidthsBatch = useCallback((nextWidths: Record<string, number>) => {
+    setWidthsState(nextWidths);
+    setIsCustomized(true);
+    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true, layoutMode });
+  }, [order, hidden, activePreset, persist, layoutMode]);
 
   const isHidden = useCallback((key: string) => hidden.has(key), [hidden]);
 
@@ -195,18 +214,22 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       order,
       hidden,
       widths,
+      layoutMode,
       ready,
       activePreset,
       isCustomized,
       setOrder,
       setWidth,
+      setWidthsBatch,
       resetWidth,
       toggle,
       setHidden,
+      setLayoutMode,
       reset,
       isHidden,
       setPreset,
     }),
-    [order, hidden, widths, ready, activePreset, isCustomized, setOrder, setWidth, resetWidth, toggle, setHidden, reset, isHidden, setPreset],
+    [order, hidden, widths, layoutMode, ready, activePreset, isCustomized, setOrder, setWidth, setWidthsBatch, resetWidth, toggle, setHidden, setLayoutMode, reset, isHidden, setPreset],
   );
 }
+
