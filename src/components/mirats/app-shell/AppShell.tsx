@@ -156,7 +156,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className="w-16 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar/80 backdrop-blur-md py-4 flex transition-all duration-300">
+            <aside className="w-18 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-white py-4 flex transition-all duration-300">
+
               <SidebarLogoRail />
               <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
                 {railWorkspaces.map((ws) => (
@@ -200,10 +201,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "h-full shrink-0 flex-col border-r border-border bg-sidebar/30 backdrop-blur-xl flex transition-[width] duration-300 ease-in-out overflow-hidden",
-                (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-60"
+                "h-full shrink-0 flex-col border-r border-border bg-[#F7F9FB] flex transition-[width] duration-300 ease-in-out overflow-hidden",
+                (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-64"
               )}
             >
+
               <div className={cn(
                 "flex h-14 items-center border-b px-6 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
                 (isCollapsed && !isHovered) && "opacity-0"
@@ -221,7 +223,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
+            <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b border-border bg-white px-4 md:px-6">
                <div className="flex flex-1 items-center gap-4">
                   <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
                   <div className="hidden md:block"><TourButton /></div>
