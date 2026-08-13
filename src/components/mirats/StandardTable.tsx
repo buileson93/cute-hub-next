@@ -165,14 +165,19 @@ export function StandardTable<T>({
     };
   }, []);
 
-  const toggleExpand = (rid: string) => {
+  const toggleExpand = useCallback((rid: string) => {
     setExpandedRows(prev => {
       const next = new Set(prev);
       if (next.has(rid)) next.delete(rid);
       else next.add(rid);
       return next;
     });
-  };
+    // Kích hoạt đo lại ảo hoá vì chiều cao dòng thay đổi
+    requestAnimationFrame(() => {
+      rowVirtualizer.measure();
+    });
+  }, [rowVirtualizer]);
+
 
 
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
