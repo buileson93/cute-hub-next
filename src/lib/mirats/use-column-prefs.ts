@@ -59,6 +59,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
   const [isCustomized, setIsCustomized] = useState(false);
   const [ready, setReady] = useState(false);
+  const isDirtyRef = useRef(false);
   const userIdRef = useRef<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -110,7 +111,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
         .maybeSingle();
       if (cancelled) return;
       const cfg = (data?.cau_hinh ?? null) as ColumnPrefs | null;
-      if (cfg && (cfg.order?.length || cfg.hidden)) applyPrefs(cfg);
+      if (cfg && (cfg.order?.length || cfg.hidden) && !isDirtyRef.current) applyPrefs(cfg);
       setReady(true);
     })().catch(() => { if (!cancelled) setReady(true); });
 
@@ -120,9 +121,11 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
   // Lưu (debounce) vào localStorage + tài khoản.
   const persist = useCallback((next: ColumnPrefs) => {
+    isDirtyRef.current = true;
     try { window.localStorage.setItem(lsKey, JSON.stringify(next)); } catch { /* ignore */ }
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
+      isDirtyRef.current = false;
       const uid = userIdRef.current;
       if (!uid) return;
       supabase
