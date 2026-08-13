@@ -815,8 +815,10 @@ function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
               })}
             </>
           ))}
-        </div>
       </div>
+    </div>
+  );
+}
 
 function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
   const rows = data.slice(0, 20);
