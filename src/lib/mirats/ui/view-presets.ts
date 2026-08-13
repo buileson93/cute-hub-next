@@ -11,9 +11,13 @@
 
 export type ViewPreset = {
   id: string;
-  ten: string;
-  moTa: string;
-  cot: string[]; // thứ tự + tập cột hiển thị
+  ten?: string;
+  label?: string; // Tương thích ngược
+  moTa?: string;
+  columns?: string[]; // Ưu tiên trường này
+  cot?: string[];     // Tương thích ngược
+  visibleKeys?: string[]; // Tương thích ngược
+  orderKeys?: string[];
   sapXep?: { key: string; dir: "asc" | "desc" };
   filterMacDinh?: Record<string, string | string[]>;
 };
@@ -27,32 +31,32 @@ export const THIET_BI_PRESETS: ViewPreset[] = [
     id: "co-ban",
     ten: "Cơ bản",
     moTa: "6 cột cốt lõi: Tên, Serial, Model, Trạng thái, Hệ thống, Đơn vị",
-    cot: ["tb", "serial", "mau", "tt", "ht", "dv"],
+    columns: ["tb", "serial", "mau", "tt", "ht", "dv"],
     sapXep: { key: "tb", dir: "asc" },
   },
   {
     id: "vong-doi",
     ten: "Vòng đời",
     moTa: "Thông tin mua sắm, bảo hành, tuổi thọ và khai thác",
-    cot: ["tb", "serial", "namkt", "namsx", "tuoitho", "tt"],
+    columns: ["tb", "serial", "namkt", "namsx", "tuoitho", "tt"],
     sapXep: { key: "namkt", dir: "desc" },
   },
   {
     id: "cap-phat",
     ten: "Cấp phát",
     moTa: "Thông tin ai đang giữ và tình trạng cấp phát",
-    cot: ["tb", "serial", "tt", "capphat", "nguoigiu", "dv"],
+    columns: ["tb", "serial", "tt", "capphat", "nguoigiu", "dv"],
   },
   {
     id: "nha-cc",
     ten: "Nhà cung cấp",
     moTa: "Thông tin NSX, NCC, Part Number và mã tài sản kế toán",
-    cot: ["tb", "serial", "mau", "nsx", "ncc", "bravo", "pn"],
+    columns: ["tb", "serial", "mau", "nsx", "ncc", "bravo", "pn"],
   },
   {
     id: "day-du",
     ten: "Đầy đủ",
     moTa: "Hiển thị toàn bộ các cột thông tin có sẵn",
-    cot: [], // Sẽ được điền toàn bộ allKeys trong logic StandardTable
+    columns: [], // Sẽ được điền toàn bộ allKeys trong logic StandardTable
   },
 ];
