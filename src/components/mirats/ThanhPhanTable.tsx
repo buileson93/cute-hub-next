@@ -394,50 +394,29 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   return (
     <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-3" : "space-y-4 p-4 sm:p-6 lg:p-8"}>
       {!hideHeader && (
-        <div className="flex flex-wrap items-start justify-between gap-3 overflow-hidden">
-          <div className="min-w-0 flex-1">
-            <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-              <Component className="h-6 w-6 text-primary shrink-0" /> 
-              <span className="truncate">Hệ thống — Thành phần & tài sản</span>
-              {editMode ? (
-                <Badge className="ml-1 gap-1 bg-primary/10 text-[11px] text-primary hover:bg-primary/15 shrink-0">
-                  <Pencil className="h-3 w-3" /> Đang chỉnh sửa
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="ml-1 gap-1 border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-400 shrink-0">
-                  <Eye className="h-3 w-3" /> Chỉ tra cứu
-                </Badge>
-              )}
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground line-clamp-2 md:line-clamp-none">
-              Bảng ở mức <span className="font-medium">thành phần hệ thống</span>: nhóm — hệ thống — thành phần — <span className="font-medium">tài sản đang lắp</span> (kế thừa serial, model, chủng loại, NSX, NCC) — vị trí — trạng thái. Thành phần chưa lắp tài sản thì các cột kế thừa để trống.
-            </p>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            {ModeToggle}
-            {allowEdit && editMode && <KhaiThemCumButtons />}
-            {allowEdit ? (
-              <Button
-                size="sm"
-                variant={editMode ? "default" : "outline"}
-                className="gap-1.5"
-                onClick={() => setEditMode((v) => !v)}
-                title="Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"
-              >
-                {editMode ? (<><Check className="h-4 w-4" /> Xong</>) : (<><Pencil className="h-4 w-4" /> Chỉnh sửa</>)}
-              </Button>
-            ) : (
-              <Button size="sm" variant="outline" className="gap-1.5" disabled title="Bạn không có quyền chỉnh sửa">
-                <Lock className="h-4 w-4" /> Chỉ tra cứu
-              </Button>
-            )}
-            <Button asChild size="sm" variant="default" className="gap-1.5">
-              <Link to="/he-thong/cay">
-                <Network className="h-4 w-4" /> Quản lý trong cây hệ thống
-              </Link>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {ModeToggle}
+          {allowEdit && editMode && <KhaiThemCumButtons />}
+          {allowEdit ? (
+            <Button
+              size="sm"
+              variant={editMode ? "default" : "outline"}
+              className="gap-1.5"
+              onClick={() => setEditMode((v) => !v)}
+              title="Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"
+            >
+              {editMode ? (<><Check className="h-4 w-4" /> Xong</>) : (<><Pencil className="h-4 w-4" /> Chỉnh sửa</>)}
             </Button>
-          </div>
+          ) : (
+            <Button size="sm" variant="outline" className="gap-1.5" disabled title="Bạn không có quyền chỉnh sửa">
+              <Lock className="h-4 w-4" /> Chỉ tra cứu
+            </Button>
+          )}
+          <Button asChild size="sm" variant="default" className="gap-1.5">
+            <Link to="/he-thong/cay">
+              <Network className="h-4 w-4" /> Quản lý trong cây hệ thống
+            </Link>
+          </Button>
         </div>
       )}
 

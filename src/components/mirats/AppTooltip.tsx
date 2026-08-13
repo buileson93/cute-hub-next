@@ -1,10 +1,3 @@
-// ============================================================================
-// Task 29 — AppTooltip: wrapper chuẩn cho tooltip ngắn toàn hệ thống.
-// Dựa trên Radix Tooltip (shadcn) nhưng bọc lại để mọi nơi có:
-//  - delay mở nhất quán (200ms)
-//  - side/align hợp lý
-//  - a11y sẵn (focusable trigger)
-// ============================================================================
 import * as React from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -18,14 +11,28 @@ export interface AppTooltipProps {
   className?: string;
 }
 
+/**
+ * Task 29 — AppTooltip: wrapper chuẩn cho tooltip ngắn toàn hệ thống.
+ * Tự động thêm aria-label nếu children là button hoặc có role="button".
+ */
 export function AppTooltip({
   noiDung, children, ben = "top", canhLe = "center", treMo = 200, className,
 }: AppTooltipProps) {
   if (noiDung == null || noiDung === "") return children;
+
+  // Tự động bổ sung aria-label cho các phần tử tương tác nếu chưa có
+  const interactiveTypes = ['button', 'a'];
+  const childType = children.type as any;
+  const isInteractive = interactiveTypes.includes(childType) || (children.props as any)?.role === 'button';
+  
+  const clonedElement = isInteractive && !(children.props as any)?.['aria-label'] && typeof noiDung === 'string'
+    ? React.cloneElement(children, { 'aria-label': noiDung } as any)
+    : children;
+
   return (
     <TooltipProvider delayDuration={treMo} skipDelayDuration={100}>
       <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipTrigger asChild>{clonedElement}</TooltipTrigger>
         <TooltipContent side={ben} align={canhLe} className={className}>
           {noiDung}
         </TooltipContent>
