@@ -1,13 +1,11 @@
 // ============================================================================
 // Dialog xác nhận THÁO tài sản khỏi thành phần hệ thống.
-// - Bắt buộc chọn `dm_vi_tri` đích (kho/xưởng…) trước khi gọi RPC
-//   `thao_tai_san_khoi_thanh_phan(p_gan_id, p_new_vi_tri_id, ...)`.
-// - Ghi audit `thao_tai_san` qua `log_app_event` (do hook đảm nhận).
+// DEPRECATED: Vui lòng sử dụng OperationDialog để có trải nghiệm thống nhất.
+// Giữ lại interface để tương thích ngược tạm thời.
 // ============================================================================
-import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { ArrowRightLeft, PackageMinus } from "lucide-react";
+import { useEffect } from "react";
+import { OperationDialog } from "@/components/mirats/OperationDialog";
+
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
