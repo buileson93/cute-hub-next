@@ -6,7 +6,7 @@ import { PageBody } from "@/components/mirats/PageBody";
 
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
-  CartesianGrid,
+  CartesianGrid, AreaChart, Area,
 } from "recharts";
 import {
   HardDrive, Activity, PauseCircle, AlertOctagon, CalendarClock, CalendarX,
