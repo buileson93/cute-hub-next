@@ -231,34 +231,38 @@ function AccountPage() {
 
 function DisplayDensityCard() {
   const [d, setD] = useDensity();
-  const compact = d === "compact";
+  
+  const options = [
+    { value: "compact", label: "Gọn", desc: "Tiết kiệm không gian, hiển thị nhiều dữ liệu" },
+    { value: "comfortable", label: "Vừa", desc: "Cân bằng, mặc định hệ thống" },
+    { value: "spacious", label: "Thoáng", desc: "Dễ nhìn, khoảng cách rộng rãi" }
+  ];
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Giao diện</CardTitle>
         <CardDescription>
-          Chế độ hiển thị cho toàn bộ ứng dụng. Chế độ Gọn thu nhỏ nút/icon/bảng để xem được nhiều dữ liệu hơn.
+          Chế độ hiển thị cho toàn bộ ứng dụng. Thay đổi mật độ các thành phần như bảng, nút và khoảng cách.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            variant={!compact ? "default" : "outline"}
-            onClick={() => setD("comfortable")}
-          >
-            Thường
-          </Button>
-          <Button
-            size="sm"
-            variant={compact ? "default" : "outline"}
-            onClick={() => setD("compact")}
-          >
-            Gọn
-          </Button>
-          <span className="ml-2 text-xs text-muted-foreground">
-            Hiện tại: {compact ? "Gọn" : "Thường"}
-          </span>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {options.map((opt) => (
+              <Button
+                key={opt.value}
+                size="sm"
+                variant={d === opt.value ? "default" : "outline"}
+                onClick={() => setD(opt.value as any)}
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground italic">
+            {options.find(o => o.value === d)?.desc}
+          </p>
         </div>
       </CardContent>
     </Card>

@@ -15,6 +15,7 @@ import {
   GripVertical, Columns, LayoutGrid, Type, 
   ChevronRight, ChevronDown, MoreVertical 
 } from "lucide-react";
+import { useDensity } from "@/components/mirats/DensityToggle";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -441,15 +442,28 @@ export function StandardTable<T>({
 
 
   const isTest = typeof window !== 'undefined' && (window as any).process?.env?.NODE_ENV === 'test';
+  const [density] = useDensity();
+
+  const estimateRowHeight = useMemo(() => {
+    if (density === "compact") return 32;
+    if (density === "comfortable") return 40;
+    return 48;
+  }, [density]);
+
   const rowVirtualizer = useVirtualizer({
     count: display.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 36,
-    overscan: isTest ? 100 : 10,
+    estimateSize: () => estimateRowHeight,
+    overscan: isTest ? 100 : 15,
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
     ...virtualizerOptions,
   });
+
+  // Re-measure when density changes
+  useEffect(() => {
+    rowVirtualizer.measure();
+  }, [density, rowVirtualizer]);
 
   // Sync expanded state with virtualizer
   useEffect(() => {
@@ -471,9 +485,9 @@ export function StandardTable<T>({
   // Force render all items in JSDOM tests since scrolling/sizing is broken
   const displayItems = isTest ? display.map((d, index) => ({
     index,
-    start: index * 36,
-    size: 36,
-    end: (index + 1) * 36,
+    start: index * estimateRowHeight,
+    size: estimateRowHeight,
+    end: (index + 1) * estimateRowHeight,
     lane: 0,
     key: index,
   })) : virtualRows;
@@ -852,7 +866,10 @@ export function StandardTable<T>({
       ) : (
         <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass)}>
           <Table className={cn(
-            "border-separate border-spacing-0 caption-bottom text-[13px]",
+            "border-separate border-spacing-0 caption-bottom",
+            density === "compact" && "text-[12px]",
+            density === "comfortable" && "text-[13px]",
+            density === "spacious" && "text-[14px]",
             prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed"
           )}>
             <colgroup>
@@ -882,7 +899,10 @@ export function StandardTable<T>({
             </colgroup>
 
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
-              <TableRow className="hover:bg-transparent h-9 border-b border-border/60">
+              <TableRow className={cn(
+                "hover:bg-transparent border-b border-border/60",
+                density === "compact" ? "h-8" : density === "comfortable" ? "h-10" : "h-12"
+              )}>
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
                     {/* Placeholder for expansion column header */}
@@ -1060,7 +1080,7 @@ export function StandardTable<T>({
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0 pointer-events-none" />
                     </TableRow>
                   )}
 
@@ -1072,7 +1092,10 @@ export function StandardTable<T>({
                       <React.Fragment key={rid}>
                         <TableRow
                           data-index={virtualRow.index}
-                          ref={rowVirtualizer.measureElement}
+                          ref={(el) => {
+                            rowVirtualizer.measureElement(el);
+                            // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
+                          }}
                           className={cn(
                             "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
                             (onRowClick || selectable) && "cursor-pointer", 
@@ -1111,6 +1134,7 @@ export function StandardTable<T>({
                                 key={c.key}
                                 className={cn(
                                   c.cellClassName,
+                                  density === "compact" ? "px-2 py-1" : density === "comfortable" ? "px-3 py-1.5" : "px-4 py-2",
                                   c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
@@ -1172,7 +1196,7 @@ export function StandardTable<T>({
 
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0 pointer-events-none" />
                     </TableRow>
                   )}
 
