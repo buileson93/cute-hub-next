@@ -258,7 +258,7 @@ function TongQuanPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 overflow-auto">
+    <PageBody className="overflow-auto">
       {/* Thanh tiêu đề + bộ lọc */}
       <div className="flex flex-wrap items-end gap-3">
         <div className="mr-auto">
@@ -817,7 +817,7 @@ function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
           ))}
         </div>
       </div>
-    </div>
+    </PageBody>
   );
 }
 
