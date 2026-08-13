@@ -85,7 +85,7 @@ function VatTuPage() {
   }, [ton.data, q]);
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="flex flex-col gap-4 p-4">
       <PageHeader
         icon={Package}
         title="Vật tư & Kho"
