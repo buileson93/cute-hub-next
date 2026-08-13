@@ -414,7 +414,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {ModeToggle}
             {allowEdit && editMode && <KhaiThemCumButtons />}
             {allowEdit ? (
