@@ -1,32 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
-import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
-import { 
-  useDashboardBrief, useUserAuditLog 
-} from "@/lib/mirats/dashboard.functions";
+import { useDashboardBrief } from "@/lib/mirats/dashboard.functions";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
 import { useQuery } from "@tanstack/react-query";
-import { useUserPref } from "@/hooks/use-user-pref";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
-  CartesianGrid, AreaChart, Area
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from "recharts";
 import { supabase } from "@/integrations/backend/client";
 import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
 import { LiveTimeline } from "@/components/mirats/dashboard/LiveTimeline";
-import { useScope } from "@/lib/mirats/scope";
-import { availability, mttr, mtbf, formatKpiValue } from "@/lib/mirats/reliability";
-import { healthDetail } from "@/lib/mirats/metrics";
-import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
+import { formatKpiValue } from "@/lib/mirats/reliability";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -70,13 +60,11 @@ export const Route = createFileRoute("/_app/tong-quan")({
 });
 
 function OverviewReport() {
-  const { profile } = useSession();
   const {
     reliabilityAvail: reliability,
     mttrKpi,
     mtbfKpi,
     healthStats,
-    lowHealthDevices,
     pmKpi,
     scope
   } = useUnifiedDashboardStats();
@@ -93,10 +81,6 @@ function OverviewReport() {
   const completeness = (statsQuery.data as any) || {};
   const lowCompleteness = (overviewQuery.data as any)?.lowCompleteness || [];
   
-  const brief = useDashboardBrief(scope.donViCode ? [scope.donViCode] : undefined);
-  
-  const [activeTab, setActiveTab] = useUserPref("overview:main-chart-tab", "trend");
-
   const trendQ = useQuery({
     queryKey: ["dashboard_su_co_by_month_report", scope.donViCode],
     queryFn: async () => {
@@ -135,6 +119,7 @@ function OverviewReport() {
       .map((r) => ({
         ...r,
         thangHT: new Date(String(r.thang)).toLocaleDateString("vi-VN", { month: "2-digit", year: "2-digit" }),
+        value: Object.values(r).filter(v => typeof v === 'number').reduce((a, b) => a + (b as number), 0)
       }));
   }, [trendQ.data]);
 
@@ -161,25 +146,20 @@ function OverviewReport() {
 
   return (
     <PageBody>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-        <div className="flex-1">
-          <PageHeader
-            title="Báo cáo Tổng quan KPI"
-            icon="entity.chart"
-            description="Dữ liệu phân tích hiệu suất vận hành, độ tin cậy và sức khỏe tài sản toàn hệ thống."
-          />
-        </div>
-        <div className="flex items-center gap-2">
-           <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleExport}
-            className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
-          >
-            <Icon name="action.download" className="text-primary" />
-            <span className="font-bold text-xs uppercase tracking-wider">Xuất PDF</span>
-          </Button>
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        <PageHeader
+          title="Báo cáo Tổng quan KPI"
+          icon="entity.chart"
+        />
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleExport}
+          className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
+        >
+          <Icon name="action.download" className="text-primary" />
+          <span className="font-bold text-[11px] uppercase tracking-wider">Xuất PDF</span>
+        </Button>
       </div>
 
       <div className="mt-2 -mx-6">
@@ -191,63 +171,59 @@ function OverviewReport() {
           {/* TẦNG 1: CHỈ SỐ THEN CHỐT */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <KpiCard
-              title="Sẵn sàng"
+              label="Sẵn sàng"
               value={formatKpiValue(reliability).replace('%', '')}
               unit="%"
               icon="entity.security"
-              target="Target: 99%"
-              description="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua."
-              sparklineData={trendData.map(d => ({ value: Object.values(d).filter(v => typeof v === 'number').reduce((a, b) => a + (b as number), 0) }))}
+              tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
+              sparklineData={trendData}
             />
 
             <KpiCard
-              title="MTTR"
+              label="MTTR"
               value={formatKpiValue(mttrKpi).replace(' phút', '')}
               unit="phút"
               icon="status.power"
-              status="info"
-              target="Target: 24h"
-              description="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+              status="attention"
+              tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair). Target: 24h"
             />
 
             <KpiCard
-              title="MTBF"
+              label="MTBF"
               value={formatKpiValue(mtbfKpi).replace(' ngày', '')}
               unit="ngày"
               icon="entity.securityAlert"
               status="warning"
-              description="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
+              tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
             />
 
             <KpiCard
-              title="Bảo trì"
+              label="Bảo trì"
               value={pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result).replace('%', '')}
               unit="%"
               icon="status.success"
               isLoading={pmKpi.isLoading}
-              description="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
+              tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
             />
           </div>
 
           {/* TẦNG 2: BIỂU ĐỒ XU HƯỚNG & TRẠNG THÁI */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="md:col-span-2 shadow-sm">
-              <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Icon name="entity.chart" className="text-primary" /> Phân tích xu hướng sự cố
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                  <Icon name="entity.chart" size="tiny" className="text-primary" /> Phân tích xu hướng sự cố
                 </CardTitle>
               </CardHeader>
-              <CardContent className="h-[350px] pt-6">
+              <CardContent className="h-[300px] pt-6">
                 {trendQ.isLoading ? (
-                  <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ xu hướng...</div>
+                  <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải...</div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={trendData}>
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.3} vertical={false} />
                       <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
                       <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                      <Legend wrapperStyle={{ fontSize: 11, paddingTop: '10px' }} />
+                      <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '8px' }} />
                       {mucDoKeys.map((k) => (
                         <Bar
                           key={k}
@@ -255,7 +231,7 @@ function OverviewReport() {
                           stackId="s"
                           fill={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
                           radius={[2, 2, 0, 0]}
-                          barSize={24}
+                          barSize={20}
                         />
                       ))}
                     </BarChart>
@@ -265,23 +241,23 @@ function OverviewReport() {
             </Card>
 
             <Card className="md:col-span-1 shadow-sm">
-              <CardHeader className="pb-2 border-b bg-muted/20">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Icon name="entity.activity" className="text-primary" /> Trạng thái tài sản
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                  <Icon name="entity.activity" size="tiny" className="text-primary" /> Trạng thái tài sản
                 </CardTitle>
               </CardHeader>
-              <CardContent className="h-[350px] pt-6">
+              <CardContent className="h-[300px] pt-6">
                 {statusQ.isLoading ? (
-                  <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ trạng thái...</div>
+                  <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải...</div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={statusQ.data ?? []}
                         dataKey="so_luong"
                         nameKey="ten"
                         innerRadius={60}
-                        outerRadius={90}
+                        outerRadius={85}
                         paddingAngle={4}
                       >
                         {(statusQ.data ?? []).map((_, i) => (
@@ -300,72 +276,65 @@ function OverviewReport() {
           {/* TẦNG 3: CHI TIẾT SỨC KHOẺ & CHẤT LƯỢNG DỮ LIỆU */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="shadow-sm">
-              <CardHeader className="pb-2 border-b bg-muted/10">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Icon name="entity.activity" className="text-blue-600 dark:text-blue-400" /> Phân bố sức khoẻ (A/B/C/D)
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                  <Icon name="entity.activity" size="tiny" className="text-primary" /> Phân bố sức khoẻ (A/B/C/D)
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  {[
-                    { label: "Sức khoẻ A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
-                    { label: "Sức khoẻ B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
-                    { label: "Sức khoẻ C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
-                    { label: "Sức khoẻ D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
-                  ].map((s) => (
-                    <div key={s.label} className="flex flex-col gap-1.5">
-                      <div className="flex justify-between items-end">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                          <span className="text-[11px] font-bold uppercase tracking-tight">{s.label}</span>
-                        </div>
-                        <span className="text-[13px] font-black tabular-nums">{s.count}</span>
-                      </div>
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="h-full transition-all duration-1000" 
-                          style={{ 
-                            width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
-                            backgroundColor: s.color 
-                          }} 
-                        />
-                      </div>
-                      <div className="text-[11px] text-muted-foreground italic pl-4">{s.desc}</div>
+              <CardContent className="pt-6 space-y-4">
+                {[
+                  { label: "A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
+                  { label: "B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
+                  { label: "C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
+                  { label: "D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
+                ].map((s) => (
+                  <div key={s.label} className="space-y-1.5">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[11px] font-bold uppercase text-muted-foreground">{s.label}</span>
+                      <span className="text-[13px] font-black tabular-nums">{s.count}</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full transition-all duration-1000" 
+                        style={{ 
+                          width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
+                          backgroundColor: s.color 
+                        }} 
+                      />
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
 
             <Card className="shadow-sm">
-              <CardHeader className="pb-2 border-b bg-muted/10">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Icon name="status.sparkle" className="text-blue-600 dark:text-blue-400" /> Chất lượng dữ liệu hoàn thiện
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                  <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ hoàn thiện
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                  <div className="flex items-center justify-center mb-6">
-                    <div className="relative w-32 h-32 flex items-center justify-center">
+                    <div className="relative w-28 h-28 flex items-center justify-center">
                       <svg className="w-full h-full transform -rotate-90">
-                        <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-muted/30" />
-                        <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="12" fill="transparent" 
-                          strokeDasharray={364.4} 
-                          strokeDashoffset={364.4 * (1 - (completeness.avg_thiet_bi || 0) / 100)} 
-                          className="text-blue-600 dark:text-blue-400 transition-all duration-1000 ease-in-out" 
+                        <circle cx="56" cy="56" r="50" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-muted/30" />
+                        <circle cx="56" cy="56" r="50" stroke="currentColor" strokeWidth="10" fill="transparent" 
+                          strokeDasharray={314} 
+                          strokeDashoffset={314 * (1 - (completeness.avg_thiet_bi || 0) / 100)} 
+                          className="text-primary transition-all duration-1000 ease-in-out" 
                         />
                       </svg>
                       <div className="absolute flex flex-col items-center">
-                        <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{completeness.avg_thiet_bi || 0}%</span>
-                        <span className="text-[11px] uppercase font-bold text-muted-foreground">Toàn hệ thống</span>
+                        <span className="text-xl font-black text-primary">{completeness.avg_thiet_bi || 0}%</span>
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Toàn hệ</span>
                       </div>
                     </div>
                  </div>
                  <div className="space-y-2">
-                    <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Top thiết bị cần hoàn thiện hồ sơ</div>
                     {lowCompleteness.slice(0, 4).map((tb: any) => (
-                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-2 rounded-lg hover:bg-blue-500/5 transition-colors border border-transparent hover:border-blue-500/10">
+                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] p-1.5 rounded-lg hover:bg-muted transition-colors">
                         <span className="truncate flex-1 pr-2 font-medium">{tb.ten_thiet_bi}</span>
-                        <span className="font-black text-red-500 dark:text-red-400 tabular-nums">{tb.completeness_pct}%</span>
+                        <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
                       </Link>
                     ))}
                  </div>
@@ -374,106 +343,19 @@ function OverviewReport() {
           </div>
         </div>
 
-        {/* CỘT PHẢI: NHẬT KÝ & THÔNG TIN BỔ SUNG */}
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2 border-b bg-muted/10">
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Icon name="entity.history" className="text-primary" /> Nhật ký vận hành (Live)
+        {/* CỘT PHẢI: NHẬT KÝ */}
+        <div className="lg:col-span-1">
+          <Card className="shadow-sm h-full flex flex-col">
+            <CardHeader className="py-3 border-b bg-muted/5">
+              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 h-[600px]">
-              <div className="h-full py-4 px-2">
-                <LiveTimeline />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm bg-primary/5 border-primary/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                <Icon name="entity.security" size="small" /> Hệ thống bảo mật
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-[11px] text-primary/70 italic leading-relaxed">
-                Tất cả dữ liệu được mã hóa và bảo vệ theo tiêu chuẩn MIRATS 2.0. Nhật ký truy cập được lưu trữ phục vụ mục đích hậu kiểm.
-              </div>
-              <div className="mt-4 flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Sẵn sàng phục vụ
-                </div>
-                <div className="text-[9px] text-muted-foreground">
-                  Phát hành: 13/08/2026 15:30 (UTC)
-                </div>
-              </div>
+            <CardContent className="flex-1 p-0 overflow-hidden">
+              <LiveTimeline />
             </CardContent>
           </Card>
         </div>
-      </div>
-      
-      {/* TẦNG CUỐI: DANH SÁCH CHI TIẾT CẦN CHÚ Ý */}
-      <div className="mt-6 mb-12">
-        <Card className="shadow-sm overflow-hidden">
-          <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600 dark:text-red-400">
-              <Icon name="entity.securityAlert" className="text-red-600 dark:text-red-400" /> Phân tích rủi ro tài sản (Sức khỏe C & D)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/30 text-[11px] uppercase font-bold text-muted-foreground tracking-wider">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Tài sản / Thiết bị</th>
-                    <th className="px-4 py-3 text-center">Xếp hạng</th>
-                    <th className="px-4 py-3 text-left">Khuyến nghị vận hành & bảo trì</th>
-                    <th className="px-4 py-3 text-right">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {lowHealthDevices.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground italic">
-                        Hiện chưa ghi nhận tài sản nào có rủi ro vận hành cao.
-                      </td>
-                    </tr>
-                  ) : (
-                    lowHealthDevices.map(({ device, health }) => (
-                      <tr key={device.ma_thiet_bi} className="hover:bg-muted/5 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="font-bold text-[13px]">{device.ten}</div>
-                          <div className="text-[11px] text-muted-foreground uppercase tracking-tighter">{device.ma_thiet_bi}</div>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={cn(
-                            "inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-white text-[12px]",
-                            health.xepLoai === 'D' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]" : "bg-orange-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]"
-                          )}>
-                            {health.xepLoai}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-[12px] font-medium leading-relaxed">{health.khuyenNghi}</div>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <Link 
-                            to="/qr/thiet-bi/$id" 
-                            params={{ id: device.ma_thiet_bi } as any}
-                            className="text-[11px] font-bold text-primary hover:underline bg-primary/5 px-2 py-1 rounded uppercase tracking-tighter"
-                          >
-                            Hồ sơ lý lịch →
-                          </Link>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </PageBody>
   );
