@@ -444,26 +444,36 @@ function TongQuanPage() {
               <EmptyChart>Chưa có sự cố trong 12 tháng qua.</EmptyChart>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="thangHT" fontSize={11} />
-                  <YAxis fontSize={11} allowDecimals={false} />
-                  <RechartsTooltip />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                <AreaChart data={trendData}>
+                  <defs>
+                    {mucDoKeys.map((k, i) => {
+                      const color = MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"];
+                      return (
+                        <linearGradient key={`grad-${k}`} id={`grad-${k}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor={color} stopOpacity={0}/>
+                        </linearGradient>
+                      );
+                    })}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
+                  <XAxis dataKey="thangHT" fontSize={10} axisLine={false} tickLine={false} fontWeight="bold" />
+                  <YAxis fontSize={10} axisLine={false} tickLine={false} allowDecimals={false} fontWeight="bold" />
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontSize: '11px', fontWeight: 'bold' }}
+                  />
                   {mucDoKeys.map((k) => (
-                    <Bar
+                    <Area
                       key={k}
+                      type="monotone"
                       dataKey={k}
-                      stackId="s"
-                      fill={
-                        MUC_DO_COLORS[
-                          Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"
-                        ]
-                      }
-                      radius={[3, 3, 0, 0]}
+                      stackId="1"
+                      stroke={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
+                      fill={`url(#grad-${k})`}
+                      strokeWidth={2}
                     />
                   ))}
-                </BarChart>
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </CardContent>
