@@ -188,7 +188,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
 
   const setPreset = useCallback((presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
     const reconciledOrder = reconcileOrder(orderKeys ?? allKeys, allKeys);
-    const hiddenKeys = allKeys.filter(k => !visibleKeys.includes(k));
+    const hiddenKeys = allKeys.filter(k => k !== "actions" && !visibleKeys.includes(k));
     const nextHidden = new Set(hiddenKeys);
 
     setOrderState(reconciledOrder);

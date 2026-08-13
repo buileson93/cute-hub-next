@@ -238,7 +238,10 @@ export function StandardTable<T>({
     if (presets && prefs.setPreset && prefs.ready) {
       const currentPreset = presets.find(p => p.id === activePreset);
       if (currentPreset && !prefs.isCustomized && prefs.activePreset !== activePreset) {
-        const visibleKeys = currentPreset.visibleKeys || currentPreset.columns || currentPreset.cot || [];
+        let visibleKeys = currentPreset.columns || currentPreset.cot || currentPreset.visibleKeys || [];
+        if (currentPreset.id === "day-du" && visibleKeys.length === 0) {
+          visibleKeys = allKeys;
+        }
         prefs.setPreset(currentPreset.id, visibleKeys, currentPreset.orderKeys || visibleKeys);
       }
     }
