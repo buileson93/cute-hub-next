@@ -33,6 +33,9 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
                 paddingAngle={5}
                 dataKey="value"
                 stroke="none"
+                isAnimationActive={true}
+                animationBegin={0}
+                animationDuration={1000}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
