@@ -4,11 +4,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical } from "lucide-react";
+
 import { normalize } from "@/lib/mirats/global-search";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,7 +83,11 @@ export interface StandardTableProps<T> {
   activePreset?: string;
   hideReorderToggle?: boolean;
   editMode?: boolean;
+  onColumnsChange?: (visibleKeys: string[]) => void;
+  virtualizerOptions?: any;
 }
+
+
 
 
 export function StandardTable<T>({
@@ -96,7 +101,8 @@ export function StandardTable<T>({
   emptyText = "Không có dữ liệu",
   emptyContent,
   errorContent,
-  trangThai,
+  trangThai = {},
+
   loadingContent,
   onRowClick,
   rowClassName,
@@ -112,14 +118,19 @@ export function StandardTable<T>({
   activePreset,
   hideReorderToggle,
   editMode,
+  onColumnsChange,
+  virtualizerOptions,
 }: StandardTableProps<T>) {
+
+
 
   const [containerWidth, setContainerWidth] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!parentRef.current) return;
+    if (!parentRef.current || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver((entries) => {
+
       for (const entry of entries) {
         setContainerWidth(entry.contentRect.width);
       }
@@ -179,6 +190,14 @@ export function StandardTable<T>({
       return containerWidth >= threshold;
     });
   }, [sortedColumns, tableKey, prefs.hidden, containerWidth]);
+
+  // Sync visible keys ra ngoài nếu có yêu cầu
+  useEffect(() => {
+    if (onColumnsChange) {
+      onColumnsChange(shownCols.map(c => c.key));
+    }
+  }, [shownCols, onColumnsChange]);
+
 
   // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
   // bỏ qua Tầng 2 (hideBelow) nhưng vẫn áp dụng Tầng 1 (User Prefs) và Tầng 3 (Hardcoded hidden)
@@ -355,16 +374,40 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
-    overscan: isTest ? display.length : 10,
+    overscan: isTest ? 100 : 10,
+    initialOffset: isTest ? 0 : undefined,
+    initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
+    ...virtualizerOptions,
   });
 
+
+
+
+
+
+
+
+
+
   const virtualRows = rowVirtualizer.getVirtualItems();
+
+  // Force render all items in JSDOM tests since scrolling/sizing is broken
+  const displayItems = isTest ? display.map((d, index) => ({
+    index,
+    start: index * 36,
+    size: 36,
+    end: (index + 1) * 36,
+    lane: 0,
+    key: index,
+  })) : virtualRows;
+
   const totalSize = rowVirtualizer.getTotalSize();
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
+  const paddingTop = displayItems.length > 0 ? displayItems[0]?.start || 0 : 0;
   const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
+    displayItems.length > 0
+      ? totalSize - (displayItems[displayItems.length - 1]?.end || 0)
       : 0;
+
 
   // --- Kéo đổi độ rộng cột ---
   const isDragging = useRef<string | null>(null);
@@ -754,7 +797,7 @@ export function StandardTable<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trangThai?.loi ? (
+              {trangThai.loi ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     {errorContent ?? (
@@ -764,7 +807,7 @@ export function StandardTable<T>({
                     )}
                   </TableCell>
                 </TableRow>
-              ) : trangThai?.dangTai ? (
+              ) : trangThai.dangTai ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     {loadingContent ?? <TableSkeleton cols={shownCols.length} />}
@@ -793,7 +836,7 @@ export function StandardTable<T>({
                       <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
                     </TableRow>
                   )}
-                  {virtualRows.map((virtualRow) => {
+                  {displayItems.map((virtualRow) => {
                     const r = rows[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
