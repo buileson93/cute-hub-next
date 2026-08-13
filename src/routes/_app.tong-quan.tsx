@@ -648,7 +648,7 @@ function TongQuanPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageBody>
   );
 }
 
@@ -817,9 +817,6 @@ function Heatmap({ data, loading }: { data: HeatCell[]; loading: boolean }) {
           ))}
         </div>
       </div>
-    </PageBody>
-  );
-}
 
 function ExpiryTimeline({ data }: { data: ExpiryRow[] }) {
   const rows = data.slice(0, 20);
