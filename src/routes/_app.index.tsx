@@ -283,14 +283,14 @@ function Dashboard() {
               <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
                   <div className="text-2xl font-black text-amber-600 dark:text-amber-400 tabular-nums">
-                    {brief.isLoading ? "..." : (brief.data?.pm_hom_today ?? 0) + (brief.data?.pm_qua_han ?? 0)}
+                    {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
                   </div>
                   <div className="text-[11px] text-muted-foreground uppercase font-bold">Công việc</div>
                 </div>
                 <div className="space-y-1 min-h-[80px]">
                   <Link to="/bao-tri/pm" className="flex justify-between items-center text-[12px] p-1 rounded hover:bg-amber-500/5 transition-colors">
                     <span>Đến hạn hôm nay</span>
-                    <span className="font-bold tabular-nums">{brief.data?.pm_hom_today ?? 0}</span>
+                    <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
                   </Link>
                   <Link to="/bao-tri/pm" className="flex justify-between items-center text-[12px] p-1 rounded hover:bg-amber-500/5 transition-colors">
                     <span>Quá hạn chưa xong</span>
