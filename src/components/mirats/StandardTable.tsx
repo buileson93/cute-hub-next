@@ -9,13 +9,12 @@ import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { Icon } from "@/components/mirats/ui/Icon";
+import { useDensity } from "@/components/mirats/DensityToggle";
 import { 
-  Maximize2, RotateCcw, SlidersHorizontal, Filter, 
-  ArrowUp, ArrowDown, ChevronsUpDown, X, Search, 
-  GripVertical, Columns, LayoutGrid, Type, 
+  GripVertical, 
   ChevronRight, ChevronDown, MoreVertical 
 } from "lucide-react";
-import { useDensity } from "@/components/mirats/DensityToggle";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -639,7 +638,7 @@ export function StandardTable<T>({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" size="sm" className="h-8 gap-2 ml-1">
-                        <Filter className="h-4 w-4" />
+                        <Icon name="table.filter" size="small" />
                         <span>Bộ lọc</span>
                       </Button>
                     </DropdownMenuTrigger>
@@ -685,7 +684,7 @@ export function StandardTable<T>({
                               className="h-8 gap-2 ml-1"
                               disabled={!prefs.ready}
                             >
-                              <SlidersHorizontal className="h-4 w-4" />
+                              <Icon name="table.settings" size="small" />
                               <span className="hidden sm:inline">Cột hiển thị</span>
                             </Button>
                           </DropdownMenuTrigger>
@@ -747,7 +746,7 @@ export function StandardTable<T>({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8 ml-1" onClick={autoFitWidths}>
-                        <Maximize2 className="h-4 w-4" />
+                        <Icon name="table.maximize" size="small" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Tự căn theo nội dung</TooltipContent>
@@ -755,7 +754,7 @@ export function StandardTable<T>({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
-                        <RotateCcw className="h-4 w-4" />
+                        <Icon name="table.reset" size="small" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Đặt lại độ rộng mọi cột</TooltipContent>
@@ -786,7 +785,7 @@ export function StandardTable<T>({
                   })}
                   className="hover:text-destructive transition-colors"
                 >
-                  <X className="h-3 w-3" />
+                  <Icon name="action.close" size="tiny" />
                 </button>
               </Badge>
             );
@@ -802,7 +801,7 @@ export function StandardTable<T>({
                   onClick={() => clearCat(key)}
                   className="hover:text-destructive transition-colors"
                 >
-                  <X className="h-3 w-3" />
+                  <Icon name="action.close" size="tiny" />
                 </button>
               </Badge>
             );
@@ -901,14 +900,14 @@ export function StandardTable<T>({
                           className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
                           onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
                         >
-                          {expandedRows.has(rid) ? (
+                        {expandedRows.has(rid) ? (
                             <>
-                              <ChevronDown className="h-3.5 w-3.5" />
+                              <Icon name="table.collapse" size="tiny" />
                               <span>Thu gọn</span>
                             </>
                           ) : (
                             <>
-                              <ChevronRight className="h-3.5 w-3.5" />
+                              <Icon name="table.expand" size="tiny" />
                               <span>Xem thêm ({detailCols.length})</span>
                             </>
                           )}
@@ -1093,10 +1092,10 @@ export function StandardTable<T>({
                             <span className="truncate">{c.label}</span>
                             {sortActive ? (
                               sort!.dir === "asc"
-                                ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" aria-hidden />
-                                : <ArrowDown className="h-3 w-3 shrink-0 text-primary" aria-hidden />
+                                ? <Icon name="table.sortAsc" size="tiny" className="text-primary" />
+                                : <Icon name="table.sortDesc" size="tiny" className="text-primary" />
                             ) : (
-                              <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" aria-hidden />
+                              <Icon name="table.sortNone" size="tiny" className="text-muted-foreground/30 group-hover:text-muted-foreground/60" />
                             )}
                           </button>
                         ) : (
@@ -1331,7 +1330,7 @@ function ColFilter({
             e.stopPropagation();
           }}
         >
-          <Filter className={cn("h-3 w-3", active && "fill-current")} />
+          <Icon name={active ? "table.filterActive" : "table.filter"} size="tiny" className={cn(active && "fill-current")} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()} side="bottom">
@@ -1355,7 +1354,7 @@ function ColFilter({
         {type === "text" ? (
           <div className="space-y-2">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Icon name="action.search" size="small" className="absolute left-2 top-2.5 text-muted-foreground" />
               <Input
                 autoFocus
                 placeholder="Tìm nội dung..."
@@ -1371,7 +1370,7 @@ function ColFilter({
         ) : (
           <div className="space-y-2">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+              <Icon name="action.search" size="small" className="absolute left-2 top-2.5 text-muted-foreground" />
               <Input
                 autoFocus
                 placeholder="Tìm giá trị..."

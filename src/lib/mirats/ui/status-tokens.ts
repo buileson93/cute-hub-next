@@ -8,60 +8,70 @@ export const TRANG_THAI_TOKEN = {
     class: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
     dot: "bg-emerald-500",
     kyHieu: "●",
+    icon: "status.success",
     label: "Đang khai thác",
   },
   DANG_SU_DUNG: {
     class: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
     dot: "bg-emerald-500",
     kyHieu: "●",
+    icon: "status.success",
     label: "Đang sử dụng",
   },
   DU_PHONG: {
     class: "bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/30",
     dot: "bg-sky-500",
     kyHieu: "○",
+    icon: "entity.asset",
     label: "Dự phòng",
   },
   DANG_SUA_CHUA: {
     class: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30",
     dot: "bg-amber-500",
     kyHieu: "⚠",
+    icon: "status.warning",
     label: "Đang sửa chữa",
   },
   HONG: {
     class: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/30",
     dot: "bg-red-500",
     kyHieu: "✖",
+    icon: "status.danger",
     label: "Hỏng",
   },
   CHO_XU_LY: {
     class: "bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/30 border-dashed",
     dot: "bg-orange-500",
     kyHieu: "◐",
+    icon: "entity.history",
     label: "Chờ xử lý",
   },
   CHO_THANH_LY: {
     class: "bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/30 border-dashed",
     dot: "bg-orange-500",
     kyHieu: "◐",
+    icon: "entity.history",
     label: "Chờ thanh lý",
   },
   THANH_LY: {
     class: "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/30",
     dot: "bg-slate-500",
     kyHieu: "⊘",
+    icon: "action.close",
     label: "Thanh lý",
   },
   DA_THANH_LY: {
     class: "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/30",
     dot: "bg-slate-500",
     kyHieu: "⊘",
+    icon: "action.close",
     label: "Đã thanh lý",
   },
   NGUNG_KHAI_THAC: {
     class: "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/30",
     dot: "bg-slate-500",
     kyHieu: "□",
+    icon: "action.close",
     label: "Ngừng khai thác",
   },
 
@@ -112,10 +122,10 @@ export const TRANG_THAI_TOKEN = {
  * MUC_DO_SU_CO_TOKEN: Màu sắc cho mức độ nghiêm trọng của sự cố.
  */
 export const MUC_DO_SU_CO_TOKEN = {
-  "Nghiêm trọng": { class: "bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-red-300 border-red-500/20" },
-  "Cao": { class: "bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border-orange-500/20" },
-  "Trung bình": { class: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20" },
-  "Thấp": { class: "bg-slate-500/10 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300 border-slate-500/20" },
+  "Nghiêm trọng": { class: "bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-red-300 border-red-500/20", icon: "status.danger" },
+  "Cao": { class: "bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border-orange-500/20", icon: "status.warning" },
+  "Trung bình": { class: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20", icon: "status.warning" },
+  "Thấp": { class: "bg-slate-500/10 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300 border-slate-500/20", icon: "status.info" },
 } as const;
 
 
@@ -123,10 +133,10 @@ export const MUC_DO_SU_CO_TOKEN = {
  * LOAI_BAO_TRI_TOKEN: Màu sắc cho các loại hình bảo trì.
  */
 export const LOAI_BAO_TRI_TOKEN = {
-  "Định kỳ": { class: "bg-sky-500/10 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300 border-sky-500/20" },
-  "Đột xuất": { class: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20" },
-  "Hiệu chuẩn": { class: "bg-violet-500/10 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300 border-violet-500/20" },
-  "Nâng cấp": { class: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-500/20" },
+  "Định kỳ": { class: "bg-sky-500/10 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300 border-sky-500/20", icon: "entity.calendar" },
+  "Đột xuất": { class: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border-amber-500/20", icon: "status.warning" },
+  "Hiệu chuẩn": { class: "bg-violet-500/10 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300 border-violet-500/20", icon: "status.info" },
+  "Nâng cấp": { class: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border-emerald-500/20", icon: "status.success" },
 } as const;
 
 
@@ -184,10 +194,10 @@ export function getPhuongAnHongHocToken(key: string | null) {
  * Lấy token giao diện cho loại bàn giao.
  */
 export const LOAI_BAN_GIAO_TOKEN = {
-  "Cấp phát": { class: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-300" },
-  "Thu hồi": { class: "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-500/20 dark:text-orange-300" },
-  "Luân chuyển": { class: "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:bg-blue-500/20 dark:text-blue-300" },
-  "Mượn tạm": { class: "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-300" },
+  "Cấp phát": { class: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-300", icon: "status.success" },
+  "Thu hồi": { class: "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-500/20 dark:text-orange-300", icon: "entity.history" },
+  "Luân chuyển": { class: "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:bg-blue-500/20 dark:text-blue-300", icon: "action.link" },
+  "Mượn tạm": { class: "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-300", icon: "entity.calendar" },
 } as const;
 
 export function getLoaiBanGiaoToken(key: string | null) {
@@ -199,10 +209,10 @@ export function getLoaiBanGiaoToken(key: string | null) {
  * Lấy token giao diện cho xếp loại tuổi thọ (A/B/C/D).
  */
 export const XEP_LOAI_HEALTH_TOKEN = {
-  A: { class: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20", hex: "#10b981" },
-  B: { class: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20", hex: "#3b82f6" },
-  C: { class: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20", hex: "#f59e0b" },
-  D: { class: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20", hex: "#ef4444" },
+  A: { class: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20", hex: "#10b981", icon: "status.success" },
+  B: { class: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20", hex: "#3b82f6", icon: "status.info" },
+  C: { class: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20", hex: "#f59e0b", icon: "status.warning" },
+  D: { class: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20", hex: "#ef4444", icon: "status.danger" },
 } as const;
 
 export function getXepLoaiHealthToken(key: string | null) {
