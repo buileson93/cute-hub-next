@@ -78,23 +78,23 @@ interface FeedRow { at: string; loai: string; tieu_de: string; ref_route: string
 
 // Muted palette for dashboard metrics
 const MUC_DO_COLORS: Record<string, string> = {
-  nghiem_trong: "oklch(0.65 0.15 25)",   // Muted orange-red
-  cao: "oklch(0.70 0.12 50)",            // Muted orange
-  trung_binh: "oklch(0.75 0.08 80)",     // Muted yellow-gold
-  thap: "oklch(0.70 0.02 260)",          // Muted slate-blue
-  khac: "oklch(0.85 0.02 260)",          // Light slate
+  nghiem_trong: "#ef4444",   // Red 500
+  cao: "#f97316",            // Orange 500
+  trung_binh: "#f59e0b",     // Amber 500
+  thap: "#3b82f6",          // Blue 500
+  khac: "#94a3b8",          // Slate 400
 };
 const MUC_DO_LABEL: Record<string, string> = {
   nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
 };
 // Use brand-blue-led palette
 const STATUS_COLORS = [
-  "oklch(0.55 0.20 264)", // Primary Blue
-  "oklch(0.65 0.15 160)", // Teal
-  "oklch(0.75 0.12 90)",  // Gold
-  "oklch(0.60 0.18 20)",  // Orange
-  "oklch(0.60 0.15 300)", // Purple
-  "oklch(0.80 0.02 260)", // Muted Slate
+  "#1D52E0", // Brand Blue
+  "#10b981", // Emerald 500
+  "#f59e0b", // Amber 500
+  "#f97316", // Orange 500
+  "#8b5cf6", // Violet 500
+  "#64748b", // Slate 500
 ];
 
 function TongQuanPage() {
