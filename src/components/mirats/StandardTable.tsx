@@ -143,18 +143,37 @@ export function StandardTable<T>({
 
   const [containerWidth, setContainerWidth] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!parentRef.current || typeof ResizeObserver === "undefined") return;
+    
+    let frameId: number;
     const observer = new ResizeObserver((entries) => {
-
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        for (const entry of entries) {
+          setContainerWidth(entry.contentRect.width);
+        }
+      });
     });
+    
     observer.observe(parentRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frameId);
+    };
   }, []);
+
+  const toggleExpand = (rid: string) => {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      if (next.has(rid)) next.delete(rid);
+      else next.add(rid);
+      return next;
+    });
+  };
+
 
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
