@@ -322,7 +322,7 @@ function ThietBiPage() {
   }, [tree]);
 
   return (
-    <PageBody>
+    <PageBody className="flex flex-col gap-4">
       <PageHeader
         icon={BookOpen}
         title="Sổ lý lịch"
@@ -411,11 +411,8 @@ function ThietBiPage() {
       />
 
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Layers className="h-4 w-4 text-primary" />
-            Cây phân cấp tài sản & hệ thống
-          </CardTitle>
+        <CardHeader className="hidden">
+          <CardTitle>Cây phân cấp tài sản & hệ thống</CardTitle>
         </CardHeader>
         <CardContent>
           <DataState

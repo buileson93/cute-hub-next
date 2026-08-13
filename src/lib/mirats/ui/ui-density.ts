@@ -9,7 +9,7 @@ export const UI_DENSITY = {
   HEADER_GAP: "gap-2 data-[density=compact]:gap-1.5",
 
   // --- AppShell specific ---
-  APP_HEADER_H: "h-14 density-compact:h-[48px]",
+  APP_HEADER_H: "h-12 data-[density=comfortable]:h-14",
   RAIL_W: "w-16 density-compact:w-[56px]",
   SIDEBAR_W: "w-64 density-compact:w-[208px]",
 

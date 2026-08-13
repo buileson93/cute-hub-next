@@ -31,48 +31,42 @@ export function PageHeader({
 
   const hasSubtitle = typeof subtitle === "string" && subtitle.trim().length > 0;
   return (
-    <div data-testid="page-header" className="space-y-0.5">
-      <div
-        className={cn(
-          "flex items-center justify-between",
-          UI_DENSITY.HEADER_GAP,
-        )}
-      >
-        <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
-          {Icon ? (
-            <Icon className="h-5 w-5 shrink-0 text-muted-foreground" />
-          ) : null}
-          <h1
-            data-testid="page-header-title"
-            className="truncate text-lg font-semibold leading-tight"
+    <div data-testid="page-header" className="flex items-center justify-between min-h-[40px] gap-3">
+      <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
+        {Icon ? (
+          <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+        ) : null}
+        <h1
+          data-testid="page-header-title"
+          className="truncate text-base font-semibold leading-tight"
+        >
+          {title}
+        </h1>
+        {hasSubtitle ? (
+          <span
+            data-testid="page-header-subtitle"
+            className="truncate text-xs text-muted-foreground"
           >
-            {title}
-          </h1>
-          {hasSubtitle ? (
-            <span
-              data-testid="page-header-subtitle"
-              className="truncate text-sm text-muted-foreground"
-            >
-              {subtitle}
-            </span>
-          ) : null}
-          {help ? <InfoHint>{help}</InfoHint> : null}
-        </div>
-        {actions ? (
-          <div
-            data-testid="page-header-actions"
-            className="flex shrink-0 items-center"
-          >
-            {actions}
-          </div>
+            {subtitle}
+          </span>
+        ) : null}
+        
+        {help || description ? (
+          <InfoHint>
+            <div className="space-y-1.5">
+              {description && <div className="text-sm font-normal text-foreground">{description}</div>}
+              {help && <div className="text-xs text-muted-foreground">{help}</div>}
+            </div>
+          </InfoHint>
         ) : null}
       </div>
-      {description ? (
+      
+      {actions ? (
         <div
-          data-testid="page-header-description"
-          className="text-sm text-muted-foreground max-w-4xl"
+          data-testid="page-header-actions"
+          className="flex shrink-0 items-center"
         >
-          {description}
+          {actions}
         </div>
       ) : null}
     </div>
