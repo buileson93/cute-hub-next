@@ -551,20 +551,21 @@ export function StandardTable<T>({
                         
                         {/* Mobile Column Filters */}
                         <div className="space-y-3">
-                          {filterableCols.map(c => (
+                          {columns.filter(c => c.filter).map(c => (
                             <ColFilter
                               key={c.key}
-                              type={c.filterType || "text"}
+                              type={c.filter || "text"}
                               label={c.label}
-                              catValues={getCatValues(c.key)}
-                              catSel={prefs.catFilters[c.key] || new Set()}
+                              catValues={catValues[c.key] || []}
+                              catSel={catFilters[c.key] || new Set()}
                               onToggleCat={(val) => toggleCat(c.key, val)}
                               onClearCat={() => clearCat(c.key)}
-                              textVal={prefs.textFilters[c.key] || ""}
+                              textVal={textFilters[c.key] || ""}
                               onText={(val) => setText(c.key, val)}
                             />
                           ))}
                         </div>
+
                       </div>
                     </DropdownMenuContent>
                   </DropdownMenu>
