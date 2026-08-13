@@ -38,36 +38,39 @@ import { Input } from "@/components/ui/input";
 
 
 
-export interface StdColumn<T> {
+export interface ColumnDef<T> {
   key: string;
-  label: string;
-  value?: (r: T) => any;
-  cell?: (r: T) => React.ReactNode;
-  filter?: "text" | "cat";
-  align?: "left" | "center" | "right";
-  sticky?: boolean;
-  minW?: string; // @deprecated: dùng minWidth thay thế
+  header: string;
   width?: number;
   minWidth?: number;
   maxWidth?: number;
+  sticky?: boolean;
+  sortable?: boolean;
+  align?: "left" | "center" | "right";
+  render?: (row: T) => React.ReactNode;
+  value?: (row: T) => any;
+  priority?: "primary" | "secondary" | "detail";
+  hideBelow?: number | string;
+  hidden?: boolean;
+  defaultHidden?: boolean;
   grow?: number;
   cellClassName?: string;
-  hidden?: boolean;
+  lineClamp?: number;
+  filter?: "text" | "cat";
+  sortValue?: (r: T) => any;
   group?: string;
   inherited?: boolean;
-  hideBelow?: number | string;
-  defaultHidden?: boolean;
-  sortable?: boolean;
-  sortValue?: (r: T) => any;
-  lineClamp?: number;
-  priority?: "primary" | "secondary" | "detail";
 }
+
+/** @deprecated Use ColumnDef instead */
+export type StdColumn<T> = ColumnDef<T>;
+
 
 
 
 export interface StandardTableProps<T> {
   rows: T[];
-  columns: StdColumn<T>[];
+  columns: ColumnDef<T>[];
   getRowId?: (r: T) => string;
   selectable?: boolean;
   selected?: Set<string>;
@@ -80,12 +83,12 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
-    visibleColumns: StdColumn<T>[];
-    allColumns: StdColumn<T>[];
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
     filteredRows: T[];
     pageRows: T[];
     clear: () => void;
@@ -103,6 +106,8 @@ export interface StandardTableProps<T> {
   editMode?: boolean;
   onColumnsChange?: (visibleKeys: string[]) => void;
   virtualizerOptions?: any;
+  expandable?: boolean;
+  renderExpansion?: (row: T) => React.ReactNode;
 }
 
 
@@ -138,6 +143,8 @@ export function StandardTable<T>({
   editMode,
   onColumnsChange,
   virtualizerOptions,
+  expandable,
+  renderExpansion,
 }: StandardTableProps<T>) {
 
 
@@ -303,8 +310,8 @@ export function StandardTable<T>({
   };
 
   const renderToolbar = (
-    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
-    ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
+    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode),
+    ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }
   ) => {
     if (typeof toolbar === "function") {
       return toolbar(ctx);
@@ -312,7 +319,7 @@ export function StandardTable<T>({
     return toolbar;
   };
 
-  const colText = useCallback((col: StdColumn<T>, row: T): string => {
+  const colText = useCallback((col: ColumnDef<T>, row: T): string => {
     const v = col.value ? col.value(row) : "";
     return v == null ? "" : String(v);
   }, []);
@@ -366,7 +373,7 @@ export function StandardTable<T>({
     );
   }, [columns, catFilters, textFilters]);
 
-  const sortableKey = useCallback((c: StdColumn<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
+  const sortableKey = useCallback((c: ColumnDef<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
   const cycleSort = useCallback((key: string) => setSort((prev) => {
     if (!prev || prev.key !== key) return { key, dir: "asc" };
     if (prev.dir === "asc") return { key, dir: "desc" };

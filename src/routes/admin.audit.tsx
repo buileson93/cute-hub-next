@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import {
   ArrowLeft, ShieldAlert, Loader2, Search, RefreshCw,
   Plus, Pencil, Trash2, Shield, LogIn, KeyRound, Activity,
-  RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle,
+  RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle, ChevronDown
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -484,6 +485,84 @@ function AdminAuditPage() {
       ),
     },
   ];
+
+  const columns: ColumnDef<EnrichedAuditRow>[] = [
+    {
+      key: "severity",
+      header: "Mức",
+      width: 80,
+      render: (e) => {
+        const m = SEVERITY_META[e.severity];
+        return (
+          <Badge className={cn("gap-1.5 font-medium", m.bg, m.text, m.border)} variant="outline">
+            <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} />
+            {m.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: "action",
+      header: "Hành động",
+      width: 200,
+      render: (e) => {
+        const Icon = e.icon;
+        return (
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-2 font-medium">
+              <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+              {e.verb}
+            </div>
+            <div className="font-mono text-[10px] text-muted-foreground">{e.row.action}</div>
+          </div>
+        );
+      },
+    },
+    {
+      key: "user",
+      header: "Người thực hiện",
+      width: 180,
+      render: (e) => {
+        const p = e.row.user_id ? profileMap.get(e.row.user_id) : null;
+        if (!p) return <span className="text-muted-foreground italic">Hệ thống</span>;
+        return (
+          <div className="flex flex-col">
+            <div className="font-medium">{p.ho_ten}</div>
+            <div className="text-[10px] text-muted-foreground">{p.email}</div>
+          </div>
+        );
+      },
+    },
+    {
+      key: "entity",
+      header: "Dữ liệu",
+      width: 140,
+      render: (e) => (
+        <div className="flex flex-col">
+          <div className="font-medium">{entityLabel(e.row.entity)}</div>
+          <div className="text-[10px] text-muted-foreground font-mono">{e.row.entity_id}</div>
+        </div>
+      ),
+    },
+    {
+      key: "page",
+      header: "Trang",
+      width: 120,
+      render: (e) => (<span>{pageLabel(e.row.entity)}</span>),
+    },
+    {
+      key: "created_at",
+      header: "Thời điểm",
+      width: 160,
+      render: (e) => (
+        <div className="flex flex-col text-muted-foreground tabular-nums font-mono text-[11px]">
+          {fmtTime(e.row.created_at)}
+        </div>
+      ),
+    },
+  ];
+
+  type EnrichedAuditRow = ReturnType<typeof enriched[number]>;
 
   const clearFilters = () => {
     setQ(""); setSeverityFilter("__all__"); setKindFilter("__all__");
