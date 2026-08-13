@@ -47,6 +47,16 @@ export async function saveEntityFieldSecurely(args: {
       .eq(config.keyCol, args.id);
     
     if (error) throw error;
+
+    // Nếu đổi tên cho node thật -> Xoá override ở cay_node_edit để tránh xung đột
+    if (targetField === "ten" || targetField === "ten_thiet_bi") {
+      await supabase
+        .from("cay_node_edit")
+        .delete()
+        .eq("kind", args.kind)
+        .eq("ma", args.id);
+    }
+
     return { success: true, mode: "direct" };
   } else {
     // KTV tạo đề xuất thay đổi
