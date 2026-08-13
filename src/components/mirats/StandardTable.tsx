@@ -40,7 +40,7 @@ import { Input } from "@/components/ui/input";
 
 export interface ColumnDef<T> {
   key: string;
-  header: string;
+  header?: string;
   /** @deprecated use header instead */
   label?: string;
   width?: number;
@@ -67,6 +67,7 @@ export interface ColumnDef<T> {
   /** @deprecated use minWidth instead */
   minW?: string;
 }
+
 
 /** @deprecated Use ColumnDef instead */
 export type StdColumn<T> = ColumnDef<T>;
