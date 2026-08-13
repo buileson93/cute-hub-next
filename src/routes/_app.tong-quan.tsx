@@ -266,41 +266,36 @@ function TongQuanPage() {
           title="Brief hôm nay"
         />
 
-        <div>
-          <label className="mb-1 block text-[11px] text-muted-foreground">Đơn vị</label>
+        <div className="flex items-center gap-2">
           <Select
             value={donVi[0] ?? "__all__"}
             onValueChange={setDonVi}
             disabled={scopeLoading || (!scopeAll && scopeDonVi.length <= 1)}
           >
-            <SelectTrigger className="h-9 w-[220px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-8 w-[160px] text-[12px] rounded-full bg-muted/30 border-transparent"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">
-                {scopeAll ? "Tất cả đơn vị" : "Toàn bộ phạm vi của tôi"}
+                {scopeAll ? "Tất cả đơn vị" : "Toàn bộ đơn vị"}
               </SelectItem>
               {scopeDonVi.map((d) => (
                 <SelectItem key={d.ma} value={d.ma}>{d.ten}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
 
-        <div>
-          <label className="mb-1 block text-[11px] text-muted-foreground">Khoảng thời gian</label>
           <Select value={String(days)} onValueChange={setDays}>
-            <SelectTrigger className="h-9 w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-8 w-[110px] text-[12px] rounded-full bg-muted/30 border-transparent"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="30">30 ngày</SelectItem>
               <SelectItem value="90">90 ngày</SelectItem>
               <SelectItem value="365">1 năm</SelectItem>
             </SelectContent>
           </Select>
-        </div>
 
-        <Button variant="outline" size="sm" onClick={refetchAll} disabled={loading}>
-          <RefreshCw className={cn("mr-1 h-4 w-4", loading && "animate-spin")} />
-          Làm mới
-        </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={refetchAll} disabled={loading} title="Làm mới">
+            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+          </Button>
+        </div>
       </div>
 
       {err && (
