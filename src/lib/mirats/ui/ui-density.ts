@@ -4,50 +4,49 @@
  */
 export const UI_DENSITY = {
   // --- Spacing & Layout ---
-  PAGE_PADDING: "p-3 md:p-4 data-[density=comfortable]:p-4 md:data-[density=comfortable]:p-6",
-  SECTION_GAP: "gap-3 data-[density=comfortable]:gap-4",
-  HEADER_GAP: "gap-1.5 data-[density=comfortable]:gap-2",
+  PAGE_PADDING: "p-3 md:p-4 data-[density=comfortable]:p-4 md:data-[density=comfortable]:p-6 data-[density=spacious]:p-6 md:data-[density=spacious]:p-8",
+  SECTION_GAP: "gap-3 data-[density=comfortable]:gap-4 data-[density=spacious]:gap-6",
+  HEADER_GAP: "gap-1.5 data-[density=comfortable]:gap-2 data-[density=spacious]:gap-3",
 
   // --- AppShell specific ---
-  APP_HEADER_H: "h-12 data-[density=comfortable]:h-14",
-  RAIL_W: "w-[56px] data-[density=comfortable]:w-16",
-  SIDEBAR_W: "w-[208px] data-[density=comfortable]:w-64",
+  APP_HEADER_H: "h-11 data-[density=comfortable]:h-14 data-[density=spacious]:h-16",
+  RAIL_W: "w-[56px] data-[density=comfortable]:w-16 data-[density=spacious]:w-20",
+  SIDEBAR_W: "w-[208px] data-[density=comfortable]:w-64 data-[density=spacious]:w-72",
 
   // --- Container breakpoints for Responsive Tables ---
   CONT_MD: 768,
   CONT_SM: 480,
 
   // --- Cards ---
-  CARD_RADIUS: "rounded-2xl", // 16px
-  CONTROL_RADIUS: "rounded-lg", // 8px
+  CARD_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl data-[density=spacious]:rounded-3xl",
+  CONTROL_RADIUS: "rounded-md data-[density=comfortable]:rounded-lg",
   BADGE_RADIUS: "rounded-full",
-  CARD_PADDING: "p-4",
-  CARD_HEADER: "px-4 pt-4 pb-2",
+  CARD_PADDING: "p-3 data-[density=comfortable]:p-4 data-[density=spacious]:p-6",
+  CARD_HEADER: "px-3 pt-3 pb-1.5 data-[density=comfortable]:px-4 data-[density=comfortable]:pt-4 data-[density=comfortable]:pb-2",
 
   // --- KPI ---
-  KPI_LABEL_FS: "text-[13px] text-muted-foreground",
-  KPI_VALUE_FS: "text-[22px] font-semibold",
+  KPI_LABEL_FS: "text-[12px] data-[density=comfortable]:text-[13px] text-muted-foreground",
+  KPI_VALUE_FS: "text-[20px] data-[density=comfortable]:text-[22px] data-[density=spacious]:text-[26px] font-semibold",
 
   // --- Tables ---
-  TABLE_ROW_H: "h-9",
-  TABLE_HEADER_FS: "text-[12px] text-muted-foreground uppercase tracking-wider",
-  TABLE_CELL_PX: "px-3",
-  TABLE_CELL_PY: "py-2",
-  TABLE_MAX_H: "max-h-[calc(100vh-12rem)]",
+  TABLE_ROW_H: "h-8 data-[density=comfortable]:h-10 data-[density=spacious]:h-12",
+  TABLE_HEADER_FS: "text-[11px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider",
+  TABLE_CELL_PX: "px-2 data-[density=comfortable]:px-3 data-[density=spacious]:px-4",
+  TABLE_CELL_PY: "py-1 data-[density=comfortable]:py-1.5 data-[density=spacious]:py-2",
+  TABLE_MAX_H: "max-h-[calc(100vh-10rem)] data-[density=comfortable]:max-h-[calc(100vh-12rem)]",
 
   // --- Controls & Icons ---
-  CONTROL_H: "h-8",
-  ICON_SM: "h-3.5 w-3.5",
-  ICON_MD: "h-4 w-4",
+  CONTROL_H: "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-10",
+  ICON_SM: "h-3 w-3 data-[density=comfortable]:h-3.5 data-[density=comfortable]:w-3.5",
+  ICON_MD: "h-3.5 w-3.5 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
   // --- Typography ---
-  TEXT_BODY: "text-[13px]",
-  TEXT_LABEL: "text-[12px]",
-  CHART_H: "h-[220px]",
+  TEXT_BODY: "text-[12px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
+  TEXT_LABEL: "text-[11px] data-[density=comfortable]:text-[12px]",
+  CHART_H: "h-[200px] data-[density=comfortable]:h-[220px] data-[density=spacious]:h-[260px]",
 } as const;
 
-
 export type UiDensityKey = keyof typeof UI_DENSITY;
-export type UiDensityMode = "comfortable" | "compact";
+export type UiDensityMode = "compact" | "comfortable" | "spacious";
 
 

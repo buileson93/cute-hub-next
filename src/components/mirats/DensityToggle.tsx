@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Minimize2, Maximize2 } from "lucide-react";
+import { Minimize2, Maximize2, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const KEY = "mirats.density";
-type Density = "comfortable" | "compact";
+export type Density = "compact" | "comfortable" | "spacious";
 
 function apply(d: Density) {
   if (typeof document === "undefined") return;
@@ -31,7 +31,11 @@ export function DensityBoot() {
 
 export function DensityToggle() {
   const [d, setD] = useDensity();
-  const compact = d === "compact";
+  const nextDensity = (current: Density): Density => {
+    if (current === "compact") return "comfortable";
+    if (current === "comfortable") return "spacious";
+    return "compact";
+  };
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -39,15 +43,17 @@ export function DensityToggle() {
           size="sm"
           variant="ghost"
           className="h-8 gap-1.5 px-2"
-          onClick={() => setD(compact ? "comfortable" : "compact")}
-          aria-label="Chế độ giao diện gọn"
+          onClick={() => setD(nextDensity(d))}
+          aria-label="Thay đổi mật độ hiển thị"
         >
-          {compact ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
-          <span className="hidden text-xs md:inline">{compact ? "Thường" : "Gọn"}</span>
+          {d === "compact" ? <Minimize2 className="h-4 w-4" /> : d === "comfortable" ? <LayoutGrid className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          <span className="hidden text-xs md:inline">
+            {d === "compact" ? "Gọn" : d === "comfortable" ? "Vừa" : "Thoáng"}
+          </span>
         </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {compact ? "Chuyển về mật độ thường" : "Chế độ gọn: thu nhỏ nút/icon/bảng để xem nhiều dữ liệu hơn"}
+        {d === "compact" ? "Chế độ Gọn: Tối đa hóa dữ liệu hiển thị" : d === "comfortable" ? "Chế độ Vừa: Cân bằng giữa dữ liệu và khoảng trống" : "Chế độ Thoáng: Dễ nhìn, khoảng cách rộng rãi"}
       </TooltipContent>
     </Tooltip>
   );
