@@ -189,17 +189,17 @@ function OverviewReport() {
         <div className="lg:col-span-3 space-y-6">
           {/* TẦNG 1: KHỐI KPI ĐỘ TIN CẬY */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="shadow-sm border-t-2 border-t-emerald-500 overflow-hidden group hover:shadow-md transition-shadow">
+            <Card className="shadow-sm border border-border overflow-hidden group hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
                     <Icon name="entity.security" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Target: 99%
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
                   {formatKpiValue(reliability)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -208,17 +208,17 @@ function OverviewReport() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-t-2 border-t-blue-500 overflow-hidden group hover:shadow-md transition-shadow">
+            <Card className="shadow-sm border border-blue-500/10 overflow-hidden group hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                  <div className="p-2 rounded-lg bg-blue-500/5 text-blue-600 dark:text-blue-400">
                     <Icon name="status.power" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Target: 24h
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-blue-600 dark:text-blue-400">
                   {formatKpiValue(mttrKpi)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -227,17 +227,17 @@ function OverviewReport() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-t-2 border-t-orange-500 overflow-hidden group hover:shadow-md transition-shadow">
+            <Card className="shadow-sm border border-amber-500/10 overflow-hidden group hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
+                  <div className="p-2 rounded-lg bg-amber-500/5 text-amber-600 dark:text-amber-400">
                     <Icon name="entity.securityAlert" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Phản hồi
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-amber-600 dark:text-amber-400">
                   {formatKpiValue(mtbfKpi)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -246,17 +246,17 @@ function OverviewReport() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-t-2 border-t-indigo-500 overflow-hidden group hover:shadow-md transition-shadow">
+            <Card className="shadow-sm border border-border overflow-hidden group hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
                     <Icon name="status.success" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Tuân thủ
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
                   {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -339,7 +339,7 @@ function OverviewReport() {
             <Card className="shadow-sm">
               <CardHeader className="pb-2 border-b bg-muted/10">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Icon name="entity.activity" className="text-emerald-600" /> Phân bố sức khoẻ (A/B/C/D)
+                  <Icon name="entity.activity" className="text-blue-600 dark:text-blue-400" /> Phân bố sức khoẻ (A/B/C/D)
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -377,7 +377,7 @@ function OverviewReport() {
             <Card className="shadow-sm">
               <CardHeader className="pb-2 border-b bg-muted/10">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Icon name="status.sparkle" className="text-blue-600" /> Chất lượng dữ liệu hoàn thiện
+                  <Icon name="status.sparkle" className="text-blue-600 dark:text-blue-400" /> Chất lượng dữ liệu hoàn thiện
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -388,11 +388,11 @@ function OverviewReport() {
                         <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="12" fill="transparent" 
                           strokeDasharray={364.4} 
                           strokeDashoffset={364.4 * (1 - (completeness.avg_thiet_bi || 0) / 100)} 
-                          className="text-blue-600 transition-all duration-1000 ease-in-out" 
+                          className="text-blue-600 dark:text-blue-400 transition-all duration-1000 ease-in-out" 
                         />
                       </svg>
                       <div className="absolute flex flex-col items-center">
-                        <span className="text-2xl font-black text-blue-600">{completeness.avg_thiet_bi || 0}%</span>
+                        <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{completeness.avg_thiet_bi || 0}%</span>
                         <span className="text-[10px] uppercase font-bold text-muted-foreground">Toàn hệ thống</span>
                       </div>
                     </div>
@@ -400,9 +400,9 @@ function OverviewReport() {
                  <div className="space-y-2">
                     <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Top thiết bị cần hoàn thiện hồ sơ</div>
                     {lowCompleteness.slice(0, 4).map((tb: any) => (
-                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-2 rounded-lg hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100">
+                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-2 rounded-lg hover:bg-blue-500/5 transition-colors border border-transparent hover:border-blue-500/10">
                         <span className="truncate flex-1 pr-2 font-medium">{tb.ten_thiet_bi}</span>
-                        <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                        <span className="font-black text-red-500 dark:text-red-400 tabular-nums">{tb.completeness_pct}%</span>
                       </Link>
                     ))}
                  </div>
@@ -454,8 +454,8 @@ function OverviewReport() {
       <div className="mt-6 mb-12">
         <Card className="shadow-sm overflow-hidden">
           <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600">
-              <Icon name="entity.securityAlert" className="text-red-600" /> Phân tích rủi ro tài sản (Sức khỏe C & D)
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600 dark:text-red-400">
+              <Icon name="entity.securityAlert" className="text-red-600 dark:text-red-400" /> Phân tích rủi ro tài sản (Sức khỏe C & D)
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
