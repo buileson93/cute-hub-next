@@ -2,11 +2,11 @@ import { supabase } from "@/integrations/backend/client";
 import { createChangeRequest } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { CayKind } from "@/lib/mirats/ui/inline-edit";
 
-const TABLE_MAP: Record<string, { table: string; keyCol: string; proposeLoai: string }> = {
-  pl: { table: "dm_phan_loai", keyCol: "id", proposeLoai: "dm.propose_new" },
-  nh: { table: "dm_nhom_he_thong", keyCol: "id", proposeLoai: "dm.propose_new" },
-  ht: { table: "dm_he_thong", keyCol: "id", proposeLoai: "he_thong.propose_field" },
-  tb: { table: "thiet_bi", keyCol: "ma_thiet_bi", proposeLoai: "thiet_bi.propose_field" },
+const TABLE_MAP: Record<string, { table: string; keyCol: string; nameCol: string; proposeLoai: string }> = {
+  pl: { table: "dm_phan_loai", keyCol: "id", nameCol: "ten", proposeLoai: "dm.propose_new" },
+  nh: { table: "dm_nhom_he_thong", keyCol: "id", nameCol: "ten", proposeLoai: "dm.propose_new" },
+  ht: { table: "dm_he_thong", keyCol: "id", nameCol: "ten", proposeLoai: "he_thong.propose_field" },
+  tb: { table: "thiet_bi", keyCol: "ma_thiet_bi", nameCol: "ten_thiet_bi", proposeLoai: "thiet_bi.propose_field" },
 };
 
 /**
@@ -19,42 +19,59 @@ export async function saveEntityFieldSecurely(args: {
   field: string;
   value: any;
   userRoles: string[];
+  isDraft?: boolean;
 }) {
   const config = TABLE_MAP[args.kind as string];
   if (!config) {
     throw new Error(`Entity loại "${args.kind}" không được hỗ trợ ghi an toàn.`);
   }
 
-  // Allowlist cột: chỉ cho phép một số cột cơ bản qua inline edit
-  const allowedFields = ["ten", "ten_thiet_bi", "mo_ta", "ghi_chu", "vi_tri", "hang_san_xuat", "model"];
-  if (!allowedFields.includes(args.field) && !args.field.startsWith("field_")) {
-    // Chấp nhận ten (logic rename) hoặc các trường mapping đặc thù
+  // Nếu là node nháp trên Mindmap -> Ghi thẳng vào cay_node_edit (SSoT cho nháp)
+  if (args.isDraft) {
+    const { error } = await supabase
+      .from("cay_node_edit")
+      .upsert(
+        { kind: args.kind, ma: args.id, ten: String(args.value || "").trim() } as never,
+        { onConflict: "kind,ma" }
+      );
+    if (error) throw error;
+    return { success: true, mode: "draft" };
+  }
+
+  // Chuẩn hóa tên cột
+  let targetField = args.field;
+  if (targetField === "ten") {
+    targetField = config.nameCol;
   }
 
   const isAdmin = args.userRoles.includes("admin") || args.userRoles.includes("phong_kt");
 
-  // Chuẩn hóa tên cột cho bảng thiet_bi
-  let targetField = args.field;
-  if (args.kind === "tb" && targetField === "ten") {
-    targetField = "ten_thiet_bi";
-  }
-
   if (isAdmin) {
-    // Admin ghi trực tiếp
+    // Admin ghi trực tiếp vào bảng gốc
+    const value = typeof args.value === 'string' ? args.value.trim() : args.value;
+    if (targetField === config.nameCol && !value) {
+      throw new Error("Tên không được để trống");
+    }
+
     const { error } = await (supabase
       .from(config.table as any)
-      .update({ [targetField]: args.value } as any) as any)
+      .update({ [targetField]: value } as any) as any)
       .eq(config.keyCol, args.id);
     
     if (error) throw error;
 
-    // Nếu đổi tên cho node thật -> Xoá override ở cay_node_edit để tránh xung đột
-    if (targetField === "ten" || targetField === "ten_thiet_bi") {
-      await supabase
-        .from("cay_node_edit")
-        .delete()
-        .eq("kind", args.kind)
-        .eq("ma", args.id);
+    // QUAN TRỌNG: Nếu đổi tên cho node thật -> Xoá triệt để override ở cay_node_edit
+    // để đảm bảo SSoT bảng gốc thắng khi hiển thị.
+    if (targetField === config.nameCol) {
+      await Promise.all([
+        supabase
+          .from("cay_node_edit")
+          .delete()
+          .eq("kind", args.kind)
+          .eq("ma", args.id),
+        // Nếu có key ten_mindmap trong du_lieu JSON, ta cũng nên dọn (nếu schema cho phép)
+        // Hiện tại ta ưu tiên xoá bản ghi cay_node_edit trước.
+      ]);
     }
 
     return { success: true, mode: "direct" };
