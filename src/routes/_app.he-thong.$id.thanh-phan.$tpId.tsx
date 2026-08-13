@@ -98,55 +98,37 @@ function ThanhPhanSoLyLich() {
   const htTen = tp.dm_he_thong?.ten ?? "";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-4 p-4">
-      {/* Breadcrumb */}
-      <div className="flex flex-wrap items-center gap-2 text-sm">
-        <Button asChild variant="ghost" size="sm" className="h-8 gap-1">
-          <Link to="/he-thong/$id" params={{ id: heThongId }}>
-            <ArrowLeft className="h-3.5 w-3.5" /> {htTen || "Hệ thống"}
-          </Link>
-        </Button>
-        <span className="text-muted-foreground">›</span>
-        <span className="text-muted-foreground">Thành phần</span>
-        <span className="text-muted-foreground">›</span>
-        <span className="font-medium">{tp.ten}</span>
+    <div className="mx-auto max-w-6xl flex flex-col gap-4 p-4">
+      {/* Consolidated Header row */}
+      <PageHeader
+        icon={Puzzle}
+        title={tp.ten}
+        subtitle={donVi ? `${donVi.ma} — ${donVi.ten}` : undefined}
+        description={tp.mo_ta}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setQuick("su_co")}>
+              <AlertTriangle className="h-3.5 w-3.5" /> + Sự cố
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setQuick("bao_tri")}>
+              <Wrench className="h-3.5 w-3.5" /> + Bảo dưỡng
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setQuick("hong_hoc")}>
+              <RefreshCw className="h-3.5 w-3.5" /> + Hỏng hóc
+            </Button>
+          </div>
+        }
+      />
+
+      <div className="flex flex-wrap gap-2 mb-2">
+        <Badge variant={tp.trang_thai === "ngung" ? "secondary" : "default"}>
+          {tp.trang_thai === "ngung" ? "Ngừng" : "Đang khai thác"}
+        </Badge>
+        {tp.bat_buoc && <Badge variant="outline">Bắt buộc</Badge>}
+        {tp.dm_loai_thiet_bi?.ten && <Badge variant="secondary" className="font-normal">Loại: {tp.dm_loai_thiet_bi.ten}</Badge>}
+        {tp.dm_vi_tri?.ten && <Badge variant="secondary" className="font-normal">Vị trí: {tp.dm_vi_tri.ten}</Badge>}
       </div>
 
-      {/* Khối A — Header định danh */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <CardTitle className="flex flex-wrap items-center gap-2 text-xl">
-                <Puzzle className="h-5 w-5 text-primary" />
-                {tp.ten}
-                <Badge variant={tp.trang_thai === "ngung" ? "secondary" : "default"}>
-                  {tp.trang_thai === "ngung" ? "Ngừng" : "Đang khai thác"}
-                </Badge>
-                {tp.bat_buoc && <Badge variant="outline">Bắt buộc</Badge>}
-              </CardTitle>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                <span>Hệ thống: <span className="font-medium text-foreground">{htTen}</span></span>
-                {donVi && <span>Đơn vị: <span className="font-medium text-foreground">{donVi.ma} — {donVi.ten}</span></span>}
-                {tp.dm_loai_thiet_bi?.ten && <span>Loại yêu cầu: <span className="font-medium text-foreground">{tp.dm_loai_thiet_bi.ten}</span></span>}
-                {tp.dm_vi_tri?.ten && <span>Vị trí: <span className="font-medium text-foreground">{tp.dm_vi_tri.ten}</span></span>}
-              </div>
-              {tp.mo_ta && <p className="mt-2 text-sm text-muted-foreground">{tp.mo_ta}</p>}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setQuick("su_co")}>
-                <AlertTriangle className="h-3.5 w-3.5" /> + Sự cố
-              </Button>
-              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setQuick("bao_tri")}>
-                <Wrench className="h-3.5 w-3.5" /> + Bảo dưỡng
-              </Button>
-              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setQuick("hong_hoc")}>
-                <RefreshCw className="h-3.5 w-3.5" /> + Hỏng hóc
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
 
       {/* Khối C — KPI */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -160,7 +142,7 @@ function ThanhPhanSoLyLich() {
 
       {chartData.length > 0 && (
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Sự cố theo tháng (12 tháng gần nhất)</CardTitle></CardHeader>
+          <CardHeader className="hidden"><CardTitle className="text-sm">Sự cố theo tháng (12 tháng gần nhất)</CardTitle></CardHeader>
           <CardContent className="pt-0">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={chartData}>
@@ -182,10 +164,8 @@ function ThanhPhanSoLyLich() {
 
         <TabsContent value="tai-san" className="space-y-3">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <HardDrive className="h-4 w-4" /> Tài sản đang gắn
-              </CardTitle>
+            <CardHeader className="hidden">
+              <CardTitle>Tài sản đang gắn</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               {dangLap ? (
@@ -222,11 +202,8 @@ function ThanhPhanSoLyLich() {
           </Card>
 
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4" /> Lịch sử gắn — tháo tài sản
-                <Badge variant="outline" className="ml-1 font-normal">{history.length}</Badge>
-              </CardTitle>
+            <CardHeader className="hidden">
+              <CardTitle>Lịch sử gắn — tháo tài sản</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               {loadingHist ? (
@@ -277,10 +254,8 @@ function ThanhPhanSoLyLich() {
 
         <TabsContent value="nhat-ky">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Activity className="h-4 w-4" /> Nhật ký khai thác thành phần
-              </CardTitle>
+            <CardHeader className="hidden">
+              <CardTitle>Nhật ký khai thác thành phần</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <LyLichThanhPhanPanel thanhPhanId={tpId} empty="Chưa có sự kiện cho thành phần này." />
