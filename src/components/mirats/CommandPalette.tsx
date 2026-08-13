@@ -1020,17 +1020,23 @@ export function CommandPalette() {
 
         <CommandSeparator />
         <CommandGroup heading="Hành động">
-          <CommandItem value="action-theme" onSelect={() => runAction("theme")}>
-            <Sparkles className="h-4 w-4" />
-            <span>Đổi chế độ sáng / tối</span>
+          <CommandItem value="action-theme" onSelect={() => runAction("theme")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <span className="text-[13px] font-bold text-foreground">Đổi chế độ sáng / tối</span>
           </CommandItem>
-          <CommandItem value="action-reload" onSelect={() => runAction("reload")}>
-            <CommandIcon className="h-4 w-4" />
-            <span>Tải lại ứng dụng</span>
+          <CommandItem value="action-reload" onSelect={() => runAction("reload")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+              <CommandIcon className="h-4 w-4" />
+            </div>
+            <span className="text-[13px] font-bold text-foreground">Tải lại ứng dụng</span>
           </CommandItem>
-          <CommandItem value="action-signout" onSelect={() => runAction("signout")}>
-            <LogOut className="h-4 w-4" />
-            <span>Đăng xuất</span>
+          <CommandItem value="action-signout" onSelect={() => runAction("signout")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors text-red-500">
+              <LogOut className="h-4 w-4" />
+            </div>
+            <span className="text-[13px] font-bold text-foreground">Đăng xuất</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
