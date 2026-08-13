@@ -2,7 +2,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon,
+  ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon, LayoutPanelLeft, LayoutPanelTop
 } from "lucide-react";
 import {
   ProductTourProvider, useProductTour, type TourStep,
@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useQueryClient } from "@tanstack/react-query";
-import { resetUserPrefs } from "@/hooks/use-user-pref";
+import { resetUserPrefs, useUserPref } from "@/hooks/use-user-pref";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserAvatar } from "@/components/mirats/UserAvatar";
+import { UiDensityMode } from "@/lib/mirats/ui/ui-density";
 
 const vatmLogoFullSrc = vatmLogoFull.url;
 const vatmMarkSrc = vatmMark.url;
@@ -68,6 +69,7 @@ export function UserMenu() {
   const { profile, roles, hasRole, loading, session } = useSession();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const [density, setDensity] = useUserPref<UiDensityMode>("ui-density", "compact");
 
   async function handleSignOut() {
     try {
@@ -125,6 +127,17 @@ export function UserMenu() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
+          >
+            {density === "compact" ? (
+              <LayoutPanelTop className="mr-2 h-3.5 w-3.5" />
+            ) : (
+              <LayoutPanelLeft className="mr-2 h-3.5 w-3.5" />
+            )}
+            Mật độ: {density === "compact" ? "Gọn (Compact)" : "Rộng (Comfortable)"}
+          </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
             <Link to="/cai-dat/tai-khoan">
