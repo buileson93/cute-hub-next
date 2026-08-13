@@ -677,11 +677,11 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             // ==== TÀI SẢN ĐANG LẮP + các cột KẾ THỪA từ tài sản ====
             {
               key: "thietBi",
-              label: "Tài sản đang lắp",
+              label: "Tài sản & Mã",
               minW: "min-w-[240px]",
               cellClassName: "max-w-[280px]",
               filter: "text",
-              value: (r) => [r.thietBiMa, r.thietBiTen].filter(Boolean).join(" "),
+              value: (r) => [r.thietBiMa, r.thietBiTen, r.thietBiSerial].filter(Boolean).join(" "),
               cell: (r) =>
                 editMode && allowEdit ? (
                   <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })} />
@@ -700,18 +700,23 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                             <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
                               {r.thietBiTen || "—"}
                             </span>
-                            <CodeBadge code={r.thietBiMa} className="w-fit" />
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <CodeBadge code={r.thietBiMa} className="w-fit" />
+                              {mr && (
+                                <MultiRoleBadge info={mr} currentThanhPhanId={r.id} compact side="left" />
+                              )}
+                            </div>
                           </div>
                           <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                         </Link>
-                        {mr && (
-                          <MultiRoleBadge info={mr} currentThanhPhanId={r.id} compact side="left" />
-                        )}
                       </div>
                     );
                   })()
                 ) : (
-                  <span className="text-xs italic text-muted-foreground">Chưa lắp tài sản</span>
+                  <Badge variant="outline" className="h-10 w-full border-dashed border-muted-foreground/30 bg-muted/20 flex flex-col items-center justify-center gap-1 font-normal text-muted-foreground">
+                    <Unplug className="h-3.5 w-3.5 opacity-50" />
+                    <span className="text-[10px] uppercase tracking-wider">Trống</span>
+                  </Badge>
                 ),
             },
             {
