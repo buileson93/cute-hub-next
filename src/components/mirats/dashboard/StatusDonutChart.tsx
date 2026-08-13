@@ -45,12 +45,17 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
                 contentStyle={{ 
                   backgroundColor: 'hsl(var(--popover))', 
                   borderColor: 'hsl(var(--border))',
-                  fontSize: '11px',
-                  borderRadius: '10px',
-                  fontWeight: 'bold',
-                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+                  fontSize: '12px',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                  border: '1px solid hsl(var(--border))',
                 }} 
-                itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                itemStyle={{ 
+                  color: 'hsl(var(--popover-foreground))',
+                  padding: '2px 0',
+                  fontWeight: '600'
+                }}
               />
               <Legend 
                 verticalAlign="bottom" 
