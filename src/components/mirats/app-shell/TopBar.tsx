@@ -122,7 +122,7 @@ function RealtimeStatusIndicator() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted/50 cursor-help transition-colors">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted cursor-help transition-mirats-fast active:scale-[var(--scale-active)]">
             <Icon className={cn("h-4 w-4", config.color)} />
           </div>
         </TooltipTrigger>

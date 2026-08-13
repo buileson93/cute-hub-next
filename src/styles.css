@@ -74,6 +74,13 @@
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
 
+  /* Interaction tokens — GĐ1-06 */
+  --hover-muted: oklch(0.965 0.004 250 / 0.6);
+  --hover-primary-light: oklch(0.46 0.22 264 / 0.08);
+  --active-primary-light: oklch(0.46 0.22 264 / 0.12);
+  --shadow-hover: 0 4px 6px -1px oklch(0 0 0 / 0.05), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+  --scale-active: 0.98;
+
 
 
   /* MIRATS brand — VATM palette: #1C51E0 · #000000 · #4C5055 · #FFFFFF · #FF8F00 */
@@ -217,11 +224,33 @@
 }
 
 
+/* Tiện ích chuyển động — GĐ1-06 */
+@utility transition-mirats-fast {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-standard);
+}
+
+@utility transition-mirats-base {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-standard);
+}
+
 /* GĐ1-05: Global focus-visible — ring hiển thị nhất quán cho a11y */
 :where(a, button, [role="button"], [role="link"], [role="menuitem"], [role="tab"], [role="option"], input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 2px solid hsl(var(--ring));
+  outline: 2px solid var(--color-ring);
   outline-offset: 2px;
   border-radius: calc(var(--radius) - 0.25rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 

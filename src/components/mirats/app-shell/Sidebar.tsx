@@ -52,15 +52,18 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     to={item.route}
                     onClick={onNavigate}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 font-medium transition-colors",
+                      "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 font-medium transition-mirats-fast",
                       "h-9 data-[density=compact]:h-8 data-[density=compact]:rounded-lg data-[density=compact]:gap-2.5",
                       UI_DENSITY.TEXT_BODY,
                       active 
-                        ? "bg-primary/10 text-primary" 
-                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                        ? "bg-primary/8 text-primary" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       collapsed && "justify-center px-0 py-2.5 h-10"
                     )}
                   >
+                    {active && !collapsed && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-primary" />
+                    )}
                     <div className="relative">
                       <Icon className={cn("h-4 w-4 shrink-0 data-[density=compact]:h-4 data-[density=compact]:w-4", active ? "text-primary" : "text-muted-foreground")} />
                       {collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
