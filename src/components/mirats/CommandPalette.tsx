@@ -814,11 +814,13 @@ export function CommandPalette() {
       onValueChange={setActiveValue}
       preview={<CommandPreview data={previewDataEnriched} modelImgUrl={modelImgUrl} modelImgLoading={modelImgLoading} />}
     >
-      <CommandInput
-        placeholder="Nhập lệnh, tìm trang, tài sản, giấy phép, biểu mẫu…"
-        value={q}
-        onValueChange={setQ}
-      />
+      <div className="pt-2 px-1">
+        <CommandInput
+          placeholder="Nhập lệnh, tìm tài sản, hệ thống, biểu mẫu…"
+          value={q}
+          onValueChange={setQ}
+        />
+      </div>
       <CommandList className="max-h-[420px]">
         {hasQuery && (() => {
           const intent = matchIntent(q);
