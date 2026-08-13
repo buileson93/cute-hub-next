@@ -112,7 +112,34 @@ function ThietBiDetailRoute() {
   const banGiao = [] as any[];
 
   if (isLoading) return <DetailSkeleton />;
-  if (!tb) return <div className="p-8 text-center">Không tìm thấy tài sản.</div>;
+  
+  if (queryError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+        <AlertTriangle className="h-12 w-12 text-destructive" />
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold">Lỗi tải dữ liệu</h2>
+          <p className="text-sm text-muted-foreground">{(queryError as Error).message}</p>
+        </div>
+        <Button variant="outline" onClick={() => window.location.reload()}>Tải lại trang</Button>
+      </div>
+    );
+  }
+
+  if (!tb) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+        <Package className="h-12 w-12 text-muted-foreground/40" />
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold">Không tìm thấy tài sản</h2>
+          <p className="text-sm text-muted-foreground">Mã thiết bị "{ma}" không tồn tại trong hệ thống.</p>
+        </div>
+        <Button variant="outline" asChild>
+          <Link to="/thiet-bi">Quay lại danh sách</Link>
+        </Button>
+      </div>
+    );
+  }
 
   const pct = tb.ty_le_tuoi_tho == null ? null : Math.max(0, Math.min(100, Math.round(tb.ty_le_tuoi_tho)));
 
