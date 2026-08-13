@@ -2,19 +2,10 @@ import { ReactNode, useEffect, useState } from "react";
 import { Search, Activity, Wifi, WifiOff, Loader2, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { 
-  Breadcrumb, 
-  BreadcrumbItem, 
-  BreadcrumbLink, 
-  BreadcrumbList, 
-  BreadcrumbPage, 
-  BreadcrumbSeparator 
-} from "@/components/ui/breadcrumb";
 import { NotificationBell } from "../NotificationBell";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
-import { DesktopOnly } from "../DesktopOnly";
 import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import {
   Tooltip,
