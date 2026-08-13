@@ -301,7 +301,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           id: id,
           field: "ten",
           value: value,
-          userRoles: userRoles || [],
+          userRoles: roles || [],
         });
 
         if (res.mode === "proposed") {
