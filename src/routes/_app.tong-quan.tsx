@@ -530,7 +530,7 @@ function TongQuanPage() {
                   <div className="w-40">
                     <div className="h-2 overflow-hidden rounded bg-secondary">
                       <div
-                        className="h-full bg-primary"
+                        className="h-full bg-primary/80"
                         style={{
                           width: `${Math.min(
                             100,
@@ -689,7 +689,7 @@ function KpiCard({
           {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
         </div>
         {link && (
-          <span className="mt-1 text-[11px] text-primary">{link.label} →</span>
+          <span className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-primary/70">{link.label} →</span>
         )}
       </CardContent>
     </Card>
