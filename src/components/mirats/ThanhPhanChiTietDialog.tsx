@@ -76,8 +76,23 @@ export function ThanhPhanChiTietDialog({
     : viTri.device;
   const ngung = viTri.trang_thai === "ngung";
   const [edit, setEdit] = useState(false);
-  const [mode, setMode] = useState<null | "lap" | "thay">(null);
+  const [opMode, setOpMode] = useState<OperationMode | null>(null);
   const [editFields, setEditFields] = useState(false);
+  const queryClient = useQueryClient();
+
+  const opTarget = useMemo(() => viTri ? ({
+    heThongId: heThongId,
+    thanhPhanId: viTri.id,
+    maThanhPhan: viTri.ma_thanh_phan,
+    tenThanhPhan: viTri.ten,
+    loaiYeuCau: viTri.loai_thiet_bi_yeu_cau,
+  }) : null, [viTri, heThongId]);
+
+  const handleOpSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["thanh-phan-chi-tiet", id] });
+    queryClient.invalidateQueries({ queryKey: ["thiet-bi-dang-lap", heThongId] });
+  };
+
   // Quyền lắp/tháo/thay tài sản (thu hẹp theo phạm vi của tài khoản con).
   // canManage đã tính đủ quyền theo vai trò tổng; canAssign kiểm tra thêm
   // ma trận role_permission cho module `thiet_bi` (action = update).
