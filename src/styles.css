@@ -76,37 +76,36 @@
 
   /* MIRATS brand — VATM palette: #1C51E0 · #000000 · #4C5055 · #FFFFFF · #FF8F00 */
   --background: oklch(1 0 0);                  /* #FFFFFF */
-  --foreground: oklch(0.12 0.01 260);          /* Very dark blue-gray */
+  --foreground: oklch(0 0 0);                  /* #000000 */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.12 0.01 260);
+  --card-foreground: oklch(0 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0.01 260);
+  --popover-foreground: oklch(0 0 0);
 
-  --primary: oklch(0.48 0.22 264);             /* ByeWind Blue */
+  --primary: oklch(0.46 0.22 264);             /* #1C51E0 — dominant blue */
   --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.975 0.004 250);         /* Very light gray #F7F9FB */
-  --secondary-foreground: oklch(0.35 0.01 260);
+  --secondary: oklch(0.965 0.004 250);
+  --secondary-foreground: oklch(0.30 0.005 260); /* neutral near #4C5055 */
 
-  --muted: oklch(0.975 0.004 250);
-  --muted-foreground: oklch(0.55 0.01 260);   /* Softened gray */
+  --muted: oklch(0.965 0.004 250);
+  --muted-foreground: oklch(0.44 0.006 260);   /* #4C5055 */
 
-  --accent: oklch(0.96 0.02 264);              /* Pale blue hover */
-  --accent-foreground: oklch(0.48 0.22 264);
+  --accent: oklch(0.95 0.04 264);              /* pale blue hover */
+  --accent-foreground: oklch(0.35 0.18 264);
 
-  --destructive: oklch(0.65 0.22 25);          /* Refined Red */
-  --destructive-foreground: oklch(1 0 0);
+  --destructive: oklch(0.75 0.17 60);          /* #FF8F00 — used for alerts/accent flame */
+  --destructive-foreground: oklch(0 0 0);
 
-  --border: oklch(0.94 0.004 250);             /* Hairline border */
-  --input: oklch(0.94 0.004 250);
-  --ring: oklch(0.48 0.22 264 / 0.3);
+  --border: oklch(0.92 0.004 250);
+  --input: oklch(0.92 0.004 250);
+  --ring: oklch(0.46 0.22 264 / 0.45);
 
-  --chart-1: oklch(0.48 0.22 264);
-  --chart-2: oklch(0.65 0.22 25);
-  --chart-3: oklch(0.55 0.01 260);
-  --chart-4: oklch(0.45 0.22 200);
-  --chart-5: oklch(0.75 0.15 160);
-
+  --chart-1: oklch(0.46 0.22 264);             /* blue */
+  --chart-2: oklch(0.75 0.17 60);              /* orange #FF8F00 */
+  --chart-3: oklch(0.44 0.006 260);            /* graphite #4C5055 */
+  --chart-4: oklch(0.32 0.18 264);             /* deep blue */
+  --chart-5: oklch(0 0 0);                     /* black */
 
   /* Sidebar */
   --sidebar: oklch(1 0 0);
@@ -190,11 +189,9 @@
 }
 
 @utility surface-elegant {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(149, 157, 165, 0.05);
+  box-shadow: 0 1px 2px oklch(0.19 0.02 260 / 0.04),
+              0 8px 24px -12px oklch(0.19 0.02 260 / 0.10);
 }
-
 
 /* Thanh cuộn mảnh, luôn hiển thị rõ cho bảng nhiều cột & dialog dài */
 @utility mirats-scroll {
