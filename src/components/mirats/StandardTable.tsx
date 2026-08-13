@@ -739,16 +739,56 @@ export function StandardTable<T>({
                         ))}
                       </div>
 
+                      {/* Dòng chi tiết (Detail) - Mobile Expandable */}
+                      {expandedRows.has(rid) && detailCols.length > 0 && (
+                        <div className="px-4 py-3 bg-muted/10 border-t border-border/20 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1">
+                          {detailCols.map((col) => (
+                            <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                                {col.label}
+                              </span>
+                              <div className={cn("text-[13px] break-words", col.cellClassName)}>
+                                {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Hành động (nếu có toolbar hoặc onRowClick) */}
-                      {(toolbarRight || onRowClick) && (
-                        <div className="flex items-center justify-end p-2 bg-muted/5 border-t border-border/30 gap-1">
-                          {/* Dạng Menu thu gọn cho Mobile Actions */}
-                          <Button variant="ghost" size="sm" className="h-8 px-2 text-[12px] gap-1 text-primary">
+                      <div className="flex items-center justify-between p-2 bg-muted/5 border-t border-border/30 gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
+                          onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
+                        >
+                          {expandedRows.has(rid) ? (
+                            <>
+                              <ChevronDown className="h-3.5 w-3.5" />
+                              <span>Thu gọn</span>
+                            </>
+                          ) : (
+                            <>
+                              <ChevronRight className="h-3.5 w-3.5" />
+                              <span>Xem thêm ({detailCols.length})</span>
+                            </>
+                          )}
+                        </Button>
+
+                        {(toolbarRight || onRowClick) && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 px-2 text-[12px] gap-1 text-primary"
+                            onClick={() => onRowClick?.(r)}
+                          >
                             <span>Chi tiết</span>
                             <ChevronRight className="h-3.5 w-3.5" />
                           </Button>
-                        </div>
-                      )}
+                        )}
+                      </div>
+
                     </div>
                   </CardContent>
                 </Card>
