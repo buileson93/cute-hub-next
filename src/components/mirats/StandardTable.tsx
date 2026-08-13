@@ -101,7 +101,8 @@ export function StandardTable<T>({
   emptyText = "Không có dữ liệu",
   emptyContent,
   errorContent,
-  trangThai,
+  trangThai = {},
+
   loadingContent,
   onRowClick,
   rowClassName,
@@ -795,7 +796,7 @@ export function StandardTable<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trangThai?.loi ? (
+              {trangThai.loi ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     {errorContent ?? (
@@ -805,7 +806,7 @@ export function StandardTable<T>({
                     )}
                   </TableCell>
                 </TableRow>
-              ) : trangThai?.dangTai ? (
+              ) : trangThai.dangTai ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
                     {loadingContent ?? <TableSkeleton cols={shownCols.length} />}
