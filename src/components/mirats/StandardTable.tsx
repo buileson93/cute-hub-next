@@ -802,7 +802,11 @@ export function StandardTable<T>({
                                 disabled={!canToggle}
                                 className="flex items-center justify-between gap-2"
                               >
-                                <span className={cn(isHiddenByWidth && isCurrentlyVisible && "text-muted-foreground/60")}>
+                                <span className={cn(
+                                  isHiddenByWidth && isCurrentlyVisible && "text-muted-foreground/60",
+                                  col.inherited && "italic text-muted-foreground/80 flex items-center gap-1.5"
+                                )}>
+                                  {col.inherited && <Icon name="entity.asset" size="tiny" className="opacity-60" />}
                                   {col.header || col.label}
                                 </span>
                                 
