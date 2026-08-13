@@ -214,7 +214,7 @@ export function useCayMutations() {
       },
       onSuccess: (res) => {
         invalidate();
-        if (res.mode === "proposed") toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
+        if (res && (res as any).mode === "proposed") toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
         else toast.success("Đã đổi tên thành công");
       },
       onError: (e: any) => toast.error(e.message)
