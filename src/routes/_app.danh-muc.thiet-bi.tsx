@@ -549,193 +549,124 @@ function DanhMucThietBiPage() {
 
 
   const columns = useMemo<StdColumn<DbDevice>[]>(() => [
-    // ---- Định danh ----
+    // ---- Nhóm Định danh (Gộp SN, Bravo, P/N) ----
     {
-      key: "tb", label: "Tài sản", group: "Tài sản vật lý · Định danh", minW: "min-w-[220px]", filter: "text", sticky: true,
+      key: "tb", header: "Tài sản", type: "id", group: "Định danh", width: 240, sticky: true,
       value: (d) => tbName(d),
-      cell: (d) => (
-        <div className="flex w-[220px] max-w-[220px] items-center gap-2">
+      render: (d) => (
+        <div className="flex items-center gap-2">
           <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <div className="min-w-0 flex-1">
-            <div className="truncate font-medium" title={tbName(d)}>{tbName(d)}</div>
-            <div className="truncate font-mono text-[11px] text-muted-foreground" title={d.ma_thiet_bi ?? undefined}>{d.ma_thiet_bi}</div>
+          <div className="min-w-0">
+            <div className="truncate font-medium">{tbName(d)}</div>
+            <div className="flex items-center gap-2">
+              <code className="text-[10px] text-muted-foreground">{d.ma_thiet_bi}</code>
+              {d.serial && <span className="text-[10px] text-muted-foreground/60">SN: {d.serial}</span>}
+              {d._maBravo && <span className="text-[10px] text-muted-foreground/60">B: {d._maBravo}</span>}
+            </div>
           </div>
         </div>
       ),
     },
-    { key: "serial", label: "Số serial", group: "Tài sản vật lý · Định danh", minW: "min-w-[120px]", filter: "text", value: (d) => d.serial },
-    { key: "bravo", label: "Mã Bravo", group: "Tài sản vật lý · Định danh", minW: "min-w-[120px]", filter: "text", value: (d) => d._maBravo, defaultHidden: true },
-    { key: "thanhphan", label: "Thành phần", group: "Thành phần hệ thống · Vai trò", minW: "min-w-[140px]", filter: "text", value: (d) => d._thanhPhan, defaultHidden: true },
-    // ---- Mẫu & loại ----
+    { key: "pn", header: "P/N", group: "Định danh", type: "text", width: 120, value: (d) => d.p_n, defaultHidden: true },
+    
+    // ---- Nhóm Mẫu & Loại (Gộp Chủng loại) ----
     {
-      key: "mau", label: "Model", group: "Tài sản vật lý · Mẫu & loại", minW: "min-w-[180px]", filter: "text",
-      value: (d) => d._modelTen,
-      cell: (d) => d._modelTen ? (
-        <div className="w-[180px] max-w-[180px]">
-          <CenterHoverCard
-            openDelay={250} closeDelay={100} contentClassName="p-0"
-            trigger={<span className="block cursor-help truncate underline decoration-dotted underline-offset-2" title={d._modelTen}>{d._modelTen}</span>}
-          >
-            <ModelHoverContent d={d} />
-          </CenterHoverCard>
+      key: "mau", header: "Mẫu & Loại", group: "Phân loại", type: "taxonomy", width: 200,
+      value: (d) => `${d._modelTen || ""} ${d._loaiTbTen || ""}`,
+      render: (d) => (
+        <div className="space-y-1">
+          {d._modelTen && (
+            <CenterHoverCard
+              openDelay={250} closeDelay={100} contentClassName="p-0"
+              trigger={<span className="block cursor-help truncate text-[13px] underline decoration-dotted underline-offset-2">{d._modelTen}</span>}
+            >
+              <ModelHoverContent d={d} />
+            </CenterHoverCard>
+          )}
+          {d._loaiTbTen && <MauChip ten={d._loaiTbTen} mau={loaiMauByTen.get(d._loaiTbTen) ?? null} className="scale-90 origin-left" />}
         </div>
-      ) : <span className="text-muted-foreground">—</span>,
+      ),
     },
     {
-      key: "loai", label: "Chủng loại", group: "Tài sản vật lý · Mẫu & loại", minW: "min-w-[150px]", filter: "cat",
-      value: (d) => d._loaiTbTen,
-      cell: (d) => d._loaiTbTen
-        ? <MauChip ten={d._loaiTbTen} mau={loaiMauByTen.get(d._loaiTbTen) ?? null} />
-        : <span className="text-muted-foreground">—</span>,
-    },
-    // Nhãn tài sản đa trị (kế thừa từ Mẫu qua v_thiet_bi_dac_tinh). Không dùng filter cột — bộ lọc đa trị nằm ở thanh trên.
-    {
-      key: "dacTinh", label: "Nhãn tài sản", group: "Tài sản vật lý · Nhãn tài sản", minW: "min-w-[240px]",
-      // Sort THEO SỐ LƯỢNG (không sort chuỗi) — nhãn tài sản là đa trị.
+      key: "dacTinh", header: "Nhãn tài sản", group: "Phân loại", width: 200,
       sortValue: (d) => (tagsByDevice.get(d.id) ?? []).length,
-      value: (d) => (tagsByDevice.get(d.id) ?? [])
-        .map((tid) => dacTinhById.get(tid)?.ma).filter(Boolean).join(" "),
-      cell: (d) => {
+      value: (d) => (tagsByDevice.get(d.id) ?? []).map((tid) => dacTinhById.get(tid)?.ma).filter(Boolean).join(" "),
+      render: (d) => {
         const ids = tagsByDevice.get(d.id) ?? [];
         if (!ids.length) return <span className="text-muted-foreground">—</span>;
-        const items = ids
-          .map((id) => dacTinhById.get(id))
-          .filter((t): t is DacTinh & { id: string } => !!t);
-        const sorted = sortDacTinh(items as DacTinh[]) as Array<DacTinh & { id: string }>;
+        const sorted = sortDacTinh(ids.map(id => dacTinhById.get(id)).filter(Boolean) as DacTinh[]);
         return (
           <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
-            {sorted.map((t) => {
-              const active = tagSelected.includes(t.id);
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTagSelected((prev) =>
-                    prev.includes(t.id) ? prev.filter((x) => x !== t.id) : [...prev, t.id],
-                  )}
-                  className={cn(
-                    "rounded-full transition-opacity hover:opacity-80 focus:outline-none",
-                    active && "ring-2 ring-primary/70 ring-offset-1",
-                  )}
-                  title={`${active ? "Bỏ khỏi bộ lọc" : "Thêm vào bộ lọc"}: ${t.ten}`}
-                  aria-pressed={active}
-                >
-                  <MauChip ten={t.ten} mau={t.mau ?? null} />
-                </button>
-              );
-            })}
+            {sorted.map((t) => (
+              <button key={t.id} type="button" onClick={() => setTagSelected(prev => prev.includes(t.id) ? prev.filter(x => x !== t.id) : [...prev, t.id])}>
+                <MauChip ten={t.ten} mau={t.mau ?? null} className={cn("scale-90 origin-left", tagSelected.includes(t.id) && "ring-1 ring-primary")} />
+              </button>
+            ))}
           </div>
         );
       },
     },
-    { key: "pn", label: "P/N", group: "Tài sản vật lý · Mẫu & loại", minW: "min-w-[120px]", filter: "text", value: (d) => d.p_n, defaultHidden: true },
-    // ---- Nhà cung cấp ----
-    { key: "nsx", label: "Nhà sản xuất", group: "Tài sản vật lý · Nhà cung cấp", minW: "min-w-[140px]", filter: "cat", value: (d) => d.nha_san_xuat, defaultHidden: true },
-    { key: "ncc", label: "Nhà cung cấp", group: "Tài sản vật lý · Nhà cung cấp", minW: "min-w-[140px]", filter: "cat", value: (d) => d.nha_cung_cap, defaultHidden: true },
-    // ---- Trạng thái & cấp phát ----
-    {
-      key: "tt", label: "Trạng thái", group: "Thành phần hệ thống · Trạng thái", filter: "cat", value: (d) => d.trang_thai,
-      cell: (d) => <StatusBadge domain="thiet_bi" code={d.trang_thai} />,
-    },
 
+    // ---- Nhóm Không gian (Hệ thống + Vị trí) ----
     {
-      key: "capphat", label: "Cấp phát", group: "Thành phần hệ thống · Trạng thái", filter: "cat",
-      value: (d) => CAP_PHAT_LABEL[d._capPhatTrangThai] ?? d._capPhatTrangThai,
-      defaultHidden: true,
-    },
-    { key: "nguoigiu", label: "Người giữ", group: "Thành phần hệ thống · Trạng thái", minW: "min-w-[140px]", filter: "text", value: (d) => d._nguoiGiu, defaultHidden: true },
-    // ---- Vị trí & đơn vị ----
-    {
-      key: "ht", label: "Hệ thống", group: "Hệ thống", minW: "min-w-[200px]", filter: "cat",
-      value: (d) => (d._htId ? htName(d._htId, d._htTen) : STANDALONE),
-      cell: (d) => d._htId ? (
-        <span className="truncate">{htName(d._htId, d._htTen)}</span>
-      ) : (
-        <span className="inline-flex items-center gap-1 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">
-          <PackageOpen className="h-3 w-3" /> Độc lập
-        </span>
-      ),
-    },
-    { key: "dv", label: "Đơn vị", group: "Hệ thống", minW: "min-w-[110px]", filter: "cat", value: (d) => d.don_vi },
-    { key: "vt", label: "Vị trí", group: "Thành phần hệ thống · Vị trí", minW: "min-w-[140px]", filter: "text", value: (d) => d._viTriTen || d.vi_tri, defaultHidden: true },
-    { key: "noiql", label: "Nơi quản lý", group: "Hệ thống", minW: "min-w-[140px]", filter: "text", value: (d) => d._noiQuanLy, defaultHidden: true },
-    // ---- Phân loại ----
-    { key: "phanloai", label: "Phân loại", group: "Hệ thống · Phân loại", minW: "min-w-[150px]", filter: "cat", value: (d) => d._plTen, defaultHidden: true },
-    { key: "nhom", label: "Nhóm hệ thống", group: "Hệ thống · Phân loại", minW: "min-w-[150px]", filter: "cat", value: (d) => d._nhTen, defaultHidden: true },
-    
-    // ---- Vòng đời ----
-    { key: "namsx", label: "Năm sản xuất", group: "Tài sản vật lý · Vòng đời", align: "right", filter: "text", value: (d) => num(d._namSanXuat), defaultHidden: true },
-    { key: "namkt", label: "Năm khai thác", group: "Tài sản vật lý · Vòng đời", align: "right", filter: "text", value: (d) => num(d._namKhaiThac), defaultHidden: true },
-    {
-      key: "tuoitho", label: "Tuổi thọ", group: "Tài sản vật lý · Vòng đời", align: "left" as const, minW: "min-w-[140px]",
-      value: (d) => num(d._tyLeTuoiTho), 
-      sortValue: (d) => d._tyLeTuoiTho ?? -1,
-      cell: (d) => {
-        const pct = d._tyLeTuoiTho;
-        if (pct == null) return <span className="text-muted-foreground">—</span>;
-        const color = pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-500" : "bg-emerald-500";
-        return (
-          <div className="flex w-full flex-col gap-1">
-            <div className="flex justify-between text-[10px] font-medium text-muted-foreground">
-              <span className="flex items-center gap-0.5"><Timer className="h-2.5 w-2.5" /> {pct}%</span>
-            </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div className={cn("h-full transition-all", color)} style={{ width: `${pct}%` }} />
-            </div>
+      key: "ht", header: "Hệ thống & Vị trí", group: "Không gian", type: "taxonomy", width: 220,
+      value: (d) => `${d._htId ? htName(d._htId, d._htTen) : "Độc lập"} ${d._viTriTen || d.vi_tri || ""}`,
+      render: (d) => (
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-1">
+            {d._htId ? (
+              <span className="truncate font-medium text-[13px]">{htName(d._htId, d._htTen)}</span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-medium text-amber-600">
+                <PackageOpen className="h-3 w-3" /> Độc lập
+              </span>
+            )}
           </div>
-        );
-      }
-    },
-    { key: "ngaymua", label: "Ngày mua", group: "Tài sản vật lý · Vòng đời", minW: "min-w-[120px]", filter: "text", value: (d) => d.ngay_mua, defaultHidden: true },
-    { key: "baohanh", label: "Hạn bảo hành", group: "Tài sản vật lý · Vòng đời", minW: "min-w-[120px]", filter: "text", value: (d) => d.han_bao_hanh, defaultHidden: true },
-    // ---- Ghi chú ----
-    { key: "ghichu", label: "Ghi chú", group: "Tài sản vật lý · Ghi chú", minW: "min-w-[200px]", filter: "text", value: (d) => d.ghi_chu ?? "", defaultHidden: true },
-    // ---- Thao tác (icons inline theo phong cách "Model") — chỉ admin / phòng KT ----
-    ...(canManage ? [{
-      key: "actions", label: "", group: "Thao tác", minW: "min-w-[150px]", align: "right" as const, sortable: false,
-      cell: (d: DbDevice) => (
-        <div className="flex items-center justify-end gap-0.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-          <Button
-            size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary"
-            onClick={() => openDetail(d)} title="Xem chi tiết tài sản"
-          >
-            <Info className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary"
-            onClick={() => openEdit(d)} title="Sửa thông tin tài sản"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary"
-            onClick={() => setAssignTargets([d])}
-            title={d._htId ? "Chuyển sang hệ thống khác" : "Gán vào hệ thống"}
-          >
-            <PackagePlus className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="icon" variant="ghost" className="h-7 w-7 text-amber-600 hover:text-amber-700 disabled:opacity-30"
-            disabled={!d._htId}
-            onClick={() => setRemoveTargets([d])}
-            title={d._htId ? "Gỡ khỏi hệ thống" : "Tài sản đang độc lập"}
-          >
-            <PackageMinus className="h-3.5 w-3.5" />
-          </Button>
-          {editOn && (
-            <Button
-              size="icon" variant="ghost"
-              className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
-              onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }}
-              title="Xoá / Ngừng khai thác tài sản"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+          {(d._viTriTen || d.vi_tri) && (
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              <span className="truncate">{d._viTriTen || d.vi_tri}</span>
+            </div>
           )}
         </div>
       ),
+    },
+    { key: "dv", header: "Đơn vị", group: "Không gian", type: "cat", width: 100, value: (d) => d.don_vi },
+    { key: "noiql", header: "Nơi QL", group: "Không gian", type: "text", width: 120, value: (d) => d._noiQuanLy, defaultHidden: true },
+
+    // ---- Trạng thái ----
+    { key: "tt", header: "Trạng thái", group: "Trạng thái", type: "status", width: 120, value: (d) => d.trang_thai },
+    { key: "nguoigiu", header: "Người giữ", group: "Trạng thái", type: "user", width: 140, value: (d) => d._nguoiGiu, defaultHidden: true },
+
+    // ---- Vòng đời ----
+    {
+      key: "tuoitho", header: "Sức khoẻ", group: "Vòng đời", type: "percent", width: 100,
+      value: (d) => d._tyLeTuoiTho,
+      sortValue: (d) => d._tyLeTuoiTho ?? -1,
+      render: (d) => {
+        const pct = d._tyLeTuoiTho;
+        if (pct == null) return <span className="text-muted-foreground">—</span>;
+        return <Progress value={pct} className={cn("h-1.5", pct >= 90 ? "[&>div]:bg-red-500" : pct >= 70 ? "[&>div]:bg-amber-500" : "[&>div]:bg-emerald-500")} />;
+      }
+    },
+    { key: "ngaymua", header: "Ngày mua", group: "Vòng đời", type: "date", width: 110, value: (d) => d.ngay_mua, defaultHidden: true },
+    { key: "baohanh", header: "Hạn BH", group: "Vòng đời", type: "expiring", width: 110, value: (d) => d.han_bao_hanh, defaultHidden: true },
+
+    { key: "ghichu", header: "Ghi chú", group: "Ghi chú", type: "longtext", width: 200, value: (d) => d.ghi_chu, defaultHidden: true },
+
+    ...(canManage ? [{
+      key: "actions", header: "", group: "Thao tác", type: "actions", width: 140, align: "right" as const,
+      render: (d: DbDevice) => (
+        <div className="flex items-center justify-end gap-0.5" onClick={(e) => e.stopPropagation()}>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openDetail(d)} title="Chi tiết"><Info className="h-3.5 w-3.5" /></Button>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(d)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setAssignTargets([d])} title="Gán"><PackagePlus className="h-3.5 w-3.5" /></Button>
+          <Button size="icon" variant="ghost" className="h-7 w-7 text-amber-600" disabled={!d._htId} onClick={() => setRemoveTargets([d])} title="Gỡ"><PackageMinus className="h-3.5 w-3.5" /></Button>
+          {editOn && <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }} title="Xoá"><Trash2 className="h-3.5 w-3.5" /></Button>}
+        </div>
+      ),
     } as StdColumn<DbDevice>] : []),
-  ], [nameOv, tbName, canManage, editOn, tagsByDevice, dacTinhById, tagSelected, openDetail]);
+  ], [nameOv, tbName, canManage, editOn, tagsByDevice, dacTinhById, tagSelected, openDetail, loaiMauByTen]);
 
   // ---- Xuất .xlsx (theo bộ lọc hiện tại hoặc dòng đang chọn) ----
   // Ánh xạ khoá cột (giao diện) → trường CSDL + cách lấy giá trị, để file nạp lại được.
