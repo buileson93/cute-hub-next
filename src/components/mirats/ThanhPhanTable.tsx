@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal, Info } from "lucide-react";
+import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal, Info, Wrench, PackageOpen } from "lucide-react";
 import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
@@ -30,7 +30,9 @@ import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
+import { OperationDialog } from "@/components/mirats/OperationDialog";
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
+
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
 export type TaiSanRow = {
