@@ -156,7 +156,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className="w-16 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-4 flex">
+            <aside className="w-16 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar/80 backdrop-blur-md py-4 flex transition-all duration-300">
               <SidebarLogoRail />
               <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
                 {railWorkspaces.map((ws) => (
@@ -200,7 +200,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "h-full shrink-0 flex-col border-r border-border bg-sidebar/40 flex transition-[width] duration-300 ease-in-out overflow-hidden",
+                "h-full shrink-0 flex-col border-r border-border bg-sidebar/30 backdrop-blur-xl flex transition-[width] duration-300 ease-in-out overflow-hidden",
                 (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-60"
               )}
             >

@@ -6,7 +6,7 @@ import { PageBody } from "@/components/mirats/PageBody";
 
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
-  CartesianGrid,
+  CartesianGrid, AreaChart, Area,
 } from "recharts";
 import {
   HardDrive, Activity, PauseCircle, AlertOctagon, CalendarClock, CalendarX,
@@ -78,23 +78,23 @@ interface FeedRow { at: string; loai: string; tieu_de: string; ref_route: string
 
 // Muted palette for dashboard metrics
 const MUC_DO_COLORS: Record<string, string> = {
-  nghiem_trong: "oklch(0.65 0.15 25)",   // Muted orange-red
-  cao: "oklch(0.70 0.12 50)",            // Muted orange
-  trung_binh: "oklch(0.75 0.08 80)",     // Muted yellow-gold
-  thap: "oklch(0.70 0.02 260)",          // Muted slate-blue
-  khac: "oklch(0.85 0.02 260)",          // Light slate
+  nghiem_trong: "#ef4444",   // Red 500
+  cao: "#f97316",            // Orange 500
+  trung_binh: "#f59e0b",     // Amber 500
+  thap: "#3b82f6",          // Blue 500
+  khac: "#94a3b8",          // Slate 400
 };
 const MUC_DO_LABEL: Record<string, string> = {
   nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
 };
 // Use brand-blue-led palette
 const STATUS_COLORS = [
-  "oklch(0.55 0.20 264)", // Primary Blue
-  "oklch(0.65 0.15 160)", // Teal
-  "oklch(0.75 0.12 90)",  // Gold
-  "oklch(0.60 0.18 20)",  // Orange
-  "oklch(0.60 0.15 300)", // Purple
-  "oklch(0.80 0.02 260)", // Muted Slate
+  "#1D52E0", // Brand Blue
+  "#10b981", // Emerald 500
+  "#f59e0b", // Amber 500
+  "#f97316", // Orange 500
+  "#8b5cf6", // Violet 500
+  "#64748b", // Slate 500
 ];
 
 function TongQuanPage() {
@@ -444,26 +444,36 @@ function TongQuanPage() {
               <EmptyChart>Chưa có sự cố trong 12 tháng qua.</EmptyChart>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="thangHT" fontSize={11} />
-                  <YAxis fontSize={11} allowDecimals={false} />
-                  <RechartsTooltip />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                <AreaChart data={trendData}>
+                  <defs>
+                    {mucDoKeys.map((k, i) => {
+                      const color = MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"];
+                      return (
+                        <linearGradient key={`grad-${k}`} id={`grad-${k}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor={color} stopOpacity={0}/>
+                        </linearGradient>
+                      );
+                    })}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
+                  <XAxis dataKey="thangHT" fontSize={10} axisLine={false} tickLine={false} fontWeight="bold" />
+                  <YAxis fontSize={10} axisLine={false} tickLine={false} allowDecimals={false} fontWeight="bold" />
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontSize: '11px', fontWeight: 'bold' }}
+                  />
                   {mucDoKeys.map((k) => (
-                    <Bar
+                    <Area
                       key={k}
+                      type="monotone"
                       dataKey={k}
-                      stackId="s"
-                      fill={
-                        MUC_DO_COLORS[
-                          Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"
-                        ]
-                      }
-                      radius={[3, 3, 0, 0]}
+                      stackId="1"
+                      stroke={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
+                      fill={`url(#grad-${k})`}
+                      strokeWidth={2}
                     />
                   ))}
-                </BarChart>
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </CardContent>
@@ -674,23 +684,33 @@ function KpiCard({
   };
   const indicatorClasses: Record<string, string> = {
     default: "bg-border",
-    ok: "bg-emerald-500",
-    warn: "bg-amber-500",
-    danger: "bg-red-500",
+    ok: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]",
+    warn: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]",
+    danger: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]",
   };
   const body = (
-    <Card className={cn(link && "cursor-pointer hover:border-primary/40")}>
-      <CardContent className="flex flex-col gap-1 p-3">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
+    <Card className={cn(link && "cursor-pointer hover:border-primary/40 transition-all hover:shadow-md rounded-2xl border-border/40")}>
+      <CardContent className="flex flex-col gap-1.5 p-4">
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+          <span className={cn("w-2 h-2 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
+          {link && (
+             <TooltipProvider>
+               <Tooltip>
+                 <TooltipTrigger asChild>
+                   <Info className="h-3 w-3 ml-auto opacity-40 hover:opacity-100 transition-opacity" />
+                 </TooltipTrigger>
+                 <TooltipContent>
+                   <p className="text-[10px] uppercase font-bold tracking-tight">Mở {link.label}</p>
+                 </TooltipContent>
+               </Tooltip>
+             </TooltipProvider>
+          )}
         </div>
-        <div className={cn("font-mono font-semibold tabular-nums", toneClasses[tone], "text-xl")}>
-          {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
+        <div className={cn("font-mono font-black tabular-nums tracking-tighter", toneClasses[tone], "text-2xl")}>
+          {loading ? <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
         </div>
-        {link && (
-          <span className="mt-1 text-[10px] font-bold uppercase tracking-tighter text-primary/70">{link.label} →</span>
-        )}
+        {sub && <div className="text-[9px] font-bold uppercase tracking-tight text-muted-foreground/60">{sub}</div>}
       </CardContent>
     </Card>
   );
@@ -753,21 +773,33 @@ function HealthTile({ icon, label, value, hint, tone, loading, to }: {
   };
   const indicatorClasses: Record<string, string> = {
     default: "bg-border",
-    ok: "bg-emerald-500",
-    warn: "bg-amber-500",
-    danger: "bg-red-500",
+    ok: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]",
+    warn: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]",
+    danger: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]",
   };
   const content = (
-    <Card className={cn(to && "cursor-pointer")}>
-      <CardContent className="flex flex-col gap-1 p-3 transition-colors">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
+    <Card className={cn(to && "cursor-pointer hover:border-primary/40 transition-all hover:shadow-md rounded-2xl border-border/40")}>
+      <CardContent className="flex flex-col gap-1.5 p-4 transition-colors">
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+          <span className={cn("w-2 h-2 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
+          {hint && (
+             <TooltipProvider>
+               <Tooltip>
+                 <TooltipTrigger asChild>
+                   <Info className="h-3 w-3 ml-auto opacity-40 hover:opacity-100 transition-opacity" />
+                 </TooltipTrigger>
+                 <TooltipContent>
+                   <p className="text-[10px] uppercase font-bold tracking-tight">{hint}</p>
+                 </TooltipContent>
+               </Tooltip>
+             </TooltipProvider>
+          )}
         </div>
-        <div className={cn("text-xl font-mono font-semibold tabular-nums", toneClasses[tone])}>
-          {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
+        <div className={cn("text-2xl font-mono font-black tabular-nums tracking-tighter", toneClasses[tone])}>
+          {loading ? <span className="inline-block h-8 w-16 animate-pulse rounded bg-muted" /> : value}
         </div>
-        {hint && <div className="text-[10px] text-muted-foreground/80 font-mono tracking-tight">{hint}</div>}
+        {hint && <div className="text-[9px] text-muted-foreground/60 font-bold uppercase tracking-widest hidden md:block">{hint}</div>}
       </CardContent>
     </Card>
   );

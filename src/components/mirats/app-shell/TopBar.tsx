@@ -5,6 +5,7 @@ import { NotificationBell } from "../NotificationBell";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
+import { HeartBeatHeader } from "../dashboard/HeartBeatHeader";
 import { DesktopOnly } from "../DesktopOnly";
 import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import {
@@ -30,12 +31,15 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
     <div className="flex h-full items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         {renderMobileMenu}
+        <div className="hidden lg:flex items-center border-r border-border/50 pr-4 mr-1">
+          <HeartBeatHeader />
+        </div>
         <div className="relative w-full max-w-sm" data-tour="search">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Tìm tài sản, sự cố, hồ sơ..."
-            className="h-9 w-full cursor-pointer rounded-full bg-muted/50 pl-9 pr-4 text-sm focus-visible:ring-1"
+            className="h-9 w-full cursor-pointer rounded-full bg-muted/50 pl-9 pr-4 text-sm focus-visible:ring-1 border-none shadow-none"
             readOnly
             onClick={handleOpenSearch}
             onFocus={handleOpenSearch}

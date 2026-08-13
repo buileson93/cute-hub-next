@@ -224,28 +224,26 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
-      <div className="mb-6 -mx-6">
-        <HeartBeatStrip />
+      {/* THÀNH PHẦN 1: DẢI NHỊP TIM (ẨN VÌ ĐÃ CÓ TRÊN HEADER) */}
+      <div className="hidden lg:block mb-4">
+        {/* Placeholder if needed or just remove */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
           {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* METRIC BAR */}
-          <div className="grid grid-cols-4 gap-6 py-4 border-y border-border/50">
             {[
-              { label: "Availability", value: formatKpiValue(reliability), icon: ShieldCheck, color: "text-emerald-600" },
-              { label: "MTTR", value: formatKpiValue(mttrKpi), icon: Clock, color: "text-blue-600" },
-              { label: "MTBF", value: formatKpiValue(mtbfKpi), icon: TrendingUp, color: "text-orange-600" },
-              { label: "PM Đúng Hạn", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), icon: Wrench, color: "text-indigo-600" },
+              { label: "Availability", value: formatKpiValue(reliability), icon: ShieldCheck, color: "text-emerald-600", bg: "bg-emerald-50/50" },
+              { label: "MTTR", value: formatKpiValue(mttrKpi), icon: Clock, color: "text-blue-600", bg: "bg-blue-50/50" },
+              { label: "MTBF", value: formatKpiValue(mtbfKpi), icon: TrendingUp, color: "text-orange-600", bg: "bg-orange-50/50" },
+              { label: "PM Đúng Hạn", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), icon: Wrench, color: "text-indigo-600", bg: "bg-indigo-50/50" },
             ].map((k) => (
-              <div key={k.label} className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <div key={k.label} className={cn("flex flex-col gap-2 p-5 rounded-3xl border border-border/40 transition-all hover:shadow-lg hover:shadow-primary/5", k.bg)}>
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                   <k.icon className="w-3.5 h-3.5" /> {k.label}
                 </div>
-                <div className={cn("text-2xl font-black font-mono tracking-tight", k.color)}>
+                <div className={cn("text-3xl font-black font-mono tracking-tighter", k.color)}>
                   {k.value}
                 </div>
               </div>
@@ -272,7 +270,6 @@ function Dashboard() {
               </div>
               <Link to="/bao-tri" className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem lịch bảo trì →</Link>
             </div>
-          </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -379,15 +376,15 @@ function Dashboard() {
 
           {/* TẦNG 4.5: BẢNG CHI TIẾT SỨC KHOẺ THẤP (KHÔI PHỤC) */}
           {/* FLEET MONITORING */}
-          <div className="bg-white rounded-2xl border border-border/50 overflow-hidden">
-            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-muted/5">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <ShieldAlert className="w-3.5 h-3.5 text-red-500" /> Fleet Attention List
+          <div className="bg-white/50 dark:bg-card/50 backdrop-blur-sm rounded-3xl border border-border/40 overflow-hidden">
+            <div className="px-6 py-5 border-b border-border/40 flex items-center justify-between bg-muted/5">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-red-500" /> Fleet Attention List
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
-                <tbody className="divide-y divide-border/30">
+                <tbody className="divide-y divide-border/20">
                   {lowHealthDevices.length === 0 ? (
                     <tr>
                       <td className="px-6 py-8 text-center text-muted-foreground italic text-xs">
@@ -396,33 +393,43 @@ function Dashboard() {
                     </tr>
                   ) : (
                     lowHealthDevices.map(({ device, health }) => (
-                      <tr key={device.ma_thiet_bi} className="hover:bg-muted/5 transition-colors group">
-                        <td className="px-6 py-3">
-                          <div className="font-bold text-foreground/90 group-hover:text-primary transition-colors">{device.ten}</div>
-                          <div className="text-[9px] text-muted-foreground font-mono uppercase tracking-tighter">{device.ma_thiet_bi}</div>
+                      <tr key={device.ma_thiet_bi} className="group hover:bg-muted/30 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-0.5">
+                            <Link 
+                              to="/qr/thiet-bi/$id" 
+                              params={{ id: device.ma_thiet_bi } as any}
+                              className="font-bold text-foreground hover:text-primary transition-colors"
+                            >
+                              {device.ten}
+                            </Link>
+                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">{device.ma_thiet_bi}</span>
+                          </div>
                         </td>
-                        <td className="px-6 py-3 text-center w-16">
-                          <span className={cn(
-                            "inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-white text-[10px] shadow-sm",
-                            health.xepLoai === 'D' ? "bg-red-500" : "bg-orange-500"
-                          )}>
-                            {health.xepLoai}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-muted-foreground/80 text-[11px] font-medium italic">
-                          {health.khuyenNghi}
-                        </td>
-                        <td className="px-6 py-3 text-right">
-                          <Link 
-                            to="/qr/thiet-bi/$id" 
-                            params={{ id: device.ma_thiet_bi } as any}
-                            className="text-[9px] font-black uppercase tracking-widest text-primary/70 hover:text-primary transition-colors"
-                          >
-                            Chi tiết →
-                          </Link>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-3">
+                            <div className="flex flex-col items-end">
+                              <span className={cn(
+                                "text-sm font-black font-mono tracking-tighter",
+                                health.xepLoai === 'D' ? "text-red-500" : "text-orange-500"
+                              )}>
+                                {health.score}%
+                              </span>
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">Health</span>
+                            </div>
+                            <div className={cn(
+                              "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2",
+                              health.xepLoai === 'D' 
+                                ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-950/30 dark:border-red-900/50" 
+                                : "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/30 dark:border-orange-900/50"
+                            )}>
+                              {health.xepLoai}
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     ))
+
                   )}
                 </tbody>
               </table>
