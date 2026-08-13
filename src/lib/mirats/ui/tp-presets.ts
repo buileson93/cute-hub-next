@@ -29,7 +29,7 @@ export const THANH_PHAN_PRESETS: ViewPreset[] = [
     id: "quan-tri",
     ten: "Quản trị",
     moTa: "Thông tin mã Bravo, NCC, đơn vị quản lý và vị trí",
-    columns: ["ma", "ten", "maTaiSanBravo", "nhaCungCap", "taiSanDonViQuanLy", "viTri", "cheDoKdHc"]
+    columns: ["ten", "maTaiSanBravo", "nhaCungCap", "taiSanDonViQuanLy", "viTri", "cheDoKdHc"]
   },
   {
     id: "day-du",
