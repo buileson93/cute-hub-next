@@ -7,7 +7,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(UI_DENSITY.CARD_RADIUS, "border bg-card text-card-foreground shadow-sm", className)}
+      className={cn(UI_DENSITY.CARD_RADIUS, "border bg-card text-card-foreground shadow-none", className)}
       {...props}
     />
   ),

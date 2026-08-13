@@ -17,7 +17,9 @@ export const UI_DENSITY = {
 
 
   // --- Cards ---
-  CARD_RADIUS: "rounded-2xl",
+  CARD_RADIUS: "rounded-2xl", // 16px
+  CONTROL_RADIUS: "rounded-lg", // 8px
+  BADGE_RADIUS: "rounded-full",
   CARD_PADDING: "p-4",
   CARD_HEADER: "px-4 pt-4 pb-2",
 

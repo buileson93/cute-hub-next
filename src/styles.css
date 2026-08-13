@@ -65,7 +65,7 @@
 }
 
 :root {
-  --radius: 0.625rem; /* 10px instead of 12px for snappier look */
+  --radius: 1rem; /* 16px for card-level components */
 
   /* Motion tokens — GĐ1-01 */
   --duration-fast: 120ms;
@@ -99,8 +99,8 @@
   --destructive: oklch(0.75 0.17 60);          /* #FF8F00 — used for alerts/accent flame */
   --destructive-foreground: oklch(0 0 0);
 
-  --border: oklch(0.92 0.004 250);
-  --input: oklch(0.92 0.004 250);
+  --border: oklch(0.95 0.002 250);     /* Hairline faint border */
+  --input: oklch(0.95 0.002 250);
   --ring: oklch(0.46 0.22 264 / 0.45);
 
   --chart-1: oklch(0.46 0.22 264);             /* blue */
@@ -191,8 +191,7 @@
 }
 
 @utility surface-elegant {
-  box-shadow: 0 1px 2px oklch(0.19 0.02 260 / 0.04),
-              0 8px 24px -12px oklch(0.19 0.02 260 / 0.10);
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
 }
 
 /* Thanh cuộn mảnh, luôn hiển thị rõ cho bảng nhiều cột & dialog dài */
