@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import {
   ArrowLeft, ShieldAlert, Loader2, Search, RefreshCw,
   Plus, Pencil, Trash2, Shield, LogIn, KeyRound, Activity,
-  RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle,
+  RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle, ChevronDown
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/backend/client";
+import { StandardTable, type ColumnDef } from "@/components/mirats/StandardTable";
 
 export const Route = createFileRoute("/admin/audit")({
   head: () => ({
@@ -408,6 +410,87 @@ function AdminAuditPage() {
     toast.success(`Đã xuất ${filtered.length} dòng`);
   };
 
+  type EnrichedAuditRow = typeof enriched[0];
+
+  const columns: ColumnDef<EnrichedAuditRow>[] = [
+    {
+      key: "severity",
+      header: "Mức",
+      width: 80,
+      render: (e) => {
+        const m = SEVERITY_META[e.severity];
+        return (
+          <Badge className={cn("gap-1.5 font-medium", m.bg, m.text, m.border)} variant="outline">
+            <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} />
+            {m.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: "action",
+      header: "Hành động",
+      width: 200,
+      render: (e) => {
+        const Icon = e.icon;
+        return (
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-2 font-medium">
+              <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+              {e.verb}
+            </div>
+            <div className="font-mono text-[10px] text-muted-foreground">{e.row.action}</div>
+          </div>
+        );
+      },
+    },
+    {
+      key: "user",
+      header: "Người thực hiện",
+      width: 180,
+      render: (e) => {
+        const p = e.row.user_id ? profileMap.get(e.row.user_id) : null;
+        if (!p) return <span className="text-muted-foreground italic">Hệ thống</span>;
+        return (
+          <div className="flex flex-col">
+            <div className="font-medium">{p.ho_ten}</div>
+            <div className="text-[10px] text-muted-foreground">{p.email}</div>
+          </div>
+        );
+      },
+    },
+    {
+      key: "entity",
+      header: "Dữ liệu",
+      width: 140,
+      render: (e) => (
+        <div className="flex flex-col">
+          <div className="font-medium">{entityLabel(e.row.entity)}</div>
+          <div className="text-[10px] text-muted-foreground font-mono">{e.row.entity_id}</div>
+        </div>
+      ),
+    },
+    {
+      key: "page",
+      header: "Trang",
+      width: 120,
+      render: (e) => pageLabel(e.row.entity),
+    },
+    {
+      key: "created_at",
+      header: "Thời điểm",
+      width: 160,
+      render: (e) => (
+        <div className="flex flex-col text-muted-foreground tabular-nums font-mono text-[11px]">
+          {fmtTime(e.row.created_at)}
+        </div>
+      ),
+    },
+  ];
+
+
+  
+
   const clearFilters = () => {
     setQ(""); setSeverityFilter("__all__"); setKindFilter("__all__");
     setEntityFilter("__all__"); setPageFilter("__all__"); setUserFilter("__all__");
@@ -579,38 +662,91 @@ function AdminAuditPage() {
         </div>
 
         {/* Log table — Supabase-like */}
-        <div className="overflow-hidden rounded-md border bg-card">
-          <div className="grid grid-cols-[28px_170px_80px_180px_1fr_140px] items-center gap-2 border-b bg-muted/40 px-3 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            <span></span>
-            <span>Thời điểm</span>
-            <span>Mức độ</span>
-            <span>Người dùng</span>
-            <span>Sự kiện</span>
-            <span>Trang</span>
-          </div>
+        <StandardTable
+          tableKey="admin-audit-logs"
+          rows={filtered}
+          columns={columns}
+          getRowId={(r) => r.row.id}
+          trangThai={{ dangTai: auditQ.isLoading, loi: auditQ.error }}
+          expandable
+          renderExpansion={(e) => {
+            const detail = (e.row.detail ?? {}) as Record<string, unknown>;
+            const changes = diffChanges(detail.old, detail.new);
+            const email = typeof detail.email === "string" ? detail.email : null;
+            const ip = typeof detail.ip === "string" ? detail.ip : null;
+            
+            return (
+              <div className="space-y-4 p-4 text-xs">
+                {/* Meta info */}
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-muted-foreground border-b pb-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-[10px] uppercase">ID:</span>
+                    <span className="font-mono">{e.row.id}</span>
+                  </div>
+                  {email && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-[10px] uppercase">Email:</span>
+                      <span>{email}</span>
+                    </div>
+                  )}
+                  {ip && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-[10px] uppercase">IP:</span>
+                      <span className="font-mono">{ip}</span>
+                    </div>
+                  )}
+                  {isAdmin && canRollback(e.row) && (
+                    <Button 
+                      size="sm" 
+                      variant="destructive" 
+                      className="h-6 px-2 text-[10px]"
+                      onClick={() => setRollbackTarget(e.row)}
+                    >
+                      <RotateCcw className="mr-1 h-3 w-3" /> Hoàn tác thay đổi
+                    </Button>
+                  )}
+                </div>
 
-          {auditQ.isLoading ? (
-            <div className="py-10 text-center text-sm text-muted-foreground">
-              <Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Đang tải…
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="py-10 text-center text-sm text-muted-foreground">Không có bản ghi phù hợp.</div>
-          ) : (
-            <div className="divide-y">
-              {filtered.map((e) => (
-                <LogRow
-                  key={e.row.id}
-                  entry={e}
-                  profile={e.row.user_id ? profileMap.get(e.row.user_id) : null}
-                  expanded={expanded.has(e.row.id)}
-                  onToggle={() => toggleExpand(e.row.id)}
-                  canRollback={isAdmin && canRollback(e.row)}
-                  onRollback={() => setRollbackTarget(e.row)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+                {/* Data changes */}
+                {e.kind === "update" && changes.length > 0 ? (
+                  <div className="rounded-md border bg-background/50 overflow-hidden">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b">
+                          <th className="px-3 py-2 text-left w-1/4">Trường</th>
+                          <th className="px-3 py-2 text-left w-3/8">Trước</th>
+                          <th className="px-3 py-2 text-left w-3/8">Sau</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {changes.map((c) => (
+                          <tr key={c.field} className="hover:bg-muted/20 transition-colors">
+                            <td className="px-3 py-2 font-medium border-r">{c.field}</td>
+                            <td className="px-3 py-2 text-destructive border-r break-all">{String(c.from)}</td>
+                            <td className="px-3 py-2 text-emerald-600 dark:text-emerald-400 break-all">{String(c.to)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : e.kind === "create" || e.kind === "delete" ? (
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Dữ liệu {e.kind === "create" ? "mới" : "đã xoá"}
+                    </div>
+
+                    <pre className="p-3 bg-muted/30 rounded-md font-mono text-[11px] overflow-auto max-h-[400px]">
+                      {JSON.stringify(detail.new || detail.old, null, 2)}
+                    </pre>
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground italic">Không có chi tiết thay đổi.</div>
+                )}
+              </div>
+            );
+          }}
+        />
+
 
         {/* Retention (admin only) */}
         {isAdmin && (

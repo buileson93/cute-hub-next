@@ -39,7 +39,7 @@ export function calculateOptimalWidths<T>(
 
   columns.forEach(col => {
     // 1. Đo độ rộng tiêu đề
-    let maxW = measureTextWidth(col.label, "bold 13px Inter, system-ui, sans-serif");
+    let maxW = measureTextWidth(col.header || col.label || "", "bold 13px Inter, system-ui, sans-serif");
 
     // 2. Đo độ rộng nội dung trong mẫu
     sample.forEach(row => {

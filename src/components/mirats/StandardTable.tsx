@@ -38,36 +38,47 @@ import { Input } from "@/components/ui/input";
 
 
 
-export interface StdColumn<T> {
+export interface ColumnDef<T> {
   key: string;
-  label: string;
-  value?: (r: T) => any;
-  cell?: (r: T) => React.ReactNode;
-  filter?: "text" | "cat";
-  align?: "left" | "center" | "right";
-  sticky?: boolean;
-  minW?: string; // @deprecated: dùng minWidth thay thế
+  header?: string;
+  /** @deprecated use header instead */
+  label?: string;
   width?: number;
   minWidth?: number;
   maxWidth?: number;
+  sticky?: boolean;
+  sortable?: boolean;
+  align?: "left" | "center" | "right";
+  render?: (row: T) => React.ReactNode;
+  /** @deprecated use render instead */
+  cell?: (row: T) => React.ReactNode;
+  value?: (row: T) => any;
+  priority?: "primary" | "secondary" | "detail";
+  hideBelow?: number | string;
+  hidden?: boolean;
+  defaultHidden?: boolean;
   grow?: number;
   cellClassName?: string;
-  hidden?: boolean;
+  lineClamp?: number;
+  filter?: "text" | "cat";
+  sortValue?: (r: T) => any;
   group?: string;
   inherited?: boolean;
-  hideBelow?: number | string;
-  defaultHidden?: boolean;
-  sortable?: boolean;
-  sortValue?: (r: T) => any;
-  lineClamp?: number;
-  priority?: "primary" | "secondary" | "detail";
+  /** @deprecated use minWidth instead */
+  minW?: string;
 }
+
+
+/** @deprecated Use ColumnDef instead */
+export type StdColumn<T> = ColumnDef<T>;
+
+
 
 
 
 export interface StandardTableProps<T> {
   rows: T[];
-  columns: StdColumn<T>[];
+  columns: ColumnDef<T>[];
   getRowId?: (r: T) => string;
   selectable?: boolean;
   selected?: Set<string>;
@@ -80,12 +91,12 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
-    visibleColumns: StdColumn<T>[];
-    allColumns: StdColumn<T>[];
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
     filteredRows: T[];
     pageRows: T[];
     clear: () => void;
@@ -103,6 +114,8 @@ export interface StandardTableProps<T> {
   editMode?: boolean;
   onColumnsChange?: (visibleKeys: string[]) => void;
   virtualizerOptions?: any;
+  expandable?: boolean;
+  renderExpansion?: (row: T) => React.ReactNode;
 }
 
 
@@ -138,6 +151,8 @@ export function StandardTable<T>({
   editMode,
   onColumnsChange,
   virtualizerOptions,
+  expandable,
+  renderExpansion,
 }: StandardTableProps<T>) {
 
 
@@ -303,8 +318,8 @@ export function StandardTable<T>({
   };
 
   const renderToolbar = (
-    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }) => React.ReactNode),
-    ctx: { visibleRows: T[]; visibleColumns: StdColumn<T>[] }
+    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode),
+    ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }
   ) => {
     if (typeof toolbar === "function") {
       return toolbar(ctx);
@@ -312,7 +327,7 @@ export function StandardTable<T>({
     return toolbar;
   };
 
-  const colText = useCallback((col: StdColumn<T>, row: T): string => {
+  const colText = useCallback((col: ColumnDef<T>, row: T): string => {
     const v = col.value ? col.value(row) : "";
     return v == null ? "" : String(v);
   }, []);
@@ -366,7 +381,7 @@ export function StandardTable<T>({
     );
   }, [columns, catFilters, textFilters]);
 
-  const sortableKey = useCallback((c: StdColumn<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
+  const sortableKey = useCallback((c: ColumnDef<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
   const cycleSort = useCallback((key: string) => setSort((prev) => {
     if (!prev || prev.key !== key) return { key, dir: "asc" };
     if (prev.dir === "asc") return { key, dir: "desc" };
@@ -643,7 +658,7 @@ export function StandardTable<T>({
                             <ColFilter
                               key={c.key}
                               type={c.filter || "text"}
-                              label={c.label}
+                               label={c.header || c.label || ""}
                               catValues={catValues[c.key] || []}
                               catSel={catFilters[c.key] || new Set()}
                               onToggleCat={(val) => toggleCat(c.key, val)}
@@ -706,7 +721,7 @@ export function StandardTable<T>({
                                  onSelect={(e: Event) => e.preventDefault()}
                                 disabled={!canToggle}
                               >
-                                {col.label}
+                                {col.header || col.label}
                               </DropdownMenuCheckboxItem>
                             );
                           })}
@@ -762,7 +777,7 @@ export function StandardTable<T>({
             const col = columns.find(c => c.key === key);
             return (
               <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
-                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{val}</span>
                 <button 
                   onClick={() => setTextFilters(prev => {
@@ -781,7 +796,7 @@ export function StandardTable<T>({
             const col = columns.find(c => c.key === key);
             return (
               <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
-                <span className="text-muted-foreground">{col?.label}:</span>
+                <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
                 <button 
                   onClick={() => clearCat(key)}
@@ -833,7 +848,7 @@ export function StandardTable<T>({
                         <div className="flex-1 space-y-1 min-w-0 pr-6">
                           {primaryCols.map((col, idx) => (
                             <div key={col.key} className={idx === 0 ? "font-semibold text-sm truncate" : "text-[12px] text-muted-foreground truncate"}>
-                              {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                             </div>
                           ))}
                         </div>
@@ -853,10 +868,10 @@ export function StandardTable<T>({
                         {secondaryCols.map((col) => (
                           <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
-                              {col.label}
+                              {col.header || col.label}
                             </span>
                             <div className={cn("text-[13px] truncate", col.cellClassName)}>
-                              {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                             </div>
                           </div>
                         ))}
@@ -868,7 +883,7 @@ export function StandardTable<T>({
                           {detailCols.map((col) => (
                             <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
                               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
-                                {col.label}
+                                {col.header || col.label}
                               </span>
                               <div className={cn("text-[13px] break-words", col.cellClassName)}>
                                 {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
@@ -1085,13 +1100,13 @@ export function StandardTable<T>({
                             )}
                           </button>
                         ) : (
-                          <span className="truncate">{c.label}</span>
+                           <span className="truncate">{c.header || c.label || ""}</span>
                         )}
 
                         {c.filter && (
                           <ColFilter
                             type={c.filter}
-                            label={c.label}
+                            label={c.header || c.label || ""}
                             catValues={catValues[c.key] ?? []}
                             catSel={catFilters[c.key] ?? new Set()}
                             onToggleCat={(v: string) => toggleCat(c.key, v)}
@@ -1213,7 +1228,9 @@ export function StandardTable<T>({
                                   minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                                 }}
                               >
-                              {c.cell ? (
+                              {c.render ? (
+                                c.render(r)
+                              ) : c.cell ? (
                                 c.cell(r)
                               ) : (
                                 <div
@@ -1245,10 +1262,10 @@ export function StandardTable<T>({
                                   .map(col => (
                                     <div key={col.key} className="flex flex-col gap-1 min-w-0 text-left">
                                       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                                        {col.label}
+                                        {col.header || col.label}
                                       </span>
                                       <div className="text-[13px] break-words">
-                                        {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                                             {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                                       </div>
                                     </div>
                                   ))}
