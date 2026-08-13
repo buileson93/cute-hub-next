@@ -76,19 +76,25 @@ interface ExpiryRow { loai: string; ref_id: string; ten: string; ngay_het: strin
 interface TopTbLap { thiet_bi_id: string; ma: string; ten: string; so_lan: number; mttr_h: number }
 interface FeedRow { at: string; loai: string; tieu_de: string; ref_route: string; ref_id: string }
 
+// Muted palette for dashboard metrics
 const MUC_DO_COLORS: Record<string, string> = {
-  nghiem_trong: "hsl(0 84% 60%)",
-  cao: "hsl(24 94% 52%)",
-  trung_binh: "hsl(38 92% 50%)",
-  thap: "hsl(215 16% 55%)",
-  khac: "hsl(215 16% 70%)",
+  nghiem_trong: "oklch(0.65 0.15 25)",   // Muted orange-red
+  cao: "oklch(0.70 0.12 50)",            // Muted orange
+  trung_binh: "oklch(0.75 0.08 80)",     // Muted yellow-gold
+  thap: "oklch(0.70 0.02 260)",          // Muted slate-blue
+  khac: "oklch(0.85 0.02 260)",          // Light slate
 };
 const MUC_DO_LABEL: Record<string, string> = {
   nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
 };
+// Use brand-blue-led palette
 const STATUS_COLORS = [
-  "hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)",
-  "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)",
+  "oklch(0.55 0.20 264)", // Primary Blue
+  "oklch(0.65 0.15 160)", // Teal
+  "oklch(0.75 0.12 90)",  // Gold
+  "oklch(0.60 0.18 20)",  // Orange
+  "oklch(0.60 0.15 300)", // Purple
+  "oklch(0.80 0.02 260)", // Muted Slate
 ];
 
 function TongQuanPage() {
@@ -666,21 +672,26 @@ function KpiCard({
 }) {
   const toneClasses: Record<string, string> = {
     default: "text-foreground",
-    ok: "text-emerald-600 dark:text-emerald-400",
-    warn: "text-amber-600 dark:text-amber-400",
-    danger: "text-destructive",
+    ok: "text-emerald-700 dark:text-emerald-400",
+    warn: "text-amber-700 dark:text-amber-400",
+    danger: "text-red-700 dark:text-red-400",
+  };
+  const indicatorClasses: Record<string, string> = {
+    default: "bg-border",
+    ok: "bg-emerald-500",
+    warn: "bg-amber-500",
+    danger: "bg-red-500",
   };
   const body = (
     <Card className={cn(link && "cursor-pointer hover:border-primary/40")}>
       <CardContent className="flex flex-col gap-1 p-3">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className={toneClasses[tone]}>{icon}</span>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span className={cn("w-1.5 h-1.5 rounded-full", indicatorClasses[tone])} />
           <span className="truncate">{label}</span>
         </div>
-        <div className={cn("font-semibold tabular-nums", toneClasses[tone], "text-2xl")}>
+        <div className={cn("font-mono font-semibold tabular-nums", toneClasses[tone], "text-xl")}>
           {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
         </div>
-        {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
         {link && (
           <span className="mt-1 text-[11px] text-primary">{link.label} →</span>
         )}
