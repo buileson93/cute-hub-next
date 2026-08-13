@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
+import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
 import { 
@@ -200,173 +201,130 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
-          {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
+          {/* TẦNG 1: CHỈ SỐ THEN CHỐT */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="shadow-sm border border-border overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
-                    <Icon name="entity.security" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Target: 99%
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
-                  {formatKpiValue(reliability)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="entity.activity" size="tiny" /> Availability
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="Sẵn sàng"
+              value={formatKpiValue(reliability).replace('%', '')}
+              unit="%"
+              icon="entity.security"
+              target="Target: 99%"
+              description="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua."
+              sparklineData={trendData.map(d => ({ value: Object.values(d).filter(v => typeof v === 'number').reduce((a, b) => a + (b as number), 0) }))}
+            />
 
-            <Card className="shadow-sm border border-blue-500/10 overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-blue-500/5 text-blue-600 dark:text-blue-400">
-                    <Icon name="status.power" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Phản hồi
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-blue-600 dark:text-blue-400">
-                  {formatKpiValue(mttrKpi)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="entity.history" size="tiny" /> MTTR (Bình quân)
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="MTTR"
+              value={formatKpiValue(mttrKpi).replace(' phút', '')}
+              unit="phút"
+              icon="status.power"
+              status="info"
+              description="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+            />
 
-            <Card className="shadow-sm border border-amber-500/10 overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-amber-500/5 text-amber-600 dark:text-amber-400">
-                    <Icon name="entity.securityAlert" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Chu kỳ
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-amber-600 dark:text-amber-400">
-                  {formatKpiValue(mtbfKpi)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="entity.trendingUp" size="tiny" /> MTBF (Trung bình)
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="MTBF"
+              value={formatKpiValue(mtbfKpi).replace(' ngày', '')}
+              unit="ngày"
+              icon="entity.securityAlert"
+              status="warning"
+              description="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
+            />
 
-            <Card className="shadow-sm border border-border overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
-                    <Icon name="status.success" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Bảo trì
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
-                  {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="status.maintenance" size="tiny" /> PM đúng hạn
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="Bảo trì"
+              value={pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result).replace('%', '')}
+              unit="%"
+              icon="status.success"
+              isLoading={pmKpi.isLoading}
+              description="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
               <div className="absolute top-0 left-0 w-[2px] h-full bg-red-600 dark:bg-red-400" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600 dark:text-red-400">
-                  <Icon name="status.emergency" /> Hôm nay có gì đang cháy?
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 text-red-600 dark:text-red-400">
+                  <Icon name="status.emergency" size="tiny" /> Sự cố khẩn
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-red-600 dark:text-red-400 tabular-nums">
+                  <div className="text-2xl font-black text-red-600 dark:text-red-400 tabular-nums">
                     {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
                   </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold">Vụ việc</div>
                 </div>
-                <div className="space-y-2 min-h-[100px]">
+                <div className="min-h-[80px]">
                   {brief.isLoading ? (
                     <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
                   ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
-                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium py-2">
-                      <Icon name="status.success" /> Không có sự cố khẩn cấp
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-[12px] font-medium py-2">
+                      <Icon name="status.success" size="tiny" /> Hệ thống ổn định
                     </div>
                   ) : (
-                    <div className="text-sm text-red-600/80 dark:text-red-400/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
+                    <div className="text-[12px] text-red-600/80 dark:text-red-400/80 italic">Cần xử lý các sự cố nghiêm trọng ngay.</div>
                   )}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Nhấn để xem sự cố</span>
-                  <Link to="/su-co" className="text-primary hover:underline">Chi tiết →</Link>
+                <div className="mt-4 pt-3 border-t border-border flex justify-between items-center text-[11px] font-bold">
+                  <Link to="/su-co" className="text-primary hover:underline uppercase tracking-tighter">Chi tiết →</Link>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
               <div className="absolute top-0 left-0 w-[2px] h-full bg-amber-600 dark:bg-amber-400" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                  <Icon name="status.maintenance" /> Tuần này phải làm gì?
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                  <Icon name="status.maintenance" size="tiny" /> Lịch bảo trì
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-amber-600 dark:text-amber-400 tabular-nums">
+                  <div className="text-2xl font-black text-amber-600 dark:text-amber-400 tabular-nums">
                     {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
                   </div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold">Công việc</div>
                 </div>
-                <div className="space-y-1 min-h-[100px]">
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-amber-500/5 transition-colors">
-                    <span>PM đến hạn hôm nay</span>
+                <div className="space-y-1 min-h-[80px]">
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-[12px] p-1 rounded hover:bg-amber-500/5 transition-colors">
+                    <span>Đến hạn hôm nay</span>
                     <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
                   </Link>
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-amber-500/5 transition-colors">
-                    <span>PM quá hạn chưa xong</span>
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-[12px] p-1 rounded hover:bg-amber-500/5 transition-colors">
+                    <span>Quá hạn chưa xong</span>
                     <span className="font-bold text-red-600 dark:text-red-400 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
                   </Link>
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Lịch bảo trì</span>
-                  <Link to="/bao-tri" className="text-primary hover:underline">Xem tất cả →</Link>
+                <div className="mt-4 pt-3 border-t border-border flex justify-between items-center text-[11px] font-bold">
+                  <Link to="/bao-tri" className="text-primary hover:underline uppercase tracking-tighter">Xem tất cả →</Link>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
               <div className="absolute top-0 left-0 w-[2px] h-full bg-blue-600 dark:bg-blue-400" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                  <Icon name="status.sparkle" /> Dữ liệu có sạch không?
+              <CardHeader className="py-3 border-b bg-muted/5">
+                <CardTitle className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <Icon name="status.sparkle" size="tiny" /> Chất lượng hồ sơ
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-blue-600 dark:text-blue-400 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
-                  <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
+                  <div className="text-2xl font-black text-blue-600 dark:text-blue-400 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold">Hoàn thiện</div>
                 </div>
-                <div className="space-y-1 min-h-[100px]">
-                  <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
-                  {lowCompleteness.map((tb: any) => (
-                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-500/5 transition-colors">
+                <div className="space-y-1 min-h-[80px]">
+                  {lowCompleteness.slice(0, 2).map((tb: any) => (
+                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] p-1 rounded hover:bg-blue-500/5 transition-colors">
                       <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
                       <span className="font-bold text-red-500 dark:text-red-400 tabular-nums">{tb.completeness_pct}%</span>
                     </Link>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
-                  <span>Tiến độ tổng</span>
-                  <Link to="/chat-luong-du-lieu" className="text-primary hover:underline">Chi tiết →</Link>
+                <div className="mt-4 pt-3 border-t border-border flex justify-between items-center text-[11px] font-bold">
+                  <Link to="/chat-luong-du-lieu" className="text-primary hover:underline uppercase tracking-tighter">Báo cáo sạch →</Link>
                 </div>
               </CardContent>
             </Card>
@@ -558,16 +516,16 @@ function Dashboard() {
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center">
                     <Icon name="status.trophy" size="medium" className="text-primary mb-2" />
                     <div className="text-2xl font-black text-primary">120</div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
+                    <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
                   </div>
                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex flex-col items-center justify-center text-center">
                     <Icon name="status.error" size="medium" className="text-amber-600 dark:text-amber-400 mb-2" />
                     <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{tasks.length}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
+                    <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
                   {tasks.length === 0 ? (
                     <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
                   ) : tasks.slice(0, 3).map((t: any) => (
@@ -577,9 +535,9 @@ function Dashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate group-hover:text-primary transition-colors">{t.tieu_de}</div>
-                        <div className="text-[10px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
+                        <div className="text-[11px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
                       </div>
-                      <Link to="/gop-gach" className="text-[10px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">Làm ngay →</Link>
+                      <Link to="/gop-gach" className="text-[11px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-tighter">Làm ngay →</Link>
                     </div>
                   ))}
                 </div>
@@ -594,7 +552,7 @@ function Dashboard() {
             <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
               <Icon name="entity.history" className="text-primary" /> Nhật ký vận hành
             </h3>
-            <span className="text-[10px] text-muted-foreground uppercase font-medium bg-muted px-1.5 py-0.5 rounded">Live</span>
+            <span className="text-[11px] text-muted-foreground uppercase font-bold bg-muted px-1.5 py-0.5 rounded tracking-widest">Live</span>
           </div>
           <div className="h-[calc(100vh-250px)] min-h-[500px]">
             <LiveTimeline />
