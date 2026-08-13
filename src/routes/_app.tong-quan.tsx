@@ -258,16 +258,13 @@ function TongQuanPage() {
   };
 
   return (
-    <PageBody className="overflow-auto">
+    <PageBody className="overflow-auto space-y-4">
       {/* Thanh tiêu đề + bộ lọc */}
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="mr-auto">
-          <PageHeader
-            icon={Activity}
-            title="Tổng quan KPI"
-            help=""
-          />
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 h-10">
+        <PageHeader
+          icon={Activity}
+          title="Brief hôm nay"
+        />
 
         <div>
           <label className="mb-1 block text-[11px] text-muted-foreground">Đơn vị</label>
