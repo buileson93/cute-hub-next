@@ -435,7 +435,7 @@ function TongQuanPage() {
             </CardTitle>
             <Link to="/su-co" className="text-[11px] text-primary hover:underline">Sổ sự cố →</Link>
           </CardHeader>
-          <CardContent className="h-[280px]">
+          <CardContent className="h-[220px]">
             {trendQ.isLoading ? (
               <ChartLoader />
             ) : trendData.length === 0 ? (
@@ -472,7 +472,7 @@ function TongQuanPage() {
             <CardTitle className="text-sm">Phân bổ trạng thái tài sản</CardTitle>
             <Link to="/thiet-bi" search={{ q: "" }} className="text-[11px] text-primary hover:underline">Tài sản →</Link>
           </CardHeader>
-          <CardContent className="h-[280px]">
+          <CardContent className="h-[220px]">
             {statusQ.isLoading ? (
               <ChartLoader />
             ) : (statusQ.data ?? []).length === 0 ? (
@@ -664,30 +664,34 @@ function KpiCard({
   link?: { to: string; label: string };
   sub?: string;
 }) {
-  const toneClasses: Record<string, string> = {
-    default: "text-foreground",
-    ok: "text-emerald-600 dark:text-emerald-400",
-    warn: "text-amber-600 dark:text-amber-400",
-    danger: "text-destructive",
+  const tones: Record<string, { text: string; bg: string }> = {
+    default: { text: "text-foreground", bg: "bg-secondary/40" },
+    ok: { text: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/20" },
+    warn: { text: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20" },
+    danger: { text: "text-destructive", bg: "bg-destructive/5" },
   };
+  const t = tones[tone];
+
   const body = (
-    <Card className={cn(link && "cursor-pointer hover:border-primary/40")}>
-      <CardContent className="flex flex-col gap-1 p-3">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className={toneClasses[tone]}>{icon}</span>
+    <Card className={cn("h-full border-none shadow-none transition-all", t.bg, link && "cursor-pointer hover:opacity-80")}>
+      <CardContent className="flex h-full flex-col justify-between p-4 pt-4">
+        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+          <span className={t.text}>{icon}</span>
           <span className="truncate">{label}</span>
         </div>
-        <div className={cn("font-semibold tabular-nums", toneClasses[tone], "text-2xl")}>
-          {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted" /> : (value ?? 0).toLocaleString("vi-VN")}
+        <div className="mt-1 flex items-baseline gap-2">
+          <div className={cn("text-[24px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
+            {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted/20" /> : (value ?? 0).toLocaleString("vi-VN")}
+          </div>
+          {sub && <div className="text-[11px] font-medium opacity-70">{sub}</div>}
         </div>
-        {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
         {link && (
-          <span className="mt-1 text-[11px] text-primary">{link.label} →</span>
+          <div className="mt-1 text-[11px] font-medium text-primary/80">{link.label} →</div>
         )}
       </CardContent>
     </Card>
   );
-  if (link) return <Link to={link.to as never} className="block">{body}</Link>;
+  if (link) return <Link to={link.to as never} className="h-full">{body}</Link>;
   return body;
 }
 
@@ -739,31 +743,47 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
   tone: "default" | "ok" | "warn" | "danger"; loading: boolean; to?: string;
   description?: string;
 }) {
-  const toneClasses: Record<string, string> = {
-    default: "text-foreground",
-    ok: "text-emerald-600 dark:text-emerald-400",
-    warn: "text-amber-600 dark:text-amber-400",
-    danger: "text-destructive",
+  const tones: Record<string, { text: string; bg: string }> = {
+    default: { text: "text-foreground", bg: "bg-secondary/40" },
+    ok: { text: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/20" },
+    warn: { text: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20" },
+    danger: { text: "text-destructive", bg: "bg-destructive/5" },
   };
+  const t = tones[tone];
+
   const content = (
-    <Card className={cn(to && "cursor-pointer")}>
-      <CardContent className="flex flex-col gap-1 p-3 transition-colors">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className={toneClasses[tone]}>{icon}</span>
-          <span className="truncate">{label}</span>
+    <Card className={cn("h-full border-none shadow-none transition-all", t.bg, to && "cursor-pointer hover:opacity-80")}>
+      <CardContent className="flex h-full flex-col justify-between p-4 pt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+            <span className={t.text}>{icon}</span>
+            <span className="truncate">{label}</span>
+          </div>
+          {description && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 text-muted-foreground/50 cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[200px] text-xs">
+                  {description}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
-        <div className={cn("text-2xl font-semibold tabular-nums", toneClasses[tone])}>
-          {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted" /> : value}
+        <div className="mt-1 flex items-baseline gap-2">
+          <div className={cn("text-[24px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
+            {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted/20" /> : value}
+          </div>
         </div>
-        {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+        {hint && <div className="mt-1 text-[11px] font-medium opacity-70 truncate">{hint}</div>}
       </CardContent>
     </Card>
   );
 
-  const inner = content;
-
-  if (to) return <Link to={to as never} className="block">{inner}</Link>;
-  return inner;
+  if (to) return <Link to={to as never} className="h-full">{content}</Link>;
+  return content;
 }
 
 function SectionHeader({ icon, title, to, more }: { icon: React.ReactNode; title: string; to?: string; more?: string }) {
