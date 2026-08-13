@@ -1100,7 +1100,7 @@ export function StandardTable<T>({
                             )}
                           </button>
                         ) : (
-                          <span className="truncate">{c.label}</span>
+                           <span className="truncate">{c.header || c.label || ""}</span>
                         )}
 
                         {c.filter && (
