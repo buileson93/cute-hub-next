@@ -82,7 +82,11 @@ export interface StandardTableProps<T> {
   activePreset?: string;
   hideReorderToggle?: boolean;
   editMode?: boolean;
+  onColumnsChange?: (visibleKeys: string[]) => void;
+  virtualizerOptions?: any;
 }
+
+
 
 
 export function StandardTable<T>({
@@ -112,14 +116,19 @@ export function StandardTable<T>({
   activePreset,
   hideReorderToggle,
   editMode,
+  onColumnsChange,
+  virtualizerOptions,
 }: StandardTableProps<T>) {
+
+
 
   const [containerWidth, setContainerWidth] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!parentRef.current) return;
+    if (!parentRef.current || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver((entries) => {
+
       for (const entry of entries) {
         setContainerWidth(entry.contentRect.width);
       }
@@ -179,6 +188,14 @@ export function StandardTable<T>({
       return containerWidth >= threshold;
     });
   }, [sortedColumns, tableKey, prefs.hidden, containerWidth]);
+
+  // Sync visible keys ra ngoài nếu có yêu cầu
+  useEffect(() => {
+    if (onColumnsChange) {
+      onColumnsChange(shownCols.map(c => c.key));
+    }
+  }, [shownCols, onColumnsChange]);
+
 
   // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
   // bỏ qua Tầng 2 (hideBelow) nhưng vẫn áp dụng Tầng 1 (User Prefs) và Tầng 3 (Hardcoded hidden)
@@ -355,8 +372,11 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
-    overscan: isTest ? display.length : 10,
+    overscan: isTest ? Math.max(display.length, 100) : 10,
+    initialOffset: isTest ? 0 : undefined,
+    ...virtualizerOptions,
   });
+
 
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();

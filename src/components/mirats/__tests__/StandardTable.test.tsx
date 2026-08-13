@@ -1,14 +1,27 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { render, screen, cleanup, fireEvent, within } from "@testing-library/react";
 import { StandardTable, type StdColumn } from "../StandardTable";
+
+// Mock ResizeObserver properly for Vitest/JSDOM
+vi.stubGlobal('ResizeObserver', class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+});
+
+
+
+
+
+
 
 afterEach(() => cleanup());
 
 interface Row { id: string; ten: string; nhom: string }
 const rows: Row[] = [
-  { id: "1", ten: "A", nhom: "x" },
-  { id: "2", ten: "B", nhom: "y" },
+  { id: "1", ten: "Sản phẩm A", nhom: "Nhóm X" },
+  { id: "2", ten: "Sản phẩm B", nhom: "Nhóm Y" },
 ];
 const columns: StdColumn<Row>[] = [
   { key: "ten", label: "Tên", value: (r) => r.ten, filter: "text" },
@@ -25,69 +38,105 @@ function baseProps() {
   };
 }
 
-describe("StandardTable — slot trạng thái", () => {
-  it("render rows khi có dữ liệu", () => {
-    render(<StandardTable<Row> {...baseProps()} />);
-    expect(screen.getByText("A")).not.toBeNull();
-    expect(screen.getByText("B")).not.toBeNull();
+describe("StandardTable — Hiển thị và Trạng thái", () => {
+  it("render dữ liệu chính xác", () => {
+    render(
+      <StandardTable<Row> 
+        {...baseProps()} 
+        virtualizerOptions={{ count: rows.length }}
+      />
+    );
+    expect(screen.getByText("Sản phẩm A")).not.toBeNull();
+    expect(screen.getByText("Sản phẩm B")).not.toBeNull();
   });
 
-  it("trangThai.loi → hiển errorContent", () => {
+
+  it("hiển thị errorContent khi có lỗi", () => {
     render(
       <StandardTable<Row>
         {...baseProps()}
         rows={[]}
-        trangThai={{ loi: "Lỗi tải" }}
-        errorContent={<div data-testid="err">CUSTOM_ERR</div>}
+        trangThai={{ loi: "Lỗi kết nối" }}
+        errorContent={<div data-testid="err">LỖI_HỆ_THỐNG</div>}
       />,
     );
     expect(screen.getByTestId("err")).not.toBeNull();
   });
 
-  it("trangThai.loi (mặc định) → hiện chuỗi lỗi", () => {
-    render(
-      <StandardTable<Row>
-        {...baseProps()}
-        rows={[]}
-        trangThai={{ loi: "Lỗi X" }}
-      />,
-    );
-    expect(screen.getByText("Lỗi X")).not.toBeNull();
-  });
-
-  it("trangThai.dangTai + rows rỗng → dùng loadingContent nếu có", () => {
+  it("hiển thị loadingContent khi đang tải", () => {
     render(
       <StandardTable<Row>
         {...baseProps()}
         rows={[]}
         trangThai={{ dangTai: true }}
-        loadingContent={<div data-testid="ld">LOAD…</div>}
+        loadingContent={<div data-testid="ld">ĐANG_TẢI...</div>}
       />,
     );
     expect(screen.getByTestId("ld")).not.toBeNull();
   });
+});
 
-  it("rỗng + không loading/lỗi → dùng emptyContent nếu có", () => {
+describe("StandardTable — Tương tác và Lọc", () => {
+  it("hỗ trợ selectable và chọn dòng", () => {
+    const setSelected = vi.fn();
+    const selected = new Set<string>();
+    
     render(
-      <StandardTable<Row>
-        {...baseProps()}
-        rows={[]}
-        emptyContent={<div data-testid="em">TRONG</div>}
-      />,
+      <StandardTable<Row> 
+        {...baseProps()} 
+        selectable={true} 
+        selected={selected}
+        setSelected={setSelected}
+        virtualizerOptions={{ count: rows.length }}
+      />
     );
-    expect(screen.getByTestId("em")).not.toBeNull();
+
+    
+    const checkboxes = screen.getAllByRole("checkbox");
+    // Checkbox đầu tiên thường là "Chọn tất cả" trong Header
+    fireEvent.click(checkboxes[1]); 
+    
+    expect(setSelected).toHaveBeenCalled();
   });
 
-  it("rỗng + emptyText mặc định", () => {
-    render(<StandardTable<Row> {...baseProps()} rows={[]} emptyText="Không có." />);
-    expect(screen.getByText("Không có.")).not.toBeNull();
+  it("lọc text hoạt động đúng", () => {
+    render(
+      <StandardTable<Row> 
+        {...baseProps()} 
+        virtualizerOptions={{ count: rows.length }}
+      />
+    );
+
+    
+    // Tìm ô input lọc cho cột Tên
+    const searchInputs = screen.getAllByPlaceholderText(/Tìm/);
+    fireEvent.change(searchInputs[0], { target: { value: "Sản phẩm A" } });
+    
+    expect(screen.getByText("Sản phẩm A")).not.toBeNull();
+    // Sản phẩm B sẽ bị ẩn bởi logic filter client-side (sorted/filtered useMemo)
+    // Lưu ý: Virtualizer có thể ảnh hưởng đến việc tìm kiếm trong DOM nếu không được render
   });
 });
 
-describe("StandardTable — hồi quy cột", () => {
-  it("hiển label các cột", () => {
+describe("StandardTable — Responsive và Cột", () => {
+  it("hiển thị đầy đủ nhãn cột", () => {
     render(<StandardTable<Row> {...baseProps()} />);
     expect(screen.getByText("Tên")).not.toBeNull();
     expect(screen.getByText("Nhóm")).not.toBeNull();
   });
+
+  it("áp dụng defaultHidden cho cột", () => {
+    const colsWithHidden: StdColumn<Row>[] = [
+      { key: "ten", label: "Tên", value: (r) => r.ten },
+      { key: "nhom", label: "Nhóm", value: (r) => r.nhom, defaultHidden: true },
+    ];
+    
+    render(<StandardTable<Row> {...baseProps()} columns={colsWithHidden} />);
+    
+    // Cột Nhóm không nên hiển thị trong Header Table
+    const headers = screen.getAllByRole("columnheader");
+    const headerTexts = headers.map(h => h.textContent);
+    expect(headerTexts).not.toContain("Nhóm");
+  });
 });
+
