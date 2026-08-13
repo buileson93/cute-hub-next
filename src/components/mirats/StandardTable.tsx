@@ -973,105 +973,106 @@ export function StandardTable<T>({
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
                     return (
-                      <TableRow
-                        key={rid}
-                        data-index={virtualRow.index}
-                        ref={rowVirtualizer.measureElement}
-                        className={cn(
-                          "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
-                          (onRowClick || selectable) && "cursor-pointer", 
-                          isSel && "bg-primary/5", 
-                          expandedRows.has(rid) && "bg-muted/40",
-                          rowClassName?.(r)
-                        )}
-                        onClick={() => onRowClick?.(r)}
-                      >
-                        {viewMode === "tablet" && (
-                          <TableCell
-                            onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
-                            className="sticky left-0 z-10 bg-card border-r border-border/30 text-center"
-                          >
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                              {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                            </Button>
-                          </TableCell>
-                        )}
-                        {selectable && (
-                          <TableCell
-                            onClick={(e) => e.stopPropagation()}
-                            className={cn(
-                              "sticky left-0 z-10 bg-card border-r border-border/30",
-                              viewMode === "tablet" && "left-10"
-                            )}
-                          >
-                            <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
-                          </TableCell>
-                        )}
-
-                        {shownCols.map((c) => {
-                          const savedW = prefs.widths[c.key];
-                          return (
+                      <React.Fragment key={rid}>
+                        <TableRow
+                          data-index={virtualRow.index}
+                          ref={rowVirtualizer.measureElement}
+                          className={cn(
+                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
+                            (onRowClick || selectable) && "cursor-pointer", 
+                            isSel && "bg-primary/5", 
+                            expandedRows.has(rid) && "bg-muted/40",
+                            rowClassName?.(r)
+                          )}
+                          onClick={() => onRowClick?.(r)}
+                        >
+                          {viewMode === "tablet" && (
                             <TableCell
-                              key={c.key}
-                              className={cn(
-                                c.cellClassName,
-                                c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
-                                selectable && c.sticky && "left-10",
-                                c.align === "center" && "text-center",
-                                c.align === "right" && "text-right tabular-nums",
-                                c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
-                              )}
-                              style={{ 
-                                width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
-                                minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
-                              }}
+                              onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
+                              className="sticky left-0 z-10 bg-card border-r border-border/30 text-center"
                             >
-                            {c.cell ? (
-                              c.cell(r)
-                            ) : (
-                              <div
+                              <Button variant="ghost" size="icon" className="h-6 w-6">
+                                {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                              </Button>
+                            </TableCell>
+                          )}
+                          {selectable && (
+                            <TableCell
+                              onClick={(e) => e.stopPropagation()}
+                              className={cn(
+                                "sticky left-0 z-10 bg-card border-r border-border/30",
+                                viewMode === "tablet" && "left-10"
+                              )}
+                            >
+                              <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
+                            </TableCell>
+                          )}
+
+                          {shownCols.map((c) => {
+                            const savedW = prefs.widths[c.key];
+                            return (
+                              <TableCell
+                                key={c.key}
                                 className={cn(
-                                  "break-words [overflow-wrap:anywhere] [word-break:break-word]",
-                                  (c.lineClamp ?? 1) > 1
-                                    ? `line-clamp-${c.lineClamp}`
-                                    : "truncate"
+                                  c.cellClassName,
+                                  c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
+                                  selectable && c.sticky && "left-10",
+                                  c.align === "center" && "text-center",
+                                  c.align === "right" && "text-right tabular-nums",
+                                  c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
                                 )}
-                                title={String(c.value?.(r) ?? "")}
+                                style={{ 
+                                  width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
+                                  minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                                }}
                               >
-                                {String(c.value?.(r) ?? "")}
-                              </div>
-                            )}
-                          </TableCell>
-                        })}
-                      </TableRow>
-                      
-                      {/* Dòng mở rộng (Expandable Row Content) */}
-                      {expandedRows.has(rid) && (
-                        <TableRow className="bg-muted/10 border-b border-border/20">
-                          <TableCell 
-                            colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)}
-                            className="p-4"
-                          >
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
-                              {sortedColumns
-                                .filter(c => !shownCols.find(sc => sc.key === c.key)) // Lấy các cột đang bị ẩn
-                                .map(col => (
-                                  <div key={col.key} className="flex flex-col gap-1 min-w-0">
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                                      {col.label}
-                                    </span>
-                                    <div className="text-[13px] break-words">
-                                      {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
-                                    </div>
-                                  </div>
-                                ))}
-                            </div>
-                          </TableCell>
+                              {c.cell ? (
+                                c.cell(r)
+                              ) : (
+                                <div
+                                  className={cn(
+                                    "break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                                    (c.lineClamp ?? 1) > 1
+                                      ? `line-clamp-${c.lineClamp}`
+                                      : "truncate"
+                                  )}
+                                  title={String(c.value?.(r) ?? "")}
+                                >
+                                  {String(c.value?.(r) ?? "")}
+                                </div>
+                              )}
+                            </TableCell>
+                          )})}
                         </TableRow>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
+                        
+                        {/* Dòng mở rộng (Expandable Row Content) */}
+                        {expandedRows.has(rid) && (
+                          <TableRow className="bg-muted/10 border-b border-border/20">
+                            <TableCell 
+                              colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)}
+                              className="p-4"
+                            >
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                                {sortedColumns
+                                  .filter(c => !shownCols.find(sc => sc.key === c.key)) // Lấy các cột đang bị ẩn
+                                  .map(col => (
+                                    <div key={col.key} className="flex flex-col gap-1 min-w-0 text-left">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                                        {col.label}
+                                      </span>
+                                      <div className="text-[13px] break-words">
+                                        {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+
 
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
