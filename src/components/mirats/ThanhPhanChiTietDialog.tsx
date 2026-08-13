@@ -8,7 +8,7 @@
 import { useMemo, useState } from "react";
 import { useTonKhoModel } from "@/lib/mirats/kho";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   HardDrive, Clock, PackageOpen, Wrench, ArrowRightLeft, History, X,
@@ -37,10 +37,12 @@ import {
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { LyLichThanhPhanPanel, LyLichHeThongPanel } from "@/components/mirats/LyLichLayerPanel";
 import { ThaoTaiSanDialog } from "@/components/mirats/ThaoTaiSanDialog";
+import { OperationDialog, type OperationMode } from "@/components/mirats/OperationDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useCan } from "@/hooks/use-permissions";
 import { showUndoToast } from "@/components/mirats/UndoToast";
+
 
 // Danh mục dùng chung cho form sửa thành phần
 function useCatalog<T extends { id: string; ten: string }>(table: "dm_loai_thiet_bi" | "dm_vi_tri" | "dm_trang_thai_thiet_bi") {
@@ -74,8 +76,26 @@ export function ThanhPhanChiTietDialog({
     : viTri.device;
   const ngung = viTri.trang_thai === "ngung";
   const [edit, setEdit] = useState(false);
-  const [mode, setMode] = useState<null | "lap" | "thay">(null);
+  const [opMode, setOpMode] = useState<OperationMode | null>(null);
   const [editFields, setEditFields] = useState(false);
+  const queryClient = useQueryClient();
+
+  const opTarget = useMemo(() => viTri ? ({
+    heThongId: heThongId,
+    thanhPhanId: viTri.id,
+    maThanhPhan: viTri.ma_thanh_phan,
+    tenThanhPhan: viTri.ten,
+    loaiYeuCau: viTri.loai_thiet_bi_yeu_cau,
+  }) : null, [viTri, heThongId]);
+
+  const handleOpSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["thanh-phan-chi-tiet", viTri.id] });
+    queryClient.invalidateQueries({ queryKey: ["thiet-bi-dang-lap", heThongId] });
+    setOpMode(null);
+  };
+
+
+
   // Quyền lắp/tháo/thay tài sản (thu hẹp theo phạm vi của tài khoản con).
   // canManage đã tính đủ quyền theo vai trò tổng; canAssign kiểm tra thêm
   // ma trận role_permission cho module `thiet_bi` (action = update).
@@ -142,10 +162,11 @@ export function ThanhPhanChiTietDialog({
               {canEdit && (
                 <Button
                   size="sm" variant={edit ? "secondary" : "outline"} className="h-7"
-                  onClick={() => { setEdit((v) => !v); setMode(null); }}
+                  onClick={() => { setEdit((v) => !v); setOpMode(null); }}
                 >
                   <Pencil className="mr-1 h-3.5 w-3.5" /> {edit ? "Xong" : "Lắp / đổi tài sản"}
                 </Button>
+
               )}
               {canManage && !canAssign && (
                 <span className="text-[11px] text-muted-foreground">Ngoài phạm vi quyền lắp/tháo</span>
@@ -186,9 +207,10 @@ export function ThanhPhanChiTietDialog({
                     {viTri.bat_buoc ? " (thành phần bắt buộc — cần lắp tài sản để hệ thống hoạt động)." : "."}
                   </div>
                   {canEdit && !edit && (
-                    <Button size="sm" className="mt-2 h-7" onClick={() => { setEdit(true); setMode("lap"); }}>
+                    <Button size="sm" className="mt-2 h-7" onClick={() => { setEdit(true); setOpMode("lap"); }}>
                       <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp tài sản vào đây
                     </Button>
+
                   )}
                 </div>
               </div>
@@ -197,30 +219,29 @@ export function ThanhPhanChiTietDialog({
 
           {/* Thao tác thay đổi tài sản — chỉ khi bật Chỉnh sửa */}
           {canEdit && edit && (
-            mode ? (
-              <ChangeDeviceForm
-                heThongId={heThongId}
-                viTri={viTri}
-                isReplace={mode === "thay"}
-                onDone={() => setMode(null)}
-              />
-            ) : (
-              <div className="flex flex-wrap items-center gap-2">
-                {dev ? (
-                  <>
-                    <Button size="sm" variant="outline" onClick={() => setMode("thay")}>
-                      <Wrench className="mr-1 h-3.5 w-3.5" /> Đổi tài sản khác
-                    </Button>
-                    <ThaoButton heThongId={heThongId} viTri={viTri} />
-                  </>
-                ) : (
-                  <Button size="sm" onClick={() => setMode("lap")}>
-                    <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp tài sản
+            <div className="flex flex-wrap items-center gap-2">
+              {dev ? (
+                <>
+                  <Button size="sm" variant="outline" onClick={() => setOpMode("thay")}>
+                    <Wrench className="mr-1 h-3.5 w-3.5" /> Thay thế tài sản...
                   </Button>
-                )}
-              </div>
-            )
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 gap-1 px-1.5 text-xs text-destructive hover:text-destructive"
+                    onClick={() => setOpMode("thao")}
+                  >
+                    <ArrowRightLeft className="h-3.5 w-3.5" /> Tháo
+                  </Button>
+                </>
+              ) : (
+                <Button size="sm" onClick={() => setOpMode("lap")}>
+                  <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp tài sản
+                </Button>
+              )}
+            </div>
           )}
+
 
           {/* Lịch sử tài sản đã lắp tại vị trí này */}
           <div>
@@ -238,10 +259,19 @@ export function ThanhPhanChiTietDialog({
           />
 
         </div>
+        {opMode && opTarget && (
+          <OperationDialog
+            mode={opMode}
+            target={opTarget}
+            onClose={() => setOpMode(null)}
+            onSuccess={handleOpSuccess}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );
 }
+
 
 /** Trích thông báo lỗi thân thiện từ mọi kiểu error (Error/PostgrestError/plain). */
 function errMsg(e: unknown, fallback: string): string {
@@ -809,3 +839,5 @@ function SoLyLichThanhPhanSection({
     </div>
   );
 }
+
+

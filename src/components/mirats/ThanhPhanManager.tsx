@@ -30,11 +30,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Combobox } from "@/components/mirats/Combobox";
 import { supabase } from "@/integrations/backend/client";
 import {
-  useViTriChucNang, useThietBiDangLap, useThietBiRanh,
+  useViTriChucNang, useThietBiDangLap,
   useLuuViTri, useNgungViTri, useXoaViTri, useXoaViTriForce, useDemLichSuThanhPhan, useDoiThuTuViTri,
   useXemTruocXoaThanhPhan, useKhoiPhucThanhPhan, useThanhPhanDaXoa,
-  useLapThietBi, useThaoThietBi, useThayTheThietBi, useLyLichViTri,
-  rankEligibleDevices,
+  useLyLichViTri,
   type ViTriChucNang, type ThietBiDangLap,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import {
@@ -42,8 +41,10 @@ import {
   type ThanhPhanNode,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { colorForThietBi } from "@/lib/mirats/multi-role-color";
-import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
+import { OperationDialog, type OperationMode } from "@/components/mirats/OperationDialog";
+
 import { sinhMaThanhPhanDuyNhat, nhanDienLoiTrungThietBi } from "@/lib/mirats/ma-thiet-bi";
+
 import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
 import { useMyPermissions, useCan } from "@/hooks/use-permissions";
 import { useIsMutating } from "@tanstack/react-query";
@@ -79,16 +80,17 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
 
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ViTriChucNang | null>(null);
-  const [assignTarget, setAssignTarget] = useState<{ viTri: ViTriChucNang; dangLap?: ThietBiDangLap } | null>(null);
+  const [opMode, setOpMode] = useState<OperationMode | null>(null);
+  const [opTarget, setOpTarget] = useState<any | null>(null);
   const [openLichSu, setOpenLichSu] = useState<string | null>(null);
-  const [thaoTarget, setThaoTarget] = useState<ThaoTaiSanTarget | null>(null);
+
 
   const ngungMut = useNgungViTri(heThongId);
   const xoaMut = useXoaViTri(heThongId);
   const xoaForceMut = useXoaViTriForce(heThongId);
   const khoiPhucMut = useKhoiPhucThanhPhan(heThongId);
   const doiThuTuMut = useDoiThuTuViTri(heThongId);
-  const thaoMut = useThaoThietBi(heThongId);
+  
   const [xoaTarget, setXoaTarget] = useState<ViTriChucNang | null>(null);
   const [xoaReason, setXoaReason] = useState("");
   const { data: perms } = useMyPermissions();
@@ -101,7 +103,8 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   // Bất kỳ mutation nào ĐANG chạy tại hệ thống này → chặn xoá để tránh xung đột.
   const busy =
     xoaMut.isPending || xoaForceMut.isPending || khoiPhucMut.isPending ||
-    ngungMut.isPending || thaoMut.isPending || doiThuTuMut.isPending;
+    ngungMut.isPending || doiThuTuMut.isPending;
+
   const inflightAll = useIsMutating() > 0;
 
   const openCreate = () => { setEditTarget(null); setFormOpen(true); };
@@ -156,15 +159,15 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
     });
   };
   const onThao = (v: ViTriChucNang) => {
-    setThaoTarget({
+    setOpTarget({
       heThongId,
       thanhPhanId: v.id,
       maThanhPhan: v.ma_thanh_phan ?? null,
       tenThanhPhan: v.ten,
-      viTriHienTaiId: v.vi_tri_id ?? null,
-      viTriHienTaiTen: null,
     });
+    setOpMode("thao");
   };
+
 
   return (
     <div className="space-y-3">
@@ -304,16 +307,24 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {canManage && (
                     <div className="flex w-full items-center gap-1 border-t pt-2 md:w-auto md:border-0 md:pt-0">
                       {!ngung && !tb && (
-                        <Button size="sm" variant="outline" onClick={() => setAssignTarget({ viTri: v })}>
+                        <Button size="sm" variant="outline" onClick={() => {
+                          setOpTarget({ heThongId, thanhPhanId: v.id, maThanhPhan: v.ma_thanh_phan, tenThanhPhan: v.ten, loaiYeuCau: v.loai_thiet_bi_yeu_cau });
+                          setOpMode("lap");
+                        }}>
                           <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp
                         </Button>
+
                       )}
                       {!ngung && tb && (
                         <>
-                          <Button size="sm" variant="outline" onClick={() => setAssignTarget({ viTri: v, dangLap: tb })}>
+                          <Button size="sm" variant="outline" onClick={() => {
+                            setOpTarget({ heThongId, thanhPhanId: v.id, maThanhPhan: v.ma_thanh_phan, tenThanhPhan: v.ten, loaiYeuCau: v.loai_thiet_bi_yeu_cau });
+                            setOpMode("thay");
+                          }}>
                             <Wrench className="mr-1 h-3.5 w-3.5" /> Thay thế
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={() => onThao(v)} disabled={thaoMut.isPending}>
+
+                          <Button size="sm" variant="ghost" onClick={() => onThao(v)}>
                             <ArrowRightLeft className="mr-1 h-3.5 w-3.5" /> Tháo
                           </Button>
                         </>
@@ -382,14 +393,14 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           onClose={() => setFormOpen(false)}
         />
       )}
-      {assignTarget && (
-        <AssignDialog
-          heThongId={heThongId}
-          viTri={assignTarget.viTri}
-          dangLap={assignTarget.dangLap}
-          onClose={() => setAssignTarget(null)}
+      {opMode && opTarget && (
+        <OperationDialog
+          mode={opMode}
+          target={opTarget}
+          onClose={() => setOpMode(null)}
         />
       )}
+
       <AlertDialog open={!!xoaTarget} onOpenChange={(o) => !o && setXoaTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -506,7 +517,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           </ul>
         </div>
       )}
-      <ThaoTaiSanDialog target={thaoTarget} onClose={() => setThaoTarget(null)} />
+      
     </div>
   );
 }
@@ -641,108 +652,6 @@ function ViTriFormDialog({
   );
 }
 
-// ---- NHỊP II: dialog gán / thay thế tài sản (lọc điều kiện) ----------------
-function AssignDialog({
-  heThongId, viTri, dangLap, onClose,
-}: {
-  heThongId: string;
-  viTri: ViTriChucNang;
-  dangLap?: ThietBiDangLap;
-  onClose: () => void;
-}) {
-  const qc = useQueryClient();
-  const { data: ranh = [], isLoading } = useThietBiRanh();
-  const lapMut = useLapThietBi(heThongId);
-  const thayMut = useThayTheThietBi(heThongId);
-  const [chon, setChon] = useState("");
-  const [ghiChu, setGhiChu] = useState("");
-  // Không cho tạo tài sản trực tiếp trong cây hệ thống — tài sản chỉ được khai
-  // ở trang Tài sản (thiết bị), sau đó gắn vào thành phần hệ thống ở đây.
-
-  // Xếp hạng: đúng loại yêu cầu lên đầu, nhưng vẫn cho chọn MỌI tài sản rảnh.
-  const eligible = useMemo(
-    () => rankEligibleDevices(ranh, viTri.loai_thiet_bi_yeu_cau),
-    [ranh, viTri.loai_thiet_bi_yeu_cau],
-  );
-  const options = useMemo(
-    () => eligible.map((r) => ({
-      value: r.id,
-      label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
-      hint: [
-        r.ma_serial ? "SN " + r.ma_serial : "",
-        r.trang_thai_ten ?? "",
-        r.khopLoai ? "" : "khác loại",
-        r.soLanLap > 0 ? `đang lắp ${r.soLanLap} vị trí${r.viTriHienTai ? " (vd: " + r.viTriHienTai + ")" : ""}` : "",
-      ].filter(Boolean).join(" · "),
-    })),
-    [eligible],
-  );
-
-
-  const isReplace = Boolean(dangLap);
-  const submit = () => {
-    if (!chon) { toast.error("Chọn tài sản"); return; }
-    const picked = ranh.find((d) => d.id === chon);
-    const tbLabel = picked ? `${picked.ma_thiet_bi}${picked.ten_thiet_bi ? " · " + picked.ten_thiet_bi : ""}` : "tài sản";
-    const viTriLabel = `${viTri.ma_thanh_phan} · ${viTri.ten}`;
-    const onSuccess = () => {
-      toast.success(
-        isReplace ? `Đã thay thế bằng ${tbLabel} tại ${viTriLabel}` : `Đã lắp ${tbLabel} vào ${viTriLabel}`,
-        { description: `Đã ghi gan_chuc_nang · thanh_phan_id=${viTri.id}${picked ? ` · thiet_bi_id=${picked.id}` : ""}` },
-      );
-      onClose();
-    };
-    const onError = (e: unknown) => toast.error(e instanceof Error ? e.message : "Thao tác thất bại");
-    if (isReplace) {
-      thayMut.mutate({ thanhPhanId: viTri.id, thietBiMoiId: chon, ghiChu }, { onSuccess, onError });
-    } else {
-      lapMut.mutate({ thanhPhanId: viTri.id, thietBiId: chon, ghiChu }, { onSuccess, onError });
-    }
-  };
-
-  return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{isReplace ? "Thay thế tài sản" : "Lắp tài sản"} — {viTri.ten}</DialogTitle>
-          <DialogDescription>
-            {isReplace
-              ? `Tài sản hiện tại: ${dangLap?.ma_thiet_bi}. Chọn tài sản mới thay vào (tài sản cũ sẽ được ghi lịch sử).`
-              : "Chọn tài sản để gán. Một tài sản có thể đảm trách nhiều vị trí chức năng khác nhau."}
-          </DialogDescription>
-
-        </DialogHeader>
-        <div className="grid gap-3">
-          <div className="space-y-1">
-            <Label>Tài sản {isReplace ? "mới" : ""} ({options.length} đủ điều kiện)</Label>
-            {isLoading ? (
-              <p className="text-sm text-muted-foreground">Đang tải danh sách tài sản rảnh…</p>
-            ) : (
-              <Combobox
-                options={options} value={chon} onChange={setChon}
-                placeholder="Chọn tài sản…" searchPlaceholder="Tìm theo mã / tên / serial…"
-                emptyText="Không có tài sản rảnh đúng loại"
-              />
-            )}
-            <p className="text-xs text-muted-foreground">
-              Tài sản chỉ được khai ở trang <span className="font-medium">Tài sản</span>. Ở đây chỉ chọn tài sản đã có để gắn vào thành phần hệ thống.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <Label>Ghi chú (tuỳ chọn)</Label>
-            <Textarea value={ghiChu} onChange={(e) => setGhiChu(e.target.value)} rows={2} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Huỷ</Button>
-          <Button onClick={submit} disabled={lapMut.isPending || thayMut.isPending}>
-            {isReplace ? "Thay thế" : "Lắp"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 // ---- BƯỚC 7: lý lịch của một vị trí chức năng (các tài sản đã/đang giữ) ----
 function ViTriLichSu({ thanhPhanId }: { thanhPhanId: string }) {
