@@ -721,11 +721,12 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
             {
               key: "soThanhPhanCuaTaiSan",
-              label: "Số thành phần đang gắn",
+              label: "Đa vai trò",
               minW: "min-w-[170px]",
               filter: "cat",
               hideBelow: "xl",
               inherited: true,
+              group: "Tài sản",
               value: (r) => (r.daLap ? String(r.soThanhPhanCuaTaiSan) : ""),
               cell: (r) =>
                 !r.daLap ? (
