@@ -376,8 +376,10 @@ export function StandardTable<T>({
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
     scrollMargin: isTest ? 0 : undefined,
+    observeElementRect: isTest ? undefined : undefined,
     ...virtualizerOptions,
   });
+
 
 
 
