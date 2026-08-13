@@ -13,8 +13,9 @@ export const UI_DENSITY = {
   RAIL_W: "w-[56px] data-[density=comfortable]:w-16",
   SIDEBAR_W: "w-[208px] data-[density=comfortable]:w-64",
 
-
-
+  // --- Container breakpoints for Responsive Tables ---
+  CONT_MD: 768,
+  CONT_SM: 480,
 
   // --- Cards ---
   CARD_RADIUS: "rounded-2xl", // 16px
@@ -44,6 +45,7 @@ export const UI_DENSITY = {
   TEXT_LABEL: "text-[12px]",
   CHART_H: "h-[220px]",
 } as const;
+
 
 export type UiDensityKey = keyof typeof UI_DENSITY;
 export type UiDensityMode = "comfortable" | "compact";
