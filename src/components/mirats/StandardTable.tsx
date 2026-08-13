@@ -1226,7 +1226,7 @@ function ColFilter({
           <Filter className={cn("h-3 w-3", active && "fill-current")} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()} side="bottom">
         <div className="flex items-center justify-between mb-2 px-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
           {active && (
