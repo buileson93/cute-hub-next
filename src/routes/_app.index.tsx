@@ -204,23 +204,24 @@ function Dashboard() {
 
   return (
     <PageBody>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
         <div className="flex-1">
-          <PageHeader
-            title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
-            icon={LayoutDashboard}
-            description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
-          />
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60 mb-1">{greeting}</div>
+          <h1 className="text-3xl font-black tracking-tight font-sans text-foreground">
+            {profile?.ho_ten ?? "Dashboard"}
+          </h1>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleExport}
-          className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
-        >
-          <Download className="w-4 h-4 text-primary" />
-          <span className="hidden sm:inline font-bold text-xs uppercase tracking-wider">Xuất báo cáo</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleExport}
+            className="h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+          >
+            <Download className="w-3.5 h-3.5 mr-1.5" />
+            Export Overview
+          </Button>
+        </div>
       </div>
 
       {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
