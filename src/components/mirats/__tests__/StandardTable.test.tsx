@@ -88,16 +88,22 @@ describe("StandardTable — Tương tác và Lọc", () => {
     render(<StandardTable<Row> {...baseProps()} />);
     
     // Mở bộ lọc
-    const filterButtons = screen.getAllByRole("button").filter(b => b.querySelector(".lucide-funnel") || b.querySelector(".lucide-filter"));
+    const filterButtons = screen.getAllByRole("button").filter(b => 
+      b.querySelector(".lucide-funnel") || 
+      b.querySelector(".lucide-filter") ||
+      b.innerHTML.includes('lucide-funnel') ||
+      b.innerHTML.includes('lucide-filter')
+    );
     fireEvent.click(filterButtons[0]);
     
-    // Tìm ô input lọc
-    const searchInput = screen.getByPlaceholderText("Tìm nội dung...");
+    // Đợi dropdown hiển thị
+    const searchInput = await screen.findByPlaceholderText("Tìm nội dung...");
     fireEvent.change(searchInput, { target: { value: "Sản phẩm A" } });
     
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
     expect(screen.queryByText("Sản phẩm B")).toBeNull();
   });
+
 
   it("áp dụng defaultHidden cho cột", () => {
     const colsWithHidden: StdColumn<Row>[] = [
