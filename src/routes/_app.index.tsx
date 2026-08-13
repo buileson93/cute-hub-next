@@ -6,7 +6,8 @@ import {
   LayoutDashboard, Flame, Wrench, Sparkles, 
   ArrowRight, Activity, User, Trophy, History,
   CheckCircle2, AlertCircle, Clock, Download,
-  ShieldCheck, Zap, ShieldAlert, BarChart3, TrendingUp
+  ShieldCheck, Zap, ShieldAlert, BarChart3, TrendingUp, ChevronDown
+
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
