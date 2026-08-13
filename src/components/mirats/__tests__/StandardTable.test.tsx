@@ -87,23 +87,22 @@ describe("StandardTable — Tương tác và Lọc", () => {
   it("lọc text hoạt động đúng", async () => {
     render(<StandardTable<Row> {...baseProps()} />);
     
-    // Tìm button lọc đầu tiên (dùng để mở dropdown)
+    // Tìm button lọc đầu tiên dựa trên icon lucide-funnel (trong TableHead)
     const filterButtons = screen.getAllByRole("button").filter(b => 
-      b.querySelector(".lucide-funnel") || 
-      b.querySelector(".lucide-filter") ||
-      b.innerHTML.includes('lucide-funnel') ||
-      b.innerHTML.includes('lucide-filter')
+      b.querySelector(".lucide-funnel") || b.innerHTML.includes('lucide-funnel')
     );
     fireEvent.click(filterButtons[0]);
     
-    // Kiểm tra xem button có click được không bằng cách tìm input trong body (DropdownMenu thường dùng portal)
+    // DropdownMenu thường dùng portal, nhưng jsdom render vào document.body
+    // Kiểm tra placeholder có xuất hiện trong toàn bộ DOM không
     const searchInput = await screen.findByPlaceholderText("Tìm nội dung...");
     fireEvent.change(searchInput, { target: { value: "Sản phẩm A" } });
     
+    // Kiểm tra kết quả filter
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
-    // Sản phẩm B sẽ bị ẩn bởi logic filter client-side
     expect(screen.queryByText("Sản phẩm B")).toBeNull();
   });
+
 
 
 
