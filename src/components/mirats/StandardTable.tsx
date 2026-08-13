@@ -624,7 +624,7 @@ export function StandardTable<T>({
         <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none", maxHeightClass)}>
           <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-[13px]">
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
-              <TableRow className="hover:bg-transparent">
+              <TableRow className="hover:bg-transparent h-9">
                 {selectable && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
                     <div className="flex justify-center">
