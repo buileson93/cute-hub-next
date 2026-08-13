@@ -788,8 +788,16 @@ export function StandardTable<T>({
 
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className="hover:bg-transparent h-9 border-b border-border/60">
-                {selectable && (
+                {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
+                    {/* Placeholder for expansion column header */}
+                  </TableHead>
+                )}
+                {selectable && (
+                  <TableHead className={cn(
+                    "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50",
+                    viewMode === "tablet" && "left-10"
+                  )}>
                     <div className="flex justify-center">
                       {!hideReorderToggle && (
                         <Button
@@ -805,6 +813,7 @@ export function StandardTable<T>({
                     </div>
                   </TableHead>
                 )}
+
 
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
