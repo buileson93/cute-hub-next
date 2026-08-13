@@ -1005,10 +1005,13 @@ export function CommandPalette() {
                   key={it.to}
                   value={`nav-${it.to}-${it.label}`}
                   onSelect={() => go(it.to)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{it.label}</span>
-                  <ArrowRight className="ml-auto h-3.5 w-3.5 opacity-40" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-[13px] font-bold text-foreground">{it.label}</span>
+                  <ArrowRight className="ml-auto h-3.5 w-3.5 opacity-30 group-data-[selected=true]:opacity-60 transition-opacity" />
                 </CommandItem>
               );
             })}
