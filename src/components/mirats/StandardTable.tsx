@@ -802,7 +802,7 @@ export function StandardTable<T>({
                         key={rid}
                         data-index={virtualRow.index}
                         ref={rowVirtualizer.measureElement}
-                        className={cn(onRowClick && "cursor-pointer transition-colors border-b", isSel && "bg-primary/5", rowClassName?.(r))}
+                        className={cn("group border-b transition-mirats-fast hover:bg-muted/60", (onRowClick || selectable) && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
                         onClick={() => onRowClick?.(r)}
                       >
                         {selectable && (
