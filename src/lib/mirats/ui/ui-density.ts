@@ -8,6 +8,14 @@ export const UI_DENSITY = {
   SECTION_GAP: "gap-4 data-[density=compact]:gap-3",
   HEADER_GAP: "gap-2 data-[density=compact]:gap-1.5",
 
+  // --- AppShell specific ---
+  APP_HEADER_H: "h-14 density-compact:h-[48px]",
+  RAIL_W: "w-16 density-compact:w-[56px]",
+  SIDEBAR_W: "w-64 density-compact:w-[208px]",
+
+
+
+
   // --- Cards ---
   CARD_PADDING: "p-6 data-[density=compact]:p-3 md:data-[density=compact]:p-4",
   CARD_HEADER: "p-6 data-[density=compact]:px-4 data-[density=compact]:pt-3 data-[density=compact]:pb-2",
@@ -23,11 +31,12 @@ export const UI_DENSITY = {
   ICON_SM: "h-4 w-4 data-[density=compact]:h-3.5 data-[density=compact]:w-3.5",
   ICON_MD: "h-5 w-5 data-[density=compact]:h-4 data-[density=compact]:w-4",
 
-  // --- Typography (dùng qua utility hoặc class trực tiếp) ---
+  // --- Typography ---
   TEXT_BODY: "text-sm data-[density=compact]:text-[13px]",
   TEXT_LABEL: "text-xs data-[density=compact]:text-[12px]",
 } as const;
 
 export type UiDensityKey = keyof typeof UI_DENSITY;
 export type UiDensityMode = "comfortable" | "compact";
+
 
