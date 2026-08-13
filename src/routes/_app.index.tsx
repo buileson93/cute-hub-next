@@ -457,7 +457,7 @@ function Dashboard() {
             </h3>
             <span className="text-[10px] text-muted-foreground uppercase font-medium bg-muted px-1.5 py-0.5 rounded">Live</span>
           </div>
-          <div className="h-[calc(100vh-250px)] min-h-[500px]">
+          <div className="h-[calc(100vh-200px)] min-h-[500px]">
             <LiveTimeline />
           </div>
         </div>
