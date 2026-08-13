@@ -31,7 +31,7 @@ export function PageHeader({
 
   const hasSubtitle = typeof subtitle === "string" && subtitle.trim().length > 0;
   return (
-    <div data-testid="page-header" className="space-y-1">
+    <div data-testid="page-header" className="space-y-0.5">
       <div
         className={cn(
           "flex items-center justify-between",

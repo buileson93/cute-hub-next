@@ -32,7 +32,7 @@ export function ActionBar({
 
   if (!allowed) {
     return (
-      <div className={cn("flex items-center gap-2", className)}>
+      <div className={cn("flex items-center gap-1.5", className)}>
         <ReadOnlyBadge />
         {extra}
       </div>
@@ -40,7 +40,7 @@ export function ActionBar({
   }
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-1.5", className)}>
       {onTao && (
         <Button size="sm" onClick={onTao}>
           <Plus className="h-4 w-4 mr-1" aria-hidden /> {NHAN.tao}
