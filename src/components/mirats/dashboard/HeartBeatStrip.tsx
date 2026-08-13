@@ -22,10 +22,10 @@ export function HeartBeatStrip() {
   useGlobalRealtime(true);
 
   return (
-    <div className="w-full bg-card/50 border-y border-border py-3 px-4 overflow-x-auto no-scrollbar">
+    <div className="w-full bg-card/50 border-y border-border py-2 px-4 overflow-x-auto no-scrollbar">
       <div className="flex items-center gap-2 min-w-max">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mr-2">
-          Nhịp tim hệ thống
+        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-2">
+          Nhịp tim
         </span>
         
         {isLoading ? (
