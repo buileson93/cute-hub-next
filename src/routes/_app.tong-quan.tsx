@@ -361,7 +361,7 @@ function OverviewReport() {
                     </div>
                  </div>
                  <div className="space-y-2">
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Top thiết bị cần hoàn thiện hồ sơ</div>
+                    <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Top thiết bị cần hoàn thiện hồ sơ</div>
                     {lowCompleteness.slice(0, 4).map((tb: any) => (
                       <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-2 rounded-lg hover:bg-blue-500/5 transition-colors border border-transparent hover:border-blue-500/10">
                         <span className="truncate flex-1 pr-2 font-medium">{tb.ten_thiet_bi}</span>

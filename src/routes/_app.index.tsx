@@ -516,16 +516,16 @@ function Dashboard() {
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center">
                     <Icon name="status.trophy" size="medium" className="text-primary mb-2" />
                     <div className="text-2xl font-black text-primary">120</div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
+                    <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
                   </div>
                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex flex-col items-center justify-center text-center">
                     <Icon name="status.error" size="medium" className="text-amber-600 dark:text-amber-400 mb-2" />
                     <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{tasks.length}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
+                    <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
                   {tasks.length === 0 ? (
                     <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
                   ) : tasks.slice(0, 3).map((t: any) => (
@@ -535,9 +535,9 @@ function Dashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate group-hover:text-primary transition-colors">{t.tieu_de}</div>
-                        <div className="text-[10px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
+                        <div className="text-[11px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
                       </div>
-                      <Link to="/gop-gach" className="text-[10px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">Làm ngay →</Link>
+                      <Link to="/gop-gach" className="text-[11px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-tighter">Làm ngay →</Link>
                     </div>
                   ))}
                 </div>
@@ -552,7 +552,7 @@ function Dashboard() {
             <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
               <Icon name="entity.history" className="text-primary" /> Nhật ký vận hành
             </h3>
-            <span className="text-[10px] text-muted-foreground uppercase font-medium bg-muted px-1.5 py-0.5 rounded">Live</span>
+            <span className="text-[11px] text-muted-foreground uppercase font-bold bg-muted px-1.5 py-0.5 rounded tracking-widest">Live</span>
           </div>
           <div className="h-[calc(100vh-250px)] min-h-[500px]">
             <LiveTimeline />
