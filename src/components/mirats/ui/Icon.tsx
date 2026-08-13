@@ -50,6 +50,7 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
         ref={ref}
         className={cn(
           "shrink-0 transition-all",
+          name.includes("loading") && "animate-spin",
           size !== "custom" && sizeClasses[size],
           className
         )}

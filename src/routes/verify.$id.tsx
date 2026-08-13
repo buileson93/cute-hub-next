@@ -8,7 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { verifySubmission } from "@/lib/form-signing.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import { Icon } from "@/components/mirats/ui/Icon";
 import { shortHash } from "@/lib/mirats/sig-canonical";
 
 export const Route = createFileRoute("/verify/$id")({
@@ -40,7 +41,7 @@ function VerifyPage() {
 
       {q.isLoading && (
         <div className="flex h-40 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin" />
+          <Icon name="status.loading" className="h-6 w-6" size="custom" />
         </div>
       )}
 
