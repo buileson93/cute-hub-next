@@ -451,6 +451,12 @@ export function StandardTable<T>({
     ...virtualizerOptions,
   });
 
+  // Sync expanded state with virtualizer
+  useEffect(() => {
+    rowVirtualizer.measure();
+  }, [expandedRows, rowVirtualizer]);
+
+
 
 
 
