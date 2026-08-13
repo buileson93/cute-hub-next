@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
+import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
 import { 
@@ -187,83 +188,45 @@ function OverviewReport() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
-          {/* TẦNG 1: KHỐI KPI ĐỘ TIN CẬY */}
+          {/* TẦNG 1: CHỈ SỐ THEN CHỐT */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="shadow-sm border border-border overflow-hidden group hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
-                    <Icon name="entity.security" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Target: 99%
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
-                  {formatKpiValue(reliability)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="entity.activity" size="tiny" /> Availability
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="Sẵn sàng"
+              value={formatKpiValue(reliability).replace('%', '')}
+              unit="%"
+              icon="entity.security"
+              target="Target: 99%"
+              description="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua."
+              sparklineData={trendData.map(d => ({ value: Object.values(d).filter(v => typeof v === 'number').reduce((a, b) => a + (b as number), 0) }))}
+            />
 
-            <Card className="shadow-sm border border-blue-500/10 overflow-hidden group hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-blue-500/5 text-blue-600 dark:text-blue-400">
-                    <Icon name="status.power" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Target: 24h
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-blue-600 dark:text-blue-400">
-                  {formatKpiValue(mttrKpi)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="entity.history" size="tiny" /> MTTR (Bình quân)
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="MTTR"
+              value={formatKpiValue(mttrKpi).replace(' phút', '')}
+              unit="phút"
+              icon="status.power"
+              status="info"
+              target="Target: 24h"
+              description="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+            />
 
-            <Card className="shadow-sm border border-amber-500/10 overflow-hidden group hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-amber-500/5 text-amber-600 dark:text-amber-400">
-                    <Icon name="entity.securityAlert" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Phản hồi
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-amber-600 dark:text-amber-400">
-                  {formatKpiValue(mtbfKpi)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="entity.trendingUp" size="tiny" /> MTBF (Trung bình)
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="MTBF"
+              value={formatKpiValue(mtbfKpi).replace(' ngày', '')}
+              unit="ngày"
+              icon="entity.securityAlert"
+              status="warning"
+              description="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
+            />
 
-            <Card className="shadow-sm border border-border overflow-hidden group hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
-                    <Icon name="status.success" size="medium" />
-                  </div>
-                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Tuân thủ
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
-                  {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Icon name="status.maintenance" size="tiny" /> PM đúng hạn
-                </div>
-              </CardContent>
-            </Card>
+            <KpiCard
+              title="Bảo trì"
+              value={pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result).replace('%', '')}
+              unit="%"
+              icon="status.success"
+              isLoading={pmKpi.isLoading}
+              description="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
+            />
           </div>
 
           {/* TẦNG 2: BIỂU ĐỒ XU HƯỚNG & TRẠNG THÁI */}
