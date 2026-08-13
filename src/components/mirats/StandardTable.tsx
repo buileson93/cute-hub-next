@@ -1106,7 +1106,7 @@ export function StandardTable<T>({
                         {c.filter && (
                           <ColFilter
                             type={c.filter}
-                            label={c.label}
+                            label={c.header || c.label || ""}
                             catValues={catValues[c.key] ?? []}
                             catSel={catFilters[c.key] ?? new Set()}
                             onToggleCat={(v: string) => toggleCat(c.key, v)}
