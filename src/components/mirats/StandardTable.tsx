@@ -172,11 +172,8 @@ export function StandardTable<T>({
       else next.add(rid);
       return next;
     });
-    // Kích hoạt đo lại ảo hoá vì chiều cao dòng thay đổi
-    requestAnimationFrame(() => {
-      rowVirtualizer.measure();
-    });
-  }, [rowVirtualizer]);
+  }, []);
+
 
 
 
