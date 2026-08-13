@@ -303,88 +303,40 @@
    Mục tiêu: thu nhỏ nút / input / icon / padding của bảng
    để hiển thị được nhiều thông tin hơn.
    ========================================================= */
-[data-density="compact"] {
-  font-size: 13.5px;
-}
+/* =========================================================
+   Hỗ trợ lớp trình diễn mật độ.
+   Mặc định hệ thống dùng bộ token UI_DENSITY.
+   ========================================================= */
 
-/* Nút shadcn: giảm chiều cao & padding các kích thước phổ biến */
-[data-density="compact"] button.h-9,
-[data-density="compact"] a.h-9 { height: 1.875rem; }
-[data-density="compact"] button.h-10,
-[data-density="compact"] a.h-10 { height: 2rem; }
-[data-density="compact"] button.h-8,
-[data-density="compact"] a.h-8 { height: 1.75rem; }
-[data-density="compact"] button.h-11,
-[data-density="compact"] a.h-11 { height: 2.25rem; }
-[data-density="compact"] button.px-4,
-[data-density="compact"] a.px-4 { padding-left: 0.625rem; padding-right: 0.625rem; }
-[data-density="compact"] button.px-3,
-[data-density="compact"] a.px-3 { padding-left: 0.5rem; padding-right: 0.5rem; }
-
-/* Ô nhập liệu */
-[data-density="compact"] input.h-10,
-[data-density="compact"] input.h-9,
-[data-density="compact"] select.h-10,
-[data-density="compact"] [role="combobox"].h-10,
-[data-density="compact"] [role="combobox"].h-9 { height: 1.875rem; }
-
-/* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút */
-[data-density="compact"] .lucide:not([class*="h-"]) { transform: scale(0.9); transform-origin: center; }
+/* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút khi cần */
+.lucide:not([class*="h-"]) { transform: scale(0.9); transform-origin: center; }
 
 /* Bảng: nén padding các ô cho tất cả TableCell/TableHead của shadcn */
-[data-density="compact"] table th,
-[data-density="compact"] table td {
-  padding-top: 0.35rem;
-  padding-bottom: 0.35rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  font-size: 0.8125rem;
+table th,
+table td {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 13px;
 }
-[data-density="compact"] table th { line-height: 1.1; }
-
-/* Card headers gọn hơn */
-[data-density="compact"] [data-slot="card-header"],
-[data-density="compact"] .card-header,
-[data-density="compact"] header + section > .p-6 { padding: 0.75rem 1rem; }
-
-/* Sidebar item: giảm chiều cao & gap */
-[data-density="compact"] aside a,
-[data-density="compact"] aside button {
-  padding-top: 0.3rem;
-  padding-bottom: 0.3rem;
-}
+table th { line-height: 1.1; font-weight: 600; }
 
 /* Badge / chip nhỏ hơn */
-[data-density="compact"] .badge,
-[data-density="compact"] [data-slot="badge"] {
+.badge,
+[data-slot="badge"] {
   padding: 0.05rem 0.4rem;
-  font-size: 0.7rem;
-}
-
-/* Dialog: gọn padding + sticky footer đi cùng compact mode */
-[data-density="compact"] [role="dialog"].p-6 {
-  padding: 1rem;
-}
-[data-density="compact"] [role="dialog"] .-mx-6 {
-  margin-left: -1rem;
-  margin-right: -1rem;
-}
-[data-density="compact"] [role="dialog"] .-mb-6 {
-  margin-bottom: -1rem;
-}
-[data-density="compact"] [role="dialog"] .px-6 {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  font-size: 11px;
 }
 
 /* Form controls chuẩn hoá gap giữa các trường */
-[data-density="compact"] .space-y-4 > * + * {
-  margin-top: 0.625rem;
+.space-y-4 > * + * {
+  margin-top: 1rem;
 }
-[data-density="compact"] .space-y-3 > * + * {
-  margin-top: 0.5rem;
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
 }
-[data-density="compact"] .gap-4 { gap: 0.625rem; }
-[data-density="compact"] .gap-3 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.gap-3 { gap: 0.75rem; }
 
 

@@ -354,7 +354,7 @@ export function StandardTable<T>({
   const rowVirtualizer = useVirtualizer({
     count: display.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 40,
+    estimateSize: () => 36,
     overscan: isTest ? display.length : 10,
   });
 
@@ -621,12 +621,12 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-sm", maxHeightClass)}>
-          <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-sm">
-            <TableHeader className="bg-muted sticky top-0 z-20 shadow-[0_1px_0_hsl(var(--border))]">
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none", maxHeightClass)}>
+          <Table className="w-full table-fixed border-separate border-spacing-0 caption-bottom text-[13px]">
+            <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className="hover:bg-transparent">
                 {selectable && (
-                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted border-r border-border/50">
+                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
                     <div className="flex justify-center">
                       {!hideReorderToggle && (
                         <Button
@@ -654,7 +654,7 @@ export function StandardTable<T>({
                     <TableHead
                       key={c.key}
                       className={cn(
-                        "group relative bg-muted border-r border-border/50 last:border-r-0",
+                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0",
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
@@ -711,7 +711,7 @@ export function StandardTable<T>({
                           <button
                             type="button"
                             onClick={() => cycleSort(c.key)}
-                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left"
+                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left transition-colors"
                             title="Bấm để sắp xếp"
                           >
                             <span className="truncate">{c.label}</span>
@@ -802,13 +802,13 @@ export function StandardTable<T>({
                         key={rid}
                         data-index={virtualRow.index}
                         ref={rowVirtualizer.measureElement}
-                        className={cn(onRowClick && "cursor-pointer", isSel && "bg-primary/5", rowClassName?.(r))}
+                        className={cn(onRowClick && "cursor-pointer transition-colors border-b", isSel && "bg-primary/5", rowClassName?.(r))}
                         onClick={() => onRowClick?.(r)}
                       >
                         {selectable && (
                           <TableCell
                             onClick={(e) => e.stopPropagation()}
-                            className="sticky left-0 z-10 bg-card border-r border-border/50"
+                            className="sticky left-0 z-10 bg-card border-r border-border/30"
                           >
                             <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
                           </TableCell>
@@ -820,7 +820,7 @@ export function StandardTable<T>({
                               key={c.key}
                               className={cn(
                                 c.cellClassName,
-                                c.sticky && "sticky left-0 z-10 bg-card border-r border-border/50",
+                                c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
                                 selectable && c.sticky && "left-10",
                                 c.align === "center" && "text-center",
                                 c.align === "right" && "text-right tabular-nums",
