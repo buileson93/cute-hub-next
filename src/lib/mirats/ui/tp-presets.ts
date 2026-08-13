@@ -17,7 +17,7 @@ export const THANH_PHAN_PRESETS: ViewPreset[] = [
     id: "ky-thuat",
     ten: "Kỹ thuật",
     moTa: "Thông tin chi tiết về Model, Serial, P/N và tình trạng kỹ thuật",
-    columns: ["ma", "ten", "model", "chungLoai", "nhaSanXuat", "pN", "thietBiSerial", "tinhTrangKyThuat"]
+    columns: ["ten", "model", "chungLoai", "nhaSanXuat", "pN", "thietBiSerial", "tinhTrangKyThuat"]
   },
   {
     id: "vong-doi",
