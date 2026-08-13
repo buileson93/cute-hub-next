@@ -176,15 +176,14 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
       const targetMa = mode === "thao" ? current?.ma_thiet_bi : allAssets.find(a => a.id === pickedAssetId)?.ma_thiet_bi;
 
       if (targetId) {
-        showUndoToast(`Thao tác thành công`, () => {
-          // Logic for undo would go here if implemented in business hooks
-        }, {
+        toast(`Thao tác thành công`, {
           description: (
-            <div className="flex flex-col gap-1 mt-1">
+            <div className="flex flex-col gap-1 mt-1 text-xs">
+              <p className="text-muted-foreground">Lịch sử lắp đặt đã được ghi nhận.</p>
               <Link 
                 to="/thiet-bi/$maThietBi" 
                 params={{ maThietBi: targetMa || "" }}
-                className="flex items-center gap-1 text-primary hover:underline"
+                className="flex items-center gap-1 text-primary hover:underline mt-1"
               >
                 <History className="h-3 w-3" /> Xem lý lịch tài sản {targetMa}
               </Link>
@@ -192,6 +191,7 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
           )
         });
       }
+
 
       onClose();
 
