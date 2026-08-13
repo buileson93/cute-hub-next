@@ -532,12 +532,49 @@ export function StandardTable<T>({
           <div className="flex items-center gap-1">
             {tableKey && (
               <>
-                {!isMobile && (
+                {isMobile ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 gap-2 ml-1">
+                        <Filter className="h-4 w-4" />
+                        <span>Bộ lọc</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[280px]">
+                      <div className="p-2 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold">Bộ lọc & Sắp xếp</span>
+                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-7 px-2 text-[10px] uppercase font-bold text-destructive">
+                            Xoá hết
+                          </Button>
+                        </div>
+                        
+                        {/* Mobile Column Filters */}
+                        <div className="space-y-3">
+                          {filterableCols.map(c => (
+                            <ColFilter
+                              key={c.key}
+                              type={c.filterType || "text"}
+                              label={c.label}
+                              catValues={getCatValues(c.key)}
+                              catSel={prefs.catFilters[c.key] || new Set()}
+                              onToggleCat={(val) => toggleCat(c.key, val)}
+                              onClearCat={() => clearCat(c.key)}
+                              textVal={prefs.textFilters[c.key] || ""}
+                              onText={(val) => setText(c.key, val)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
                   <DropdownMenu>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <DropdownMenuTrigger asChild>
+
                             <Button 
                               variant="outline" 
                               size="sm" 
