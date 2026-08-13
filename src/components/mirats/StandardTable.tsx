@@ -1,10 +1,3 @@
-import { cn } from "@/lib/utils";
-
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TableSkeleton } from "@/components/mirats/Skeletons";
-import { EmptyState } from "@/components/mirats/EmptyState";
 import { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
@@ -16,10 +9,16 @@ import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical, Columns, LayoutGrid, Type, ChevronRight, ChevronDown, MoreVertical } from "lucide-react";
+import { 
+  Maximize2, RotateCcw, SlidersHorizontal, Filter, 
+  ArrowUp, ArrowDown, ChevronsUpDown, X, Search, 
+  GripVertical, Columns, LayoutGrid, Type, 
+  ChevronRight, ChevronDown, MoreVertical 
+} from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
+
 
 
 import { Button } from "@/components/ui/button";
