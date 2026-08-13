@@ -7,13 +7,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
   MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, 
-  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid, Timer, HeartPulse
+  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid, Timer, HeartPulse,
+  MapPin
 } from "lucide-react";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -567,7 +569,7 @@ function DanhMucThietBiPage() {
         </div>
       ),
     },
-    { key: "pn", header: "P/N", group: "Định danh", type: "text", width: 120, value: (d) => d.p_n, defaultHidden: true },
+    { key: "pn", header: "P/N", group: "Định danh", type: "longtext", width: 120, value: (d) => d.p_n, defaultHidden: true },
     
     // ---- Nhóm Mẫu & Loại (Gộp Chủng loại) ----
     {
@@ -594,12 +596,13 @@ function DanhMucThietBiPage() {
       render: (d) => {
         const ids = tagsByDevice.get(d.id) ?? [];
         if (!ids.length) return <span className="text-muted-foreground">—</span>;
-        const sorted = sortDacTinh(ids.map(id => dacTinhById.get(id)).filter(Boolean) as DacTinh[]);
+        const items = ids.map(id => dacTinhById.get(id)).filter(Boolean) as DacTinh[];
+        const sorted = sortDacTinh(items);
         return (
           <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
             {sorted.map((t) => (
-              <button key={t.id} type="button" onClick={() => setTagSelected(prev => prev.includes(t.id) ? prev.filter(x => x !== t.id) : [...prev, t.id])}>
-                <MauChip ten={t.ten} mau={t.mau ?? null} className={cn("scale-90 origin-left", tagSelected.includes(t.id) && "ring-1 ring-primary")} />
+              <button key={t.ma} type="button" onClick={() => setTagSelected(prev => prev.includes(t.ma) ? prev.filter(x => x !== t.ma) : [...prev, t.ma])}>
+                <MauChip ten={t.ten} mau={t.mau ?? null} className={cn("scale-90 origin-left", tagSelected.includes(t.ma) && "ring-1 ring-primary")} />
               </button>
             ))}
           </div>
@@ -609,7 +612,7 @@ function DanhMucThietBiPage() {
 
     // ---- Nhóm Không gian (Hệ thống + Vị trí) ----
     {
-      key: "ht", header: "Hệ thống & Vị trí", group: "Không gian", type: "taxonomy", width: 220,
+      key: "ht", header: "Hệ thống & Vị trí", group: "Không gian", width: 220,
       value: (d) => `${d._htId ? htName(d._htId, d._htTen) : "Độc lập"} ${d._viTriTen || d.vi_tri || ""}`,
       render: (d) => (
         <div className="space-y-0.5">
@@ -631,8 +634,8 @@ function DanhMucThietBiPage() {
         </div>
       ),
     },
-    { key: "dv", header: "Đơn vị", group: "Không gian", type: "cat", width: 100, value: (d) => d.don_vi },
-    { key: "noiql", header: "Nơi QL", group: "Không gian", type: "text", width: 120, value: (d) => d._noiQuanLy, defaultHidden: true },
+    { key: "dv", header: "Đơn vị", group: "Không gian", type: "taxonomy", width: 100, value: (d) => d.don_vi },
+    { key: "noiql", header: "Nơi QL", group: "Không gian", type: "longtext", width: 120, value: (d) => d._noiQuanLy, defaultHidden: true },
 
     // ---- Trạng thái ----
     { key: "tt", header: "Trạng thái", group: "Trạng thái", type: "status", width: 120, value: (d) => d.trang_thai },
@@ -655,7 +658,7 @@ function DanhMucThietBiPage() {
     { key: "ghichu", header: "Ghi chú", group: "Ghi chú", type: "longtext", width: 200, value: (d) => d.ghi_chu, defaultHidden: true },
 
     ...(canManage ? [{
-      key: "actions", header: "", group: "Thao tác", type: "actions", width: 140, align: "right" as const,
+      key: "actions", header: "", group: "Thao tác", type: "actions" as const, width: 140, align: "right" as const,
       render: (d: DbDevice) => (
         <div className="flex items-center justify-end gap-0.5" onClick={(e) => e.stopPropagation()}>
           <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openDetail(d)} title="Chi tiết"><Info className="h-3.5 w-3.5" /></Button>
@@ -665,7 +668,7 @@ function DanhMucThietBiPage() {
           {editOn && <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }} title="Xoá"><Trash2 className="h-3.5 w-3.5" /></Button>}
         </div>
       ),
-    } as StdColumn<DbDevice>] : []),
+    }] : []),
   ], [nameOv, tbName, canManage, editOn, tagsByDevice, dacTinhById, tagSelected, openDetail, loaiMauByTen]);
 
   // ---- Xuất .xlsx (theo bộ lọc hiện tại hoặc dòng đang chọn) ----
