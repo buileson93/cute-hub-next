@@ -429,45 +429,23 @@ function Dashboard() {
           </div>
 
           {/* TẦNG 5: KHU VỰC CỦA TÔI */}
-          <div className="pb-12">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-2 border-b bg-muted/10">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <User className="w-4 h-4 text-primary" /> Khu vực của tôi
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center">
-                    <Trophy className="w-6 h-6 text-primary mb-2" />
-                    <div className="text-2xl font-black text-primary">120</div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 flex flex-col items-center justify-center text-center">
-                    <AlertCircle className="w-6 h-6 text-orange-600 mb-2" />
-                    <div className="text-2xl font-black text-orange-600">{tasks.length}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
-                  {tasks.length === 0 ? (
-                    <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
-                  ) : tasks.slice(0, 3).map((t: any) => (
-                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border group">
-                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold shrink-0">
-                        {t.diem_thuong || 5}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate group-hover:text-primary transition-colors">{t.tieu_de}</div>
-                        <div className="text-[10px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
-                      </div>
-                      <Link to="/gop-gach" className="text-[10px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">Làm ngay →</Link>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          {/* COMPACT PERSONAL AREA */}
+          <div className="flex items-center justify-between py-6 border-t border-border/50">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 text-primary border border-primary/10">
+                <Trophy className="w-3.5 h-3.5" />
+                <span className="text-xl font-black font-mono leading-none tracking-tighter">120</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest opacity-70">Gạch</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/5 text-orange-600 border border-orange-500/10">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span className="text-xl font-black font-mono leading-none tracking-tighter">{tasks.length}</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest opacity-70">Tasks</span>
+              </div>
+            </div>
+            <Link to="/gop-gach" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 hover:text-primary transition-colors border-b border-muted-foreground/30 hover:border-primary pb-0.5">
+              Personal Dashboard →
+            </Link>
           </div>
         </div>
 
