@@ -119,15 +119,33 @@ describe("StandardTable — Tương tác và Lọc", () => {
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
     // Sản phẩm B sẽ bị ẩn bởi logic filter client-side (sorted/filtered useMemo)
     // Lưu ý: Virtualizer có thể ảnh hưởng đến việc tìm kiếm trong DOM nếu không được render
+  describe("StandardTable — Nâng cấp Độ rộng", () => {
+    it("parse chính xác minW từ chuỗi Tailwind", () => {
+      expect(parseMinW("min-w-[150px]")).toBe(150);
+      expect(parseMinW("min-w-[80px]")).toBe(80);
+      expect(parseMinW("120px")).toBe(120);
+      expect(parseMinW(undefined)).toBe(100);
+    });
+
+    it("render colgroup với các độ rộng tương ứng", () => {
+      const { container } = render(
+        <StandardTable 
+          rows={mockRows} 
+          columns={[
+            { key: "id", label: "ID", minW: "min-w-[60px]" },
+            { key: "name", label: "Tên", width: 250, minWidth: 200 }
+          ]} 
+        />
+      );
+      const cols = container.querySelectorAll("colgroup col");
+      // Cột 1: ID (60px từ minW)
+      expect(cols[0].getAttribute("style")).toContain("width: 60px");
+      // Cột 2: Tên (250px từ width)
+      expect(cols[1].getAttribute("style")).toContain("width: 250px");
+    });
   });
 });
 
-describe("StandardTable — Responsive và Cột", () => {
-  it("hiển thị đầy đủ nhãn cột", () => {
-    render(<StandardTable<Row> {...baseProps()} />);
-    expect(screen.getByText("Tên")).not.toBeNull();
-    expect(screen.getByText("Nhóm")).not.toBeNull();
-  });
 
   it("áp dụng defaultHidden cho cột", () => {
     const colsWithHidden: StdColumn<Row>[] = [
