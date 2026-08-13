@@ -5,7 +5,7 @@ import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { useLicensesData, type LicenseRow } from "@/lib/mirats/db-licenses";
 import type {
   ThietBi, GiayPhep, SuCo, BaoTri, HongHocThayThe, BanGiao,
-  SuKienThietBi, HeThong, ViTri, DonVi,
+  SuKienThietBi, HeThong, ViTri, DonVi, NhomHeThong,
 } from "@/lib/mirats/types";
 
 /**
@@ -71,7 +71,7 @@ export function ScopeProvider({
       ma: h.ma, ten: h.ten, nhom: "",
       don_vi: dvMaById.get(h.donViId) ?? "", trang_thai: "", nam_dua_vao: 0,
     }));
-    const allNhomHeThong: NhomHeThong[] = (tax?.nhomHtList ?? []).map((n) => ({
+    const allNhomHeThong: NhomHeThong[] = (tax?.nhomList ?? []).map((n) => ({
       ma: n.ma, ten: n.ten, linh_vuc: "",
     }));
     const allViTri: ViTri[] = (tax?.viTriList ?? []).map((v) => ({
