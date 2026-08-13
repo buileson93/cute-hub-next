@@ -335,13 +335,9 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
     return rows.filter((r) =>
       normalize(
         [
-          r.ma, r.ten, r.nhomHeThong, r.phanLoai, r.heThong,
+          r.ma, r.ten, r.heThong,
           r.thietBiMa, r.thietBiTen, r.thietBiSerial,
-          r.model, r.chungLoai, r.nhaSanXuat, r.nhaCungCap,
-          r.loaiYeuCau, r.viTri,
-          r.pN, r.maTaiSanBravo, r.namSanXuat, r.namKhaiThac,
-          r.taiSanTrangThai, r.taiSanViTri, r.taiSanDonViQuanLy,
-          r.tinhTrangKyThuat, r.cheDoKdHc,
+          r.pN, r.maTaiSanBravo, r.viTri,
         ].join(" "),
       ).includes(t),
     );
