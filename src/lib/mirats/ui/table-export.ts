@@ -40,7 +40,7 @@ export function buildCsv<T>(
   sep = ";",
 ): string {
   const use = exportableCols(cols);
-  const header = use.map((c) => csvCell(c.exportHeader ?? c.label, sep)).join(sep);
+  const header = use.map((c) => csvCell(c.exportHeader || c.header || c.label || "", sep)).join(sep);
   const body = rows
     .map((r) => use.map((c) => csvCell((c.exportValue ?? c.value)!(r), sep)).join(sep))
     .join("\r\n");
