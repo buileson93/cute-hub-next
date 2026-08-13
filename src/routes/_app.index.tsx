@@ -224,9 +224,9 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
-      <div className="mb-6 -mx-6">
-        <HeartBeatStrip />
+      {/* THÀNH PHẦN 1: DẢI NHỊP TIM (ẨN VÌ ĐÃ CÓ TRÊN HEADER) */}
+      <div className="hidden lg:block mb-4">
+        {/* Placeholder if needed or just remove */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
