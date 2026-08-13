@@ -5,6 +5,7 @@ import { NotificationBell } from "../NotificationBell";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
+import { HeartBeatHeader } from "../dashboard/HeartBeatHeader";
 import { DesktopOnly } from "../DesktopOnly";
 import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import {
