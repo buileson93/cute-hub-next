@@ -722,18 +722,19 @@ function AdminAuditPage() {
                         {changes.map((c) => (
                           <tr key={c.field} className="hover:bg-muted/20 transition-colors">
                             <td className="px-3 py-2 font-medium border-r">{c.field}</td>
-                            <td className="px-3 py-2 text-destructive border-r break-all">{String(c.old)}</td>
-                            <td className="px-3 py-2 text-emerald-600 dark:text-emerald-400 break-all">{String(c.new)}</td>
+                            <td className="px-3 py-2 text-destructive border-r break-all">{String(c.from)}</td>
+                            <td className="px-3 py-2 text-emerald-600 dark:text-emerald-400 break-all">{String(c.to)}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                ) : e.kind === "insert" || e.kind === "delete" ? (
+                ) : e.kind === "create" || e.kind === "delete" ? (
                   <div className="space-y-2">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      Dữ liệu {e.kind === "insert" ? "mới" : "đã xoá"}
+                      Dữ liệu {e.kind === "create" ? "mới" : "đã xoá"}
                     </div>
+
                     <pre className="p-3 bg-muted/30 rounded-md font-mono text-[11px] overflow-auto max-h-[400px]">
                       {JSON.stringify(detail.new || detail.old, null, 2)}
                     </pre>
