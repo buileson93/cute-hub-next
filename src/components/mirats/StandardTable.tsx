@@ -30,6 +30,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
@@ -803,7 +807,7 @@ export function StandardTable<T>({
                                 </span>
                                 
                                 {isHiddenByWidth && isCurrentlyVisible && (
-                                  <AppTooltip content={`Cột này đang tạm ẩn do màn hình hẹp (< ${thresholdLabel}). Hãy mở rộng trình duyệt hoặc xem ở dòng mở rộng.`}>
+                                  <AppTooltip noiDung={`Cột này đang tạm ẩn do màn hình hẹp (< ${thresholdLabel}). Hãy mở rộng trình duyệt hoặc xem ở dòng mở rộng.`}>
                                     <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[9px] font-bold uppercase tracking-tighter">
                                       <Icon name="status.warning" size="tiny" />
                                       Hẹp
