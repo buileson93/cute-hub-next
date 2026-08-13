@@ -1,4 +1,4 @@
-import { StdColumn } from "./StandardTable";
+import type { StdColumn } from "@/components/mirats/StandardTable";
 
 /**
  * Đo độ rộng văn bản bằng Canvas để có kết quả chính xác mà không cần render vào DOM.
