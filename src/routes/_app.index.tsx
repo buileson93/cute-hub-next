@@ -225,7 +225,7 @@ function Dashboard() {
       </div>
 
       {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
-      <div className="mt-2 -mx-6">
+      <div className="mb-6 -mx-6">
         <HeartBeatStrip />
       </div>
 
