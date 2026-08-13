@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
-import { PackageOpen, Wrench, ArrowRightLeft, HardDrive, Info, AlertTriangle, History, ArrowUpRight } from "lucide-react";
+import { PackageOpen, Wrench, ArrowRightLeft, HardDrive, Info, AlertTriangle, History } from "lucide-react";
 
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import {
   useThietBiChon,
   rankChonDevices
 } from "@/lib/mirats/he-thong-thanh-phan";
-import { showUndoToast } from "@/components/mirats/UndoToast";
+
 import { Link } from "@tanstack/react-router";
 
 export type OperationMode = "lap" | "thao" | "thay" | "chuyen";
