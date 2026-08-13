@@ -332,8 +332,6 @@ function OverviewReport() {
                  </div>
               </CardContent>
             </Card>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
               <CardHeader className="p-4 pb-0">
