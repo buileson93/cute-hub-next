@@ -393,33 +393,43 @@ function Dashboard() {
                     </tr>
                   ) : (
                     lowHealthDevices.map(({ device, health }) => (
-                      <tr key={device.ma_thiet_bi} className="hover:bg-muted/5 transition-colors group">
-                        <td className="px-6 py-3">
-                          <div className="font-bold text-foreground/90 group-hover:text-primary transition-colors">{device.ten}</div>
-                          <div className="text-[9px] text-muted-foreground font-mono uppercase tracking-tighter">{device.ma_thiet_bi}</div>
+                      <tr key={device.ma_thiet_bi} className="group hover:bg-muted/30 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-0.5">
+                            <Link 
+                              to="/qr/thiet-bi/$id" 
+                              params={{ id: device.ma_thiet_bi } as any}
+                              className="font-bold text-foreground hover:text-primary transition-colors"
+                            >
+                              {device.ten}
+                            </Link>
+                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">{device.ma_thiet_bi}</span>
+                          </div>
                         </td>
-                        <td className="px-6 py-3 text-center w-16">
-                          <span className={cn(
-                            "inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-white text-[10px] shadow-sm",
-                            health.xepLoai === 'D' ? "bg-red-500" : "bg-orange-500"
-                          )}>
-                            {health.xepLoai}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-muted-foreground/80 text-[11px] font-medium italic">
-                          {health.khuyenNghi}
-                        </td>
-                        <td className="px-6 py-3 text-right">
-                          <Link 
-                            to="/qr/thiet-bi/$id" 
-                            params={{ id: device.ma_thiet_bi } as any}
-                            className="text-[9px] font-black uppercase tracking-widest text-primary/70 hover:text-primary transition-colors"
-                          >
-                            Chi tiết →
-                          </Link>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-3">
+                            <div className="flex flex-col items-end">
+                              <span className={cn(
+                                "text-sm font-black font-mono tracking-tighter",
+                                health.xepLoai === 'D' ? "text-red-500" : "text-orange-500"
+                              )}>
+                                {health.score}%
+                              </span>
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">Health</span>
+                            </div>
+                            <div className={cn(
+                              "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2",
+                              health.xepLoai === 'D' 
+                                ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-950/30 dark:border-red-900/50" 
+                                : "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/30 dark:border-orange-900/50"
+                            )}>
+                              {health.xepLoai}
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     ))
+
                   )}
                 </tbody>
               </table>
