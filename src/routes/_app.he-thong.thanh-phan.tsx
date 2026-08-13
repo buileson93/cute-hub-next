@@ -37,7 +37,7 @@ function ThanhPhanListPage() {
           <PageHeader
             title="Bảng thành phần & tài sản"
             icon={Puzzle}
-            description="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật."
+            help="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật. Thành phần chưa lắp tài sản thì các cột kế thừa (serial, model, NSX...) để trống."
           />
           <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })}>
             <TabsList>
