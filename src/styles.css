@@ -63,7 +63,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.625rem; /* 10px instead of 12px for snappier look */
 
   /* Motion tokens — GĐ1-01 */
   --duration-fast: 120ms;
@@ -301,7 +301,8 @@
    Mục tiêu: thu nhỏ nút / input / icon / padding của bảng
    để hiển thị được nhiều thông tin hơn.
    ========================================================= */
-:root[data-density="compact"] {
+:root[data-density="compact"],
+[data-density="compact"] {
   font-size: 13.5px;
 }
 
