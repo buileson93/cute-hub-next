@@ -170,7 +170,7 @@ export function TableExportDialog<T>({
                       }
                     />
                     <Label htmlFor={`col-${c.key}`} className="font-normal">
-                      {c.label}
+                      {c.header || c.label}
                     </Label>
                   </div>
                 ))}
