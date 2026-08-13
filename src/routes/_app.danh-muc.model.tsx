@@ -363,7 +363,6 @@ function ModelCatalogPage() {
       <PageHeader
         icon={Package}
         title="Model"
-        subtitle={`${models?.length ?? 0} model`}
         subtitle="Quản lý mẫu tài sản & hình ảnh"
         help="Gắn hình ảnh minh hoạ, nhà sản xuất và chủng loại. Tài sản chọn model để kế thừa thông tin."
         actions={
