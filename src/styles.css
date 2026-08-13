@@ -7,6 +7,8 @@
 @import "@fontsource/ibm-plex-mono/600.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant density-compact (&:is([data-density="compact"] *));
+
 
 /*
  * MIRATS 2.0 — VATM Middle Region ATC.
@@ -297,97 +299,92 @@
 
 /* =========================================================
    Chế độ mật độ gọn (Small mode)
-   Kích hoạt bằng data-density="compact" trên <html>.
+   Kích hoạt bằng data-density="compact" trên container.
    Mục tiêu: thu nhỏ nút / input / icon / padding của bảng
    để hiển thị được nhiều thông tin hơn.
    ========================================================= */
-:root[data-density="compact"],
 [data-density="compact"] {
   font-size: 13.5px;
 }
 
-/* Header của AppShell thấp hơn */
-:root[data-density="compact"] header.sticky {
-  height: 3rem;
-}
-
 /* Nút shadcn: giảm chiều cao & padding các kích thước phổ biến */
-:root[data-density="compact"] button.h-9,
-:root[data-density="compact"] a.h-9 { height: 1.875rem; }
-:root[data-density="compact"] button.h-10,
-:root[data-density="compact"] a.h-10 { height: 2rem; }
-:root[data-density="compact"] button.h-8,
-:root[data-density="compact"] a.h-8 { height: 1.75rem; }
-:root[data-density="compact"] button.h-11,
-:root[data-density="compact"] a.h-11 { height: 2.25rem; }
-:root[data-density="compact"] button.px-4,
-:root[data-density="compact"] a.px-4 { padding-left: 0.625rem; padding-right: 0.625rem; }
-:root[data-density="compact"] button.px-3,
-:root[data-density="compact"] a.px-3 { padding-left: 0.5rem; padding-right: 0.5rem; }
+[data-density="compact"] button.h-9,
+[data-density="compact"] a.h-9 { height: 1.875rem; }
+[data-density="compact"] button.h-10,
+[data-density="compact"] a.h-10 { height: 2rem; }
+[data-density="compact"] button.h-8,
+[data-density="compact"] a.h-8 { height: 1.75rem; }
+[data-density="compact"] button.h-11,
+[data-density="compact"] a.h-11 { height: 2.25rem; }
+[data-density="compact"] button.px-4,
+[data-density="compact"] a.px-4 { padding-left: 0.625rem; padding-right: 0.625rem; }
+[data-density="compact"] button.px-3,
+[data-density="compact"] a.px-3 { padding-left: 0.5rem; padding-right: 0.5rem; }
 
 /* Ô nhập liệu */
-:root[data-density="compact"] input.h-10,
-:root[data-density="compact"] input.h-9,
-:root[data-density="compact"] select.h-10,
-:root[data-density="compact"] [role="combobox"].h-10,
-:root[data-density="compact"] [role="combobox"].h-9 { height: 1.875rem; }
+[data-density="compact"] input.h-10,
+[data-density="compact"] input.h-9,
+[data-density="compact"] select.h-10,
+[data-density="compact"] [role="combobox"].h-10,
+[data-density="compact"] [role="combobox"].h-9 { height: 1.875rem; }
 
 /* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút */
-:root[data-density="compact"] .lucide { transform: scale(0.9); transform-origin: center; }
+[data-density="compact"] .lucide:not([class*="h-"]) { transform: scale(0.9); transform-origin: center; }
 
 /* Bảng: nén padding các ô cho tất cả TableCell/TableHead của shadcn */
-:root[data-density="compact"] table th,
-:root[data-density="compact"] table td {
+[data-density="compact"] table th,
+[data-density="compact"] table td {
   padding-top: 0.35rem;
   padding-bottom: 0.35rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   font-size: 0.8125rem;
 }
-:root[data-density="compact"] table th { line-height: 1.1; }
+[data-density="compact"] table th { line-height: 1.1; }
 
 /* Card headers gọn hơn */
-:root[data-density="compact"] [data-slot="card-header"],
-:root[data-density="compact"] .card-header,
-:root[data-density="compact"] header + section > .p-6 { padding: 0.75rem 1rem; }
+[data-density="compact"] [data-slot="card-header"],
+[data-density="compact"] .card-header,
+[data-density="compact"] header + section > .p-6 { padding: 0.75rem 1rem; }
 
 /* Sidebar item: giảm chiều cao & gap */
-:root[data-density="compact"] aside a,
-:root[data-density="compact"] aside button {
+[data-density="compact"] aside a,
+[data-density="compact"] aside button {
   padding-top: 0.3rem;
   padding-bottom: 0.3rem;
 }
 
 /* Badge / chip nhỏ hơn */
-:root[data-density="compact"] .badge,
-:root[data-density="compact"] [data-slot="badge"] {
+[data-density="compact"] .badge,
+[data-density="compact"] [data-slot="badge"] {
   padding: 0.05rem 0.4rem;
   font-size: 0.7rem;
 }
 
 /* Dialog: gọn padding + sticky footer đi cùng compact mode */
-:root[data-density="compact"] [role="dialog"].p-6 {
+[data-density="compact"] [role="dialog"].p-6 {
   padding: 1rem;
 }
-:root[data-density="compact"] [role="dialog"] .-mx-6 {
+[data-density="compact"] [role="dialog"] .-mx-6 {
   margin-left: -1rem;
   margin-right: -1rem;
 }
-:root[data-density="compact"] [role="dialog"] .-mb-6 {
+[data-density="compact"] [role="dialog"] .-mb-6 {
   margin-bottom: -1rem;
 }
-:root[data-density="compact"] [role="dialog"] .px-6 {
+[data-density="compact"] [role="dialog"] .px-6 {
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
 /* Form controls chuẩn hoá gap giữa các trường */
-:root[data-density="compact"] .space-y-4 > * + * {
+[data-density="compact"] .space-y-4 > * + * {
   margin-top: 0.625rem;
 }
-:root[data-density="compact"] .space-y-3 > * + * {
+[data-density="compact"] .space-y-3 > * + * {
   margin-top: 0.5rem;
 }
-:root[data-density="compact"] .gap-4 { gap: 0.625rem; }
-:root[data-density="compact"] .gap-3 { gap: 0.5rem; }
+[data-density="compact"] .gap-4 { gap: 0.625rem; }
+[data-density="compact"] .gap-3 { gap: 0.5rem; }
+
 
