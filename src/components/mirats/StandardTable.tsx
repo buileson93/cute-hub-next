@@ -37,11 +37,27 @@ import { Input } from "@/components/ui/input";
 
 
 
+export type ColumnType = 
+  | "id" 
+  | "status" 
+  | "taxonomy" 
+  | "user" 
+  | "number" 
+  | "currency" 
+  | "percent" 
+  | "date" 
+  | "expiring" 
+  | "boolean" 
+  | "path" 
+  | "longtext" 
+  | "actions";
+
 export interface ColumnDef<T> {
   key: string;
   header?: string;
   /** @deprecated use header instead */
   label?: string;
+  type?: ColumnType;
   width?: number;
   minWidth?: number;
   maxWidth?: number;
