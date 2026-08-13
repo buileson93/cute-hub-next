@@ -143,6 +143,7 @@ export function StandardTable<T>({
 
 
   const [containerWidth, setContainerWidth] = useState(0);
+  const [liveAnnouncement, setLiveAnnouncement] = useState("");
   const parentRef = useRef<HTMLDivElement>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -393,8 +394,16 @@ export function StandardTable<T>({
 
   const notifyFilteredTotal = clientPagination?.onFilteredTotalChange;
   useEffect(() => {
-    notifyFilteredTotal?.(fullDisplay.length);
-  }, [fullDisplay.length, notifyFilteredTotal]);
+    const count = fullDisplay.length;
+    notifyFilteredTotal?.(count);
+    
+    // Task 25: Thông báo số dòng thay đổi cho screen reader
+    if (hasFilter) {
+      setLiveAnnouncement(`Tìm thấy ${count} ${countUnit}`);
+    } else {
+      setLiveAnnouncement("");
+    }
+  }, [fullDisplay.length, notifyFilteredTotal, hasFilter, countUnit]);
 
   const display = useMemo(() => {
     if (!clientPagination) return fullDisplay;
@@ -541,8 +550,58 @@ export function StandardTable<T>({
     allKeys.forEach(k => prefs.resetWidth(k));
   };
 
+  const renderGlobalState = () => {
+    if (trangThai.loi) {
+      return (
+        <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
+          <div className="text-sm text-destructive font-medium">
+            {String(trangThai.loi)}
+          </div>
+          {trangThai.loi.retry && (
+            <Button variant="outline" size="sm" onClick={trangThai.loi.retry}>
+              Thử lại
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    if (trangThai.dangTai) {
+      return (
+        <div className="p-4 border rounded-lg bg-card">
+          {loadingContent ?? <TableSkeleton cols={isMobile ? 1 : shownCols.length} rows={isMobile ? 3 : 6} />}
+        </div>
+      );
+    }
+
+    if (fullDisplay.length === 0) {
+      return (
+        <div className="py-20 border rounded-lg bg-card">
+          <EmptyState
+            title={hasFilter ? "Không có dòng nào khớp bộ lọc" : (gated ? "Vui lòng chọn bộ lọc để xem dữ liệu" : (emptyContent ? undefined : emptyText))}
+            description={hasFilter ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật" : (typeof emptyContent === "string" ? emptyContent : undefined)}
+            action={hasFilter ? (
+              <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
+                Xoá tất cả bộ lọc
+              </Button>
+            ) : undefined}
+            live="polite"
+          />
+          {!hasFilter && typeof emptyContent !== "string" && emptyContent}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="space-y-3">
+      {/* Vùng ẩn thông báo trạng thái cho screen reader */}
+      <div className="sr-only" aria-live="polite" role="status">
+        {liveAnnouncement}
+      </div>
+
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2">
@@ -746,11 +805,7 @@ export function StandardTable<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {fullDisplay.length === 0 ? (
-            <div className="py-20 text-center text-sm text-muted-foreground border rounded-lg bg-card">
-              {hasFilter ? "Không có dòng nào khớp bộ lọc" : (gated ? "Bảng đang trống." : (emptyContent ?? emptyText))}
-            </div>
-          ) : (
+          {renderGlobalState() || (
             display.map((r) => {
               const rid = getRowIdInternal(r);
               const isSel = selectable && selected?.has(rid);
@@ -788,6 +843,7 @@ export function StandardTable<T>({
                             onCheckedChange={() => toggleRow(rid)}
                             onClick={(e: React.MouseEvent) => e.stopPropagation()}
                             className="mt-1"
+                            aria-label={`Chọn dòng ${rid}`}
                           />
                         )}
                       </div>
@@ -909,11 +965,22 @@ export function StandardTable<T>({
                   </TableHead>
                 )}
                 {selectable && (
-                  <TableHead className={cn(
-                    "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50",
-                    viewMode === "tablet" && "left-10"
-                  )}>
-                    <div className="flex justify-center">
+                  <TableHead 
+                    scope="col"
+                    className={cn(
+                      "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50",
+                      viewMode === "tablet" && "left-10"
+                    )}
+                  >
+                    <div className="flex justify-center items-center gap-1">
+                      <Checkbox 
+                        checked={selected?.size === rows.length && rows.length > 0}
+                        onCheckedChange={(checked) => {
+                          if (checked) setSelected?.(new Set(rows.map(getRowIdInternal)));
+                          else clearSelection();
+                        }}
+                        aria-label="Chọn tất cả các dòng"
+                      />
                       {!hideReorderToggle && (
                         <Button
                           variant="ghost"
@@ -921,6 +988,7 @@ export function StandardTable<T>({
                           className={cn("h-6 w-6 transition-colors", internalReorder && "text-primary bg-primary/10")}
                           onClick={() => setInternalReorder(!internalReorder)}
                           title="Bật/tắt chế độ kéo thả đổi thứ tự cột"
+                          aria-label="Bật/tắt chế độ kéo thả đổi thứ tự cột"
                         >
                           <GripVertical className="h-3.5 w-3.5" />
                         </Button>
@@ -940,6 +1008,8 @@ export function StandardTable<T>({
                   return (
                     <TableHead
                       key={c.key}
+                      scope="col"
+                      aria-sort={sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"}
                       className={cn(
                         "group relative bg-muted/30 border-r border-border/50 last:border-r-0",
                         c.sticky && "sticky left-0 z-30",
@@ -1001,16 +1071,17 @@ export function StandardTable<T>({
                           <button
                             type="button"
                             onClick={() => cycleSort(c.key)}
-                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left transition-colors"
-                            title="Bấm để sắp xếp"
+                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none"
+                            title={`Sắp xếp theo ${c.label}`}
+                            aria-label={`Sắp xếp theo ${c.label}`}
                           >
                             <span className="truncate">{c.label}</span>
                             {sortActive ? (
                               sort!.dir === "asc"
-                                ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" />
-                                : <ArrowDown className="h-3 w-3 shrink-0 text-primary" />
+                                ? <ArrowUp className="h-3 w-3 shrink-0 text-primary" aria-hidden />
+                                : <ArrowDown className="h-3 w-3 shrink-0 text-primary" aria-hidden />
                             ) : (
-                              <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" />
+                              <ChevronsUpDown className="h-3 w-3 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground/60" aria-hidden />
                             )}
                           </button>
                         ) : (
@@ -1033,9 +1104,20 @@ export function StandardTable<T>({
 
                       {/* Resizer handle */}
                       <div
-                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-primary/30 transition-opacity z-10"
+                        role="separator"
+                        tabIndex={0}
+                        aria-label={`Thay đổi độ rộng cột ${c.label}`}
+                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-primary/30 transition-opacity z-10 focus-visible:opacity-100 focus-visible:bg-primary/30 outline-none"
                         onMouseDown={(e) => onHandleMouseDown(e, c.key, currentWidth)}
                         onDoubleClick={() => prefs.resetWidth(c.key)}
+                        onKeyDown={(e) => {
+                          if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                            e.preventDefault();
+                            const step = e.shiftKey ? 32 : 8;
+                            const nextW = Math.max(60, currentWidth + (e.key === "ArrowRight" ? step : -step));
+                            prefs.setWidth(c.key, nextW);
+                          }
+                        }}
                         title="Kéo để đổi độ rộng — bấm đúp để đặt lại"
                       />
                     </TableHead>
@@ -1044,35 +1126,10 @@ export function StandardTable<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trangThai.loi ? (
+              {renderGlobalState() ? (
                 <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
-                    {errorContent ?? (
-                      <div className="flex h-full items-center justify-center text-sm text-destructive">
-                        {String(trangThai.loi)}
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ) : trangThai.dangTai ? (
-                <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
-                    {loadingContent ?? <TableSkeleton cols={shownCols.length} />}
-                  </TableCell>
-                </TableRow>
-              ) : rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="h-24">
-                    <EmptyState
-                      title={hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyContent ? undefined : emptyText)}
-                      description={hasFilter ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật" : (typeof emptyContent === "string" ? emptyContent : undefined)}
-                      action={hasFilter ? (
-                        <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
-                          Xoá tất cả bộ lọc
-                        </Button>
-                      ) : undefined}
-                    />
-                    {!hasFilter && typeof emptyContent !== "string" && emptyContent}
+                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} className="p-0 border-0">
+                    {renderGlobalState()}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -1123,15 +1180,16 @@ export function StandardTable<T>({
                                 viewMode === "tablet" && "left-10"
                               )}
                             >
-                              <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} />
+                              <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} aria-label={`Chọn dòng ${rid}`} />
                             </TableCell>
                           )}
 
-                          {shownCols.map((c) => {
+                          {shownCols.map((c, colIdx) => {
                             const savedW = prefs.widths[c.key];
                             return (
-                              <TableCell
-                                key={c.key}
+                                <TableCell
+                                  key={c.key}
+                                  scope={colIdx === 0 ? "row" : undefined}
                                 className={cn(
                                   c.cellClassName,
                                   density === "compact" ? "px-2 py-1" : density === "comfortable" ? "px-3 py-1.5" : "px-4 py-2",
