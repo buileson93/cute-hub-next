@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
+import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
 import { 
