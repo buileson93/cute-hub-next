@@ -241,7 +241,7 @@ function Dashboard() {
                   {formatKpiValue(reliability)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Activity className="w-3 h-3" /> Availability
+                  <Icon name="entity.activity" size="tiny" /> Availability
                 </div>
               </CardContent>
             </Card>
@@ -260,7 +260,7 @@ function Dashboard() {
                   {formatKpiValue(mttrKpi)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Clock className="w-3 h-3" /> MTTR (Bình quân)
+                  <Icon name="entity.history" size="tiny" /> MTTR (Bình quân)
                 </div>
               </CardContent>
             </Card>
@@ -279,7 +279,7 @@ function Dashboard() {
                   {formatKpiValue(mtbfKpi)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> MTBF (Trung bình)
+                  <Icon name="entity.trendingUp" size="tiny" /> MTBF (Trung bình)
                 </div>
               </CardContent>
             </Card>
@@ -298,7 +298,7 @@ function Dashboard() {
                   {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Wrench className="w-3 h-3" /> PM đúng hạn
+                  <Icon name="status.maintenance" size="tiny" /> PM đúng hạn
                 </div>
               </CardContent>
             </Card>

@@ -2,6 +2,7 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 import { InfoHint } from "./InfoHint";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { Icon as SemanticIcon } from "@/components/mirats/ui/Icon";
 
 export interface PageHeaderProps {
   title: string;
@@ -11,7 +12,7 @@ export interface PageHeaderProps {
   description?: React.ReactNode;
   help?: React.ReactNode;
   actions?: React.ReactNode;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }> | string;
 }
 
 /**
@@ -34,7 +35,11 @@ export function PageHeader({
     <div data-testid="page-header" className="flex items-center justify-between h-10 gap-3">
       <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
         {Icon ? (
-          <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          typeof Icon === "string" ? (
+            <SemanticIcon name={Icon} size="small" className="text-muted-foreground" />
+          ) : (
+            <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          )
         ) : null}
         <h1
           data-testid="page-header-title"
