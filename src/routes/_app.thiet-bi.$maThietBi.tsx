@@ -135,7 +135,7 @@ function ThietBiDetailRoute() {
           <p className="text-sm text-muted-foreground">Mã thiết bị "{ma}" không tồn tại trong hệ thống.</p>
         </div>
         <Button variant="outline" asChild>
-          <Link to="/thiet-bi">Quay lại danh sách</Link>
+          <Link to="/thiet-bi" search={{ q: "" } as any}>Quay lại danh sách</Link>
         </Button>
       </div>
     );
