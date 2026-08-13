@@ -1161,6 +1161,15 @@ export function StandardTable<T>({
                             rowClassName?.(r)
                           )}
                           onClick={() => onRowClick?.(r)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              if ((e.target as HTMLElement).tagName !== "BUTTON" && (e.target as HTMLElement).tagName !== "INPUT") {
+                                e.preventDefault();
+                                onRowClick?.(r);
+                              }
+                            }
+                          }}
+                          tabIndex={onRowClick ? 0 : undefined}
                         >
                           {viewMode === "tablet" && (
                             <TableCell
