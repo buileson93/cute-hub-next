@@ -965,9 +965,10 @@ export function StandardTable<T>({
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
                     </TableRow>
                   )}
+
                   {displayItems.map((virtualRow) => {
                     const r = rows[virtualRow.index];
                     const rid = getRowIdInternal(r);
