@@ -424,7 +424,7 @@ function OverviewReport() {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-muted/30 text-[10px] uppercase font-bold text-muted-foreground">
+                <thead className="bg-muted/30 text-[11px] uppercase font-bold text-muted-foreground tracking-wider">
                   <tr>
                     <th className="px-4 py-3 text-left">Tài sản / Thiết bị</th>
                     <th className="px-4 py-3 text-center">Xếp hạng</th>
