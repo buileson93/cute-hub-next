@@ -354,7 +354,7 @@ export function StandardTable<T>({
   const rowVirtualizer = useVirtualizer({
     count: display.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 48,
+    estimateSize: () => 40,
     overscan: isTest ? display.length : 10,
   });
 

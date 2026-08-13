@@ -30,11 +30,11 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
   }, [groups, hasRole]);
 
   return (
-    <div className="flex flex-col gap-8 py-4 overflow-x-hidden">
+    <div className="flex flex-col gap-6 py-3 overflow-x-hidden">
       {filteredGroups.map((group) => {
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
-            <nav className="space-y-1.5">
+            <nav className="space-y-1">
               {group.items.map((item) => {
                 const Icon = (LucideIcons as any)[item.icon] || LucideIcons.Circle;
                 const active = isActive(pathname, item);
@@ -45,7 +45,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     to={item.route}
                     onClick={onNavigate}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors",
                       active 
                         ? "bg-primary/10 text-primary" 
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground",

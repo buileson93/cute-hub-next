@@ -156,7 +156,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className="w-16 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-4 flex">
+            <aside className="w-14 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-3 flex transition-[width]">
               <SidebarLogoRail />
               <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
                 {railWorkspaces.map((ws) => (
@@ -165,7 +165,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     onClick={() => gotoWorkspace(ws)}
                     onPointerEnter={() => setHoveredWsId(ws.id)}
                     className={cn(
-                      "group relative flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                      "group relative flex w-[48px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
                       ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                     )}
                   >
@@ -186,7 +186,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     onClick={() => gotoWorkspace(adminWs)}
                     onPointerEnter={() => setHoveredWsId(adminWs.id)}
                     className={cn(
-                      "flex w-[52px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
+                      "flex w-[48px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
                       adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                     )}
                   >
@@ -201,11 +201,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <aside 
               className={cn(
                 "h-full shrink-0 flex-col border-r border-border bg-sidebar/40 flex transition-[width] duration-300 ease-in-out overflow-hidden",
-                (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-60"
+                (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-52"
               )}
             >
               <div className={cn(
-                "flex h-14 items-center border-b px-6 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
+                "flex h-12 items-center border-b px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
                 (isCollapsed && !isHovered) && "opacity-0"
               )}>
                 {(hoveredWsId ? visibleWorkspaces.find(w => w.id === hoveredWsId) : activeWs)?.label}
@@ -221,7 +221,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
+            <header className="sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
                <div className="flex flex-1 items-center gap-4">
                   <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
                   <div className="hidden md:block"><TourButton /></div>
