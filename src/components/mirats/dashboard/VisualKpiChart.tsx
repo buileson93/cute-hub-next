@@ -120,7 +120,7 @@ export function VisualKpiChart({
                   animationDuration={1000}
                 >
                     {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={typeof color === 'object' ? color[index % color.length] : color} />
+                      <Cell key={`cell-${index}`} fill={Array.isArray(color) ? color[index % color.length] : color} />
                     ))}
                 </Bar>
               </BarChart>
