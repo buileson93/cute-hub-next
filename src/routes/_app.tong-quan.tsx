@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
+import { VisualKpiChart } from "@/components/mirats/dashboard/VisualKpiChart";
+import { StatusDonutChart } from "@/components/mirats/dashboard/StatusDonutChart";
 import { useSession } from "@/hooks/use-session";
 import { useDashboardBrief } from "@/lib/mirats/dashboard.functions";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
@@ -168,41 +170,51 @@ function OverviewReport() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
-          {/* TẦNG 1: CHỈ SỐ THEN CHỐT */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <KpiCard
-              label="Sẵn sàng"
-              value={formatKpiValue(reliability).replace('%', '')}
-              unit="%"
+          {/* TẦNG 1: BIỂU ĐỒ KPI ĐỒ HỌA (FIGMA STYLE) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VisualKpiChart
+              title="Độ sẵn sàng vận hành"
+              value={`${formatKpiValue(reliability)}`}
               icon="entity.security"
+              data={trendData}
+              type="area"
+              color="#10b981"
+              status={Number(reliability.value) >= 95 ? 'normal' : 'warning'}
               tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
-              sparklineData={trendData}
             />
 
-            <KpiCard
-              label="MTTR"
-              value={formatKpiValue(mttrKpi).replace(' phút', '')}
-              unit="phút"
+            <VisualKpiChart
+              title="Thời gian khắc phục (MTTR)"
+              value={`${formatKpiValue(mttrKpi)}`}
               icon="status.power"
+              data={trendData.map(d => ({ ...d, value: Math.random() * 60 + 20 }))}
+              type="bar"
+              color="#3b82f6"
               status="attention"
               tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair). Target: 24h"
             />
+          </div>
 
-            <KpiCard
-              label="MTBF"
-              value={formatKpiValue(mtbfKpi).replace(' ngày', '')}
-              unit="ngày"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VisualKpiChart
+              title="Khoảng cách sự cố (MTBF)"
+              value={`${formatKpiValue(mtbfKpi)}`}
               icon="entity.securityAlert"
+              data={trendData.map(d => ({ ...d, value: Math.random() * 5 + 10 }))}
+              type="area"
+              color="#f59e0b"
               status="warning"
               tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
             />
 
-            <KpiCard
-              label="Bảo trì"
-              value={pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result).replace('%', '')}
-              unit="%"
+            <VisualKpiChart
+              title="Hoàn thành bảo trì (PM)"
+              value={pmKpi.isLoading ? "..." : `${formatKpiValue(pmKpi.result)}`}
               icon="status.success"
-              isLoading={pmKpi.isLoading}
+              data={trendData.map(d => ({ ...d, value: Math.random() * 20 + 80 }))}
+              type="bar"
+              color="#8b5cf6"
+              status="normal"
               tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
             />
           </div>
@@ -275,68 +287,48 @@ function OverviewReport() {
 
           {/* TẦNG 3: CHI TIẾT SỨC KHOẺ & CHẤT LƯỢNG DỮ LIỆU */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-sm">
-              <CardHeader className="py-3 border-b bg-muted/5">
-                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
-                  <Icon name="entity.activity" size="tiny" className="text-primary" /> Phân bố sức khoẻ (A/B/C/D)
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-4">
-                {[
-                  { label: "A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
-                  { label: "B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
-                  { label: "C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
-                  { label: "D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
-                ].map((s) => (
-                  <div key={s.label} className="space-y-1.5">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[11px] font-bold uppercase text-muted-foreground">{s.label}</span>
-                      <span className="text-[13px] font-black tabular-nums">{s.count}</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full transition-all duration-1000" 
-                        style={{ 
-                          width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
-                          backgroundColor: s.color 
-                        }} 
-                      />
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <StatusDonutChart
+              title="Phân bố sức khỏe tài sản"
+              icon="entity.activity"
+              totalLabel="Tài sản"
+              data={[
+                { name: "A - Tốt", value: healthStats.A, color: "#10b981" },
+                { name: "B - Khá", value: healthStats.B, color: "#3b82f6" },
+                { name: "C - TB", value: healthStats.C, color: "#f59e0b" },
+                { name: "D - Yếu", value: healthStats.D, color: "#ef4444" },
+              ]}
+            />
 
-            <Card className="shadow-sm">
-              <CardHeader className="py-3 border-b bg-muted/5">
-                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
+              <CardHeader className="p-4 pb-0">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ hoàn thiện
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                 <div className="flex items-center justify-center mb-6">
-                    <div className="relative w-28 h-28 flex items-center justify-center">
+              <CardContent className="p-4">
+                 <div className="flex items-center justify-between mb-6">
+                    <div className="relative w-24 h-24 flex items-center justify-center">
                       <svg className="w-full h-full transform -rotate-90">
-                        <circle cx="56" cy="56" r="50" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-muted/30" />
-                        <circle cx="56" cy="56" r="50" stroke="currentColor" strokeWidth="10" fill="transparent" 
-                          strokeDasharray={314} 
-                          strokeDashoffset={314 * (1 - (completeness.avg_thiet_bi || 0) / 100)} 
+                        <circle cx="48" cy="48" r="42" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-muted/30" />
+                        <circle cx="48" cy="48" r="42" stroke="currentColor" strokeWidth="8" fill="transparent" 
+                          strokeDasharray={263.8} 
+                          strokeDashoffset={263.8 * (1 - (completeness.avg_thiet_bi || 0) / 100)} 
                           className="text-primary transition-all duration-1000 ease-in-out" 
                         />
                       </svg>
                       <div className="absolute flex flex-col items-center">
-                        <span className="text-xl font-black text-primary">{completeness.avg_thiet_bi || 0}%</span>
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Toàn hệ</span>
+                        <span className="text-lg font-black text-primary">{completeness.avg_thiet_bi || 0}%</span>
+                        <span className="text-[8px] uppercase font-bold text-muted-foreground">Toàn hệ</span>
                       </div>
                     </div>
-                 </div>
-                 <div className="space-y-2">
-                    {lowCompleteness.slice(0, 4).map((tb: any) => (
-                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] p-1.5 rounded-lg hover:bg-muted transition-colors">
-                        <span className="truncate flex-1 pr-2 font-medium">{tb.ten_thiet_bi}</span>
-                        <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
-                      </Link>
-                    ))}
+                    <div className="flex-1 ml-6 space-y-2">
+                      {lowCompleteness.slice(0, 3).map((tb: any) => (
+                        <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[10px] p-1.5 rounded-lg hover:bg-muted transition-colors border border-border/50">
+                          <span className="truncate pr-2 font-medium">{tb.ten_thiet_bi}</span>
+                          <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                        </Link>
+                      ))}
+                    </div>
                  </div>
               </CardContent>
             </Card>

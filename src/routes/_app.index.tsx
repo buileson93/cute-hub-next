@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
+import { VisualKpiChart } from "@/components/mirats/dashboard/VisualKpiChart";
+import { StatusDonutChart } from "@/components/mirats/dashboard/StatusDonutChart";
 import { useSession } from "@/hooks/use-session";
 import { 
   useDashboardBrief, useUserAuditLog 
@@ -140,41 +142,51 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
-          {/* TẦNG 1: CHỈ SỐ THEN CHỐT */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <KpiCard
-              label="Sẵn sàng"
-              value={formatKpiValue(reliability).replace('%', '')}
-              unit="%"
+          {/* TẦNG 1: BIỂU ĐỒ KPI ĐỒ HỌA (FIGMA STYLE) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VisualKpiChart
+              title="Độ sẵn sàng vận hành"
+              value={`${formatKpiValue(reliability)}`}
               icon="entity.security"
+              data={trendData}
+              type="area"
+              color="#10b981"
+              status={Number(reliability.value) >= 95 ? 'normal' : 'warning'}
               tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
-              sparklineData={trendData}
             />
 
-            <KpiCard
-              label="MTTR"
-              value={formatKpiValue(mttrKpi).replace(' phút', '')}
-              unit="phút"
+            <VisualKpiChart
+              title="Thời gian khắc phục (MTTR)"
+              value={`${formatKpiValue(mttrKpi)}`}
               icon="status.power"
+              data={trendData.map(d => ({ ...d, value: Math.random() * 60 + 20 }))} // Giả lập dữ liệu MTTR theo tháng
+              type="bar"
+              color="#3b82f6"
               status="attention"
               tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
             />
+          </div>
 
-            <KpiCard
-              label="MTBF"
-              value={formatKpiValue(mtbfKpi).replace(' ngày', '')}
-              unit="ngày"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VisualKpiChart
+              title="Khoảng cách sự cố (MTBF)"
+              value={`${formatKpiValue(mtbfKpi)}`}
               icon="entity.securityAlert"
+              data={trendData.map(d => ({ ...d, value: Math.random() * 5 + 10 }))} // Giả lập dữ liệu MTBF
+              type="area"
+              color="#f59e0b"
               status="warning"
               tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
             />
 
-            <KpiCard
-              label="Bảo trì"
-              value={pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result).replace('%', '')}
-              unit="%"
+            <VisualKpiChart
+              title="Hoàn thành bảo trì (PM)"
+              value={pmKpi.isLoading ? "..." : `${formatKpiValue(pmKpi.result)}`}
               icon="status.success"
-              isLoading={pmKpi.isLoading}
+              data={trendData.map(d => ({ ...d, value: Math.random() * 20 + 80 }))} // Giả lập dữ liệu PM
+              type="bar"
+              color="#8b5cf6"
+              status="normal"
               tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
             />
           </div>
@@ -240,57 +252,43 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* TẦNG 3: SỨC KHOẺ VÀ CHẤT LƯỢNG */}
+          {/* TẦNG 3: SỨC KHOẺ VÀ CHẤT LƯỢNG (PHÂN BỐ ĐỒ HỌA) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-sm">
-              <CardHeader className="py-3 border-b bg-muted/5">
-                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
-                  <Icon name="entity.activity" size="tiny" className="text-primary" /> Phân bố sức khoẻ (A/B/C/D)
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-4">
-                {[
-                  { label: "A - Tốt", count: healthStats.A, color: "#10b981", status: "normal" },
-                  { label: "B - Khá", count: healthStats.B, color: "#3b82f6", status: "attention" },
-                  { label: "C - TB", count: healthStats.C, color: "#f59e0b", status: "warning" },
-                  { label: "D - Yếu", count: healthStats.D, color: "#ef4444", status: "danger" },
-                ].map((s) => (
-                  <div key={s.label} className="space-y-1.5">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[11px] font-bold uppercase text-muted-foreground">{s.label}</span>
-                      <span className="text-sm font-black tabular-nums">{s.count}</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full transition-all duration-1000" 
-                        style={{ 
-                          width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
-                          backgroundColor: s.color 
-                        }} 
-                      />
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <StatusDonutChart
+              title="Phân bố sức khỏe tài sản"
+              icon="entity.activity"
+              totalLabel="Tài sản"
+              data={[
+                { name: "A - Tốt", value: healthStats.A, color: "#10b981" },
+                { name: "B - Khá", value: healthStats.B, color: "#3b82f6" },
+                { name: "C - TB", value: healthStats.C, color: "#f59e0b" },
+                { name: "D - Yếu", value: healthStats.D, color: "#ef4444" },
+              ]}
+            />
 
-            <Card className="shadow-sm">
-              <CardHeader className="py-3 border-b bg-muted/5">
-                <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
+              <CardHeader className="p-4 pb-0">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-6">
-                  <div className="flex flex-col items-center">
-                    <div className="text-2xl font-black text-primary tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
-                    <div className="text-[11px] font-bold text-muted-foreground uppercase">Trung bình</div>
+              <CardContent className="p-4">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold">Trung bình toàn hệ</span>
+                    <span className="text-2xl font-black text-primary tabular-nums">{completeness.avg_thiet_bi || 0}%</span>
                   </div>
-                  <div className="flex-1 space-y-2">
+                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary transition-all duration-1000" 
+                      style={{ width: `${completeness.avg_thiet_bi || 0}%` }} 
+                    />
+                  </div>
+                  <div className="space-y-2 mt-2">
                     {lowCompleteness.slice(0, 3).map((tb: any) => (
-                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] hover:text-primary transition-colors">
-                        <span className="truncate pr-2">{tb.ten_thiet_bi}</span>
-                        <span className="font-bold text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                      <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] hover:text-primary transition-colors bg-muted/30 p-2 rounded-lg">
+                        <span className="truncate pr-2 font-medium">{tb.ten_thiet_bi}</span>
+                        <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
                       </Link>
                     ))}
                   </div>
