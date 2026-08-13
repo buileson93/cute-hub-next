@@ -84,13 +84,17 @@ describe("StandardTable — Tương tác và Lọc", () => {
     expect(setSelected).toHaveBeenCalled();
   });
 
-  it("lọc text hoạt động đúng", async () => {
-    // Mock một input đơn giản thay vì test DropdownMenu Radix phức tạp trong JSDOM
+  it("render các nút sắp xếp và lọc", async () => {
     render(<StandardTable<Row> {...baseProps()} />);
     
-    // Kiểm tra xem các tiêu đề cột có hiện diện không
+    // Kiểm tra các thành phần giao diện chính thay vì hành vi lọc phức tạp trong JSDOM
     expect(screen.getByText("Tên")).not.toBeNull();
+    const filterButtons = screen.getAllByRole("button").filter(b => 
+      b.querySelector(".lucide-funnel") || b.innerHTML.includes('lucide-funnel')
+    );
+    expect(filterButtons.length).toBeGreaterThan(0);
   });
+
 
 
 
