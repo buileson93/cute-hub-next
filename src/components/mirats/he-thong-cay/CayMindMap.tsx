@@ -536,9 +536,14 @@ export function CayMindMap({
 
     const maxDepth = allRaw.reduce((m, n) => Math.max(m, n.depth ?? 0), 0);
     const colW: number[] = Array.from({ length: maxDepth + 1 }, () => 0);
-    for (const n of allRaw) colW[n.depth!] = Math.max(colW[n.depth!], KIND_W[n.kind]);
+    for (const n of allRaw) {
+      const w = KIND_W[n.kind] ?? 160;
+      colW[n.depth!] = Math.max(colW[n.depth!], w);
+    }
     const COL: number[] = [];
-    for (let d = 0; d <= maxDepth; d++) COL[d] = d === 0 ? 0 : COL[d - 1] + colW[d - 1] + COL_GAP;
+    for (let d = 0; d <= maxDepth; d++) {
+      COL[d] = d === 0 ? 0 : COL[d - 1] + (colW[d - 1] || 160) + COL_GAP;
+    }
 
     const nodes: ReactFlowNode[] = [];
     const edges: Edge[] = [];

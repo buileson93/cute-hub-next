@@ -365,26 +365,26 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const pageStart = (currentPage - 1) * pageSize;
 
   const ModeToggle = (
-    <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5">
+    <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5 shrink-0">
       <Button
         size="sm"
         variant={viewMode === "component" ? "default" : "ghost"}
-        className="h-7 gap-1.5 px-2 text-xs"
+        className="h-7 gap-1.5 px-2 text-xs shrink-0 whitespace-nowrap"
         onClick={() => setViewMode("component")}
         title="1 dòng = 1 thành phần hệ thống"
       >
         <LayoutGrid className="h-3.5 w-3.5" /> Theo thành phần
-        <Badge variant="secondary" className="ml-1 px-1 text-[10px]">{rows.length.toLocaleString("vi-VN")}</Badge>
+        <Badge variant="secondary" className="ml-1 h-4 min-w-[1rem] px-1 text-[10px]">{rows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
       <Button
         size="sm"
         variant={viewMode === "asset" ? "default" : "ghost"}
-        className="h-7 gap-1.5 px-2 text-xs"
+        className="h-7 gap-1.5 px-2 text-xs shrink-0 whitespace-nowrap"
         onClick={() => setViewMode("asset")}
         title="1 dòng = 1 tài sản, hiện số thành phần đang gắn"
       >
         <Package className="h-3.5 w-3.5" /> Theo tài sản
-        <Badge variant="secondary" className="ml-1 px-1 text-[10px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
+        <Badge variant="secondary" className="ml-1 h-4 min-w-[1rem] px-1 text-[10px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
     </div>
   );
@@ -394,26 +394,27 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   return (
     <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-3" : "space-y-4 p-4 sm:p-6 lg:p-8"}>
       {!hideHeader && (
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3 overflow-hidden">
+          <div className="min-w-0 flex-1">
             <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-              <Component className="h-6 w-6 text-primary" /> Hệ thống — Thành phần & tài sản
+              <Component className="h-6 w-6 text-primary shrink-0" /> 
+              <span className="truncate">Hệ thống — Thành phần & tài sản</span>
               {editMode ? (
-                <Badge className="ml-1 gap-1 bg-primary/10 text-[11px] text-primary hover:bg-primary/15">
+                <Badge className="ml-1 gap-1 bg-primary/10 text-[11px] text-primary hover:bg-primary/15 shrink-0">
                   <Pencil className="h-3 w-3" /> Đang chỉnh sửa
                 </Badge>
               ) : (
-                <Badge variant="outline" className="ml-1 gap-1 border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-400">
+                <Badge variant="outline" className="ml-1 gap-1 border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-400 shrink-0">
                   <Eye className="h-3 w-3" /> Chỉ tra cứu
                 </Badge>
               )}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground line-clamp-2 md:line-clamp-none">
               Bảng ở mức <span className="font-medium">thành phần hệ thống</span>: nhóm — hệ thống — thành phần — <span className="font-medium">tài sản đang lắp</span> (kế thừa serial, model, chủng loại, NSX, NCC) — vị trí — trạng thái. Thành phần chưa lắp tài sản thì các cột kế thừa để trống.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {ModeToggle}
             {allowEdit && editMode && <KhaiThemCumButtons />}
             {allowEdit ? (

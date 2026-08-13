@@ -114,18 +114,25 @@ export function StandardTable<T>({
   editMode,
 }: StandardTableProps<T>) {
 
-  const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!parentRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(parentRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [internalReorder, setInternalReorder] = useState(false);
   const reorder = (editMode || internalReorder) && !hideReorderToggle;
-
-  useEffect(() => {
-    const handleResize = () => setVw(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // --- Tầng 1: Column Prefs (User Settings) ---
   const allKeys = useMemo(() => columns.map(c => c.key), [columns]);
@@ -147,7 +154,7 @@ export function StandardTable<T>({
     }
   }, [presets, activePreset, prefs.ready, prefs.isCustomized, prefs.activePreset]);
 
-  const isMobile = vw > 0 && vw < BP_PX.md;
+  const isMobile = containerWidth > 0 && containerWidth < BP_PX.md;
   
   // Sắp xếp cột theo thứ tự người dùng đã chọn
   const sortedColumns = useMemo(() => {
@@ -169,9 +176,9 @@ export function StandardTable<T>({
       const threshold = typeof c.hideBelow === "number" 
         ? c.hideBelow 
         : (BP_PX as any)[c.hideBelow] || BP_PX.md;
-      return vw >= threshold;
+      return containerWidth >= threshold;
     });
-  }, [sortedColumns, tableKey, prefs.hidden, vw]);
+  }, [sortedColumns, tableKey, prefs.hidden, containerWidth]);
 
   // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
   // bỏ qua Tầng 2 (hideBelow) nhưng vẫn áp dụng Tầng 1 (User Prefs) và Tầng 3 (Hardcoded hidden)
@@ -342,7 +349,6 @@ export function StandardTable<T>({
     });
   };
 
-  const parentRef = useRef<HTMLDivElement>(null);
 
   const isTest = typeof window !== 'undefined' && (window as any).process?.env?.NODE_ENV === 'test';
   const rowVirtualizer = useVirtualizer({
