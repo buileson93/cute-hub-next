@@ -674,20 +674,22 @@ function KpiCard({
 
   const body = (
     <Card className={cn("h-full border-none shadow-none transition-all", t.bg, link && "cursor-pointer hover:opacity-80")}>
-      <CardContent className="flex h-full flex-col justify-between p-4 pt-4">
-        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-          <span className={t.text}>{icon}</span>
-          <span className="truncate">{label}</span>
+      <CardContent className="flex h-full items-center gap-4 p-4">
+        <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background/50", t.text)}>
+          {icon}
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <div className={cn("text-[24px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
-            {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted/20" /> : (value ?? 0).toLocaleString("vi-VN")}
+        <div className="flex-1 min-w-0">
+          <div className="text-[12px] text-muted-foreground truncate leading-tight">{label}</div>
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <div className={cn("text-[20px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
+              {loading ? <span className="inline-block h-6 w-14 animate-pulse rounded bg-muted/20" /> : (value ?? 0).toLocaleString("vi-VN")}
+            </div>
+            {sub && <div className="text-[11px] font-medium opacity-60 truncate">{sub}</div>}
           </div>
-          {sub && <div className="text-[11px] font-medium opacity-70">{sub}</div>}
+          {link && (
+            <div className="text-[10px] font-medium text-primary/70 mt-0.5">{link.label} →</div>
+          )}
         </div>
-        {link && (
-          <div className="mt-1 text-[11px] font-medium text-primary/80">{link.label} →</div>
-        )}
       </CardContent>
     </Card>
   );
@@ -753,31 +755,33 @@ function HealthTile({ icon, label, value, hint, tone, loading, to, description }
 
   const content = (
     <Card className={cn("h-full border-none shadow-none transition-all", t.bg, to && "cursor-pointer hover:opacity-80")}>
-      <CardContent className="flex h-full flex-col justify-between p-4 pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-            <span className={t.text}>{icon}</span>
-            <span className="truncate">{label}</span>
-          </div>
-          {description && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 text-muted-foreground/50 cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-[200px] text-xs">
-                  {description}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+      <CardContent className="flex h-full items-center gap-3 p-3">
+        <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background/50", t.text)}>
+          {icon}
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <div className={cn("text-[24px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
-            {loading ? <span className="inline-block h-6 w-16 animate-pulse rounded bg-muted/20" /> : value}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] text-muted-foreground truncate leading-tight">{label}</span>
+            {description && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground/40 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[200px] text-xs">
+                    {description}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <div className={cn("text-[18px] font-semibold tabular-nums leading-none tracking-tight", t.text)}>
+              {loading ? <span className="inline-block h-5 w-12 animate-pulse rounded bg-muted/20" /> : value}
+            </div>
+            {hint && <div className="text-[10px] font-medium opacity-60 truncate">{hint}</div>}
           </div>
         </div>
-        {hint && <div className="mt-1 text-[11px] font-medium opacity-70 truncate">{hint}</div>}
       </CardContent>
     </Card>
   );

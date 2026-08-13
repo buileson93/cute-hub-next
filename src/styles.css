@@ -65,7 +65,9 @@
 }
 
 :root {
-  --radius: 1rem; /* 16px for card-level components */
+  --radius: 1rem; /* 16px */
+  --radius-control: 0.5rem; /* 8px */
+  --border-contrast: 0.08; /* 8% hair-line border */
 
   /* Motion tokens — GĐ1-01 */
   --duration-fast: 120ms;
@@ -106,8 +108,8 @@
   --destructive: oklch(0.75 0.17 60);          /* #FF8F00 — used for alerts/accent flame */
   --destructive-foreground: oklch(0 0 0);
 
-  --border: oklch(0.95 0.002 250);     /* Hairline faint border */
-  --input: oklch(0.95 0.002 250);
+  --border: oklch(0 0 0 / var(--border-contrast));
+  --input: oklch(0 0 0 / var(--border-contrast));
   --ring: oklch(0.46 0.22 264 / 0.45);
 
   --chart-1: oklch(0.46 0.22 264);             /* blue */
@@ -240,8 +242,8 @@
 /* GĐ1-05: Global focus-visible — ring hiển thị nhất quán cho a11y */
 :where(a, button, [role="button"], [role="link"], [role="menuitem"], [role="tab"], [role="option"], input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--color-ring);
-  outline-offset: 2px;
-  border-radius: calc(var(--radius) - 0.25rem);
+  outline-offset: 1px;
+  border-radius: var(--radius-control);
 }
 
 @media (prefers-reduced-motion: reduce) {

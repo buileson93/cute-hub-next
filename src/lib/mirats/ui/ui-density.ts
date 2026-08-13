@@ -4,14 +4,14 @@
  */
 export const UI_DENSITY = {
   // --- Spacing & Layout ---
-  PAGE_PADDING: "p-4 md:p-6 data-[density=compact]:p-3 md:data-[density=compact]:p-4",
-  SECTION_GAP: "gap-4 data-[density=compact]:gap-3",
-  HEADER_GAP: "gap-2 data-[density=compact]:gap-1.5",
+  PAGE_PADDING: "p-3 md:p-4 data-[density=comfortable]:p-4 md:data-[density=comfortable]:p-6",
+  SECTION_GAP: "gap-3 data-[density=comfortable]:gap-4",
+  HEADER_GAP: "gap-1.5 data-[density=comfortable]:gap-2",
 
   // --- AppShell specific ---
   APP_HEADER_H: "h-12 data-[density=comfortable]:h-14",
-  RAIL_W: "w-16 density-compact:w-[56px]",
-  SIDEBAR_W: "w-64 density-compact:w-[208px]",
+  RAIL_W: "w-[56px] data-[density=comfortable]:w-16",
+  SIDEBAR_W: "w-[208px] data-[density=comfortable]:w-64",
 
 
 

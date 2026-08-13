@@ -31,7 +31,7 @@ export function PageHeader({
 
   const hasSubtitle = typeof subtitle === "string" && subtitle.trim().length > 0;
   return (
-    <div data-testid="page-header" className="flex items-center justify-between min-h-[40px] gap-3">
+    <div data-testid="page-header" className="flex items-center justify-between h-10 gap-3">
       <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
         {Icon ? (
           <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />

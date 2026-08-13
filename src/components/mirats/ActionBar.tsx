@@ -42,28 +42,28 @@ export function ActionBar({
   return (
     <div className={cn("flex items-center gap-1.5", className)}>
       {onTao && (
-        <Button size="sm" onClick={onTao}>
-          <Plus className="h-4 w-4 mr-1" aria-hidden /> {NHAN.tao}
+        <Button size="sm" className="h-8 gap-1.5" onClick={onTao}>
+          <Plus className="h-4 w-4" aria-hidden /> {NHAN.tao}
         </Button>
       )}
       {onSua && (
-        <Button size="sm" variant="secondary" onClick={onSua}>
-          <Pencil className="h-4 w-4 mr-1" aria-hidden /> {NHAN.sua}
+        <Button size="sm" variant="secondary" className="h-8 gap-1.5" onClick={onSua}>
+          <Pencil className="h-4 w-4" aria-hidden /> {NHAN.sua}
         </Button>
       )}
       {onHoanThanh && (
-        <Button size="sm" variant="default" onClick={onHoanThanh}>
-          <CheckCircle2 className="h-4 w-4 mr-1" aria-hidden /> {NHAN.hoanThanh}
+        <Button size="sm" variant="default" className="h-8 gap-1.5" onClick={onHoanThanh}>
+          <CheckCircle2 className="h-4 w-4" aria-hidden /> {NHAN.hoanThanh}
         </Button>
       )}
       {onDong && (
-        <Button size="sm" variant="outline" onClick={onDong}>
-          <XCircle className="h-4 w-4 mr-1" aria-hidden /> {NHAN.dong}
+        <Button size="sm" variant="outline" className="h-8 gap-1.5" onClick={onDong}>
+          <XCircle className="h-4 w-4" aria-hidden /> {NHAN.dong}
         </Button>
       )}
       {onXoa && (
-        <Button size="sm" variant="destructive" onClick={onXoa}>
-          <Trash2 className="h-4 w-4 mr-1" aria-hidden /> {NHAN.xoa}
+        <Button size="sm" variant="destructive" className="h-8 gap-1.5" onClick={onXoa}>
+          <Trash2 className="h-4 w-4" aria-hidden /> {NHAN.xoa}
         </Button>
       )}
       {extra}
