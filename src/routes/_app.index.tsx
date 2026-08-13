@@ -362,7 +362,7 @@ function Dashboard() {
                   </div>
                   <div className="bg-muted/30 p-4 rounded-xl flex flex-col items-center">
                     <span className="text-[10px] font-bold uppercase text-muted-foreground">Nhóm hệ thống</span>
-                    <span className="text-2xl font-black text-primary">{scope.nhomHeThong.length}</span>
+                    <span className="text-2xl font-black text-primary">{scope.heThong.length}</span>
                   </div>
                 </div>
               </CardContent>

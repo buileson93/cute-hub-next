@@ -38,7 +38,7 @@ export function useUnifiedDashboardStats() {
     // 3. Phân loại tài sản (Asset Type)
     const assetTypeStats: Record<string, number> = {};
     devices.forEach(d => {
-      const type = d.loai_thiet_bi || "Khác";
+      const type = d.loai || "Khác";
       assetTypeStats[type] = (assetTypeStats[type] || 0) + 1;
     });
 
