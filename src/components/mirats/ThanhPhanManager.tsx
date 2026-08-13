@@ -159,15 +159,15 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
     });
   };
   const onThao = (v: ViTriChucNang) => {
-    setThaoTarget({
+    setOpTarget({
       heThongId,
       thanhPhanId: v.id,
       maThanhPhan: v.ma_thanh_phan ?? null,
       tenThanhPhan: v.ten,
-      viTriHienTaiId: v.vi_tri_id ?? null,
-      viTriHienTaiTen: null,
     });
+    setOpMode("thao");
   };
+
 
   return (
     <div className="space-y-3">
@@ -307,15 +307,23 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {canManage && (
                     <div className="flex w-full items-center gap-1 border-t pt-2 md:w-auto md:border-0 md:pt-0">
                       {!ngung && !tb && (
-                        <Button size="sm" variant="outline" onClick={() => setAssignTarget({ viTri: v })}>
+                        <Button size="sm" variant="outline" onClick={() => {
+                          setOpTarget({ heThongId, thanhPhanId: v.id, maThanhPhan: v.ma_thanh_phan, tenThanhPhan: v.ten, loaiYeuCau: v.loai_thiet_bi_yeu_cau });
+                          setOpMode("lap");
+                        }}>
                           <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp
                         </Button>
+
                       )}
                       {!ngung && tb && (
                         <>
-                          <Button size="sm" variant="outline" onClick={() => setAssignTarget({ viTri: v, dangLap: tb })}>
+                          <Button size="sm" variant="outline" onClick={() => {
+                            setOpTarget({ heThongId, thanhPhanId: v.id, maThanhPhan: v.ma_thanh_phan, tenThanhPhan: v.ten, loaiYeuCau: v.loai_thiet_bi_yeu_cau });
+                            setOpMode("thay");
+                          }}>
                             <Wrench className="mr-1 h-3.5 w-3.5" /> Thay thế
                           </Button>
+
                           <Button size="sm" variant="ghost" onClick={() => onThao(v)} disabled={thaoMut.isPending}>
                             <ArrowRightLeft className="mr-1 h-3.5 w-3.5" /> Tháo
                           </Button>
@@ -385,14 +393,14 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           onClose={() => setFormOpen(false)}
         />
       )}
-      {assignTarget && (
-        <AssignDialog
-          heThongId={heThongId}
-          viTri={assignTarget.viTri}
-          dangLap={assignTarget.dangLap}
-          onClose={() => setAssignTarget(null)}
+      {opMode && opTarget && (
+        <OperationDialog
+          mode={opMode}
+          target={opTarget}
+          onClose={() => setOpMode(null)}
         />
       )}
+
       <AlertDialog open={!!xoaTarget} onOpenChange={(o) => !o && setXoaTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -509,7 +517,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           </ul>
         </div>
       )}
-      <ThaoTaiSanDialog target={thaoTarget} onClose={() => setThaoTarget(null)} />
+      
     </div>
   );
 }
