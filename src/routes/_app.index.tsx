@@ -6,8 +6,9 @@ import { Icon } from "@/components/mirats/ui/Icon";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
 import { 
-  useDashboardBrief, useDashboardKpis, useUserAuditLog 
+  useDashboardBrief, useUserAuditLog 
 } from "@/lib/mirats/dashboard.functions";
+import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -72,7 +73,15 @@ export const Route = (createFileRoute("/_app/") as any)({
 
 function Dashboard() {
   const { profile } = useSession();
-  const scope = useScope();
+  const {
+    reliabilityAvail: reliability,
+    mttrKpi,
+    mtbfKpi,
+    healthStats,
+    lowHealthDevices,
+    pmKpi,
+    scope
+  } = useUnifiedDashboardStats();
   
   const statsQuery = useQuery({
     queryKey: ['completeness-stats'],
@@ -83,8 +92,6 @@ function Dashboard() {
     queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
   });
 
-  const pmKpi = usePmOnTimeKpi();
-  
   const completeness = (statsQuery.data as any) || {};
   const lowCompleteness = (overviewQuery.data as any)?.lowCompleteness || [];
   const tasks = (overviewQuery.data as any)?.tasks || [];
@@ -93,38 +100,6 @@ function Dashboard() {
   const audit = useUserAuditLog(5);
   
   const [activeTab, setActiveTab] = useUserPref("dashboard:main-chart-tab", "reliability");
-
-  const devices = scope.thietBi;
-  const incidents = scope.suCo;
-  
-  const reliability = useMemo(() => {
-    return availability({ 
-      assetCount: devices.length, 
-      windowHours: 720, // 30 days
-      incidents 
-    });
-  }, [devices.length, incidents]);
-
-  const mttrKpi = useMemo(() => mttr(incidents), [incidents]);
-  const mtbfKpi = useMemo(() => mtbf(incidents), [incidents]);
-
-  const healthStats = useMemo(() => {
-    const stats = { A: 0, B: 0, C: 0, D: 0, total: 0 };
-    devices.forEach(d => {
-      const h = healthDetail(d);
-      stats[h.xepLoai]++;
-      stats.total++;
-    });
-    return stats;
-  }, [devices]);
-
-  const lowHealthDevices = useMemo(() => {
-    return devices
-      .map(d => ({ device: d, health: healthDetail(d) }))
-      .filter(item => item.health.xepLoai === 'C' || item.health.xepLoai === 'D')
-      .sort((a, b) => a.health.score - b.health.score)
-      .slice(0, 5);
-  }, [devices]);
 
   const greeting = useMemo(() => {
     const h = new Date().getHours();
