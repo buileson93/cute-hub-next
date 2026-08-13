@@ -10,22 +10,22 @@ import { ThanhPhanRow } from "@/components/mirats/ThanhPhanTable";
 export const THANH_PHAN_PRESETS = [
   {
     id: "co-ban",
-    label: "Cơ bản",
+    ten: "Cơ bản",
     columns: ["ma", "ten", "nhomHeThong", "phanLoai", "heThong", "trangThai", "daLap", "thietBiMa"]
   },
   {
     id: "ky-thuat",
-    label: "Kỹ thuật",
+    ten: "Kỹ thuật",
     columns: ["ma", "ten", "model", "chungLoai", "nhaSanXuat", "pN", "thietBiSerial", "tinhTrangKyThuat"]
   },
   {
     id: "vong-doi",
-    label: "Vòng đời",
+    ten: "Vòng đời",
     columns: ["ma", "ten", "namSanXuat", "namKhaiThac", "ngayMua", "hanBaoHanh", "tyLeTuoiTho"]
   },
   {
     id: "quan-tri",
-    label: "Quản trị",
+    ten: "Quản trị",
     columns: ["ma", "ten", "maTaiSanBravo", "nhaCungCap", "taiSanDonViQuanLy", "viTri", "cheDoKdHc"]
   }
 ];

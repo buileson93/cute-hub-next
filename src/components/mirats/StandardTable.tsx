@@ -734,8 +734,8 @@ export function StandardTable<T>({
                           {group !== "Khác" && <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
                           {cols.map((col) => {
                             const isCurrentlyVisible = !prefs.isHidden(col.key);
-                            // Chặn việc ẩn cột cuối cùng
-                            const canToggle = !isCurrentlyVisible || shownCols.length > 1;
+                            // Chặn việc ẩn cột cuối cùng - Dùng allKeys và hidden Set để tính toán chính xác
+                            const canToggle = !isCurrentlyVisible || (allKeys.length - prefs.hidden.size > 1);
                             
                             return (
                               <DropdownMenuCheckboxItem

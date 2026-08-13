@@ -167,10 +167,10 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     setHiddenState(next);
     setIsCustomized(true);
     setOrderState((o) => {
-      persist({ order: o, hidden: [...next], presetId: activePreset, customized: true, layoutMode });
+      persist({ order: o, hidden: [...next], widths, presetId: activePreset, customized: true, layoutMode });
       return o;
     });
-  }, [persist, activePreset]);
+  }, [persist, activePreset, widths, layoutMode]);
 
   const reset = useCallback(() => {
     const o = reconcileOrder(undefined, allKeys);
