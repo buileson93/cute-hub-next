@@ -165,43 +165,61 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className="w-14 h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-3 flex transition-[width]">
+            <aside className={cn(
+              "h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-3 flex transition-[width]",
+              UI_DENSITY.RAIL_W
+            )}>
               <SidebarLogoRail />
-              <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-2">
+              <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1 data-[density=compact]:gap-1 comfortable:gap-2">
                 {railWorkspaces.map((ws) => (
-                  <button
-                    key={ws.id}
-                    onClick={() => gotoWorkspace(ws)}
-                    onPointerEnter={() => setHoveredWsId(ws.id)}
-                    className={cn(
-                      "group relative flex w-[48px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
-                      ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                    )}
-                  >
-                    <ws.icon className="h-5 w-5" />
-                    <span className="w-full truncate text-center leading-tight">{ws.short}</span>
-                    {ws.id === activeWs.id && (
-                      <motion.div 
-                        layoutId="active-ws"
-                        className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
-                      />
-                    )}
-                  </button>
+                  <Tooltip key={ws.id}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => gotoWorkspace(ws)}
+                        onPointerEnter={() => setHoveredWsId(ws.id)}
+                        className={cn(
+                          "group relative flex flex-col items-center justify-center rounded-xl transition-colors",
+                          "w-12 h-12 data-[density=compact]:w-11 data-[density=compact]:h-11 data-[density=compact]:rounded-[10px]",
+                          ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        )}
+                      >
+                        <ws.icon className="h-5 w-5 data-[density=compact]:h-[18px] data-[density=compact]:w-[18px]" />
+                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium data-[density=compact]:hidden">
+                          {ws.short}
+                        </span>
+                        {ws.id === activeWs.id && (
+                          <motion.div 
+                            layoutId="active-ws"
+                            className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
+                          />
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">{ws.label}</TooltipContent>
+                  </Tooltip>
                 ))}
               </nav>
               {adminWs && (
                 <div className="mt-auto pt-2 border-t border-sidebar-border">
-                  <button
-                    onClick={() => gotoWorkspace(adminWs)}
-                    onPointerEnter={() => setHoveredWsId(adminWs.id)}
-                    className={cn(
-                      "flex w-[48px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium transition-colors",
-                      adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                    )}
-                  >
-                    <adminWs.icon className="h-5 w-5" />
-                    <span className="w-full truncate text-center leading-tight">{adminWs.short}</span>
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => gotoWorkspace(adminWs)}
+                        onPointerEnter={() => setHoveredWsId(adminWs.id)}
+                        className={cn(
+                          "flex flex-col items-center justify-center rounded-xl transition-colors",
+                          "w-12 h-12 data-[density=compact]:w-11 data-[density=compact]:h-11 data-[density=compact]:rounded-[10px]",
+                          adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        )}
+                      >
+                        <adminWs.icon className="h-5 w-5 data-[density=compact]:h-[18px] data-[density=compact]:w-[18px]" />
+                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium data-[density=compact]:hidden">
+                          {adminWs.short}
+                        </span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">{adminWs.label}</TooltipContent>
+                  </Tooltip>
                 </div>
               )}
             </aside>
@@ -210,11 +228,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             <aside 
               className={cn(
                 "h-full shrink-0 flex-col border-r border-border bg-sidebar/40 flex transition-[width] duration-300 ease-in-out overflow-hidden",
-                (isCollapsed && !isHovered) ? "w-0 border-r-0" : "w-52"
+                (isCollapsed && !isHovered) ? "w-0 border-r-0" : UI_DENSITY.SIDEBAR_W
               )}
             >
               <div className={cn(
-                "flex h-12 items-center border-b px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
+                "flex items-center border-b px-3 data-[density=comfortable]:px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
+                UI_DENSITY.APP_HEADER_H,
                 (isCollapsed && !isHovered) && "opacity-0"
               )}>
                 {(hoveredWsId ? visibleWorkspaces.find(w => w.id === hoveredWsId) : activeWs)?.label}
@@ -230,7 +249,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex h-12 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
+            <header className={cn(
+              "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/90 px-3 data-[density=comfortable]:px-4 backdrop-blur-md md:px-6",
+              UI_DENSITY.APP_HEADER_H
+            )}>
+
                <div className="flex flex-1 items-center gap-4">
                   <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
                   <div className="hidden md:block"><TourButton /></div>
