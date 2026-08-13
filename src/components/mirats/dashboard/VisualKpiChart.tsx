@@ -82,12 +82,15 @@ export function VisualKpiChart({
                 </defs>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
+                    backgroundColor: 'hsl(var(--popover))', 
                     borderColor: 'hsl(var(--border))',
-                    fontSize: '10px',
-                    borderRadius: '8px',
-                    fontWeight: 'bold'
-                  }} 
+                    fontSize: '11px',
+                    borderRadius: '10px',
+                    fontWeight: 'bold',
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+                  }}
+                  itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                  formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, 'Giá trị']}
                 />
                 <Area 
                   type="monotone" 
@@ -105,12 +108,15 @@ export function VisualKpiChart({
                 <Tooltip 
                   cursor={{ fill: 'rgba(0,0,0,0.05)' }}
                   contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
+                    backgroundColor: 'hsl(var(--popover))', 
                     borderColor: 'hsl(var(--border))',
-                    fontSize: '10px',
-                    borderRadius: '8px',
-                    fontWeight: 'bold'
-                  }} 
+                    fontSize: '11px',
+                    borderRadius: '10px',
+                    fontWeight: 'bold',
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+                  }}
+                  itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                  formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, 'Giá trị']}
                 />
                 <Bar 
                   dataKey="value" 
@@ -128,12 +134,15 @@ export function VisualKpiChart({
                 <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                     <Tooltip 
                         contentStyle={{ 
-                            backgroundColor: 'hsl(var(--card))', 
+                            backgroundColor: 'hsl(var(--popover))', 
                             borderColor: 'hsl(var(--border))',
-                            fontSize: '10px',
-                            borderRadius: '8px',
-                            fontWeight: 'bold'
+                            fontSize: '11px',
+                            borderRadius: '10px',
+                            fontWeight: 'bold',
+                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
                         }} 
+                        itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
+                        formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, 'Giá trị']}
                     />
                     <Line 
                         type="monotone" 

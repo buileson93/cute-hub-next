@@ -65,6 +65,7 @@ function Dashboard() {
     mttrKpi,
     mtbfKpi,
     healthStats,
+    assetTypeStats,
     pmKpi,
     scope
   } = useUnifiedDashboardStats();
@@ -266,6 +267,57 @@ function Dashboard() {
               ]}
             />
 
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="p-4 pb-0">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Icon name="entity.system" size="tiny" className="text-primary" /> Phân loại hệ thống
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 p-4 overflow-hidden">
+                <div className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      layout="vertical"
+                      data={Object.entries(assetTypeStats)
+                        .map(([name, value]) => ({ name, value }))
+                        .sort((a, b) => b.value - a.value)
+                        .slice(0, 5)
+                      }
+                      margin={{ left: -20, right: 20 }}
+                    >
+                      <XAxis type="number" hide />
+                      <YAxis 
+                        dataKey="name" 
+                        type="category" 
+                        fontSize={10} 
+                        width={80}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip 
+                        cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--popover))', 
+                          borderColor: 'hsl(var(--border))',
+                          fontSize: '11px',
+                          borderRadius: '10px',
+                        }}
+                      />
+                      <Bar 
+                        dataKey="value" 
+                        fill="hsl(var(--primary))" 
+                        radius={[0, 4, 4, 0]} 
+                        barSize={12}
+                        isAnimationActive={true}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
               <CardHeader className="p-4 pb-0">
                 <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -291,6 +343,26 @@ function Dashboard() {
                         <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
                       </Link>
                     ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
+              <CardHeader className="p-4 pb-0">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Icon name="status.activity" size="tiny" className="text-primary" /> Trạng thái vận hành hệ thống
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 flex items-center justify-center">
+                <div className="grid grid-cols-2 gap-4 w-full">
+                  <div className="bg-muted/30 p-4 rounded-xl flex flex-col items-center">
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground">Tổng hệ thống</span>
+                    <span className="text-2xl font-black">{scope.heThong.length}</span>
+                  </div>
+                  <div className="bg-muted/30 p-4 rounded-xl flex flex-col items-center">
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground">Nhóm hệ thống</span>
+                    <span className="text-2xl font-black text-primary">{scope.nhomHeThong.length}</span>
                   </div>
                 </div>
               </CardContent>
