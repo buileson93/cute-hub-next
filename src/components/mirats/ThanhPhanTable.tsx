@@ -394,21 +394,22 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   return (
     <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-3" : "space-y-4 p-4 sm:p-6 lg:p-8"}>
       {!hideHeader && (
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3 overflow-hidden">
+          <div className="min-w-0 flex-1">
             <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-              <Component className="h-6 w-6 text-primary" /> Hệ thống — Thành phần & tài sản
+              <Component className="h-6 w-6 text-primary shrink-0" /> 
+              <span className="truncate">Hệ thống — Thành phần & tài sản</span>
               {editMode ? (
-                <Badge className="ml-1 gap-1 bg-primary/10 text-[11px] text-primary hover:bg-primary/15">
+                <Badge className="ml-1 gap-1 bg-primary/10 text-[11px] text-primary hover:bg-primary/15 shrink-0">
                   <Pencil className="h-3 w-3" /> Đang chỉnh sửa
                 </Badge>
               ) : (
-                <Badge variant="outline" className="ml-1 gap-1 border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-400">
+                <Badge variant="outline" className="ml-1 gap-1 border-amber-500/40 text-[11px] text-amber-700 dark:text-amber-400 shrink-0">
                   <Eye className="h-3 w-3" /> Chỉ tra cứu
                 </Badge>
               )}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground line-clamp-2 md:line-clamp-none">
               Bảng ở mức <span className="font-medium">thành phần hệ thống</span>: nhóm — hệ thống — thành phần — <span className="font-medium">tài sản đang lắp</span> (kế thừa serial, model, chủng loại, NSX, NCC) — vị trí — trạng thái. Thành phần chưa lắp tài sản thì các cột kế thừa để trống.
             </p>
           </div>
