@@ -151,7 +151,7 @@ function Dashboard() {
               data={trendData}
               type="area"
               color="#10b981"
-              status={reliability >= 95 ? 'normal' : 'warning'}
+              status={Number(reliability.result) >= 95 ? 'normal' : 'warning'}
               tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
             />
 
