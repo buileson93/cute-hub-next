@@ -373,11 +373,13 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
-    overscan: isTest ? Math.max(display.length, 100) : 10,
+    overscan: isTest ? 100 : 10,
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
+    observeElementRect: isTest ? (() => ({ width: 1000, height: 36 })) : undefined,
     ...virtualizerOptions,
   });
+
 
 
 
