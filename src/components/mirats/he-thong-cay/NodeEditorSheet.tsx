@@ -237,7 +237,7 @@ export function NodeEditorSheet({
                     ten, 
                     draft: !isRealNode(target.kind, target.ma),
                     userRoles: roles 
-                  });
+                  } as any);
                 }
               }} 
               disabled={saving || renameEntity.isPending || saveCell.isPending}
