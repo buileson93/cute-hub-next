@@ -443,25 +443,25 @@ function OverviewReport() {
                     lowHealthDevices.map(({ device, health }) => (
                       <tr key={device.ma_thiet_bi} className="hover:bg-muted/5 transition-colors">
                         <td className="px-4 py-3">
-                          <div className="font-bold">{device.ten}</div>
-                          <div className="text-[10px] text-muted-foreground">{device.ma_thiet_bi}</div>
+                          <div className="font-bold text-[13px]">{device.ten}</div>
+                          <div className="text-[11px] text-muted-foreground uppercase tracking-tighter">{device.ma_thiet_bi}</div>
                         </td>
                         <td className="px-4 py-3 text-center">
                           <span className={cn(
-                            "inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-white text-xs",
+                            "inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-white text-[12px]",
                             health.xepLoai === 'D' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]" : "bg-orange-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]"
                           )}>
                             {health.xepLoai}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-xs font-medium leading-relaxed">{health.khuyenNghi}</div>
+                          <div className="text-[12px] font-medium leading-relaxed">{health.khuyenNghi}</div>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <Link 
                             to="/qr/thiet-bi/$id" 
                             params={{ id: device.ma_thiet_bi } as any}
-                            className="text-xs font-bold text-primary hover:underline bg-primary/5 px-2 py-1 rounded"
+                            className="text-[11px] font-bold text-primary hover:underline bg-primary/5 px-2 py-1 rounded uppercase tracking-tighter"
                           >
                             Hồ sơ lý lịch →
                           </Link>
