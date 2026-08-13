@@ -3,15 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
-import { ResponsiveContainer, AreaChart, Area, Tooltip, BarChart, Bar } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, Tooltip, BarChart, Bar, LineChart, Line, Cell } from "recharts";
 
 interface VisualKpiChartProps {
   title: string;
   value: string | number;
   unit?: string;
   data: any[];
-  type?: 'area' | 'bar';
-  color?: string;
+  type?: 'area' | 'bar' | 'line';
+  color?: string | string[];
   icon?: string;
   height?: number;
   status?: 'normal' | 'attention' | 'warning' | 'danger';
@@ -76,8 +76,8 @@ export function VisualKpiChart({
               <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id={`gradient-${title.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor={color} stopOpacity={0}/>
+                    <stop offset="5%" stopColor={Array.isArray(color) ? color[0] : color} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={Array.isArray(color) ? color[0] : color} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <Tooltip 
@@ -92,13 +92,15 @@ export function VisualKpiChart({
                 <Area 
                   type="monotone" 
                   dataKey="value" 
-                  stroke={color} 
+                  stroke={Array.isArray(color) ? color[0] : color} 
                   strokeWidth={2}
                   fillOpacity={1} 
-                  fill={`url(#gradient-${title.replace(/\s+/g, '-')})`} 
+                  fill={`url(#gradient-${title.replace(/\s+/g, '-')})`}
+                  isAnimationActive={true}
+                  animationDuration={1000}
                 />
               </AreaChart>
-            ) : (
+            ) : type === 'bar' ? (
               <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                 <Tooltip 
                   cursor={{ fill: 'rgba(0,0,0,0.05)' }}
@@ -112,11 +114,37 @@ export function VisualKpiChart({
                 />
                 <Bar 
                   dataKey="value" 
-                  fill={color} 
                   radius={[4, 4, 0, 0]} 
                   barSize={12}
-                />
+                  isAnimationActive={true}
+                  animationDuration={1000}
+                >
+                    {data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={Array.isArray(color) ? color[index % color.length] : color} />
+                    ))}
+                </Bar>
               </BarChart>
+            ) : (
+                <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                    <Tooltip 
+                        contentStyle={{ 
+                            backgroundColor: 'hsl(var(--card))', 
+                            borderColor: 'hsl(var(--border))',
+                            fontSize: '10px',
+                            borderRadius: '8px',
+                            fontWeight: 'bold'
+                        }} 
+                    />
+                    <Line 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke={Array.isArray(color) ? color[0] : color} 
+                        strokeWidth={2}
+                        dot={false}
+                        isAnimationActive={true}
+                        animationDuration={1000}
+                    />
+                </LineChart>
             )}
           </ResponsiveContainer>
         </div>

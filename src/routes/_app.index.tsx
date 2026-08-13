@@ -150,7 +150,7 @@ function Dashboard() {
               icon="entity.security"
               data={trendData}
               type="area"
-              color="#10b981"
+              color={["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#d1fae5"]}
               status={Number(reliability.value) >= 95 ? 'normal' : 'warning'}
               tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
             />
@@ -161,7 +161,7 @@ function Dashboard() {
               icon="status.power"
               data={trendData.map(d => ({ ...d, value: Math.random() * 60 + 20 }))} // Giả lập dữ liệu MTTR theo tháng
               type="bar"
-              color="#3b82f6"
+              color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
               status="attention"
               tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
             />
@@ -173,7 +173,7 @@ function Dashboard() {
               value={`${formatKpiValue(mtbfKpi)}`}
               icon="entity.securityAlert"
               data={trendData.map(d => ({ ...d, value: Math.random() * 5 + 10 }))} // Giả lập dữ liệu MTBF
-              type="area"
+              type="line"
               color="#f59e0b"
               status="warning"
               tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
@@ -185,7 +185,7 @@ function Dashboard() {
               icon="status.success"
               data={trendData.map(d => ({ ...d, value: Math.random() * 20 + 80 }))} // Giả lập dữ liệu PM
               type="bar"
-              color="#8b5cf6"
+              color={["#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"]}
               status="normal"
               tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
             />
