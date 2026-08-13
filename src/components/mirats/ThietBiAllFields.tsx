@@ -11,6 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { RawTableWrapper } from "@/components/mirats/ui/RawTableWrapper";
 
 // Nhãn tiếng Việt cho toàn bộ cột vật lý của bảng thiet_bi (nguồn: schema DB).
 const FIELD_LABELS: Record<string, string> = {
@@ -241,15 +242,15 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
               <span className="w-1 h-3 bg-primary/40 rounded-full" />
               {s.title}
             </h3>
-            <div className="overflow-hidden rounded-md border bg-card">
-              <table className="w-full text-sm">
+            <RawTableWrapper stickyHeader={false} showShadows={false}>
+              <table>
                 <tbody>
                   {s.rows.map((r, i) => (
                     <tr key={r.key} className={cn(
-                      "group hover:bg-muted/50 transition-colors border-b last:border-0",
+                      "group transition-colors",
                       i % 2 === 0 ? "bg-background" : "bg-muted/20"
                     )}>
-                      <td className="w-1/3 min-w-[160px] border-r px-4 py-2.5 align-top">
+                      <td className="w-1/3 min-w-[160px] border-r align-top">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-foreground">{r.label}</span>
                           {r.isSnapshot && (
@@ -270,7 +271,7 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
                         </div>
                       </td>
                       <td className={cn(
-                        "px-4 py-2.5 align-top break-all font-medium",
+                        "align-top break-all font-medium",
                         (r.isFK || r.isHidden) ? "font-mono text-[11px] text-muted-foreground bg-muted/10" : "text-foreground",
                         r.isEmpty && "text-muted-foreground/40 italic font-normal"
                       )}>
@@ -280,7 +281,7 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </RawTableWrapper>
           </div>
         ))}
       </div>
