@@ -87,7 +87,7 @@ describe("StandardTable — Tương tác và Lọc", () => {
   it("lọc text hoạt động đúng", async () => {
     render(<StandardTable<Row> {...baseProps()} />);
     
-    // Mở bộ lọc
+    // Tìm button lọc đầu tiên (dùng để mở dropdown)
     const filterButtons = screen.getAllByRole("button").filter(b => 
       b.querySelector(".lucide-funnel") || 
       b.querySelector(".lucide-filter") ||
@@ -96,13 +96,15 @@ describe("StandardTable — Tương tác và Lọc", () => {
     );
     fireEvent.click(filterButtons[0]);
     
-    // Đợi dropdown hiển thị
+    // Kiểm tra xem button có click được không bằng cách tìm input trong body (DropdownMenu thường dùng portal)
     const searchInput = await screen.findByPlaceholderText("Tìm nội dung...");
     fireEvent.change(searchInput, { target: { value: "Sản phẩm A" } });
     
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
+    // Sản phẩm B sẽ bị ẩn bởi logic filter client-side
     expect(screen.queryByText("Sản phẩm B")).toBeNull();
   });
+
 
 
   it("áp dụng defaultHidden cho cột", () => {
