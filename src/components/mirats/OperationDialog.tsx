@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
-import { PackageOpen, Wrench, ArrowRightLeft, HardDrive, Info, AlertTriangle, History } from "lucide-react";
+import { PackageOpen, Wrench, ArrowRightLeft, HardDrive, Info, AlertTriangle, History, ArrowUpRight } from "lucide-react";
+
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -66,6 +67,19 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
   const [destLocationId, setDestLocationId] = useState("");
   const [ghiChu, setGhiChu] = useState("");
   const [lyDo, setLyDo] = useState("tháo");
+  const [lastOpResult, setLastOpResult] = useState<{ type: string; id: string; ma: string } | null>(null);
+
+  // Reset states when mode changes
+  useEffect(() => {
+    if (open) {
+      setPickedAssetId("");
+      setDestLocationId("");
+      setGhiChu("");
+      setLyDo("tháo");
+      setLastOpResult(null);
+    }
+  }, [open, mode, target?.thanhPhanId]);
+
   
   const isBusy = lapMut.isPending || thaoMut.isPending || thayMut.isPending || chuyenMut.isPending;
 
@@ -100,10 +114,11 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
           thietBiId: pickedAssetId, 
           ghiChu 
         });
-        
+        setLastOpResult({ type: "lap", id: pickedAssetId, ma: asset?.ma_thiet_bi || "" });
         toast.success(`Đã lắp ${asset?.ma_thiet_bi} vào ${tpLabel}`, {
           description: "Đã tạo bản ghi lịch sử tháo lắp."
         });
+
       } 
       else if (mode === "thao") {
         if (!current) { toast.error("Không có tài sản để tháo"); return; }
@@ -119,8 +134,9 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
           maThietBi: current.ma_thiet_bi,
           maThanhPhan: target.maThanhPhan
         });
-        
+        setLastOpResult({ type: "thao", id: current.thiet_bi_id, ma: current.ma_thiet_bi });
         toast.success(`Đã tháo ${current.ma_thiet_bi} khỏi ${tpLabel}`);
+
       }
       else if (mode === "thay") {
         if (!pickedAssetId) { toast.error("Vui lòng chọn tài sản mới"); return; }
@@ -137,8 +153,9 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
           maThietBiMoi: asset?.ma_thiet_bi,
           maThanhPhan: target.maThanhPhan
         });
-        
+        setLastOpResult({ type: "thay", id: pickedAssetId, ma: asset?.ma_thiet_bi || "" });
         toast.success(`Đã thay thế tài sản tại ${tpLabel}`);
+
       }
       else if (mode === "chuyen") {
         if (!pickedAssetId) { toast.error("Vui lòng chọn tài sản"); return; }
@@ -148,11 +165,15 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
           thanhPhanDich: target.thanhPhanId,
           ghiChu
         });
+        setLastOpResult({ type: "chuyen", id: pickedAssetId, ma: asset?.ma_thiet_bi || "" });
         toast.success(`Đã điều chuyển ${asset?.ma_thiet_bi} sang ${tpLabel}`);
       }
       
       onSuccess?.();
+      // Don't close immediately if we want to show the post-op view?
+      // For now, let's stick to the plan: close on success but we could show a "View History" link in toast.
       onClose();
+
     } catch (e: any) {
       toast.error(e.message || "Thao tác thất bại");
     }
