@@ -77,15 +77,15 @@ export async function renameEntity(input: RenameInput): Promise<void> {
   if (!id) throw new Error("Thiếu định danh bản ghi để đổi tên");
 
   if (input.draft) {
-    if (input.kind !== "nh") {
+    if (input.kind !== "nh" && input.kind !== "tb" && input.kind !== "ht") {
       throw new Error(
-        `Chỉ nhóm hệ thống (nh) có khái niệm nháp — không hỗ trợ draft cho kind=${input.kind}`,
+        `Không hỗ trợ draft cho kind=${input.kind}`,
       );
     }
     const { error } = await supabase
       .from("cay_node_edit")
       .upsert(
-        { kind: "nh", ma: id, ten } as never,
+        { kind: input.kind, ma: id, ten } as never,
         { onConflict: "kind,ma" },
       );
     if (error) throw error;
