@@ -377,9 +377,10 @@ export function StandardTable<T>({
     overscan: isTest ? 100 : 10,
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
-    observeElementRect: isTest ? (() => ({ width: 1000, height: 36 })) : undefined,
+    onChange: isTest ? () => {} : undefined,
     ...virtualizerOptions,
   });
+
 
 
 
