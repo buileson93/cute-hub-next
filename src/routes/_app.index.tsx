@@ -271,7 +271,6 @@ function Dashboard() {
               <Link to="/bao-tri" className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem lịch bảo trì →</Link>
             </div>
           </div>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50/30 rounded-2xl p-6 border border-blue-100/50">
