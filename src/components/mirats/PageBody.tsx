@@ -20,8 +20,8 @@ export function PageBody({ children, className, noPadding }: Props) {
     <div 
       className={cn(
         "flex w-full flex-col flex-1 overflow-auto",
-        !noPadding && "p-4 md:p-6 data-[density=compact]:p-3 md:data-[density=compact]:p-4",
-        "gap-4 data-[density=compact]:gap-3",
+        !noPadding && UI_DENSITY.PAGE_PADDING,
+        UI_DENSITY.SECTION_GAP,
         className
       )}
     >

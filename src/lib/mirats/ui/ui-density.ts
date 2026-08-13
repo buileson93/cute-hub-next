@@ -1,20 +1,33 @@
 /**
- * Token mật độ giao diện — dùng để đồng bộ padding/gap/scroll cho các trang.
+ * Token mật độ giao diện — nguồn sự thật duy nhất cho padding/gap/size.
+ * Các giá trị này hỗ trợ cả data-density="comfortable" và "compact".
  */
 export const UI_DENSITY = {
-  // Mặc định (Comfortable)
-  PAGE_PADDING: "p-4 md:p-6",
-  SECTION_GAP: "gap-4",
-  HEADER_GAP: "gap-2",
-  CARD_PADDING: "p-6",
-  
-  // Compact (Dùng qua CSS variables hoặc data-density="compact")
-  COMPACT: {
-    PAGE_PADDING: "p-3 md:p-4",
-    SECTION_GAP: "gap-3",
-    HEADER_GAP: "gap-1.5",
-    CARD_PADDING: "p-4",
-  }
+  // --- Spacing & Layout ---
+  PAGE_PADDING: "p-4 md:p-6 data-[density=compact]:p-3 md:data-[density=compact]:p-4",
+  SECTION_GAP: "gap-4 data-[density=compact]:gap-3",
+  HEADER_GAP: "gap-2 data-[density=compact]:gap-1.5",
+
+  // --- Cards ---
+  CARD_PADDING: "p-6 data-[density=compact]:p-3 md:data-[density=compact]:p-4",
+  CARD_HEADER: "p-6 data-[density=compact]:px-4 data-[density=compact]:pt-3 data-[density=compact]:pb-2",
+
+  // --- Tables ---
+  TABLE_ROW_H: "h-10 data-[density=compact]:h-9",
+  TABLE_CELL_PX: "px-2 data-[density=compact]:px-3",
+  TABLE_CELL_PY: "py-2 data-[density=compact]:py-1.5",
+  TABLE_MAX_H: "max-h-[calc(100vh-16rem)] data-[density=compact]:max-h-[calc(100vh-12rem)]",
+
+  // --- Controls & Icons ---
+  CONTROL_H: "h-9 data-[density=compact]:h-8",
+  ICON_SM: "h-4 w-4 data-[density=compact]:h-3.5 data-[density=compact]:w-3.5",
+  ICON_MD: "h-5 w-5 data-[density=compact]:h-4 data-[density=compact]:w-4",
+
+  // --- Typography (dùng qua utility hoặc class trực tiếp) ---
+  TEXT_BODY: "text-sm data-[density=compact]:text-[13px]",
+  TEXT_LABEL: "text-xs data-[density=compact]:text-[12px]",
 } as const;
 
 export type UiDensityKey = keyof typeof UI_DENSITY;
+export type UiDensityMode = "comfortable" | "compact";
+
