@@ -399,7 +399,7 @@ function Dashboard() {
             <Card className="md:col-span-1 shadow-sm">
               <CardHeader className="pb-2 border-b bg-muted/10">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-primary" /> Phân bố sức khoẻ (A/B/C/D)
+                  <Icon name="entity.activity" className="text-primary" /> Phân bố sức khoẻ (A/B/C/D)
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -441,7 +441,7 @@ function Dashboard() {
             <Card className="md:col-span-2 shadow-sm">
               <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
+                  <Icon name="entity.chart" className="text-primary" /> Phân tích xu hướng & Trạng thái
                 </CardTitle>
                 <Tabs value={activeTab} onValueChange={setActiveTab as any} className="h-8">
                   <TabsList className="h-8 p-0.5 bg-muted/50 border">
@@ -510,7 +510,7 @@ function Dashboard() {
           <Card className="shadow-sm overflow-hidden">
             <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600">
-                <ShieldAlert className="w-4 h-4" /> Danh sách thiết bị cần chú ý
+                <Icon name="entity.securityAlert" className="text-red-600" /> Danh sách thiết bị cần chú ý
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -572,18 +572,18 @@ function Dashboard() {
             <Card className="shadow-sm">
               <CardHeader className="pb-2 border-b bg-muted/10">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <User className="w-4 h-4 text-primary" /> Khu vực của tôi
+                  <Icon name="entity.user" className="text-primary" /> Khu vực của tôi
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center">
-                    <Trophy className="w-6 h-6 text-primary mb-2" />
+                    <Icon name="status.trophy" size="medium" className="text-primary mb-2" />
                     <div className="text-2xl font-black text-primary">120</div>
                     <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
                   </div>
                   <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 flex flex-col items-center justify-center text-center">
-                    <AlertCircle className="w-6 h-6 text-orange-600 mb-2" />
+                    <Icon name="status.error" size="medium" className="text-orange-600 mb-2" />
                     <div className="text-2xl font-black text-orange-600">{tasks.length}</div>
                     <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
                   </div>
@@ -614,7 +614,7 @@ function Dashboard() {
         <div className="hidden lg:block lg:col-span-1 border-l border-border pl-6 space-y-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" /> Nhật ký vận hành
+              <Icon name="entity.history" className="text-primary" /> Nhật ký vận hành
             </h3>
             <span className="text-[10px] text-muted-foreground uppercase font-medium bg-muted px-1.5 py-0.5 rounded">Live</span>
           </div>
