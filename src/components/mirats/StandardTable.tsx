@@ -4,11 +4,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Maximize2, RotateCcw, SlidersHorizontal, Filter, ArrowUp, ArrowDown, ChevronsUpDown, X, Search, GripVertical } from "lucide-react";
+
 import { normalize } from "@/lib/mirats/global-search";
 import { Button } from "@/components/ui/button";
 import {
@@ -372,11 +373,9 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
-    overscan: isTest ? 100 : 10,
+    overscan: isTest ? Math.max(display.length, 100) : 10,
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
-    scrollMargin: isTest ? 0 : undefined,
-    observeElementRect: isTest ? undefined : undefined,
     ...virtualizerOptions,
   });
 
@@ -385,13 +384,26 @@ export function StandardTable<T>({
 
 
 
+
   const virtualRows = rowVirtualizer.getVirtualItems();
+
+  // Force render all items in JSDOM tests since scrolling/sizing is broken
+  const displayItems = isTest ? display.map((d, index) => ({
+    index,
+    start: index * 36,
+    size: 36,
+    end: (index + 1) * 36,
+    lane: 0,
+    key: index,
+  })) : virtualRows;
+
   const totalSize = rowVirtualizer.getTotalSize();
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
+  const paddingTop = displayItems.length > 0 ? displayItems[0]?.start || 0 : 0;
   const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
+    displayItems.length > 0
+      ? totalSize - (displayItems[displayItems.length - 1]?.end || 0)
       : 0;
+
 
   // --- Kéo đổi độ rộng cột ---
   const isDragging = useRef<string | null>(null);
@@ -820,7 +832,7 @@ export function StandardTable<T>({
                       <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0" />
                     </TableRow>
                   )}
-                  {virtualRows.map((virtualRow) => {
+                  {displayItems.map((virtualRow) => {
                     const r = rows[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);

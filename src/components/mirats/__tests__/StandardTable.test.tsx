@@ -5,16 +5,11 @@ import { StandardTable, type StdColumn } from "../StandardTable";
 
 // Mock ResizeObserver properly for Vitest/JSDOM
 vi.stubGlobal('ResizeObserver', class ResizeObserver {
-  constructor(callback: any) {
-    // Tự động gọi callback với một mock entry để kích hoạt render
-    setTimeout(() => {
-      callback([{ contentRect: { width: 1000, height: 1000 } }]);
-    }, 0);
-  }
   observe() {}
   unobserve() {}
   disconnect() {}
 });
+
 
 
 
