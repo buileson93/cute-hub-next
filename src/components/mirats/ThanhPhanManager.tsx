@@ -43,7 +43,9 @@ import {
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { colorForThietBi } from "@/lib/mirats/multi-role-color";
 import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
+import { OperationDialog, type OperationMode } from "@/components/mirats/OperationDialog";
 import { sinhMaThanhPhanDuyNhat, nhanDienLoiTrungThietBi } from "@/lib/mirats/ma-thiet-bi";
+
 import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
 import { useMyPermissions, useCan } from "@/hooks/use-permissions";
 import { useIsMutating } from "@tanstack/react-query";
@@ -79,9 +81,10 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
 
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ViTriChucNang | null>(null);
-  const [assignTarget, setAssignTarget] = useState<{ viTri: ViTriChucNang; dangLap?: ThietBiDangLap } | null>(null);
+  const [opMode, setOpMode] = useState<OperationMode | null>(null);
+  const [opTarget, setOpTarget] = useState<any | null>(null);
   const [openLichSu, setOpenLichSu] = useState<string | null>(null);
-  const [thaoTarget, setThaoTarget] = useState<ThaoTaiSanTarget | null>(null);
+
 
   const ngungMut = useNgungViTri(heThongId);
   const xoaMut = useXoaViTri(heThongId);
