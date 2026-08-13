@@ -6,7 +6,12 @@ import {
   RefreshCw, RotateCcw, Undo2, ChevronRight, ChevronDown,
   Maximize2, SlidersHorizontal, Search, X, Check,
   Clock, Calendar, Download, Printer, Link as LinkIcon,
-  ShieldCheck, ShieldAlert, AlertCircle, HelpCircle
+  ShieldCheck, ShieldAlert, AlertCircle, HelpCircle,
+  Activity, PauseCircle, AlertOctagon, CalendarClock, CalendarX,
+  BadgeAlert, FileWarning, Flame, HeartPulse, Gauge, Wrench,
+  TrendingUp, TrendingDown, Repeat2, Radio, ClipboardCheck, ArrowRightLeft,
+  Sparkles, ArrowRight, Trophy, Zap, BarChart3, ListTree, GitFork, List,
+  ClipboardList
 } from "lucide-react";
 
 export const ICON_REGISTRY = {
@@ -23,6 +28,9 @@ export const ICON_REGISTRY = {
   "action.search": Search,
   "action.close": X,
   "action.confirm": Check,
+  "action.sync": ArrowRightLeft,
+  "action.repeat": Repeat2,
+  "action.next": ArrowRight,
 
   // --- Table Controls ---
   "table.sortAsc": ArrowUp,
@@ -45,6 +53,15 @@ export const ICON_REGISTRY = {
   "status.help": HelpCircle,
   "status.loading": RefreshCw,
   "status.undo": Undo2,
+  "status.critical": AlertOctagon,
+  "status.alert": BadgeAlert,
+  "status.warning_alt": FileWarning,
+  "status.emergency": Flame,
+  "status.health": HeartPulse,
+  "status.maintenance": Wrench,
+  "status.sparkle": Sparkles,
+  "status.trophy": Trophy,
+  "status.power": Zap,
 
   // --- Entities ---
   "entity.asset": HardDrive,
@@ -54,8 +71,22 @@ export const ICON_REGISTRY = {
   "entity.dashboard": LayoutDashboard,
   "entity.history": Clock,
   "entity.calendar": Calendar,
+  "entity.calendarClock": CalendarClock,
+  "entity.calendarX": CalendarX,
   "entity.security": ShieldCheck,
   "entity.securityAlert": ShieldAlert,
+  "entity.activity": Activity,
+  "entity.pause": PauseCircle,
+  "entity.gauge": Gauge,
+  "entity.trendingUp": TrendingUp,
+  "entity.trendingDown": TrendingDown,
+  "entity.radio": Radio,
+  "entity.check": ClipboardCheck,
+  "entity.chart": BarChart3,
+  "entity.tree": ListTree,
+  "entity.fork": GitFork,
+  "entity.list": List,
+  "entity.checklist": ClipboardList,
 } as const;
 
 export type IconName = keyof typeof ICON_REGISTRY;
