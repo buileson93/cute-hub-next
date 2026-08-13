@@ -365,26 +365,26 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const pageStart = (currentPage - 1) * pageSize;
 
   const ModeToggle = (
-    <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5">
+    <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5 shrink-0">
       <Button
         size="sm"
         variant={viewMode === "component" ? "default" : "ghost"}
-        className="h-7 gap-1.5 px-2 text-xs"
+        className="h-7 gap-1.5 px-2 text-xs shrink-0 whitespace-nowrap"
         onClick={() => setViewMode("component")}
         title="1 dòng = 1 thành phần hệ thống"
       >
         <LayoutGrid className="h-3.5 w-3.5" /> Theo thành phần
-        <Badge variant="secondary" className="ml-1 px-1 text-[10px]">{rows.length.toLocaleString("vi-VN")}</Badge>
+        <Badge variant="secondary" className="ml-1 h-4 min-w-[1rem] px-1 text-[10px]">{rows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
       <Button
         size="sm"
         variant={viewMode === "asset" ? "default" : "ghost"}
-        className="h-7 gap-1.5 px-2 text-xs"
+        className="h-7 gap-1.5 px-2 text-xs shrink-0 whitespace-nowrap"
         onClick={() => setViewMode("asset")}
         title="1 dòng = 1 tài sản, hiện số thành phần đang gắn"
       >
         <Package className="h-3.5 w-3.5" /> Theo tài sản
-        <Badge variant="secondary" className="ml-1 px-1 text-[10px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
+        <Badge variant="secondary" className="ml-1 h-4 min-w-[1rem] px-1 text-[10px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
     </div>
   );
