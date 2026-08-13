@@ -890,19 +890,22 @@ export function CommandPalette() {
         {aiEnabled && hasQuery && (
           <>
             <CommandGroup heading="Trợ lý AI">
-              <CommandItem
-                value={`ai-ask ${q}`}
-                onSelect={() => askAi(q)}
-              >
-                <SparklesIcon className="h-4 w-4 text-primary" />
-                <div className="min-w-0 flex-1">
-                  <div className="truncate">Hỏi MIRATS AI</div>
-                  <div className="truncate text-xs text-muted-foreground">“{q.trim()}”</div>
-                </div>
-                <span className="ml-auto shrink-0 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                  AI
-                </span>
-              </CommandItem>
+                <CommandItem
+                  value={`ai-ask ${q}`}
+                  onSelect={() => askAi(q)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-data-[selected=true]:bg-primary/20 transition-colors">
+                    <SparklesIcon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-0.5">
+                    <div className="truncate text-[13px] font-bold text-foreground">Hỏi MIRATS AI</div>
+                    <div className="truncate text-[11px] text-muted-foreground/80">“{q.trim()}”</div>
+                  </div>
+                  <span className="ml-auto shrink-0 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+                    AI
+                  </span>
+                </CommandItem>
             </CommandGroup>
             <CommandSeparator />
           </>
