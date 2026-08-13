@@ -5,7 +5,7 @@ import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { useLicensesData, type LicenseRow } from "@/lib/mirats/db-licenses";
 import type {
   ThietBi, GiayPhep, SuCo, BaoTri, HongHocThayThe, BanGiao,
-  SuKienThietBi, HeThong, ViTri, DonVi,
+  SuKienThietBi, HeThong, ViTri, DonVi, NhomHeThong,
 } from "@/lib/mirats/types";
 
 /**
@@ -32,6 +32,7 @@ export interface ScopeData {
   banGiao: BanGiao[];
   suKien: SuKienThietBi[];
   heThong: HeThong[];
+  nhomHeThong: NhomHeThong[];
   viTri: ViTri[];
   donVi: DonVi[];
   /** true nếu bản ghi thuộc phạm vi của người dùng hiện tại (dùng cho trang chi tiết). */
@@ -70,6 +71,9 @@ export function ScopeProvider({
       ma: h.ma, ten: h.ten, nhom: "",
       don_vi: dvMaById.get(h.donViId) ?? "", trang_thai: "", nam_dua_vao: 0,
     }));
+    const allNhomHeThong: NhomHeThong[] = (tax?.nhomList ?? []).map((n) => ({
+      ma: n.ma, ten: n.ten, linh_vuc: "",
+    }));
     const allViTri: ViTri[] = (tax?.viTriList ?? []).map((v) => ({
       ma: v.ma, ten: v.ten, don_vi: "", loai_vi_tri: "",
     }));
@@ -90,6 +94,7 @@ export function ScopeProvider({
         banGiao: ops.banGiao,
         suKien: [],
         heThong: allHeThong,
+        nhomHeThong: allNhomHeThong,
         viTri: allViTri,
         donVi: allDonVi,
         inScope,
@@ -119,6 +124,7 @@ export function ScopeProvider({
       banGiao: ops.banGiao.filter((b) => deviceSet.has(b.thiet_bi) || (!!u && b.don_vi_nhan === u)),
       suKien: [],
       heThong: allHeThong.filter((h) => !!u && h.don_vi === u),
+      nhomHeThong: allNhomHeThong,
       viTri: allViTri,
       donVi: allDonVi.filter((d) => !!u && d.ma === u),
       inScope,

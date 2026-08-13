@@ -35,7 +35,14 @@ export function useUnifiedDashboardStats() {
       healthStats.total++;
     });
 
-    // 3. Danh sách thiết bị sức khỏe thấp (C/D)
+    // 3. Phân loại tài sản (Asset Type)
+    const assetTypeStats: Record<string, number> = {};
+    devices.forEach(d => {
+      const type = (d as any)._loaiTbTen || d.loai || "Khác";
+      assetTypeStats[type] = (assetTypeStats[type] || 0) + 1;
+    });
+
+    // 4. Danh sách thiết bị sức khỏe thấp (C/D)
     const lowHealthDevices = devices
       .map(d => ({ device: d, health: healthDetail(d) }))
       .filter(item => item.health.xepLoai === 'C' || item.health.xepLoai === 'D')
@@ -48,6 +55,7 @@ export function useUnifiedDashboardStats() {
       mtbfKpi,
       healthStats,
       lowHealthDevices,
+      assetTypeStats,
       pmKpi,
       scope,
       assetCount: devices.length

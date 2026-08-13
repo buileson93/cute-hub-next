@@ -43,12 +43,14 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
               </Pie>
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'hsl(var(--card))', 
+                  backgroundColor: 'hsl(var(--popover))', 
                   borderColor: 'hsl(var(--border))',
-                  fontSize: '10px',
-                  borderRadius: '8px',
-                  fontWeight: 'bold'
+                  fontSize: '11px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
                 }} 
+                itemStyle={{ color: 'hsl(var(--popover-foreground))' }}
               />
               <Legend 
                 verticalAlign="bottom" 
