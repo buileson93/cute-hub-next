@@ -223,9 +223,9 @@ function compact(pairs: [string, string | null | undefined][]): PreviewField[] {
 
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="mt-0.5 truncate text-sm text-foreground">{value}</div>
+    <div className="min-w-0 flex flex-col gap-1">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{label}</div>
+      <div className="truncate text-[13px] font-semibold text-foreground/90">{value}</div>
     </div>
   );
 }
