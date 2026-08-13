@@ -42,9 +42,10 @@ function ThietBiDetailRoute() {
   const canEdit = canManage && editMode;
 
 
-  const { data: tb, isLoading } = useQuery({
+  const { data: tb, isLoading, error: queryError } = useQuery({
     queryKey: ["thiet-bi", ma],
     queryFn: async () => {
+      if (!ma) throw new Error("Mã thiết bị không hợp lệ");
       const { data, error } = await supabase
         .from("thiet_bi")
         .select(`
@@ -54,8 +55,12 @@ function ThietBiDetailRoute() {
           don_vi:don_vi_quan_ly_id(ten, ma)
         `)
         .eq("ma_thiet_bi", ma)
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      
+      if (error) {
+        console.error("Lỗi fetch thiết bị:", error);
+        throw error;
+      }
       
       // Khởi tạo các trường DbDevice giả định nếu thiếu
       const row = data as any;
