@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/mirats/ui/Icon";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, Tooltip, BarChart, Bar } from "recharts";
 
 interface VisualKpiChartProps {
   title: string;
@@ -14,6 +15,7 @@ interface VisualKpiChartProps {
   icon?: string;
   height?: number;
   status?: 'normal' | 'attention' | 'warning' | 'danger';
+  tooltip?: string;
 }
 
 export function VisualKpiChart({
@@ -24,8 +26,9 @@ export function VisualKpiChart({
   type = 'area',
   color = "hsl(var(--primary))",
   icon,
-  height = 200,
-  status = 'normal'
+  height = 140,
+  status = 'normal',
+  tooltip
 }: VisualKpiChartProps) {
   
   const statusColors = {
@@ -49,6 +52,13 @@ export function VisualKpiChart({
           <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
             {icon && <Icon name={icon as any} size="tiny" className={statusColors[status]} />}
             {title}
+            {tooltip && (
+              <AppTooltip noiDung={tooltip}>
+                <div className="cursor-help">
+                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/50" />
+                </div>
+              </AppTooltip>
+            )}
           </CardTitle>
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-black tabular-nums tracking-tighter">
