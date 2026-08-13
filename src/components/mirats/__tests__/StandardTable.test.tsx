@@ -43,9 +43,9 @@ describe("StandardTable — Hiển thị và Trạng thái", () => {
     render(
       <StandardTable<Row> 
         {...baseProps()} 
-        virtualizerOptions={{ count: rows.length }}
       />
     );
+
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
     expect(screen.getByText("Sản phẩm B")).not.toBeNull();
   });
@@ -87,9 +87,9 @@ describe("StandardTable — Tương tác và Lọc", () => {
         selectable={true} 
         selected={selected}
         setSelected={setSelected}
-        virtualizerOptions={{ count: rows.length }}
       />
     );
+
 
     
     const checkboxes = screen.getAllByRole("checkbox");
@@ -103,9 +103,9 @@ describe("StandardTable — Tương tác và Lọc", () => {
     render(
       <StandardTable<Row> 
         {...baseProps()} 
-        virtualizerOptions={{ count: rows.length }}
       />
     );
+
 
     
     // Tìm ô input lọc cho cột Tên

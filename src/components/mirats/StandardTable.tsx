@@ -372,10 +372,11 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
-    overscan: isTest ? Math.max(display.length, 100) : 10,
+    overscan: isTest ? 100 : 10,
     initialOffset: isTest ? 0 : undefined,
     ...virtualizerOptions,
   });
+
 
 
   const virtualRows = rowVirtualizer.getVirtualItems();
