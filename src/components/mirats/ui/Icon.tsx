@@ -11,7 +11,7 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 
 export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
   ({ name, size = "small", className, ...props }, ref) => {
-    const { density } = useDensity();
+    const [density] = useDensity();
     
     // Resolve icon component
     const LucideIcon = (ICON_REGISTRY as any)[name];
