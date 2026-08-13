@@ -1042,11 +1042,37 @@ export function StandardTable<T>({
                               </div>
                             )}
                           </TableCell>
-                        );
-                      })}
+                        })}
                       </TableRow>
-                    );
-                  })}
+                      
+                      {/* Dòng mở rộng (Expandable Row Content) */}
+                      {expandedRows.has(rid) && (
+                        <TableRow className="bg-muted/10 border-b border-border/20">
+                          <TableCell 
+                            colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)}
+                            className="p-4"
+                          >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                              {sortedColumns
+                                .filter(c => !shownCols.find(sc => sc.key === c.key)) // Lấy các cột đang bị ẩn
+                                .map(col => (
+                                  <div key={col.key} className="flex flex-col gap-1 min-w-0">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                                      {col.label}
+                                    </span>
+                                    <div className="text-[13px] break-words">
+                                      {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
                       <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
