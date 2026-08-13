@@ -72,9 +72,6 @@ export interface ColumnDef<T> {
 export type StdColumn<T> = ColumnDef<T>;
 
 
-/** @deprecated Use ColumnDef instead */
-export type StdColumn<T> = ColumnDef<T>;
-
 
 
 
