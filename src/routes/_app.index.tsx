@@ -204,256 +204,414 @@ function Dashboard() {
 
   return (
     <PageBody>
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
         <div className="flex-1">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60 mb-1">{greeting}</div>
-          <h1 className="text-3xl font-black tracking-tight font-sans text-foreground">
-            {profile?.ho_ten ?? "Dashboard"}
-          </h1>
+          <PageHeader
+            title={`${greeting} ${profile?.ho_ten ?? ""}`.trim()}
+            icon={LayoutDashboard}
+            description="Chào mừng bạn quay lại MIRATS. Dưới đây là tóm tắt các hoạt động quan trọng trong ngày."
+          />
         </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleExport}
-            className="h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
-          >
-            <Download className="w-3.5 h-3.5 mr-1.5" />
-            Export Overview
-          </Button>
-        </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleExport}
+          className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
+        >
+          <Download className="w-4 h-4 text-primary" />
+          <span className="hidden sm:inline font-bold text-xs uppercase tracking-wider">Xuất báo cáo</span>
+        </Button>
       </div>
 
-      {/* THÀNH PHẦN 1: DẢI NHỊP TIM (ẨN VÌ ĐÃ CÓ TRÊN HEADER) */}
-      <div className="hidden lg:block mb-4">
-        {/* Placeholder if needed or just remove */}
+      {/* THÀNH PHẦN 1: DẢI NHỊP TIM */}
+      <div className="mt-2 -mx-6">
+        <HeartBeatStrip />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
           {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[
-              { label: "Availability", value: formatKpiValue(reliability), icon: ShieldCheck, color: "text-emerald-600", bg: "bg-emerald-50/50" },
-              { label: "MTTR", value: formatKpiValue(mttrKpi), icon: Clock, color: "text-blue-600", bg: "bg-blue-50/50" },
-              { label: "MTBF", value: formatKpiValue(mtbfKpi), icon: TrendingUp, color: "text-orange-600", bg: "bg-orange-50/50" },
-              { label: "PM Đúng Hạn", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), icon: Wrench, color: "text-indigo-600", bg: "bg-indigo-50/50" },
-            ].map((k) => (
-              <div key={k.label} className={cn("flex flex-col gap-2 p-5 rounded-3xl border border-border/40 transition-all hover:shadow-lg hover:shadow-primary/5", k.bg)}>
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
-                  <k.icon className="w-3.5 h-3.5" /> {k.label}
+            <Card className="shadow-sm border-t-2 border-t-emerald-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Target: 99%
+                  </div>
                 </div>
-                <div className={cn("text-3xl font-black font-mono tracking-tighter", k.color)}>
-                  {k.value}
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(reliability)}
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* OPERATIONS HUB */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-muted/10 rounded-2xl p-6 border border-border/40">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-                <Flame className="w-4 h-4 text-red-500" /> Sự cố khẩn cấp
-              </div>
-              <div className="text-5xl font-black tabular-nums tracking-tighter text-red-600 mb-2">
-                {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
-              </div>
-              <Link to="/su-co" className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem chi tiết sự cố →</Link>
-            </div>
-            <div className="bg-muted/10 rounded-2xl p-6 border border-border/40">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-                <Wrench className="w-4 h-4 text-orange-500" /> Việc bảo trì
-              </div>
-              <div className="text-5xl font-black tabular-nums tracking-tighter text-orange-600 mb-2">
-                {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
-              </div>
-              <Link to="/bao-tri" className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem lịch bảo trì →</Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50/30 rounded-2xl p-6 border border-blue-100/50">
-              <div className="flex items-baseline gap-2 mb-4">
-                <div className="text-4xl font-black text-blue-600 tabular-nums font-mono tracking-tighter">{completeness.avg_thiet_bi || 0}%</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Data quality</div>
-              </div>
-              <div className="space-y-1">
-                {lowCompleteness.slice(0, 2).map((tb: any) => (
-                  <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded-lg hover:bg-white transition-colors">
-                    <span className="truncate flex-1 pr-2 font-medium">{tb.ten_thiet_bi}</span>
-                    <span className="font-bold text-red-500 tabular-nums font-mono">{tb.completeness_pct}%</span>
-                  </Link>
-                ))}
-              </div>
-              <Link to="/chat-luong-du-lieu" className="block mt-4 text-[10px] font-bold uppercase text-primary hover:underline">Chi tiết chất lượng →</Link>
-            </div>
-          </div>
-
-          {/* TẦNG 4: KHỐI PHÂN BỔ SỨC KHOẺ & BIỂU ĐỒ */}
-          {/* ANALYTICS SECTION */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-none border border-border/50 rounded-2xl">
-              <CardHeader className="pb-0 pt-6 px-6">
-                <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <BarChart3 className="w-3.5 h-3.5" /> Fleet Reliability & Health
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="h-[300px] pt-4 px-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={[
-                        { name: "Tốt (A)", value: healthStats.A, color: "oklch(0.65 0.15 160)" },
-                        { name: "Khá (B)", value: healthStats.B, color: "oklch(0.55 0.20 264)" },
-                        { name: "Trung bình (C)", value: healthStats.C, color: "oklch(0.75 0.12 90)" },
-                        { name: "Yếu (D)", value: healthStats.D, color: "oklch(0.65 0.15 25)" },
-                      ]}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={60}
-                      outerRadius={85}
-                      paddingAngle={5}
-                      stroke="none"
-                    >
-                      {[
-                        { color: "oklch(0.65 0.15 160)" },
-                        { color: "oklch(0.55 0.20 264)" },
-                        { color: "oklch(0.75 0.12 90)" },
-                        { color: "oklch(0.65 0.15 25)" },
-                      ].map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', fontSize: '11px', fontWeight: 'bold' }} 
-                    />
-                    <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Activity className="w-3 h-3" /> Availability
+                </div>
               </CardContent>
             </Card>
 
-            <Card className="shadow-none border border-border/50 rounded-2xl overflow-hidden">
-              <CardHeader className="pb-0 pt-6 px-6 flex flex-row items-center justify-between">
-                <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <TrendingUp className="w-3.5 h-3.5" /> Incident Trends
+            <Card className="shadow-sm border-t-2 border-t-blue-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Phản hồi
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(mttrKpi)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> MTTR (Bình quân)
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-orange-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Chu kỳ
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {formatKpiValue(mtbfKpi)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" /> MTBF (Trung bình)
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm border-t-2 border-t-indigo-500 overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                    Bảo trì
+                  </div>
+                </div>
+                <div className="text-2xl font-black tabular-nums tracking-tight">
+                  {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
+                  <Wrench className="w-3 h-3" /> PM đúng hạn
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
+                  <Flame className="w-4 h-4" /> Hôm nay có gì đang cháy?
                 </CardTitle>
-                <Link to="/su-co" className="text-[10px] font-bold text-primary/70 uppercase hover:text-primary transition-colors">Sổ sự cố →</Link>
               </CardHeader>
-              <CardContent className="h-[300px] pt-4 px-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={trendData}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.15} vertical={false} />
-                    <XAxis dataKey="thangHT" fontSize={9} axisLine={false} tickLine={false} fontWeight="bold" />
-                    <YAxis fontSize={9} axisLine={false} tickLine={false} allowDecimals={false} fontWeight="bold" />
-                    <Bar
-                      dataKey="Cao"
-                      stackId="a"
-                      fill="oklch(0.65 0.15 25)"
-                      radius={[2, 2, 0, 0]}
-                      barSize={16}
-                    />
-                    <Bar
-                      dataKey="Trung bình"
-                      stackId="a"
-                      fill="oklch(0.75 0.12 90)"
-                      radius={[0, 0, 0, 0]}
-                      barSize={16}
-                    />
-                    <Bar
-                      dataKey="Thấp"
-                      stackId="a"
-                      fill="oklch(0.55 0.20 264)"
-                      radius={[0, 0, 2, 2]}
-                      barSize={16}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
+              <CardContent>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <div className="text-4xl font-black text-red-600 tabular-nums">
+                    {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
+                </div>
+                <div className="space-y-2 min-h-[100px]">
+                  {brief.isLoading ? (
+                    <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
+                  ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
+                    <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium py-2">
+                      <CheckCircle2 className="w-4 h-4" /> Không có sự cố khẩn cấp
+                    </div>
+                  ) : (
+                    <div className="text-sm text-red-600/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
+                  )}
+                </div>
+                <div className="mt-4 pt-4 border-t border-red-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+                  <span>Nhấn để xem sự cố</span>
+                  <Link to="/su-co" className="text-primary hover:underline">Chi tiết →</Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-1 border-l-4 border-l-orange-500 shadow-sm transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-orange-600">
+                  <Wrench className="w-4 h-4" /> Tuần này phải làm gì?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <div className="text-4xl font-black text-orange-600 tabular-nums">
+                    {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
+                </div>
+                <div className="space-y-1 min-h-[100px]">
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                    <span>PM đến hạn hôm nay</span>
+                    <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
+                  </Link>
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                    <span>PM quá hạn chưa xong</span>
+                    <span className="font-bold text-red-600 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
+                  </Link>
+                </div>
+                <div className="mt-4 pt-4 border-t border-orange-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+                  <span>Lịch bảo trì</span>
+                  <Link to="/bao-tri" className="text-primary hover:underline">Xem tất cả →</Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-1 border-l-4 border-l-blue-500 shadow-sm transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600">
+                  <Sparkles className="w-4 h-4" /> Dữ liệu có sạch không?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <div className="text-4xl font-black text-blue-600 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
+                  <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
+                </div>
+                <div className="space-y-1 min-h-[100px]">
+                  <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
+                  {lowCompleteness.map((tb: any) => (
+                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
+                      <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
+                      <span className="font-bold text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                    </Link>
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t border-blue-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+                  <span>Tiến độ tổng</span>
+                  <Link to="/chat-luong-du-lieu" className="text-primary hover:underline">Chi tiết →</Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* TẦNG 4: KHỐI PHÂN BỔ SỨC KHOẺ & BIỂU ĐỒ */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="md:col-span-1 shadow-sm">
+              <CardHeader className="pb-2 border-b bg-muted/10">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-primary" /> Phân bố sức khoẻ (A/B/C/D)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  {[
+                    { label: "Sức khoẻ A - Tốt", count: healthStats.A, color: "#10b981", desc: "Vận hành ổn định" },
+                    { label: "Sức khoẻ B - Khá", count: healthStats.B, color: "#3b82f6", desc: "Có lỗi nhẹ/hao mòn" },
+                    { label: "Sức khoẻ C - TB", count: healthStats.C, color: "#f59e0b", desc: "Cần bảo trì sớm" },
+                    { label: "Sức khoẻ D - Yếu", count: healthStats.D, color: "#ef4444", desc: "Nguy cơ dừng máy" },
+                  ].map((s) => (
+                    <div key={s.label} className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                          <span className="text-xs font-bold uppercase tracking-tight">{s.label}</span>
+                        </div>
+                        <span className="text-sm font-black tabular-nums">{s.count}</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full transition-all duration-1000" 
+                          style={{ 
+                            width: `${scope.thietBi.length ? (s.count / scope.thietBi.length) * 100 : 0}%`,
+                            backgroundColor: s.color 
+                          }} 
+                        />
+                      </div>
+                      <div className="text-[10px] text-muted-foreground italic pl-4">{s.desc}</div>
+                    </div>
+                  ))}
+                  <div className="pt-2 mt-2 border-t text-center">
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Tổng số tài sản theo dõi</div>
+                    <div className="text-lg font-black">{scope.thietBi.length}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2 shadow-sm">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between border-b bg-muted/20">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary" /> Phân tích xu hướng & Trạng thái
+                </CardTitle>
+                <Tabs value={activeTab} onValueChange={setActiveTab as any} className="h-8">
+                  <TabsList className="h-8 p-0.5 bg-muted/50 border">
+                    <TabsTrigger value="trend" className="h-7 text-[11px] px-3">Xu hướng sự cố</TabsTrigger>
+                    <TabsTrigger value="status" className="h-7 text-[11px] px-3">Trạng thái tài sản</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </CardHeader>
+              <CardContent className="h-[350px] pt-6">
+                <Tabs value={activeTab}>
+                  <TabsContent value="trend" className="m-0 h-full">
+                    {trendQ.isLoading ? (
+                      <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={trendData}>
+                          <CartesianGrid strokeDasharray="3 3" opacity={0.3} vertical={false} />
+                          <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
+                          <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
+                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                          <Legend wrapperStyle={{ fontSize: 11, paddingTop: '10px' }} />
+                          {mucDoKeys.map((k) => (
+                            <Bar
+                              key={k}
+                              dataKey={k}
+                              stackId="s"
+                              fill={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
+                              radius={[2, 2, 0, 0]}
+                              barSize={24}
+                            />
+                          ))}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    )}
+                  </TabsContent>
+                  <TabsContent value="status" className="m-0 h-full">
+                    {statusQ.isLoading ? (
+                      <div className="h-full flex items-center justify-center text-muted-foreground animate-pulse">Đang tải biểu đồ...</div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={statusQ.data ?? []}
+                            dataKey="so_luong"
+                            nameKey="ten"
+                            innerRadius={60}
+                            outerRadius={100}
+                            paddingAngle={4}
+                          >
+                            {(statusQ.data ?? []).map((_, i) => (
+                              <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} stroke="white" strokeWidth={2} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                          <Legend verticalAlign="middle" align="right" layout="vertical" wrapperStyle={{ fontSize: 12, paddingLeft: '20px' }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
 
           {/* TẦNG 4.5: BẢNG CHI TIẾT SỨC KHOẺ THẤP (KHÔI PHỤC) */}
-          {/* FLEET MONITORING */}
-          <div className="bg-white/50 dark:bg-card/50 backdrop-blur-sm rounded-3xl border border-border/40 overflow-hidden">
-            <div className="px-6 py-5 border-b border-border/40 flex items-center justify-between bg-muted/5">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-red-500" /> Fleet Attention List
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-[13px]">
-                <tbody className="divide-y divide-border/20">
-                  {lowHealthDevices.length === 0 ? (
+          <Card className="shadow-sm overflow-hidden">
+            <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600">
+                <ShieldAlert className="w-4 h-4" /> Danh sách thiết bị cần chú ý
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/30 text-[10px] uppercase font-bold text-muted-foreground">
                     <tr>
-                      <td className="px-6 py-8 text-center text-muted-foreground italic text-xs">
-                        Fleet operations stable. No attention required.
-                      </td>
+                      <th className="px-4 py-3 text-left">Thiết bị</th>
+                      <th className="px-4 py-3 text-center">Sức khoẻ</th>
+                      <th className="px-4 py-3 text-left">Vấn đề chính</th>
+                      <th className="px-4 py-3 text-right">Hành động</th>
                     </tr>
-                  ) : (
-                    lowHealthDevices.map(({ device, health }) => (
-                      <tr key={device.ma_thiet_bi} className="group hover:bg-muted/30 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col gap-0.5">
+                  </thead>
+                  <tbody className="divide-y">
+                    {lowHealthDevices.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground italic">
+                          Tất cả tài sản hiện đang ở trạng thái tốt.
+                        </td>
+                      </tr>
+                    ) : (
+                      lowHealthDevices.map(({ device, health }) => (
+                        <tr key={device.ma_thiet_bi} className="hover:bg-muted/10 transition-colors">
+                          <td className="px-4 py-3">
+                            <div className="font-bold">{device.ten}</div>
+                            <div className="text-[10px] text-muted-foreground">{device.ma_thiet_bi}</div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={cn(
+                              "inline-flex items-center justify-center w-8 h-8 rounded-full font-black text-white text-xs",
+                              health.xepLoai === 'D' ? "bg-red-500" : "bg-orange-500 shadow-sm"
+                            )}>
+                              {health.xepLoai}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="text-xs">{health.khuyenNghi}</div>
+                          </td>
+                          <td className="px-4 py-3 text-right">
                             <Link 
                               to="/qr/thiet-bi/$id" 
                               params={{ id: device.ma_thiet_bi } as any}
-                              className="font-bold text-foreground hover:text-primary transition-colors"
+                              className="text-xs font-bold text-primary hover:underline"
                             >
-                              {device.ten}
+                              Chi tiết →
                             </Link>
-                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">{device.ma_thiet_bi}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-3">
-                            <div className="flex flex-col items-end">
-                              <span className={cn(
-                                "text-sm font-black font-mono tracking-tighter",
-                                health.xepLoai === 'D' ? "text-red-500" : "text-orange-500"
-                              )}>
-                                {health.score}%
-                              </span>
-                              <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">Health</span>
-                            </div>
-                            <div className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2",
-                              health.xepLoai === 'D' 
-                                ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-950/30 dark:border-red-900/50" 
-                                : "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-950/30 dark:border-orange-900/50"
-                            )}>
-                              {health.xepLoai}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* TẦNG 5: KHU VỰC CỦA TÔI */}
-          {/* COMPACT PERSONAL AREA */}
-          <div className="flex items-center justify-between py-6 border-t border-border/50">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 text-primary border border-primary/10">
-                <Trophy className="w-3.5 h-3.5" />
-                <span className="text-xl font-black font-mono leading-none tracking-tighter">120</span>
-                <span className="text-[9px] font-bold uppercase tracking-widest opacity-70">Gạch</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/5 text-orange-600 border border-orange-500/10">
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span className="text-xl font-black font-mono leading-none tracking-tighter">{tasks.length}</span>
-                <span className="text-[9px] font-bold uppercase tracking-widest opacity-70">Tasks</span>
-              </div>
-            </div>
-            <Link to="/gop-gach" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/80 hover:text-primary transition-colors border-b border-muted-foreground/30 hover:border-primary pb-0.5">
-              Personal Dashboard →
-            </Link>
+          <div className="pb-12">
+            <Card className="shadow-sm">
+              <CardHeader className="pb-2 border-b bg-muted/10">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" /> Khu vực của tôi
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center text-center">
+                    <Trophy className="w-6 h-6 text-primary mb-2" />
+                    <div className="text-2xl font-black text-primary">120</div>
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 flex flex-col items-center justify-center text-center">
+                    <AlertCircle className="w-6 h-6 text-orange-600 mb-2" />
+                    <div className="text-2xl font-black text-orange-600">{tasks.length}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-2">Nhiệm vụ nhập liệu gần đây</div>
+                  {tasks.length === 0 ? (
+                    <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
+                  ) : tasks.slice(0, 3).map((t: any) => (
+                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border group">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold shrink-0">
+                        {t.diem_thuong || 5}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate group-hover:text-primary transition-colors">{t.tieu_de}</div>
+                        <div className="text-[10px] text-muted-foreground italic">Thưởng {t.diem_thuong || 5} gạch</div>
+                      </div>
+                      <Link to="/gop-gach" className="text-[10px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">Làm ngay →</Link>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -465,7 +623,7 @@ function Dashboard() {
             </h3>
             <span className="text-[10px] text-muted-foreground uppercase font-medium bg-muted px-1.5 py-0.5 rounded">Live</span>
           </div>
-          <div className="h-[calc(100vh-200px)] min-h-[500px]">
+          <div className="h-[calc(100vh-250px)] min-h-[500px]">
             <LiveTimeline />
           </div>
         </div>

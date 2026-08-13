@@ -59,10 +59,10 @@ function TimelineItem({ item, isFirst }: { item: AuditTimelineItem; isFirst: boo
   // Choose icon based on action
   const getIcon = () => {
     switch (item.action) {
-      case 'INSERT': return <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/70" />;
-      case 'UPDATE': return <div className="w-1.5 h-1.5 rounded-full bg-primary/70" />;
-      case 'DELETE': return <div className="w-1.5 h-1.5 rounded-full bg-red-500/70" />;
-      default: return <div className="w-1.5 h-1.5 rounded-full bg-slate-400/70" />;
+      case 'INSERT': return <div className="w-2 h-2 rounded-full bg-emerald-500" />;
+      case 'UPDATE': return <div className="w-2 h-2 rounded-full bg-blue-500" />;
+      case 'DELETE': return <div className="w-2 h-2 rounded-full bg-red-500" />;
+      default: return <div className="w-2 h-2 rounded-full bg-slate-400" />;
     }
   };
 
@@ -76,13 +76,13 @@ function TimelineItem({ item, isFirst }: { item: AuditTimelineItem; isFirst: boo
         {getIcon()}
       </div>
 
-      <div className="flex flex-col gap-0.5">
-        <div className="text-[12px] leading-snug text-foreground/80 group-hover:text-primary transition-colors font-medium">
+      <div className="flex flex-col gap-1">
+        <div className="text-[13px] leading-snug text-foreground/90 group-hover:text-primary transition-colors">
           {item.description}
         </div>
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70">
-          <span className="font-semibold uppercase tracking-tighter bg-muted/30 px-1 rounded flex items-center gap-1">
-            <User className="w-2 h-2" />
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <span className="font-medium text-[10px] uppercase bg-muted/50 px-1 rounded flex items-center gap-1">
+            <User className="w-2.5 h-2.5" />
             {item.user_ho_ten || "Hệ thống"}
           </span>
           <span>•</span>
