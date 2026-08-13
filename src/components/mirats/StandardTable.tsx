@@ -182,13 +182,34 @@ export function StandardTable<T>({
     }
   }, [presets, activePreset, prefs.ready, prefs.isCustomized, prefs.activePreset]);
 
-  const isMobile = containerWidth > 0 && containerWidth < BP_PX.md;
-  
+  const viewMode = useMemo(() => {
+    if (containerWidth === 0) return "desktop";
+    if (containerWidth < UI_DENSITY.CONT_SM) return "mobile";
+    if (containerWidth < UI_DENSITY.CONT_MD) return "tablet";
+    return "desktop";
+  }, [containerWidth]);
+
+  const isMobile = viewMode === "mobile";
+
   // Sắp xếp cột theo thứ tự người dùng đã chọn
   const sortedColumns = useMemo(() => {
-    if (!tableKey) return columns;
+    const withPriority = columns.map((c, idx) => {
+      if (c.priority) return c;
+      // Quy tắc suy diễn: 
+      // - 2 cột đầu (hoặc ma/ten): primary
+      // - 3 cột tiếp theo: secondary
+      // - còn lại: detail
+      let priority: "primary" | "secondary" | "detail" = "detail";
+      const isCore = ["ma", "ten", "ma_thiet_bi", "ten_thiet_bi"].includes(c.key.toLowerCase());
+      if (isCore || idx < 2) priority = "primary";
+      else if (idx < 5) priority = "secondary";
+      
+      return { ...c, priority };
+    });
+
+    if (!tableKey) return withPriority;
     const order = prefs.order;
-    return [...columns].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+    return [...withPriority].sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
   }, [columns, tableKey, prefs.order]);
 
   const shownCols = useMemo(() => {
@@ -199,6 +220,10 @@ export function StandardTable<T>({
       // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn mọi nơi
       if (c.hidden) return false;
 
+      // Priority-based hiding:
+      // Tablet ẩn detail, Mobile chuyển sang Card (handled in render)
+      if (viewMode === "tablet" && c.priority === "detail") return false;
+
       // Tầng 2: Ẩn theo bề rộng màn hình (hideBelow) -> Chỉ ẩn trên UI
       if (!c.hideBelow) return true;
       const threshold = typeof c.hideBelow === "number" 
@@ -206,7 +231,8 @@ export function StandardTable<T>({
         : (BP_PX as any)[c.hideBelow] || BP_PX.md;
       return containerWidth >= threshold;
     });
-  }, [sortedColumns, tableKey, prefs.hidden, containerWidth]);
+  }, [sortedColumns, tableKey, prefs.hidden, containerWidth, viewMode]);
+
 
   // Sync visible keys ra ngoài nếu có yêu cầu
   useEffect(() => {
