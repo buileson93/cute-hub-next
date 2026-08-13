@@ -23,7 +23,7 @@ export const THANH_PHAN_PRESETS: ViewPreset[] = [
     id: "vong-doi",
     ten: "Vòng đời",
     moTa: "Thông tin thời gian khai thác, bảo hành và sức khỏe tài sản",
-    columns: ["ma", "ten", "namSanXuat", "namKhaiThac", "ngayMua", "hanBaoHanh", "tyLeTuoiTho"]
+    columns: ["ten", "namSanXuat", "namKhaiThac", "ngayMua", "hanBaoHanh", "tyLeTuoiTho"]
   },
   {
     id: "quan-tri",
