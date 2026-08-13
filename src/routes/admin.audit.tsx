@@ -489,7 +489,7 @@ function AdminAuditPage() {
   ];
 
 
-  type EnrichedAuditRow = ReturnType<typeof enriched[number]>;
+  
 
   const clearFilters = () => {
     setQ(""); setSeverityFilter("__all__"); setKindFilter("__all__");
