@@ -1183,43 +1183,15 @@ function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () 
 }
 
 function InlineTaiSanEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
-  const { data: dsThietBi = [], isLoading } = useThietBiChon();
-  const lapMut = useLapThietBi(row.heThongId);
-  const [pending, setPending] = useState<string>("");
-  const [thaoTarget, setThaoTarget] = useState<ThaoTaiSanTarget | null>(null);
+  const [op, setOp] = useState<{ mode: "lap" | "thao" | "thay" | "chuyen"; target: any } | null>(null);
 
-  const options = useMemo(
-    () =>
-      dsThietBi.map((t) => ({
-        value: t.id,
-        label: `${t.ma_thiet_bi} — ${t.ten_thiet_bi ?? ""}`.trim(),
-        hint: t.dangLap
-          ? `Đang lắp: ${t.viTriHienTai ?? "—"}${t.ma_serial ? " · SN " + t.ma_serial : ""}`
-          : t.ma_serial
-            ? `SN ${t.ma_serial}`
-            : undefined,
-      })),
-    [dsThietBi],
-  );
-
-  const busy = lapMut.isPending;
-
-  async function doLap(thietBiId: string) {
-    if (!thietBiId || busy) return;
-    if (row.daLap) {
-      toast.error("Thành phần đang có tài sản — bấm 'Tháo' trước rồi lắp mới");
-      setPending("");
-      return;
-    }
-    try {
-      await lapMut.mutateAsync({ thanhPhanId: row.id, thietBiId, lyDo: "Lắp nhanh từ bảng" });
-      toast.success("Đã lắp tài sản — kế thừa vị trí & đơn vị quản lý");
-      setPending("");
-      onChanged();
-    } catch (e) {
-      toast.error((e as Error).message || "Không lắp được");
-    }
-  }
+  const target = useMemo(() => ({
+    heThongId: row.heThongId,
+    thanhPhanId: row.id,
+    maThanhPhan: row.ma,
+    tenThanhPhan: row.ten,
+    viTriId: row.viTriId,
+  }), [row]);
 
   return (
     <div className="flex flex-col gap-1">
@@ -1231,45 +1203,44 @@ function InlineTaiSanEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: ()
       )}
       <div className="flex items-center gap-1">
         {row.daLap ? (
-          <div
-            className="flex h-7 w-[240px] items-center rounded-md border border-dashed border-muted-foreground/40 bg-muted/30 px-2 text-[11px] italic text-muted-foreground"
-            title="Bấm 'Tháo' để chọn vị trí đích cho tài sản cũ, sau đó mới lắp tài sản mới"
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 w-[240px] justify-start text-[11px] font-normal"
+            onClick={() => setOp({ mode: "thay", target })}
           >
-            Tháo trước khi lắp mới…
-          </div>
+            <Wrench className="mr-1.5 h-3 w-3" /> Thay thế tài sản...
+          </Button>
         ) : (
-          <Combobox
-            options={options}
-            value={pending}
-            onChange={(v) => { setPending(v); void doLap(v); }}
-            placeholder={isLoading ? "Đang tải…" : "Chọn tài sản để lắp…"}
-            searchPlaceholder="Tìm mã / tên / serial…"
-            emptyText="Không có tài sản phù hợp"
-            className="h-7 w-[240px] text-xs"
-          />
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 w-[240px] justify-start text-[11px] font-normal"
+            onClick={() => setOp({ mode: "lap", target })}
+          >
+            <PackageOpen className="mr-1.5 h-3 w-3" /> Lắp tài sản...
+          </Button>
         )}
         {row.daLap && (
           <Button
             size="sm"
             variant="ghost"
             className="h-7 gap-1 px-1.5 text-xs text-destructive hover:text-destructive"
-            disabled={busy}
-            onClick={() => setThaoTarget({
-              heThongId: row.heThongId,
-              thanhPhanId: row.id,
-              maThanhPhan: row.ma,
-              tenThanhPhan: row.ten,
-              viTriHienTaiId: row.viTriId,
-              viTriHienTaiTen: row.viTri || null,
-            })}
+            onClick={() => setOp({ mode: "thao", target })}
             title="Tháo tài sản khỏi thành phần"
           >
             <Unplug className="h-3.5 w-3.5" /> Tháo
           </Button>
         )}
-        {busy && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
       </div>
-      <ThaoTaiSanDialog target={thaoTarget} onClose={() => { setThaoTarget(null); onChanged(); }} />
+      {op && (
+        <OperationDialog
+          mode={op.mode}
+          target={op.target}
+          onClose={() => setOp(null)}
+          onSuccess={onChanged}
+        />
+      )}
     </div>
   );
 }
