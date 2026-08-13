@@ -1,9 +1,7 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ListTree, GitFork, List, Search as SearchIcon, Pencil, Activity, ClipboardList
-} from "lucide-react";
+import { Icon } from "@/components/mirats/ui/Icon";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
@@ -321,17 +319,17 @@ function HeThongCayPage() {
             <PageHeader
               title="Cây Hệ Thống"
               subtitle={tpCount > 0 ? `(${tpCount.toLocaleString("vi-VN")} thành phần)` : undefined}
-              icon={ListTree}
+              icon="entity.tree"
             />
 
 
             <Tabs value={display} onValueChange={handleDisplayChange}>
               <TabsList>
-                <TabsTrigger value="table" className="gap-2"><List className="h-4 w-4"/>Bảng</TabsTrigger>
-                <TabsTrigger value="tree" className="gap-2"><ListTree className="h-4 w-4"/>Cây</TabsTrigger>
-                <TabsTrigger value="mindmap" className="gap-2"><GitFork className="h-4 w-4"/>Sơ đồ</TabsTrigger>
-                <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
+                <TabsTrigger value="table" className="gap-2"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
+                <TabsTrigger value="tree" className="gap-2"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
+                <TabsTrigger value="mindmap" className="gap-2"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
+                <TabsTrigger value="health" className="gap-2"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
+                <TabsTrigger value="history" className="gap-2"><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -382,7 +380,7 @@ function HeThongCayPage() {
                 onClick={() => setEditMode(!editMode)}
                 className="gap-2"
               >
-                <Pencil className="h-4 w-4" />
+                <Icon name="action.edit" size="tiny" />
                 {editMode ? "Đang sửa" : "Chỉnh sửa"}
               </Button>
             )}
