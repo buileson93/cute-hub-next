@@ -30,11 +30,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Combobox } from "@/components/mirats/Combobox";
 import { supabase } from "@/integrations/backend/client";
 import {
-  useViTriChucNang, useThietBiDangLap, useThietBiRanh,
+  useViTriChucNang, useThietBiDangLap,
   useLuuViTri, useNgungViTri, useXoaViTri, useXoaViTriForce, useDemLichSuThanhPhan, useDoiThuTuViTri,
   useXemTruocXoaThanhPhan, useKhoiPhucThanhPhan, useThanhPhanDaXoa,
-  useLapThietBi, useThaoThietBi, useThayTheThietBi, useLyLichViTri,
-  rankEligibleDevices,
+  useLyLichViTri,
   type ViTriChucNang, type ThietBiDangLap,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import {
@@ -42,8 +41,8 @@ import {
   type ThanhPhanNode,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { colorForThietBi } from "@/lib/mirats/multi-role-color";
-import { ThaoTaiSanDialog, type ThaoTaiSanTarget } from "@/components/mirats/ThaoTaiSanDialog";
 import { OperationDialog, type OperationMode } from "@/components/mirats/OperationDialog";
+
 import { sinhMaThanhPhanDuyNhat, nhanDienLoiTrungThietBi } from "@/lib/mirats/ma-thiet-bi";
 
 import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
@@ -91,7 +90,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   const xoaForceMut = useXoaViTriForce(heThongId);
   const khoiPhucMut = useKhoiPhucThanhPhan(heThongId);
   const doiThuTuMut = useDoiThuTuViTri(heThongId);
-  const thaoMut = useThaoThietBi(heThongId);
+  
   const [xoaTarget, setXoaTarget] = useState<ViTriChucNang | null>(null);
   const [xoaReason, setXoaReason] = useState("");
   const { data: perms } = useMyPermissions();
@@ -324,7 +323,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                             <Wrench className="mr-1 h-3.5 w-3.5" /> Thay thế
                           </Button>
 
-                          <Button size="sm" variant="ghost" onClick={() => onThao(v)} disabled={thaoMut.isPending}>
+                          <Button size="sm" variant="ghost" onClick={() => onThao(v)}>
                             <ArrowRightLeft className="mr-1 h-3.5 w-3.5" /> Tháo
                           </Button>
                         </>
