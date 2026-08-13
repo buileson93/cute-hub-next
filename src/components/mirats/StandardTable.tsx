@@ -248,9 +248,16 @@ export function StandardTable<T>({
       const threshold = typeof c.hideBelow === "number" 
         ? c.hideBelow 
         : (BP_PX as any)[c.hideBelow] || BP_PX.md;
-      return containerWidth >= threshold;
+      const isShown = containerWidth >= threshold;
+      
+      // TRƯỜNG HỢP ĐẶC BIỆT: Nếu viewMode là tablet và cột là detail, 
+      // ta LUÔN ẩn nó đi để nhường chỗ cho nút mở rộng dòng.
+      if (viewMode === "tablet" && c.priority === "detail") return false;
+      
+      return isShown;
     });
   }, [sortedColumns, tableKey, prefs.hidden, containerWidth, viewMode]);
+
 
 
   // Sync visible keys ra ngoài nếu có yêu cầu
