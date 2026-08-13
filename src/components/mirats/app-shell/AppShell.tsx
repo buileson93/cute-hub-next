@@ -157,7 +157,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TooltipProvider delayDuration={300}>
         <div 
           data-density={density}
-          className="flex min-h-dvh w-full bg-gradient-to-br from-background via-background to-primary/[0.045] text-foreground"
+          className="flex min-h-dvh w-full bg-background text-foreground"
         >
           {/* Desktop Navigation Container */}
           <div 
@@ -170,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             {/* Rail (Desktop) */}
             <aside className={cn(
-              "h-full shrink-0 flex-col items-center border-r border-sidebar-border bg-sidebar py-3 flex transition-[width]",
+              "h-full shrink-0 flex-col items-center border-r border-border bg-sidebar py-3 flex transition-[width]",
               UI_DENSITY.RAIL_W
             )}>
               <SidebarLogoRail />
