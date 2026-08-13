@@ -166,7 +166,7 @@ function ThietBiDetailRoute() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20 pb-20 md:pb-0">
+    <div className="flex flex-1 flex-col bg-muted/20 pb-20 md:pb-0 min-h-screen">
       <div className="p-4 bg-background border-b sticky top-0 z-30">
         <PageHeader
           title={tb.ten_thiet_bi || ma}
