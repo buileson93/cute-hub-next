@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/backend/client";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllRows } from "@/lib/mirats/paginate";
