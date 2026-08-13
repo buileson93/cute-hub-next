@@ -1199,7 +1199,6 @@ export function StandardTable<T>({
                                 <TableCell
                                   key={c.key}
                                   scope={colIdx === 0 ? "row" : undefined}
-                                  scope={colIdx === 0 ? "row" : undefined}
                                 className={cn(
                                   c.cellClassName,
                                   density === "compact" ? "px-2 py-1" : density === "comfortable" ? "px-3 py-1.5" : "px-4 py-2",
