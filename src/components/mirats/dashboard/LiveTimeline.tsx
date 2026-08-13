@@ -43,7 +43,7 @@ export function LiveTimeline() {
   }
 
   return (
-    <ScrollArea className="h-full pr-4">
+    <ScrollArea className="h-[350px] pr-4">
       <div className="space-y-6 relative before:absolute before:inset-0 before:left-[15px] before:w-[1px] before:bg-border before:pointer-events-none">
         {data.map((item, idx) => (
           <TimelineItem key={item.id} item={item} isFirst={idx === 0} />

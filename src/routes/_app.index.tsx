@@ -141,8 +141,8 @@ function Dashboard() {
         <HeartBeatStrip />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-        <div className="lg:col-span-3 space-y-6">
+      <div className="space-y-6 mt-6">
+        <div className="w-full space-y-6">
           {/* TẦNG 1: BIỂU ĐỒ KPI ĐỒ HỌA (FIGMA STYLE) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <VisualKpiChart
@@ -317,8 +317,8 @@ function Dashboard() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
               <CardHeader className="p-4 pb-0">
                 <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
@@ -348,40 +348,37 @@ function Dashboard() {
               </CardContent>
             </Card>
             
-            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
               <CardHeader className="p-4 pb-0">
                 <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <Icon name="status.activity" size="tiny" className="text-primary" /> Trạng thái vận hành hệ thống
+                  <Icon name="status.activity" size="tiny" className="text-primary" /> Trạng thái vận hành
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-4 w-full">
+              <CardContent className="p-4 flex-1 flex items-center justify-center">
+                <div className="grid grid-cols-1 gap-4 w-full">
                   <div className="bg-muted/30 p-4 rounded-xl flex flex-col items-center">
-                    <span className="text-[10px] font-bold uppercase text-muted-foreground">Tổng hệ thống</span>
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground text-center">Tổng hệ thống</span>
                     <span className="text-2xl font-black">{scope.heThong.length}</span>
                   </div>
                   <div className="bg-muted/30 p-4 rounded-xl flex flex-col items-center">
-                    <span className="text-[10px] font-bold uppercase text-muted-foreground">Nhóm hệ thống</span>
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground text-center">Nhóm hệ thống</span>
                     <span className="text-2xl font-black text-primary">{scope.nhomHeThong.length}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
 
-        {/* CỘT PHẢI: LIVE TIMELINE */}
-        <div className="lg:col-span-1">
-          <Card className="shadow-sm h-full flex flex-col">
-            <CardHeader className="py-3 border-b bg-muted/5">
-              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
-                <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-0 overflow-hidden">
-              <LiveTimeline />
-            </CardContent>
-          </Card>
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="p-4 pb-0">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 flex-1 overflow-hidden">
+                <LiveTimeline />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </PageBody>

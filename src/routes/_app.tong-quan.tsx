@@ -168,8 +168,8 @@ function OverviewReport() {
         <HeartBeatStrip />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-        <div className="lg:col-span-3 space-y-6">
+      <div className="space-y-6 mt-6">
+        <div className="w-full space-y-6">
           {/* TẦNG 1: BIỂU ĐỒ KPI ĐỒ HỌA (FIGMA STYLE) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <VisualKpiChart
@@ -299,7 +299,7 @@ function OverviewReport() {
               ]}
             />
 
-            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full">
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
               <CardHeader className="p-4 pb-0">
                 <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ hoàn thiện
@@ -333,20 +333,19 @@ function OverviewReport() {
               </CardContent>
             </Card>
           </div>
-        </div>
 
-        {/* CỘT PHẢI: NHẬT KÝ */}
-        <div className="lg:col-span-1">
-          <Card className="shadow-sm h-full flex flex-col">
-            <CardHeader className="py-3 border-b bg-muted/5">
-              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
-                <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-0 overflow-hidden">
-              <LiveTimeline />
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+              <CardHeader className="p-4 pb-0">
+                <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 flex-1 overflow-hidden">
+                <LiveTimeline />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </PageBody>
