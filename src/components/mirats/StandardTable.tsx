@@ -1076,9 +1076,10 @@ export function StandardTable<T>({
 
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0" />
                     </TableRow>
                   )}
+
                 </>
               )}
             </TableBody>
