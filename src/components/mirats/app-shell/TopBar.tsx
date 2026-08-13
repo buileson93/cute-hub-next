@@ -39,7 +39,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <Input
             type="search"
             placeholder="Tìm tài sản, sự cố, hồ sơ..."
-            className="h-9 w-full cursor-pointer rounded-full bg-muted/50 pl-9 pr-4 text-sm focus-visible:ring-1 border-none shadow-none"
+            className="h-9 w-full cursor-pointer rounded-lg bg-[#F1F3F5] pl-9 pr-4 text-sm focus-visible:ring-1 border-none shadow-none transition-colors hover:bg-[#EBEDF0]"
             readOnly
             onClick={handleOpenSearch}
             onFocus={handleOpenSearch}

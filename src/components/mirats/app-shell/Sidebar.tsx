@@ -45,11 +45,12 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     to={item.route}
                     onClick={onNavigate}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200",
                       active 
-                        ? "bg-primary/10 text-primary shadow-[inset_0_0_10px_rgba(29,82,224,0.05)]" 
-                        : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
+                        ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
+                        : "text-muted-foreground hover:bg-black/5 hover:text-foreground",
                       collapsed && "justify-center px-0 py-2.5"
+
                     )}
                   >
                     <div className="relative">

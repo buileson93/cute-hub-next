@@ -203,31 +203,35 @@ function Dashboard() {
   }
 
   return (
-    <PageBody>
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
-        <div className="flex-1">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60 mb-1">{greeting}</div>
-          <h1 className="text-3xl font-black tracking-tight font-sans text-foreground">
-            {profile?.ho_ten ?? "Dashboard"}
-          </h1>
+    <PageBody className="bg-white">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Overview</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleExport}
-            className="h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
-          >
-            <Download className="w-3.5 h-3.5 mr-1.5" />
-            Export Overview
-          </Button>
+        <div className="flex items-center gap-3">
+          <div className="text-[13px] text-muted-foreground font-medium">Today <ChevronDown className="inline w-3 h-3 ml-1" /></div>
         </div>
       </div>
 
-      {/* THÀNH PHẦN 1: DẢI NHỊP TIM (ẨN VÌ ĐÃ CÓ TRÊN HEADER) */}
-      <div className="hidden lg:block mb-4">
-        {/* Placeholder if needed or just remove */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: "Availability", value: formatKpiValue(reliability), change: "+2.4%", icon: ShieldCheck, color: "bg-[#E3F2FD] text-[#1D52E0]" },
+          { label: "MTTR", value: formatKpiValue(mttrKpi), change: "-12.5%", icon: Clock, color: "bg-[#F3E5F5] text-[#9C27B0]" },
+          { label: "MTBF", value: formatKpiValue(mtbfKpi), change: "+5.1%", icon: TrendingUp, color: "bg-[#FFF3E0] text-[#E65100]" },
+          { label: "PM On-Time", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), change: "+1.2%", icon: Wrench, color: "bg-[#E8F5E9] text-[#2E7D32]" },
+        ].map((k) => (
+          <div key={k.label} className={cn("p-6 rounded-3xl border border-border/50 bg-white hover:shadow-md transition-shadow")}>
+            <div className="text-sm font-medium text-foreground mb-4">{k.label}</div>
+            <div className="flex items-end justify-between">
+              <div className="text-3xl font-bold tracking-tight">{k.value}</div>
+              <div className="flex items-center text-[11px] font-bold text-muted-foreground">
+                {k.change} <TrendingUp className="w-3 h-3 ml-1" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-3 space-y-6">
