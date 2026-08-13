@@ -34,6 +34,15 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { CodeBadge } from "@/components/mirats/CodeBadge";
+import { MauChip } from "@/components/mirats/MauChip";
+import { UserAvatar } from "@/components/mirats/UserAvatar";
+import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { fmtNgay, fmtVND, fmtSo } from "@/lib/mirats/format";
+import { Check, X as XIcon } from "lucide-react";
 
 
 
