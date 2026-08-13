@@ -233,19 +233,17 @@ function Dashboard() {
         <div className="lg:col-span-3 space-y-6">
           {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* METRIC BAR */}
-          <div className="grid grid-cols-4 gap-6 py-4 border-y border-border/50">
             {[
-              { label: "Availability", value: formatKpiValue(reliability), icon: ShieldCheck, color: "text-emerald-600" },
-              { label: "MTTR", value: formatKpiValue(mttrKpi), icon: Clock, color: "text-blue-600" },
-              { label: "MTBF", value: formatKpiValue(mtbfKpi), icon: TrendingUp, color: "text-orange-600" },
-              { label: "PM Đúng Hạn", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), icon: Wrench, color: "text-indigo-600" },
+              { label: "Availability", value: formatKpiValue(reliability), icon: ShieldCheck, color: "text-emerald-600", bg: "bg-emerald-50/50" },
+              { label: "MTTR", value: formatKpiValue(mttrKpi), icon: Clock, color: "text-blue-600", bg: "bg-blue-50/50" },
+              { label: "MTBF", value: formatKpiValue(mtbfKpi), icon: TrendingUp, color: "text-orange-600", bg: "bg-orange-50/50" },
+              { label: "PM Đúng Hạn", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), icon: Wrench, color: "text-indigo-600", bg: "bg-indigo-50/50" },
             ].map((k) => (
-              <div key={k.label} className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <div key={k.label} className={cn("flex flex-col gap-2 p-5 rounded-3xl border border-border/40 transition-all hover:shadow-lg hover:shadow-primary/5", k.bg)}>
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                   <k.icon className="w-3.5 h-3.5" /> {k.label}
                 </div>
-                <div className={cn("text-2xl font-black font-mono tracking-tight", k.color)}>
+                <div className={cn("text-3xl font-black font-mono tracking-tighter", k.color)}>
                   {k.value}
                 </div>
               </div>
