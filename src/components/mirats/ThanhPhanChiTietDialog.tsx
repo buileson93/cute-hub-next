@@ -89,9 +89,10 @@ export function ThanhPhanChiTietDialog({
   }) : null, [viTri, heThongId]);
 
   const handleOpSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["thanh-phan-chi-tiet", id] });
+    queryClient.invalidateQueries({ queryKey: ["thanh-phan-chi-tiet", viTri.id] });
     queryClient.invalidateQueries({ queryKey: ["thiet-bi-dang-lap", heThongId] });
   };
+
 
   // Quyền lắp/tháo/thay tài sản (thu hẹp theo phạm vi của tài khoản con).
   // canManage đã tính đủ quyền theo vai trò tổng; canAssign kiểm tra thêm
