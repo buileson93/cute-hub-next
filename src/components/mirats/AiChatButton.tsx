@@ -77,7 +77,7 @@ export function AiChatButton() {
           "fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full lg:bottom-6 lg:right-6",
           "bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground",
           "shadow-lg shadow-primary/25 ring-1 ring-primary/20 backdrop-blur",
-          "hover:shadow-xl hover:shadow-primary/30 transition-shadow",
+          "hover:shadow-xl hover:shadow-primary/20 transition-mirats-base",
         )}
       >
         <Sparkles className="h-5 w-5" strokeWidth={2} />
@@ -212,7 +212,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("ai")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "ai" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary",
+            tab === "ai" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <Sparkles className="h-3.5 w-3.5" /> Hỏi AI
@@ -222,7 +222,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("messages")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "messages" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary",
+            tab === "messages" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <MessagesSquare className="h-3.5 w-3.5" /> Tin nhắn
@@ -249,7 +249,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
                     onClick={() => setActiveId(c.id)}
                     className={cn(
                       "flex-1 truncate rounded px-1.5 py-1.5 text-left text-[11px] transition-colors",
-                      activeId === c.id ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                      activeId === c.id ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground transition-colors"
                     )}
                   >
                     <MessageSquareText className="mr-1 inline h-3 w-3 opacity-60" />

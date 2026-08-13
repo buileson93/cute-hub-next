@@ -179,13 +179,13 @@ function MindNode({ data }: { data: MindData }) {
     <div
       onDoubleClick={(e) => { e.stopPropagation(); startInline(); }}
       className={cn(
-        "group relative flex h-8 cursor-pointer items-center text-[11px] leading-none transition-all animate-fade-in",
+        "group relative flex h-8 cursor-pointer items-center text-[11px] leading-none transition-mirats-fast animate-fade-in",
         KIND_WIDTH[data.kind],
       )}
     >
       <div
         className={cn(
-          "relative flex h-full w-full items-center gap-1.5 overflow-hidden rounded-md border border-l-2 px-2 pr-2 backdrop-blur-[1px] transition-all hover:border-primary/60 hover:shadow-sm",
+          "relative flex h-full w-full items-center gap-1.5 overflow-hidden rounded-md border border-l-2 px-2 pr-2 backdrop-blur-[1px] transition-mirats-fast hover:border-primary/60 hover:bg-muted/40",
         KIND_STYLE[data.kind],
         data.tone,
         data.dim && "opacity-20 saturate-0",
