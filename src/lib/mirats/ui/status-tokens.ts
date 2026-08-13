@@ -194,10 +194,10 @@ export function getPhuongAnHongHocToken(key: string | null) {
  * Lấy token giao diện cho loại bàn giao.
  */
 export const LOAI_BAN_GIAO_TOKEN = {
-  "Cấp phát": { class: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-300" },
-  "Thu hồi": { class: "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-500/20 dark:text-orange-300" },
-  "Luân chuyển": { class: "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:bg-blue-500/20 dark:text-blue-300" },
-  "Mượn tạm": { class: "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-300" },
+  "Cấp phát": { class: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-300", icon: "status.success" },
+  "Thu hồi": { class: "bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-500/20 dark:text-orange-300", icon: "entity.history" },
+  "Luân chuyển": { class: "bg-blue-500/10 text-blue-700 border-blue-500/20 dark:bg-blue-500/20 dark:text-blue-300", icon: "action.link" },
+  "Mượn tạm": { class: "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-300", icon: "entity.calendar" },
 } as const;
 
 export function getLoaiBanGiaoToken(key: string | null) {
@@ -209,10 +209,10 @@ export function getLoaiBanGiaoToken(key: string | null) {
  * Lấy token giao diện cho xếp loại tuổi thọ (A/B/C/D).
  */
 export const XEP_LOAI_HEALTH_TOKEN = {
-  A: { class: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20", hex: "#10b981" },
-  B: { class: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20", hex: "#3b82f6" },
-  C: { class: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20", hex: "#f59e0b" },
-  D: { class: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20", hex: "#ef4444" },
+  A: { class: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20", hex: "#10b981", icon: "status.success" },
+  B: { class: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20", hex: "#3b82f6", icon: "status.info" },
+  C: { class: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20", hex: "#f59e0b", icon: "status.warning" },
+  D: { class: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20", hex: "#ef4444", icon: "status.danger" },
 } as const;
 
 export function getXepLoaiHealthToken(key: string | null) {
