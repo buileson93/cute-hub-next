@@ -9,12 +9,7 @@ import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { 
-  Maximize2, RotateCcw, SlidersHorizontal, Filter, 
-  ArrowUp, ArrowDown, ChevronsUpDown, X, Search, 
-  GripVertical, Columns, LayoutGrid, Type, 
-  ChevronRight, ChevronDown, MoreVertical 
-} from "lucide-react";
+import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
 
 import { normalize } from "@/lib/mirats/global-search";
@@ -802,7 +797,7 @@ export function StandardTable<T>({
                   onClick={() => clearCat(key)}
                   className="hover:text-destructive transition-colors"
                 >
-                  <X className="h-3 w-3" />
+                  <Icon name="action.close" size="tiny" />
                 </button>
               </Badge>
             );
@@ -901,14 +896,14 @@ export function StandardTable<T>({
                           className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
                           onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
                         >
-                          {expandedRows.has(rid) ? (
+                        {expandedRows.has(rid) ? (
                             <>
-                              <ChevronDown className="h-3.5 w-3.5" />
+                              <Icon name="table.collapse" size="tiny" />
                               <span>Thu gọn</span>
                             </>
                           ) : (
                             <>
-                              <ChevronRight className="h-3.5 w-3.5" />
+                              <Icon name="table.expand" size="tiny" />
                               <span>Xem thêm ({detailCols.length})</span>
                             </>
                           )}
