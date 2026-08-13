@@ -232,81 +232,46 @@ function Dashboard() {
         <div className="lg:col-span-3 space-y-6">
           {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="shadow-sm border-t-2 border-t-emerald-500 overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Target: 99%
-                  </div>
+          {/* METRIC BAR */}
+          <div className="grid grid-cols-4 gap-6 py-4 border-y border-border/50">
+            {[
+              { label: "Availability", value: formatKpiValue(reliability), icon: ShieldCheck, color: "text-emerald-600" },
+              { label: "MTTR", value: formatKpiValue(mttrKpi), icon: Clock, color: "text-blue-600" },
+              { label: "MTBF", value: formatKpiValue(mtbfKpi), icon: TrendingUp, color: "text-orange-600" },
+              { label: "PM Đúng Hạn", value: pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result), icon: Wrench, color: "text-indigo-600" },
+            ].map((k) => (
+              <div key={k.label} className="flex flex-col gap-1">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <k.icon className="w-3.5 h-3.5" /> {k.label}
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
-                  {formatKpiValue(reliability)}
+                <div className={cn("text-2xl font-black font-mono tracking-tight", k.color)}>
+                  {k.value}
                 </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Activity className="w-3 h-3" /> Availability
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            ))}
+          </div>
 
-            <Card className="shadow-sm border-t-2 border-t-blue-500 overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-                    <Zap className="w-5 h-5" />
-                  </div>
-                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Phản hồi
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
-                  {formatKpiValue(mttrKpi)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Clock className="w-3 h-3" /> MTTR (Bình quân)
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm border-t-2 border-t-orange-500 overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
-                    <ShieldAlert className="w-5 h-5" />
-                  </div>
-                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Chu kỳ
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
-                  {formatKpiValue(mtbfKpi)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" /> MTBF (Trung bình)
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm border-t-2 border-t-indigo-500 overflow-hidden group">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                    Bảo trì
-                  </div>
-                </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
-                  {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
-                  <Wrench className="w-3 h-3" /> PM đúng hạn
-                </div>
-              </CardContent>
-            </Card>
+          {/* OPERATIONS HUB */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-muted/10 rounded-2xl p-6 border border-border/40">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <Flame className="w-4 h-4 text-red-500" /> Sự cố khẩn cấp
+              </div>
+              <div className="text-5xl font-black tabular-nums tracking-tighter text-red-600 mb-2">
+                {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
+              </div>
+              <Link to="/su-co" className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem chi tiết sự cố →</Link>
+            </div>
+            <div className="bg-muted/10 rounded-2xl p-6 border border-border/40">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-orange-500" /> Việc bảo trì
+              </div>
+              <div className="text-5xl font-black tabular-nums tracking-tighter text-orange-600 mb-2">
+                {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
+              </div>
+              <Link to="/bao-tri" className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem lịch bảo trì →</Link>
+            </div>
+          </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
