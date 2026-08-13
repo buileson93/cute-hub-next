@@ -16,33 +16,29 @@ Dựa trên `src/lib/mirats/ui/status-tokens.ts`, thiết lập bảng quy đổ
 
 | Class cũ | Dòng | Ý nghĩa thực | Token / Thay thế |
 | :--- | :--- | :--- | :--- |
-| `bg-emerald-50 text-emerald-600` | 208, 211 | Availability (Tốt) | Bỏ màu nền, dùng icon/chữ default. |
+| `bg-emerald-50 text-emerald-600` | 208, 211 | Availability (Tốt) | Bỏ màu nền, dùng icon/chữ mặc định. |
 | `bg-blue-50 text-blue-600` | 227, 230 | MTTR (Thông tin) | **Cần chú ý** (Blue token). |
-| `bg-orange-50 text-orange-600` | 246, 249 | MTBF (Cảnh báo) | **Cảnh báo** (Amber/Orange token). |
-| `bg-indigo-50 text-indigo-600` | 265, 268 | PM (Thông tin) | Bỏ màu trang trí (Indigo). |
-| `text-red-600`, `border-l-red-500` | 283-291 | Sự cố khẩn | **Nguy hiểm** (Red token). Bỏ border-l-4. |
-| `text-orange-600`, `border-l-orange-50` | 314-322 | Bảo trì | **Cảnh báo** (Amber token). Bỏ border-l-4. |
-| `text-blue-600`, `border-l-blue-500` | 344-352 | Chất lượng dữ liệu | **Cần chú ý** (Blue token). Bỏ border-l-4. |
+| `bg-orange-50 text-orange-600` | 246, 249 | MTBF (Cảnh báo) | **Cảnh báo** (Amber token). |
+| `bg-indigo-50 text-indigo-600` | 265, 268 | PM (Thông tin) | Bỏ màu nền, dùng icon/chữ mặc định. |
+| `text-red-600`, `border-l-red-500` | 283-291 | Sự cố khẩn | **Nguy hiểm** (Red token). Bỏ border-l-4, dùng viền 2px. |
+| `text-orange-600`, `border-l-orange-500` | 314-322 | Bảo trì | **Cảnh báo** (Amber token). Bỏ border-l-4, dùng viền 2px. |
+| `text-blue-600`, `border-l-blue-500` | 344-352 | Chất lượng dữ liệu | **Cần chú ý** (Blue token). Bỏ border-l-4, dùng viền 2px. |
 | `bg-orange-500/5` | 560 | Widget Task | Đồng bộ với token **Cảnh báo**. |
 
 ## 3. Danh sách Loại bỏ & Tinh gọn
 - **Loại bỏ hoàn toàn**:
-  - `border-l-4`: Thay bằng viền 1px hoặc dot nhỏ để tinh gọn (Apple-like).
-  - Các màu nền Tailwind thô (`bg-xx-50`): Thay bằng nền opacity thấp (5%) để hoạt động tốt cả Dark/Light.
-  - Màu Indigo/Emerald dùng làm trang trí cho KPI ổn định.
+  - `border-l-4`: Thay bằng viền mảnh 2px hoặc dải màu 2px bên trái (relative position) để tinh gọn.
+  - Các màu nền Tailwind thô (`bg-xx-50`): Thay bằng nền opacity thấp (5%) hoặc bỏ hẳn.
+  - Màu Indigo/Emerald dùng làm trang trí cho KPI đang ở trạng thái tốt.
 - **Quy tắc hiển thị**:
-  - KPI Availability (99%): Chỉ dùng màu khi nó < 95% (Nguy hiểm) hoặc < 98% (Cảnh báo). Mặc định không màu.
-  - Các số liệu trong `Brief hôm nay`: Chỉ tô màu con số nếu có dữ liệu khẩn cấp (>0).
+  - KPI Availability: Mặc định không màu nếu đạt Target.
+  - Các số liệu trong `Brief hôm nay`: Chỉ tô màu khi có dữ liệu cần chú ý/nguy hiểm (>0).
 
 ## 4. Các bước thực hiện
-1. **Refactor `_app.index.tsx`**: Thay thế các class thô bằng class từ `XEP_LOAI_HEALTH_TOKEN` hoặc `MUC_DO_SU_CO_TOKEN`.
-2. **Đồng bộ `_app.tong-quan.tsx`**: Áp dụng chung một bộ quy tắc tiết chế.
-3. **Cập nhật CSS toàn cục**: Đảm bảo các nền `bg-xxx-500/5` hiển thị sạch trên cả nền trắng và nền tối của Card.
-4. **Kiểm tra**:
-   - Chế độ sáng: Màu nhạt, thanh thoát.
-   - Chế độ tối: Không bị chói mắt (vấn đề `bg-blue-50`), độ tương phản chữ đạt chuẩn AA.
+1. **Refactor `_app.index.tsx`**: Thay thế các class thô bằng class từ `XEP_LOAI_HEALTH_TOKEN` hoặc `MUC_DO_SU_CO_TOKEN` (Amber/Red/Blue).
+2. **Refactor `_app.tong-quan.tsx`**: Đồng bộ logic màu sắc để đảm bảo tính nhất quán giữa hai trang dashboard.
+3. **Kiểm tra Dark Mode**: Đảm bảo toàn bộ thẻ Card không bị chói và chữ có độ tương phản tốt.
 
 ## 5. Danh sách file sửa đổi
 - `src/routes/_app.index.tsx`
 - `src/routes/_app.tong-quan.tsx`
-- `src/lib/mirats/ui/ui-density.ts` (nếu cần tinh chỉnh padding card)

@@ -202,17 +202,17 @@ function Dashboard() {
         <div className="lg:col-span-3 space-y-6">
           {/* TẦNG 1.5: KHỐI KPI ĐỘ TIN CẬY (KHÔI PHỤC) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="shadow-sm border-t-2 border-t-emerald-500 overflow-hidden group">
+            <Card className="shadow-sm border border-border overflow-hidden group">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
                     <Icon name="entity.security" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Target: 99%
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
                   {formatKpiValue(reliability)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -221,17 +221,17 @@ function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-t-2 border-t-blue-500 overflow-hidden group">
+            <Card className="shadow-sm border border-blue-500/10 overflow-hidden group">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                  <div className="p-2 rounded-lg bg-blue-500/5 text-blue-600 dark:text-blue-400">
                     <Icon name="status.power" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Phản hồi
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-blue-600 dark:text-blue-400">
                   {formatKpiValue(mttrKpi)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -240,17 +240,17 @@ function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-t-2 border-t-orange-500 overflow-hidden group">
+            <Card className="shadow-sm border border-amber-500/10 overflow-hidden group">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-orange-50 text-orange-600">
+                  <div className="p-2 rounded-lg bg-amber-500/5 text-amber-600 dark:text-amber-400">
                     <Icon name="entity.securityAlert" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Chu kỳ
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-amber-600 dark:text-amber-400">
                   {formatKpiValue(mtbfKpi)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -259,17 +259,17 @@ function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm border-t-2 border-t-indigo-500 overflow-hidden group">
+            <Card className="shadow-sm border border-border overflow-hidden group">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                  <div className="p-2 rounded-lg bg-muted text-muted-foreground">
                     <Icon name="status.success" size="medium" />
                   </div>
-                  <div className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  <div className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider">
                     Bảo trì
                   </div>
                 </div>
-                <div className="text-2xl font-black tabular-nums tracking-tight">
+                <div className="text-2xl font-black tabular-nums tracking-tight text-foreground">
                   {pmKpi.isLoading ? "..." : formatKpiValue(pmKpi.result)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mt-1 flex items-center gap-1">
@@ -280,15 +280,16 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="md:col-span-1 border-l-4 border-l-red-500 shadow-sm transition-all hover:shadow-md">
+            <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-[2px] h-full bg-red-600 dark:bg-red-400" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-red-600 dark:text-red-400">
                   <Icon name="status.emergency" /> Hôm nay có gì đang cháy?
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-red-600 tabular-nums">
+                  <div className="text-4xl font-black text-red-600 dark:text-red-400 tabular-nums">
                     {brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase font-bold">Sự cố khẩn</div>
@@ -297,71 +298,73 @@ function Dashboard() {
                   {brief.isLoading ? (
                     <div className="space-y-2"><div className="h-4 w-full bg-muted animate-pulse rounded" /><div className="h-4 w-2/3 bg-muted animate-pulse rounded" /></div>
                   ) : (brief.data?.su_co_khan ?? 0) === 0 ? (
-                    <div className="flex items-center gap-2 text-emerald-600 text-sm font-medium py-2">
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium py-2">
                       <Icon name="status.success" /> Không có sự cố khẩn cấp
                     </div>
                   ) : (
-                    <div className="text-sm text-red-600/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
+                    <div className="text-sm text-red-600/80 dark:text-red-400/80 italic">Cần xử lý ngay các sự cố mức độ cao và nghiêm trọng.</div>
                   )}
                 </div>
-                <div className="mt-4 pt-4 border-t border-red-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
                   <span>Nhấn để xem sự cố</span>
                   <Link to="/su-co" className="text-primary hover:underline">Chi tiết →</Link>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="md:col-span-1 border-l-4 border-l-orange-500 shadow-sm transition-all hover:shadow-md">
+            <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-[2px] h-full bg-amber-600 dark:bg-amber-400" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-orange-600">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-amber-600 dark:text-amber-400">
                   <Icon name="status.maintenance" /> Tuần này phải làm gì?
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-orange-600 tabular-nums">
+                  <div className="text-4xl font-black text-amber-600 dark:text-amber-400 tabular-nums">
                     {brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0) + (brief.data?.pm_qua_han ?? 0)}
                   </div>
                   <div className="text-xs text-muted-foreground uppercase font-bold">Việc bảo trì</div>
                 </div>
                 <div className="space-y-1 min-h-[100px]">
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-amber-500/5 transition-colors">
                     <span>PM đến hạn hôm nay</span>
                     <span className="font-bold tabular-nums">{brief.data?.pm_hom_nay ?? 0}</span>
                   </Link>
-                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-orange-50 transition-colors">
+                  <Link to="/bao-tri/pm" className="flex justify-between items-center text-sm p-1.5 rounded hover:bg-amber-500/5 transition-colors">
                     <span>PM quá hạn chưa xong</span>
-                    <span className="font-bold text-red-600 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
+                    <span className="font-bold text-red-600 dark:text-red-400 tabular-nums">{brief.data?.pm_qua_han ?? 0}</span>
                   </Link>
                 </div>
-                <div className="mt-4 pt-4 border-t border-orange-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
                   <span>Lịch bảo trì</span>
                   <Link to="/bao-tri" className="text-primary hover:underline">Xem tất cả →</Link>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="md:col-span-1 border-l-4 border-l-blue-500 shadow-sm transition-all hover:shadow-md">
+            <Card className="md:col-span-1 border border-border shadow-sm transition-all hover:shadow-md relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-[2px] h-full bg-blue-600 dark:bg-blue-400" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-blue-600 dark:text-blue-400">
                   <Icon name="status.sparkle" /> Dữ liệu có sạch không?
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <div className="text-4xl font-black text-blue-600 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
+                  <div className="text-4xl font-black text-blue-600 dark:text-blue-400 tabular-nums">{completeness.avg_thiet_bi || 0}%</div>
                   <div className="text-xs text-muted-foreground uppercase font-bold">Chất lượng dữ liệu</div>
                 </div>
                 <div className="space-y-1 min-h-[100px]">
                   <div className="text-[11px] text-muted-foreground uppercase font-bold mb-1">Thiết bị hoàn thiện thấp</div>
                   {lowCompleteness.map((tb: any) => (
-                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-50 transition-colors">
+                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-xs p-1.5 rounded hover:bg-blue-500/5 transition-colors">
                       <span className="truncate flex-1 pr-2">{tb.ten_thiet_bi}</span>
-                      <span className="font-bold text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                      <span className="font-bold text-red-500 dark:text-red-400 tabular-nums">{tb.completeness_pct}%</span>
                     </Link>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-blue-100 flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
+                <div className="mt-4 pt-4 border-t border-border flex justify-between items-center text-[10px] text-muted-foreground uppercase font-bold">
                   <span>Tiến độ tổng</span>
                   <Link to="/chat-luong-du-lieu" className="text-primary hover:underline">Chi tiết →</Link>
                 </div>
@@ -484,8 +487,8 @@ function Dashboard() {
           {/* TẦNG 4.5: BẢNG CHI TIẾT SỨC KHOẺ THẤP (KHÔI PHỤC) */}
           <Card className="shadow-sm overflow-hidden">
             <CardHeader className="pb-2 border-b bg-muted/20 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600">
-                <Icon name="entity.securityAlert" className="text-red-600" /> Danh sách thiết bị cần chú ý
+              <CardTitle className="text-sm font-bold flex items-center gap-2 text-red-600 dark:text-red-400">
+                <Icon name="entity.securityAlert" className="text-red-600 dark:text-red-400" /> Danh sách thiết bị cần chú ý
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -557,9 +560,9 @@ function Dashboard() {
                     <div className="text-2xl font-black text-primary">120</div>
                     <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Điểm đóng góp</div>
                   </div>
-                  <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 flex flex-col items-center justify-center text-center">
-                    <Icon name="status.error" size="medium" className="text-orange-600 mb-2" />
-                    <div className="text-2xl font-black text-orange-600">{tasks.length}</div>
+                   <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex flex-col items-center justify-center text-center">
+                    <Icon name="status.error" size="medium" className="text-amber-600 dark:text-amber-400 mb-2" />
+                    <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{tasks.length}</div>
                     <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Nhiệm vụ chờ</div>
                   </div>
                 </div>
@@ -568,8 +571,8 @@ function Dashboard() {
                   {tasks.length === 0 ? (
                     <div className="text-sm text-muted-foreground italic text-center py-4 bg-muted/20 rounded-lg">Không có nhiệm vụ nào đang chờ.</div>
                   ) : tasks.slice(0, 3).map((t: any) => (
-                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border group">
-                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold shrink-0">
+                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-500/5 transition-colors border border-transparent hover:border-amber-500/20 group">
+                      <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 text-xs font-bold shrink-0">
                         {t.diem_thuong || 5}
                       </div>
                       <div className="flex-1 min-w-0">
