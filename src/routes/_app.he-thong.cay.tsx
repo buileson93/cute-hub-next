@@ -513,20 +513,7 @@ function HeThongCayPage() {
         htLabel={htMind}
         tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
         canManage={canManage && editMode}
-        saving={false} // Chuyển sang dùng state pending của mutation trong Sheet
-        onSave={() => {}} // Đã handle bên trong Sheet qua renameEntity/saveCell mutation
-        unitCodeOf={() => null}
-        isCustomNode={() => false}
-        isRealNode={() => true}
-        childInfo={{items: []}}
         donViList={taxonomy?.donViList || []}
-        physSection={null}
-        submit={() => {}}
-        renamingGroupCode={false}
-        groupCode=""
-        setGroupCode={() => {}}
-        onRenameGroupCode={() => {}}
-        slugMa={(s) => s}
       />
 
     </div>

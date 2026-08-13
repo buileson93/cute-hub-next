@@ -192,6 +192,21 @@ export function useCayMutations() {
     }
   });
 
+  const renameGroupCode = useMutation({
+    mutationFn: async ({ ma, newMa }: { ma: string; newMa: string }) => {
+      if (!newMa || newMa === ma) return;
+      const { data: existing } = await supabase.from("dm_nhom_he_thong").select("id").eq("ma", newMa).maybeSingle();
+      if (existing) throw new Error(`Mã nhóm ${newMa} đã tồn tại`);
+      const { error } = await supabase.from("dm_nhom_he_thong").update({ ma: newMa } as any).eq("ma", ma);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      invalidate();
+      toast.success("Đã đổi mã nhóm thành công");
+    },
+    onError: (e: any) => toast.error(e.message)
+  });
+
   return {
     addGroup,
     addSystem,
@@ -203,6 +218,7 @@ export function useCayMutations() {
     moveSystem,
     moveDevice,
     hoanTac,
+    renameGroupCode,
     renameEntity: useMutation({
       mutationFn: async ({ kind, id, ten, draft, userRoles }: { kind: any, id: string, ten: string, draft?: boolean, userRoles: string[] }) => {
         if (draft) {
@@ -224,9 +240,9 @@ export function useCayMutations() {
         const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
         return saveEntityFieldSecurely({ kind: "tb", id: ma, field: col, value, userRoles });
       },
-      onSuccess: (res) => {
+      onSuccess: (res: any) => {
         invalidate();
-        if (res.mode === "proposed") toast.success("Đã tạo đề xuất cập nhật (chờ phê duyệt)");
+        if (res && res.mode === "proposed") toast.success("Đã tạo đề xuất cập nhật (chờ phê duyệt)");
         else toast.success("Đã lưu thành công");
       },
       onError: (e: any) => toast.error(e.message)

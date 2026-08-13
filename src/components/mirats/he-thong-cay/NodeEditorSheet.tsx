@@ -19,10 +19,8 @@ import { useSession } from "@/hooks/use-session";
 
 export function NodeEditorSheet({
   target, onClose, plLabel, nhLabel, htLabel, tbMap,
-  saving, onSave, canManage,
-  unitCodeOf, isCustomNode, isRealNode,
-  childInfo, donViList,
-  physSection, submit, renamingGroupCode, groupCode, setGroupCode, onRenameGroupCode, slugMa
+  canManage,
+  donViList,
 }: {
   target: { kind: EditKind; ma: string } | null;
   onClose: () => void;
@@ -30,24 +28,13 @@ export function NodeEditorSheet({
   nhLabel: (ma: string) => string;
   htLabel: (ma: string) => string;
   tbMap: Map<string, any>;
-  saving: boolean;
-  onSave: (payload: any) => void;
   canManage: boolean;
-  unitCodeOf: (kind: string, ma: string) => string | null;
-  isCustomNode: (kind: string, ma: string) => boolean;
-  isRealNode: (kind: string, ma: string) => boolean;
-  childInfo: any;
   donViList: any[];
-  physSection: React.ReactNode;
-  submit: () => void;
-  renamingGroupCode: boolean;
-  groupCode: string;
-  setGroupCode: (s: string) => void;
-  onRenameGroupCode: (ma: string, newMa: string) => void;
-  slugMa: (s: string) => string;
 }) {
-  const { addGroup, addSystem, deleteNode, renameEntity, saveCell } = useCayMutations();
-  const { setReorgOpen } = useCayContext();
+  const { 
+    addGroup, addSystem, deleteNode, renameEntity, saveCell, renameGroupCode 
+  } = useCayMutations();
+  const { setReorgOpen, viewTree, groupCode, setGroupCode } = useCayContext();
   const { roles } = useSession();
 
   const [ten, setTen] = useState("");
@@ -55,15 +42,16 @@ export function NodeEditorSheet({
   const [tenMindmapTouched, setTenMindmapTouched] = useState(false);
   const [newGroupTen, setNewGroupTen] = useState("");
   const [newGroupMa, setNewGroupMa] = useState("");
-  const [newGroupMaTouched, setNewGroupMaTouched] = useState(false);
   const [newSystemTen, setNewSystemTen] = useState("");
   const [newSystemDonViId, setNewSystemDonViId] = useState("");
   const [addingGroup, setAddingGroup] = useState(false);
   const [addingSystem, setAddingSystem] = useState(false);
 
+  const isReal = target ? (target.kind === "tb" || target.kind === "pl" || target.kind === "lv" || !target.ma.startsWith("custom:")) : false;
+
   useEffect(() => {
     if (!target) return;
-    const isReal = isRealNode(target.kind, target.ma);
+    setGroupCode(target.kind === "nh" ? target.ma : "");
     const tb = tbMap.get(target.ma);
     
     const baseTen =
@@ -80,7 +68,7 @@ export function NodeEditorSheet({
       setTenMindmap(target.kind === "tb" ? (tb?.ten_mindmap ?? "") : (target.kind === "ht" ? htLabel(target.ma) : ""));
       setTenMindmapTouched(false);
     }
-  }, [target, plLabel, nhLabel, htLabel, tbMap, isRealNode]);
+  }, [target, plLabel, nhLabel, htLabel, tbMap, isReal, setGroupCode]);
 
   const title = target ? (
     target.kind === "pl" ? "Phân loại"
@@ -95,9 +83,9 @@ export function NodeEditorSheet({
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <span>{title}</span>
-            {target && unitCodeOf(target.kind, target.ma) && (
+            {target && target.kind !== "pl" && (
               <Badge variant="outline" className="shrink-0 border-primary/30 bg-primary/10 font-mono text-[11px] font-semibold text-primary">
-                {unitCodeOf(target.kind, target.ma)}
+                {target.ma}
               </Badge>
             )}
           </SheetTitle>
@@ -120,16 +108,40 @@ export function NodeEditorSheet({
                   id="edit-group-ma" value={groupCode} onChange={(e) => setGroupCode(e.target.value.toUpperCase())}
                   className="font-mono text-xs uppercase" placeholder="MÃ NHÓM"
                 />
-                <Button size="sm" variant="outline" onClick={() => onRenameGroupCode(target.ma, groupCode)}>
-                  {renamingGroupCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Đổi mã"}
+                <Button size="sm" variant="outline" onClick={() => renameGroupCode.mutate({ ma: target.ma, newMa: groupCode })}>
+                  {renameGroupCode.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Đổi mã"}
                 </Button>
               </div>
             </div>
           )}
 
-          {physSection}
+          {target?.kind === "tb" && (
+            <div className="space-y-4 rounded-md border bg-muted/5 p-3">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                <Cpu className="h-4 w-4" /> Thuộc tính vật lý
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label className="text-[10px] uppercase text-muted-foreground">Số serial</Label>
+                  <Input 
+                    value={tbMap.get(target.ma)?.ma_serial || ""} 
+                    onChange={(e) => saveCell.mutate({ ma: target.ma, col: "ma_serial", value: e.target.value, userRoles: roles })}
+                    className="h-8 text-xs font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[10px] uppercase text-muted-foreground">Vị trí</Label>
+                  <Input 
+                    value={tbMap.get(target.ma)?.vi_tri || ""} 
+                    onChange={(e) => saveCell.mutate({ ma: target.ma, col: "vi_tri", value: e.target.value, userRoles: roles })}
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
-          {target && !isRealNode(target.kind, target.ma) && (
+          {target && !isReal && (
             <div className="space-y-1.5">
               <Label htmlFor="edit-ten-mm">Tên hiển thị trên sơ đồ (dành cho node nháp)</Label>
               <Input 
@@ -179,7 +191,7 @@ export function NodeEditorSheet({
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button size="sm" onClick={() => { addSystem.mutate({ nhMa: target.ma, plId: unitCodeOf("nh", target.ma) || "", ten: newSystemTen, donViId: newSystemDonViId }); setNewSystemTen(""); }}>
+                  <Button size="sm" onClick={() => { addSystem.mutate({ nhMa: target.ma, plId: "HT_KHAC", ten: newSystemTen, donViId: newSystemDonViId }); setNewSystemTen(""); }}>
                     <Plus className="h-4 w-4 mr-1" /> Thêm HT
                   </Button>
                 </div>
@@ -187,7 +199,7 @@ export function NodeEditorSheet({
             </div>
           )}
 
-          {target?.kind === "ht" && !isCustomNode("ht", target.ma) && (
+          {target?.kind === "ht" && (
             <div className="space-y-2 rounded-md border p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
                 <Cpu className="h-4 w-4 text-sky-600" /> Thành phần hệ thống
@@ -221,7 +233,7 @@ export function NodeEditorSheet({
                     userRoles: roles 
                   });
                   // Nếu là node nháp và có đổi tên mindmap -> lưu vào cay_node_edit
-                  if (!isRealNode(target.kind, target.ma) && tenMindmapTouched) {
+                  if (!isReal && tenMindmapTouched) {
                     renameEntity.mutate({
                       kind: target.kind,
                       id: target.ma,
@@ -235,14 +247,14 @@ export function NodeEditorSheet({
                     kind: target.kind, 
                     id: target.ma, 
                     ten, 
-                    draft: !isRealNode(target.kind, target.ma),
+                    draft: !isReal,
                     userRoles: roles 
                   } as any);
                 }
               }} 
-              disabled={saving || renameEntity.isPending || saveCell.isPending}
+              disabled={renameEntity.isPending || saveCell.isPending}
             >
-              {(saving || renameEntity.isPending || saveCell.isPending) ? (
+              {(renameEntity.isPending || saveCell.isPending) ? (
                 <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
               ) : (
                 <Save className="mr-1.5 h-4 w-4" />
