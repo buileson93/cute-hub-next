@@ -920,39 +920,40 @@ export function CommandPalette() {
                       saveRecent(h);
                       go(h.to);
                     }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                   >
-
-                    <Icon className={h.entity === "he_thong" ? "h-4 w-4 text-primary" : "h-4 w-4"} />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate">
+                    <div className={cn(
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                      h.entity === "he_thong" ? "bg-primary/5 text-primary group-data-[selected=true]:bg-primary/20" : "bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary"
+                    )}>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <div className="truncate text-[13px] font-bold text-foreground">
                         <Highlight text={h.title || "(không tiêu đề)"} query={activeTerm} />
                       </div>
                       {h.subtitle && (
-                        <div className="truncate text-xs text-muted-foreground">
+                        <div className="truncate text-[11px] text-muted-foreground/80">
                           <Highlight text={h.subtitle} query={activeTerm} />
                         </div>
                       )}
                     </div>
                     {h.entity === "thiet_bi" && h.sysName && (
                       <span
-                        className="ml-auto flex shrink-0 items-center gap-1 rounded-full border border-primary/30 px-2 py-0.5 text-[10px] font-medium text-primary"
+                        className="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary"
                         title={`Hệ thống: ${h.sysName}`}
                       >
                         <Network className="h-3 w-3" />
-                        <span className="max-w-[9rem] truncate">{h.sysName}</span>
+                        <span className="max-w-[7rem] truncate">{h.sysName}</span>
                       </span>
                     )}
                     {h.entity === "he_thong" && typeof h.count === "number" && (
-                      <span className="ml-auto shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+                      <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold tabular-nums tracking-wider text-muted-foreground">
                         {h.count} TB
                       </span>
                     )}
                     <span
-                      className={
-                        (h.entity === "thiet_bi" && h.sysName) || h.entity === "he_thong"
-                          ? "shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
-                          : "ml-auto shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
-                      }
+                      className="shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground"
                     >
                       {meta.label}
                     </span>
