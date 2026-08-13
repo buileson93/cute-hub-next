@@ -335,11 +335,11 @@ function TongQuanPage() {
           <KpiCard icon={<CalendarX className="h-4 w-4" />} label="PM quá hạn"
             value={briefQ.data?.pm_qua_han} loading={briefQ.isLoading} tone="danger"
             link={{ to: "/bao-tri/pm", label: "Xử lý" }} />
-          <KpiCard icon={<CalendarClock className="h-4 w-4" />} label="Hạn 7 ngày tới"
+          <KpiCard icon={<CalendarClock className="h-4 w-4" />} label="Hạn 7 ngày"
             value={briefQ.data?.han_7_ngay} loading={briefQ.isLoading} tone="warn"
-            link={{ to: "/giay-phep", label: "Giấy phép" }} />
-          <KpiCard icon={<BadgeAlert className="h-4 w-4" />} label="Sắp hết hạn 30 ngày"
-            value={briefQ.data?.sap_het_han_30} loading={briefQ.isLoading} tone="warn"
+            link={{ to: "/giay-phep", label: "Xem" }} />
+          <KpiCard icon={<BadgeAlert className="h-4 w-4" />} label="Hạn 30 ngày"
+            value={briefQ.data?.sap_het_han_30} loading={briefQ.isLoading} tone="default"
             link={{ to: "/giay-phep", label: "Xem" }} />
         </div>
       </div>
@@ -357,7 +357,6 @@ function TongQuanPage() {
               : healthQ.data?.availability_pct != null && healthQ.data.availability_pct >= 95 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/su-co"
-            description="Tỷ lệ thời gian hệ thống sẵn sàng phục vụ trong kỳ quan sát."
           />
           <HealthTile
             icon={<Repeat2 className="h-4 w-4" />}
@@ -367,7 +366,6 @@ function TongQuanPage() {
             tone="default"
             loading={healthQ.isLoading}
             to="/su-co"
-            description="Chỉ số tin cậy: thời gian trung bình giữa hai lần phát sinh sự cố."
           />
           <HealthTile
             icon={<Wrench className="h-4 w-4" />}
@@ -377,18 +375,16 @@ function TongQuanPage() {
             tone={healthQ.data && healthQ.data.mttr_h > healthQ.data.mttr_prev_h ? "warn" : "ok"}
             loading={healthQ.isLoading}
             to="/bao-tri"
-            description="Chỉ số bảo trì: thời gian trung bình để khắc phục một sự cố."
           />
           <HealthTile
             icon={<ShieldCheck className="h-4 w-4" />}
             label="Tuân thủ (Compliance)"
             value={healthQ.data?.compliance_pct == null ? "—" : `${healthQ.data.compliance_pct}%`}
-            hint="Giấy phép/chứng chỉ còn hiệu lực"
+            hint="Giấy phép/chứng chỉ"
             tone={healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 90 ? "ok"
               : healthQ.data?.compliance_pct != null && healthQ.data.compliance_pct >= 70 ? "warn" : "danger"}
             loading={healthQ.isLoading}
             to="/giay-phep"
-            description="Tỷ lệ tuân thủ hiệu lực giấy phép khai thác và chứng chỉ."
           />
         </div>
       </div>
