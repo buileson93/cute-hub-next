@@ -110,9 +110,14 @@ describe("StandardTable — Tương tác và Lọc", () => {
 
 
     
-    // Tìm ô input lọc cho cột Tên
-    const searchInputs = screen.getAllByPlaceholderText(/Tìm/);
-    fireEvent.change(searchInputs[0], { target: { value: "Sản phẩm A" } });
+    // Mở bộ lọc
+    const filterButtons = screen.getAllByRole("button").filter(b => b.querySelector(".lucide-filter"));
+    fireEvent.click(filterButtons[0]);
+    
+    // Tìm ô input lọc cho cột Tên trong dropdown (sử dụng aria-label hoặc placeholder chính xác)
+    const searchInput = screen.getByPlaceholderText("Tìm nội dung...");
+    fireEvent.change(searchInput, { target: { value: "Sản phẩm A" } });
+
     
     expect(screen.getByText("Sản phẩm A")).not.toBeNull();
     // Sản phẩm B sẽ bị ẩn bởi logic filter client-side (sorted/filtered useMemo)
