@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/backend/client";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllRows } from "@/lib/mirats/paginate";
@@ -42,9 +42,10 @@ function ThietBiDetailRoute() {
   const canEdit = canManage && editMode;
 
 
-  const { data: tb, isLoading } = useQuery({
+  const { data: tb, isLoading, error: queryError } = useQuery({
     queryKey: ["thiet-bi", ma],
     queryFn: async () => {
+      if (!ma) throw new Error("Mã thiết bị không hợp lệ");
       const { data, error } = await supabase
         .from("thiet_bi")
         .select(`
@@ -54,8 +55,12 @@ function ThietBiDetailRoute() {
           don_vi:don_vi_quan_ly_id(ten, ma)
         `)
         .eq("ma_thiet_bi", ma)
-        .single();
-      if (error) throw error;
+        .maybeSingle();
+      
+      if (error) {
+        console.error("Lỗi fetch thiết bị:", error);
+        throw error;
+      }
       
       // Khởi tạo các trường DbDevice giả định nếu thiếu
       const row = data as any;
@@ -107,7 +112,34 @@ function ThietBiDetailRoute() {
   const banGiao = [] as any[];
 
   if (isLoading) return <DetailSkeleton />;
-  if (!tb) return <div className="p-8 text-center">Không tìm thấy tài sản.</div>;
+  
+  if (queryError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+        <AlertTriangle className="h-12 w-12 text-destructive" />
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold">Lỗi tải dữ liệu</h2>
+          <p className="text-sm text-muted-foreground">{(queryError as Error).message}</p>
+        </div>
+        <Button variant="outline" onClick={() => window.location.reload()}>Tải lại trang</Button>
+      </div>
+    );
+  }
+
+  if (!tb) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+        <Package className="h-12 w-12 text-muted-foreground/40" />
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold">Không tìm thấy tài sản</h2>
+          <p className="text-sm text-muted-foreground">Mã thiết bị "{ma}" không tồn tại trong hệ thống.</p>
+        </div>
+        <Button variant="outline" asChild>
+          <Link to="/thiet-bi" search={{ q: "" } as any}>Quay lại danh sách</Link>
+        </Button>
+      </div>
+    );
+  }
 
   const pct = tb.ty_le_tuoi_tho == null ? null : Math.max(0, Math.min(100, Math.round(tb.ty_le_tuoi_tho)));
 
@@ -134,7 +166,7 @@ function ThietBiDetailRoute() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/20 pb-20 md:pb-0">
+    <div className="flex flex-1 flex-col bg-muted/20 pb-20 md:pb-0 min-h-screen">
       <div className="p-4 bg-background border-b sticky top-0 z-30">
         <PageHeader
           title={tb.ten_thiet_bi || ma}
