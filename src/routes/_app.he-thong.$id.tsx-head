@@ -1,0 +1,55 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ArrowLeft, Network, HardDrive, Wrench, AlertTriangle, RefreshCw, ArrowLeftRight,
+  Clock, Loader2, ShieldCheck, Building2, ChevronRight, FileText, Link2, Puzzle,
+  MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
+  Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
+  Search, X, Filter, ChevronDown, ChevronUp, Minimize2, Maximize2, CheckCircle2,
+  History as HistoryIcon
+} from "lucide-react";
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, Tooltip, ResponsiveContainer,
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/backend/client";
+import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
+import { useCanDownloadAttachments } from "@/hooks/use-can-download";
+import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
+import { useOperationsData } from "@/lib/mirats/db-operations";
+import { useScope } from "@/lib/mirats/scope";
+import { AccessDenied } from "@/components/mirats/AccessDenied";
+import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
+import { HeThongLienKetTab } from "@/components/mirats/HeThongLienKetTab";
+import { useSession } from "@/hooks/use-session";
+import { useViTriChucNang, useThietBiDangLap } from "@/lib/mirats/he-thong-thanh-phan";
+import { LyLichThanhPhanPanel } from "@/components/mirats/LyLichLayerPanel";
+import { SuCoMoiForm } from "@/components/mirats/quick/SuCoMoiForm";
+import { BaoTriMoiForm } from "@/components/mirats/quick/BaoTriMoiForm";
+import { HongHocMoiForm } from "@/components/mirats/quick/HongHocMoiForm";
+import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+
+export const Route = createFileRoute("/_app/he-thong/$id")({
+  head: ({ params }) => ({
+    title: `Hệ thống ${params.id} | MIRATS`,
+  }),
+});
