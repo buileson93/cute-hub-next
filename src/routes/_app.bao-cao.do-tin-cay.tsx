@@ -141,14 +141,14 @@ function TrendCard({
                     key={a.id}
                     yAxisId="left"
                     x={a.label}
-                    stroke={a.mau ?? LOAI_META[a.loai].color}
+                    stroke={a.mau ?? LOAI_META[a.loai as keyof typeof LOAI_META].color}
                     strokeDasharray="4 3"
                     strokeWidth={1.5}
                     ifOverflow="extendDomain"
                     label={{
-                      value: `${LOAI_META[a.loai].label.charAt(0)}·${a.tieu_de.slice(0, 24)}`,
+                      value: `${LOAI_META[a.loai as keyof typeof LOAI_META].label.charAt(0)}·${a.tieu_de.slice(0, 24)}`,
                       position: "top",
-                      fill: a.mau ?? LOAI_META[a.loai].color,
+                      fill: a.mau ?? LOAI_META[a.loai as keyof typeof LOAI_META].color,
                       fontSize: 10,
                     }}
                   />
