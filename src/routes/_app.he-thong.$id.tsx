@@ -42,11 +42,10 @@ import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 import { HeThongLienKetTab } from "@/components/mirats/HeThongLienKetTab";
 import { useSession } from "@/hooks/use-session";
 import { useViTriChucNang, useThietBiDangLap } from "@/lib/mirats/he-thong-thanh-phan";
-import { LyLichThanhPhanPanel } from "@/components/mirats/LyLichLayerPanel";
+import { LyLichThanhPhanPanel, LyLichHeThongPanel } from "@/components/mirats/LyLichLayerPanel";
 import { SuCoMoiForm } from "@/components/mirats/quick/SuCoMoiForm";
 import { BaoTriMoiForm } from "@/components/mirats/quick/BaoTriMoiForm";
 import { HongHocMoiForm } from "@/components/mirats/quick/HongHocMoiForm";
-
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 
 export const Route = createFileRoute("/_app/he-thong/$id")({
@@ -732,11 +731,13 @@ function HeThongInner({
         </div>
       </div>
 
-      <ThanhPhanChiTietDialog 
-        open={!!openTpId} 
-        onOpenChange={(open) => !open && setOpenTpId(null)}
-        thanhPhanId={openTpId !== "sys-history" ? openTpId : undefined}
-        heThongId={openTpId === "sys-history" ? id : undefined}
+      {/* Sử dụng ThanhPhanChiTietDialog từ component thay vì inline Sheet cũ */}
+      <ThanhPhanChiTietWrapper 
+        openTpId={openTpId} 
+        heThongId={id} 
+        canManage={canManage} 
+        onClose={() => setOpenTpId(null)} 
+        tenHt={tenHt}
       />
 
       <ThresholdDialog
@@ -1015,6 +1016,58 @@ function useGpktFile(heThongId: string) {
     refetch: q.refetch,
   };
 }
+
+function ThanhPhanChiTietWrapper({
+  openTpId, heThongId, canManage, onClose, tenHt
+}: {
+  openTpId: string | null;
+  heThongId: string;
+  canManage: boolean;
+  onClose: () => void;
+  tenHt: string;
+}) {
+  const { data: tps } = useViTriChucNang(heThongId);
+  const { data: dangLap } = useThietBiDangLap(heThongId);
+
+  return (
+    <>
+      {openTpId && openTpId !== "sys-history" && (
+        <ThanhPhanChiTietDialog 
+          viTri={(() => {
+            const tp = (tps || []).find(t => t.id === openTpId);
+            return {
+              ...(tp || {}),
+              device: dangLap?.get(openTpId) || null
+            } as any;
+          })()}
+          heThongId={heThongId}
+          canManage={canManage}
+          onClose={onClose}
+          onOpenDevice={(ma) => window.location.href = `/thiet-bi/${ma}`}
+        />
+      )}
+
+      <Dialog open={openTpId === "sys-history"} onOpenChange={(o) => !o && onClose()}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex flex-wrap items-center gap-2">
+              <HistoryIcon className="h-4 w-4" />
+              Sổ lý lịch hệ thống
+              <span className="text-sm font-normal">· {tenHt}</span>
+            </DialogTitle>
+            <DialogDescription>
+              Gộp toàn bộ sự kiện của hệ thống và các thành phần con.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] overflow-y-auto pr-2">
+            <LyLichHeThongPanel heThongId={heThongId} canEdit={canManage} />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 
 function GpktDetailSheet({
   open, onOpenChange, record, url, fileName, isLoading, error, onRetry,

@@ -33,6 +33,7 @@ import { AllocationPanel } from "@/components/mirats/thiet-bi-detail/AllocationP
 import { LifecyclePanel } from "@/components/mirats/thiet-bi-detail/LifecyclePanel";
 import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useOperationsData } from "@/lib/mirats/db-operations";
 
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
@@ -109,13 +110,26 @@ function ThietBiDetailRoute() {
     },
   });
 
-  // Giả lập hoặc fetch các dữ liệu phụ cho các tab (timeline, suCo, baoTri, ...)
-  // Trong thực tế sẽ dùng useQueries hoặc fetch đầy đủ từ DB
-  const timeline = [] as any[]; 
-  const suCo = [] as any[];
-  const baoTri = [] as any[];
-  const hongHoc = [] as any[];
-  const banGiao = [] as any[];
+  const { ops } = useOperationsData();
+  const maSet = useMemo(() => new Set([ma]), [ma]);
+  const idSet = useMemo(() => (tb?.id ? new Set([tb.id]) : new Set()), [tb?.id]);
+
+  const timeline = useMemo(() => {
+    if (!tb) return [];
+    // Tự tổng hợp timeline đơn giản cho prop cũ nếu cần, 
+    // hoặc để các sub-panel tự fetch
+    return [];
+  }, [tb]);
+
+  const inDev = (e: { thiet_bi_id?: string | null; thiet_bi: string }) => 
+    e.thiet_bi_id === tb?.id || e.thiet_bi === ma;
+  
+  const baoTri = useMemo(() => ops.baoTri.filter(inDev), [ops.baoTri, tb?.id, ma]);
+  const suCo = useMemo(() => ops.suCo.filter(inDev), [ops.suCo, tb?.id, ma]);
+  const hongHoc = useMemo(() => ops.hongHoc.filter((e: any) => e.thiet_bi_hong_id === tb?.id || e.thiet_bi_hong === ma), [ops.hongHoc, tb?.id, ma]);
+  const banGiao = useMemo(() => ops.banGiao.filter((e: any) => e.thiet_bi === ma), [ops.banGiao, ma]);
+
+
 
   if (isLoading) return <DetailSkeleton />;
   
