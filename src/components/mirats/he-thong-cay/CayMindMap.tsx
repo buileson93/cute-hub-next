@@ -222,11 +222,26 @@ function MindNode({ data }: { data: MindData }) {
                <Eye className="h-3 w-3" />
              </button>
            )}
-           {data.onRecord && (
-             <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Sổ lý lịch">
-               <History className="h-3 w-3" />
-             </button>
-           )}
+            {data.onIncident && (
+              <button onClick={(e) => { e.stopPropagation(); data.onIncident?.(); }} className="rounded p-0.5 hover:bg-muted" title="Sự cố">
+                <AlertTriangle className="h-3 w-3 text-red-500" />
+              </button>
+            )}
+            {data.onMaint && (
+              <button onClick={(e) => { e.stopPropagation(); data.onMaint?.(); }} className="rounded p-0.5 hover:bg-muted" title="Bảo trì">
+                <Wrench className="h-3 w-3 text-sky-500" />
+              </button>
+            )}
+            {data.onRecord && (
+              <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch tài sản">
+                <History className="h-3 w-3" />
+              </button>
+            )}
+            {data.onHistory && (
+              <button onClick={(e) => { e.stopPropagation(); data.onHistory?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch hệ thống">
+                <History className="h-3 w-3 text-primary" />
+              </button>
+            )}
         </div>
         
         <Handle type="source" position={Position.Right} className="!h-1.5 !w-1.5 !border-0 !bg-muted-foreground/40" />
@@ -414,8 +429,9 @@ export function CayMindMap({
           count: ht.devices.length, collapsible: ht.devices.length > 0 || htPosCount > 0, expanded: expanded.has(htId),
           canManage: canManage && ht.ma !== HT_KHAC,
           toggle: () => toggle(htId), onRename: (t) => onRename("ht", ht.ma, t), onOpenEditor: () => onOpenEditor("ht", ht.ma),
-          onHistory: ht.ma !== HT_KHAC ? () => onHistory(ht.ma) : undefined,
-          onRecord: ht.ma !== HT_KHAC ? () => onRecord("tb", ht.ma, htMind(ht.ma)) : undefined, // Placeholder for system record
+          onHistory: () => onHistory(ht.ma),
+          onIncident: () => onIncident(ht.ma),
+          onMaint: () => onMaint(ht.ma),
           onMove: unitMode ? undefined : (toNhomId, toLvId, toNhKey, toNhTen) => {
              const sysId = parseHtSysMa(ht.ma).sysName;
              if (!isRealSystemId(sysId)) return;
