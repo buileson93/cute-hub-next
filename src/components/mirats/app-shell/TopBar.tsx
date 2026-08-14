@@ -71,11 +71,6 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         <CommandPalette />
       </Suspense>
     </div>
-
-      <Suspense fallback={null}>
-        <CommandPalette />
-      </Suspense>
-    </div>
   );
 }
 
