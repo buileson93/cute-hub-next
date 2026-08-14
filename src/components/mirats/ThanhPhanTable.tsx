@@ -606,7 +606,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               </div>
               {/* Removed redundant "đã lắp tài sản" count as requested */}
               <div className="ml-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span>Hiển thị</span>
+
                 <Select value={String(pageSize)} onValueChange={(v) => setPageSize(v === "all" ? Math.max(total, 1) : Number(v))}>
                   <SelectTrigger className="h-7 w-[80px] text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
