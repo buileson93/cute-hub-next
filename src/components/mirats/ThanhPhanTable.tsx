@@ -501,6 +501,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           trangThai={{ dangTai: isLoading, loi: error }}
           clientPagination={{ page: currentPage, pageSize, onFilteredTotalChange: setFilteredTotal }}
           getRowId={(r) => r.id}
+          selected={selectedIds}
+          setSelected={setSelectedIds}
           requireFilterToShow={false}
           emptyText="Không có thành phần hệ thống phù hợp."
           countUnit="thành phần"
@@ -891,6 +893,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           rows={filteredTaiSan}
           clientPagination={{ page: currentPage, pageSize, onFilteredTotalChange: setFilteredTotal }}
           getRowId={(r) => r.id}
+          selected={selectedIds}
+          setSelected={setSelectedIds}
           requireFilterToShow={false}
           emptyText="Không có tài sản phù hợp."
           countUnit="tài sản"
