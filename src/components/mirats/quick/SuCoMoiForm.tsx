@@ -79,7 +79,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   const [tinhHinh, setTinhHinh] = useState("");
   const [ketQua, setKetQua] = useState("");
   const [nguyenNhan, setNguyenNhan] = useState("");
-  const [bienPhap, setBienPhap] = useState("");
+  const [bienPhapXuLy, setBienPhapXuLy] = useState("");
   const [phanLoai, setPhanLoai] = useState("E");
   const [vanDeId, setVanDeId] = useState<string>("");
   const [vanDeOptions, setVanDeOptions] = useState<ComboOption[]>([]);
@@ -134,7 +134,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       setThoiGianBatDau(p.thoi_gian_bat_dau);
       setAnhHuongDhb(p.anh_huong_dhb);
       setNguyenNhan(p.nguyen_nhan);
-      setBienPhap(p.bien_phap_xu_ly);
+      setBienPhapXuLy(p.bien_phap_xu_ly);
       setTinhHinh(p.tinh_hinh_hien_tai);
       setKetQua(p.ket_qua_khac_phuc);
       setPhanLoai(p.phan_loai);
@@ -201,14 +201,14 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       if (!thoiGianKetThuc) return "Đóng sự cố cần có Thời gian kết thúc";
       if (!tinhTrangHT.trim()) return "Đóng sự cố cần khai Tình trạng hệ thống sau xử lý";
       if (!nguyenNhan.trim()) return "Đóng sự cố cần khai Nguyên nhân";
-      if (!bienPhap.trim()) return "Đóng sự cố cần khai Biện pháp xử lý";
+      if (!bienPhapXuLy.trim()) return "Đóng sự cố cần khai Biện pháp xử lý";
     }
     return null;
   }
 
   const buildPayloadForSave = (maNhom: string, closing: boolean) => buildSuCoPayload({
-      ma_nhom_bc: maNhom, ngay_phat_hien: ngayPhatHien, nguoi_bao_cao: profile?.ho_ten || profile?.email || "", muc_do: MUC_BY_PL[phanLoai] ?? "Thấp", anh_huong_dhb: anhHuongDhb, hien_tuong: hienTuong, nguyen_nhan: nguyenNhan || null, bien_phap_xu_ly: bienPhap || null,
-      bao_cao_ban_dau: { kinh_gui: kinhGui, he_thong_dich_vu: heThongDichVu, tom_tat: tomTat, thoi_gian_bat_dau: fmtDateTime(thoiGianBatDau), thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "", dia_diem: "", kip_truc: kip, thanh_phan_list: tpList.filter(t => selectedTpIds.has(t.id)), tinh_trang_he_thong: tinhTrangHT, da_dong: closing, tinh_hinh_hien_tai: tinhHinh, ket_qua_khac_phuc: ketQua, phan_loai: phanLoai, nguyen_nhan: nguyenNhan, bien_phap_xu_ly: bienPhap, thiet_bi_list: selected.map(d => d.ma_thiet_bi), nguon: aiFilled ? "AI" : "Người dùng" },
+      ma_nhom_bc: maNhom, ngay_phat_hien: ngayPhatHien, nguoi_bao_cao: profile?.ho_ten || profile?.email || "", muc_do: MUC_BY_PL[phanLoai] ?? "Thấp", anh_huong_dhb: anhHuongDhb, hien_tuong: hienTuong, nguyen_nhan: nguyenNhan || null, bien_phap_xu_ly: bienPhapXuLy || null,
+      bao_cao_ban_dau: { kinh_gui: kinhGui, he_thong_dich_vu: heThongDichVu, tom_tat: tomTat, thoi_gian_bat_dau: fmtDateTime(thoiGianBatDau), thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "", dia_diem: "", kip_truc: kip, thanh_phan_list: tpList.filter(t => selectedTpIds.has(t.id)), tinh_trang_he_thong: tinhTrangHT, da_dong: closing, tinh_hinh_hien_tai: tinhHinh, ket_qua_khac_phuc: ketQua, phan_loai: phanLoai, nguyen_nhan: nguyenNhan, bien_phap_xu_ly: bienPhapXuLy, thiet_bi_list: selected.map(d => d.ma_thiet_bi), nguon: aiFilled ? "AI" : "Người dùng" },
       van_de_id: vanDeId || null, trang_thai: closing ? "hoan_thanh" : "bao_cao",
       devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null, he_thong_id: d._htId ?? null, he_thong_ten: d._htTen ?? null }))
   });
