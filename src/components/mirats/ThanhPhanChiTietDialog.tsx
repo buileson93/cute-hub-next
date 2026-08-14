@@ -243,20 +243,39 @@ export function ThanhPhanChiTietDialog({
           )}
 
 
-          {/* Lịch sử tài sản đã lắp tại vị trí này */}
-          <div>
-            <div className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              <History className="h-3.5 w-3.5" /> Lịch sử tài sản đã lắp
-            </div>
-            <ViTriLichSu thanhPhanId={viTri.id} />
-          </div>
+          {/* Sổ lý lịch thành phần */}
+          <div className="rounded-lg border bg-muted/20 p-3">
+            <Tabs defaultValue="history" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="history" className="text-xs">
+                  <History className="mr-1.5 h-3.5 w-3.5" /> Lý lịch
+                </TabsTrigger>
+                <TabsTrigger value="audit" className="text-xs">
+                  <Settings2 className="mr-1.5 h-3.5 w-3.5" /> Nhật ký sửa
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="history" className="mt-4">
+                <LyLichThanhPhanPanel 
+                  thanhPhanId={viTri.id} 
+                  canEdit={canManage}
+                  empty="Chưa có sự kiện vận hành nào cho thành phần này."
+                />
+              </TabsContent>
+              
+              <TabsContent value="audit" className="mt-4">
+                <ChangeLogPanel entity="he_thong_thanh_phan" entityId={viTri.id} />
+              </TabsContent>
+            </Tabs>
 
-          {/* Sổ lý lịch thành phần: tách tab Tháo-lắp / Sự cố / Bảo dưỡng-Hỏng hóc + link sổ hệ thống */}
-          <SoLyLichThanhPhanSection
-            thanhPhanId={viTri.id}
-            heThongId={heThongId}
-            canEdit={canManage}
-          />
+            <div className="mt-4 border-t pt-3">
+              <Button asChild variant="link" size="sm" className="h-auto p-0 text-xs text-primary">
+                <Link to="/he-thong/$id" params={{ id: heThongId }}>
+                  Xem sổ lý lịch toàn hệ thống <ExternalLink className="ml-1 h-3 w-3" />
+                </Link>
+              </Button>
+            </div>
+          </div>
 
         </div>
         {opMode && opTarget && (

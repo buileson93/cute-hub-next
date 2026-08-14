@@ -566,10 +566,10 @@ function HeThongInner({
                 <TabsTrigger value="sc"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
                 <TabsTrigger value="hh"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
                 <TabsTrigger value="bg"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
-                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết hệ thống</TabsTrigger>
-                <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư dự phòng ({tuongThich?.length || 0})</TabsTrigger>
-
-                {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký thay đổi</TabsTrigger>}
+                <TabsTrigger value="ll"><HistoryIcon className="mr-1 h-3.5 w-3.5" />Sổ lý lịch gộp</TabsTrigger>
+                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết</TabsTrigger>
+                <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư ({tuongThich?.length || 0})</TabsTrigger>
+                {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký sửa</TabsTrigger>}
               </TabsList>
 
               <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
@@ -647,6 +647,16 @@ function HeThongInner({
                 {banGiao.map((e) => (
                   <EventRow key={e.ma_ban_giao} code={e.ma_ban_giao} tb={e.thiet_bi} tenMap={tenMap} title={`${e.nguoi_giao || "—"} → ${e.nguoi_nhan || "—"}`} date={e.ngay_nhan} label={e.loai_ban_giao || "Bàn giao"} desc={e.don_vi_nhan ?? ""} tag={e.trang_thai} tone="bg-sky-50 text-sky-700" />
                 ))}
+              </TabsContent>
+
+              <TabsContent value="ll">
+                <div className="rounded-md border bg-muted/20 p-4">
+                  <div className="mb-4">
+                    <h3 className="text-base font-semibold">Sổ lý lịch gộp (System Life History)</h3>
+                    <p className="text-sm text-muted-foreground">Tổng hợp mọi biến động kỹ thuật từ tất cả thành phần thuộc hệ thống này.</p>
+                  </div>
+                  <LyLichHeThongPanel heThongId={id} canEdit={canManage} />
+                </div>
               </TabsContent>
 
               <TabsContent value="lk">
