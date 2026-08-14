@@ -58,6 +58,110 @@ export const Route = createFileRoute("/_app/bao-cao/do-tin-cay")({
   component: DoTinCayPage,
 });
 
+function TrendCard({ 
+  bucket, 
+  bucketLabel, 
+  trendData, 
+  trendQ, 
+  annotationsMapped, 
+  annotationsQ, 
+  setTrendDrill 
+}: { 
+  bucket: Bucket; 
+  bucketLabel: string; 
+  trendData: any[]; 
+  trendQ: any; 
+  annotationsMapped: any[]; 
+  annotationsQ: any; 
+  setTrendDrill: (v: any) => void;
+}) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-col items-start justify-between gap-3 space-y-0 sm:flex-row">
+        <div>
+          <CardTitle className="text-base">Xu hướng sự cố theo thời gian</CardTitle>
+          <CardDescription>
+            Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng {bucketLabel}.
+          </CardDescription>
+        </div>
+        <div className="flex items-center gap-2">
+          <AnnotationManager
+            items={annotationsQ.data ?? []}
+            isLoading={annotationsQ.isLoading}
+            onChanged={() => annotationsQ.refetch()}
+          />
+          <TabsList>
+            <TabsTrigger value="day">Ngày</TabsTrigger>
+            <TabsTrigger value="week">Tuần</TabsTrigger>
+            <TabsTrigger value="month">Tháng</TabsTrigger>
+          </TabsList>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {trendQ.isLoading ? (
+          <Skeleton className="h-72 w-full" />
+        ) : !trendData.length ? (
+          <EmptyState title="Chưa có dữ liệu" description="Không có sự cố trong khoảng thời gian đã chọn." />
+        ) : (
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={trendData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
+                <Tooltip
+                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  formatter={(value: number | string, name: string) => [value ?? "—", name]}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar
+                  yAxisId="left"
+                  dataKey="so_su_co"
+                  name="Sự cố"
+                  fill="hsl(var(--primary))"
+                  radius={[3, 3, 0, 0]}
+                  cursor="pointer"
+                  onClick={(payloadItem) => {
+                    const p = payloadItem as unknown as { payload?: { bucket_start?: string; label?: string } };
+                    const start = p?.payload?.bucket_start;
+                    if (!start) return;
+                    const s = new Date(start);
+                    const e = new Date(s);
+                    if (bucket === "day") e.setDate(e.getDate() + 1);
+                    else if (bucket === "week") e.setDate(e.getDate() + 7);
+                    else e.setMonth(e.getMonth() + 1);
+                    setTrendDrill({ from: s.toISOString(), to: e.toISOString(), label: p.payload?.label ?? "" });
+                  }}
+                />
+                <Bar yAxisId="left" dataKey="so_dong" name="Đã đóng" fill="hsl(var(--muted-foreground))" radius={[3, 3, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="mttr_gio" name="MTTR (giờ)" stroke="hsl(var(--destructive))" strokeWidth={2} dot={{ r: 3 }} />
+                {annotationsMapped.map((a) => (
+                  <ReferenceLine
+                    key={a.id}
+                    yAxisId="left"
+                    x={a.label}
+                    stroke={a.mau ?? LOAI_META[a.loai].color}
+                    strokeDasharray="4 3"
+                    strokeWidth={1.5}
+                    ifOverflow="extendDomain"
+                    label={{
+                      value: `${LOAI_META[a.loai].label.charAt(0)}·${a.tieu_de.slice(0, 24)}`,
+                      position: "top",
+                      fill: a.mau ?? LOAI_META[a.loai].color,
+                      fontSize: 10,
+                    }}
+                  />
+                ))}
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function DoTinCayPage() {
   const { session } = useSession();
   const search = Route.useSearch();
