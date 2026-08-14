@@ -458,11 +458,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               <Lock className="h-4 w-4" /> Chỉ tra cứu
             </Button>
           )}
-          <Button asChild size="sm" variant="default" className="gap-1.5">
-            <Link to="/he-thong/cay">
-              <Network className="h-4 w-4" /> Quản lý trong cây hệ thống
-            </Link>
-          </Button>
         </div>
       )}
 
