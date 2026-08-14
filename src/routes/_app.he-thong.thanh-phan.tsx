@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw, Puzzle, List, ListTree, GitFork, Activity, ClipboardList, Pencil, Check } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { useCan } from "@/hooks/use-permissions";
 import { useUserPref } from "@/hooks/use-user-pref";
@@ -32,14 +32,14 @@ function ThanhPhanListPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
-        <div className="flex items-center gap-4">
-          <PageHeader
-            title="Bảng thành phần & tài sản"
-            icon={Puzzle}
-            help="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật. Thành phần chưa lắp tài sản thì các cột kế thừa (serial, model, NSX...) để trống."
-          />
-          <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })}>
+      <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })} className="flex-1 flex flex-col min-h-0">
+        <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
+          <div className="flex items-center gap-4">
+            <PageHeader
+              title="Bảng thành phần & tài sản"
+              icon={Puzzle}
+              help="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật. Thành phần chưa lắp tài sản thì các cột kế thừa (serial, model, NSX...) để trống."
+            />
             <TabsList>
               <TabsTrigger value="table" className="gap-2"><List className="h-4 w-4"/>Bảng</TabsTrigger>
               <TabsTrigger value="tree" className="gap-2"><ListTree className="h-4 w-4"/>Cây</TabsTrigger>
@@ -47,24 +47,25 @@ function ThanhPhanListPage() {
               <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
               <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
             </TabsList>
-          </Tabs>
-        </div>
+          </div>
 
-        {canManage && (
-          <Button
-            variant={editMode ? "default" : "outline"}
-            size="sm"
-            className="gap-2"
-            onClick={() => setEditMode(!editMode)}
-          >
-            {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-            {editMode ? "Đang sửa" : "Chỉnh sửa"}
-          </Button>
-        )}
-      </div>
-      <div className="flex-1 overflow-hidden">
-        <ThanhPhanTable externalEditMode={editMode} />
-      </div>
+          {canManage && (
+            <Button
+              variant={editMode ? "default" : "outline"}
+              size="sm"
+              className="gap-2"
+              onClick={() => setEditMode(!editMode)}
+            >
+              {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+              {editMode ? "Đang sửa" : "Chỉnh sửa"}
+            </Button>
+          )}
+        </div>
+        <TabsContent value="table" className="flex-1 min-h-0 m-0 outline-none">
+          <ThanhPhanTable externalEditMode={editMode} />
+        </TabsContent>
+      </Tabs>
+    </div>
 
     </div>
   );
