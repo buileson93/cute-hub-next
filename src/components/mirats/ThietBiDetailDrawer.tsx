@@ -9,6 +9,7 @@ import {
   HardDrive, Package, PackagePlus, PackageMinus, PackageOpen,
   ExternalLink, History, Pencil, ShieldCheck,
 } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
@@ -314,35 +315,49 @@ export function ThietBiDetailDrawer({
               {canManage && (
                 <>
                   {onEdit ? (
-                    <Button size="sm" variant="default" className="gap-1.5" onClick={() => onEdit(device)}>
-                      <Pencil className="h-4 w-4" /> Sửa nhanh
-                    </Button>
+                    <AppTooltip noiDung="Sửa nhanh thông tin tài sản">
+                      <Button size="sm" variant="default" className="h-8 w-8 p-0" onClick={() => onEdit(device)}>
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Sửa nhanh</span>
+                      </Button>
+                    </AppTooltip>
                   ) : (
-                    <Button asChild size="sm" variant="default" className="gap-1.5">
-                      <Link to="/he-thong/cay" search={{ editTb: device.ma_thiet_bi }}>
-                        <Pencil className="h-4 w-4" /> Sửa thông tin
-                      </Link>
-                    </Button>
+                    <AppTooltip noiDung="Sửa thông tin tài sản trong cây hệ thống">
+                      <Button asChild size="sm" variant="default" className="h-8 w-8 p-0">
+                        <Link to="/he-thong/cay" search={{ editTb: device.ma_thiet_bi }}>
+                          <Pencil className="h-4 w-4" />
+                          <span className="sr-only">Sửa thông tin</span>
+                        </Link>
+                      </Button>
+                    </AppTooltip>
                   )}
-                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => onAssign(device)}>
-                    <PackagePlus className="h-4 w-4" />
-                    {device._htId ? "Chuyển hệ thống" : "Gán vào hệ thống"}
-                  </Button>
-                  {device._htId && (
-                    <Button
-                      size="sm" variant="outline" className="gap-1.5 text-amber-600"
-                      onClick={() => onRemove(device)}
-                    >
-                      <PackageMinus className="h-4 w-4" /> Gỡ khỏi hệ thống
+                  <AppTooltip noiDung={device._htId ? "Chuyển tài sản sang hệ thống khác" : "Gán tài sản vào hệ thống"}>
+                    <Button size="sm" variant="outline" className="h-8 w-8 p-0" onClick={() => onAssign(device)}>
+                      <PackagePlus className="h-4 w-4" />
+                      <span className="sr-only">{device._htId ? "Chuyển hệ thống" : "Gán vào hệ thống"}</span>
                     </Button>
+                  </AppTooltip>
+                  {device._htId && (
+                    <AppTooltip noiDung="Gỡ tài sản khỏi hệ thống hiện tại">
+                      <Button
+                        size="sm" variant="outline" className="h-8 w-8 p-0 text-amber-600"
+                        onClick={() => onRemove(device)}
+                      >
+                        <PackageMinus className="h-4 w-4" />
+                        <span className="sr-only">Gỡ khỏi hệ thống</span>
+                      </Button>
+                    </AppTooltip>
                   )}
                 </>
               )}
-              <Button asChild size="sm" variant="ghost" className="ml-auto gap-1.5">
-                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: device.ma_thiet_bi }}>
-                  Mở trang chi tiết <ExternalLink className="h-4 w-4" />
-                </Link>
-              </Button>
+              <AppTooltip noiDung="Mở trang hồ sơ chi tiết đầy đủ của tài sản">
+                <Button asChild size="sm" variant="ghost" className="ml-auto h-8 w-8 p-0">
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: device.ma_thiet_bi }}>
+                    <ExternalLink className="h-4 w-4" />
+                    <span className="sr-only">Mở trang chi tiết</span>
+                  </Link>
+                </Button>
+              </AppTooltip>
             </div>
           </>
         )}

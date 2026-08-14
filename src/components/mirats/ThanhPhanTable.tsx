@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal, Info, Wrench, PackageOpen } from "lucide-react";
+import { Component, Loader2, Search, X, Cpu, Eye, Network, ExternalLink, Pencil, Check, XCircle, Lock, ChevronLeft, ChevronRight, Unplug, Package, LayoutGrid, Copy, Download, SlidersHorizontal, Info, Wrench, PackageOpen, X as XIcon } from "lucide-react";
 import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
@@ -406,32 +406,34 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
   const ModeToggle = (
     <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5 shrink-0">
-      <Button
-        size="sm"
-        variant={viewMode === "component" ? "default" : "ghost"}
-        className="h-6 gap-1 px-1.5 text-[11px] shrink-0 whitespace-nowrap"
-        onClick={() => {
-          setViewMode("component");
-          setSelectedIds(new Set());
-        }}
-        title="1 dòng = 1 thành phần hệ thống"
-      >
-        <LayoutGrid className="h-3.5 w-3.5" /> Theo thành phần
-        <Badge variant="secondary" className="ml-1 h-3.5 min-w-[1rem] px-1 text-[9px]">{rows.length.toLocaleString("vi-VN")}</Badge>
-      </Button>
-      <Button
-        size="sm"
-        variant={viewMode === "asset" ? "default" : "ghost"}
-        className="h-6 gap-1 px-1.5 text-[11px] shrink-0 whitespace-nowrap"
-        onClick={() => {
-          setViewMode("asset");
-          setSelectedIds(new Set());
-        }}
-        title="1 dòng = 1 tài sản, hiện số thành phần đang gắn"
-      >
-        <Package className="h-3.5 w-3.5" /> Theo tài sản
-        <Badge variant="secondary" className="ml-1 h-3.5 min-w-[1rem] px-1 text-[9px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
-      </Button>
+        <AppTooltip noiDung={`Theo thành phần (${rows.length.toLocaleString("vi-VN")})`}>
+          <Button
+            size="sm"
+            variant={viewMode === "component" ? "default" : "ghost"}
+            className="h-7 w-7 p-0"
+            onClick={() => {
+              setViewMode("component");
+              setSelectedIds(new Set());
+            }}
+          >
+            <LayoutGrid className="h-4 w-4" />
+            <span className="sr-only">Theo thành phần</span>
+          </Button>
+        </AppTooltip>
+        <AppTooltip noiDung={`Theo tài sản (${taiSanRows.length.toLocaleString("vi-VN")})`}>
+          <Button
+            size="sm"
+            variant={viewMode === "asset" ? "default" : "ghost"}
+            className="h-7 w-7 p-0"
+            onClick={() => {
+              setViewMode("asset");
+              setSelectedIds(new Set());
+            }}
+          >
+            <Package className="h-4 w-4" />
+            <span className="sr-only">Theo tài sản</span>
+          </Button>
+        </AppTooltip>
     </div>
   );
 
@@ -444,19 +446,23 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           {ModeToggle}
           {allowEdit && editMode && <KhaiThemCumButtons />}
           {allowEdit ? (
-            <Button
-              size="sm"
-              variant={editMode ? "default" : "outline"}
-              className="gap-1.5"
-              onClick={() => setEditMode((v) => !v)}
-              title="Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"
-            >
-              {editMode ? (<><Check className="h-4 w-4" /> Xong</>) : (<><Pencil className="h-4 w-4" /> Chỉnh sửa</>)}
-            </Button>
+            <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
+              <Button
+                size="sm"
+                variant={editMode ? "default" : "outline"}
+                className="h-7 w-7 p-0"
+                onClick={() => setEditMode((v) => !v)}
+              >
+                {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
+              </Button>
+            </AppTooltip>
           ) : (
-            <Button size="sm" variant="outline" className="gap-1.5" disabled title="Bạn không có quyền chỉnh sửa">
-              <Lock className="h-4 w-4" /> Chỉ tra cứu
-            </Button>
+            <AppTooltip noiDung="Bạn không có quyền chỉnh sửa (Chỉ tra cứu)">
+              <Button size="sm" variant="outline" className="h-7 w-7 p-0" disabled>
+                <Lock className="h-4 w-4" />
+              </Button>
+            </AppTooltip>
           )}
         </div>
       )}
@@ -466,15 +472,17 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           {ModeToggle}
           {allowEdit && editMode && <KhaiThemCumButtons />}
           {allowEdit && externalEditMode === undefined && (
-            <Button
-              size="sm"
-              variant={editMode ? "default" : "outline"}
-              className="gap-1.5"
-              onClick={() => setEditMode((v) => !v)}
-              title="Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"
-            >
-              {editMode ? (<><Check className="h-4 w-4" /> Xong</>) : (<><Pencil className="h-4 w-4" /> Chỉnh sửa</>)}
-            </Button>
+            <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
+              <Button
+                size="sm"
+                variant={editMode ? "default" : "outline"}
+                className="h-7 w-7 p-0"
+                onClick={() => setEditMode((v) => !v)}
+              >
+                {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
+              </Button>
+            </AppTooltip>
           )}
         </div>
       )}
@@ -555,12 +563,20 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 allColumns={allColumns}
                 rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
                 trigger={
-                  <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs">
-                    <Download className="h-3.5 w-3.5" /> Xuất CSV…
+                  <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
+                  <Button size="sm" variant="outline" className="h-7 w-7 p-0">
+                    <Download className="h-3.5 w-3.5" />
+                    <span className="sr-only">Xuất CSV…</span>
                   </Button>
+                  </AppTooltip>
                 }
               />
-              <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clear}>Bỏ chọn</Button>
+              <AppTooltip noiDung="Bỏ chọn tất cả các dòng">
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
+                  <XIcon className="h-4 w-4" />
+                  <span className="sr-only">Bỏ chọn</span>
+                </Button>
+              </AppTooltip>
             </>
           )}
 
@@ -912,12 +928,20 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 allColumns={allColumns}
                 rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
                 trigger={
-                  <Button size="sm" variant="outline" className="h-7 gap-1.5 text-xs">
-                    <Download className="h-3.5 w-3.5" /> Xuất CSV…
+                  <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
+                  <Button size="sm" variant="outline" className="h-7 w-7 p-0">
+                    <Download className="h-3.5 w-3.5" />
+                    <span className="sr-only">Xuất CSV…</span>
                   </Button>
+                  </AppTooltip>
                 }
               />
-              <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clear}>Bỏ chọn</Button>
+              <AppTooltip noiDung="Bỏ chọn tất cả các dòng">
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
+                  <XIcon className="h-4 w-4" />
+                  <span className="sr-only">Bỏ chọn</span>
+                </Button>
+              </AppTooltip>
             </>
           )}
 

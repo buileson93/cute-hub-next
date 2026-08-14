@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -238,18 +239,27 @@ export function FullDumpButton() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={() => run("zip")} disabled={!!running} className="gap-1.5">
-          {running === "zip" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileArchive className="h-4 w-4" />}
-          Tải .zip dump về máy
-        </Button>
-        <Button variant="outline" onClick={() => run("folder")} disabled={!!running} className="gap-1.5">
-          {running === "folder" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderDown className="h-4 w-4" />}
-          Dump ra thư mục
-        </Button>
-        {running && (
-          <Button variant="outline" onClick={() => (cancelRef.current = true)} className="gap-1.5">
-            <StopCircle className="h-4 w-4" /> Dừng
+        <AppTooltip noiDung="Tải toàn bộ dữ liệu CSDL dưới dạng tệp nén .zip">
+          <Button size="sm" onClick={() => run("zip")} disabled={!!running} className="h-8 w-8 p-0">
+            {running === "zip" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileArchive className="h-4 w-4" />}
+            <span className="sr-only">Tải .zip dump</span>
           </Button>
+        </AppTooltip>
+        
+        <AppTooltip noiDung="Dump dữ liệu trực tiếp vào một thư mục trên máy tính (yêu cầu Chrome/Edge)">
+          <Button size="sm" variant="outline" onClick={() => run("folder")} disabled={!!running} className="h-8 w-8 p-0">
+            {running === "folder" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderDown className="h-4 w-4" />}
+            <span className="sr-only">Dump ra thư mục</span>
+          </Button>
+        </AppTooltip>
+
+        {running && (
+          <AppTooltip noiDung="Dừng quá trình dump ngay lập tức">
+            <Button size="sm" variant="outline" onClick={() => (cancelRef.current = true)} className="h-8 w-8 p-0">
+              <StopCircle className="h-4 w-4" />
+              <span className="sr-only">Dừng</span>
+            </Button>
+          </AppTooltip>
         )}
         <Badge variant="outline" className="gap-1">
           <DatabaseBackup className="h-3 w-3" /> Chỉ Admin

@@ -28,6 +28,7 @@ import { exportCatalogTemplateXlsx, readXlsxFirstSheet, validateCatalogRows } fr
 import type { ImportPreviewStep } from "@/components/mirats/ImportPreviewDialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 // Bảng danh mục được truyền động (string) nên dùng client không ràng buộc kiểu literal.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -676,24 +677,43 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
 
   return (
     <>
-      <Button variant="outline" className="gap-1.5" onClick={() => setMergeOpen(true)}>
-        <GitMerge className="h-4 w-4" /> Gộp trùng
-      </Button>
-      <Button variant="outline" className="gap-1.5" onClick={exportCsv}>
-        <Download className="h-4 w-4" /> Xuất CSV
-      </Button>
-      <Button variant="outline" className="gap-1.5" onClick={exportXlsxTemplate} disabled={exportingXlsx}>
-        {exportingXlsx ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} Xuất mẫu XLSX
-      </Button>
+      <AppTooltip noiDung="Gộp bản trùng (an toàn, giữ liên kết)">
+        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => setMergeOpen(true)}>
+          <GitMerge className="h-4 w-4" />
+          <span className="sr-only">Gộp trùng</span>
+        </Button>
+      </AppTooltip>
+
+      <AppTooltip noiDung="Xuất toàn bộ danh sách ra file CSV">
+        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportCsv}>
+          <Download className="h-4 w-4" />
+          <span className="sr-only">Xuất CSV</span>
+        </Button>
+      </AppTooltip>
+
+      <AppTooltip noiDung="Xuất mẫu XLSX (có sẵn danh sách dropdown)">
+        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportXlsxTemplate} disabled={exportingXlsx}>
+          {exportingXlsx ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+          <span className="sr-only">Xuất mẫu XLSX</span>
+        </Button>
+      </AppTooltip>
+
       {config.childExport && (
-        <Button variant="outline" className="gap-1.5" onClick={exportWithChildren} disabled={exportingChild}>
-          {exportingChild ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} {config.childExport.label}
-        </Button>
+        <AppTooltip noiDung={config.childExport.label}>
+          <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportWithChildren} disabled={exportingChild}>
+            {exportingChild ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            <span className="sr-only">{config.childExport.label}</span>
+          </Button>
+        </AppTooltip>
       )}
+
       <FileDropZone onFile={importCsv} disabled={importing} hint="Kéo-thả file CSV/XLSX để nhập">
-        <Button variant="outline" className="gap-1.5" onClick={() => fileRef.current?.click()} disabled={importing}>
-          {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Nhập CSV/XLSX
-        </Button>
+        <AppTooltip noiDung="Nhập dữ liệu từ file CSV hoặc XLSX">
+          <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => fileRef.current?.click()} disabled={importing}>
+            {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            <span className="sr-only">Nhập CSV/XLSX</span>
+          </Button>
+        </AppTooltip>
         <input
           ref={fileRef}
           type="file"

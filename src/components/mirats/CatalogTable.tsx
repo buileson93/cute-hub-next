@@ -11,6 +11,7 @@ import { useMemo, useState, useEffect, useRef, type ComponentType, type ReactNod
 import { useSearch, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Loader2, Pencil, Trash2, Boxes, List, Network, ChevronRight, ChevronDown, ImageUp, X, Factory, GitMerge, Info, MapPin, Building2, Layers, Download } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { toCsv } from "@/lib/mirats/import-config";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -372,14 +373,20 @@ export function CatalogTable({
           <div className="flex flex-wrap items-center gap-2">
             {headerActions}
             {canManage && (
-              <Button variant="outline" onClick={() => setPickMerge(true)} className="gap-1.5">
-                <GitMerge className="h-4 w-4" /> Gộp trùng
-              </Button>
+              <AppTooltip noiDung="Gộp các mục trùng lặp (giữ nguyên liên kết)">
+                <Button size="sm" variant="outline" onClick={() => setPickMerge(true)} className="h-8 w-8 p-0">
+                  <GitMerge className="h-4 w-4" />
+                  <span className="sr-only">Gộp trùng</span>
+                </Button>
+              </AppTooltip>
             )}
             {canManage && (
-              <Button onClick={() => setEditing("new")} className="gap-1.5">
-                <Plus className="h-4 w-4" /> Thêm {singular.toLowerCase()}
-              </Button>
+              <AppTooltip noiDung={`Thêm ${singular.toLowerCase()} mới`}>
+                <Button size="sm" onClick={() => setEditing("new")} className="h-8 w-8 p-0">
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">Thêm {singular.toLowerCase()}</span>
+                </Button>
+              </AppTooltip>
             )}
           </div>
         }
@@ -394,14 +401,20 @@ export function CatalogTable({
         </div>
         {supportsParent && (
           <div className="inline-flex rounded-md border p-0.5">
-            <Button size="sm" variant={view === "tree" ? "default" : "ghost"} className="h-8 gap-1.5"
-              onClick={() => setView("tree")}>
-              <Network className="h-3.5 w-3.5" /> Sơ đồ cây
-            </Button>
-            <Button size="sm" variant={view === "list" ? "default" : "ghost"} className="h-8 gap-1.5"
-              onClick={() => setView("list")}>
-              <List className="h-3.5 w-3.5" /> Danh sách
-            </Button>
+            <AppTooltip noiDung="Xem dưới dạng sơ đồ phân cấp">
+              <Button size="sm" variant={view === "tree" ? "default" : "ghost"} className="h-8 w-8 p-0"
+                onClick={() => setView("tree")}>
+                <Network className="h-3.5 w-3.5" />
+                <span className="sr-only">Sơ đồ cây</span>
+              </Button>
+            </AppTooltip>
+            <AppTooltip noiDung="Xem dưới dạng bảng danh sách">
+              <Button size="sm" variant={view === "list" ? "default" : "ghost"} className="h-8 w-8 p-0"
+                onClick={() => setView("list")}>
+                <List className="h-3.5 w-3.5" />
+                <span className="sr-only">Danh sách</span>
+              </Button>
+            </AppTooltip>
           </div>
         )}
       </div>
@@ -557,18 +570,27 @@ export function CatalogTable({
               key: "actions", label: "", align: "right" as const,
               cell: (r: Row) => (
                 <div className="flex items-center justify-end gap-0.5 whitespace-nowrap">
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setUsageRow(r)} title={`Xem tài sản đang ở "${r.ten}"`}>
-                    <Info className="h-3.5 w-3.5" />
-                  </Button>
+                  <AppTooltip noiDung={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`}>
+                    <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setUsageRow(r)}>
+                      <Info className="h-3.5 w-3.5" />
+                      <span className="sr-only">Chi tiết tài sản</span>
+                    </Button>
+                  </AppTooltip>
                   {extraRowActions?.(r)}
                   {canManage && (
                     <>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(r)} title="Sửa">
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(r)} title="Xoá">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      <AppTooltip noiDung="Chỉnh sửa thông tin">
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(r)}>
+                          <Pencil className="h-3.5 w-3.5" />
+                          <span className="sr-only">Sửa</span>
+                        </Button>
+                      </AppTooltip>
+                      <AppTooltip noiDung="Xoá mục này">
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(r)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span className="sr-only">Xoá</span>
+                        </Button>
+                      </AppTooltip>
                     </>
                   )}
                 </div>
@@ -871,18 +893,27 @@ function DonViNode({
           <span className="text-[11px] text-muted-foreground">· {kids.length} {childLabel} con</span>
         )}
         <div className="ml-auto flex shrink-0 items-center gap-0.5">
-          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => onInfo(row)} title={`Xem tài sản đang ở "${row.ten}"`}>
-            <Info className="h-3.5 w-3.5" />
-          </Button>
+          <AppTooltip noiDung={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => onInfo(row)}>
+              <Info className="h-3.5 w-3.5" />
+              <span className="sr-only">Chi tiết tài sản</span>
+            </Button>
+          </AppTooltip>
           {extraRowActions?.(row)}
           {canManage && (
             <div className="flex items-center opacity-0 transition-opacity group-hover:opacity-100">
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(row)} title="Sửa">
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => onDelete(row)} title="Xoá">
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <AppTooltip noiDung="Chỉnh sửa thông tin">
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(row)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                  <span className="sr-only">Sửa</span>
+                </Button>
+              </AppTooltip>
+              <AppTooltip noiDung="Xoá mục này">
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => onDelete(row)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span className="sr-only">Xoá</span>
+                </Button>
+              </AppTooltip>
             </div>
           )}
         </div>

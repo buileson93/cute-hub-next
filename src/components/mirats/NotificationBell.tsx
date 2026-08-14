@@ -1,6 +1,7 @@
 import { Bell, Check, CheckCheck } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Link } from "@tanstack/react-router";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,9 +50,12 @@ export function NotificationBell() {
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <div className="text-sm font-semibold">Thông báo</div>
           {unread > 0 && (
-            <Button size="sm" variant="ghost" onClick={markAllRead} className="h-7 gap-1 text-xs">
-              <CheckCheck className="h-3.5 w-3.5" /> Đánh dấu đã đọc
-            </Button>
+            <AppTooltip noiDung="Đánh dấu đã đọc tất cả thông báo">
+              <Button size="sm" variant="ghost" onClick={markAllRead} className="h-7 w-7 p-0">
+                <CheckCheck className="h-3.5 w-3.5" />
+                <span className="sr-only">Đánh dấu đã đọc</span>
+              </Button>
+            </AppTooltip>
           )}
         </div>
         <ScrollArea className="max-h-[420px]">

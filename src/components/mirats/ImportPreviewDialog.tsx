@@ -9,6 +9,7 @@ import {
   Loader2, Database, X, FileDown, CheckCircle2, Circle, AlertTriangle, GitCompare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
@@ -341,18 +342,28 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
         )}
 
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose} disabled={saving} className="gap-1.5">
-            <X aria-hidden="true" className="h-4 w-4" /> Huỷ
-          </Button>
-          {onDownloadErrors && errorCount > 0 && (
-            <Button variant="outline" onClick={onDownloadErrors} disabled={saving} className="gap-1.5">
-              <FileDown aria-hidden="true" className="h-4 w-4" /> Tải báo cáo lỗi (.csv)
+          <AppTooltip noiDung="Huỷ bỏ quá trình nhập liệu">
+            <Button variant="ghost" onClick={onClose} disabled={saving} className="h-8 w-8 p-0">
+              <X aria-hidden="true" className="h-4 w-4" />
+              <span className="sr-only">Huỷ</span>
             </Button>
+          </AppTooltip>
+          
+          {onDownloadErrors && errorCount > 0 && (
+            <AppTooltip noiDung="Tải file CSV chứa các dòng bị lỗi để kiểm tra">
+              <Button variant="outline" onClick={onDownloadErrors} disabled={saving} className="h-8 w-8 p-0">
+                <FileDown aria-hidden="true" className="h-4 w-4" />
+                <span className="sr-only">Tải báo cáo lỗi</span>
+              </Button>
+            </AppTooltip>
           )}
-          <Button onClick={commit} disabled={commitDisabled} className="gap-1.5">
-            {saving ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Database aria-hidden="true" className="h-4 w-4" />}
-            Ghi vào CSDL
-          </Button>
+
+          <AppTooltip noiDung={commitDisabled ? "Khắc phục lỗi trước khi ghi" : "Ghi dữ liệu hợp lệ vào CSDL"}>
+            <Button onClick={commit} disabled={commitDisabled} className="h-8 w-8 p-0">
+              {saving ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Database aria-hidden="true" className="h-4 w-4" />}
+              <span className="sr-only">Ghi vào CSDL</span>
+            </Button>
+          </AppTooltip>
         </DialogFooter>
       </DialogContent>
     </Dialog>

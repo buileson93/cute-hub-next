@@ -8,6 +8,7 @@ import { useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GitMerge, Download, Upload, Loader2, ArrowRight, AlertTriangle, Boxes, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -244,19 +245,34 @@ export function NhaSanXuatTools() {
 
   return (
     <>
-      <Button variant="outline" className="gap-1.5" onClick={() => setMergeOpen(true)}>
-        <GitMerge className="h-4 w-4" /> Gộp trùng
-      </Button>
-      <Button variant="outline" className="gap-1.5" onClick={exportCsv}>
-        <Download className="h-4 w-4" /> Xuất CSV
-      </Button>
-      <Button variant="outline" className="gap-1.5" onClick={exportXlsxTemplate}>
-        <Download className="h-4 w-4" /> Xuất mẫu XLSX
-      </Button>
-      <FileDropZone onFile={importCsv} disabled={importing} hint="Kéo-thả file CSV/XLSX để nhập">
-        <Button variant="outline" className="gap-1.5" onClick={() => fileRef.current?.click()} disabled={importing}>
-          {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Nhập CSV/XLSX
+      <AppTooltip noiDung="Gộp các nhà sản xuất trùng lặp (giữ nguyên liên kết)">
+        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => setMergeOpen(true)}>
+          <GitMerge className="h-4 w-4" />
+          <span className="sr-only">Gộp trùng</span>
         </Button>
+      </AppTooltip>
+
+      <AppTooltip noiDung="Xuất toàn bộ nhà sản xuất ra file CSV">
+        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportCsv}>
+          <Download className="h-4 w-4" />
+          <span className="sr-only">Xuất CSV</span>
+        </Button>
+      </AppTooltip>
+
+      <AppTooltip noiDung="Xuất mẫu XLSX (dùng để nhập liệu nhanh)">
+        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportXlsxTemplate}>
+          <Download className="h-4 w-4" />
+          <span className="sr-only">Xuất mẫu XLSX</span>
+        </Button>
+      </AppTooltip>
+
+      <FileDropZone onFile={importCsv} disabled={importing} hint="Kéo-thả file CSV/XLSX để nhập">
+        <AppTooltip noiDung="Nhập danh sách nhà sản xuất từ file">
+          <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => fileRef.current?.click()} disabled={importing}>
+            {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            <span className="sr-only">Nhập CSV/XLSX</span>
+          </Button>
+        </AppTooltip>
         <input
           ref={fileRef}
           type="file"

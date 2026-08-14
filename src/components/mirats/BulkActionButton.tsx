@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 type Props = {
   label: string;
@@ -36,7 +36,7 @@ export function BulkActionButton({
     <Button
       size="sm"
       variant={duocPhep ? variant : "outline"}
-      className="h-7 gap-1.5 text-xs"
+      className="h-7 w-7 p-0"
       disabled={!duocPhep || busy}
       aria-disabled={!duocPhep || busy}
       onClick={() => {
@@ -48,22 +48,20 @@ export function BulkActionButton({
         else void onRun();
       }}
     >
-      {duocPhep ? icon : <Lock className="h-3.5 w-3.5" />} {label}
+      {duocPhep ? icon : <Lock className="h-3.5 w-3.5" />}
+      <span className="sr-only">{label}</span>
     </Button>
+  );
+
+  const content = (
+    <AppTooltip noiDung={duocPhep ? label : (lyDoKhoa ?? "Bạn không có quyền thực hiện thao tác này.")}>
+      {duocPhep ? nut : <span className="inline-flex cursor-not-allowed">{nut}</span>}
+    </AppTooltip>
   );
 
   return (
     <>
-      {duocPhep ? nut : (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="inline-flex cursor-not-allowed">{nut}</span>
-            </TooltipTrigger>
-            <TooltipContent>{lyDoKhoa ?? "Bạn không có quyền thực hiện thao tác này."}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
+      {content}
 
       {xacNhan && (
         <AlertDialog open={open} onOpenChange={setOpen}>

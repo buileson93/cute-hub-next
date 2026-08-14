@@ -3,6 +3,7 @@ import {
   BookOpen, KeyRound, Link2, AlertTriangle, CheckCircle2, Bot, Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Badge } from "@/components/ui/badge";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger,
@@ -19,9 +20,12 @@ export function AllInOneGuide() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5">
-          <BookOpen className="h-3.5 w-3.5" /> Hướng dẫn nhập
-        </Button>
+        <AppTooltip noiDung="Hướng dẫn nhập liệu Excel/CSV (đọc một lần là đủ dùng)">
+          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+            <BookOpen className="h-3.5 w-3.5" />
+            <span className="sr-only">Hướng dẫn nhập</span>
+          </Button>
+        </AppTooltip>
       </SheetTrigger>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
         <SheetHeader>
