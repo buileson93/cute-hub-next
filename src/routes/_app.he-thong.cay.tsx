@@ -29,6 +29,7 @@ import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/Cay
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
+import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
@@ -160,6 +161,7 @@ function HeThongCayPage() {
   };
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
   const { roles } = useSession();
 
   const { data: overrides, isLoading: loadingOverrides, error: errorOverrides, refetch: refetchOverrides } = useOverrides();
@@ -329,7 +331,7 @@ function HeThongCayPage() {
                 <TabsTrigger value="tree" className="gap-2"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
                 <TabsTrigger value="mindmap" className="gap-2"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
                 <TabsTrigger value="health" className="gap-2"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="gap-2"><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
+                <TabsTrigger value="history" className="gap-2" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
 
