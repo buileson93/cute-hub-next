@@ -213,7 +213,7 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
   
   if (!modelData) {
     return (
-      <span title={model} className="line-clamp-2 break-words text-sm leading-snug">
+      <span title={model} className="line-clamp-2 break-words text-[12px] leading-snug">
         {model}
       </span>
     );
@@ -221,7 +221,7 @@ function ModelCell({ model, modelId, registry }: { model: string, modelId: strin
 
   return (
     <EntityHoverCard loai="dm_model" row={modelData}>
-      <span className="line-clamp-2 cursor-pointer break-words text-sm leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
+      <span className="line-clamp-2 cursor-pointer break-words text-[12px] leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
         {model}
       </span>
     </EntityHoverCard>
@@ -386,22 +386,22 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
       <Button
         size="sm"
         variant={viewMode === "component" ? "default" : "ghost"}
-        className="h-7 gap-1.5 px-2 text-xs shrink-0 whitespace-nowrap"
+        className="h-6 gap-1 px-1.5 text-[11px] shrink-0 whitespace-nowrap"
         onClick={() => setViewMode("component")}
         title="1 dòng = 1 thành phần hệ thống"
       >
         <LayoutGrid className="h-3.5 w-3.5" /> Theo thành phần
-        <Badge variant="secondary" className="ml-1 h-4 min-w-[1rem] px-1 text-[10px]">{rows.length.toLocaleString("vi-VN")}</Badge>
+        <Badge variant="secondary" className="ml-1 h-3.5 min-w-[1rem] px-1 text-[9px]">{rows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
       <Button
         size="sm"
         variant={viewMode === "asset" ? "default" : "ghost"}
-        className="h-7 gap-1.5 px-2 text-xs shrink-0 whitespace-nowrap"
+        className="h-6 gap-1 px-1.5 text-[11px] shrink-0 whitespace-nowrap"
         onClick={() => setViewMode("asset")}
         title="1 dòng = 1 tài sản, hiện số thành phần đang gắn"
       >
         <Package className="h-3.5 w-3.5" /> Theo tài sản
-        <Badge variant="secondary" className="ml-1 h-4 min-w-[1rem] px-1 text-[10px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
+        <Badge variant="secondary" className="ml-1 h-3.5 min-w-[1rem] px-1 text-[9px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
     </div>
   );
