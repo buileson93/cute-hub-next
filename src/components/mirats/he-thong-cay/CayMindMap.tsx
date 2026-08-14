@@ -222,16 +222,26 @@ function MindNode({ data }: { data: MindData }) {
                <Eye className="h-3 w-3" />
              </button>
            )}
-           {data.onRecord && (
-             <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch tài sản">
-               <History className="h-3 w-3" />
-             </button>
-           )}
-           {data.onHistory && (
-             <button onClick={(e) => { e.stopPropagation(); data.onHistory?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch hệ thống">
-               <History className="h-3 w-3 text-primary" />
-             </button>
-           )}
+            {data.onIncident && (
+              <button onClick={(e) => { e.stopPropagation(); data.onIncident?.(); }} className="rounded p-0.5 hover:bg-muted" title="Sự cố">
+                <AlertTriangle className="h-3 w-3 text-red-500" />
+              </button>
+            )}
+            {data.onMaint && (
+              <button onClick={(e) => { e.stopPropagation(); data.onMaint?.(); }} className="rounded p-0.5 hover:bg-muted" title="Bảo trì">
+                <Wrench className="h-3 w-3 text-sky-500" />
+              </button>
+            )}
+            {data.onRecord && (
+              <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch tài sản">
+                <History className="h-3 w-3" />
+              </button>
+            )}
+            {data.onHistory && (
+              <button onClick={(e) => { e.stopPropagation(); data.onHistory?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch hệ thống">
+                <History className="h-3 w-3 text-primary" />
+              </button>
+            )}
         </div>
         
         <Handle type="source" position={Position.Right} className="!h-1.5 !w-1.5 !border-0 !bg-muted-foreground/40" />
