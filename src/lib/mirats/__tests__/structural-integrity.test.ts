@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { globSync } from "glob";
+import { glob } from "glob";
 
 // Cấu hình các file và thư mục cần kiểm tra
 const ROUTES_DIR = "src/routes";
