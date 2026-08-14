@@ -415,8 +415,8 @@ function HeThongCayPage() {
           }
           className="flex-1 min-h-0 w-full flex flex-col"
         >
-          {display === "tree" && (
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar h-full">
+          <Tabs value={display} className="flex-1 flex flex-col min-h-0">
+            <TabsContent value="tree" className="flex-1 overflow-y-auto p-4 custom-scrollbar h-full mt-0 focus-visible:outline-none">
               <TreeView 
                 tree={viewTree as any}
                 plLabel={plMind}
@@ -450,12 +450,29 @@ function HeThongCayPage() {
                 }}
                 posByHt={posByHt || new Map()}
               />
-            </div>
-          )}
-          
-          {display === "mindmap" && (
-            <div className="flex-1 w-full min-h-[600px] relative">
+            </TabsContent>
+            
+            <TabsContent value="mindmap" className="flex-1 w-full min-h-[600px] relative mt-0 focus-visible:outline-none">
               <CayMindMap 
+                tree={viewTree as any}
+                plLabel={plMind}
+                nhLabel={nhMind}
+                htMind={htMind}
+                tbLabel={tbMind}
+                canManage={canManage && editMode}
+                onOpenEditor={onOpenEditor}
+                onHistory={onHistory}
+                onRecord={onRecord}
+                onRename={(kind, ma, ten) => {
+                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
+                }}
+              />
+            </TabsContent>
+
+            <TabsContent value="health" className="flex-1 mt-0 focus-visible:outline-none">
+              <div className="p-8 text-center text-muted-foreground">Chế độ Sức khỏe đang được phát triển...</div>
+            </TabsContent>
+          </Tabs>
                 tree={viewTree as any}
                 posByHt={posByHt || new Map()}
                 scopeText="Toàn hệ thống"
