@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { PageTransition } from "@/components/mirats/PageTransition";
 import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { useSession } from "@/hooks/use-session";
 import { useIdleLogout } from "@/hooks/use-idle-logout";
 import { ScopeProvider } from "@/lib/mirats/scope";

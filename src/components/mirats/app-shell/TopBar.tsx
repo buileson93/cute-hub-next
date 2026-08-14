@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 
 const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
 
+const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
+
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -65,8 +67,12 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
         <div className="hidden md:block">
           <TzClock />
-        </div>
       </div>
+
+      <Suspense fallback={null}>
+        <CommandPalette />
+      </Suspense>
+    </div>
 
       <Suspense fallback={null}>
         <CommandPalette />
