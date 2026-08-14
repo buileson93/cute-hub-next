@@ -1,55 +1,65 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { glob } from "glob";
 
-// Cấu hình các file và thư mục cần kiểm tra
-const QUICK_FORMS_DIR = "src/components/mirats/quick";
+// Helper đơn giản thay thế glob để tránh lỗi type/import
+function getFilesRecursively(dir: string): string[] {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const files = entries.flatMap((entry) => {
+    const res = path.resolve(dir, entry.name);
+    return entry.isDirectory() ? getFilesRecursively(res) : res;
+  });
+  return files.filter(f => f.endsWith('.tsx') || f.endsWith('.ts'));
+}
+
+const PROJECT_ROOT = process.cwd();
+const ROUTES_DIR = path.join(PROJECT_ROOT, "src/routes");
+const COMPONENTS_DIR = path.join(PROJECT_ROOT, "src/components/mirats");
+const QUICK_FORMS_DIR = path.join(PROJECT_ROOT, "src/components/mirats/quick");
 
 describe("MIRATS Integrity Guard - Automated Audit", () => {
   
   describe("A. Giao diện lắp sai (Tabs Mismatch)", () => {
-    const files = glob.sync("{src/routes/**/*.tsx,src/components/mirats/**/*.tsx}");
+    const allTsx = [...getFilesRecursively(ROUTES_DIR), ...getFilesRecursively(COMPONENTS_DIR)];
     
-    files.forEach((file: string) => {
-      it(`kiểm tra Tabs trong ${file}`, () => {
+    allTsx.forEach((file: string) => {
+      const relPath = path.relative(PROJECT_ROOT, file);
+      it(`kiểm tra Tabs trong ${relPath}`, () => {
         const content = fs.readFileSync(file, "utf-8");
-        if (!content.includes("<Tabs")) return; // Bỏ qua nếu không dùng Tabs
-        
-        // Bỏ qua nếu có comment miễn trừ
+        if (!content.includes("<Tabs")) return;
         if (content.includes("integrity-ignore: tabs-managed-externally")) return;
 
         const triggerCount = (content.match(/<TabsTrigger/g) || []).length;
         const contentCount = (content.match(/<TabsContent/g) || []).length;
 
         if (triggerCount > 0) {
-          expect(contentCount, `Tệp ${file} có ${triggerCount} TabsTrigger nhưng 0 TabsContent. Cấu trúc Tabs có thể bị hỏng.`).toBeGreaterThan(0);
+          expect(contentCount, `Tệp ${relPath} có ${triggerCount} TabsTrigger nhưng 0 TabsContent. Cấu trúc Tabs có thể bị hỏng.`).toBeGreaterThan(0);
         }
       });
     });
   });
 
   describe("B. Handler rỗng (Silent Failure)", () => {
-    const forms = glob.sync(`${QUICK_FORMS_DIR}/*.tsx`);
-    
-    forms.forEach((file: string) => {
-      it(`kiểm tra handler rỗng trong ${file}`, () => {
-        const content = fs.readFileSync(file, "utf-8");
-        
-        // Tìm các prop bắt đầu bằng on gán lambda rỗng: onSomething={() => {}} hoặc onSomething={() => { }}
-        const criticalHandlers = ["onDone", "onSuccess", "onSave", "onConfirm", "onApplyDescription"];
-        
-        criticalHandlers.forEach(handler => {
-          const regex = new RegExp(`${handler}=\\{\\(\\)\\s*=>\\s*\\{\\s*\\}\\}`, "g");
-          const match = content.match(regex);
+    if (fs.existsSync(QUICK_FORMS_DIR)) {
+      const forms = getFilesRecursively(QUICK_FORMS_DIR);
+      
+      forms.forEach((file: string) => {
+        const relPath = path.relative(PROJECT_ROOT, file);
+        it(`kiểm tra handler rỗng trong ${relPath}`, () => {
+          const content = fs.readFileSync(file, "utf-8");
+          const criticalHandlers = ["onDone", "onSuccess", "onSave", "onConfirm", "onApplyDescription"];
           
-          if (match && !content.includes(`integrity-ignore: optional-handler`)) {
-            // Chúng ta báo lỗi nếu handler quan trọng bị rỗng mà không có giải trình
-            expect(match, `Tệp ${file} chứa handler rỗng cho '${handler}'. Đây có thể là tính năng bị mất sau refactor.`).toBeNull();
-          }
+          criticalHandlers.forEach(handler => {
+            const regex = new RegExp(`${handler}=\\{\\(\\)\\s*=>\\s*\\{\\s*\\}\\}`, "g");
+            const match = content.match(regex);
+            
+            if (match && !content.includes(`integrity-ignore: optional-handler`)) {
+              expect(match, `Tệp ${relPath} chứa handler rỗng cho '${handler}'. Đây có thể là tính năng bị mất sau refactor.`).toBeNull();
+            }
+          });
         });
       });
-    });
+    }
   });
 
   describe("C. Trường nhập liệu bị rụng (Form Payload Consistency)", () => {
@@ -66,15 +76,15 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
 
     forms.forEach(form => {
       it(`kiểm tra tính đầy đủ của trường nhập liệu trong ${form.path}`, () => {
-        if (!fs.existsSync(form.path)) return;
-        const content = fs.readFileSync(form.path, "utf-8");
+        const fullPath = path.join(PROJECT_ROOT, form.path);
+        if (!fs.existsSync(fullPath)) return;
+        const content = fs.readFileSync(fullPath, "utf-8");
         
         form.payloadFields.forEach(field => {
-          // CamelCase mapping
           const stateName = field.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
           const hasState = content.includes(`[${stateName},`) || content.includes(`set${stateName.charAt(0).toUpperCase() + stateName.slice(1)}(`);
           
-          expect(hasState, `Trường '${field}' có trong payload nhưng không thấy state '${stateName}' tương ứng trong UI.`).toBe(true);
+          expect(hasState, `Trường '${field}' có trong payload nhưng không thấy state '${stateName}' tương ứng trong UI của ${form.path}.`).toBe(true);
         });
       });
     });
@@ -82,38 +92,36 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
 
   describe("D. Component mồ côi (Orphans Scan)", () => {
     it("quét các component mồ côi trong src/components/mirats", () => {
-      const allComponents = glob.sync("src/components/mirats/**/*.tsx");
-      const allSourceFiles = glob.sync("src/{routes,components,lib}/**/*.{ts,tsx}");
+      const allComponents = getFilesRecursively(COMPONENTS_DIR);
+      const allSourceFiles = [
+        ...getFilesRecursively(ROUTES_DIR),
+        ...getFilesRecursively(COMPONENTS_DIR),
+        ...getFilesRecursively(path.join(PROJECT_ROOT, "src/lib"))
+      ];
       
       const importedPaths: Set<string> = new Set();
-      
       allSourceFiles.forEach((file: string) => {
         const content = fs.readFileSync(file, "utf-8");
         const matches = content.match(/from\s+["']@\/components\/mirats\/([^"']+)["']/g);
         if (matches) {
           matches.forEach(m => {
-            const relPath = m.match(/@\/components\/mirats\/([^"']+)/)?.[1];
-            if (relPath) importedPaths.add(relPath);
+            const rel = m.match(/@\/components\/mirats\/([^"']+)/)?.[1];
+            if (rel) importedPaths.add(rel);
           });
         }
       });
 
       const orphans = allComponents.filter((comp: string) => {
         const fileName = path.basename(comp, ".tsx");
-        const dirName = path.dirname(comp).replace("src/components/mirats/", "");
-        let searchPath = dirName === "src/components/mirats" ? fileName : `${dirName}/${fileName}`;
-        // Dọn dẹp path nếu dirName vẫn chứa "src/components/mirats" (khi ở gốc)
-        if (searchPath.startsWith("src/components/mirats/")) {
-            searchPath = searchPath.replace("src/components/mirats/", "");
-        }
+        const dirRel = path.relative(COMPONENTS_DIR, path.dirname(comp));
+        const searchKey = dirRel === "" ? fileName : `${dirRel}/${fileName}`;
         
-        if (fileName === "index") return false;
-        
-        return !importedPaths.has(searchPath);
+        if (fileName === "index" || fileName.startsWith("__")) return false;
+        return !importedPaths.has(searchKey);
       });
 
       if (orphans.length > 0) {
-        console.warn("CẢNH BÁO: Phát hiện các component mồ côi:", orphans);
+        console.warn("CẢNH BÁO: Phát hiện các component mồ côi:", orphans.map(o => path.relative(PROJECT_ROOT, o)));
       }
     });
   });
