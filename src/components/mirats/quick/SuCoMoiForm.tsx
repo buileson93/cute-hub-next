@@ -429,8 +429,6 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
               </Card>
             </div>
           )}
-             </div>
-          )}
         </div>
         <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
           <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
