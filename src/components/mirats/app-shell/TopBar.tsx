@@ -18,8 +18,6 @@ import { cn } from "@/lib/utils";
 
 const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
 
-const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
-
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
