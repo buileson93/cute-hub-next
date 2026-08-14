@@ -13,13 +13,13 @@ import { useQuery } from "@tanstack/react-query";
 import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
 import { useCellEditor } from "@/lib/mirats/ui/use-cell-editor";
 import { Input } from "@/components/ui/input";
-import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
+import { useThietBiDetailMutations } from "@/hooks/use-thiet-bi-detail-mutations";
 import { useSession } from "@/hooks/use-session";
 
 export default function TabTongQuan({ 
   tb, ma, tenTb, refInfo, loaiMau, sysName, vaiTroList, pct, canEdit
 }: DeviceDetailTabProps) {
-  const mutations = useCayMutations();
+  const mutations = useThietBiDetailMutations();
   const { roles: userRoles } = useSession();
   
   const editor = useCellEditor({

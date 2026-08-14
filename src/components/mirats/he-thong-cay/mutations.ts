@@ -1,13 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { toast } from "sonner";
-import { useCayContext } from "./CayContext";
+import React from "react";
+import { CayContext } from "./CayContext";
 import { xoaThietBiAnToan, xemTruocXoaThietBi } from "@/lib/mirats/cay-delete";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 
 export function useCayMutations() {
   const qc = useQueryClient();
-  const { setEditMode } = useCayContext();
+  const cayCtx = React.useContext(CayContext);
+  const setEditMode = cayCtx?.setEditMode || (() => {});
   const { submit, hoanTac, submitMany } = useCayRpc();
 
   const invalidate = () => {

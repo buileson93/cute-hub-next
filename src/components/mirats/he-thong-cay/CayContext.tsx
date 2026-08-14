@@ -28,7 +28,7 @@ interface CayContextType {
   setGroupCode: (s: string) => void;
 }
 
-const CayContext = createContext<CayContextType | undefined>(undefined);
+export const CayContext = createContext<CayContextType | undefined>(undefined);
 
 export function CayProvider({ children }: { children: ReactNode }) {
   const [display, setDisplay] = useState<DisplayMode>("tree");

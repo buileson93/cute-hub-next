@@ -146,6 +146,10 @@ function ThietBiDetailRoute() {
     );
   }
 
+  return <ThietBiDetailView tb={tb} ma={ma} canEdit={canEdit} canManage={canManage} editMode={editMode} setEditMode={setEditMode} timeline={timeline} suCo={suCo} baoTri={baoTri} hongHoc={hongHoc} banGiao={banGiao} isAdmin={isAdmin} />;
+}
+
+function ThietBiDetailView({ tb, ma, canEdit, canManage, editMode, setEditMode, timeline, suCo, baoTri, hongHoc, banGiao, isAdmin }: any) {
   if (!tb) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
