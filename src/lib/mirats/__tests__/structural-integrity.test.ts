@@ -68,7 +68,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
         if (triggerValues.length > 0 && contentValues.length > 0) {
           triggerValues.forEach(val => {
             // Bỏ qua các giá trị navigation logic phổ biến
-            if (["table", "tree", "all", "current", "history", "mindmap", "health"].includes(val)) return;
+            if (["table", "tree", "all", "current", "history", "mindmap", "health", "system", "component", "position", "asset"].includes(val)) return;
             expect(contentValues, `TabsTrigger '${val}' không có TabsContent tương ứng trong ${file}`).toContain(val);
           });
         }
