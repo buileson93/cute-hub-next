@@ -262,11 +262,45 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
             <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Nội dung phiếu</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><Label>Ngày bắt đầu</Label><Input type="date" value={ngayBatDau} onChange={e => setNgayBatDau(e.target.value)} /></div>
-                <div><Label>Ngày hoàn thành</Label><Input type="date" value={ngayHoanThanh} onChange={e => setNgayHoanThanh(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Ngày bắt đầu</Label><Input type="date" value={ngayBatDau} onChange={e => setNgayBatDau(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Ngày hoàn thành</Label><Input type="date" value={ngayHoanThanh} onChange={e => setNgayHoanThanh(e.target.value)} /></div>
               </div>
-              <Label>Người thực hiện</Label><Input value={nguoiThucHien} onChange={e => setNguoiThucHien(e.target.value)} />
-              {isChecklist && sections && <ChecklistRenderer sections={sections} values={chkValues} onChange={setChkValues} />}
+              <div className="space-y-1.5">
+                <Label>Người thực hiện</Label>
+                <Input value={nguoiThucHien} onChange={e => setNguoiThucHien(e.target.value)} placeholder="Tên những người tham gia..." />
+              </div>
+
+              {templateId && (
+                <div className="pt-4 border-t space-y-4">
+                  <Label className="text-xs font-bold text-primary uppercase">Nội dung chi tiết (Trường động)</Label>
+                  {isChecklist && sections ? (
+                    <ChecklistRenderer sections={sections} values={chkValues} onChange={setChkValues} />
+                  ) : fields && fields.length > 0 ? (
+                    <DynamicFieldsForm 
+                      specs={fields.map(f => ({
+                        field_key: f.key,
+                        nhan: f.label,
+                        kieu: f.kind as any,
+                        bat_buoc: f.required,
+                        help_text: f.help_text ?? undefined,
+                        tuy_chon: f.options ?? [],
+                        mac_dinh: null,
+                        rang_buoc: {}
+                      } as FieldSpec))}
+                      value={values}
+                      onChange={setValues}
+                      showErrors
+                    />
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">Mẫu phiếu này không có trường dữ liệu động nào.</p>
+                  )}
+                  
+                  <div className="space-y-1.5 pt-2">
+                    <Label>Kết quả / Kết luận</Label>
+                    <Textarea value={ketQua} onChange={e => setKetQua(e.target.value)} placeholder="Ghi chú kết quả bảo dưỡng..." />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
