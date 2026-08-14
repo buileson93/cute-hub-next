@@ -6,14 +6,9 @@ import { ThietBiBanQuyen } from "@/components/mirats/ThietBiBanQuyen";
 import { DeviceDetailTabProps } from "./types";
 import { Badge } from "@/components/ui/badge";
 
-// Giả định TelemetryPanel và AllocationPanel đã được export hoặc có sẵn
-// Trong file gốc chúng được định nghĩa hoặc import, ta cần đảm bảo render đúng.
-// Ở đây tôi sẽ sử dụng các placeholder nếu không tìm thấy import trực tiếp, 
-// nhưng theo file gốc chúng là các panel chuyên biệt.
-
 export default function TabCauHinh({ 
   tb, ma, canManage, canEdit, vaiTroList, TelemetryPanel, AllocationPanel, donViTenMap 
-}: DeviceDetailTabProps & { TelemetryPanel: any, AllocationPanel: any, donViTenMap: any }) {
+}: DeviceDetailTabProps & { TelemetryPanel?: any, AllocationPanel?: any, donViTenMap?: any }) {
   return (
     <Tabs defaultValue="linhkien" className="w-full">
       <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto gap-1 bg-muted/50 p-1">

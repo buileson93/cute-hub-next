@@ -7,7 +7,7 @@ import { DeviceDetailTabProps } from "./types";
 
 export default function TabNangCao({ 
   ma, tb, canEdit, LifecyclePanel, editMode
-}: DeviceDetailTabProps & { LifecyclePanel: any }) {
+}: DeviceDetailTabProps & { LifecyclePanel?: any }) {
   return (
     <Tabs defaultValue="fields" className="w-full">
       <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 h-auto gap-1 bg-muted/50 p-1">

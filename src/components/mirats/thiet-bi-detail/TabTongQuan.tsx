@@ -127,12 +127,7 @@ export default function TabTongQuan({
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle className="text-base">Lý lịch tài sản</CardTitle></CardHeader>
-          <CardContent>
-            <LyLichThietBiPanel thietBiId={tb.id} />
-          </CardContent>
-        </Card>
+        {/* Lý lịch bị gỡ bỏ khỏi tab Tổng quan để ra tab riêng */}
       </div>
     </div>
   );

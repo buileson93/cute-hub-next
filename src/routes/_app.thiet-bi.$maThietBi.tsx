@@ -27,6 +27,11 @@ import TabVanHanh from "@/components/mirats/thiet-bi-detail/TabVanHanh";
 import TabCauHinh from "@/components/mirats/thiet-bi-detail/TabCauHinh";
 import TabHoSoPhapLy from "@/components/mirats/thiet-bi-detail/TabHoSoPhapLy";
 import TabNangCao from "@/components/mirats/thiet-bi-detail/TabNangCao";
+import { TelemetryPanel } from "@/components/mirats/thiet-bi-detail/TelemetryPanel";
+import { AllocationPanel } from "@/components/mirats/thiet-bi-detail/AllocationPanel";
+import { LifecyclePanel } from "@/components/mirats/thiet-bi-detail/LifecyclePanel";
+import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
+import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
@@ -143,12 +148,18 @@ function ThietBiDetailRoute() {
 
   const pct = tb.ty_le_tuoi_tho == null ? null : Math.max(0, Math.min(100, Math.round(tb.ty_le_tuoi_tho)));
 
+  const { data: taxo } = useDbTaxonomy();
+  const donViTenMap = useMemo(() => {
+    if (!taxo?.donViList) return new Map<string, string>();
+    return new Map(taxo.donViList.map((d) => [d.id, d.ten]));
+  }, [taxo]);
+
   const tabProps = {
     tb,
     ma,
     tenTb: tb.ten_thiet_bi || tb.ma_thiet_bi,
     loaiMau: tb.loai?.mau,
-    sysName: "Hệ thống giả lập",
+    sysName: tb._htTen || "Hệ thống giả lập",
     sysGpSo: "",
     sysGpHan: "",
     vaiTroList: [],
@@ -224,8 +235,9 @@ function ThietBiDetailRoute() {
         <div className="mt-6">
 
         <Tabs defaultValue="tong-quan" className="w-full">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex flex-wrap h-auto p-1 bg-muted/50 gap-1">
             <TabsTrigger value="tong-quan">Tổng quan</TabsTrigger>
+            <TabsTrigger value="ly-lich">Lý lịch</TabsTrigger>
             <TabsTrigger value="van-hanh">Vận hành</TabsTrigger>
             <TabsTrigger value="cau-hinh">Cấu hình</TabsTrigger>
             <TabsTrigger value="phap-ly">Pháp lý</TabsTrigger>
@@ -235,17 +247,25 @@ function ThietBiDetailRoute() {
           <TabsContent value="tong-quan" className="focus-visible:outline-none">
             <TabTongQuan {...tabProps} />
           </TabsContent>
+          <TabsContent value="ly-lich" className="focus-visible:outline-none">
+            <Card>
+              <CardHeader><CardTitle className="text-base">Lý lịch tài sản (Toàn bộ)</CardTitle></CardHeader>
+              <CardContent>
+                <LyLichThietBiPanel thietBiId={tb.id} />
+              </CardContent>
+            </Card>
+          </TabsContent>
           <TabsContent value="van-hanh" className="focus-visible:outline-none">
             <TabVanHanh {...tabProps} />
           </TabsContent>
           <TabsContent value="cau-hinh" className="focus-visible:outline-none">
-            <TabCauHinh {...tabProps} TelemetryPanel={null} AllocationPanel={null} donViTenMap={{}} />
+            <TabCauHinh {...tabProps} TelemetryPanel={TelemetryPanel} AllocationPanel={AllocationPanel} donViTenMap={donViTenMap} />
           </TabsContent>
           <TabsContent value="phap-ly" className="focus-visible:outline-none">
             <TabHoSoPhapLy {...tabProps} />
           </TabsContent>
           <TabsContent value="nang-cao" className="focus-visible:outline-none">
-            <TabNangCao {...tabProps} LifecyclePanel={null} />
+            <TabNangCao {...tabProps} LifecyclePanel={LifecyclePanel} />
           </TabsContent>
         </Tabs>
       </div>
