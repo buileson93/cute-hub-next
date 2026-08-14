@@ -134,7 +134,16 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
           template_snapshot: {} 
         },
 
-        ma_base: maBase, he_thong_ten: heThongTen, loai_bao_tri: "Định kỳ", ngay_bat_dau: ngayBatDau, ngay_hoan_thanh: ngayHoanThanh, ket_qua: "", trang_thai: trangThai, nguoi_thuc_hien: nguoiThucHien, don_vi_thuc_hien: profile?.don_vi ?? "", mo_ta_cong_viec: "",
+        ma_base: maBase, 
+        he_thong_ten: heThongTen, 
+        loai_bao_tri: loaiBaoTri, 
+        ngay_bat_dau: ngayBatDau, 
+        ngay_hoan_thanh: ngayHoanThanh, 
+        ket_qua: ketQua, 
+        trang_thai: trangThai, 
+        nguoi_thuc_hien: nguoiThucHien, 
+        don_vi_thuc_hien: donViThucHien, 
+        mo_ta_cong_viec: "",
         devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null })),
         item_results: isChecklist ? buildItemResults("__placeholder__", sections ?? [], chkValues) as any : []
       });
