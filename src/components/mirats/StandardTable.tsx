@@ -598,7 +598,7 @@ export function StandardTable<T>({
 
   const renderGlobalState = () => {
     if (trangThai.loi) {
-      return (
+      return errorContent ?? (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">
             {String(trangThai.loi)}
