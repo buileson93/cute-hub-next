@@ -615,7 +615,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                     />
                   ) : (
                     <AppTooltip noiDung={r.ma ? `Mã thành phần: ${r.ma}` : undefined}>
-                      <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug">{r.ten || "—"}</span>
+                      <span title={r.ten} className="line-clamp-2 break-words text-[12px] font-bold leading-snug">{r.ten || "—"}</span>
                     </AppTooltip>
                   )}
                   {r.ma && (
@@ -653,7 +653,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                     onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })}
                   />
                 ) : (
-                  <span title={r.viTri} className="line-clamp-2 break-words text-sm">{r.viTri || "—"}</span>
+                  <span title={r.viTri} className="line-clamp-2 break-words text-[12px]">{r.viTri || "—"}</span>
                 ),
             },
             { key: "loai", label: "Loại yêu cầu", minW: "min-w-[150px]", cellClassName: "max-w-[180px]", filter: "cat", value: (r) => r.loaiYeuCau, hideBelow: "xl" },
@@ -679,7 +679,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"} className="text-[11px]">
+                  <Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"} className="text-[10px]">
                     {r.trangThai || "—"}
                   </Badge>
                 ),
@@ -708,7 +708,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                         >
                           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                             <AppTooltip noiDung={r.thietBiMa ? `Mã tài sản: ${r.thietBiMa}` : undefined}>
-                              <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
+                              <span title={r.thietBiTen} className="line-clamp-2 break-words text-[12px] font-bold leading-snug group-hover:text-primary group-hover:underline">
                                 {r.thietBiTen || "—"}
                               </span>
                             </AppTooltip>
@@ -773,9 +773,9 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 ),
             },
             { key: "model", label: "Model", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "lg", inherited: true, group: "Tài sản", value: (r) => r.model, cell: (r) => <ModelCell model={r.model} modelId={r.modelId} registry={modelRegistry} /> },
-            { key: "chungLoai", label: "Chủng loại", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "xl", inherited: true, group: "Tài sản", value: (r) => r.chungLoai, cell: (r) => r.chungLoai ? <span title={r.chungLoai} className="line-clamp-2 break-words text-sm leading-snug">{r.chungLoai}</span> : <span className="text-xs text-muted-foreground">—</span> },
-            { key: "nhaSanXuat", label: "Nhà sản xuất", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.nhaSanXuat, cell: (r) => r.nhaSanXuat ? <span title={r.nhaSanXuat} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaSanXuat}</span> : <span className="text-xs text-muted-foreground">—</span> },
-            { key: "nhaCungCap", label: "Nhà cung cấp", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.nhaCungCap, cell: (r) => r.nhaCungCap ? <span title={r.nhaCungCap} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaCungCap}</span> : <span className="text-xs text-muted-foreground">—</span> },
+            { key: "chungLoai", label: "Chủng loại", minW: "min-w-[150px]", cellClassName: "max-w-[200px]", filter: "cat", hideBelow: "xl", inherited: true, group: "Tài sản", value: (r) => r.chungLoai, cell: (r) => r.chungLoai ? <span title={r.chungLoai} className="line-clamp-2 break-words text-[12px] leading-snug">{r.chungLoai}</span> : <span className="text-xs text-muted-foreground">—</span> },
+            { key: "nhaSanXuat", label: "Nhà sản xuất", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.nhaSanXuat, cell: (r) => r.nhaSanXuat ? <span title={r.nhaSanXuat} className="line-clamp-2 break-words text-[12px] leading-snug">{r.nhaSanXuat}</span> : <span className="text-xs text-muted-foreground">—</span> },
+            { key: "nhaCungCap", label: "Nhà cung cấp", minW: "min-w-[170px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.nhaCungCap, cell: (r) => r.nhaCungCap ? <span title={r.nhaCungCap} className="line-clamp-2 break-words text-[12px] leading-snug">{r.nhaCungCap}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "pN", label: "P/N", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "xl", inherited: true, group: "Tài sản", value: (r) => r.pN, cell: (r) => r.pN ? <span className="font-mono text-xs">{r.pN}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "maTaiSanBravo", label: "Mã Bravo", minW: "min-w-[130px]", filter: "text", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.maTaiSanBravo, cell: (r) => r.maTaiSanBravo ? <span className="font-mono text-xs text-muted-foreground">{r.maTaiSanBravo}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "taiSanTrangThai", label: "Trạng thái tài sản", minW: "min-w-[140px]", align: "center", filter: "cat", defaultHidden: true, hideBelow: "xl", inherited: true, group: "Tài sản", value: (r) => r.taiSanTrangThai, cell: (r) => r.taiSanTrangThai ? <Badge variant="outline" className="text-[11px]">{r.taiSanTrangThai}</Badge> : <span className="text-xs text-muted-foreground">—</span> },
@@ -784,7 +784,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             { key: "ngayMua", label: "Ngày mua", minW: "min-w-[110px]", filter: "text", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.ngayMua },
             { key: "hanBaoHanh", label: "Hạn bảo hành", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.hanBaoHanh },
             { key: "tyLeTuoiTho", label: "% Tuổi thọ", minW: "min-w-[110px]", align: "right", filter: "text", defaultHidden: true, hideBelow: "xl", inherited: true, group: "Tài sản", value: (r) => r.tyLeTuoiTho, sortValue: (r) => parseFloat(r.tyLeTuoiTho) || 0 },
-            { key: "tinhTrangKyThuat", label: "Tình trạng kỹ thuật", minW: "min-w-[160px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.tinhTrangKyThuat, cell: (r) => r.tinhTrangKyThuat ? <span title={r.tinhTrangKyThuat} className="line-clamp-2 break-words text-sm leading-snug">{r.tinhTrangKyThuat}</span> : <span className="text-xs text-muted-foreground">—</span> },
+            { key: "tinhTrangKyThuat", label: "Tình trạng kỹ thuật", minW: "min-w-[160px]", cellClassName: "max-w-[220px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.tinhTrangKyThuat, cell: (r) => r.tinhTrangKyThuat ? <span title={r.tinhTrangKyThuat} className="line-clamp-2 break-words text-[12px] leading-snug">{r.tinhTrangKyThuat}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "cheDoKdHc", label: "Chế độ KD/HC", minW: "min-w-[130px]", filter: "cat", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.cheDoKdHc },
             { key: "ngayBaoTriGanNhat", label: "BT gần nhất", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.ngayBaoTriGanNhat },
             { key: "ngayBaoTriKeTiep", label: "BT kế tiếp", minW: "min-w-[120px]", filter: "text", defaultHidden: true, hideBelow: "2xl", inherited: true, group: "Tài sản", value: (r) => r.ngayBaoTriKeTiep },
