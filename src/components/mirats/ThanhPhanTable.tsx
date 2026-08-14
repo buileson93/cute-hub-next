@@ -808,6 +808,31 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
           ]}
         />
+        
+        {selectedTp && (
+          <ThanhPhanChiTietDialog
+            viTri={{
+              id: selectedTp.row.id,
+              ma_thanh_phan: selectedTp.row.ma,
+              ten: selectedTp.row.ten,
+              he_thong_id: selectedTp.row.heThongId,
+              loai_thiet_bi_yeu_cau: selectedTp.row.modelId,
+              trang_thai: selectedTp.row.trangThai === "Đã ngừng" ? "ngung" : "hoat_dong",
+              bat_buoc: false,
+              device: selectedTp.row.daLap ? {
+                thiet_bi_id: "", // RPC doesn't provide asset ID
+                ma_thiet_bi: selectedTp.row.thietBiMa,
+                ten_thiet_bi: selectedTp.row.thietBiTen,
+                ma_serial: selectedTp.row.thietBiSerial
+              } : null
+            } as any}
+            heThongId={selectedTp.heThongId}
+            canManage={allowEdit}
+            onClose={() => setSelectedTp(null)}
+            onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } })}
+          />
+        )}
+        </>
       )}
 
       {loadingTS && viewMode === "asset" && (
