@@ -233,101 +233,202 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
        <FormWizardSteps steps={steps} currentStep={step} />
        <div className="flex-1 overflow-y-auto px-4">
           {step === 1 && (
-             <div className="space-y-4">
-               <CollapsibleSection
-                 formId="su-co-moi"
-                 sectionId="thong-tin-chung"
-                 title="1. Thông tin chung"
-                 defaultOpen
-                 action={
-                   <div className="flex gap-2">
-                     <Button variant="outline" size="sm" onClick={() => setVoiceActive(!voiceActive)} className={voiceActive ? "bg-red-50 text-red-600" : ""}>
-                       {voiceActive ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                     </Button>
-                     <Button variant="outline" size="sm" onClick={() => parseMutation.mutate(aiText)}>
-                       <Sparkles className="h-4 w-4 mr-1" /> AI Bóc tách
-                     </Button>
-                   </div>
-                 }
-               >
-                   <div className="space-y-4">
-                    <div className="space-y-1.5">
-                      <Label>Sự cố / Hiện tượng *</Label>
-                      <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả hiện tượng..." className="min-h-[100px]" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="space-y-1.5">
-                         <Label>Hệ thống bị sự cố *</Label>
-                         <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
-                       </div>
-                       <div className="space-y-1.5">
-                         <Label>Phân loại mức độ</Label>
-                         <Select value={phanLoai} onValueChange={setPhanLoai}>
-                           <SelectTrigger><SelectValue /></SelectTrigger>
-                           <SelectContent>
-                              {["A", "B", "C", "D", "E"].map(l => <SelectItem key={l} value={l}>Mức {l}</SelectItem>)}
-                           </SelectContent>
-                         </Select>
-                       </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label>Tài sản chính liên quan *</Label>
-                      <AssetPicker value={heThongDichVu} onChange={(id) => setHeThongDichVu(id)} heThongId={heThongId} />
-                    </div>
-                   </div>
-               </CollapsibleSection>
+            <div className="space-y-4">
+              <CollapsibleSection
+                formId="su-co-moi"
+                sectionId="kinh-gui"
+                title="Kính gửi (Thông tin chung)"
+                defaultOpen={false}
+              >
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label>Kính gửi</Label>
+                    <Combobox 
+                      options={DEFAULT_RECIPIENTS.map(r => ({ value: r, label: r }))} 
+                      value={kinhGui} 
+                      onChange={setKinhGui}
+                      allowCustom
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Ngày phát hiện *</Label>
+                    <Input type="date" value={ngayPhatHien} onChange={e => setNgayPhatHien(e.target.value)} />
+                  </div>
+                </div>
+              </CollapsibleSection>
 
-               <CollapsibleSection
-                 formId="su-co-moi"
-                 sectionId="hien-truong"
-                 title="Ảnh hiện trường & AI"
-                 defaultOpen
-               >
-                 <VisionImageHint 
-                   onApplyDescription={(text) => setHienTuong(prev => prev ? prev + "\n" + text : text)}
-                   onApplyCategory={(cat) => setPhanLoai(cat)}
-                 />
-               </CollapsibleSection>
-             </div>
+              <CollapsibleSection
+                formId="su-co-moi"
+                sectionId="khai-bao-nhanh"
+                title="1. Khai báo nhanh & AI"
+                defaultOpen
+                action={
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setVoiceActive(!voiceActive)} className={voiceActive ? "bg-red-50 text-red-600" : ""}>
+                      {voiceActive ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => parseMutation.mutate(aiText)}>
+                      <Sparkles className="h-4 w-4 mr-1" /> AI Bóc tách
+                    </Button>
+                  </div>
+                }
+              >
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label>Sự cố / Hiện tượng *</Label>
+                    <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả hiện tượng..." className="min-h-[100px]" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Hệ thống bị sự cố *</Label>
+                      <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Phân loại mức độ (A-E) *</Label>
+                      <Select value={phanLoai} onValueChange={setPhanLoai}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {PHAN_LOAI.map(l => (
+                            <SelectItem key={l} value={l}>
+                              <div className="flex items-center gap-2">
+                                <Badge variant={l === "A" || l === "B" ? "destructive" : "outline"} className="w-6 justify-center">{l}</Badge>
+                                <span>{MUC_BY_PL[l]}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Tài sản chính liên quan *</Label>
+                    <AssetPicker value={heThongDichVu} onChange={(id) => setHeThongDichVu(id)} heThongId={heThongId} />
+                  </div>
+                </div>
+              </CollapsibleSection>
+
+              <CollapsibleSection
+                formId="su-co-moi"
+                sectionId="hien-truong"
+                title="Ảnh hiện trường & AI"
+                defaultOpen={false}
+              >
+                <VisionImageHint 
+                  onApplyDescription={(text) => setHienTuong(prev => prev ? prev + "\n" + text : text)}
+                  onApplyCategory={(cat) => setPhanLoai(cat)}
+                />
+              </CollapsibleSection>
+            </div>
           )}
           {step === 2 && (
-             <Card>
-                 <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Chọn thành phần hệ thống & Tài sản</CardTitle></CardHeader>
-                 <CardContent className="space-y-4">
-                   {tpLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto" /> : (
-                     tpList.map(tp => (
-                        <div key={tp.id} className="flex items-center gap-2">
-                          <Checkbox checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} />
-                          <Label>{tp.ten}</Label>
-                        </div>
-                     ))
-                   )}
-                   {selected.length > 0 && <div className="p-2 bg-muted rounded text-xs">Đã chọn: {selected.length} tài sản</div>}
-                 </CardContent>
-             </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold text-primary">2. Chọn thành phần hệ thống & Tài sản</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-2">
+                  {tpLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto" /> : tpList.length === 0 ? (
+                    <p className="text-center text-xs text-muted-foreground py-8">Hệ thống chưa có thành phần nào.</p>
+                  ) : (
+                    tpList.map(tp => (
+                      <div key={tp.id} className="flex items-center gap-2 p-2 hover:bg-muted/50 rounded-md transition-colors">
+                        <Checkbox id={`tp-${tp.id}`} checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} />
+                        <Label htmlFor={`tp-${tp.id}`} className="flex-1 cursor-pointer">{tp.ten}</Label>
+                      </div>
+                    ))
+                  )}
+                </div>
+                {selected.length > 0 && (
+                  <div className="p-3 bg-primary/5 border border-primary/10 rounded-md">
+                    <div className="flex items-center gap-2 text-primary font-medium text-xs mb-1">
+                      <Layers className="h-3.5 w-3.5" />
+                      <span>Tài sản liên quan ({selected.length})</span>
+                    </div>
+                    <div className="text-[11px] text-muted-foreground line-clamp-2">
+                      {selected.map(d => d.ma_thiet_bi).join(", ")}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           )}
           {step === 3 && (
-             <div className="space-y-4">
-                <Card>
-                    <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Diễn biến & Xử lý</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <Label>Tóm tắt sự cố</Label><Textarea value={tomTat} onChange={e => setTomTat(e.target.value)} />
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="space-y-1">
-                              <Label>Bắt đầu</Label><Input type="datetime-local" value={thoiGianBatDau.slice(0, 16)} onChange={e => setThoiGianBatDau(e.target.value)} />
-                           </div>
-                           <div className="space-y-1">
-                              <Label>Kết thúc</Label><Input type="datetime-local" value={thoiGianKetThuc.slice(0, 16)} onChange={e => setThoiGianKetThuc(e.target.value)} />
-                           </div>
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold text-primary">3. Diễn biến & Đánh giá</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label>Tóm tắt sự cố</Label>
+                    <Textarea value={tomTat} onChange={e => setTomTat(e.target.value)} placeholder="Tóm tắt ngắn gọn diễn biến..." />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Bắt đầu *</Label>
+                      <Input type="datetime-local" value={thoiGianBatDau.slice(0, 16)} onChange={e => setThoiGianBatDau(e.target.value)} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Kết thúc {closingIntent && "*"}</Label>
+                      <Input type="datetime-local" value={thoiGianKetThuc.slice(0, 16)} onChange={e => setThoiGianKetThuc(e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label>Ảnh hưởng ĐHB *</Label>
+                      <Select value={anhHuongDhb} onValueChange={setAnhHuongDhb}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {AH_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Vấn đề liên quan (RCA)</Label>
+                      <Combobox options={vanDeOptions} value={vanDeId} onChange={setVanDeId} placeholder="— Chọn vấn đề —" />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 space-y-4">
+                    <div className="flex items-center space-x-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-100 dark:border-amber-900/30">
+                      <Checkbox id="closing-intent" checked={closingIntent} onCheckedChange={(v: boolean) => setClosingIntent(!!v)} />
+                      <div className="grid gap-1.5 leading-none">
+                        <Label htmlFor="closing-intent" className="text-sm font-bold text-amber-900 dark:text-amber-200 cursor-pointer">
+                          Đóng sự cố ngay
+                        </Label>
+                        <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                          Xác nhận sự cố đã được khắc phục dứt điểm.
+                        </p>
+                      </div>
+                    </div>
+
+                    {closingIntent && (
+                      <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="space-y-1.5">
+                          <Label>Tình hình hiện tại *</Label>
+                          <Textarea value={tinhHinh} onChange={e => setTinhHinh(e.target.value)} placeholder="Trạng thái hệ thống/tài sản sau khi xử lý..." />
                         </div>
-                        <Label>Nguyên nhân</Label><Textarea value={nguyenNhan} onChange={e => setNguyenNhan(e.target.value)} />
-                        <Label>Biện pháp xử lý</Label><Textarea value={bienPhap} onChange={e => setBienPhap(e.target.value)} />
-                        <div className="flex items-center gap-2">
-                           <Checkbox checked={closingIntent} onCheckedChange={(v: boolean) => setClosingIntent(v)} />
-                           <Label>Đóng sự cố ngay (hoàn thành)</Label>
+                        <div className="space-y-1.5">
+                          <Label>Nguyên nhân *</Label>
+                          <Textarea value={nguyenNhan} onChange={e => setNguyenNhan(e.target.value)} placeholder="Kết luận nguyên nhân..." />
                         </div>
-                    </CardContent>
-                </Card>
+                        <div className="space-y-1.5">
+                          <Label>Biện pháp xử lý *</Label>
+                          <Textarea value={bienPhap} onChange={e => setBienPhap(e.target.value)} placeholder="Các bước đã thực hiện để khắc phục..." />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label>Kết quả / Kết luận *</Label>
+                          <Textarea value={ketQua} onChange={e => setKetQua(e.target.value)} placeholder="Đánh giá hiệu quả sau xử lý..." />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
              </div>
           )}
         </div>
