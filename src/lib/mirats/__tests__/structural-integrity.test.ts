@@ -115,17 +115,30 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
   });
 
   describe("E. Sổ lý lịch (SolyLich Entry Points)", () => {
-    it("kiểm tra LyLichHeThongPanel có ít nhất một đường import/render từ UI chính", () => {
+    it("kiểm tra LyLichHeThongPanel có ít nhất một đường render từ UI chính", () => {
       const allTsx = [...getFilesRecursively(ROUTES_DIR), ...getFilesRecursively(COMPONENTS_DIR)];
       let found = false;
       allTsx.forEach((file: string) => {
         if (file.includes("LyLichLayerPanel.tsx")) return; 
         const content = fs.readFileSync(file, "utf-8");
-        if (content.includes("LyLichHeThongPanel")) {
+        if (content.includes("<LyLichHeThongPanel") || content.includes("LyLichHeThongPanel")) {
           found = true;
         }
       });
       expect(found, "LyLichHeThongPanel không được sử dụng ở bất kỳ đâu trong UI chính.").toBe(true);
+    });
+
+    it("kiểm tra LyLichThanhPhanPanel có đường dẫn render từ UI chính", () => {
+      const allTsx = [...getFilesRecursively(ROUTES_DIR), ...getFilesRecursively(COMPONENTS_DIR)];
+      let found = false;
+      allTsx.forEach((file: string) => {
+        if (file.includes("LyLichLayerPanel.tsx")) return; 
+        const content = fs.readFileSync(file, "utf-8");
+        if (content.includes("<LyLichThanhPhanPanel") || content.includes("LyLichThanhPhanPanel")) {
+          found = true;
+        }
+      });
+      expect(found, "LyLichThanhPhanPanel không được sử dụng ở bất kỳ đâu trong UI chính.").toBe(true);
     });
   });
 
