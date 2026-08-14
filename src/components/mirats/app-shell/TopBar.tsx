@@ -3,6 +3,7 @@ import { Search, Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
+import { CommandPaletteButton } from "../CommandPaletteButton";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
@@ -51,6 +52,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
       <div className="flex items-center gap-1 sm:gap-2">
         <RealtimeStatusIndicator />
+        <CommandPaletteButton />
         <QrScanButton />
         
         <div className="hidden md:block">
