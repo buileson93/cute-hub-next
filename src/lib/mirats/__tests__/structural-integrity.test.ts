@@ -13,7 +13,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
   describe("A. Giao diện lắp sai (Tabs Mismatch)", () => {
     const files = globSync("{src/routes/**/*.tsx,src/components/mirats/**/*.tsx}");
     
-    files.forEach(file => {
+    files.forEach((file: string) => {
       it(`kiểm tra Tabs trong ${file}`, () => {
         const content = fs.readFileSync(file, "utf-8");
         if (!content.includes("<Tabs")) return; // Bỏ qua nếu không dùng Tabs
@@ -34,7 +34,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
   describe("B. Handler rỗng (Silent Failure)", () => {
     const forms = globSync(`${QUICK_FORMS_DIR}/*.tsx`);
     
-    forms.forEach(file => {
+    forms.forEach((file: string) => {
       it(`kiểm tra handler rỗng trong ${file}`, () => {
         const content = fs.readFileSync(file, "utf-8");
         
@@ -91,7 +91,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
       
       const importedPaths: Set<string> = new Set();
       
-      allSourceFiles.forEach(file => {
+      allSourceFiles.forEach((file: string) => {
         const content = fs.readFileSync(file, "utf-8");
         // Tìm các import từ @/components/mirats
         const matches = content.match(/from\s+["']@\/components\/mirats\/([^"']+)["']/g);
@@ -103,7 +103,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
         }
       });
 
-      const orphans = allComponents.filter(comp => {
+      const orphans = allComponents.filter((comp: string) => {
         const fileName = path.basename(comp, ".tsx");
         const dirName = path.dirname(comp).replace("src/components/mirats/", "");
         const searchPath = dirName === "src/components/mirats" ? fileName : `${dirName}/${fileName}`;
