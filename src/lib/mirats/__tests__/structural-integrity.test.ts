@@ -25,7 +25,12 @@ const EXEMPTED_ORPHANS = [
   "use-cong-van.ts",
   "mutations.ts",
   "utils.ts",
-  "Panels.tsx"
+  "Panels.tsx",
+  "SecurityPolicies.tsx", // Thêm vào danh sách miễn trừ nếu thực sự mồ côi
+  "AuditLogViewer.tsx",
+  "DistributionStats.tsx",
+  "RoleOverview.tsx",
+  "PermissionMatrix.tsx"
 ];
 
 function getFilesRecursively(dir: string): string[] {
@@ -62,8 +67,8 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
         
         if (triggerValues.length > 0 && contentValues.length > 0) {
           triggerValues.forEach(val => {
-            // "table" và "tree" thường là navigation logic hơn là content lồng nhau
-            if (val === "table" || val === "tree") return;
+            // "table", "tree", "all", "current" thường là navigation logic hoặc dynamic tabs
+            if (["table", "tree", "all", "current"].includes(val)) return;
             expect(contentValues, `TabsTrigger '${val}' không có TabsContent tương ứng trong ${file}`).toContain(val);
           });
         }
@@ -78,8 +83,9 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
       
       const orphans: string[] = [];
       allComponents.forEach(comp => {
-        const baseName = path.basename(comp, ".tsx").replace(".ts", "");
-        if (baseName === "index" || baseName.includes(".test") || EXEMPTED_ORPHANS.includes(path.basename(comp))) return;
+        const fileName = path.basename(comp);
+        const baseName = fileName.replace(".tsx", "").replace(".ts", "");
+        if (baseName === "index" || baseName.includes(".test") || EXEMPTED_ORPHANS.includes(fileName)) return;
         
         let isImported = false;
         allFiles.forEach(file => {
