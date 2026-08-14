@@ -38,8 +38,11 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
         const content = fs.readFileSync(file, "utf-8");
         
         // 1. Kiểm tra lồng nhau
-        const nestingMatch = content.match(/<TabsContent[^>]*>[\s\S]*?<TabsContent/g);
+        // Lưu ý: Chỉ bắt các TabsContent lồng nhau TRỰC TIẾP trong cùng một file.
+        // Dùng regex không tham lam để tránh bắt nhầm các TabsContent ngang hàng.
+        const nestingMatch = content.match(/<TabsContent[^>]*>[\s\S]*?<TabsContent[^>]*>[\s\S]*?<\/TabsContent>[\s\S]*?<\/TabsContent>/g);
         expect(nestingMatch || [], `Phát hiện TabsContent lồng nhau trong ${file}`).toHaveLength(0);
+
 
         // 2. Kiểm tra TabsList vs TabsContent (nếu có TabsList thì nên có ít nhất một TabsContent trong cùng file)
         if (content.includes("<TabsList")) {
