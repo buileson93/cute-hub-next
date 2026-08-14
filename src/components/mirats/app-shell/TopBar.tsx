@@ -8,12 +8,7 @@ import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
 import { useRealtimeStatus } from "@/hooks/use-realtime-status";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
 
 const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
@@ -88,17 +83,10 @@ function RealtimeStatusIndicator() {
   const Icon = config.icon;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted cursor-help transition-mirats-fast active:scale-[var(--scale-active)]">
-            <Icon className={cn("h-4 w-4", config.color)} />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p className="text-xs font-medium">{config.label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <AppTooltip noiDung={<p className="text-xs font-medium">{config.label}</p>} ben="bottom">
+      <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted cursor-help transition-mirats-fast active:scale-[var(--scale-active)]">
+        <Icon className={cn("h-4 w-4", config.color)} />
+      </div>
+    </AppTooltip>
   );
 }

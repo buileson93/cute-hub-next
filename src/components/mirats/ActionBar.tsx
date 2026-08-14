@@ -1,4 +1,5 @@
 import { Plus, Pencil, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { AppRole } from "@/hooks/use-session";
@@ -42,29 +43,44 @@ export function ActionBar({
   return (
     <div className={cn("flex items-center gap-1.5", className)}>
       {onTao && (
-        <Button size="sm" className="h-8 gap-1.5" onClick={onTao}>
-          <Plus className="h-4 w-4" aria-hidden /> {NHAN.tao}
-        </Button>
+        <AppTooltip noiDung={NHAN.tao}>
+          <Button size="sm" className="h-8 w-8 p-0" onClick={onTao}>
+            <Plus className="h-4 w-4" aria-hidden />
+            <span className="sr-only">{NHAN.tao}</span>
+          </Button>
+        </AppTooltip>
       )}
       {onSua && (
-        <Button size="sm" variant="secondary" className="h-8 gap-1.5" onClick={onSua}>
-          <Pencil className="h-4 w-4" aria-hidden /> {NHAN.sua}
-        </Button>
+        <AppTooltip noiDung={NHAN.sua}>
+          <Button size="sm" variant="secondary" className="h-8 w-8 p-0" onClick={onSua}>
+            <Pencil className="h-4 w-4" aria-hidden />
+            <span className="sr-only">{NHAN.sua}</span>
+          </Button>
+        </AppTooltip>
       )}
       {onHoanThanh && (
-        <Button size="sm" variant="default" className="h-8 gap-1.5" onClick={onHoanThanh}>
-          <CheckCircle2 className="h-4 w-4" aria-hidden /> {NHAN.hoanThanh}
-        </Button>
+        <AppTooltip noiDung={NHAN.hoanThanh}>
+          <Button size="sm" variant="default" className="h-8 w-8 p-0" onClick={onHoanThanh}>
+            <CheckCircle2 className="h-4 w-4" aria-hidden />
+            <span className="sr-only">{NHAN.hoanThanh}</span>
+          </Button>
+        </AppTooltip>
       )}
       {onDong && (
-        <Button size="sm" variant="outline" className="h-8 gap-1.5" onClick={onDong}>
-          <XCircle className="h-4 w-4" aria-hidden /> {NHAN.dong}
-        </Button>
+        <AppTooltip noiDung={NHAN.dong}>
+          <Button size="sm" variant="outline" className="h-8 w-8 p-0" onClick={onDong}>
+            <XCircle className="h-4 w-4" aria-hidden />
+            <span className="sr-only">{NHAN.dong}</span>
+          </Button>
+        </AppTooltip>
       )}
       {onXoa && (
-        <Button size="sm" variant="destructive" className="h-8 gap-1.5" onClick={onXoa}>
-          <Trash2 className="h-4 w-4" aria-hidden /> {NHAN.xoa}
-        </Button>
+        <AppTooltip noiDung={NHAN.xoa}>
+          <Button size="sm" variant="destructive" className="h-8 w-8 p-0" onClick={onXoa}>
+            <Trash2 className="h-4 w-4" aria-hidden />
+            <span className="sr-only">{NHAN.xoa}</span>
+          </Button>
+        </AppTooltip>
       )}
       {extra}
     </div>

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -154,17 +155,39 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
       <div className="flex items-center gap-1">
         {url && (
           <>
-            <Button size="sm" variant="ghost" title="Xem" onClick={() => setViewerOpen(true)}><Eye className="h-4 w-4" /></Button>
-            <Button asChild size="sm" variant="ghost"><a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a></Button>
+            <AppTooltip noiDung="Xem trực tiếp trong trình duyệt">
+              <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setViewerOpen(true)}>
+                <Eye className="h-4 w-4" />
+                <span className="sr-only">Xem</span>
+              </Button>
+            </AppTooltip>
+            <AppTooltip noiDung="Mở trong tab mới">
+              <Button asChild size="sm" variant="ghost" className="h-7 w-7 p-0">
+                <a href={url} target="_blank" rel="noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  <span className="sr-only">Mở tab mới</span>
+                </a>
+              </Button>
+            </AppTooltip>
             {canDownload && (
-              <Button asChild size="sm" variant="ghost" title="Tải xuống"><a href={url} download={row.file_name}><Download className="h-4 w-4" /></a></Button>
+              <AppTooltip noiDung="Tải về máy tính">
+                <Button asChild size="sm" variant="ghost" className="h-7 w-7 p-0">
+                  <a href={url} download={row.file_name}>
+                    <Download className="h-4 w-4" />
+                    <span className="sr-only">Tải xuống</span>
+                  </a>
+                </Button>
+              </AppTooltip>
             )}
           </>
         )}
         {canManage && (
-          <Button size="icon" variant="ghost" onClick={onDelete} className="text-red-600" aria-label="Xoá">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <AppTooltip noiDung="Xoá tài liệu này">
+            <Button size="sm" variant="ghost" onClick={onDelete} className="h-7 w-7 p-0 text-red-600">
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Xoá</span>
+            </Button>
+          </AppTooltip>
         )}
       </div>
       <DocViewerDialog
@@ -230,9 +253,12 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-1.5">
-          <Upload className="h-4 w-4" /> Tải tài liệu
-        </Button>
+        <AppTooltip noiDung="Tải tài liệu mới lên cho model này">
+          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+            <Upload className="h-4 w-4" />
+            <span className="sr-only">Tải tài liệu</span>
+          </Button>
+        </AppTooltip>
       </DialogTrigger>
       <DialogContent onClick={(e) => e.stopPropagation()}>
         <DialogHeader><DialogTitle>Tải tài liệu cho model</DialogTitle></DialogHeader>

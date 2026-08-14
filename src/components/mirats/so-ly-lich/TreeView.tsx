@@ -5,7 +5,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@tanstack/react-router";
 
@@ -78,9 +80,14 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
           )}
           {node.kind === 'ht' && node.sysId && (
             <div className="ml-auto opacity-0 group-hover:opacity-100 pr-1">
-              <Link to="/he-thong/$id" params={{ id: node.sysId }} title="Xem sổ lý lịch hệ thống">
-                <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
-              </Link>
+              <AppTooltip noiDung="Xem sổ lý lịch hệ thống">
+                <Button asChild variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Link to="/he-thong/$id" params={{ id: node.sysId }}>
+                    <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
+                    <span className="sr-only">Sổ lý lịch hệ thống</span>
+                  </Link>
+                </Button>
+              </AppTooltip>
             </div>
           )}
         </div>
@@ -106,9 +113,14 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
                   </TooltipContent>
                 </Tooltip>
                 <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2">
-                   <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi } as any} title="Xem sổ lý lịch">
-                     <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
-                   </Link>
+                   <AppTooltip noiDung="Xem sổ lý lịch tài sản">
+                     <Button asChild variant="ghost" size="sm" className="h-6 w-6 p-0">
+                       <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi } as any}>
+                         <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
+                         <span className="sr-only">Xem sổ lý lịch</span>
+                       </Link>
+                     </Button>
+                   </AppTooltip>
                 </div>
               </div>
             ))}

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import {
   Dialog,
   DialogContent,
@@ -159,10 +160,12 @@ export function AnnotationManager({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5">
-          <StickyNote className="h-3.5 w-3.5" />
-          Ghi chú <Badge variant="secondary" className="ml-1">{items.length}</Badge>
-        </Button>
+        <AppTooltip noiDung={`Quản lý ${items.length} ghi chú sự kiện trên biểu đồ`}>
+          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+            <StickyNote className="h-3.5 w-3.5" />
+            <span className="sr-only">Ghi chú ({items.length})</span>
+          </Button>
+        </AppTooltip>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>

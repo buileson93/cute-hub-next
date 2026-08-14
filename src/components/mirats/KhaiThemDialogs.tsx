@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Combobox } from "@/components/mirats/Combobox";
 import { SchemaDialog, type SchemaField } from "@/components/mirats/SchemaDialog";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { supabase } from "@/integrations/backend/client";
 import { useLuuViTri, useViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { sinhMaThanhPhanDuyNhat } from "@/lib/mirats/ma-thiet-bi";
@@ -47,13 +48,16 @@ export function KhaiThemCumButtons({ size = "sm" }: { size?: "sm" | "default" })
   const [openTp, setOpenTp] = useState(false);
   return (
     <>
-      <Button size={size} variant="outline" className="gap-1.5" onClick={() => setOpenHt(true)}>
-        <Network className="h-4 w-4" /> <Plus className="-ml-1 h-3.5 w-3.5" /> Khai thêm hệ thống
-      </Button>
-      <Button size={size} variant="outline" className="gap-1.5" onClick={() => setOpenTp(true)}>
-        <ComponentIcon className="h-4 w-4" /> <Plus className="-ml-1 h-3.5 w-3.5" /> Khai thêm thành
-        phần
-      </Button>
+      <AppTooltip noiDung="Khai thêm hệ thống mới">
+        <Button size={size} variant="outline" className="h-7 w-7 p-0" onClick={() => setOpenHt(true)}>
+          <Network className="h-4 w-4" />
+        </Button>
+      </AppTooltip>
+      <AppTooltip noiDung="Khai thêm thành phần cho hệ thống">
+        <Button size={size} variant="outline" className="h-7 w-7 p-0" onClick={() => setOpenTp(true)}>
+          <ComponentIcon className="h-4 w-4" />
+        </Button>
+      </AppTooltip>
       {openHt && <KhaiThemHeThongDialog onClose={() => setOpenHt(false)} />}
       {openTp && <KhaiThemThanhPhanDialog onClose={() => setOpenTp(false)} />}
     </>

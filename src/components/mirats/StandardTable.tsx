@@ -811,10 +811,12 @@ export function StandardTable<T>({
                 {isMobile ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-7 gap-1.5 ml-1">
-                        <Icon name="table.filter" size="small" />
-                        <span>Bộ lọc</span>
-                      </Button>
+                      <AppTooltip noiDung="Mở bộ lọc và sắp xếp cột cho di động">
+                        <Button variant="outline" size="sm" className="h-7 w-7 p-0 ml-1">
+                          <Icon name="table.filter" size="small" />
+                          <span className="sr-only">Bộ lọc</span>
+                        </Button>
+                      </AppTooltip>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[280px]">
                       <div className="p-2 space-y-4">
