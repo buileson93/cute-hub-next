@@ -33,8 +33,11 @@ import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
 import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
+import { DynamicFieldsForm } from "@/components/mirats/DynamicFieldsForm";
+import type { FieldSpec } from "@/lib/mirats/registry";
 
 const TT_OPTIONS = ["Kế hoạch", "Đang thực hiện", "Hoàn thành", "Hoãn"];
+const LOAI_BT_OPTIONS = ["Định kỳ", "Đột xuất", "Khắc phục"];
 
 type FieldRow = {
   id: string; key: string; label: string; kind: string; required: boolean; help_text: string | null; placeholder: string | null; options: string[] | null; position: number;
