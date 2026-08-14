@@ -1448,7 +1448,7 @@ export function StandardTable<T>({
                                   scope={colIdx === 0 ? "row" : undefined}
                                 className={cn(
                                   c.cellClassName,
-                                  density === "compact" ? "px-2 py-1" : density === "comfortable" ? "px-3 py-1.5" : "px-4 py-2",
+                                  density === "compact" ? "px-1.5 py-0.5" : density === "comfortable" ? "px-2 py-1" : "px-3 py-1.5",
                                   c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
@@ -1460,7 +1460,7 @@ export function StandardTable<T>({
                                   minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                                 }}
                               >
-                              {renderAutoCell(c, r)}
+                              <div className="truncate max-w-[200px]">{renderAutoCell(c, r)}</div>
                             </TableCell>
                           )})}
                         </TableRow>
