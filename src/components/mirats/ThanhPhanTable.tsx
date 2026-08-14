@@ -809,7 +809,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           ]}
         />
 
-        />
 
         {selectedTp && (
           <ThanhPhanChiTietDialog
