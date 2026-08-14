@@ -207,17 +207,29 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
     await Promise.all([
       supabase.from("dm_phan_loai").select("id, ma, ten, thu_tu").order("thu_tu"),
       supabase.from("dm_nhom_he_thong").select("id, ma, ten, phan_loai_id, thu_tu").order("thu_tu"),
-      supabase
-        .from("dm_he_thong")
-        .select(
-          "id, ma, ten, ma_tai_san_bravo, thu_tu, phan_loai_id, nhom_he_thong_id, don_vi_id, gp_so, gp_han",
-        )
-        .order("ten"),
+      fetchAllRows((from, to) => 
+        supabase
+          .from("dm_he_thong")
+          .select("id, ma, ten, ma_tai_san_bravo, thu_tu, phan_loai_id, nhom_he_thong_id, don_vi_id, gp_so, gp_han")
+          .order("ten")
+          .range(from, to)
+      ).then(data => ({ data, error: null })),
       supabase.from("dm_don_vi").select("id, ma, ten, mo_ta, thu_tu").order("thu_tu"),
       supabase.from("dm_trang_thai_thiet_bi").select("id, ma, ten, thu_tu").order("thu_tu"),
-      supabase.from("dm_vi_tri").select("id, ma, ten, mo_ta, thu_tu").order("thu_tu"),
+      fetchAllRows((from, to) =>
+        supabase
+          .from("dm_vi_tri")
+          .select("id, ma, ten, mo_ta, thu_tu")
+          .order("thu_tu")
+          .range(from, to)
+      ).then(data => ({ data, error: null })),
       supabase.from("dm_loai_thiet_bi").select("id, ma, ten, thu_tu").order("thu_tu"),
-      supabase.from("dm_model").select("id, ma, ten, hinh_anh, mo_ta, p_n, nha_san_xuat_id"),
+      fetchAllRows((from, to) =>
+        supabase
+          .from("dm_model")
+          .select("id, ma, ten, hinh_anh, mo_ta, p_n, nha_san_xuat_id")
+          .range(from, to)
+      ).then(data => ({ data, error: null })),
       supabase.from("dm_nha_san_xuat").select("id, ten"),
       supabase.from("cay_node_edit").select("ma, du_lieu").eq("kind", "ht"),
       fetchAllThietBi(),
