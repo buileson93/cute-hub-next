@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, Suspense, lazy } from "react";
 import { Search, Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouterState } from "@tanstack/react-router";
