@@ -125,4 +125,45 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
       }
     });
   });
+
+  describe("E. Sổ lý lịch (SolyLich Entry Points)", () => {
+    it("kiểm tra LyLichHeThongPanel có ít nhất một đường import/render từ UI chính", () => {
+      const allTsx = [...getFilesRecursively(ROUTES_DIR), ...getFilesRecursively(COMPONENTS_DIR)];
+      let found = false;
+      allTsx.forEach((file: string) => {
+        if (file.includes("LyLichLayerPanel.tsx")) return; // Bản thân file chứa component
+        const content = fs.readFileSync(file, "utf-8");
+        if (content.includes("LyLichHeThongPanel")) {
+          found = true;
+        }
+      });
+      expect(found, "LyLichHeThongPanel không được sử dụng ở bất kỳ đâu trong UI chính.").toBe(true);
+    });
+  });
+
+  describe("F. Chi tiết tài sản (Device Detail Tabs)", () => {
+    it("kiểm tra sự tồn tại của các tab nghiệp vụ trọng yếu trong route chi tiết tài sản", () => {
+      const detailRoute = path.join(ROUTES_DIR, "_app.thiet-bi.$maThietBi.tsx");
+      if (!fs.existsSync(detailRoute)) return;
+      const content = fs.readFileSync(detailRoute, "utf-8");
+      
+      const essentialTabs = ["tong-quan", "ly-lich", "van-hanh", "cau-hinh", "phap-ly", "nang-cao"];
+      essentialTabs.forEach(tab => {
+        expect(content.includes(`value="${tab}"`), `Tab '${tab}' bị thiếu trong trang chi tiết tài sản.`).toBe(true);
+      });
+    });
+  });
+
+  describe("G. Lỗi truyền null (Null Props Audit)", () => {
+    it("quét các component con không được truyền null cho các prop chức năng", () => {
+      const detailRoute = path.join(ROUTES_DIR, "_app.thiet-bi.$maThietBi.tsx");
+      if (!fs.existsSync(detailRoute)) return;
+      const content = fs.readFileSync(detailRoute, "utf-8");
+      
+      const nullProps = ["TelemetryPanel={null}", "AllocationPanel={null}", "LifecyclePanel={null}"];
+      nullProps.forEach(pattern => {
+        expect(content.includes(pattern), `Phát hiện lỗi truyền null: '${pattern}' trong route chi tiết tài sản.`).toBe(false);
+      });
+    });
+  });
 });
