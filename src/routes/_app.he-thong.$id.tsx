@@ -6,6 +6,7 @@ import {
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
   Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
   Search, X, Filter, ChevronDown, ChevronUp, Minimize2, Maximize2, CheckCircle2,
+  History as HistoryIcon
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -122,6 +123,7 @@ function HeThongInner({
   const [nkOpen, setNkOpen] = useState(true);
   const [tpOpen, setTpOpen] = useState(true);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
+  const [openTpId, setOpenTpId] = useState<string | null>(null);
   const [thrOpen, setThrOpen] = useState(false);
   const { data: tuongThich } = useQuery({
     queryKey: ["he-thong-tuong-thich", id],
@@ -500,6 +502,9 @@ function HeThongInner({
                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setNkOpen((v) => !v)} aria-label={nkOpen ? "Thu gọn nhật ký" : "Mở rộng nhật ký"} title={nkOpen ? "Thu gọn" : "Mở rộng"}>
                   {nkOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
+                <Button size="icon" variant="outline" className="h-7 w-7 text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100" onClick={() => setOpenTpId("sys-history")} title="Xem lý lịch hệ thống đầy đủ">
+                  <HistoryIcon className="h-4 w-4" />
+                </Button>
               </div>
             </CardTitle>
           </CardHeader>
@@ -721,9 +726,16 @@ function HeThongInner({
           </Card>
 
           {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
-          <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} />
+          <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} onOpenHistory={(tpId) => setOpenTpId(tpId)} />
         </div>
       </div>
+
+      <ThanhPhanChiTietDialog 
+        open={!!openTpId} 
+        onOpenChange={(open) => !open && setOpenTpId(null)}
+        thanhPhanId={openTpId !== "sys-history" ? openTpId : undefined}
+        heThongId={openTpId === "sys-history" ? id : undefined}
+      />
 
       <ThresholdDialog
         open={thrOpen}
@@ -745,7 +757,7 @@ function HeThongInner({
   );
 }
 
-function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false }: { heThongId: string; open?: boolean; onToggle?: () => void; compact?: boolean }) {
+function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOpenHistory }: { heThongId: string; open?: boolean; onToggle?: () => void; compact?: boolean; onOpenHistory?: (id: string) => void }) {
   const { data: tps } = useViTriChucNang(heThongId);
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const list = tps ?? [];
