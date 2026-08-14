@@ -32,7 +32,8 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
   }, [stats]);
 
   return (
-    <TabsContent value="phanbo" className="space-y-3 m-0">
+    <div className="space-y-3">
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
@@ -99,8 +100,9 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
           Ràng buộc theo hàng: <span className="font-mono">don_vi = user.don_vi</span> cho dữ liệu nghiệp vụ; vai trò cấp công ty được bỏ qua.
         </span>
       </div>
-    </TabsContent>
+    </div>
+
   );
 }
 
-import { TabsContent } from "@/components/ui/tabs";
+

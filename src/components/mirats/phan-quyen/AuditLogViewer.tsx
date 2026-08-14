@@ -5,7 +5,7 @@ import { Search, Check, X, FileClock } from "lucide-react";
 import { StandardTable } from "@/components/mirats/StandardTable";
 import { Badge } from "@/components/ui/badge";
 import { type AuditRow, ENTITY_LABEL } from "./types";
-import { TabsContent } from "@/components/ui/tabs";
+
 
 interface AuditLogViewerProps {
   auditLogs: AuditRow[];
@@ -46,7 +46,7 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
   }, [auditLogs, q, profileMap]);
 
   return (
-    <TabsContent value="audit" className="space-y-3 m-0">
+    <div className="space-y-3">
       <Card>
         <CardHeader className="pb-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -123,6 +123,6 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
           />
         </CardContent>
       </Card>
-    </TabsContent>
+    </div>
   );
 }
