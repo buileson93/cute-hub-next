@@ -65,6 +65,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
         <div className="hidden md:block">
           <TzClock />
+        </div>
       </div>
 
       <Suspense fallback={null}>
