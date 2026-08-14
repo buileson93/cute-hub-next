@@ -121,12 +121,14 @@ function ThietBiDetailRoute() {
     return [];
   }, [tb]);
 
-  const inDev = (e: any) => e.thiet_bi_id === tb?.id || e.thiet_bi === ma;
+  const inDev = (e: { thiet_bi_id?: string | null; thiet_bi: string }) => 
+    e.thiet_bi_id === tb?.id || e.thiet_bi === ma;
   
   const baoTri = useMemo(() => ops.baoTri.filter(inDev), [ops.baoTri, tb?.id, ma]);
   const suCo = useMemo(() => ops.suCo.filter(inDev), [ops.suCo, tb?.id, ma]);
-  const hongHoc = useMemo(() => ops.hongHoc.filter(e => e.thiet_bi_hong_id === tb?.id || e.thiet_bi_hong === ma), [ops.hongHoc, tb?.id, ma]);
-  const banGiao = useMemo(() => ops.banGiao.filter(e => e.thiet_bi === ma), [ops.banGiao, ma]);
+  const hongHoc = useMemo(() => ops.hongHoc.filter((e: any) => e.thiet_bi_hong_id === tb?.id || e.thiet_bi_hong === ma), [ops.hongHoc, tb?.id, ma]);
+  const banGiao = useMemo(() => ops.banGiao.filter((e: any) => e.thiet_bi === ma), [ops.banGiao, ma]);
+
 
 
   if (isLoading) return <DetailSkeleton />;
