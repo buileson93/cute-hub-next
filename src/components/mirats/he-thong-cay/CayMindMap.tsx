@@ -419,8 +419,9 @@ export function CayMindMap({
           count: ht.devices.length, collapsible: ht.devices.length > 0 || htPosCount > 0, expanded: expanded.has(htId),
           canManage: canManage && ht.ma !== HT_KHAC,
           toggle: () => toggle(htId), onRename: (t) => onRename("ht", ht.ma, t), onOpenEditor: () => onOpenEditor("ht", ht.ma),
-          onHistory: ht.ma !== HT_KHAC ? () => onHistory(ht.ma) : undefined,
-          onRecord: ht.ma !== HT_KHAC ? () => onRecord("tb", ht.ma, htMind(ht.ma)) : undefined, // Placeholder for system record
+          onHistory: () => onHistory(ht.ma),
+          onIncident: () => onIncident(ht.ma),
+          onMaint: () => onMaint(ht.ma),
           onMove: unitMode ? undefined : (toNhomId, toLvId, toNhKey, toNhTen) => {
              const sysId = parseHtSysMa(ht.ma).sysName;
              if (!isRealSystemId(sysId)) return;
