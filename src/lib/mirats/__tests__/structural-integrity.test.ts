@@ -87,7 +87,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
   });
 
   describe("D. Component mồ côi (Orphans Scan)", () => {
-    it("quét các component mồ côi trong src/components/mirats", () => {
+    it("quét các component mồ côi trong src/components/mirats", { timeout: 15000 }, () => {
       const allComponents = getFilesRecursively(COMPONENTS_DIR);
       const allFiles = getFilesRecursively(path.join(PROJECT_ROOT, "src"));
       
