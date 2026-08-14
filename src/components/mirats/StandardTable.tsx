@@ -1227,7 +1227,13 @@ export function StandardTable<T>({
                   >
                     <div className="flex justify-center items-center gap-1">
                       <Checkbox 
-                        checked={selected?.size === filtered.length && filtered.length > 0}
+                        checked={
+                          filtered.length > 0 && selected?.size === filtered.length
+                            ? true
+                            : (selected?.size ?? 0) > 0
+                            ? "indeterminate"
+                            : false
+                        }
                         onCheckedChange={(checked) => {
                           if (checked) setSelected?.(new Set(filtered.map(getRowIdInternal)));
                           else clearSelection();
