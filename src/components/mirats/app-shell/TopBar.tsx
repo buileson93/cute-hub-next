@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
+
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -65,6 +67,10 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <TzClock />
         </div>
       </div>
+
+      <Suspense fallback={null}>
+        <CommandPalette />
+      </Suspense>
     </div>
   );
 }
