@@ -37,6 +37,7 @@ import {
   type ThietBiChon,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { LyLichThanhPhanPanel, LyLichHeThongPanel } from "@/components/mirats/LyLichLayerPanel";
+import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 import { ThaoTaiSanDialog } from "@/components/mirats/ThaoTaiSanDialog";
 import { OperationDialog, type OperationMode } from "@/components/mirats/OperationDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
