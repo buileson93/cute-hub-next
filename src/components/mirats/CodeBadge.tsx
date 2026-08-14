@@ -23,7 +23,7 @@ export function CodeBadge({
     <span
       title={title ?? `Mã: ${c}`}
       className={cn(
-        "inline-flex shrink-0 items-center gap-0.5 rounded border border-primary/25 bg-primary/10 px-1.5 py-0 font-mono text-[10px] font-semibold leading-5 text-primary align-middle",
+        "inline-flex shrink-0 items-center gap-0.5 rounded border border-primary/25 bg-primary/10 px-1 py-0 font-mono text-[9px] font-bold leading-4 text-primary align-middle",
         className,
       )}
     >
