@@ -47,6 +47,8 @@ import { SuCoMoiForm } from "@/components/mirats/quick/SuCoMoiForm";
 import { BaoTriMoiForm } from "@/components/mirats/quick/BaoTriMoiForm";
 import { HongHocMoiForm } from "@/components/mirats/quick/HongHocMoiForm";
 
+import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+
 export const Route = createFileRoute("/_app/he-thong/$id")({
   head: ({ params }) => ({
     meta: [
