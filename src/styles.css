@@ -246,6 +246,13 @@
   border-radius: var(--radius-control);
 }
 
+
+/* MIRATS-specific suppression: Never show outline on command palette input */
+[cmdk-input], [cmdk-input]:focus, [cmdk-input]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
