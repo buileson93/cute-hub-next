@@ -77,9 +77,20 @@ export function useTaiSanRows() {
     queryKey: ["tai-san-thanh-phan-toan-cuc"],
     staleTime: 60_000,
     queryFn: async (): Promise<TaiSanRow[]> => {
-      const { data, error } = await supabase.rpc("rpc_tai_san_toan_cuc");
-      if (error) throw error;
-      return (data ?? []) as TaiSanRow[];
+      const pageSize = 1000;
+      let from = 0;
+      const all: TaiSanRow[] = [];
+      for (;;) {
+        const { data, error } = await supabase
+          .rpc("rpc_tai_san_toan_cuc")
+          .range(from, from + pageSize - 1);
+        if (error) throw error;
+        const rows = (data ?? []) as TaiSanRow[];
+        all.push(...rows);
+        if (rows.length < pageSize) break;
+        from += pageSize;
+      }
+      return all;
     },
   });
 }
@@ -135,9 +146,20 @@ export function useThanhPhanRows() {
     queryKey: ["thanh-phan-toan-cuc"],
     staleTime: 60_000,
     queryFn: async (): Promise<ThanhPhanRow[]> => {
-      const { data, error } = await supabase.rpc("rpc_thanh_phan_toan_cuc");
-      if (error) throw error;
-      return (data ?? []) as ThanhPhanRow[];
+      const pageSize = 1000;
+      let from = 0;
+      const all: ThanhPhanRow[] = [];
+      for (;;) {
+        const { data, error } = await supabase
+          .rpc("rpc_thanh_phan_toan_cuc")
+          .range(from, from + pageSize - 1);
+        if (error) throw error;
+        const rows = (data ?? []) as ThanhPhanRow[];
+        all.push(...rows);
+        if (rows.length < pageSize) break;
+        from += pageSize;
+      }
+      return all;
     },
   });
 }
