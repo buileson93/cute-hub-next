@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { AnnotationManager, LOAI_META } from "@/components/mirats/AnnotationManager";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
   ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, Legend,
