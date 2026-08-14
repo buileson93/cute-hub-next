@@ -33,6 +33,7 @@ import { OperationDialog } from "@/components/mirats/OperationDialog";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
