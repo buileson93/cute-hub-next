@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useAllocationHistory, useTelemetry, useLifecycle, useTrangThaiMap } from "@/lib/mirats/db-smart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { History, Activity, Move, RefreshCw } from "lucide-react";
+import { History as HistoryIcon, Activity, Move, RefreshCw } from "lucide-react";
 
 export function TelemetryPanel({ thietBiId }: { thietBiId: string }) {
   const { data: metrics, isLoading } = useTelemetry(thietBiId);
@@ -35,7 +35,7 @@ export function TelemetryPanel({ thietBiId }: { thietBiId: string }) {
                 <TableCell className="text-xs font-mono">{new Date(m.thoi_diem).toLocaleString("vi-VN")}</TableCell>
                 <TableCell>{m.chi_so}</TableCell>
                 <TableCell className="font-semibold">{m.gia_tri}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{m.don_vi}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{m.don_vi_do}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -58,10 +58,10 @@ export function AllocationPanel({ thietBiId, donViTenMap = {} }: { thietBiId: st
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Từ ngày</TableHead>
-              <TableHead>Đến ngày</TableHead>
+              <TableHead>Thời điểm</TableHead>
+              <TableHead>Hành động</TableHead>
+              <TableHead>Người giữ</TableHead>
               <TableHead>Đơn vị sử dụng</TableHead>
-              <TableHead>Trạng thái</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,14 +71,14 @@ export function AllocationPanel({ thietBiId, donViTenMap = {} }: { thietBiId: st
               <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Chưa có lịch sử cấp phát.</TableCell></TableRow>
             ) : history.map((h, i) => (
               <TableRow key={i}>
-                <TableCell className="text-xs font-mono">{new Date(h.tu_ngay).toLocaleDateString("vi-VN")}</TableCell>
-                <TableCell className="text-xs font-mono">{h.den_ngay ? new Date(h.den_ngay).toLocaleDateString("vi-VN") : "Hiện tại"}</TableCell>
-                <TableCell>{donViTenMap[h.don_vi_id] || h.don_vi_id}</TableCell>
+                <TableCell className="text-xs font-mono">{new Date(h.thoi_diem).toLocaleString("vi-VN")}</TableCell>
                 <TableCell>
-                  <Badge variant={!h.den_ngay ? "default" : "secondary"}>
-                    {!h.den_ngay ? "Đang sử dụng" : "Đã trả"}
+                  <Badge variant={h.hanh_dong === "cap_phat" ? "default" : "secondary"}>
+                    {h.hanh_dong === "cap_phat" ? "Cấp phát" : "Thu hồi"}
                   </Badge>
                 </TableCell>
+                <TableCell className="text-sm">{h.nguoi_giu || "—"}</TableCell>
+                <TableCell className="text-sm">{h.don_vi_giu_id ? (donViTenMap[h.don_vi_giu_id] || h.don_vi_giu_id) : "—"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -104,23 +104,21 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
             <TableRow>
               <TableHead>Thời điểm</TableHead>
               <TableHead>Trạng thái mới</TableHead>
-              <TableHead>Ghi chú / Lý do</TableHead>
-              <TableHead>Người thực hiện</TableHead>
+              <TableHead>Lý do</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Đang tải dữ liệu...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={3} className="text-center py-4 text-muted-foreground">Đang tải dữ liệu...</TableCell></TableRow>
             ) : !lifecycle?.length ? (
-              <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Chưa có bản ghi vòng đời.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={3} className="text-center py-4 text-muted-foreground">Chưa có bản ghi vòng đời.</TableCell></TableRow>
             ) : lifecycle.map((l, i) => (
               <TableRow key={i}>
-                <TableCell className="text-xs font-mono">{new Date(l.created_at).toLocaleString("vi-VN")}</TableCell>
+                <TableCell className="text-xs font-mono">{new Date(l.thoi_diem).toLocaleString("vi-VN")}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{statusMap?.get(l.trang_thai_id) || l.trang_thai_id}</Badge>
+                  <Badge variant="outline">{statusMap?.get(l.den_trang_thai_id || "") || l.den_trang_thai_id || "—"}</Badge>
                 </TableCell>
-                <TableCell className="text-sm italic">{l.ghi_chu || "—"}</TableCell>
-                <TableCell className="text-xs">{l.created_by || "Hệ thống"}</TableCell>
+                <TableCell className="text-sm italic">{l.ly_do || "—"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
