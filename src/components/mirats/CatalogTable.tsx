@@ -148,6 +148,7 @@ export function CatalogTable({
   const [view, setView] = useState<"list" | "tree">(supportsParent ? "tree" : "list");
   const [editing, setEditing] = useState<Row | "new" | null>(null);
   const [mergeList, setMergeList] = useState<Row[] | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pickMerge, setPickMerge] = useState(false);
   const [usageRow, setUsageRow] = useState<Row | null>(null);
   const hideCode = hiddenCols.includes("ma");
@@ -430,6 +431,8 @@ export function CatalogTable({
           rows={filtered}
           requireFilterToShow={false}
           selectable={canManage}
+          selected={selectedIds}
+          setSelected={setSelectedIds}
           toolbarRight={(ctx) => (
             <Button
               size="sm"

@@ -290,6 +290,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">("thanh-phan:view-mode", "component");
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
   const [internalEditMode, setInternalEditMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedTp, setSelectedTp] = useState<{ row: ThanhPhanRow; heThongId: string } | null>(null);
   const editMode = externalEditMode !== undefined ? externalEditMode : internalEditMode;
   const setEditMode = setInternalEditMode;
@@ -409,7 +410,10 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
         size="sm"
         variant={viewMode === "component" ? "default" : "ghost"}
         className="h-6 gap-1 px-1.5 text-[11px] shrink-0 whitespace-nowrap"
-        onClick={() => setViewMode("component")}
+        onClick={() => {
+          setViewMode("component");
+          setSelectedIds(new Set());
+        }}
         title="1 dòng = 1 thành phần hệ thống"
       >
         <LayoutGrid className="h-3.5 w-3.5" /> Theo thành phần
@@ -419,7 +423,10 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
         size="sm"
         variant={viewMode === "asset" ? "default" : "ghost"}
         className="h-6 gap-1 px-1.5 text-[11px] shrink-0 whitespace-nowrap"
-        onClick={() => setViewMode("asset")}
+        onClick={() => {
+          setViewMode("asset");
+          setSelectedIds(new Set());
+        }}
         title="1 dòng = 1 tài sản, hiện số thành phần đang gắn"
       >
         <Package className="h-3.5 w-3.5" /> Theo tài sản
@@ -494,6 +501,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           trangThai={{ dangTai: isLoading, loi: error }}
           clientPagination={{ page: currentPage, pageSize, onFilteredTotalChange: setFilteredTotal }}
           getRowId={(r) => r.id}
+          selected={selectedIds}
+          setSelected={setSelectedIds}
           requireFilterToShow={false}
           emptyText="Không có thành phần hệ thống phù hợp."
           countUnit="thành phần"
@@ -884,6 +893,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           rows={filteredTaiSan}
           clientPagination={{ page: currentPage, pageSize, onFilteredTotalChange: setFilteredTotal }}
           getRowId={(r) => r.id}
+          selected={selectedIds}
+          setSelected={setSelectedIds}
           requireFilterToShow={false}
           emptyText="Không có tài sản phù hợp."
           countUnit="tài sản"

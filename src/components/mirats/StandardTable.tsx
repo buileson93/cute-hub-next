@@ -598,7 +598,7 @@ export function StandardTable<T>({
 
   const renderGlobalState = () => {
     if (trangThai.loi) {
-      return (
+      return errorContent ?? (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">
             {String(trangThai.loi)}
@@ -1227,7 +1227,13 @@ export function StandardTable<T>({
                   >
                     <div className="flex justify-center items-center gap-1">
                       <Checkbox 
-                        checked={selected?.size === filtered.length && filtered.length > 0}
+                        checked={
+                          filtered.length > 0 && selected?.size === filtered.length
+                            ? true
+                            : (selected?.size ?? 0) > 0
+                            ? "indeterminate"
+                            : false
+                        }
                         onCheckedChange={(checked) => {
                           if (checked) setSelected?.(new Set(filtered.map(getRowIdInternal)));
                           else clearSelection();
