@@ -525,6 +525,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 duocPhep={allowEdit}
                 lyDoKhoa={LY_DO_KHOA}
                 busy={bulkBusy}
+                variant="outline"
                 xacNhan={{
                   tieuDe: "Đặt trạng thái Hoạt động?",
                   moTa: <MoTaXacNhan rows={selectedRows} tt="Hoạt động" />,
@@ -538,6 +539,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 duocPhep={allowEdit}
                 lyDoKhoa={LY_DO_KHOA}
                 busy={bulkBusy}
+                variant="outline"
                 xacNhan={{
                   tieuDe: "Đặt trạng thái Đã ngừng?",
                   moTa: <MoTaXacNhan rows={selectedRows} tt="Đã ngừng" />,
@@ -549,6 +551,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               <BulkActionButton
                 label="Sao chép mã"
                 icon={<Copy className="h-3.5 w-3.5" />}
+                variant="outline"
                 xacNhan={{
                   tieuDe: "Sao chép mã các dòng đã chọn?",
                   moTa: <>Sẽ chép <b>{selectedRows.length}</b> mã thành phần vào bộ nhớ tạm.</>,
@@ -914,6 +917,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               <BulkActionButton
                 label="Sao chép mã"
                 icon={<Copy className="h-3.5 w-3.5" />}
+                variant="outline"
                 xacNhan={{
                   tieuDe: "Sao chép mã các tài sản đã chọn?",
                   moTa: <>Sẽ chép <b>{selectedRows.length}</b> mã tài sản vào bộ nhớ tạm.</>,
