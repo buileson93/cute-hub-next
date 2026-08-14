@@ -600,7 +600,10 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               sticky: true,
               value: (r) => [r.ten, r.ma].filter(Boolean).join(" "),
               cell: (r) => (
-                <div className="flex flex-col gap-0.5">
+                <div 
+                  className="flex flex-col gap-0.5 cursor-pointer hover:bg-muted/30 p-1 rounded transition-colors"
+                  onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}
+                >
                   {editMode && allowEdit ? (
                     <InlineTextEdit
                       initial={r.ten}

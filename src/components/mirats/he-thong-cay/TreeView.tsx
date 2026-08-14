@@ -127,13 +127,13 @@ export function TreeView({
               <button onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))} className="rounded p-1 hover:bg-muted" title="Sổ lý lịch">
                 <History className="h-3.5 w-3.5" />
               </button>
-              {d.tb.thanh_phan_id && (
+              {d.tb._thanhPhanId && (
                 <button 
                   onClick={() => setSelectedTp({ 
                     vt: { 
-                      id: d.tb.thanh_phan_id, 
-                      ma_thanh_phan: d.tb.ma_thanh_phan, 
-                      ten: d.tb.ten_thanh_phan || "Thành phần",
+                      id: d.tb._thanhPhanId, 
+                      ma_thanh_phan: d.tb._thanhPhanMa, 
+                      ten: d.tb._thanhPhanTen || "Thành phần",
                       device: d.tb 
                     }, 
                     htId: htMa 
