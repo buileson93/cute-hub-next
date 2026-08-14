@@ -4,7 +4,7 @@ import { TabsContent } from "@/components/ui/tabs";
 
 export function SecurityPolicies() {
   return (
-    <TabsContent value="policy" className="space-y-3 m-0">
+    <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
         {[
           { icon: KeyRound, title: "Xác thực", items: ["Tài khoản mới cần quản trị duyệt", "Khôi phục mật khẩu qua email có ghi log"] },
@@ -44,6 +44,6 @@ export function SecurityPolicies() {
           ))}
         </div>
       </Card>
-    </TabsContent>
+    </div>
   );
 }
