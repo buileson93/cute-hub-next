@@ -33,8 +33,11 @@ import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
 import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
+import { DynamicFieldsForm } from "@/components/mirats/DynamicFieldsForm";
+import type { FieldSpec } from "@/lib/mirats/registry";
 
 const TT_OPTIONS = ["Kế hoạch", "Đang thực hiện", "Hoàn thành", "Hoãn"];
+const LOAI_BT_OPTIONS = ["Định kỳ", "Đột xuất", "Khắc phục"];
 
 type FieldRow = {
   id: string; key: string; label: string; kind: string; required: boolean; help_text: string | null; placeholder: string | null; options: string[] | null; position: number;
@@ -54,10 +57,13 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
   const [templateId, setTemplateId] = useState("");
   const [selected, setSelected] = useState<DbDevice[]>([]);
   const [trangThai, setTrangThai] = useState("Hoàn thành");
+  const [loaiBaoTri, setLoaiBaoTri] = useState("Định kỳ");
+  const [donViThucHien, setDonViThucHien] = useState(profile?.don_vi ?? "");
   const [ngayBatDau, setNgayBatDau] = useState(new Date().toISOString().slice(0, 10));
   const [ngayHoanThanh, setNgayHoanThanh] = useState(new Date().toISOString().slice(0, 10));
   const [nguoiThucHien, setNguoiThucHien] = useState("");
-  const [values, setValues] = useState<Record<string, unknown>>({});
+  const [ketQua, setKetQua] = useState("");
+  const [values, setValues] = useState<Record<string, string>>({});
   const [chkValues, setChkValues] = useState<Record<string, ItemInput>>({});
   const [step, setStep] = useState(1);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -128,7 +134,16 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
           template_snapshot: {} 
         },
 
-        ma_base: maBase, he_thong_ten: heThongTen, loai_bao_tri: "Định kỳ", ngay_bat_dau: ngayBatDau, ngay_hoan_thanh: ngayHoanThanh, ket_qua: "", trang_thai: trangThai, nguoi_thuc_hien: nguoiThucHien, don_vi_thuc_hien: profile?.don_vi ?? "", mo_ta_cong_viec: "",
+        ma_base: maBase, 
+        he_thong_ten: heThongTen, 
+        loai_bao_tri: loaiBaoTri, 
+        ngay_bat_dau: ngayBatDau, 
+        ngay_hoan_thanh: ngayHoanThanh, 
+        ket_qua: ketQua, 
+        trang_thai: trangThai, 
+        nguoi_thuc_hien: nguoiThucHien, 
+        don_vi_thuc_hien: donViThucHien, 
+        mo_ta_cong_viec: "",
         devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null })),
         item_results: isChecklist ? buildItemResults("__placeholder__", sections ?? [], chkValues) as any : []
       });
@@ -156,12 +171,45 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
               defaultOpen
             >
               <div className="space-y-4">
-                <Label>Hệ thống *</Label>
-                <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                <div className="space-y-1.5">
+                  <Label>Hệ thống *</Label>
+                  <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label>Loại bảo dưỡng *</Label>
+                    <Select value={loaiBaoTri} onValueChange={setLoaiBaoTri}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {LOAI_BT_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Đơn vị thực hiện *</Label>
+                    <Input value={donViThucHien} onChange={e => setDonViThucHien(e.target.value)} />
+                  </div>
+                </div>
+
                 {heThongId && (
                   <div className="space-y-2">
-                    <Label>Mẫu phiếu *</Label>
-                    {(templates ?? []).map(t => <Button key={t.id} variant={templateId === t.id ? "default" : "outline"} className="w-full justify-start" onClick={() => setTemplateId(t.id)}>{t.ten}</Button>)}
+                    <Label className="text-xs font-bold text-muted-foreground uppercase">Mẫu phiếu *</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {(templates ?? []).map(t => (
+                        <Button 
+                          key={t.id} 
+                          variant={templateId === t.id ? "default" : "outline"} 
+                          className="justify-start h-auto py-2 px-3 text-left" 
+                          onClick={() => setTemplateId(t.id)}
+                        >
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-medium">{t.ten}</span>
+                            <span className="text-[10px] opacity-70">{t.code}</span>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -214,11 +262,45 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
             <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Nội dung phiếu</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><Label>Ngày bắt đầu</Label><Input type="date" value={ngayBatDau} onChange={e => setNgayBatDau(e.target.value)} /></div>
-                <div><Label>Ngày hoàn thành</Label><Input type="date" value={ngayHoanThanh} onChange={e => setNgayHoanThanh(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Ngày bắt đầu</Label><Input type="date" value={ngayBatDau} onChange={e => setNgayBatDau(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Ngày hoàn thành</Label><Input type="date" value={ngayHoanThanh} onChange={e => setNgayHoanThanh(e.target.value)} /></div>
               </div>
-              <Label>Người thực hiện</Label><Input value={nguoiThucHien} onChange={e => setNguoiThucHien(e.target.value)} />
-              {isChecklist && sections && <ChecklistRenderer sections={sections} values={chkValues} onChange={setChkValues} />}
+              <div className="space-y-1.5">
+                <Label>Người thực hiện</Label>
+                <Input value={nguoiThucHien} onChange={e => setNguoiThucHien(e.target.value)} placeholder="Tên những người tham gia..." />
+              </div>
+
+              {templateId && (
+                <div className="pt-4 border-t space-y-4">
+                  <Label className="text-xs font-bold text-primary uppercase">Nội dung chi tiết (Trường động)</Label>
+                  {isChecklist && sections ? (
+                    <ChecklistRenderer sections={sections} values={chkValues} onChange={setChkValues} />
+                  ) : fields && fields.length > 0 ? (
+                    <DynamicFieldsForm 
+                      specs={fields.map(f => ({
+                        field_key: f.key,
+                        nhan: f.label,
+                        kieu: f.kind as any,
+                        bat_buoc: f.required,
+                        help_text: f.help_text ?? undefined,
+                        tuy_chon: f.options ?? [],
+                        mac_dinh: null,
+                        rang_buoc: {}
+                      } as FieldSpec))}
+                      value={values}
+                      onChange={setValues}
+                      showErrors
+                    />
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">Mẫu phiếu này không có trường dữ liệu động nào.</p>
+                  )}
+                  
+                  <div className="space-y-1.5 pt-2">
+                    <Label>Kết quả / Kết luận</Label>
+                    <Textarea value={ketQua} onChange={e => setKetQua(e.target.value)} placeholder="Ghi chú kết quả bảo dưỡng..." />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

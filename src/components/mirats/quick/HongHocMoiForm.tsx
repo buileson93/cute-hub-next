@@ -85,11 +85,27 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   const save = useMutation({
     mutationFn: async () => {
       const maHH = `HH-${Date.now().toString(36).toUpperCase()}`;
-      const payload = buildHongHocPayload({ ma_hong_hoc: maHH, ngay_hong: ngayHong, mo_ta_hong_hoc: moTa, phuong_an: PHUONG_AN.find(p => p.code === phuongAn)?.label ?? phuongAn, thiet_bi_hong_ids: [thietBiHongId], thiet_bi_thay_the_id: thietBiThayTheId || null, he_thong_id: heThongId || null, thanh_phan_id: thanhPhanId || null, bo_phan_hong: boPhan || null, su_co: suCoMa || null, nguoi_thuc_hien: profile?.ho_ten ? [profile.ho_ten] : [] });
+      const payload = buildHongHocPayload({ 
+        ma_hong_hoc: maHH, 
+        ngay_hong: ngayHong, 
+        mo_ta_hong_hoc: moTa, 
+        phuong_an: PHUONG_AN.find(p => p.code === phuongAn)?.label ?? phuongAn, 
+        thiet_bi_hong_ids: [thietBiHongId], 
+        thiet_bi_thay_the_id: thietBiThayTheId || null, 
+        he_thong_id: heThongId || null, 
+        thanh_phan_id: thanhPhanId || null, 
+        bo_phan_hong: boPhan || null, 
+        su_co: suCoMa || null, 
+        nguoi_thuc_hien: profile?.ho_ten ? [profile.ho_ten] : [] 
+      });
       await ghiHongHocFull(payload);
       return maHH;
     },
-    onSuccess: () => { toast.success("Đã ghi nhận hỏng hóc"); if (onDone) onDone(); }
+    onSuccess: () => { 
+      toast.success("Đã ghi nhận hỏng hóc"); 
+      qc.invalidateQueries({ queryKey: ["operations_data"] });
+      if (onDone) onDone(); 
+    }
   });
 
   if (!canManageHongHoc(roles)) return <AccessDenied backTo="/hong-hoc" backLabel="Về danh sách" />;
@@ -116,20 +132,47 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
           <Card>
             <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Tài sản & Phương án</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <Label>Vị trí / Thành phần</Label>
-              <Combobox options={(tpList ?? []).map(t => ({ value: t.id, label: t.ten }))} value={thanhPhanId} onChange={setThanhPhanId} />
-              <Label>Tài sản hỏng *</Label>
-              <AssetPicker 
-                value={thietBiHongId} 
-                onChange={(id) => setThietBiHongId(id)}
-                heThongId={heThongId}
-                thanhPhanId={thanhPhanId}
-              />
-              <Label>Phương án</Label>
-              <Select value={phuongAn} onValueChange={setPhuongAn}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{PHUONG_AN.map(p => <SelectItem key={p.code} value={p.code}>{p.label}</SelectItem>)}</SelectContent>
-              </Select>
+              <div className="space-y-1.5">
+                <Label>Vị trí / Thành phần</Label>
+                <Combobox options={(tpList ?? []).map(t => ({ value: t.id, label: t.ten }))} value={thanhPhanId} onChange={setThanhPhanId} />
+              </div>
+              
+              <div className="space-y-1.5">
+                <Label>Bộ phận hỏng *</Label>
+                <Input value={boPhan} onChange={e => setBoPhan(e.target.value)} placeholder="VD: Khối nguồn, Màn hình, Cáp tín hiệu..." />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Tài sản hỏng *</Label>
+                <AssetPicker 
+                  value={thietBiHongId} 
+                  onChange={(id) => setThietBiHongId(id)}
+                  heThongId={heThongId}
+                  thanhPhanId={thanhPhanId}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Phương án xử lý *</Label>
+                <Select value={phuongAn} onValueChange={setPhuongAn}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{PHUONG_AN.map(p => <SelectItem key={p.code} value={p.code}>{p.label}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+
+              {phuongAn === "thay_the" && (
+                <div className="space-y-1.5 pt-2 animate-in fade-in slide-in-from-top-2">
+                  <Label className="text-primary font-bold">Tài sản thay thế *</Label>
+                  <AssetPicker 
+                    value={thietBiThayTheId} 
+                    onChange={(id) => setThietBiThayTheId(id)}
+                    heThongId={heThongId}
+                  />
+                  <p className="text-[10px] text-muted-foreground italic">
+                    Lưu ý: Tài sản thay thế phải có sẵn trong kho hoặc đang ở trạng thái sẵn sàng.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
