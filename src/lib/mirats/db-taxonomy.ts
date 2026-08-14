@@ -322,7 +322,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
       const n = typeof v === "number" ? v : v == null || v === "" ? NaN : Number(v);
       return Number.isFinite(n) ? n : null;
     };
-    const tp = (r.he_thong_thanh_phan as any)?.[0];
+    const tp = (r.gan_chuc_nang as any)?.[0]?.he_thong_thanh_phan;
     return {
       // các trường ThietBi tĩnh (điền từ CSDL, thiếu thì để rỗng)
       ma_thiet_bi: (r.ma_thiet_bi as string) ?? (r.id as string),
