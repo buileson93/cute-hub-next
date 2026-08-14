@@ -223,8 +223,13 @@ function MindNode({ data }: { data: MindData }) {
              </button>
            )}
            {data.onRecord && (
-             <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Sổ lý lịch">
+             <button onClick={(e) => { e.stopPropagation(); data.onRecord?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch tài sản">
                <History className="h-3 w-3" />
+             </button>
+           )}
+           {data.onHistory && (
+             <button onClick={(e) => { e.stopPropagation(); data.onHistory?.(); }} className="rounded p-0.5 hover:bg-muted" title="Lý lịch hệ thống">
+               <History className="h-3 w-3 text-primary" />
              </button>
            )}
         </div>

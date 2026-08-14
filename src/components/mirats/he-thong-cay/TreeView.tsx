@@ -124,7 +124,7 @@ export function TreeView({
              <button onClick={() => onMaint(htMa)} className="rounded p-1 hover:bg-muted" title="Bảo trì">
                <Wrench className="h-3.5 w-3.5" />
              </button>
-              <button onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))} className="rounded p-1 hover:bg-muted" title="Sổ lý lịch">
+              <button onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))} className="rounded p-1 hover:bg-muted" title="Lý lịch tài sản">
                 <History className="h-3.5 w-3.5" />
               </button>
               {d.tb._thanhPhanId && (
@@ -171,7 +171,7 @@ export function TreeView({
              <button onClick={() => onMaint(ht.ma)} className="rounded p-1 hover:bg-muted" title="Bảo trì">
                <Wrench className="h-4 w-4" />
              </button>
-             <button onClick={() => onHistory(ht.ma)} className="rounded p-1 hover:bg-muted" title="Lịch sử">
+             <button onClick={() => onHistory(ht.ma)} className="rounded p-1 hover:bg-muted" title="Lý lịch hệ thống">
                <History className="h-4 w-4" />
              </button>
              <button onClick={() => onOpenEditor("ht", ht.ma)} className="rounded p-1 hover:bg-muted" title="Thông tin">
