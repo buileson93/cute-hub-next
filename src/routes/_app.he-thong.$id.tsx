@@ -359,7 +359,12 @@ function HeThongInner({
         body{background:white !important;}
       }`}</style>
       <div className="flex items-center gap-3 no-print">
-        <Button asChild variant="ghost" size="sm"><Link to="/thiet-bi" search={{ q: "" }}><ArrowLeft className="mr-1 h-4 w-4" /> Quay lại</Link></Button>
+        <Button asChild variant="ghost" size="sm" className="h-8 gap-1 pr-3">
+          <Link to="/he-thong/cay" search={{ view: "tree" }}>
+            <ChevronLeft className="h-4 w-4" />
+            <span className="text-xs">Cây hệ thống</span>
+          </Link>
+        </Button>
         <div className="text-xs text-muted-foreground truncate">
           <ChevronRight className="inline h-3 w-3 mx-1 opacity-60" />
           <span className="text-foreground/80">{tenHt}</span>
