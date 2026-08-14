@@ -316,10 +316,9 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                 defaultOpen={false}
               >
                 <VisionImageHint 
-                  onApplyDescription={(text) => setHienTuong(prev => prev ? prev + "\n" + text : text)}
-                  onApplyCategory={(cat) => setPhanLoai(cat)}
-                  onApplyResult={(text) => setKetQua(text)}
-                  onApplyRca={(text) => setNguyenNhan(text)}
+                  onApplyDescription={(text: string) => setHienTuong(prev => prev ? prev + "\n" + text : text)}
+                  onApplyCategory={(cat: "A" | "B" | "C" | "D" | "E") => setPhanLoai(cat)}
+                  onApplyKeywords={(keywords: string[]) => setTomTat(prev => prev ? prev + "\n" + keywords.join(", ") : keywords.join(", "))}
                 />
               </CollapsibleSection>
             </div>
