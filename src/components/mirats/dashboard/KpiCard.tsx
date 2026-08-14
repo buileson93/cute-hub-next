@@ -114,6 +114,8 @@ export function KpiCard({
                   fillOpacity={0.1}
                   strokeWidth={1.5}
                   className={textColors[status]}
+                  dot={false}
+                  activeDot={{ r: 3, fill: 'currentColor', stroke: '#fff', strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>

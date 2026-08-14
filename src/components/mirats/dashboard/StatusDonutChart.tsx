@@ -46,9 +46,9 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
                   backgroundColor: 'hsl(var(--popover))', 
                   borderColor: 'hsl(var(--border))',
                   fontSize: '12px',
-                  borderRadius: '12px',
-                  padding: '12px',
-                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  boxShadow: 'var(--shadow-lg)',
                   border: '1px solid hsl(var(--border))',
                 }} 
                 itemStyle={{ 

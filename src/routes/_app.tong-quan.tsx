@@ -235,7 +235,23 @@ function OverviewReport() {
                     <BarChart data={trendData}>
                       <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
                       <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '8px' }} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--popover))', 
+                          borderColor: 'hsl(var(--border))',
+                          fontSize: '11px',
+                          borderRadius: '8px',
+                          padding: '8px 12px',
+                          boxShadow: 'var(--shadow-lg)',
+                          border: '1px solid hsl(var(--border))',
+                        }}
+                        itemStyle={{ 
+                          color: 'hsl(var(--popover-foreground))',
+                          padding: '2px 0',
+                          fontWeight: '600'
+                        }}
+                        cursor={{ fill: 'hsl(var(--primary))', fillOpacity: 0.05 }}
+                      />
                       {mucDoKeys.map((k) => (
                         <Bar
                           key={k}
@@ -276,7 +292,22 @@ function OverviewReport() {
                           <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} stroke="white" strokeWidth={2} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--popover))', 
+                          borderColor: 'hsl(var(--border))',
+                          fontSize: '11px',
+                          borderRadius: '8px',
+                          padding: '8px 12px',
+                          boxShadow: 'var(--shadow-lg)',
+                          border: '1px solid hsl(var(--border))',
+                        }}
+                        itemStyle={{ 
+                          color: 'hsl(var(--popover-foreground))',
+                          padding: '2px 0',
+                          fontWeight: '600'
+                        }}
+                      />
                       <Legend verticalAlign="bottom" align="center" layout="horizontal" wrapperStyle={{ fontSize: 10, paddingTop: '10px' }} />
                     </PieChart>
                   </ResponsiveContainer>
