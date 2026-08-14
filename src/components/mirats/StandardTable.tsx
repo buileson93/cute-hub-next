@@ -641,6 +641,148 @@ export function StandardTable<T>({
     return null;
   };
 
+  /** Tự động render ô dựa trên `type` */
+  function renderAutoCell(c: ColumnDef<T>, r: T) {
+    const val = c.value?.(r);
+    
+    // Nếu không có value thì trả về null
+    if (val === undefined || val === null) return KHONG_CO;
+
+    const density = document.body.dataset.density as any;
+    const isCompact = density === "compact";
+
+    switch (c.type) {
+      case "id":
+        return <CodeBadge code={String(val)} title={String(val)} />;
+      
+      case "status":
+        // status-registry cần DomainKey, ở đây ta chưa biết domain chính xác.
+        // Ta sẽ dùng StatusBadge với domain mặc định hoặc suy luận.
+        // Nếu val là object có domain và code thì dùng.
+        if (typeof val === 'object' && val !== null && 'domain' in val) {
+          const v = val as any;
+          return <StatusBadge domain={v.domain} code={v.code} />;
+        }
+        // Fallback: Nếu là string, thử tìm domain thiet_bi
+        return <StatusBadge domain="thiet_bi" code={String(val)} />;
+
+      case "taxonomy":
+        // val có thể là { ten, mau }
+        if (typeof val === 'object' && val !== null) {
+          const v = val as any;
+          return <MauChip ten={v.ten} mau={v.mau} />;
+        }
+        return <MauChip ten={String(val)} />;
+
+      case "user":
+        // val có thể là { ho_ten, email, avatar_url }
+        if (typeof val === 'object' && val !== null) {
+          const v = val as any;
+          return (
+            <div className="flex items-center gap-2">
+              <UserAvatar 
+                name={v.ho_ten || v.ten} 
+                email={v.email} 
+                url={v.avatar_url || v.url} 
+                className="h-6 w-6" 
+              />
+              <span className="truncate text-[12px]">{v.ho_ten || v.ten || "—"}</span>
+            </div>
+          );
+        }
+        return (
+          <div className="flex items-center gap-2">
+            <UserAvatar name={String(val)} className="h-6 w-6" />
+            <span className="truncate text-[12px]">{String(val)}</span>
+          </div>
+        );
+
+      case "number":
+        return <span className="tabular-nums">{fmtSo(Number(val))}</span>;
+
+      case "currency":
+        return <span className="tabular-nums">{fmtVND(Number(val))}</span>;
+
+      case "percent":
+        const p = Number(val);
+        return (
+          <div className="flex items-center gap-2 w-full">
+            <span className="w-8 tabular-nums text-[11px] font-semibold">{p}%</span>
+            <Progress value={p} className="h-1.5 flex-1" />
+          </div>
+        );
+
+      case "date":
+        return (
+          <AppTooltip noiDung={String(val)}>
+            <span className="text-[12px] tabular-nums">{fmtNgay(val)}</span>
+          </AppTooltip>
+        );
+
+      case "expiring":
+        return <ExpiringBadge soNgay={Number(val)} compact={isCompact} />;
+
+      case "boolean":
+        return (
+          <div className="flex justify-center">
+            {val ? (
+              <Check className="h-4 w-4 text-emerald-500" />
+            ) : (
+              <XIcon className="h-4 w-4 text-muted-foreground/30" />
+            )}
+          </div>
+        );
+
+      case "path":
+        const parts = String(val).split(/[>/]/);
+        const last = parts[parts.length - 1];
+        return (
+          <AppTooltip noiDung={String(val)}>
+            <span className="text-[12px] truncate">{last}</span>
+          </AppTooltip>
+        );
+
+      case "longtext":
+        return (
+          <AppTooltip noiDung={String(val)}>
+            <div
+              className={cn(
+                "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
+              )}
+            >
+              {String(val)}
+            </div>
+          </AppTooltip>
+        );
+
+      case "actions":
+        // Thường do render/cell xử lý, auto-cell chỉ làm khung
+        return val as any;
+
+      default:
+        // Kiểu chữ thô (mặc định)
+        return (
+          <div
+            className={cn(
+              "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
+              (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
+            )}
+            title={String(val)}
+          >
+            {String(val)}
+          </div>
+        );
+    }
+  }
+
+  function renderCellContent(c: ColumnDef<T>, r: T) {
+    if (c.render) return c.render(r);
+    if (c.cell) return c.cell(r);
+    return renderAutoCell(c, r);
+  }
+
+
   return (
     <div className="space-y-1.5">
       {/* Vùng ẩn thông báo trạng thái cho screen reader */}
@@ -1257,145 +1399,6 @@ export function StandardTable<T>({
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
   /** Tự động render ô dựa trên `type` */
-  function renderAutoCell(c: ColumnDef<T>, r: T) {
-    const val = c.value?.(r);
-    
-    // Nếu không có value thì trả về null
-    if (val === undefined || val === null) return KHONG_CO;
-
-    const density = document.body.dataset.density as any;
-    const isCompact = density === "compact";
-
-    switch (c.type) {
-      case "id":
-        return <CodeBadge code={String(val)} title={String(val)} />;
-      
-      case "status":
-        // status-registry cần DomainKey, ở đây ta chưa biết domain chính xác.
-        // Ta sẽ dùng StatusBadge với domain mặc định hoặc suy luận.
-        // Nếu val là object có domain và code thì dùng.
-        if (typeof val === 'object' && val !== null && 'domain' in val) {
-          return <StatusBadge domain={val.domain as any} code={val.code as any} />;
-        }
-        // Fallback: Nếu là string, thử tìm domain thiet_bi
-        return <StatusBadge domain="thiet_bi" code={String(val)} />;
-
-      case "taxonomy":
-        // val có thể là { ten, mau }
-        if (typeof val === 'object' && val !== null) {
-          const v = val as any;
-          return <MauChip ten={v.ten} mau={v.mau} />;
-        }
-        return <MauChip ten={String(val)} />;
-
-      case "user":
-        // val có thể là { ho_ten, email, avatar_url }
-        if (typeof val === 'object' && val !== null) {
-          const v = val as any;
-          return (
-            <div className="flex items-center gap-2">
-              <UserAvatar 
-                name={v.ho_ten || v.ten} 
-                email={v.email} 
-                url={v.avatar_url || v.url} 
-                className="h-6 w-6" 
-              />
-              <span className="truncate text-[12px]">{v.ho_ten || v.ten || "—"}</span>
-            </div>
-          );
-        }
-        return (
-          <div className="flex items-center gap-2">
-            <UserAvatar name={String(val)} className="h-6 w-6" />
-            <span className="truncate text-[12px]">{String(val)}</span>
-          </div>
-        );
-
-      case "number":
-        return <span className="tabular-nums">{fmtSo(Number(val))}</span>;
-
-      case "currency":
-        return <span className="tabular-nums">{fmtVND(Number(val))}</span>;
-
-      case "percent":
-        const p = Number(val);
-        return (
-          <div className="flex items-center gap-2 w-full">
-            <span className="w-8 tabular-nums text-[11px] font-semibold">{p}%</span>
-            <Progress value={p} className="h-1.5 flex-1" />
-          </div>
-        );
-
-      case "date":
-        return (
-          <AppTooltip noiDung={String(val)}>
-            <span className="text-[12px] tabular-nums">{fmtNgay(val)}</span>
-          </AppTooltip>
-        );
-
-      case "expiring":
-        return <ExpiringBadge soNgay={Number(val)} compact={isCompact} />;
-
-      case "boolean":
-        return (
-          <div className="flex justify-center">
-            {val ? (
-              <Check className="h-4 w-4 text-emerald-500" />
-            ) : (
-              <XIcon className="h-4 w-4 text-muted-foreground/30" />
-            )}
-          </div>
-        );
-
-      case "path":
-        const parts = String(val).split(/[>/]/);
-        const last = parts[parts.length - 1];
-        return (
-          <AppTooltip noiDung={String(val)}>
-            <span className="text-[12px] truncate">{last}</span>
-          </AppTooltip>
-        );
-
-      case "longtext":
-        return (
-          <AppTooltip noiDung={String(val)}>
-            <div
-              className={cn(
-                "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
-                (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
-              )}
-            >
-              {String(val)}
-            </div>
-          </AppTooltip>
-        );
-
-      case "actions":
-        // Thường do render/cell xử lý, auto-cell chỉ làm khung
-        return val as any;
-
-      default:
-        // Kiểu chữ thô (mặc định)
-        return (
-          <div
-            className={cn(
-              "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
-              (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
-            )}
-            title={String(val)}
-          >
-            {String(val)}
-          </div>
-        );
-    }
-  }
-
-  /** Render một ô (logic chung cho cả Table và Tablet/Card mode nếu cần) */
-  function renderCellContent(c: ColumnDef<T>, r: T) {
-    if (c.render) return c.render(r);
-    if (c.cell) return c.cell(r);
-    return renderAutoCell(c, r);
-  }
 
   return (
                       <React.Fragment key={rid}>
