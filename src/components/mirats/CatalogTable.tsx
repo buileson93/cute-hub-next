@@ -474,10 +474,12 @@ export function CatalogTable({
                 URL.revokeObjectURL(url);
                 toast.success(`Đã xuất ${rows.length} dòng theo bộ lọc hiện tại.`);
               }}
-              title="Xuất các dòng đang hiển thị theo bộ lọc/tìm kiếm"
-            >
-              <Download className="h-3.5 w-3.5" /> Xuất theo bộ lọc
-            </Button>
+                }}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="sr-only">Xuất theo bộ lọc</span>
+              </Button>
+            </AppTooltip>
           )}
 
           bulkActions={({ selectedRows, clear }) => (
