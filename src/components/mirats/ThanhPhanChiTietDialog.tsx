@@ -6,6 +6,7 @@
 //   - Bật "Chỉnh sửa" để đổi/lắp/tháo tài sản (ghi lịch sử gan_chuc_nang).
 // ============================================================================
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useTonKhoModel } from "@/lib/mirats/kho";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
