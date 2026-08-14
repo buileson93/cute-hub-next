@@ -360,17 +360,37 @@ function HeThongCayPage() {
             <TabsContent value="mindmap" className="flex-1 w-full min-h-[600px] relative mt-0 focus-visible:outline-none">
               <CayMindMap 
                 tree={viewTree as any}
-                plLabel={plMind}
-                nhLabel={nhMind}
-                htMind={htMind}
-                tbLabel={tbMind}
+                posByHt={posByHt || new Map()}
+                scopeText="Toàn hệ thống"
                 canManage={canManage && editMode}
-                onOpenEditor={onOpenEditor}
-                onHistory={onHistory}
-                onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
                   renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
                 }}
+                onOpenEditor={onOpenEditor}
+                onHistory={onHistory}
+                onIncident={(ma) => {
+                  const id = parseHtSysMa(ma).sysName;
+                  if (id && id !== NONE_HT) nav({ to: "/su-co", search: { heThongId: id } });
+                }}
+                onMaint={(ma) => {
+                  const id = parseHtSysMa(ma).sysName;
+                  if (id && id !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: id } });
+                }}
+                onRecord={onRecord}
+                onMoveSystem={(req) => {
+                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
+                }}
+                onMoveGroup={(req) => {
+                  toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
+                }}
+                onMoveDevice={(req) => {
+                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
+                }}
+                plMind={plMind}
+                nhMind={nhMind}
+                htMind={htMind}
+                tbMind={tbMind}
+                devices={devices}
               />
             </TabsContent>
             <TabsContent value="health" className="flex-1 mt-0 focus-visible:outline-none">
@@ -392,10 +412,12 @@ function HeThongCayPage() {
       <NodeEditorSheet 
         target={target}
         onClose={() => setTarget(null)}
-        onRename={(kind, ma, ten) => {
-          renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
-          setTarget(null);
-        }}
+        plLabel={plMind}
+        nhLabel={nhMind}
+        htLabel={htMind}
+        tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
+        canManage={canManage}
+        donViList={taxonomy?.donViList || []}
       />
       
       {search.moveHt && (
