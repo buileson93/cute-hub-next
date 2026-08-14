@@ -57,10 +57,13 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
   const [templateId, setTemplateId] = useState("");
   const [selected, setSelected] = useState<DbDevice[]>([]);
   const [trangThai, setTrangThai] = useState("Hoàn thành");
+  const [loaiBaoTri, setLoaiBaoTri] = useState("Định kỳ");
+  const [donViThucHien, setDonViThucHien] = useState(profile?.don_vi ?? "");
   const [ngayBatDau, setNgayBatDau] = useState(new Date().toISOString().slice(0, 10));
   const [ngayHoanThanh, setNgayHoanThanh] = useState(new Date().toISOString().slice(0, 10));
   const [nguoiThucHien, setNguoiThucHien] = useState("");
-  const [values, setValues] = useState<Record<string, unknown>>({});
+  const [ketQua, setKetQua] = useState("");
+  const [values, setValues] = useState<Record<string, string>>({});
   const [chkValues, setChkValues] = useState<Record<string, ItemInput>>({});
   const [step, setStep] = useState(1);
   const [previewOpen, setPreviewOpen] = useState(false);
