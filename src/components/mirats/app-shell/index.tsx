@@ -104,10 +104,10 @@ export function UserMenu() {
             <UserAvatar name={profile.ho_ten} email={profile.email} url={profile.avatar_url} className="h-8 w-8" />
             <div className="hidden text-left leading-tight sm:block">
               <div className="max-w-[120px] truncate text-[13px] font-semibold text-foreground">
-                {profile.ho_ten ?? profile.email.split("@")[0]}
+                {typeof profile.ho_ten === 'string' ? profile.ho_ten : profile.email.split("@")[0]}
               </div>
               <div className="text-[10.5px] text-muted-foreground">
-                {roles[0] ?? "—"}
+                {typeof roles[0] === 'string' ? roles[0] : "—"}
               </div>
             </div>
             <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" />
