@@ -1302,14 +1302,14 @@ export function StandardTable<T>({
                 url={val.avatar_url || val.url} 
                 className="h-6 w-6" 
               />
-              <span className="truncate text-sm">{val.ho_ten || val.ten || "—"}</span>
+              <span className="truncate text-[12px]">{val.ho_ten || val.ten || "—"}</span>
             </div>
           );
         }
         return (
           <div className="flex items-center gap-2">
             <UserAvatar name={String(val)} className="h-6 w-6" />
-            <span className="truncate text-sm">{String(val)}</span>
+            <span className="truncate text-[12px]">{String(val)}</span>
           </div>
         );
 
@@ -1331,7 +1331,7 @@ export function StandardTable<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-sm tabular-nums">{fmtNgay(val)}</span>
+            <span className="text-[12px] tabular-nums">{fmtNgay(val)}</span>
           </AppTooltip>
         );
 
@@ -1354,7 +1354,7 @@ export function StandardTable<T>({
         const last = parts[parts.length - 1];
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-sm truncate">{last}</span>
+            <span className="text-[12px] truncate">{last}</span>
           </AppTooltip>
         );
 
@@ -1363,7 +1363,7 @@ export function StandardTable<T>({
           <AppTooltip noiDung={String(val)}>
             <div
               className={cn(
-                "break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
                 (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
               )}
             >
@@ -1381,7 +1381,7 @@ export function StandardTable<T>({
         return (
           <div
             className={cn(
-              "break-words [overflow-wrap:anywhere] [word-break:break-word]",
+              "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
               (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
             )}
             title={String(val)}
