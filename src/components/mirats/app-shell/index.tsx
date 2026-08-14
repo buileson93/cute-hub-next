@@ -117,13 +117,13 @@ export function UserMenu() {
           <DropdownMenuLabel>
             <div className="text-xs font-medium">{profile.email}</div>
             <div className="text-[10.5px] font-normal text-muted-foreground">
-              {profile.ho_ten ?? "—"}
+              {typeof profile.ho_ten === 'string' ? profile.ho_ten : "—"}
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Badge variant="outline" className="rounded-full font-mono text-[10px] tracking-wider">
                 {hasRole("admin") || hasRole("phong_kt")
                   ? "TOÀN HỆ THỐNG"
-                  : `ĐV: ${profile.don_vi ?? "—"}`}
+                  : `ĐV: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? profile.don_vi?.toString() ?? "—"}`}
               </Badge>
             </div>
           </DropdownMenuLabel>
