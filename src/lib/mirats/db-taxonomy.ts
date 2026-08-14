@@ -405,6 +405,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
     plNameMap,
     lvNameMap,
     htNameMap,
+    htMaMap,
     nhomList: nhom.map((r) => ({
       id: r.id,
       ma: r.ma,
@@ -413,6 +414,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
       thu_tu: r.thu_tu ?? 0,
     })),
     nhomNameMap,
+    nhomMaMap,
     donViList: dv.map((r) => ({ id: r.id, ma: r.ma, ten: r.ten, mo_ta: r.mo_ta ?? "" })),
     lvList: lv.map((r) => ({ id: r.id, ma: r.ma, ten: r.ten, thu_tu: r.thu_tu ?? 0 })),
     htList: ht.map((r) => ({
