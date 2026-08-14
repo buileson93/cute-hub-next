@@ -318,6 +318,8 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                 <VisionImageHint 
                   onApplyDescription={(text) => setHienTuong(prev => prev ? prev + "\n" + text : text)}
                   onApplyCategory={(cat) => setPhanLoai(cat)}
+                  onApplyResult={(text) => setKetQua(text)}
+                  onApplyRca={(text) => setNguyenNhan(text)}
                 />
               </CollapsibleSection>
             </div>
