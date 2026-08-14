@@ -413,7 +413,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
         title="1 dòng = 1 thành phần hệ thống"
       >
         <LayoutGrid className="h-3.5 w-3.5" /> Theo thành phần
-        <Badge variant="secondary" className="ml-1 h-3.5 min-w-[1rem] px-1 text-[9px]">{rows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
       <Button
         size="sm"
@@ -423,7 +422,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
         title="1 dòng = 1 tài sản, hiện số thành phần đang gắn"
       >
         <Package className="h-3.5 w-3.5" /> Theo tài sản
-        <Badge variant="secondary" className="ml-1 h-3.5 min-w-[1rem] px-1 text-[9px]">{taiSanRows.length.toLocaleString("vi-VN")}</Badge>
       </Button>
     </div>
   );
