@@ -966,8 +966,8 @@ export function StandardTable<T>({
                             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                               {col.header || col.label}
                             </span>
-                            <div className={cn("text-[13px] truncate", col.cellClassName)}>
-                              {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                            <div className={cn("text-[12px] truncate", col.cellClassName)}>
+                              {col.render ? col.render(r) : col.cell ? col.cell(r) : renderAutoCell(col, r)}
                             </div>
                           </div>
                         ))}
@@ -981,8 +981,8 @@ export function StandardTable<T>({
                               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                                 {col.header || col.label}
                               </span>
-                              <div className={cn("text-[13px] break-words", col.cellClassName)}>
-                                {col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
+                              <div className={cn("text-[12px] break-words", col.cellClassName)}>
+                                {col.cell ? col.cell(r) : renderAutoCell(col, r)}
                               </div>
                             </div>
                           ))}
@@ -1449,7 +1449,7 @@ export function StandardTable<T>({
                                   scope={colIdx === 0 ? "row" : undefined}
                                 className={cn(
                                   c.cellClassName,
-                                  density === "compact" ? "px-1.5 py-0.5" : density === "comfortable" ? "px-2 py-1" : "px-3 py-1.5",
+                                  density === "compact" ? "px-1 py-0.5" : density === "comfortable" ? "px-1.5 py-0.5" : "px-3 py-1.5",
                                   c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
@@ -1461,7 +1461,7 @@ export function StandardTable<T>({
                                   minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                                 }}
                               >
-                              <div className="truncate max-w-[200px]">{renderAutoCell(c, r)}</div>
+                              <div className="truncate w-full max-w-full">{renderAutoCell(c, r)}</div>
                             </TableCell>
                           )})}
                         </TableRow>
@@ -1481,7 +1481,7 @@ export function StandardTable<T>({
                                       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
                                         {col.header || col.label}
                                       </span>
-                                      <div className="text-[13px] break-words">
+                                      <div className="text-[12px] break-words">
                                         {renderAutoCell(col, r)}
                                       </div>
                                     </div>
