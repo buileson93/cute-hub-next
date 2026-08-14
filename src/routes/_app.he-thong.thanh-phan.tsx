@@ -66,8 +66,6 @@ function ThanhPhanListPage() {
         </TabsContent>
       </Tabs>
     </div>
-
-    </div>
   );
 }
 
