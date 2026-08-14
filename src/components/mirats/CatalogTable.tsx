@@ -447,12 +447,13 @@ export function CatalogTable({
           selected={selectedIds}
           setSelected={setSelectedIds}
           toolbarRight={(ctx) => (
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 gap-1.5"
-              disabled={ctx.visibleRows.length === 0}
-              onClick={() => {
+            <AppTooltip noiDung="Tải dữ liệu danh mục hiện tại ra file CSV">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 w-8 p-0"
+                disabled={ctx.visibleRows.length === 0}
+                onClick={() => {
                 const cols = ctx.visibleColumns.filter((c) => c.key !== "logo");
                 const headers = cols.map((c) => (c.label ?? c.key) as string);
                 const rows = ctx.visibleRows.map((r) => {
