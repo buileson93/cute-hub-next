@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function UserAvatar({ name, email, url, className }: Props) {
-  const label = (name ?? email ?? "?").trim();
+  const label = (typeof name === 'string' ? name : (email ?? "?")).trim();
   const initials = label
     .split(/\s+/)
     .filter(Boolean)

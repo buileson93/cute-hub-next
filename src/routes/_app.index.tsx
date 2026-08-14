@@ -132,7 +132,7 @@ function Dashboard() {
     <PageBody>
       <div className="mb-2">
         <PageHeader
-          title={`Chào mừng, ${profile?.ho_ten ?? ""}`.trim()}
+          title={`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? ""}`.trim()}
           icon="entity.dashboard"
         />
       </div>

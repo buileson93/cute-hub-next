@@ -45,7 +45,7 @@ export function PageHeader({
           data-testid="page-header-title"
           className="truncate text-sm font-bold leading-tight"
         >
-          {title}
+          {typeof title === 'string' ? title : String(title)}
         </h1>
         {hasSubtitle ? (
           <span
