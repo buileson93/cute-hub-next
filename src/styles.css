@@ -351,10 +351,10 @@
 /* Bảng: nén padding các ô cho tất cả TableCell/TableHead của shadcn */
 table th,
 table td {
-  padding-top: 0.375rem;
-  padding-bottom: 0.375rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   font-size: 13px;
 }
 table th { line-height: 1.1; font-weight: 600; }
