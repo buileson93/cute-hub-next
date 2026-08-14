@@ -31,8 +31,8 @@ import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 import { OperationDialog } from "@/components/mirats/OperationDialog";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
-
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
+import { InlineTextEdit } from "./he-thong-cay/NodeEditorSheet";
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
