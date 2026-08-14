@@ -4,14 +4,12 @@ import path from "node:path";
 import { glob } from "glob";
 
 // Cấu hình các file và thư mục cần kiểm tra
-const ROUTES_DIR = "src/routes";
-const COMPONENTS_DIR = "src/components/mirats";
 const QUICK_FORMS_DIR = "src/components/mirats/quick";
 
 describe("MIRATS Integrity Guard - Automated Audit", () => {
   
   describe("A. Giao diện lắp sai (Tabs Mismatch)", () => {
-    const files = globSync("{src/routes/**/*.tsx,src/components/mirats/**/*.tsx}");
+    const files = glob.sync("{src/routes/**/*.tsx,src/components/mirats/**/*.tsx}");
     
     files.forEach((file: string) => {
       it(`kiểm tra Tabs trong ${file}`, () => {
@@ -32,14 +30,13 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
   });
 
   describe("B. Handler rỗng (Silent Failure)", () => {
-    const forms = globSync(`${QUICK_FORMS_DIR}/*.tsx`);
+    const forms = glob.sync(`${QUICK_FORMS_DIR}/*.tsx`);
     
     forms.forEach((file: string) => {
       it(`kiểm tra handler rỗng trong ${file}`, () => {
         const content = fs.readFileSync(file, "utf-8");
         
         // Tìm các prop bắt đầu bằng on gán lambda rỗng: onSomething={() => {}} hoặc onSomething={() => { }}
-        // Tập trung vào các handler quan trọng thường dùng cho callback thành công hoặc đóng form
         const criticalHandlers = ["onDone", "onSuccess", "onSave", "onConfirm", "onApplyDescription"];
         
         criticalHandlers.forEach(handler => {
@@ -73,8 +70,7 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
         const content = fs.readFileSync(form.path, "utf-8");
         
         form.payloadFields.forEach(field => {
-          // Kiểm tra xem field có xuất hiện trong UI code không (Input, Select, Combobox, Textarea...)
-          // Cách kiểm tra đơn giản: tìm sự hiện diện của setter hoặc biến state tương ứng (camelCase)
+          // CamelCase mapping
           const stateName = field.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
           const hasState = content.includes(`[${stateName},`) || content.includes(`set${stateName.charAt(0).toUpperCase() + stateName.slice(1)}(`);
           
@@ -86,14 +82,13 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
 
   describe("D. Component mồ côi (Orphans Scan)", () => {
     it("quét các component mồ côi trong src/components/mirats", () => {
-      const allComponents = globSync("src/components/mirats/**/*.tsx");
-      const allSourceFiles = globSync("src/{routes,components,lib}/**/*.{ts,tsx}");
+      const allComponents = glob.sync("src/components/mirats/**/*.tsx");
+      const allSourceFiles = glob.sync("src/{routes,components,lib}/**/*.{ts,tsx}");
       
       const importedPaths: Set<string> = new Set();
       
       allSourceFiles.forEach((file: string) => {
         const content = fs.readFileSync(file, "utf-8");
-        // Tìm các import từ @/components/mirats
         const matches = content.match(/from\s+["']@\/components\/mirats\/([^"']+)["']/g);
         if (matches) {
           matches.forEach(m => {
@@ -106,17 +101,19 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
       const orphans = allComponents.filter((comp: string) => {
         const fileName = path.basename(comp, ".tsx");
         const dirName = path.dirname(comp).replace("src/components/mirats/", "");
-        const searchPath = dirName === "src/components/mirats" ? fileName : `${dirName}/${fileName}`;
+        let searchPath = dirName === "src/components/mirats" ? fileName : `${dirName}/${fileName}`;
+        // Dọn dẹp path nếu dirName vẫn chứa "src/components/mirats" (khi ở gốc)
+        if (searchPath.startsWith("src/components/mirats/")) {
+            searchPath = searchPath.replace("src/components/mirats/", "");
+        }
         
-        // Bỏ qua các file index hoặc file ui cơ bản
         if (fileName === "index") return false;
         
         return !importedPaths.has(searchPath);
       });
 
-      // Ở giai đoạn này chúng ta chỉ log cảnh báo chứ không fail test cho orphans
       if (orphans.length > 0) {
-        console.warn("CẢNH BÁO: Phát hiện các component mồ côi (không được import ở đâu):", orphans);
+        console.warn("CẢNH BÁO: Phát hiện các component mồ côi:", orphans);
       }
     });
   });
