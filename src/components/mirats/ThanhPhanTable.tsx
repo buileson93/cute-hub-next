@@ -831,7 +831,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } })}
           />
         )}
-      )}
+      </StandardTable>
+    )}
 
       {loadingTS && viewMode === "asset" && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
