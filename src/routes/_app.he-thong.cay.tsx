@@ -12,7 +12,6 @@ import { ReactFlowProvider } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import { DataState } from "@/components/mirats/DataState";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -20,16 +19,15 @@ import {
   type DbDevice, type DbTaxonomy,
 } from "@/lib/mirats/db-taxonomy";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
-import { useMyPermissions, useCan } from "@/hooks/use-permissions";
+import { useCan } from "@/hooks/use-permissions";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { parseHtSysMa } from "@/lib/mirats/phan-loai";
 
 import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/CayContext";
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
-import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
@@ -130,14 +128,11 @@ function HeThongCayPage() {
   } = useCayContext();
   
   const { renameEntity } = useCayMutations();
-
-  // Sync display with search param
+  
   useEffect(() => {
-    // Nếu URL có view khác với state hiện tại, cập nhật state
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
-    // Ngược lại, nếu URL KHÔNG có view nhưng state đang là mindmap, cập nhật URL
     else if (!search.view && display === "mindmap") {
       nav({ 
         to: "/he-thong/cay", 
@@ -164,15 +159,14 @@ function HeThongCayPage() {
   const [showHistory, setShowHistory] = useState(false);
   const { roles } = useSession();
 
-  const { data: overrides, isLoading: loadingOverrides, error: errorOverrides, refetch: refetchOverrides } = useOverrides();
-  const { data: taxonomy, isLoading: loadingTaxo, error: errorTaxo } = useDbTaxonomy();
+  const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
+  const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
   const plMind = usePlMind(overrides, taxonomy);
   const nhMind = useNhMind(overrides, taxonomy);
   const htMind = useHtMind(overrides, taxonomy);
   const tbMind = useTbMind(overrides);
 
   const { data: posByHt } = useAllViTriChucNang();
-
 
   const { data: tpCount = 0 } = useQuery({
     queryKey: ["he_thong_thanh_phan_count"],
@@ -185,13 +179,12 @@ function HeThongCayPage() {
     }
   });
 
-  const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, error: errorDevices, refetch: refetchDevices } = useQuery({
-    queryKey: ["thiet_bi_cay"], // groupMode is removed from queryKey as it's not used in query
+  const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, refetch: refetchDevices } = useQuery({
+    queryKey: ["thiet_bi_cay"],
     queryFn: async () => {
       const pageSize = 1000;
       let from = 0;
       const allData: any[] = [];
-      
       for (;;) {
         const { data, error } = await supabase
           .from("thiet_bi")
@@ -207,20 +200,12 @@ function HeThongCayPage() {
             _thanhPhanTen:he_thong_thanh_phan(ten)
           `)
           .range(from, from + pageSize - 1);
-
         if (error) throw error;
         const rows = data || [];
         allData.push(...rows);
-
         if (rows.length < pageSize) break;
         from += pageSize;
       }
-
-      if (allData.length > 0 && allData.length % 1000 === 0) {
-        // eslint-disable-next-line no-console
-        console.warn(`[MIRATS-T30] Cảnh báo: Số lượng thiết bị (${allData.length}) chia hết cho 1000. Có khả năng dữ liệu bị PostgREST cắt nếu không dùng vòng lặp fetchAll.`);
-      }
-
       return allData.map((d: any) => ({
         ...d,
         _pl: d._pl?.id,
@@ -235,86 +220,39 @@ function HeThongCayPage() {
     }
   });
 
-
   const { tree } = useMemo(() => {
     const plList = taxonomy?.plList || [];
     const htList = taxonomy?.htList || [];
     const nhomList = taxonomy?.nhomList || [];
-
     const realSystems = htList.map(h => {
       const nhom = nhomList.find(n => n.id === h.nhomId);
       return {
-        ma: h.ma,
-        ten: h.ten,
+        ma: h.ma, ten: h.ten,
         nhMa: nhom?.ma || h.nhomId || "KHAC",
         nhTen: nhom?.ten || taxonomy?.nhomNameMap.get(h.nhomId || "KHAC") || "Khác",
         plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC"
       };
     });
-
-    const customGroups = Array.from(overrides?.entries() || [])
-      .filter(([k]) => k.startsWith("nh:"))
-      .map(([k, v]) => ({
-        ma: k.split(":")[1],
-        ten: v.ten || "",
-        plId: (v.du_lieu as any)?.phan_loai_id || ""
-      }))
-      .filter(g => g.plId);
-
-    const customSystems = Array.from(overrides?.entries() || [])
-      .filter(([k]) => k.startsWith("ht:"))
-      .map(([k, v]) => ({
-        ma: k.split(":")[1],
-        ten: v.ten || "",
-        nhMa: (v.du_lieu as any)?.nhom_ma || "",
-        plId: (v.du_lieu as any)?.phan_loai_id || ""
-      }))
-      .filter(s => s.nhMa && s.plId);
-
-    const htDonViMap = (htId: string) => htList.find(h => h.id === htId || h.ma === htId)?.donViId || null;
-    
     const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
     const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
     const colNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.mau;
-
-    return buildTree(
-      devices as any,
-      plList,
-      htMind,
-      nhMind,
-      groupMode === "donvi",
-      customGroups,
-      ordNh,
-      ordHt,
-      colNh,
-      customSystems,
-      htDonViMap,
-      realSystems
-    );
+    return buildTree(devices as any, plList, htMind, nhMind, groupMode === "donvi", [], ordNh, ordHt, colNh, [], (htId) => htList.find(h => h.id === htId || h.ma === htId)?.donViId || null, realSystems);
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);
 
-  // Sync viewTree to context for MindMap and other consumers
   useEffect(() => {
     setViewTree(viewTree as any);
   }, [viewTree, setViewTree]);
 
   const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
-  const error = errorOverrides || errorTaxo || errorDevices;
-  const state = isLoading ? "loading" : error ? "error" : viewTree.length === 0 ? "empty" : "success";
+  const state = isLoading ? "loading" : viewTree.length === 0 ? "empty" : "success";
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
 
-
-
-  const onOpenEditor = useCallback((kind: EditKind, ma: string) => {
-    setTarget({ kind, ma });
-  }, []);
-
+  const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
   const onRecord = useCallback((kind: "tb" | "tp", ma: string) => {
      if (kind === "tb") nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } });
   }, [nav]);
-
   const onHistory = useCallback((ma: string) => {
      const id = parseHtSysMa(ma).sysName;
      if (id && id !== NONE_HT) nav({ to: "/he-thong/$id", params: { id } });
@@ -324,13 +262,7 @@ function HeThongCayPage() {
     <div className="flex flex-col h-full overflow-hidden min-h-0 flex-1">
       <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
          <div className="flex items-center gap-4">
-            <PageHeader
-              title="Cây Hệ Thống"
-              subtitle={tpCount > 0 ? `(${tpCount.toLocaleString("vi-VN")} thành phần)` : undefined}
-              icon="entity.tree"
-            />
-
-
+            <PageHeader title="Cây Hệ Thống" subtitle={tpCount > 0 ? `(${tpCount.toLocaleString("vi-VN")} thành phần)` : undefined} icon="entity.tree" />
             <Tabs value={display} onValueChange={handleDisplayChange}>
               <TabsList>
                 <TabsTrigger value="table" className="gap-2"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
@@ -340,7 +272,6 @@ function HeThongCayPage() {
                 <TabsTrigger value="history" className="gap-2" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
-
          </div>
          <div className="flex items-center gap-2">
             <NodeSearch 
@@ -354,14 +285,7 @@ function HeThongCayPage() {
                       for (const ht of nh.systems) {
                         list.push({ kind: "ht", ma: ht.ma, label: ht.ten, plId: pl.id, lvId: lv.id, nhMa: nh.ma, count: ht.count });
                         for (const d of ht.devices) {
-                          list.push({ 
-                            kind: "tb", 
-                            ma: d.tb.ma_thiet_bi, 
-                            label: d.tb.ten || d.tb.ma_thiet_bi, 
-                            code: d.tb.ma_thiet_bi,
-                            plId: pl.id, lvId: lv.id, nhMa: nh.ma, htMa: ht.ma,
-                            sysName: ht.ten
-                          });
+                          list.push({ kind: "tb", ma: d.tb.ma_thiet_bi, label: d.tb.ten || d.tb.ma_thiet_bi, code: d.tb.ma_thiet_bi, plId: pl.id, lvId: lv.id, nhMa: nh.ma, htMa: ht.ma, sysName: ht.ten });
                         }
                       }
                     }
@@ -373,21 +297,13 @@ function HeThongCayPage() {
                 setSearchQuery(it.label);
                 if (it.kind === "ht" || it.kind === "tb" || it.kind === "nh" || it.kind === "pl") {
                   setDisplay("mindmap");
-                  nav({ 
-                    to: "/he-thong/cay", 
-                    search: (prev: any) => ({ ...prev, view: "mindmap" }),
-                    replace: true 
-                  });
+                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, view: "mindmap" }), replace: true });
                 }
                 setFocus({ ...it, nonce: Math.random() });
               }}
             />
             {canManage && (
-              <Button 
-                variant={editMode ? "default" : "outline"} 
-                onClick={() => setEditMode(!editMode)}
-                className="gap-2"
-              >
+              <Button variant={editMode ? "default" : "outline"} onClick={() => setEditMode(!editMode)} className="gap-2">
                 <Icon name="action.edit" size="tiny" />
                 {editMode ? "Đang sửa" : "Chỉnh sửa"}
               </Button>
@@ -400,19 +316,9 @@ function HeThongCayPage() {
           state={state}
           loadingType="drawer"
           title={isFiltering ? "Không tìm thấy kết quả" : "Cây hệ thống trống"}
-          description={
-            isFiltering 
-              ? "Thử xoá từ khoá tìm kiếm hoặc bộ lọc để xem đầy đủ cây hệ thống."
-              : "Hệ thống chưa có dữ liệu cây phân cấp nào."
-          }
+          description={isFiltering ? "Thử xoá từ khoá tìm kiếm hoặc bộ lọc để xem đầy đủ cây hệ thống." : "Hệ thống chưa có dữ liệu cây phân cấp nào."}
           onRetry={() => { refetchOverrides(); refetchDevices(); }}
-          emptyAction={
-            isFiltering ? (
-              <Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>
-                Xoá tìm kiếm
-              </Button>
-            ) : undefined
-          }
+          emptyAction={isFiltering ? (<Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>Xoá tìm kiếm</Button>) : undefined}
           className="flex-1 min-h-0 w-full flex flex-col"
         >
           <Tabs value={display} className="flex-1 flex flex-col min-h-0">
@@ -451,7 +357,6 @@ function HeThongCayPage() {
                 posByHt={posByHt || new Map()}
               />
             </TabsContent>
-            
             <TabsContent value="mindmap" className="flex-1 w-full min-h-[600px] relative mt-0 focus-visible:outline-none">
               <CayMindMap 
                 tree={viewTree as any}
@@ -468,63 +373,18 @@ function HeThongCayPage() {
                 }}
               />
             </TabsContent>
-
             <TabsContent value="health" className="flex-1 mt-0 focus-visible:outline-none">
               <div className="p-8 text-center text-muted-foreground">Chế độ Sức khỏe đang được phát triển...</div>
             </TabsContent>
           </Tabs>
-                tree={viewTree as any}
-                posByHt={posByHt || new Map()}
-                scopeText="Toàn hệ thống"
-                canManage={canManage && editMode}
-                onRename={(kind, ma, ten) => {
-                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
-                }}
-                onOpenEditor={onOpenEditor}
-                onHistory={onHistory}
-                onIncident={(ma) => {
-                  const id = parseHtSysMa(ma).sysName;
-                  if (id && id !== NONE_HT) nav({ to: "/su-co", search: { heThongId: id } });
-                }}
-                onMaint={(ma) => {
-                  const id = parseHtSysMa(ma).sysName;
-                  if (id && id !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: id } });
-                }}
-                onRecord={onRecord}
-                onMoveSystem={(req) => {
-                   nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
-                }}
-                onMoveGroup={(req) => {
-                  toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
-                }}
-                onMoveDevice={(req) => {
-                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
-                }}
-
-                plMind={plMind}
-                nhMind={nhMind}
-                htMind={htMind}
-                tbMind={tbMind}
-                devices={devices}
-              />
-            </div>
-          )}
         </DataState>
 
-
-        {display === "health" && (
-          <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
-            <Icon name="entity.activity" size="large" className="mb-4 opacity-20" />
-            <h3 className="text-lg font-medium">Bản đồ sức khỏe hệ thống</h3>
-            <p className="max-w-md text-center text-sm mt-2">Tính năng đang được chuyển sang module HealthMonitor chuyên biệt.</p>
-          </div>
-        )}
-
-        {display === "history" && (
-          <div className="h-full overflow-y-auto p-8 flex flex-col items-center justify-center text-muted-foreground bg-background">
-            <Icon name="entity.checklist" size="large" className="mb-4 opacity-20" />
-            <h3 className="text-lg font-medium">Nhật ký tác động hệ thống</h3>
-            <p className="max-w-md text-center text-sm mt-2">Xem lịch sử thay đổi cấu trúc và điều động thiết bị toàn hệ thống.</p>
+        {display === "history" && showHistory && (
+          <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm p-8 flex flex-col items-center justify-center text-muted-foreground">
+             <Button variant="ghost" className="absolute top-4 right-4" onClick={() => setShowHistory(false)}>Đóng</Button>
+             <Icon name="entity.checklist" size="large" className="mb-4 opacity-20" />
+             <h3 className="text-lg font-medium">Nhật ký tác động hệ thống</h3>
+             <p className="max-w-md text-center text-sm mt-2">Xem lịch sử thay đổi cấu trúc và điều động thiết bị toàn hệ thống.</p>
           </div>
         )}
       </PageBody>
@@ -532,20 +392,23 @@ function HeThongCayPage() {
       <NodeEditorSheet 
         target={target}
         onClose={() => setTarget(null)}
-        plLabel={plMind}
-        nhLabel={nhMind}
-        htLabel={htMind}
-        tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
-        canManage={canManage && editMode}
-        donViList={taxonomy?.donViList || []}
+        onRename={(kind, ma, ten) => {
+          renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
+          setTarget(null);
+        }}
       />
-
-      <CayThayDoiPanel 
-        open={showHistory} 
-        onClose={() => setShowHistory(false)} 
-        isAdmin={roles?.includes("admin") || roles?.includes("phong_kt")}
-        htNameMap={taxonomy?.htNameMap}
-      />
+      
+      {search.moveHt && (
+         <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center">
+            <div className="bg-background p-6 rounded-lg max-w-md w-full">
+               <h3 className="text-lg font-bold mb-4">Di chuyển Hệ thống</h3>
+               <p className="text-sm mb-6">Chọn nhóm hệ thống mới để chuyển <strong>{taxonomy?.htNameMap.get(parseHtSysMa(search.moveHt).sysName) || search.moveHt}</strong> vào.</p>
+               <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>Hủy</Button>
+               </div>
+            </div>
+         </div>
+      )}
     </div>
   );
 }
