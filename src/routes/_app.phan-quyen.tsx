@@ -5,7 +5,7 @@ import { ShieldCheck, Lock, FileClock, Database, Boxes, Monitor } from "lucide-r
 import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/backend/client";
 import { RoleOverview } from "@/components/mirats/phan-quyen/RoleOverview";
 import { PermissionMatrix } from "@/components/mirats/phan-quyen/PermissionMatrix";
