@@ -201,7 +201,10 @@ function HeThongCayPage() {
             _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
             _pl:dm_phan_loai(id),
             _nhKey:dm_nhom_he_thong(id),
-            _htId:dm_he_thong(id)
+            _htId:dm_he_thong(id),
+            _thanhPhanId:he_thong_thanh_phan(id),
+            _thanhPhanMa:he_thong_thanh_phan(ma_thanh_phan),
+            _thanhPhanTen:he_thong_thanh_phan(ten)
           `)
           .range(from, from + pageSize - 1);
 
@@ -223,6 +226,9 @@ function HeThongCayPage() {
         _pl: d._pl?.id,
         _nhKey: d._nhKey?.id,
         _htId: d._htId?.id,
+        _thanhPhanId: d._thanhPhanId?.[0]?.id,
+        _thanhPhanMa: d._thanhPhanMa?.[0]?.ma_thanh_phan,
+        _thanhPhanTen: d._thanhPhanTen?.[0]?.ten,
         _loaiTbTen: d._loaiTbTen?.ten,
         _loaiTbOrder: d._loaiTbOrder?.thu_tu
       }));

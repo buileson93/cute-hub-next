@@ -464,6 +464,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
       )}
 
       {!isLoading && !error && viewMode === "component" && (
+        <>
         <StandardTable<ThanhPhanRow>
           tableKey={tableKey}
           rows={filtered}
@@ -477,6 +478,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           selectable
           // activePreset="co-ban" (Bỏ ghim cứng để Reset hoạt động đúng)
           presets={THANH_PHAN_PRESETS}
+
 
           bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
             <>
