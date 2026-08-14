@@ -669,7 +669,7 @@ export function StandardTable<T>({
                 {isMobile ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 gap-2 ml-1">
+                      <Button variant="outline" size="sm" className="h-7 gap-1.5 ml-1">
                         <Icon name="table.filter" size="small" />
                         <span>Bộ lọc</span>
                       </Button>
@@ -713,7 +713,7 @@ export function StandardTable<T>({
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="h-8 gap-2 ml-1"
+                              className="h-7 gap-1.5 ml-1"
                               disabled={!prefs.ready}
                             >
                               <Icon name="table.settings" size="small" />
@@ -842,7 +842,7 @@ export function StandardTable<T>({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 ml-1" onClick={autoFitWidths}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 ml-1" onClick={autoFitWidths}>
                         <Icon name="table.maximize" size="small" />
                       </Button>
                     </TooltipTrigger>
@@ -850,7 +850,7 @@ export function StandardTable<T>({
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
                         <Icon name="table.reset" size="small" />
                       </Button>
                     </TooltipTrigger>
@@ -1068,7 +1068,7 @@ export function StandardTable<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className={cn(
                 "hover:bg-transparent border-b border-border/60",
-                density === "compact" ? "h-8" : density === "comfortable" ? "h-10" : "h-12"
+                density === "compact" ? "h-7" : density === "comfortable" ? "h-9" : "h-11"
               )}>
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
