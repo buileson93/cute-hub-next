@@ -106,84 +106,90 @@ function PmPage() {
             </div>
           </div>
 
-          <div className="border rounded-md overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Chính sách</TableHead>
-                  <TableHead>Đối tượng</TableHead>
-                  <TableHead>Chu kỳ</TableHead>
-                  <TableHead>Hạn</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Đơn vị</TableHead>
-                  <TableHead>Phụ trách</TableHead>
-                  <TableHead className="text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading && (
-                  <TableRow><TableCell colSpan={8} className="text-center py-8">
-                    <Loader2 className="h-5 w-5 animate-spin inline-block" /> Đang tải…
-                  </TableCell></TableRow>
-                )}
-                {!isLoading && list.length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="py-6">
-                    <EmptyState
-                      icon={CalendarClock}
-                      title="Chưa có công việc PM"
-                      description='Bấm "Sinh công việc" để tạo hàng đợi từ các chính sách bảo dưỡng định kỳ hiện có.'
-                      action={
-                        <Button size="sm" variant="outline" onClick={() => sinh.mutate()} disabled={sinh.isPending}>
-                          <RefreshCw className="mr-1 h-4 w-4" /> Sinh công việc
-                        </Button>
-                      }
-                    />
-                  </TableCell></TableRow>
-                )}
-                {list.map((r) => {
-                  const st = PM_STATUS_META[r.trang_thai];
-                  const terminal = r.trang_thai === "hoan_thanh" || r.trang_thai === "bo_qua";
-                  return (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium">
-                        {r.chinh_sach?.ten ?? "—"}
-                        {r.chinh_sach?.noi_dung && (
-                          <div className="text-xs text-muted-foreground line-clamp-1">{r.chinh_sach.noi_dung}</div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        <Badge variant="outline">{r.doi_tuong_type === "thiet_bi" ? "Tài sản" : "Hệ thống"}</Badge>
-                        <div className="font-mono text-[10px] text-muted-foreground mt-1">{r.doi_tuong_id.slice(0, 8)}…</div>
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        {r.chinh_sach?.chu_ky_loai === "metric" ? "Chỉ số" : "Ngày"} · {r.chinh_sach?.chu_ky_gia_tri ?? "—"}
-                        {r.estimated && <div className="text-[10px] text-amber-600 flex items-center gap-1 mt-1"><AlertTriangle className="h-3 w-3" />ước lượng</div>}
-                      </TableCell>
-                      <TableCell>{r.han}</TableCell>
-                      <TableCell><Badge className={st.color} variant="outline">{st.label}</Badge></TableCell>
-                      <TableCell className="text-xs">{r.don_vi?.ten_don_vi ?? "—"}</TableCell>
-                      <TableCell className="text-xs">{r.phu_trach?.ho_ten ?? "—"}</TableCell>
-                      <TableCell className="text-right space-x-1">
-                        {!terminal && (
-                          <>
-                            <Button size="sm" variant="outline" onClick={() => setDone(r)}>
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              <span className="ml-1">Hoàn thành</span>
-                            </Button>
-                            {canSkip && (
-                              <Button size="sm" variant="ghost" onClick={() => setSkip(r)}>
-                                <XCircle className="h-3.5 w-3.5" />
+          <Tabs defaultValue="tuan" value={tab} onValueChange={setTab}>
+            {TABS.map((t) => (
+              <TabsContent key={t.value} value={t.value} className="mt-0 outline-none">
+                <div className="border rounded-md overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Chính sách</TableHead>
+                        <TableHead>Đối tượng</TableHead>
+                        <TableHead>Chu kỳ</TableHead>
+                        <TableHead>Hạn</TableHead>
+                        <TableHead>Trạng thái</TableHead>
+                        <TableHead>Đơn vị</TableHead>
+                        <TableHead>Phụ trách</TableHead>
+                        <TableHead className="text-right">Thao tác</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {isLoading && (
+                        <TableRow><TableCell colSpan={8} className="text-center py-8">
+                          <Loader2 className="h-5 w-5 animate-spin inline-block" /> Đang tải…
+                        </TableCell></TableRow>
+                      )}
+                      {!isLoading && list.length === 0 && (
+                        <TableRow><TableCell colSpan={8} className="py-6">
+                          <EmptyState
+                            icon={CalendarClock}
+                            title="Chưa có công việc PM"
+                            description='Bấm "Sinh công việc" để tạo hàng đợi từ các chính sách bảo dưỡng định kỳ hiện có.'
+                            action={
+                              <Button size="sm" variant="outline" onClick={() => sinh.mutate()} disabled={sinh.isPending}>
+                                <RefreshCw className="mr-1 h-4 w-4" /> Sinh công việc
                               </Button>
-                            )}
-                          </>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                            }
+                          />
+                        </TableCell></TableRow>
+                      )}
+                      {list.map((r) => {
+                        const st = PM_STATUS_META[r.trang_thai];
+                        const terminal = r.trang_thai === "hoan_thanh" || r.trang_thai === "bo_qua";
+                        return (
+                          <TableRow key={r.id}>
+                            <TableCell className="font-medium">
+                              {r.chinh_sach?.ten ?? "—"}
+                              {r.chinh_sach?.noi_dung && (
+                                <div className="text-xs text-muted-foreground line-clamp-1">{r.chinh_sach.noi_dung}</div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-xs">
+                              <Badge variant="outline">{r.doi_tuong_type === "thiet_bi" ? "Tài sản" : "Hệ thống"}</Badge>
+                              <div className="font-mono text-[10px] text-muted-foreground mt-1">{r.doi_tuong_id.slice(0, 8)}…</div>
+                            </TableCell>
+                            <TableCell className="text-xs">
+                              {r.chinh_sach?.chu_ky_loai === "metric" ? "Chỉ số" : "Ngày"} · {r.chinh_sach?.chu_ky_gia_tri ?? "—"}
+                              {r.estimated && <div className="text-[10px] text-amber-600 flex items-center gap-1 mt-1"><AlertTriangle className="h-3 w-3" />ước lượng</div>}
+                            </TableCell>
+                            <TableCell>{r.han}</TableCell>
+                            <TableCell><Badge className={st.color} variant="outline">{st.label}</Badge></TableCell>
+                            <TableCell className="text-xs">{r.don_vi?.ten_don_vi ?? "—"}</TableCell>
+                            <TableCell className="text-xs">{r.phu_trach?.ho_ten ?? "—"}</TableCell>
+                            <TableCell className="text-right space-x-1">
+                              {!terminal && (
+                                <>
+                                  <Button size="sm" variant="outline" onClick={() => setDone(r)}>
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    <span className="ml-1">Hoàn thành</span>
+                                  </Button>
+                                  {canSkip && (
+                                    <Button size="sm" variant="ghost" onClick={() => setSkip(r)}>
+                                      <XCircle className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                </>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </CardContent>
       </Card>
 
