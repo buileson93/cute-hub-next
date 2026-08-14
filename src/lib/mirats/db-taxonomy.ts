@@ -83,7 +83,6 @@ export interface DbTaxonomy {
   lvList: Array<{ id: string; ma: string; ten: string; thu_tu: number }>;
   /** Danh sách nhóm hệ thống thật (dm_nhom_he_thong: VHF/VCCS…). */
   nhomList: Array<{ id: string; ma: string; ten: string; phanLoaiId: string; thu_tu: number }>;
-  nhomNameMap: Map<string, string>;
   /** Danh sách hệ thống thật (dm_he_thong) kèm khoá phân lớp. */
   htList: Array<{
     id: string;
@@ -257,6 +256,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
   const plNameMap = new Map(pl.map((r) => [r.id, r.ten]));
   const lvNameMap = new Map(lv.map((r) => [r.id, r.ten]));
   const htNameMap = new Map(ht.map((r) => [r.id, r.ten]));
+  const htMaMap = new Map(ht.map((r) => [r.ma, r.ten]));
   const dvMaMap = new Map(dv.map((r) => [r.id, r.ma]));
   const dvTenMap = new Map(dv.map((r) => [r.id, r.ten]));
   const ttNameMap = new Map(tt.map((r) => [r.id, r.ten]));
@@ -270,8 +270,6 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
   const nhomById = new Map(nhom.map((r) => [r.id, { ma: r.ma, ten: r.ten }]));
   const nhomNameMap = new Map(nhom.map((r) => [r.id, r.ten]));
   const nhomMaMap = new Map(nhom.map((r) => [r.ma, r.ten]));
-  const htNameMap = new Map(ht.map((r) => [r.id, r.ten]));
-  const htMaMap = new Map(ht.map((r) => [r.ma, r.ten]));
   const htNhomMap = new Map(ht.map((r) => [r.id, r.nhom_he_thong_id ?? ""]));
   const htPhanLoaiMap = new Map(ht.map((r) => [r.id, r.phan_loai_id ?? ""]));
   // Phân loại của NHÓM hệ thống (nhomId → phan_loai_id) — dùng làm bậc dự phòng
