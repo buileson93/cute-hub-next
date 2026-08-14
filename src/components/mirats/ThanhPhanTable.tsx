@@ -585,9 +585,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   </button>
                 )}
               </div>
-              <Badge variant="secondary" className="gap-1 text-[11px]">
-                <Cpu className="h-3 w-3" /> {soLap.toLocaleString("vi-VN")} đã lắp tài sản
-              </Badge>
+              {/* Removed redundant "đã lắp tài sản" count as requested */}
               <div className="ml-2 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span>Hiển thị</span>
                 <Select value={String(pageSize)} onValueChange={(v) => setPageSize(v === "all" ? Math.max(total, 1) : Number(v))}>
@@ -944,9 +942,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   </button>
                 )}
               </div>
-              <Badge variant="secondary" className="gap-1 text-[11px]">
-                <Cpu className="h-3 w-3" /> {soTaiSanCoLap.toLocaleString("vi-VN")} tài sản đang gắn thành phần
-              </Badge>
+              {/* Removed redundant "tài sản đang gắn thành phần" count as requested */}
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span>Số thành phần:</span>
                 <Select value={bucket} onValueChange={(v) => setBucket(v as typeof bucket)}>
