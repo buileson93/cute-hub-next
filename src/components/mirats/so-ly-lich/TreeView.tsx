@@ -71,9 +71,16 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             </Badge>
           </div>
           {node.hist && (node.hist.bt > 0 || node.hist.sc > 0) && (
-            <div className="flex gap-2 text-[10px] mr-2">
+            <div className="flex gap-2 text-[10px]">
                {node.hist.bt > 0 && <span className="text-muted-foreground">BD: {node.hist.bt}</span>}
                {node.hist.sc > 0 && <span className="text-amber-600 font-medium">SC: {node.hist.sc}</span>}
+            </div>
+          )}
+          {node.kind === 'ht' && node.sysId && (
+            <div className="ml-auto opacity-0 group-hover:opacity-100 pr-1">
+              <Link to="/he-thong/$id" params={{ id: node.sysId }} title="Xem sổ lý lịch hệ thống">
+                <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
+              </Link>
             </div>
           )}
         </div>
