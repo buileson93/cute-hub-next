@@ -464,7 +464,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
       )}
 
       {!isLoading && !error && viewMode === "component" && (
-        <>
         <StandardTable<ThanhPhanRow>
           tableKey={tableKey}
           rows={filtered}
@@ -808,7 +807,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
           ]}
         />
-        
+
         {selectedTp && (
           <ThanhPhanChiTietDialog
             viTri={{
@@ -832,7 +831,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } })}
           />
         )}
-        </>
       )}
 
       {loadingTS && viewMode === "asset" && (
