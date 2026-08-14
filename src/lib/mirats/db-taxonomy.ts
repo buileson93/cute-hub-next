@@ -38,6 +38,9 @@ export interface DbDevice extends ThietBi {
   _noiQuanLy: string;
   _phanLoai: string;
   _thanhPhan: string;
+  _thanhPhanId: string | null;
+  _thanhPhanMa: string | null;
+  _thanhPhanTen: string | null;
   _donViTen: string;
   _viTriId: string;
   /** Tên vị trí ĐÃ liên kết danh mục dm_vi_tri (rỗng nếu chưa liên kết / danh mục đã xoá).
