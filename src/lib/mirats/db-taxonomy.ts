@@ -75,12 +75,14 @@ export interface DbTaxonomy {
   plNameMap: Map<string, string>;
   lvNameMap: Map<string, string>;
   htNameMap: Map<string, string>; // id hệ thống → tên
+  htMaMap: Map<string, string>;   // mã hệ thống (ma) → tên
+  nhomNameMap: Map<string, string>;
+  nhomMaMap: Map<string, string>; // mã nhóm (ma) → tên
   donViList: Array<{ id: string; ma: string; ten: string; mo_ta: string }>;
   /** Danh sách lĩnh vực theo thứ tự CSDL. */
   lvList: Array<{ id: string; ma: string; ten: string; thu_tu: number }>;
   /** Danh sách nhóm hệ thống thật (dm_nhom_he_thong: VHF/VCCS…). */
   nhomList: Array<{ id: string; ma: string; ten: string; phanLoaiId: string; thu_tu: number }>;
-  nhomNameMap: Map<string, string>;
   /** Danh sách hệ thống thật (dm_he_thong) kèm khoá phân lớp. */
   htList: Array<{
     id: string;
@@ -254,6 +256,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
   const plNameMap = new Map(pl.map((r) => [r.id, r.ten]));
   const lvNameMap = new Map(lv.map((r) => [r.id, r.ten]));
   const htNameMap = new Map(ht.map((r) => [r.id, r.ten]));
+  const htMaMap = new Map(ht.map((r) => [r.ma, r.ten]));
   const dvMaMap = new Map(dv.map((r) => [r.id, r.ma]));
   const dvTenMap = new Map(dv.map((r) => [r.id, r.ten]));
   const ttNameMap = new Map(tt.map((r) => [r.id, r.ten]));
@@ -266,6 +269,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
   // Nhóm hệ thống thật (id → mã/tên) + bản đồ hệ thống → nhóm/phân loại.
   const nhomById = new Map(nhom.map((r) => [r.id, { ma: r.ma, ten: r.ten }]));
   const nhomNameMap = new Map(nhom.map((r) => [r.id, r.ten]));
+  const nhomMaMap = new Map(nhom.map((r) => [r.ma, r.ten]));
   const htNhomMap = new Map(ht.map((r) => [r.id, r.nhom_he_thong_id ?? ""]));
   const htPhanLoaiMap = new Map(ht.map((r) => [r.id, r.phan_loai_id ?? ""]));
   // Phân loại của NHÓM hệ thống (nhomId → phan_loai_id) — dùng làm bậc dự phòng
@@ -401,6 +405,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
     plNameMap,
     lvNameMap,
     htNameMap,
+    htMaMap,
     nhomList: nhom.map((r) => ({
       id: r.id,
       ma: r.ma,
@@ -409,6 +414,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
       thu_tu: r.thu_tu ?? 0,
     })),
     nhomNameMap,
+    nhomMaMap,
     donViList: dv.map((r) => ({ id: r.id, ma: r.ma, ten: r.ten, mo_ta: r.mo_ta ?? "" })),
     lvList: lv.map((r) => ({ id: r.id, ma: r.ma, ten: r.ten, thu_tu: r.thu_tu ?? 0 })),
     htList: ht.map((r) => ({
