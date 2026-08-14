@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   useDbTaxonomy,
   type DbDevice, type DbTaxonomy,
+  dbTaxonomyOptions,
 } from "@/lib/mirats/db-taxonomy";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useCan } from "@/hooks/use-permissions";
@@ -31,9 +32,11 @@ import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorShee
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
+import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import type { 
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
+
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
   validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string; moveHt?: string; moveTb?: string } => ({
@@ -424,6 +427,14 @@ function HeThongCayPage() {
         canManage={canManage}
         donViList={taxonomy?.donViList || []}
       />
+
+      <CayThayDoiPanel 
+        open={reorgOpen}
+        onClose={() => setReorgOpen(false)}
+        isAdmin={roles.includes("admin")}
+        htNameMap={taxonomy?.htNameMap}
+      />
+
       
       {search.moveHt && (
          <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center">

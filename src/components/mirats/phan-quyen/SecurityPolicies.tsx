@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { ShieldCheck, Lock, KeyRound, FileClock, Check, Database } from "lucide-react";
-import { TabsContent } from "@/components/ui/tabs";
+
 
 export function SecurityPolicies() {
   return (

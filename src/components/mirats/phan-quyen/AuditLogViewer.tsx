@@ -5,7 +5,7 @@ import { Search, Check, X, FileClock } from "lucide-react";
 import { StandardTable } from "@/components/mirats/StandardTable";
 import { Badge } from "@/components/ui/badge";
 import { type AuditRow, ENTITY_LABEL } from "./types";
-import { TabsContent } from "@/components/ui/tabs";
+
 
 interface AuditLogViewerProps {
   auditLogs: AuditRow[];
