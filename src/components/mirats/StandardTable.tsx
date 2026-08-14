@@ -642,15 +642,15 @@ export function StandardTable<T>({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1.5">
       {/* Vùng ẩn thông báo trạng thái cho screen reader */}
       <div className="sr-only" aria-live="polite" role="status">
         {liveAnnouncement}
       </div>
 
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
-        <div className="flex items-center justify-between gap-2 px-1">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-1.5 px-0">
+          <div className="flex items-center gap-1.5">
             {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: fullDisplay, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
