@@ -123,7 +123,7 @@ export function UserMenu() {
               <Badge variant="outline" className="rounded-full font-mono text-[10px] tracking-wider">
                 {hasRole("admin") || hasRole("phong_kt")
                   ? "TOÀN HỆ THỐNG"
-                  : `ĐV: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? profile.don_vi?.toString() ?? "—"}`}
+                  : `ĐV: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? String(profile.don_vi ?? "—")}`}
               </Badge>
             </div>
           </DropdownMenuLabel>
