@@ -732,39 +732,13 @@ function HeThongInner({
       </div>
 
       {/* Sử dụng ThanhPhanChiTietDialog từ component thay vì inline Sheet cũ */}
-      {openTpId && openTpId !== "sys-history" && (
-        <ThanhPhanChiTietDialog 
-          viTri={(() => {
-            const tp = (tps || []).find(t => t.id === openTpId);
-            return {
-              ...(tp || {}),
-              device: dangLap?.get(openTpId) || null
-            } as any;
-          })()}
-          heThongId={id}
-          canManage={canManage}
-          onClose={() => setOpenTpId(null)}
-          onOpenDevice={(ma) => window.location.href = `/thiet-bi/${ma}`}
-        />
-      )}
-
-      <Dialog open={openTpId === "sys-history"} onOpenChange={(o) => !o && setOpenTpId(null)}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="flex flex-wrap items-center gap-2">
-              <HistoryIcon className="h-4 w-4" />
-              Sổ lý lịch hệ thống
-              <span className="text-sm font-normal">· {tenHt}</span>
-            </DialogTitle>
-            <DialogDescription>
-              Gộp toàn bộ sự kiện của hệ thống và các thành phần con.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2">
-            <LyLichHeThongPanel heThongId={id} canEdit={canManage} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ThanhPhanChiTietWrapper 
+        openTpId={openTpId} 
+        heThongId={id} 
+        canManage={canManage} 
+        onClose={() => setOpenTpId(null)} 
+        tenHt={tenHt}
+      />
 
       <ThresholdDialog
         open={thrOpen}
