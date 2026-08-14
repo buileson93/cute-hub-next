@@ -85,9 +85,9 @@ export function VisualKpiChart({
                     backgroundColor: 'hsl(var(--popover))', 
                     borderColor: 'hsl(var(--border))',
                     fontSize: '12px',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    boxShadow: 'var(--shadow-lg)',
                     border: '1px solid hsl(var(--border))',
                   }}
                   itemStyle={{ 
@@ -108,19 +108,21 @@ export function VisualKpiChart({
                   fill={`url(#gradient-${title.replace(/\s+/g, '-')})`}
                   isAnimationActive={true}
                   animationDuration={1000}
+                  dot={false}
+                  activeDot={{ r: 4, fill: Array.isArray(color) ? color[0] : color, stroke: '#fff', strokeWidth: 2 }}
                 />
               </AreaChart>
             ) : type === 'bar' ? (
               <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                 <Tooltip 
-                  cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                  cursor={{ fill: 'hsl(var(--primary))', fillOpacity: 0.05 }}
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--popover))', 
                     borderColor: 'hsl(var(--border))',
                     fontSize: '12px',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    boxShadow: 'var(--shadow-lg)',
                     border: '1px solid hsl(var(--border))',
                   }}
                   itemStyle={{ 
@@ -150,9 +152,9 @@ export function VisualKpiChart({
                             backgroundColor: 'hsl(var(--popover))', 
                             borderColor: 'hsl(var(--border))',
                             fontSize: '12px',
-                            borderRadius: '12px',
-                            padding: '12px',
-                            boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                            borderRadius: '8px',
+                            padding: '8px 12px',
+                            boxShadow: 'var(--shadow-lg)',
                             border: '1px solid hsl(var(--border))',
                         }} 
                         itemStyle={{ 
@@ -160,6 +162,7 @@ export function VisualKpiChart({
                             padding: '2px 0',
                             fontWeight: '600'
                         }}
+                        cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
                         formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, '']}
                         labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: 'hsl(var(--muted-foreground))' }}
                     />
@@ -169,6 +172,7 @@ export function VisualKpiChart({
                         stroke={Array.isArray(color) ? color[0] : color} 
                         strokeWidth={2}
                         dot={false}
+                        activeDot={{ r: 4, fill: Array.isArray(color) ? color[0] : color, stroke: '#fff', strokeWidth: 2 }}
                         isAnimationActive={true}
                         animationDuration={1000}
                     />
