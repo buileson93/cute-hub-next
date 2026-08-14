@@ -626,9 +626,9 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 </div>
               ),
             },
-            { key: "heThong", label: "Hệ thống", minW: "min-w-[200px]", cellClassName: "max-w-[240px]", filter: "cat", value: (r) => r.heThong },
-            { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", filter: "cat", value: (r) => r.nhomHeThong, hideBelow: "md" },
-            { key: "phanLoai", label: "Phân loại hệ thống", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", filter: "cat", value: (r) => r.phanLoai, hideBelow: "md" },
+            { key: "heThong", label: "Hệ thống", minW: "min-w-[200px]", cellClassName: "max-w-[240px]", filter: "cat", value: (r) => r.heThong, cell: (r) => <span className="text-[12px] truncate">{r.heThong}</span> },
+            { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", filter: "cat", value: (r) => r.nhomHeThong, hideBelow: "md", cell: (r) => <span className="text-[12px] truncate">{r.nhomHeThong}</span> },
+            { key: "phanLoai", label: "Phân loại hệ thống", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", filter: "cat", value: (r) => r.phanLoai, hideBelow: "md", cell: (r) => <span className="text-[12px] truncate">{r.phanLoai}</span> },
             {
               key: "ma",
               label: "Mã thành phần",
