@@ -1085,9 +1085,9 @@ export function StandardTable<T>({
                   >
                     <div className="flex justify-center items-center gap-1">
                       <Checkbox 
-                        checked={selected?.size === filteredRows.length && filteredRows.length > 0}
+                        checked={selected?.size === filtered.length && filtered.length > 0}
                         onCheckedChange={(checked) => {
-                          if (checked) setSelected?.(new Set(filteredRows.map(getRowIdInternal)));
+                          if (checked) setSelected?.(new Set(filtered.map(getRowIdInternal)));
                           else clearSelection();
                         }}
                         aria-label="Chọn tất cả các dòng"
