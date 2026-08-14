@@ -967,7 +967,7 @@ export function StandardTable<T>({
                               {col.header || col.label}
                             </span>
                             <div className={cn("text-[12px] truncate", col.cellClassName)}>
-                              {col.render ? col.render(r) : col.cell ? col.cell(r) : renderAutoCell(col, r)}
+                              {renderCellContent(col, r)}
                             </div>
                           </div>
                         ))}
@@ -982,7 +982,7 @@ export function StandardTable<T>({
                                 {col.header || col.label}
                               </span>
                               <div className={cn("text-[12px] break-words", col.cellClassName)}>
-                                {col.cell ? col.cell(r) : renderAutoCell(col, r)}
+                                {renderCellContent(col, r)}
                               </div>
                             </div>
                           ))}
@@ -1260,10 +1260,6 @@ export function StandardTable<T>({
   function renderAutoCell(c: ColumnDef<T>, r: T) {
     const val = c.value?.(r);
     
-    // Nếu có render/cell thì ưu tiên
-    if (c.render) return c.render(r);
-    if (c.cell) return c.cell(r);
-    
     // Nếu không có value thì trả về null
     if (val === undefined || val === null) return KHONG_CO;
 
@@ -1279,7 +1275,7 @@ export function StandardTable<T>({
         // Ta sẽ dùng StatusBadge với domain mặc định hoặc suy luận.
         // Nếu val là object có domain và code thì dùng.
         if (typeof val === 'object' && val !== null && 'domain' in val) {
-          return <StatusBadge domain={val.domain} code={val.code} />;
+          return <StatusBadge domain={val.domain as any} code={val.code as any} />;
         }
         // Fallback: Nếu là string, thử tìm domain thiet_bi
         return <StatusBadge domain="thiet_bi" code={String(val)} />;
@@ -1287,22 +1283,24 @@ export function StandardTable<T>({
       case "taxonomy":
         // val có thể là { ten, mau }
         if (typeof val === 'object' && val !== null) {
-          return <MauChip ten={val.ten} mau={val.mau} />;
+          const v = val as any;
+          return <MauChip ten={v.ten} mau={v.mau} />;
         }
         return <MauChip ten={String(val)} />;
 
       case "user":
         // val có thể là { ho_ten, email, avatar_url }
         if (typeof val === 'object' && val !== null) {
+          const v = val as any;
           return (
             <div className="flex items-center gap-2">
               <UserAvatar 
-                name={val.ho_ten || val.ten} 
-                email={val.email} 
-                url={val.avatar_url || val.url} 
+                name={v.ho_ten || v.ten} 
+                email={v.email} 
+                url={v.avatar_url || v.url} 
                 className="h-6 w-6" 
               />
-              <span className="truncate text-[12px]">{val.ho_ten || val.ten || "—"}</span>
+              <span className="truncate text-[12px]">{v.ho_ten || v.ten || "—"}</span>
             </div>
           );
         }
@@ -1374,7 +1372,7 @@ export function StandardTable<T>({
 
       case "actions":
         // Thường do render/cell xử lý, auto-cell chỉ làm khung
-        return val;
+        return val as any;
 
       default:
         // Kiểu chữ thô (mặc định)
@@ -1390,6 +1388,13 @@ export function StandardTable<T>({
           </div>
         );
     }
+  }
+
+  /** Render một ô (logic chung cho cả Table và Tablet/Card mode nếu cần) */
+  function renderCellContent(c: ColumnDef<T>, r: T) {
+    if (c.render) return c.render(r);
+    if (c.cell) return c.cell(r);
+    return renderAutoCell(c, r);
   }
 
   return (
@@ -1461,7 +1466,7 @@ export function StandardTable<T>({
                                   minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
                                 }}
                               >
-                              <div className="truncate w-full max-w-full">{renderAutoCell(c, r)}</div>
+                              <div className="truncate w-full max-w-full">{renderCellContent(c, r)}</div>
                             </TableCell>
                           )})}
                         </TableRow>
@@ -1482,7 +1487,7 @@ export function StandardTable<T>({
                                         {col.header || col.label}
                                       </span>
                                       <div className="text-[12px] break-words">
-                                        {renderAutoCell(col, r)}
+                                        {renderCellContent(col, r)}
                                       </div>
                                     </div>
                                   ))}
