@@ -95,6 +95,7 @@ function ThietBiPage() {
 
   const devices = useMemo(() => {
     const all = taxo?.devices ?? [];
+    console.log("[Registry] devices:", all.length, "scopeAll:", scopeAll, "donViCode:", donViCode);
     return scopeAll ? all : all.filter((d) => !donViCode || d.don_vi === donViCode);
   }, [taxo, scopeAll, donViCode]);
 
