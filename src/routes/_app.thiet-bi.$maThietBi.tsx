@@ -33,6 +33,7 @@ import { AllocationPanel } from "@/components/mirats/thiet-bi-detail/AllocationP
 import { LifecyclePanel } from "@/components/mirats/thiet-bi-detail/LifecyclePanel";
 import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useOperationsData } from "@/lib/mirats/db-operations";
 
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
