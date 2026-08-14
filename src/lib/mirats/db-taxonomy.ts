@@ -38,6 +38,9 @@ export interface DbDevice extends ThietBi {
   _noiQuanLy: string;
   _phanLoai: string;
   _thanhPhan: string;
+  _thanhPhanId: string | null;
+  _thanhPhanMa: string | null;
+  _thanhPhanTen: string | null;
   _donViTen: string;
   _viTriId: string;
   /** Tên vị trí ĐÃ liên kết danh mục dm_vi_tri (rỗng nếu chưa liên kết / danh mục đã xoá).
@@ -176,7 +179,7 @@ export function giayPhepLabelByTen(plTen: string | undefined): string {
 type CatRow = { id: string; ma: string; ten: string; thu_tu: number | null };
 
 const TB_COLS =
-  "id, ma_thiet_bi, ma_tai_san_bravo, ten_thiet_bi, ma_serial, p_n, model, model_id, nha_san_xuat, nha_cung_cap, vi_tri, vi_tri_id, ngay_mua, han_bao_hanh, ghi_chu, he_thong_id, phan_loai_id, nhom_he_thong_id, don_vi_id, trang_thai_id, loai_thiet_bi_id, phan_loai, nam_san_xuat, nam_dua_vao_khai_thac, ty_le_tuoi_tho, noi_quan_ly, thanh_phan, nguoi_giu, don_vi_giu_id, ngay_cap_phat, trang_thai_cap_phat";
+  "id, ma_thiet_bi, ma_tai_san_bravo, ten_thiet_bi, ma_serial, p_n, model, model_id, nha_san_xuat, nha_cung_cap, vi_tri, vi_tri_id, ngay_mua, han_bao_hanh, ghi_chu, he_thong_id, phan_loai_id, nhom_he_thong_id, don_vi_id, trang_thai_id, loai_thiet_bi_id, phan_loai, nam_san_xuat, nam_dua_vao_khai_thac, ty_le_tuoi_tho, noi_quan_ly, thanh_phan, nguoi_giu, don_vi_giu_id, ngay_cap_phat, trang_thai_cap_phat, he_thong_thanh_phan(id, ma_thanh_phan, ten)";
 
 async function fetchAllThietBi(): Promise<Record<string, unknown>[]> {
   const page = 1000;
@@ -319,6 +322,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
       const n = typeof v === "number" ? v : v == null || v === "" ? NaN : Number(v);
       return Number.isFinite(n) ? n : null;
     };
+    const tp = (r.he_thong_thanh_phan as any)?.[0];
     return {
       // các trường ThietBi tĩnh (điền từ CSDL, thiếu thì để rỗng)
       ma_thiet_bi: (r.ma_thiet_bi as string) ?? (r.id as string),
@@ -361,6 +365,9 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
       _noiQuanLy: (r.noi_quan_ly as string) ?? "",
       _phanLoai: (r.phan_loai as string) ?? "",
       _thanhPhan: (r.thanh_phan as string) ?? "",
+      _thanhPhanId: tp?.id || null,
+      _thanhPhanMa: tp?.ma_thanh_phan || null,
+      _thanhPhanTen: tp?.ten || null,
       _donViTen: donViTen,
       _viTriId: (r.vi_tri_id as string) ?? "",
       _viTriTen: vtNameMap.get((r.vi_tri_id as string) ?? "") ?? "",

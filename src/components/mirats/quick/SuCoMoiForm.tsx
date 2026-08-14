@@ -35,6 +35,8 @@ import { cn } from "@/lib/utils";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
 import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefill";
 import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
+import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
+import { VisionImageHint } from "@/components/mirats/VisionImageHint";
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
 const MUC_BY_PL: Record<string, string> = { A: "Nghiêm trọng", B: "Cao", C: "Trung bình", D: "Thấp", E: "Thấp" };
@@ -232,9 +234,12 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
        <div className="flex-1 overflow-y-auto px-4">
           {step === 1 && (
              <div className="space-y-4">
-               <Card>
-                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                   <CardTitle className="text-sm font-semibold text-primary">1. Thông tin chung</CardTitle>
+               <CollapsibleSection
+                 formId="su-co-moi"
+                 sectionId="thong-tin-chung"
+                 title="1. Thông tin chung"
+                 defaultOpen
+                 action={
                    <div className="flex gap-2">
                      <Button variant="outline" size="sm" onClick={() => setVoiceActive(!voiceActive)} className={voiceActive ? "bg-red-50 text-red-600" : ""}>
                        {voiceActive ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -243,33 +248,46 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                        <Sparkles className="h-4 w-4 mr-1" /> AI Bóc tách
                      </Button>
                    </div>
-                 </CardHeader>
-                 <CardContent className="space-y-4">
-                   <div className="space-y-1.5">
-                     <Label>Sự cố / Hiện tượng *</Label>
-                     <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả hiện tượng..." className="min-h-[100px]" />
+                 }
+               >
+                   <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label>Sự cố / Hiện tượng *</Label>
+                      <Textarea value={hienTuong} onChange={e => setHienTuong(e.target.value)} placeholder="Mô tả hiện tượng..." className="min-h-[100px]" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-1.5">
+                         <Label>Hệ thống bị sự cố *</Label>
+                         <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                       </div>
+                       <div className="space-y-1.5">
+                         <Label>Phân loại mức độ</Label>
+                         <Select value={phanLoai} onValueChange={setPhanLoai}>
+                           <SelectTrigger><SelectValue /></SelectTrigger>
+                           <SelectContent>
+                              {["A", "B", "C", "D", "E"].map(l => <SelectItem key={l} value={l}>Mức {l}</SelectItem>)}
+                           </SelectContent>
+                         </Select>
+                       </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Tài sản chính liên quan *</Label>
+                      <AssetPicker value={heThongDichVu} onChange={(id) => setHeThongDichVu(id)} heThongId={heThongId} />
+                    </div>
                    </div>
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label>Hệ thống bị sự cố *</Label>
-                        <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label>Phân loại mức độ</Label>
-                        <Select value={phanLoai} onValueChange={setPhanLoai}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                             {["A", "B", "C", "D", "E"].map(l => <SelectItem key={l} value={l}>Mức {l}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                   </div>
-                   <div className="space-y-1.5">
-                     <Label>Tài sản chính liên quan *</Label>
-                     <AssetPicker value={heThongDichVu} onChange={(id) => setHeThongDichVu(id)} heThongId={heThongId} />
-                   </div>
-                 </CardContent>
-               </Card>
+               </CollapsibleSection>
+
+               <CollapsibleSection
+                 formId="su-co-moi"
+                 sectionId="hien-truong"
+                 title="Ảnh hiện trường & AI"
+                 defaultOpen
+               >
+                 <VisionImageHint 
+                   onApplyDescription={(text) => setHienTuong(prev => prev ? prev + "\n" + text : text)}
+                   onApplyCategory={(cat) => setPhanLoai(cat)}
+                 />
+               </CollapsibleSection>
              </div>
           )}
           {step === 2 && (

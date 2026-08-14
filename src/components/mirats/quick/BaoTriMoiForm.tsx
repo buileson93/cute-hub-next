@@ -32,6 +32,7 @@ import { PreviewKhaiDialog } from "@/components/mirats/PreviewKhaiDialog";
 import type { KhaiNghiepVuInput } from "@/lib/mirats/ghi-nghiep-vu";
 import { FormWizardSteps } from "@/components/mirats/FormWizardSteps";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
+import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
 
 const TT_OPTIONS = ["Kế hoạch", "Đang thực hiện", "Hoàn thành", "Hoãn"];
 
@@ -148,9 +149,13 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       <div className="flex-1 overflow-y-auto px-4">
         {step === 1 && (
           <div className="space-y-4">
-            <Card>
-              <CardHeader><CardTitle className="text-sm font-semibold text-primary">1. Hệ thống & Mẫu phiếu</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
+            <CollapsibleSection
+              formId="bao-tri-moi"
+              sectionId="he-thong-mau"
+              title="1. Hệ thống & Mẫu phiếu"
+              defaultOpen
+            >
+              <div className="space-y-4">
                 <Label>Hệ thống *</Label>
                 <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
                 {heThongId && (
@@ -159,8 +164,8 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
                     {(templates ?? []).map(t => <Button key={t.id} variant={templateId === t.id ? "default" : "outline"} className="w-full justify-start" onClick={() => setTemplateId(t.id)}>{t.ten}</Button>)}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </CollapsibleSection>
           </div>
         )}
         {step === 2 && (

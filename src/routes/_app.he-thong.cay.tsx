@@ -29,6 +29,7 @@ import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/Cay
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
+import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
@@ -160,6 +161,7 @@ function HeThongCayPage() {
   };
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
   const { roles } = useSession();
 
   const { data: overrides, isLoading: loadingOverrides, error: errorOverrides, refetch: refetchOverrides } = useOverrides();
@@ -199,7 +201,10 @@ function HeThongCayPage() {
             _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
             _pl:dm_phan_loai(id),
             _nhKey:dm_nhom_he_thong(id),
-            _htId:dm_he_thong(id)
+            _htId:dm_he_thong(id),
+            _thanhPhanId:he_thong_thanh_phan(id),
+            _thanhPhanMa:he_thong_thanh_phan(ma_thanh_phan),
+            _thanhPhanTen:he_thong_thanh_phan(ten)
           `)
           .range(from, from + pageSize - 1);
 
@@ -221,6 +226,9 @@ function HeThongCayPage() {
         _pl: d._pl?.id,
         _nhKey: d._nhKey?.id,
         _htId: d._htId?.id,
+        _thanhPhanId: d._thanhPhanId?.[0]?.id,
+        _thanhPhanMa: d._thanhPhanMa?.[0]?.ma_thanh_phan,
+        _thanhPhanTen: d._thanhPhanTen?.[0]?.ten,
         _loaiTbTen: d._loaiTbTen?.ten,
         _loaiTbOrder: d._loaiTbOrder?.thu_tu
       }));
@@ -329,7 +337,7 @@ function HeThongCayPage() {
                 <TabsTrigger value="tree" className="gap-2"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
                 <TabsTrigger value="mindmap" className="gap-2"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
                 <TabsTrigger value="health" className="gap-2"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="gap-2"><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
+                <TabsTrigger value="history" className="gap-2" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -504,7 +512,6 @@ function HeThongCayPage() {
         )}
       </PageBody>
 
-
       <NodeEditorSheet 
         target={target}
         onClose={() => setTarget(null)}
@@ -516,6 +523,12 @@ function HeThongCayPage() {
         donViList={taxonomy?.donViList || []}
       />
 
+      <CayThayDoiPanel 
+        open={showHistory} 
+        onClose={() => setShowHistory(false)} 
+        isAdmin={roles?.includes("admin") || roles?.includes("phong_kt")}
+        htNameMap={taxonomy?.htNameMap}
+      />
     </div>
   );
 }

@@ -1,8 +1,9 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, Suspense, lazy } from "react";
 import { Search, Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
+import { CommandPaletteButton } from "../CommandPaletteButton";
 import { QrScanButton } from "../QrScanButton";
 import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
@@ -14,6 +15,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+
+const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
 
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
@@ -51,6 +54,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
       <div className="flex items-center gap-1 sm:gap-2">
         <RealtimeStatusIndicator />
+        <CommandPaletteButton />
         <QrScanButton />
         
         <div className="hidden md:block">
@@ -63,6 +67,10 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <TzClock />
         </div>
       </div>
+
+      <Suspense fallback={null}>
+        <CommandPalette />
+      </Suspense>
     </div>
   );
 }

@@ -30,6 +30,7 @@ import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 
 import { OperationDialog } from "@/components/mirats/OperationDialog";
+import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 
@@ -266,6 +267,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">("thanh-phan:view-mode", "component");
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
   const [internalEditMode, setInternalEditMode] = useState(false);
+  const [selectedTp, setSelectedTp] = useState<{ row: ThanhPhanRow; heThongId: string } | null>(null);
   const editMode = externalEditMode !== undefined ? externalEditMode : internalEditMode;
   const setEditMode = setInternalEditMode;
 
@@ -462,6 +464,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
       )}
 
       {!isLoading && !error && viewMode === "component" && (
+        <>
         <StandardTable<ThanhPhanRow>
           tableKey={tableKey}
           rows={filtered}
@@ -475,6 +478,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           selectable
           // activePreset="co-ban" (Bỏ ghim cứng để Reset hoạt động đúng)
           presets={THANH_PHAN_PRESETS}
+
 
           bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
             <>
@@ -598,7 +602,10 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               sticky: true,
               value: (r) => [r.ten, r.ma].filter(Boolean).join(" "),
               cell: (r) => (
-                <div className="flex flex-col gap-0.5">
+                <div 
+                  className="flex flex-col gap-0.5 cursor-pointer hover:bg-muted/30 p-1 rounded transition-colors"
+                  onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}
+                >
                   {editMode && allowEdit ? (
                     <InlineTextEdit
                       initial={r.ten}
@@ -801,7 +808,33 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
           ]}
         />
-      )}
+
+
+        {selectedTp && (
+          <ThanhPhanChiTietDialog
+            viTri={{
+              id: selectedTp.row.id,
+              ma_thanh_phan: selectedTp.row.ma,
+              ten: selectedTp.row.ten,
+              he_thong_id: selectedTp.row.heThongId,
+              loai_thiet_bi_yeu_cau: selectedTp.row.modelId,
+              trang_thai: selectedTp.row.trangThai === "Đã ngừng" ? "ngung" : "hoat_dong",
+              bat_buoc: false,
+              device: selectedTp.row.daLap ? {
+                thiet_bi_id: "", // RPC doesn't provide asset ID
+                ma_thiet_bi: selectedTp.row.thietBiMa,
+                ten_thiet_bi: selectedTp.row.thietBiTen,
+                ma_serial: selectedTp.row.thietBiSerial
+              } : null
+            } as any}
+            heThongId={selectedTp.heThongId}
+            canManage={allowEdit}
+            onClose={() => setSelectedTp(null)}
+            onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } })}
+          />
+        )}
+      </>
+    )}
 
       {loadingTS && viewMode === "asset" && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -1065,45 +1098,46 @@ function InlineTextEdit({
 }) {
   const [value, setValue] = useState(initial);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const initialRef = useRef(initial);
+
   useEffect(() => {
     setValue(initial);
     initialRef.current = initial;
   }, [initial]);
 
-  const dirty = value.trim() !== (initialRef.current ?? "").trim();
-
   async function commit() {
     if (!dirty || saving) return;
-    const v = value.trim();
-    if (!v) {
-      setValue(initialRef.current);
-      return;
-    }
     setSaving(true);
     try {
-      await onSave(v);
-      initialRef.current = v;
-    } catch {
-      setValue(initialRef.current);
+      await onSave(value);
+      setDirty(false);
+      initialRef.current = value;
+    } catch (e) {
+      toast.error((e as Error).message);
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex w-full items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
       <Input
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={commit}
+        onChange={(e) => {
+          setValue(e.target.value);
+          setDirty(e.target.value !== initialRef.current);
+        }}
         onKeyDown={(e) => {
-          if (e.key === "Enter") { e.preventDefault(); (e.target as HTMLInputElement).blur(); }
-          if (e.key === "Escape") { setValue(initialRef.current); (e.target as HTMLInputElement).blur(); }
+          if (e.key === "Enter") void commit();
+          if (e.key === "Escape") {
+            setValue(initialRef.current);
+            setDirty(false);
+          }
         }}
         placeholder={placeholder}
+        className="h-7 w-full border-none bg-transparent p-0 text-sm font-medium focus-visible:ring-0"
         disabled={saving}
-        className="h-7 text-sm font-medium"
       />
       {saving && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
       {dirty && !saving && (
@@ -1131,6 +1165,7 @@ function InlineTextEdit({
     </div>
   );
 }
+
 
 // ---- Sửa nhanh VỊ TRÍ LẮP ĐẶT của thành phần (edit mode, dạng bảng) ----
 function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () => void }) {
