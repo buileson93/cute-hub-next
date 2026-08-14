@@ -123,6 +123,7 @@ function HeThongInner({
   const [nkOpen, setNkOpen] = useState(true);
   const [tpOpen, setTpOpen] = useState(true);
   const [chartMonths, setChartMonths] = useState<3 | 6 | 12>(6);
+  const [openTpId, setOpenTpId] = useState<string | null>(null);
   const [thrOpen, setThrOpen] = useState(false);
   const { data: tuongThich } = useQuery({
     queryKey: ["he-thong-tuong-thich", id],
