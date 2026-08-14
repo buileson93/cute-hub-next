@@ -250,12 +250,12 @@ function HeThongCayPage() {
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
-  const onRecord = useCallback((kind: "tb" | "tp", ma: string) => {
+  const onRecord = useCallback((kind: "tb" | "tp", ma: string, ten?: string) => {
      if (kind === "tb") nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } });
   }, [nav]);
   const onHistory = useCallback((ma: string) => {
-     const id = parseHtSysMa(ma).sysName;
-     if (id && id !== NONE_HT) nav({ to: "/he-thong/$id", params: { id } });
+     const sysId = parseHtSysMa(ma).sysName;
+     if (sysId && sysId !== NONE_HT) nav({ to: "/he-thong/$id", params: { id: sysId } });
   }, [nav]);
 
   return (
@@ -334,12 +334,12 @@ function HeThongCayPage() {
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}
                 onIncident={(ma) => {
-                  const id = parseHtSysMa(ma).sysName;
-                  if (id && id !== NONE_HT) nav({ to: "/su-co", search: { heThongId: id } });
+                  const sysId = parseHtSysMa(ma).sysName;
+                  if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
                 }}
                 onMaint={(ma) => {
-                  const id = parseHtSysMa(ma).sysName;
-                  if (id && id !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: id } });
+                  const sysId = parseHtSysMa(ma).sysName;
+                  if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
                 }}
                 onRecord={onRecord}
                 onRename={(kind, ma, ten) => {
@@ -369,12 +369,12 @@ function HeThongCayPage() {
                 onOpenEditor={onOpenEditor}
                 onHistory={onHistory}
                 onIncident={(ma) => {
-                  const id = parseHtSysMa(ma).sysName;
-                  if (id && id !== NONE_HT) nav({ to: "/su-co", search: { heThongId: id } });
+                  const sysId = parseHtSysMa(ma).sysName;
+                  if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
                 }}
                 onMaint={(ma) => {
-                  const id = parseHtSysMa(ma).sysName;
-                  if (id && id !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: id } });
+                  const sysId = parseHtSysMa(ma).sysName;
+                  if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
                 }}
                 onRecord={onRecord}
                 onMoveSystem={(req) => {

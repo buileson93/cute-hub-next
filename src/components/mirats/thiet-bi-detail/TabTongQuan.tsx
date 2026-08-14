@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MauChip } from "@/components/mirats/MauChip";
 import { DeviceDetailTabProps } from "./types";
+import { useQuery } from "@tanstack/react-query";
 import { LyLichThietBiPanel } from "@/components/mirats/LyLichThietBiPanel";
 import { useCellEditor } from "@/lib/mirats/ui/use-cell-editor";
 import { Input } from "@/components/ui/input";
