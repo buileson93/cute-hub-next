@@ -31,8 +31,8 @@ import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 import { OperationDialog } from "@/components/mirats/OperationDialog";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
-import { InlineTextEdit } from "./he-thong-cay/NodeEditorSheet";
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
@@ -1088,6 +1088,85 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 }
 
 function InlineTextEdit({
+  initial,
+  placeholder,
+  onSave,
+}: {
+  initial: string;
+  placeholder?: string;
+  onSave: (v: string) => Promise<void>;
+}) {
+  const [value, setValue] = useState(initial);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const initialRef = useRef(initial);
+
+  useEffect(() => {
+    setValue(initial);
+    initialRef.current = initial;
+  }, [initial]);
+
+  async function commit() {
+    if (!dirty || saving) return;
+    setSaving(true);
+    try {
+      await onSave(value);
+      setDirty(false);
+      initialRef.current = value;
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="flex w-full items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+      <Input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          setDirty(e.target.value !== initialRef.current);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") void commit();
+          if (e.key === "Escape") {
+            setValue(initialRef.current);
+            setDirty(false);
+          }
+        }}
+        placeholder={placeholder}
+        className="h-7 w-full border-none bg-transparent p-0 text-sm font-medium focus-visible:ring-0"
+        disabled={saving}
+      />
+      {saving && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+      {dirty && !saving && (
+        <>
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); void commit(); }}
+            className="text-emerald-600 hover:text-emerald-500"
+            aria-label="Lưu"
+            title="Lưu (Enter)"
+          >
+            <Check className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); setValue(initialRef.current); }}
+            className="text-muted-foreground hover:text-foreground"
+            aria-label="Huỷ"
+            title="Huỷ (Esc)"
+          >
+            <XCircle className="h-3.5 w-3.5" />
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function InlineTextEditLegacy({
   initial,
   placeholder,
   onSave,
