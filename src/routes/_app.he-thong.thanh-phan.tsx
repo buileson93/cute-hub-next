@@ -33,12 +33,12 @@ function ThanhPhanListPage() {
   return (
     <div className="flex h-full flex-col">
       <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })} className="flex-1 flex flex-col min-h-0">
-        <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
+        <div className="px-3 py-1.5 border-b flex items-center justify-between bg-background z-10 shrink-0">
           <div className="flex items-center gap-4">
             <PageHeader
-              title="Bảng thành phần & tài sản"
+              title="Thành phần & tài sản"
               icon={Puzzle}
-              help="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật. Thành phần chưa lắp tài sản thì các cột kế thừa (serial, model, NSX...) để trống."
+              help="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật."
             />
             <TabsList>
               <TabsTrigger value="table" className="gap-2"><List className="h-4 w-4"/>Bảng</TabsTrigger>
