@@ -6,6 +6,7 @@ import {
   MapPin, Tag, Info, ExternalLink, HeartPulse, Activity, Gauge, TrendingUp,
   Printer, Settings2, Plus, QrCode, Waypoints, Bug, ClipboardList, FolderKanban,
   Search, X, Filter, ChevronDown, ChevronUp, Minimize2, Maximize2, CheckCircle2,
+  History as HistoryIcon
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -501,7 +502,7 @@ function HeThongInner({
                   {nkOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
                 <Button size="icon" variant="outline" className="h-7 w-7 text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100" onClick={() => setOpenTpId("sys-history")} title="Xem lý lịch hệ thống đầy đủ">
-                  <History className="h-4 w-4" />
+                  <HistoryIcon className="h-4 w-4" />
                 </Button>
               </div>
             </CardTitle>

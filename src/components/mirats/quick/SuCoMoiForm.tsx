@@ -419,7 +419,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                         </div>
                         <div className="space-y-1.5">
                           <Label>Biện pháp xử lý *</Label>
-                          <Textarea value={bienPhap} onChange={e => setBienPhap(e.target.value)} placeholder="Các bước đã thực hiện để khắc phục..." />
+                          <Textarea value={bienPhapXuLy} onChange={e => setBienPhapXuLy(e.target.value)} placeholder="Các bước đã thực hiện để khắc phục..." />
                         </div>
                         <div className="space-y-1.5">
                           <Label>Kết quả / Kết luận *</Label>
