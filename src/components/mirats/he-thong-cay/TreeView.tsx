@@ -18,6 +18,7 @@ import type {
   MoveReq, MoveGroupReq, MoveDeviceReq, MoveTarget, 
   ViTriChucNangTree 
 } from "./types";
+import { ThanhPhanChiTietDialog } from "../ThanhPhanChiTietDialog";
 import { LEVEL_META } from "./types";
 import { DUNG_KHAI_THAC_TEN, deviceChips } from "./utils";
 
@@ -59,6 +60,7 @@ export function TreeView({
   posByHt: Map<string, any>;
 }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
+  const [selectedTp, setSelectedTp] = useState<{ vt: any, htId: string } | null>(null);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
@@ -122,9 +124,25 @@ export function TreeView({
              <button onClick={() => onMaint(htMa)} className="rounded p-1 hover:bg-muted" title="Bảo trì">
                <Wrench className="h-3.5 w-3.5" />
              </button>
-             <button onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))} className="rounded p-1 hover:bg-muted" title="Sổ lý lịch">
-               <History className="h-3.5 w-3.5" />
-             </button>
+              <button onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))} className="rounded p-1 hover:bg-muted" title="Sổ lý lịch">
+                <History className="h-3.5 w-3.5" />
+              </button>
+              {d.tb.thanh_phan_id && (
+                <button 
+                  onClick={() => setSelectedTp({ 
+                    vt: { 
+                      id: d.tb.thanh_phan_id, 
+                      ma_thanh_phan: d.tb.ma_thanh_phan, 
+                      ten: d.tb.ten_thanh_phan || "Thành phần",
+                      device: d.tb 
+                    }, 
+                    htId: htMa 
+                  })} 
+                  className="rounded p-1 hover:bg-muted" title="Chi tiết thành phần"
+                >
+                  <Eye className="h-3.5 w-3.5 text-sky-600" />
+                </button>
+              )}
           </div>
         </div>
         {isExpanded && d.children.map(c => renderDevice({ tb: c, children: [] }, htMa, level + 1))}
@@ -221,6 +239,16 @@ export function TreeView({
           </div>
         );
       })}
+
+      {selectedTp && (
+        <ThanhPhanChiTietDialog
+          viTri={selectedTp.vt}
+          heThongId={selectedTp.htId}
+          canManage={canManage}
+          onClose={() => setSelectedTp(null)}
+          onOpenDevice={(ma) => onRecord("tb", ma, "")}
+        />
+      )}
     </div>
   );
 }

@@ -506,7 +506,6 @@ function HeThongCayPage() {
         )}
       </PageBody>
 
-
       <NodeEditorSheet 
         target={target}
         onClose={() => setTarget(null)}
@@ -518,6 +517,12 @@ function HeThongCayPage() {
         donViList={taxonomy?.donViList || []}
       />
 
+      <CayThayDoiPanel 
+        open={showHistory} 
+        onClose={() => setShowHistory(false)} 
+        isAdmin={roles?.includes("admin") || roles?.includes("phong_kt")}
+        htNameMap={taxonomy?.htNameMap}
+      />
     </div>
   );
 }

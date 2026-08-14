@@ -30,6 +30,7 @@ import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 
 import { OperationDialog } from "@/components/mirats/OperationDialog";
+import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 
@@ -266,6 +267,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">("thanh-phan:view-mode", "component");
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
   const [internalEditMode, setInternalEditMode] = useState(false);
+  const [selectedTp, setSelectedTp] = useState<{ row: ThanhPhanRow; heThongId: string } | null>(null);
   const editMode = externalEditMode !== undefined ? externalEditMode : internalEditMode;
   const setEditMode = setInternalEditMode;
 
