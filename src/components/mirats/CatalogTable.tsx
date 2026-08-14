@@ -495,21 +495,23 @@ export function CatalogTable({
                   <span className="sr-only">Gộp đã chọn</span>
                 </Button>
               </AppTooltip>
-              <Button
-                size="sm"
-                variant="destructive"
-                className="h-8 gap-1.5"
-                disabled={bulkDelMut.isPending}
-                onClick={() => {
-                  const removable = selectedRows.filter((r) => r.soThietBi === 0).length;
-                  if (removable === 0) { toast.error("Các mục đã chọn đều còn tài sản đang dùng — không thể xoá."); return; }
-                  if (!confirm(`Xoá ${removable} ${singular.toLowerCase()} đã chọn? Thao tác không thể hoàn tác.`)) return;
-                  bulkDelMut.mutate(selectedRows, { onSuccess: () => clear() });
-                }}
-              >
-                {bulkDelMut.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                Xoá đã chọn
-              </Button>
+              <AppTooltip noiDung="Xoá hàng loạt các mục đã chọn (chỉ những mục không có tài sản)">
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="h-8 w-8 p-0"
+                  disabled={bulkDelMut.isPending}
+                  onClick={() => {
+                    const removable = selectedRows.filter((r) => r.soThietBi === 0).length;
+                    if (removable === 0) { toast.error("Các mục đã chọn đều còn tài sản đang dùng — không thể xoá."); return; }
+                    if (!confirm(`Xoá ${removable} ${singular.toLowerCase()} đã chọn? Thao tác không thể hoàn tác.`)) return;
+                    bulkDelMut.mutate(selectedRows, { onSuccess: () => clear() });
+                  }}
+                >
+                  {bulkDelMut.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                  <span className="sr-only">Xoá đã chọn</span>
+                </Button>
+              </AppTooltip>
             </>
           )}
           getRowId={(r) => r.id}
