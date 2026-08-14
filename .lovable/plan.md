@@ -28,7 +28,9 @@ Người dùng báo cáo dữ liệu trong database có 1.185 thành phần như
 ### Bước 2: Kiểm tra Virtualization
 - Xác minh `StandardTable` đang nhận đúng `rows` và `virtualizer` đang hoạt động (không render toàn bộ DOM cùng lúc).
 
-### Bước 3: Kiểm định
-- Mở bảng "Thành phần & tài sản", kiểm tra tổng số dòng ở footer (phải là 1.185+).
+### Bước 3: Kiểm định và Hiển thị
+- Cập nhật các badge số lượng trên nút chuyển đổi chế độ (`ModeToggle`) để hiển thị con số thực tế (1.185+).
+- Mở bảng "Thành phần & tài sản", kiểm tra tổng số dòng ở footer và trên các nút chuyển đổi (phải khớp với dữ liệu thực).
 - Cuộn nhanh qua danh sách để xác nhận không bị giật lag (hiệu năng ảo hóa).
+
 
