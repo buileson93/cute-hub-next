@@ -85,11 +85,27 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   const save = useMutation({
     mutationFn: async () => {
       const maHH = `HH-${Date.now().toString(36).toUpperCase()}`;
-      const payload = buildHongHocPayload({ ma_hong_hoc: maHH, ngay_hong: ngayHong, mo_ta_hong_hoc: moTa, phuong_an: PHUONG_AN.find(p => p.code === phuongAn)?.label ?? phuongAn, thiet_bi_hong_ids: [thietBiHongId], thiet_bi_thay_the_id: thietBiThayTheId || null, he_thong_id: heThongId || null, thanh_phan_id: thanhPhanId || null, bo_phan_hong: boPhan || null, su_co: suCoMa || null, nguoi_thuc_hien: profile?.ho_ten ? [profile.ho_ten] : [] });
+      const payload = buildHongHocPayload({ 
+        ma_hong_hoc: maHH, 
+        ngay_hong: ngayHong, 
+        mo_ta_hong_hoc: moTa, 
+        phuong_an: PHUONG_AN.find(p => p.code === phuongAn)?.label ?? phuongAn, 
+        thiet_bi_hong_ids: [thietBiHongId], 
+        thiet_bi_thay_the_id: thietBiThayTheId || null, 
+        he_thong_id: heThongId || null, 
+        thanh_phan_id: thanhPhanId || null, 
+        bo_phan_hong: boPhan || null, 
+        su_co: suCoMa || null, 
+        nguoi_thuc_hien: profile?.ho_ten ? [profile.ho_ten] : [] 
+      });
       await ghiHongHocFull(payload);
       return maHH;
     },
-    onSuccess: () => { toast.success("Đã ghi nhận hỏng hóc"); if (onDone) onDone(); }
+    onSuccess: () => { 
+      toast.success("Đã ghi nhận hỏng hóc"); 
+      qc.invalidateQueries({ queryKey: ["operations_data"] });
+      if (onDone) onDone(); 
+    }
   });
 
   if (!canManageHongHoc(roles)) return <AccessDenied backTo="/hong-hoc" backLabel="Về danh sách" />;
