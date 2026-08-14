@@ -171,12 +171,45 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
               defaultOpen
             >
               <div className="space-y-4">
-                <Label>Hệ thống *</Label>
-                <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                <div className="space-y-1.5">
+                  <Label>Hệ thống *</Label>
+                  <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label>Loại bảo dưỡng *</Label>
+                    <Select value={loaiBaoTri} onValueChange={setLoaiBaoTri}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {LOAI_BT_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Đơn vị thực hiện *</Label>
+                    <Input value={donViThucHien} onChange={e => setDonViThucHien(e.target.value)} />
+                  </div>
+                </div>
+
                 {heThongId && (
                   <div className="space-y-2">
-                    <Label>Mẫu phiếu *</Label>
-                    {(templates ?? []).map(t => <Button key={t.id} variant={templateId === t.id ? "default" : "outline"} className="w-full justify-start" onClick={() => setTemplateId(t.id)}>{t.ten}</Button>)}
+                    <Label className="text-xs font-bold text-muted-foreground uppercase">Mẫu phiếu *</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {(templates ?? []).map(t => (
+                        <Button 
+                          key={t.id} 
+                          variant={templateId === t.id ? "default" : "outline"} 
+                          className="justify-start h-auto py-2 px-3 text-left" 
+                          onClick={() => setTemplateId(t.id)}
+                        >
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-medium">{t.ten}</span>
+                            <span className="text-[10px] opacity-70">{t.code}</span>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
