@@ -131,16 +131,24 @@ function PhanQuyenPage() {
           <TabsTrigger value="policy" className="data-[state=active]:bg-background"><ShieldCheck className="mr-1.5 h-3.5 w-3.5" />Chính sách</TabsTrigger>
         </TabsList>
 
-        <PermissionMatrix stats={statsQ.data} />
-        <DistributionStats stats={statsQ.data} />
-        <AuditLogViewer 
-          auditLogs={auditQ.data ?? []} 
-          loading={auditQ.isLoading} 
-          profileMap={profileMap} 
-          q={q} 
-          setQ={setQ} 
-        />
-        <SecurityPolicies />
+        <TabsContent value="matrix" className="mt-0">
+          <PermissionMatrix stats={statsQ.data} />
+        </TabsContent>
+        <TabsContent value="phanbo" className="mt-0">
+          <DistributionStats stats={statsQ.data} />
+        </TabsContent>
+        <TabsContent value="audit" className="mt-0">
+          <AuditLogViewer 
+            auditLogs={auditQ.data ?? []} 
+            loading={auditQ.isLoading} 
+            profileMap={profileMap} 
+            q={q} 
+            setQ={setQ} 
+          />
+        </TabsContent>
+        <TabsContent value="policy" className="mt-0">
+          <SecurityPolicies />
+        </TabsContent>
       </Tabs>
     </div>
   );
