@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Plus, TicketIcon, User as UserIcon, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { formatDT, timeAgo } from "@/lib/time";
@@ -105,7 +105,7 @@ function TicketsPage() {
         }
       />
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="space-y-6">
         <TabsList>
           <TabsTrigger value="all">Tất cả ({rows.length})</TabsTrigger>
           <TabsTrigger value="cua_toi">
@@ -115,63 +115,65 @@ function TicketsPage() {
             Được giao ({rows.filter((r) => r.assigned_to === user?.id).length})
           </TabsTrigger>
         </TabsList>
-      </Tabs>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <TicketIcon className="h-10 w-10 text-muted-foreground/40" />
-            <div className="text-sm text-muted-foreground">Chưa có yêu cầu nào</div>
-            <Button size="sm" onClick={() => setOpen(true)}>
-              <Plus className="mr-1.5 h-3.5 w-3.5" /> Tạo yêu cầu đầu tiên
-            </Button>
-          </div>
-        ) : (
-          <ul className="divide-y divide-border">
-            {filtered.map((t) => (
-              <li key={t.id}>
-                <Link
-                  to={`/tickets/${t.id}` as never}
-                  className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-secondary/60"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <TicketIcon className="h-4.5 w-4.5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <div className="truncate text-sm font-semibold">{t.tieu_de}</div>
-                      <Badge variant="outline" className={cn("text-[10px]", TRANG_THAI_COLOR[t.trang_thai])}>
-                        {TICKET_TRANG_THAI[t.trang_thai]}
-                      </Badge>
-                      <span
-                        className={cn(
-                          "rounded px-1.5 py-0.5 text-[10px] font-medium",
-                          UU_TIEN_COLOR[t.uu_tien],
+        <TabsContent value={tab} className="mt-0 outline-none">
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+                <TicketIcon className="h-10 w-10 text-muted-foreground/40" />
+                <div className="text-sm text-muted-foreground">Chưa có yêu cầu nào</div>
+                <Button size="sm" onClick={() => setOpen(true)}>
+                  <Plus className="mr-1.5 h-3.5 w-3.5" /> Tạo yêu cầu đầu tiên
+                </Button>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {filtered.map((t) => (
+                  <li key={t.id}>
+                    <Link
+                      to={`/tickets/${t.id}` as never}
+                      className="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-secondary/60"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <TicketIcon className="h-4.5 w-4.5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className="truncate text-sm font-semibold">{t.tieu_de}</div>
+                          <Badge variant="outline" className={cn("text-[10px]", TRANG_THAI_COLOR[t.trang_thai])}>
+                            {TICKET_TRANG_THAI[t.trang_thai]}
+                          </Badge>
+                          <span
+                            className={cn(
+                              "rounded px-1.5 py-0.5 text-[10px] font-medium",
+                              UU_TIEN_COLOR[t.uu_tien],
+                            )}
+                          >
+                            {TICKET_UU_TIEN[t.uu_tien]}
+                          </span>
+                        </div>
+                        {t.mo_ta && (
+                          <div className="mt-1 line-clamp-1 text-xs text-muted-foreground">{t.mo_ta}</div>
                         )}
-                      >
-                        {TICKET_UU_TIEN[t.uu_tien]}
-                      </span>
-                    </div>
-                    {t.mo_ta && (
-                      <div className="mt-1 line-clamp-1 text-xs text-muted-foreground">{t.mo_ta}</div>
-                    )}
-                    <div className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <UserIcon className="h-3 w-3" />
-                        {TICKET_LOAI[t.loai]}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {timeAgo(t.created_at)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                        <div className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <UserIcon className="h-3 w-3" />
+                            {TICKET_LOAI[t.loai]}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {timeAgo(t.created_at)}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

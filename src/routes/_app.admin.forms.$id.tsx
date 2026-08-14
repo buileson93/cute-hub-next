@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { FormVersionIncludePanel } from "@/components/mirats/FormVersionIncludePanel";
@@ -486,176 +486,192 @@ function FormEditor() {
           </button>
         </div>
       )}
-      {tab === "design" && preview ? (
-        <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20">
-          <FormLivePreview
-            tplName={tpl.ten}
-            tplDesc={tpl.mo_ta}
-            fields={fields as unknown as ReadonlyArray<Record<string, unknown>>}
-          />
-        </div>
-      ) : tab === "checklist" ? (
-        chkSections === null ? (
-          <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
-        ) : (
-          <div className="flex min-h-0 flex-1 flex-col">
-            {chkIssues.length > 0 && (
-              <div className="max-h-24 overflow-y-auto border-b bg-amber-50/60 px-4 py-1.5 text-[11px] dark:bg-amber-950/20">
-                <ul className="space-y-0.5">
-                  {chkIssues.slice(0, 5).map((iss, k) => (
-                    <li key={k} className={iss.level === "error" ? "text-rose-700" : "text-amber-700"}>
-                      <AlertTriangle className="mr-1 inline h-3 w-3" />{iss.message}
-                    </li>
-                  ))}
-                  {chkIssues.length > 5 && <li className="text-muted-foreground">… {chkIssues.length - 5} mục nữa</li>}
-                </ul>
-              </div>
-            )}
-            <ChecklistDesigner
-              sections={chkSections}
-              onChange={(next) => { setChkSections(next); setChkDirty(true); }}
-              tplName={tpl.ten}
-            />
-          </div>
-        )
-      ) : tab === "design" && mode === "simple" ? (
-        <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20">
-          <SimpleFormDesigner
-            fields={fields}
-            onChange={(next) => setFields(next.map((f, i) => ({ ...f, position: i })))}
-            tplName={tpl.ten}
-            tplDesc={tpl.mo_ta}
-            onTplChange={(p) => setTpl({ ...tpl, ...p })}
-          />
-        </div>
-      ) : tab === "design" ? (
-        <div className="grid min-h-0 flex-1 grid-cols-[260px_1fr_320px]">
-          {/* LEFT: field list */}
-          <aside className="min-h-0 overflow-y-auto border-r bg-muted/30">
-            <div className="flex items-center justify-between p-2">
-              <p className="text-xs font-semibold uppercase text-muted-foreground">Trường ({fields.length})</p>
-              <Button size="sm" variant="outline" className="h-7" onClick={addField}>
-                <Plus className="h-3 w-3" />
-              </Button>
+      <div className="flex-1 min-h-0">
+        <TabsContent value="design" className="h-full mt-0 outline-none">
+          {preview ? (
+            <div className="h-full overflow-y-auto bg-muted/20">
+              <FormLivePreview
+                tplName={tpl.ten}
+                tplDesc={tpl.mo_ta}
+                fields={fields as unknown as ReadonlyArray<Record<string, unknown>>}
+              />
             </div>
-            <ul className="space-y-0.5 px-1 pb-4">
-              {fields.map((f, i) => {
-                const isSel = i === selectedIdx;
-                return (
-                  <li key={i}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedIdx(i)}
-                      className={`group flex w-full items-center gap-1 rounded px-2 py-1.5 text-left text-xs transition ${
-                        isSel ? "bg-primary/10 text-primary" : "hover:bg-secondary"
-                      }`}
-                    >
-                      <span className="flex-1 truncate">
-                        <span className="font-medium">{f.label}</span>
-                        <span className="ml-1 font-mono text-[10px] text-muted-foreground">{f.key}</span>
-                      </span>
-                      <Badge variant="outline" className="h-4 shrink-0 px-1 font-mono text-[9px]">{f.kind}</Badge>
-                      <span className="flex opacity-0 transition group-hover:opacity-100">
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); move(i, -1); }}
-                          className="rounded p-0.5 hover:bg-background"
-                        ><ChevronUp className="h-3 w-3" /></button>
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); move(i, 1); }}
-                          className="rounded p-0.5 hover:bg-background"
-                        ><ChevronDown className="h-3 w-3" /></button>
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); duplicateField(i); }}
-                          className="rounded p-0.5 hover:bg-background"
-                          title="Nhân bản"
-                        ><Copy className="h-3 w-3" /></button>
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); removeField(i); }}
-                          className="rounded p-0.5 hover:bg-background"
-                        ><Trash2 className="h-3 w-3 text-rose-600" /></button>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-              {fields.length === 0 && (
-                <li className="px-2 py-6 text-center text-xs text-muted-foreground">
-                  Chưa có trường. Bấm + để thêm.
-                </li>
+          ) : (
+            <>
+              {fields.length === 0 && chkSections && chkSections.some((s) => (s.items?.length ?? 0) > 0) && (
+                <div className="border-b bg-sky-50 px-4 py-2 text-xs text-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
+                  <AlertTriangle className="mr-1 inline h-3 w-3" />
+                  Mẫu này (AWOS/PL-KT) dùng <b>Bảng kiểm bảo dưỡng</b> — không có "Trường" ở tab Biểu mẫu tự do.
+                  <button className="ml-2 rounded bg-sky-600 px-2 py-0.5 text-white hover:bg-sky-700" onClick={() => setTab("checklist")}>
+                    Mở tab Bảng kiểm bảo dưỡng
+                  </button>
+                </div>
               )}
-            </ul>
-          </aside>
-
-          {/* CENTER: preview canvas */}
-          <main className="min-h-0 overflow-y-auto bg-background p-6">
-            <div className="mx-auto max-w-3xl">
-              <div className="mb-4 text-center">
-                <h1 className="text-lg font-bold uppercase">{tpl.ten || "Chưa đặt tên mẫu"}</h1>
-                {tpl.mo_ta && <p className="mt-1 text-xs text-muted-foreground">{tpl.mo_ta}</p>}
-              </div>
-              <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3 rounded-md border bg-card p-4">
-                {fields.map((f, i) => {
-                  const pv: PreviewField = f as PreviewField;
-                  const span = `col-span-${Math.min(3, Math.max(1, f.col_span))}`;
-                  const isSel = i === selectedIdx;
-                  return (
-                    <div
-                      key={i}
-                      onClick={() => setSelectedIdx(i)}
-                      className={`${span} cursor-pointer rounded-md border-2 p-2 transition ${
-                        isSel ? "border-primary bg-primary/5" : "border-transparent hover:border-muted"
-                      }`}
-                    >
-                      <FieldPreview f={pv} />
+              {mode === "simple" ? (
+                <div className="h-full overflow-y-auto bg-muted/20">
+                  <SimpleFormDesigner
+                    fields={fields}
+                    onChange={(next) => setFields(next.map((f, i) => ({ ...f, position: i })))}
+                    tplName={tpl.ten}
+                    tplDesc={tpl.mo_ta}
+                    onTplChange={(p) => setTpl({ ...tpl, ...p })}
+                  />
+                </div>
+              ) : (
+                <div className="grid h-full grid-cols-[260px_1fr_320px]">
+                  <aside className="min-h-0 overflow-y-auto border-r bg-muted/30">
+                    <div className="flex items-center justify-between p-2">
+                      <p className="text-xs font-semibold uppercase text-muted-foreground">Trường ({fields.length})</p>
+                      <Button size="sm" variant="outline" className="h-7" onClick={addField}>
+                        <Plus className="h-3 w-3" />
+                      </Button>
                     </div>
-                  );
-                })}
-                {fields.length === 0 && (
-                  <div className="col-span-3 py-12 text-center text-sm text-muted-foreground">
-                    Chưa có trường. Thêm ở panel bên trái.
-                  </div>
-                )}
-              </div>
-              {tpl.require_signature && (
-                <div className="mt-4 rounded-md border bg-muted/20 p-3">
-                  <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Chữ ký</p>
-                  <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 text-center text-xs">
-                    <div className="rounded border border-dashed p-4">Người lập</div>
-                    <div className="rounded border border-dashed p-4">Trưởng phòng KT</div>
-                    <div className="rounded border border-dashed p-4">Lãnh đạo</div>
-                  </div>
+                    <ul className="space-y-0.5 px-1 pb-4">
+                      {fields.map((f, i) => {
+                        const isSel = i === selectedIdx;
+                        return (
+                          <li key={i}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedIdx(i)}
+                              className={`group flex w-full items-center gap-1 rounded px-2 py-1.5 text-left text-xs transition ${
+                                isSel ? "bg-primary/10 text-primary" : "hover:bg-secondary"
+                              }`}
+                            >
+                              <span className="flex-1 truncate">
+                                <span className="font-medium">{f.label}</span>
+                                <span className="ml-1 font-mono text-[10px] text-muted-foreground">{f.key}</span>
+                              </span>
+                              <Badge variant="outline" className="h-4 shrink-0 px-1 font-mono text-[9px]">{f.kind}</Badge>
+                              <span className="flex opacity-0 transition group-hover:opacity-100">
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); move(i, -1); }}
+                                  className="rounded p-0.5 hover:bg-background"
+                                ><ChevronUp className="h-3 w-3" /></button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); move(i, 1); }}
+                                  className="rounded p-0.5 hover:bg-background"
+                                ><ChevronDown className="h-3 w-3" /></button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); duplicateField(i); }}
+                                  className="rounded p-0.5 hover:bg-background"
+                                  title="Nhân bản"
+                                ><Copy className="h-3 w-3" /></button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); removeField(i); }}
+                                  className="rounded p-0.5 hover:bg-background"
+                                ><Trash2 className="h-3 w-3 text-rose-600" /></button>
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                      {fields.length === 0 && (
+                        <li className="px-2 py-6 text-center text-xs text-muted-foreground">
+                          Chưa có trường. Bấm + để thêm.
+                        </li>
+                      )}
+                    </ul>
+                  </aside>
+
+                  <main className="min-h-0 overflow-y-auto bg-background p-6">
+                    <div className="mx-auto max-w-3xl">
+                      <div className="mb-4 text-center">
+                        <h1 className="text-lg font-bold uppercase">{tpl.ten || "Chưa đặt tên mẫu"}</h1>
+                        {tpl.mo_ta && <p className="mt-1 text-xs text-muted-foreground">{tpl.mo_ta}</p>}
+                      </div>
+                      <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3 rounded-md border bg-card p-4">
+                        {fields.map((f, i) => {
+                          const pv: PreviewField = f as PreviewField;
+                          const span = `col-span-${Math.min(3, Math.max(1, f.col_span))}`;
+                          const isSel = i === selectedIdx;
+                          return (
+                            <div
+                              key={i}
+                              onClick={() => setSelectedIdx(i)}
+                              className={`${span} cursor-pointer rounded-md border-2 p-2 transition ${
+                                isSel ? "border-primary bg-primary/5" : "border-transparent hover:border-muted"
+                              }`}
+                            >
+                              <FieldPreview f={pv} />
+                            </div>
+                          );
+                        })}
+                        {fields.length === 0 && (
+                          <div className="col-span-3 py-12 text-center text-sm text-muted-foreground">
+                            Chưa có trường. Thêm ở panel bên trái.
+                          </div>
+                        )}
+                      </div>
+                      {tpl.require_signature && (
+                        <div className="mt-4 rounded-md border bg-muted/20 p-3">
+                          <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Chữ ký</p>
+                          <div className="grid grid-cols-1 @md:grid-cols-3 gap-2 text-center text-xs">
+                            <div className="rounded border border-dashed p-4">Người lập</div>
+                            <div className="rounded border border-dashed p-4">Trưởng phòng KT</div>
+                            <div className="rounded border border-dashed p-4">Lãnh đạo</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </main>
+
+                  <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3">
+                    {selected ? (
+                      <>
+                        <div className="mb-2 flex items-center gap-1">
+                          <Settings2 className="h-4 w-4 text-muted-foreground" />
+                          <p className="text-xs font-semibold uppercase text-muted-foreground">Thuộc tính trường</p>
+                        </div>
+                        <FieldInspector
+                          field={selected}
+                          otherFields={otherFields}
+                          onChange={(patch) => patchField(selectedIdx!, patch)}
+                        />
+                      </>
+                    ) : (
+                      <div className="rounded-md border border-dashed p-4 text-center text-xs text-muted-foreground">
+                        Chọn 1 trường ở panel trái hoặc preview để chỉnh thuộc tính.
+                      </div>
+                    )}
+                  </aside>
                 </div>
               )}
-            </div>
-          </main>
+            </>
+          )}
+        </TabsContent>
 
-          {/* RIGHT: inspector */}
-          <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3">
-            {selected ? (
-              <>
-                <div className="mb-2 flex items-center gap-1">
-                  <Settings2 className="h-4 w-4 text-muted-foreground" />
-                  <p className="text-xs font-semibold uppercase text-muted-foreground">Thuộc tính trường</p>
+        <TabsContent value="checklist" className="h-full mt-0 outline-none">
+          {chkSections === null ? (
+            <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
+          ) : (
+            <div className="flex flex-col h-full">
+              {chkIssues.length > 0 && (
+                <div className="max-h-24 overflow-y-auto border-b bg-amber-50/60 px-4 py-1.5 text-[11px] dark:bg-amber-950/20">
+                  <ul className="space-y-0.5">
+                    {chkIssues.slice(0, 5).map((iss, k) => (
+                      <li key={k} className={iss.level === "error" ? "text-rose-700" : "text-amber-700"}>
+                        <AlertTriangle className="mr-1 inline h-3 w-3" />{iss.message}
+                      </li>
+                    ))}
+                    {chkIssues.length > 5 && <li className="text-muted-foreground">… {chkIssues.length - 5} mục nữa</li>}
+                  </ul>
                 </div>
-                <FieldInspector
-                  field={selected}
-                  otherFields={otherFields}
-                  onChange={(patch) => patchField(selectedIdx!, patch)}
-                />
-              </>
-            ) : (
-              <div className="rounded-md border border-dashed p-4 text-center text-xs text-muted-foreground">
-                Chọn 1 trường ở panel trái hoặc preview để chỉnh thuộc tính.
-              </div>
-            )}
-          </aside>
-        </div>
-      ) : tab === "info" ? (
-        <div className="min-h-0 flex-1 overflow-y-auto p-6">
+              )}
+              <ChecklistDesigner
+                sections={chkSections}
+                onChange={(next) => { setChkSections(next); setChkDirty(true); }}
+                tplName={tpl.ten}
+              />
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="info" className="h-full mt-0 outline-none overflow-y-auto p-6">
           <div className="mx-auto max-w-3xl space-y-4">
             <Card>
               <CardHeader><CardTitle className="text-base">Thông tin mẫu</CardTitle></CardHeader>
@@ -742,14 +758,14 @@ function FormEditor() {
               </Card>
             )}
           </div>
-        </div>
-      ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto p-6">
+        </TabsContent>
+
+        <TabsContent value="includes" className="h-full mt-0 outline-none overflow-y-auto p-6">
           <div className="mx-auto max-w-4xl">
             <FormVersionIncludePanel templateId={id} />
           </div>
-        </div>
-      )}
+        </TabsContent>
+      </div>
     </div>
   );
 }
