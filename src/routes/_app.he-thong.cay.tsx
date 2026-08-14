@@ -17,7 +17,6 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   useDbTaxonomy,
   type DbDevice, type DbTaxonomy,
-  dbTaxonomyOptions,
 } from "@/lib/mirats/db-taxonomy";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useCan } from "@/hooks/use-permissions";
@@ -36,6 +35,7 @@ import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import type { 
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
+
 
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
@@ -133,7 +133,9 @@ function HeThongCayPage() {
     badgeFilter, setBadgeFilter,
     groupMode,
     setViewTree,
+    reorgOpen, setReorgOpen
   } = useCayContext();
+
   
   const { renameEntity } = useCayMutations();
   
