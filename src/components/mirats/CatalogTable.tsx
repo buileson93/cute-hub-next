@@ -483,16 +483,18 @@ export function CatalogTable({
 
           bulkActions={({ selectedRows, clear }) => (
             <>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 gap-1.5"
-                disabled={selectedRows.length < 2}
-                onClick={() => setMergeList(selectedRows)}
-                title="Gộp các mục đã chọn thành một"
-              >
-                <GitMerge className="h-3.5 w-3.5" /> Gộp đã chọn
-              </Button>
+              <AppTooltip noiDung="Gộp các mục đã chọn thành một (giữ nguyên liên kết)">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  disabled={selectedRows.length < 2}
+                  onClick={() => setMergeList(selectedRows)}
+                >
+                  <GitMerge className="h-3.5 w-3.5" />
+                  <span className="sr-only">Gộp đã chọn</span>
+                </Button>
+              </AppTooltip>
               <Button
                 size="sm"
                 variant="destructive"
