@@ -75,6 +75,9 @@ export interface DbTaxonomy {
   plNameMap: Map<string, string>;
   lvNameMap: Map<string, string>;
   htNameMap: Map<string, string>; // id hệ thống → tên
+  htMaMap: Map<string, string>;   // mã hệ thống (ma) → tên
+  nhomNameMap: Map<string, string>;
+  nhomMaMap: Map<string, string>; // mã nhóm (ma) → tên
   donViList: Array<{ id: string; ma: string; ten: string; mo_ta: string }>;
   /** Danh sách lĩnh vực theo thứ tự CSDL. */
   lvList: Array<{ id: string; ma: string; ten: string; thu_tu: number }>;
@@ -266,6 +269,9 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
   // Nhóm hệ thống thật (id → mã/tên) + bản đồ hệ thống → nhóm/phân loại.
   const nhomById = new Map(nhom.map((r) => [r.id, { ma: r.ma, ten: r.ten }]));
   const nhomNameMap = new Map(nhom.map((r) => [r.id, r.ten]));
+  const nhomMaMap = new Map(nhom.map((r) => [r.ma, r.ten]));
+  const htNameMap = new Map(ht.map((r) => [r.id, r.ten]));
+  const htMaMap = new Map(ht.map((r) => [r.ma, r.ten]));
   const htNhomMap = new Map(ht.map((r) => [r.id, r.nhom_he_thong_id ?? ""]));
   const htPhanLoaiMap = new Map(ht.map((r) => [r.id, r.phan_loai_id ?? ""]));
   // Phân loại của NHÓM hệ thống (nhomId → phan_loai_id) — dùng làm bậc dự phòng

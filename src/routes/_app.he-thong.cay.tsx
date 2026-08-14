@@ -94,7 +94,7 @@ function usePlMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 
 function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (ma: string) => overrides?.get(okey("nh", ma))?.ten || taxonomy?.nhomNameMap.get(ma) || ma,
+    (ma: string) => overrides?.get(okey("nh", ma))?.ten || taxonomy?.nhomNameMap.get(ma) || taxonomy?.nhomMaMap.get(ma) || ma,
     [overrides, taxonomy],
   );
 }
@@ -102,9 +102,14 @@ function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback((ma: string) => {
     const parsed = parseHtSysMa(ma);
-    const id = parsed.sysName;
-    if (!id || id === NONE_HT) return "Hệ thống khác";
-    return overrides?.get(okey("ht", ma))?.ten || taxonomy?.htNameMap.get(id) || ma;
+    const sysName = parsed.sysName;
+    if (!sysName || sysName === NONE_HT) return "Hệ thống khác";
+    
+    // Tìm theo ID (UUID) trước, sau đó tìm theo Mã (Code)
+    return overrides?.get(okey("ht", ma))?.ten || 
+           taxonomy?.htNameMap.get(sysName) || 
+           taxonomy?.htMaMap.get(sysName) || 
+           ma;
   }, [overrides, taxonomy]);
 }
 
