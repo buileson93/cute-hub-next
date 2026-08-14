@@ -33,6 +33,7 @@ import { OperationDialog } from "@/components/mirats/OperationDialog";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
@@ -603,7 +604,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
               value: (r) => [r.ten, r.ma].filter(Boolean).join(" "),
               cell: (r) => (
                 <div 
-                  className="flex flex-col gap-0.5 cursor-pointer hover:bg-muted/30 p-1 rounded transition-colors"
+                  className="group flex flex-col gap-0.5 cursor-pointer hover:bg-muted/30 p-1 rounded transition-colors"
                   onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}
                 >
                   {editMode && allowEdit ? (
@@ -613,9 +614,15 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                       onSave={(v) => saveField(r.id, "ten", v)}
                     />
                   ) : (
-                    <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug">{r.ten || "—"}</span>
+                    <AppTooltip noiDung={r.ma ? `Mã thành phần: ${r.ma}` : undefined}>
+                      <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug">{r.ten || "—"}</span>
+                    </AppTooltip>
                   )}
-                  {r.ma && <CodeBadge code={r.ma} className="w-fit bg-transparent border-transparent text-muted-foreground hover:bg-muted/50 transition-colors" />}
+                  {r.ma && (
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <CodeBadge code={r.ma} className="w-fit bg-transparent border-transparent text-muted-foreground hover:bg-muted/50 transition-colors" />
+                    </div>
+                  )}
                 </div>
               ),
             },
@@ -700,11 +707,15 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                           title="Mở sổ lý lịch tài sản"
                         >
                           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                            <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
-                              {r.thietBiTen || "—"}
-                            </span>
+                            <AppTooltip noiDung={r.thietBiMa ? `Mã tài sản: ${r.thietBiMa}` : undefined}>
+                              <span title={r.thietBiTen} className="line-clamp-2 break-words text-sm font-medium leading-snug group-hover:text-primary group-hover:underline">
+                                {r.thietBiTen || "—"}
+                              </span>
+                            </AppTooltip>
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <CodeBadge code={r.thietBiMa} className="w-fit" />
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <CodeBadge code={r.thietBiMa} className="w-fit" />
+                              </div>
                               {mr && (
                                 <MultiRoleBadge info={mr} currentThanhPhanId={r.id} compact side="left" />
                               )}
