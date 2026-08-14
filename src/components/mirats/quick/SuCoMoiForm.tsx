@@ -37,7 +37,7 @@ import { usePrefillKipTruc, usePrefillBienPhap } from "@/hooks/use-ambient-prefi
 import { AutoFilledBadge, useAmbientApply } from "@/components/mirats/AutoFilledBadge";
 import { CollapsibleSection } from "@/components/mirats/CollapsibleSection";
 import { VisionImageHint } from "@/components/mirats/VisionImageHint";
-import { Toaster } from "@/components/ui/sonner";
+
 
 
 const PHAN_LOAI = ["A", "B", "C", "D", "E"];
