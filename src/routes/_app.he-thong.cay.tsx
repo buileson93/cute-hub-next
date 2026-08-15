@@ -222,7 +222,8 @@ function HeThongCayPage() {
         if (rows.length < pageSize) break;
         from += pageSize;
       }
-      return allData.map((d: any) => ({
+      
+      const mapped = allData.map((d: any) => ({
         ...d,
         _pl: d.phan_loai_id,
         _nhKey: d.nhom_he_thong_id,
@@ -233,6 +234,19 @@ function HeThongCayPage() {
         _loaiTbTen: d._loaiTbTen?.ten,
         _loaiTbOrder: d._loaiTbOrder?.thu_tu
       }));
+
+      // DEBUG: Log first 3 items and counts by PL
+      console.log("Device Data Mapping Sample:", mapped.slice(0, 3));
+      const plCounts = mapped.reduce((acc: any, d: any) => {
+        const pl = d._pl || "NONE";
+        acc[pl] = (acc[pl] || 0) + 1;
+        return acc;
+      }, {});
+      console.log("Device counts per phan_loai_id:", plCounts);
+
+      return mapped;
+    }
+  });
     }
   });
 
