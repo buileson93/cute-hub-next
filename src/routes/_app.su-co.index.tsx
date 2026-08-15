@@ -412,7 +412,7 @@ function SuCoPage() {
         title="Sự cố kỹ thuật"
         help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng. Xuất báo cáo ban đầu / tuần / tháng khi cần."
         actions={
-          <div className="flex gap-1">
+          <div className="flex gap-1 items-center">
             <WeeklyReportImportDialog />
             <AppTooltip noiDung="Lịch sử nhập">
               <Button asChild size="sm" variant="outline" className="h-7 w-7 p-0">
@@ -596,43 +596,54 @@ function SuCoPage() {
         </Card>
       </div>
 
-      {/* Nhật ký sự cố gọn */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-base">Nhật ký sự cố</CardTitle>
-              <InfoHint>Tick chọn các dòng cần xuất (hoặc chọn tất cả), sau đó bấm “Xuất báo cáo” ở thanh hành động phía trên bảng. Có thể lọc theo tuần/tháng ở dải thống kê để chọn nhanh.</InfoHint>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => exportList(suCo.filter((s) => inPeriod(s, "week")), "Tuần này")}
-              >
-                <FileDown className="mr-1 h-4 w-4" /> Xuất tuần này
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => exportList(suCo.filter((s) => inPeriod(s, "month")), "Tháng này")}
-              >
-                <FileDown className="mr-1 h-4 w-4" /> Xuất tháng này
-              </Button>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã SC, tài sản, hệ thống..." className="h-9 w-56 pl-9" />
+      {/* Nhật ký sự cố — chuyển sang StandardTable có toolbar nội bộ */}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <StandardTable<SuCo>
+          tableKey="su_co_nhat_ky_list"
+          columns={logColumns}
+          rows={rows}
+          selectable
+          density="compact"
+          maxHeightClass="min-h-0 flex-1"
+          toolbarLeft={
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mr-1">Nhật ký</span>
+              <div className="relative w-36 sm:w-48">
+                <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Tìm SC..."
+                  className="h-7 pl-7 text-[11px]"
+                />
               </div>
               <Select value={tt} onValueChange={setTt}>
-                <SelectTrigger className="h-9 w-[150px]"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
+                <SelectTrigger className="h-7 w-[90px] text-[11px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Mọi trạng thái</SelectItem>
-                  {statuses("su_co").map((s) => <SelectItem key={s.code} value={s.code}>{s.label}</SelectItem>)}
+                  <SelectItem value="all">Tất cả</SelectItem>
+                  {Array.from(statuses.su_co).map((s) => (
+                    <SelectItem key={s.ma} value={s.ma}>{s.ten}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-          </div>
-        </CardHeader>
+          }
+          toolbarRight={
+            <div className="flex items-center gap-1">
+               <AppTooltip noiDung="Xuất CSV">
+                 <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => exportList(filtered, "Tìm kiếm")}>
+                   <FileDownIcon className="h-3.5 w-3.5" />
+                 </Button>
+               </AppTooltip>
+               <div className="flex bg-muted/30 p-0.5 rounded-md border h-7 ml-1">
+                 <Button variant={period === "all" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("all")} className="h-6 px-2 text-[10px]">Cả năm</Button>
+                 <Button variant={period === "week" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("week")} className="h-6 px-2 text-[10px]">Tuần</Button>
+                 <Button variant={period === "month" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("month")} className="h-6 px-2 text-[10px]">Tháng</Button>
+               </div>
+            </div>
+          }
+        />
+      </div>
         <CardContent>
           <DataState
             state={state}
