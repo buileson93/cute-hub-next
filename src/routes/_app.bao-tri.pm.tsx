@@ -18,7 +18,7 @@ import {
   PM_STATUS_META, type PmCongViecRow, type PmTrangThai,
 } from "@/lib/mirats/pm";
 import { cn } from "@/lib/utils";
-import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { EmptyState } from "@/components/mirats/EmptyState";
 
 export const Route = createFileRoute("/_app/bao-tri/pm")({
   head: () => ({
@@ -73,41 +73,59 @@ function PmPage() {
   }, [rows]);
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <CalendarClock className="h-5 w-5 text-primary" />
-            <CardTitle>Bảo dưỡng định kỳ (PM)</CardTitle>
+    <div className="flex flex-col gap-2 p-2 md:p-3">
+      <PageHeader
+        icon={CalendarClock}
+        title="Bảo dưỡng (PM)"
+        actions={
+          <div className="flex items-center gap-1">
+            <div className="relative w-36 sm:w-48">
+              <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Tìm PM..."
+                className="h-7 pl-7 text-[11px]"
+              />
+            </div>
+            <AppTooltip noiDung="Sinh công việc PM">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 w-7 p-0"
+                onClick={() => sinh.mutate()}
+                disabled={sinh.isPending}
+              >
+                <RefreshCw className={cn("h-4 w-4", sinh.isPending && "animate-spin")} />
+              </Button>
+            </AppTooltip>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => sinh.mutate()} disabled={sinh.isPending}>
-              {sinh.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              <span className="ml-2">Sinh công việc</span>
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <StatCard label="Tổng theo tab" value={stats.total} />
-            <StatCard label="Đến/sắp hạn" value={stats.due} tone="amber" />
-            <StatCard label="Quá hạn" value={stats.overdue} tone="red" />
-            <StatCard label="Hoàn thành" value={stats.done} tone="green" />
-          </div>
+        }
+      />
 
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <Tabs value={tab} onValueChange={setTab}>
-              <TabsList>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+        <Stat icon={CalendarClock} label="Tổng" value={stats.total} />
+        <Stat icon={AlertTriangle} label="Đến/sắp hạn" value={stats.due} tone="text-amber-600" />
+        <Stat icon={AlertTriangle} label="Quá hạn" value={stats.overdue} tone="text-red-600" />
+        <Stat icon={CheckCircle2} label="Xong" value={stats.done} tone="text-emerald-600" />
+      </div>
+
+      <Card className="mt-2 border-none shadow-none bg-transparent">
+        <CardContent className="p-0">
+          <Tabs value={tab} onValueChange={setTab} className="space-y-2">
+            <div className="flex items-center justify-between border-b pb-1">
+              <TabsList className="h-7 bg-transparent p-0">
                 {TABS.map((t) => (
-                  <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>
+                  <TabsTrigger
+                    key={t.value}
+                    value={t.value}
+                    className="h-7 rounded-none border-b-2 border-transparent px-3 text-[11px] data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  >
+                    {t.label}
+                  </TabsTrigger>
                 ))}
               </TabsList>
-            </Tabs>
-            <div className="relative flex-1 min-w-[240px]">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Tìm chính sách/đơn vị/phụ trách…" className="pl-8" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
-          </div>
 
           <Tabs defaultValue="tuan" value={tab} onValueChange={setTab}>
             {TABS.map((t) => (
