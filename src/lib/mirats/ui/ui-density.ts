@@ -25,24 +25,24 @@ export const UI_DENSITY = {
   CARD_HEADER: "px-2 pt-2 pb-1 data-[density=comfortable]:px-4 data-[density=comfortable]:pt-4 data-[density=comfortable]:pb-2",
 
   // --- KPI ---
-  KPI_LABEL_FS: "text-[12px] data-[density=comfortable]:text-[13px] text-muted-foreground",
-  KPI_VALUE_FS: "text-[20px] data-[density=comfortable]:text-[22px] data-[density=spacious]:text-[26px] font-semibold",
+  KPI_LABEL_FS: "text-[12px] data-[density=comfortable]:text-[14px] text-muted-foreground",
+  KPI_VALUE_FS: "text-[20px] data-[density=comfortable]:text-[24px] data-[density=spacious]:text-[26px] font-semibold",
 
   // --- Tables ---
-  TABLE_ROW_H: "h-7 data-[density=comfortable]:h-9 data-[density=spacious]:h-11",
-  TABLE_HEADER_FS: "text-[10px] data-[density=comfortable]:text-[11px] text-muted-foreground uppercase tracking-wider font-bold",
-  TABLE_CELL_PX: "px-1.5 data-[density=comfortable]:px-2.5 data-[density=spacious]:px-4",
-  TABLE_CELL_PY: "py-0.5 data-[density=comfortable]:py-1 data-[density=spacious]:py-2",
+  TABLE_ROW_H: "h-7 data-[density=comfortable]:h-10 data-[density=spacious]:h-11",
+  TABLE_HEADER_FS: "text-[10px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider font-bold",
+  TABLE_CELL_PX: "px-1.5 data-[density=comfortable]:px-3.5 data-[density=spacious]:px-4",
+  TABLE_CELL_PY: "py-0.5 data-[density=comfortable]:py-1.5 data-[density=spacious]:py-2",
   TABLE_MAX_H: "max-h-[calc(100vh-8rem)] data-[density=comfortable]:max-h-[calc(100vh-10rem)]",
 
   // --- Controls & Icons ---
-  CONTROL_H: "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
-  ICON_SM: "h-2.5 w-2.5 data-[density=comfortable]:h-3.5 data-[density=comfortable]:w-3.5",
-  ICON_MD: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
+  CONTROL_H: "h-7 data-[density=comfortable]:h-9 data-[density=spacious]:h-9",
+  ICON_SM: "h-2.5 w-2.5 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
+  ICON_MD: "h-3 w-3 data-[density=comfortable]:h-5 data-[density=comfortable]:w-5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
   // --- Typography ---
-  TEXT_BODY: "text-[11px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
-  TEXT_LABEL: "text-[10px] data-[density=comfortable]:text-[12px]",
+  TEXT_BODY: "text-[11px] data-[density=comfortable]:text-[14px] data-[density=spacious]:text-[14px]",
+  TEXT_LABEL: "text-[10px] data-[density=comfortable]:text-[13px]",
   CHART_H: "h-[200px] data-[density=comfortable]:h-[220px] data-[density=spacious]:h-[260px]",
 } as const;
 

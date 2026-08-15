@@ -501,7 +501,7 @@ export function StandardTable<T>({
 
   const estimateRowHeight = useMemo(() => {
     if (density === "compact") return 32;
-    if (density === "comfortable") return 40;
+    if (density === "comfortable") return 44;
     return 48;
   }, [density]);
 
