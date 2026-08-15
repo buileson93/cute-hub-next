@@ -145,10 +145,24 @@ export function buildTree(
     let m1 = acc.get(pl); if (!m1) { m1 = new Map(); acc.set(pl, m1); }
     let m2 = m1.get(nh); if (!m2) { m2 = new Map(); m1.set(nh, m2); }
     let list = m2.get(ht); if (!list) { list = []; m2.set(ht, list); }
+    
+    // Nếu có thiet_bi_cha, đây là thành phần con, nó sẽ được xử lý trong bước lồng nhau
+    // Nhưng hiện tại buildTree đang làm phẳng 1 cấp con qua mapping?
+    // Kiểm tra lại logic thiet_bi_cha vs gan_chuc_nang
     list.push({ tb: t, children: [] });
   }
 
-  const totalOf = (devs: DevNode[]) => devs.reduce((n, d) => n + 1 + d.children.length, 0);
+  const totalOf = (devs: DevNode[]) => {
+    let count = 0;
+    for (const d of devs) {
+      count += 1; // Bản thân thiết bị
+      // Nếu có children (con kỹ thuật hoặc thành phần lồng)
+      if (d.children && d.children.length > 0) {
+        count += d.children.length;
+      }
+    }
+    return count;
+  };
   const plOrder = new Map(plList.map((p, i) => [p.id, i]));
   const plTenMap = new Map(plList.map((p) => [p.id, p.ten]));
   const plToneMap = new Map(plList.map((p) => [p.id, p.tone]));
