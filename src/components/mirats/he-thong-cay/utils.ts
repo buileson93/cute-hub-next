@@ -267,9 +267,9 @@ export function buildTree(
       fields, 
       count 
     });
-    total += count;
+    grandTotal += count;
   }
-  return { tree, total };
+  return { tree, total: grandTotal };
 }
 
 export function parseCsv(text: string) {
