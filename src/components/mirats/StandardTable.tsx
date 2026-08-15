@@ -1271,7 +1271,7 @@ export function StandardTable<T>({
                       scope="col"
                       aria-sort={sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"}
                       className={cn(
-                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0",
+                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0 p-0",
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
