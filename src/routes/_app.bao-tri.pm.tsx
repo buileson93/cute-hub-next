@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { CalendarClock, Loader2, RefreshCw, CheckCircle2, XCircle, Search, AlertTriangle } from "lucide-react";
+import { CalendarClock, Loader2, RefreshCw, CheckCircle2, XCircle, Search, AlertTriangle, FileDown } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { PageHeader } from "@/components/mirats/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +17,8 @@ import {
   usePmCongViec, useSinhPmCongViec, useHoanThanhPm, useBoQuaPm,
   PM_STATUS_META, type PmCongViecRow, type PmTrangThai,
 } from "@/lib/mirats/pm";
-import { EmptyState } from "@/components/mirats/EmptyState";
+import { cn } from "@/lib/utils";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 export const Route = createFileRoute("/_app/bao-tri/pm")({
   head: () => ({
@@ -199,12 +202,12 @@ function PmPage() {
   );
 }
 
-function StatCard({ label, value, tone }: { label: string; value: number; tone?: "amber" | "red" | "green" }) {
-  const c = tone === "red" ? "text-red-600" : tone === "amber" ? "text-amber-600" : tone === "green" ? "text-emerald-600" : "text-foreground";
+function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; tone?: string }) {
   return (
-    <div className="rounded-md border p-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={`text-2xl font-semibold ${c}`}>{value}</div>
+    <div className="flex items-center gap-2">
+      <Icon className={`h-3.5 w-3.5 ${tone ?? "text-muted-foreground"}`} />
+      <span className="text-muted-foreground">{label}:</span>
+      <span className={`font-semibold tabular-nums ${tone ?? ""}`}>{value}</span>
     </div>
   );
 }
