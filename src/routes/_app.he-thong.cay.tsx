@@ -186,7 +186,10 @@ function HeThongCayPage() {
       const { count, error } = await supabase
         .from("he_thong_thanh_phan")
         .select("id", { count: "exact", head: true });
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching tpCount:", error);
+        return 0;
+      }
       return count || 0;
     }
   });
@@ -264,16 +267,18 @@ function HeThongCayPage() {
 
   // Debug logs to identify why counts might be zero
   useEffect(() => {
-    if (viewTree.length > 0) {
-      console.log("Tree Structure Data:", {
-        plCount: viewTree.length,
-        plSample: viewTree[0],
-        totalDevices: devices.length,
-        loadingStates: { loadingOverrides, loadingTaxo, loadingDevices },
-        userRole: roles
-      });
-    }
-  }, [viewTree, devices, loadingOverrides, loadingTaxo, loadingDevices, roles]);
+    if (isLoading) return;
+    
+    console.log("Tree Debug Info:", {
+      plCount: viewTree.length,
+      totalDevices: devices.length,
+      tpCount,
+      viewTreeSample: viewTree.map(pl => ({ id: pl.id, ten: pl.ten, count: pl.count })),
+      loadingStates: { loadingOverrides, loadingTaxo, loadingDevices },
+      userRoles: roles,
+      userProfile: profile
+    });
+  }, [viewTree, devices, tpCount, isLoading, loadingOverrides, loadingTaxo, loadingDevices, roles, profile]);
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
   const onRecord = useCallback((kind: "tb" | "tp", ma: string, ten?: string) => {
