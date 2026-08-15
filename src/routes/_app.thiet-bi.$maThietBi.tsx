@@ -39,10 +39,10 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
   component: ThietBiDetailRoute,
   validateSearch: (search: Record<string, unknown>) => ({
-    tab: (search.tab as string | undefined) || "tong-quan",
-    doc: (search.doc as string | undefined) || null,
-    q: (search.q as string | undefined) || "",
-  } as const),
+    tab: (search.tab as string) || "tong-quan",
+    doc: (search.doc as string) || undefined,
+    q: (search.q as string) || "",
+  }),
 });
 
 function ThietBiDetailRoute() {
