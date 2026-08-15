@@ -183,9 +183,12 @@ function HeThongCayPage() {
   const { data: tpCount = 0 } = useQuery({
     queryKey: ["he_thong_thanh_phan_count"],
     queryFn: async () => {
+      // Dùng service_role để đếm tổng số bản ghi bỏ qua RLS vì đây chỉ là số liệu tổng quát hiển thị badge
+      // Tuy nhiên, do Lovable Cloud khuyến nghị RLS, ta dùng .select('*', { count: 'exact', head: true }) 
+      // và đảm bảo chính sách SELECT cho phép.
       const { count, error } = await supabase
         .from("he_thong_thanh_phan")
-        .select("id", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true });
       if (error) {
         console.error("Error fetching tpCount:", error);
         return 0;

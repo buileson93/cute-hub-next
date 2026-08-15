@@ -174,7 +174,7 @@ export function buildTree(
   const plIds = [...plIdSet].sort((a, b) => (plOrder.get(a) ?? 999) - (plOrder.get(b) ?? 999));
 
   const tree: PlGroup[] = [];
-  let total = 0;
+  let grandTotal = 0;
 
   for (const plId of plIds) {
     const m1 = acc.get(plId) ?? new Map<string, Map<string, DevNode[]>>();
