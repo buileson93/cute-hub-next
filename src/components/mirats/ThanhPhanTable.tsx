@@ -443,31 +443,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
 
   return (
-    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-2 p-2"}>
-      {!hideHeader && (
-        <div className="flex flex-wrap items-center justify-end gap-1.5">
-          {allowEdit && editMode && <KhaiThemCumButtons />}
-          {allowEdit ? (
-            <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
-              <Button
-                size="sm"
-                variant={editMode ? "default" : "outline"}
-                className="h-7 w-7 p-0"
-                onClick={() => setEditMode((v) => !v)}
-              >
-                {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
-              </Button>
-            </AppTooltip>
-          ) : (
-            <AppTooltip noiDung="Bạn không có quyền chỉnh sửa (Chỉ tra cứu)">
-              <Button size="sm" variant="outline" className="h-7 w-7 p-0" disabled>
-                <Lock className="h-4 w-4" />
-              </Button>
-            </AppTooltip>
-          )}
-        </div>
-      )}
+    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-1 p-2"}>
+      {/* Nút Khai thêm và Edit đã được di chuyển vào toolbarLeft của StandardTable */}
 
       {hideHeader && (
         <div className="flex flex-wrap items-center justify-end gap-1.5">
