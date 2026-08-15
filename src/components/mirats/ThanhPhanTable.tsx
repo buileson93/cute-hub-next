@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -607,7 +608,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                       ref={searchInputRef}
                       value={q}
                       onChange={(e) => setQ(e.target.value)}
-                      placeholder={viewMode === "asset" ? "Tìm tài sản…" : "Tìm vai trò, tên…"}
+                      placeholder="Tìm vai trò, tên…"
                       className="h-7 w-[200px] bg-background text-xs shadow-sm"
                     />
                     {q && (
