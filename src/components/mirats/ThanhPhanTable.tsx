@@ -444,17 +444,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
   return (
     <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-1 p-2"}>
-      {/* Nút Khai thêm và Edit đã được di chuyển vào toolbarLeft của StandardTable */}
-
-      {/* Khối header dư thừa đã được gỡ bỏ để bảng nằm sát lên trên */}
-                {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
-              </Button>
-            </AppTooltip>
-          )}
-        </div>
-      )}
-
       {isLoading && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tải dữ liệu…
