@@ -1330,7 +1330,8 @@ export function StandardTable<T>({
                           <button
                             type="button"
                             onClick={() => cycleSort(c.key)}
-                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none"
+                            className="group inline-flex min-w-0 items-center justify-center gap-1 rounded hover:text-foreground text-center w-full transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none"
+
                             title={`Sắp xếp theo ${c.label}`}
                             aria-label={`Sắp xếp theo ${c.label}`}
                           >
