@@ -1139,7 +1139,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   className="h-7 gap-1 px-2 text-xs"
                   title="Mở sổ lý lịch tài sản"
                 >
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.thietBiMa }}>
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: (r as any).thietBiMa || (r as any).ma }}>
                     <ExternalLink className="h-3.5 w-3.5" /> Sổ lý lịch
                   </Link>
                 </Button>
