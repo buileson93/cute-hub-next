@@ -289,7 +289,6 @@ function HeThongCayPage() {
             <NodeSearch 
               containerClassName="h-7"
               items={useMemo(() => {
-                console.log("Tree for search items:", viewTree);
                 const list: SearchItem[] = [];
                 for (const pl of viewTree) {
                   list.push({ kind: "pl", ma: pl.id, label: pl.ten, plId: pl.id, count: pl.count });
