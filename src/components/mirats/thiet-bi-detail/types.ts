@@ -28,4 +28,5 @@ export interface DeviceDetailTabProps {
   banGiao: any[];
   changeEvents: any[];
   pct: number | null;
+  initialDocId?: string | null;
 }

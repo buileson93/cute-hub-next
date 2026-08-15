@@ -56,7 +56,7 @@ export function GlobalSearch() {
           onChange={(e) => { setQ(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
-          placeholder="Tìm hệ thống, tài sản, giấy phép, biểu mẫu…"
+          placeholder="Tìm hệ thống, tài sản, tài liệu, giấy phép…"
           className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
         />
       </div>

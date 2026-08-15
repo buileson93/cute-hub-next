@@ -38,10 +38,16 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
   component: ThietBiDetailRoute,
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: (search.tab as string | undefined) || "tong-quan",
+    doc: (search.doc as string | undefined) || undefined,
+    q: (search.q as string | undefined) || "",
+  }),
 });
 
 function ThietBiDetailRoute() {
   const { maThietBi: ma } = Route.useParams();
+  const { tab, doc: initialDocId } = Route.useSearch();
   const { roles } = useSession();
   const isAdmin = roles.includes("admin") || roles.includes("phong_kt");
   const canManage = useCan("thiet-bi", "manage");

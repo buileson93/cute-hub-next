@@ -7,7 +7,7 @@ import { DeviceDetailTabProps } from "./types";
 import { useSession } from "@/hooks/use-session";
 
 export default function TabHoSoPhapLy({ 
-  tb, ma, sysGpSo, sysName, sysGpHan, roles, canEdit
+  tb, ma, sysGpSo, sysName, sysGpHan, roles, canEdit, initialDocId
 }: DeviceDetailTabProps & { roles?: any[] }) {
   const hasGp = Boolean(sysGpSo);
   const gpLabel = "Giấy phép khai thác";
@@ -56,7 +56,7 @@ export default function TabHoSoPhapLy({
           <Paperclip className="h-4 w-4 text-primary" />
           Hồ sơ tài liệu đính kèm
         </h3>
-        <ThietBiTepDinhKem maThietBi={ma} />
+        <ThietBiTepDinhKem maThietBi={ma} initialDocId={initialDocId} />
       </section>
     </div>
   );

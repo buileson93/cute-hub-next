@@ -41,7 +41,7 @@ function fmtSize(n: number | null | undefined) {
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function ThietBiTepDinhKem({ maThietBi }: { maThietBi: string }) {
+export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: string; initialDocId?: string | null }) {
   const qc = useQueryClient();
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
@@ -132,7 +132,7 @@ export function ThietBiTepDinhKem({ maThietBi }: { maThietBi: string }) {
         ) : (
           <div className="space-y-2">
             {docs.map((r) => (
-              <DocRow key={r.id} row={r} canManage={canManage} onDelete={() => del.mutate(r)} />
+              <DocRow key={r.id} row={r} canManage={canManage} onDelete={() => del.mutate(r)} initialOpen={initialDocId === r.id} />
             ))}
           </div>
         )}
@@ -181,9 +181,9 @@ function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boole
   );
 }
 
-function DocRow({ row, canManage, onDelete }: { row: TepRow; canManage: boolean; onDelete: () => void }) {
+function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canManage: boolean; onDelete: () => void; initialOpen?: boolean }) {
   const url = useSignedUrl(row.bucket, row.file_path);
-  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(initialOpen || false);
   const canDownload = useCanDownloadAttachments();
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">
