@@ -169,7 +169,7 @@ function HeThongCayPage() {
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const { roles, user } = useSession();
+  const { roles, user, profile } = useSession();
 
   const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
   const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
