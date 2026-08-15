@@ -1221,7 +1221,7 @@ export function StandardTable<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className={cn(
                 "hover:bg-transparent border-b border-border/60",
-                density === "compact" ? "h-7" : density === "comfortable" ? "h-9" : "h-11"
+                density === "compact" ? "h-8 min-h-[32px]" : density === "comfortable" ? "h-9" : "h-11"
               )}>
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
@@ -1238,6 +1238,8 @@ export function StandardTable<T>({
                   >
                     <div className="flex h-full w-full items-center justify-center">
                       <Checkbox 
+
+
                         checked={
                           filtered.length > 0 && selected?.size === filtered.length
                             ? true
@@ -1269,7 +1271,7 @@ export function StandardTable<T>({
                       scope="col"
                       aria-sort={sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"}
                       className={cn(
-                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0",
+                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0 p-0",
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
@@ -1284,7 +1286,7 @@ export function StandardTable<T>({
                       }}
 
                     >
-                      <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                      <div className={cn("flex items-center gap-1 h-full w-full", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                         {reorder && (
                           <div
                             className="h-6 w-4 flex items-center justify-center cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
@@ -1329,7 +1331,12 @@ export function StandardTable<T>({
                           <button
                             type="button"
                             onClick={() => cycleSort(c.key)}
-                            className="group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground text-left transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none"
+                            className={cn(
+                              "group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none h-full px-2",
+                              c.align === "center" ? "justify-center w-full" : c.align === "right" ? "justify-end w-full text-right" : "justify-start text-left w-full"
+                            )}
+
+
                             title={`Sắp xếp theo ${c.label}`}
                             aria-label={`Sắp xếp theo ${c.label}`}
                           >
@@ -1418,7 +1425,7 @@ export function StandardTable<T>({
                             (onRowClick || selectable) && "cursor-pointer", 
                             isSel && "bg-primary/5", 
                             expandedRows.has(rid) && "bg-muted/40",
-                            density === "compact" ? "h-7" : density === "comfortable" ? "h-9" : "h-11",
+                            density === "compact" ? "h-8 min-h-[32px]" : density === "comfortable" ? "h-9" : "h-11",
                             rowClassName?.(r)
                           )}
                           onClick={() => onRowClick?.(r)}
@@ -1454,6 +1461,8 @@ export function StandardTable<T>({
                             >
                               <div className="flex h-full w-full items-center justify-center">
                                 <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} aria-label={`Chọn dòng ${rid}`} />
+
+
                               </div>
                             </TableCell>
                           )}

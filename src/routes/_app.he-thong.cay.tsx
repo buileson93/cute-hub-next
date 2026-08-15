@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { useSession } from "@/hooks/use-session";
+import { Check, Pencil } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 import { cn } from "@/lib/utils";
 import { ReactFlowProvider } from "@xyflow/react";
@@ -270,21 +272,21 @@ function HeThongCayPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden min-h-0 flex-1">
-      <div className="p-4 border-b flex items-center justify-between bg-background z-10 shrink-0">
-         <div className="flex items-center gap-4">
-            <PageHeader title="Cây Hệ Thống" subtitle={tpCount > 0 ? `(${tpCount.toLocaleString("vi-VN")} thành phần)` : undefined} icon="entity.tree" />
+      <div className="px-4 py-1.5 border-b flex items-center justify-between bg-background z-10 shrink-0">
+         <div className="flex items-center gap-3">
             <Tabs value={display} onValueChange={handleDisplayChange}>
-              <TabsList>
-                <TabsTrigger value="table" className="gap-2"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
-                <TabsTrigger value="tree" className="gap-2"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
-                <TabsTrigger value="mindmap" className="gap-2"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
-                <TabsTrigger value="health" className="gap-2"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="gap-2" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
+              <TabsList className="h-8">
+                <TabsTrigger value="table" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
+                <TabsTrigger value="tree" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
+                <TabsTrigger value="mindmap" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
+                <TabsTrigger value="health" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
+                <TabsTrigger value="history" className="h-7 gap-2 px-2 text-[12px]" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
          </div>
          <div className="flex items-center gap-2">
             <NodeSearch 
+              containerClassName="h-7"
               items={useMemo(() => {
                 const list: SearchItem[] = [];
                 for (const pl of viewTree) {
@@ -313,10 +315,17 @@ function HeThongCayPage() {
               }}
             />
             {canManage && (
-              <Button variant={editMode ? "default" : "outline"} onClick={() => setEditMode(!editMode)} className="gap-2">
-                <Icon name="action.edit" size="tiny" />
-                {editMode ? "Đang sửa" : "Chỉnh sửa"}
-              </Button>
+              <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
+                <Button 
+                  size="sm" 
+                  variant={editMode ? "default" : "outline"} 
+                  onClick={() => setEditMode(!editMode)} 
+                  className="h-7 w-7 p-0"
+                >
+                  {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                  <span className="sr-only">{editMode ? "Đang sửa" : "Chỉnh sửa"}</span>
+                </Button>
+              </AppTooltip>
             )}
          </div>
       </div>

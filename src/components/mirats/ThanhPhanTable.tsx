@@ -443,51 +443,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
 
   return (
-    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-2 p-2"}>
-      {!hideHeader && (
-        <div className="flex flex-wrap items-center justify-end gap-1.5">
-          {allowEdit && editMode && <KhaiThemCumButtons />}
-          {allowEdit ? (
-            <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
-              <Button
-                size="sm"
-                variant={editMode ? "default" : "outline"}
-                className="h-7 w-7 p-0"
-                onClick={() => setEditMode((v) => !v)}
-              >
-                {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
-              </Button>
-            </AppTooltip>
-          ) : (
-            <AppTooltip noiDung="Bạn không có quyền chỉnh sửa (Chỉ tra cứu)">
-              <Button size="sm" variant="outline" className="h-7 w-7 p-0" disabled>
-                <Lock className="h-4 w-4" />
-              </Button>
-            </AppTooltip>
-          )}
-        </div>
-      )}
-
-      {hideHeader && (
-        <div className="flex flex-wrap items-center justify-end gap-1.5">
-          {allowEdit && editMode && <KhaiThemCumButtons />}
-          {allowEdit && externalEditMode === undefined && (
-            <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
-              <Button
-                size="sm"
-                variant={editMode ? "default" : "outline"}
-                className="h-7 w-7 p-0"
-                onClick={() => setEditMode((v) => !v)}
-              >
-                {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
-              </Button>
-            </AppTooltip>
-          )}
-        </div>
-      )}
-
+    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-1 p-2"}>
       {isLoading && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tải dữ liệu…
@@ -586,6 +542,22 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
           toolbarLeft={
             <div className="flex items-center gap-1.5">
+              {allowEdit && (
+                <div className="flex items-center gap-1">
+                  {editMode && <KhaiThemCumButtons />}
+                  <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
+                    <Button
+                      size="sm"
+                      variant={editMode ? "default" : "outline"}
+                      className="h-7 w-7 p-0"
+                      onClick={() => setEditMode((v) => !v)}
+                    >
+                      {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                      <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
+                    </Button>
+                  </AppTooltip>
+                </div>
+              )}
               {ModeToggle}
               <div className="relative flex items-center">
                 <Button
@@ -1167,7 +1139,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   className="h-7 gap-1 px-2 text-xs"
                   title="Mở sổ lý lịch tài sản"
                 >
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma }}>
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: (r as any).thietBiMa || (r as any).ma }}>
                     <ExternalLink className="h-3.5 w-3.5" /> Sổ lý lịch
                   </Link>
                 </Button>
@@ -1175,7 +1147,6 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             },
           ]}
         />
-
       )}
     </div>
   );
