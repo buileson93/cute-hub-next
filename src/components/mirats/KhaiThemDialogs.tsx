@@ -54,16 +54,27 @@ export function KhaiThemCumButtons({ size = "sm" }: { size?: "sm" | "default" })
   const [openTp, setOpenTp] = useState(false);
   return (
     <>
-      <AppTooltip noiDung="Khai thêm hệ thống mới">
-        <Button size={size} variant="outline" className="h-7 w-7 p-0" onClick={() => setOpenHt(true)}>
-          <Network className="h-4 w-4" />
-        </Button>
-      </AppTooltip>
-      <AppTooltip noiDung="Khai thêm thành phần cho hệ thống">
-        <Button size={size} variant="outline" className="h-7 w-7 p-0" onClick={() => setOpenTp(true)}>
-          <ComponentIcon className="h-4 w-4" />
-        </Button>
-      </AppTooltip>
+      <DropdownMenu>
+        <AppTooltip noiDung="Khai thêm mới">
+          <DropdownMenuTrigger asChild>
+            <Button size={size} variant="outline" className="h-7 w-7 p-0">
+              <Plus className="h-4 w-4" />
+              <span className="sr-only">Thêm mới</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </AppTooltip>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={() => setOpenHt(true)} className="gap-2">
+            <Network className="h-4 w-4" />
+            <span>Hệ thống mới</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setOpenTp(true)} className="gap-2">
+            <ComponentIcon className="h-4 w-4" />
+            <span>Thành phần mới</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       {openHt && <KhaiThemHeThongDialog onClose={() => setOpenHt(false)} />}
       {openTp && <KhaiThemThanhPhanDialog onClose={() => setOpenTp(false)} />}
     </>
