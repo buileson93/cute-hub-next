@@ -1286,7 +1286,7 @@ export function StandardTable<T>({
                       }}
 
                     >
-                      <div className={cn("flex items-center gap-1", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                      <div className={cn("flex items-center gap-1 h-full w-full", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                         {reorder && (
                           <div
                             className="h-6 w-4 flex items-center justify-center cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
