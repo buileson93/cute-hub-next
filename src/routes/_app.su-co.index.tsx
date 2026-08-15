@@ -615,7 +615,6 @@ function SuCoPage() {
             rows={rows}
             getRowId={(s) => s.ma_su_co}
             selectable
-            density="compact"
             maxHeightClass="min-h-0 flex-1"
             toolbarLeft={
               <div className="flex items-center gap-1.5">
@@ -633,8 +632,8 @@ function SuCoPage() {
                   <SelectTrigger className="h-7 w-[90px] text-[11px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả</SelectItem>
-                    {Array.from(statuses.su_co).map((s) => (
-                      <SelectItem key={s.ma} value={s.ma}>{s.ten}</SelectItem>
+                    {statuses("su_co").map((s) => (
+                      <SelectItem key={s.code} value={s.code}>{s.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
