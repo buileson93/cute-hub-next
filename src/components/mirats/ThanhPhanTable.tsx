@@ -295,8 +295,10 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedTp, setSelectedTp] = useState<{ row: ThanhPhanRow; heThongId: string } | null>(null);
-  const editMode = externalEditMode !== undefined ? externalEditMode : internalEditMode;
-  const setEditMode = setInternalEditMode;
+  
+  const isExternalEdit = externalEditMode !== undefined;
+  const editMode = isExternalEdit ? externalEditMode : internalEditMode;
+  const setEditMode = isExternalEdit ? () => {} : setInternalEditMode;
 
 
   const navigate = useNavigate();
@@ -468,6 +470,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           countUnit="thành phần"
           maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
           selectable
+          editMode={editMode}
           // activePreset="co-ban" (Bỏ ghim cứng để Reset hoạt động đúng)
           presets={THANH_PHAN_PRESETS}
 

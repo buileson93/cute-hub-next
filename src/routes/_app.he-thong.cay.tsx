@@ -125,7 +125,7 @@ function useTbMind(overrides: OverrideMap | undefined) {
 function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
-  const canManage = useCan("he-thong", "manage");
+  const canManage = useCan("he-thong", "manage") || useCan("admin", "manage");
 
   const {
     display, setDisplay,
