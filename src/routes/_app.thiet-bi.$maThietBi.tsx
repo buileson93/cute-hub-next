@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
   component: ThietBiDetailRoute,
   validateSearch: (search: Record<string, unknown>) => ({
     tab: (search.tab as string | undefined) || "tong-quan",
-    doc: (search.doc as string | undefined) || null,
+    doc: (search.doc as string | undefined) || undefined,
     q: (search.q as string | undefined) || "",
   }),
 });
