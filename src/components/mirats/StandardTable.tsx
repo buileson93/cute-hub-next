@@ -791,8 +791,8 @@ export function StandardTable<T>({
       </div>
 
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
-        <div className="flex items-center justify-between gap-1.5 px-0">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center justify-between gap-1 px-0">
+          <div className="flex items-center gap-1">
             {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: fullDisplay, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({

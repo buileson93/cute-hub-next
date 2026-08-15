@@ -4,9 +4,9 @@
  */
 export const UI_DENSITY = {
   // --- Spacing & Layout ---
-  PAGE_PADDING: "p-3 md:p-4 data-[density=comfortable]:p-4 md:data-[density=comfortable]:p-6 data-[density=spacious]:p-6 md:data-[density=spacious]:p-8",
-  SECTION_GAP: "gap-3 data-[density=comfortable]:gap-4 data-[density=spacious]:gap-6",
-  HEADER_GAP: "gap-1.5 data-[density=comfortable]:gap-2 data-[density=spacious]:gap-3",
+  PAGE_PADDING: "p-2 md:p-3 data-[density=comfortable]:p-4 md:data-[density=comfortable]:p-6 data-[density=spacious]:p-6 md:data-[density=spacious]:p-8",
+  SECTION_GAP: "gap-2 data-[density=comfortable]:gap-4 data-[density=spacious]:gap-6",
+  HEADER_GAP: "gap-1 data-[density=comfortable]:gap-2 data-[density=spacious]:gap-3",
 
   // --- AppShell specific ---
   APP_HEADER_H: "h-11 data-[density=comfortable]:h-14 data-[density=spacious]:h-16",
@@ -21,8 +21,8 @@ export const UI_DENSITY = {
   CARD_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl data-[density=spacious]:rounded-3xl",
   CONTROL_RADIUS: "rounded-md data-[density=comfortable]:rounded-lg",
   BADGE_RADIUS: "rounded-full",
-  CARD_PADDING: "p-3 data-[density=comfortable]:p-4 data-[density=spacious]:p-6",
-  CARD_HEADER: "px-3 pt-3 pb-1.5 data-[density=comfortable]:px-4 data-[density=comfortable]:pt-4 data-[density=comfortable]:pb-2",
+  CARD_PADDING: "p-2 data-[density=comfortable]:p-4 data-[density=spacious]:p-6",
+  CARD_HEADER: "px-2 pt-2 pb-1 data-[density=comfortable]:px-4 data-[density=comfortable]:pt-4 data-[density=comfortable]:pb-2",
 
   // --- KPI ---
   KPI_LABEL_FS: "text-[12px] data-[density=comfortable]:text-[13px] text-muted-foreground",
@@ -41,8 +41,8 @@ export const UI_DENSITY = {
   ICON_MD: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
   // --- Typography ---
-  TEXT_BODY: "text-[12px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
-  TEXT_LABEL: "text-[11px] data-[density=comfortable]:text-[12px]",
+  TEXT_BODY: "text-[11px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
+  TEXT_LABEL: "text-[10px] data-[density=comfortable]:text-[12px]",
   CHART_H: "h-[200px] data-[density=comfortable]:h-[220px] data-[density=spacious]:h-[260px]",
 } as const;
 
