@@ -204,9 +204,9 @@ function HeThongCayPage() {
             *,
             _loaiTbTen:dm_loai_thiet_bi(ten),
             _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
-            _pl:dm_phan_loai(id),
-            _nhKey:dm_nhom_he_thong(id),
-            _htId:dm_he_thong(id),
+            phan_loai_id,
+            nhom_he_thong_id,
+            he_thong_id,
             gan_chuc_nang(
               id,
               he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten)
@@ -221,9 +221,9 @@ function HeThongCayPage() {
       }
       return allData.map((d: any) => ({
         ...d,
-        _pl: d._pl?.id,
-        _nhKey: d._nhKey?.id,
-        _htId: d._htId?.id,
+        _pl: d.phan_loai_id,
+        _nhKey: d.nhom_he_thong_id,
+        _htId: d.he_thong_id,
         _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
         _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
         _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
