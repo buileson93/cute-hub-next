@@ -6,9 +6,9 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
   component: ThietBiDetailRoute,
   validateSearch: (search: Record<string, unknown>) => ({
-    tab: (search.tab as string | undefined) || "tong-quan",
-    doc: (search.doc as string | undefined) || undefined,
-    q: (search.q as string | undefined) || "",
+    tab: (search.tab as string | undefined),
+    doc: (search.doc as string | undefined),
+    q: (search.q as string | undefined),
   }),
 });
 
@@ -39,7 +39,7 @@ function ThietBiDetailRoute() {
         hongHoc: hongHoc || [],
       }}
       isLoading={isLoading}
-      initialTab={tab}
+      initialTab={tab || "tong-quan"}
       initialDocId={initialDocId || null}
     />
   );
