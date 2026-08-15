@@ -126,8 +126,6 @@ function PmPage() {
                 ))}
               </TabsList>
             </div>
-
-          <Tabs defaultValue="tuan" value={tab} onValueChange={setTab}>
             {TABS.map((t) => (
               <TabsContent key={t.value} value={t.value} className="mt-0 outline-none">
                 <div className="border rounded-md overflow-x-auto">
@@ -211,8 +209,6 @@ function PmPage() {
               </TabsContent>
             ))}
           </Tabs>
-        </CardContent>
-      </Card>
 
       <HoanThanhDialog task={done} onClose={() => setDone(null)} />
       <BoQuaDialog task={skip} onClose={() => setSkip(null)} />
