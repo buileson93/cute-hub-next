@@ -446,17 +446,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
     <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-1 p-2"}>
       {/* Nút Khai thêm và Edit đã được di chuyển vào toolbarLeft của StandardTable */}
 
-      {hideHeader && (
-        <div className="flex flex-wrap items-center justify-end gap-1.5">
-          {allowEdit && editMode && <KhaiThemCumButtons />}
-          {allowEdit && externalEditMode === undefined && (
-            <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
-              <Button
-                size="sm"
-                variant={editMode ? "default" : "outline"}
-                className="h-7 w-7 p-0"
-                onClick={() => setEditMode((v) => !v)}
-              >
+      {/* Khối header dư thừa đã được gỡ bỏ để bảng nằm sát lên trên */}
                 {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
                 <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
               </Button>
@@ -563,6 +553,22 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
           toolbarLeft={
             <div className="flex items-center gap-1.5">
+              {allowEdit && (
+                <div className="flex items-center gap-1">
+                  {editMode && <KhaiThemCumButtons />}
+                  <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
+                    <Button
+                      size="sm"
+                      variant={editMode ? "default" : "outline"}
+                      className="h-7 w-7 p-0"
+                      onClick={() => setEditMode((v) => !v)}
+                    >
+                      {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                      <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
+                    </Button>
+                  </AppTooltip>
+                </div>
+              )}
               {ModeToggle}
               <div className="relative flex items-center">
                 <Button
