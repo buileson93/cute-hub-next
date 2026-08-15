@@ -94,7 +94,7 @@ function ThanhPhanErrorView({ error, reset }: { error: Error; reset: () => void 
       <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
         <div className="min-w-0 flex-1 space-y-2">
-          <div className="font-medium text-destructive">Không tải được bảng thành phần</div>
+          <div className="font-medium text-destructive">đang bị lỗi này xem thử lý do</div>
           <div className="break-words text-sm text-muted-foreground">{message || "Lỗi không xác định"}</div>
           {isRealtimeIssue ? (
             <div className="text-xs text-muted-foreground">
