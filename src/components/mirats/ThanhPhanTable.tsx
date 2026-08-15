@@ -605,19 +605,17 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 )}
               </div>
               {/* Removed redundant "đã lắp tài sản" count as requested */}
-              <div className="ml-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Select value={String(pageSize)} onValueChange={(v) => setPageSize(v === "all" ? Math.max(total, 1) : Number(v))}>
-                  <SelectTrigger className="h-7 w-[80px] text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-7 w-[70px] px-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="25">25</SelectItem>
                     <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
                     <SelectItem value="200">200</SelectItem>
-                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="all">Hết</SelectItem>
                   </SelectContent>
                 </Select>
-                <span>/ trang</span>
               </div>
               <div className="flex items-center gap-1">
                 <Button size="sm" variant="outline" className="h-7 w-7 p-0" disabled={currentPage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} aria-label="Trang trước">
@@ -970,32 +968,29 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   </button>
                 )}
               </div>
-              {/* Removed redundant "tài sản đang gắn thành phần" count as requested */}
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-
                 <Select value={bucket} onValueChange={(v) => setBucket(v as typeof bucket)}>
-                  <SelectTrigger className="h-7 w-[130px] text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-7 w-[90px] px-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả</SelectItem>
-                    <SelectItem value="0">Chưa gắn (0)</SelectItem>
-                    <SelectItem value="1">Đúng 1</SelectItem>
+                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
                     <SelectItem value="2-3">2 – 3</SelectItem>
-                    <SelectItem value=">3">Nhiều hơn 3</SelectItem>
+                    <SelectItem value=">3">&gt; 3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="ml-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Select value={String(pageSize)} onValueChange={(v) => setPageSize(v === "all" ? Math.max(total, 1) : Number(v))}>
-                  <SelectTrigger className="h-7 w-[80px] text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-7 w-[70px] px-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="25">25</SelectItem>
                     <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
                     <SelectItem value="200">200</SelectItem>
-                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="all">Hết</SelectItem>
                   </SelectContent>
                 </Select>
-
               </div>
               <div className="flex items-center gap-1">
                 <Button size="sm" variant="outline" className="h-7 w-7 p-0" disabled={currentPage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} aria-label="Trang trước">
