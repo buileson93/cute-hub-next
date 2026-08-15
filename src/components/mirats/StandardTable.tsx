@@ -984,6 +984,21 @@ export function StandardTable<T>({
                 )}
 
                 <TooltipProvider>
+                  {!hideReorderToggle && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn("h-7 w-7 ml-1 transition-colors", internalReorder && "text-primary bg-primary/10")}
+                          onClick={() => setInternalReorder(!internalReorder)}
+                        >
+                          <GripVertical className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Bật/tắt chế độ kéo thả đổi thứ tự cột</TooltipContent>
+                    </Tooltip>
+                  )}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-7 w-7 ml-1" onClick={autoFitWidths}>
@@ -1227,7 +1242,7 @@ export function StandardTable<T>({
                       viewMode === "tablet" && "left-10"
                     )}
                   >
-                    <div className="flex justify-center items-center gap-1">
+                    <div className="flex justify-center items-center h-full">
                       <Checkbox 
                         checked={
                           filtered.length > 0 && selected?.size === filtered.length
@@ -1242,18 +1257,6 @@ export function StandardTable<T>({
                         }}
                         aria-label="Chọn tất cả các dòng"
                       />
-                      {!hideReorderToggle && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn("h-6 w-6 transition-colors", internalReorder && "text-primary bg-primary/10")}
-                          onClick={() => setInternalReorder(!internalReorder)}
-                          title="Bật/tắt chế độ kéo thả đổi thứ tự cột"
-                          aria-label="Bật/tắt chế độ kéo thả đổi thứ tự cột"
-                        >
-                          <GripVertical className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
                     </div>
                   </TableHead>
                 )}
