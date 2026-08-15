@@ -1,24 +1,25 @@
-# Plan: Optimize Table Density and Alignment in System Components
+# Kế hoạch: Tối ưu mật độ hiển thị và Căn lề Bảng Hệ thống
 
-The user pointed out that the alignment issue persists in the "Components & Assets" table (`/he-thong/thanh-phan`) and requested a more compact UI by reducing whitespace and removing redundant selection status text ("tất cả chưa gắn", etc.). I will refine the alignment in the `StandardTable` component and clean up the `ThanhPhanTable` toolbar.
+Người dùng phản hồi rằng ô "Chọn tất cả" vẫn chưa thẳng hàng với các ô chọn từng dòng và yêu cầu làm gọn giao diện, giảm khoảng trắng thừa, đồng thời loại bỏ các nhãn văn bản dư thừa trong bộ lọc (như "tất cả chưa gắn", "đúng 1",...). Tôi sẽ tập trung sửa triệt để việc căn lề trong `StandardTable` và làm sạch thanh công cụ của `ThanhPhanTable`.
 
-## Proposed Changes
+## Các thay đổi đề xuất
 
-### 1. `src/components/mirats/StandardTable.tsx` (Alignment Fix)
-- **Refine Checkbox Column**: Adjust the `TableHead` and `TableCell` for the checkbox column to ensure perfect centering and vertical alignment.
-- **Header Padding**: Standardize the height and vertical alignment of headers to match the row density levels (`compact`, `comfortable`, `spacious`).
+### 1. `src/components/mirats/StandardTable.tsx` (Sửa căn lề)
+- **Căn chỉnh cột Checkbox**: Điều chỉnh CSS trong `TableHead` và `TableCell` của cột checkbox để đảm bảo căn giữa tuyệt đối và thẳng hàng dọc giữa tiêu đề và các dòng, bất kể chế độ hiển thị (`compact`, `comfortable`, `spacious`).
+- **Đồng bộ Padding Header**: Đảm bảo chiều cao của header khớp với các dòng dữ liệu để tránh lệch trục.
 
-### 2. `src/components/mirats/ThanhPhanTable.tsx` (UI Density & Cleanup)
-- **Remove Redundant Selection Text**: The user specifically requested removing the secondary selection/filter text (e.g., "tất cả chưa gắn", "đúng 1", etc.) which is currently displayed alongside the filters or in the toolbar labels.
-- **Tighten Toolbar**: Reduce margins and gaps in the toolbar to maximize vertical space for data.
-- **Standardize Pagination**: Ensure the pagination controls are as compact as possible.
+### 2. `src/components/mirats/ThanhPhanTable.tsx` (Tối ưu mật độ & Làm gọn)
+- **Loại bỏ văn bản dư thừa**: Xóa các nhãn text không cần thiết cạnh các bộ lọc (ví dụ: các đoạn giải thích trạng thái chọn trong bộ lọc "Số lượng lắp").
+- **Thu gọn Thanh công cụ**: Giảm khoảng cách (gap) và lề (padding) để dành tối đa diện tích cho bảng dữ liệu.
+- **Chuẩn hóa Phân trang**: Đảm bảo các nút điều hướng trang và bộ chọn số dòng trên trang được hiển thị gọn gàng nhất.
 
-## Technical Details
-- In `StandardTable.tsx`, I'll check the `h-full` and `flex items-center` classes on the checkbox containers to ensure they respect the dynamic row height.
-- In `ThanhPhanTable.tsx`, I will remove redundant labels like "Số thành phần:", "đã lắp tài sản:", and ensure the "Bucket" filter for asset attachment counts is clear but minimal.
+## Chi tiết kỹ thuật
+- Trong `StandardTable.tsx`, tôi sẽ sử dụng `flex items-center justify-center` và kiểm tra `vertical-align` để đảm bảo checkbox luôn nằm chính giữa ô.
+- Trong `ThanhPhanTable.tsx`, tôi sẽ lược bỏ các nhãn như "Số thành phần:", "đã lắp tài sản:" và các đoạn text phụ trong bộ lọc "Bucket" để giao diện thanh thoát hơn.
 
-## Verification Plan
-- Navigate to `/he-thong/thanh-phan` in the preview.
-- Verify the header checkbox is perfectly aligned with row checkboxes.
-- Verify the toolbar is cleaner and more compact, without redundant text labels.
-- Check that different density modes (via density toggle if applicable) maintain alignment.
+## Kế hoạch kiểm tra
+- Truy cập `/he-thong/thanh-phan` trong trình duyệt.
+- Xác nhận nút "Select All" ở header thẳng hàng tuyệt đối với các nút ở từng dòng.
+- Xác nhận thanh công cụ sạch sẽ, không còn các đoạn text giải thích rườm rà.
+- Kiểm tra các chế độ hiển thị (dày/thưa) để đảm bảo căn lề vẫn chuẩn.
+
