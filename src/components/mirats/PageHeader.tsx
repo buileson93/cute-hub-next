@@ -32,7 +32,7 @@ export function PageHeader({
 
   const hasSubtitle = typeof subtitle === "string" && subtitle.trim().length > 0;
   return (
-    <div data-testid="page-header" className="flex items-center justify-between h-7 gap-2">
+    <div data-testid="page-header" className="flex items-center justify-between h-6 gap-2">
       <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
         {Icon ? (
           typeof Icon === "string" ? (
@@ -43,7 +43,7 @@ export function PageHeader({
         ) : null}
         <h1
           data-testid="page-header-title"
-          className="truncate text-sm font-bold leading-tight"
+          className="truncate text-xs font-bold leading-tight uppercase tracking-tight"
         >
           {typeof title === 'string' ? title : String(title)}
         </h1>

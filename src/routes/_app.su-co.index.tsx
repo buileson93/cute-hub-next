@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 
@@ -411,26 +412,30 @@ function SuCoPage() {
         title="Sự cố kỹ thuật"
         help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng. Xuất báo cáo ban đầu / tuần / tháng khi cần."
         actions={
-          <div className="flex gap-2">
+          <div className="flex gap-1 items-center">
             <WeeklyReportImportDialog />
-            <Button asChild size="sm" variant="outline">
-              <Link to="/su-co/import-history">Lịch sử nhập</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
-            </Button>
+            <AppTooltip noiDung="Lịch sử nhập">
+              <Button asChild size="sm" variant="outline" className="h-7 w-7 p-0">
+                <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
+              </Button>
+            </AppTooltip>
+            <AppTooltip noiDung="Báo cáo ban đầu">
+              <Button asChild size="sm" className="h-7 w-7 p-0">
+                <Link to="/su-co/moi"><FilePlus2 className="h-4 w-4" /></Link>
+              </Button>
+            </AppTooltip>
           </div>
         }
       />
 
       {/* Dải thống kê gọn */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
-        <Stat icon={AlertTriangle} label="Sự cố" value={stats.total} />
-        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
-        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600 dark:text-red-400" />
-        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+        <Stat icon={AlertTriangle} label="SC" value={stats.total} />
+        <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
+        <Stat icon={AlertTriangle} label="Gắt" value={stats.severe} tone="text-red-600 dark:text-red-400" />
+        <Stat icon={Clock} label="DT" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
         <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600 dark:text-sky-400" />
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
           <Select value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
             <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -591,116 +596,77 @@ function SuCoPage() {
         </Card>
       </div>
 
-      {/* Nhật ký sự cố gọn */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-base">Nhật ký sự cố</CardTitle>
-              <InfoHint>Tick chọn các dòng cần xuất (hoặc chọn tất cả), sau đó bấm “Xuất báo cáo” ở thanh hành động phía trên bảng. Có thể lọc theo tuần/tháng ở dải thống kê để chọn nhanh.</InfoHint>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => exportList(suCo.filter((s) => inPeriod(s, "week")), "Tuần này")}
-              >
-                <FileDown className="mr-1 h-4 w-4" /> Xuất tuần này
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => exportList(suCo.filter((s) => inPeriod(s, "month")), "Tháng này")}
-              >
-                <FileDown className="mr-1 h-4 w-4" /> Xuất tháng này
-              </Button>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã SC, tài sản, hệ thống..." className="h-9 w-56 pl-9" />
-              </div>
-              <Select value={tt} onValueChange={setTt}>
-                <SelectTrigger className="h-9 w-[150px]"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Mọi trạng thái</SelectItem>
-                  {statuses("su_co").map((s) => <SelectItem key={s.code} value={s.code}>{s.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataState
-            state={state}
-            isFiltering={isFiltering}
-            onRetry={refetch}
-            emptyAction={
-              <Button onClick={() => { setQuery(""); setTt("all"); setPeriod("all"); }} variant="outline" size="sm">
-                Xoá bộ lọc
-              </Button>
-            }
-          >
-            <StandardTable
-              tableKey="su_co_nhat_ky_list"
-              columns={logColumns}
-              rows={rows}
-              getRowId={(s) => s.ma_su_co}
-              selectable
-              bulkActions={({ selectedRows, clear }) => (
-                <>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                      clear();
-                    }}
-                  >
-                    <FileDown className="mr-1 h-4 w-4" /> Xuất báo cáo ({selectedRows.length})
-                  </Button>
-                  <ContextualToolbar
-                    selectionCount={selectedRows.length}
-                    onDismiss={clear}
-                    actions={[
-                      {
-                        id: "export-word",
-                        label: "Xuất Word",
-                        icon: FileDownIcon,
-                        supportsBulk: true,
-                        onSelect: () => {
-                          exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
-                          clear();
-                        },
-                      },
-                      {
-                        id: "close",
-                        label: "Đóng sự cố",
-                        icon: XCircle,
-                        supportsBulk: false,
-                        onSelect: () => {
-                          const first = selectedRows[0];
-                          if (!first) return;
-                          if (!isOpenState(first.trang_thai)) toast.info("Sự cố này đã đóng");
-                          else toast.info("Vui lòng đóng sự cố ở khu vực 'Sự cố đang xảy ra'");
-                        },
-                      },
-                    ]}
+      {/* Nhật ký sự cố — chuyển sang StandardTable có toolbar nội bộ */}
+      {/* Nhật ký sự cố — chuyển sang StandardTable có toolbar nội bộ */}
+      <div className="flex-1 min-h-0 flex flex-col mt-4">
+        <DataState
+          state={state}
+          isFiltering={isFiltering}
+          onRetry={refetch}
+          emptyAction={
+            <Button onClick={() => { setQuery(""); setTt("all"); setPeriod("all"); }} variant="outline" size="sm">
+              Xoá bộ lọc
+            </Button>
+          }
+        >
+          <StandardTable<SuCo>
+            tableKey="su_co_nhat_ky_list"
+            columns={logColumns}
+            rows={rows}
+            getRowId={(s) => s.ma_su_co}
+            selectable
+            maxHeightClass="min-h-0 flex-1"
+            toolbarLeft={
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mr-1">Nhật ký</span>
+                <div className="relative w-36 sm:w-48">
+                  <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Tìm SC..."
+                    className="h-7 pl-7 text-[11px]"
                   />
-                </>
-              )}
-            />
-          </DataState>
-
-
-
-          {filtered.length > 40 && (
-            <div className="mt-3 text-center">
-              <Button variant="ghost" size="sm" onClick={() => setShowAll((v) => !v)}>
-                <ChevronDown className={`mr-1 h-4 w-4 transition-transform ${showAll ? "rotate-180" : ""}`} />
-                {showAll ? "Thu gọn" : `Xem tất cả ${filtered.length} sự cố`}
+                </div>
+                <Select value={tt} onValueChange={setTt}>
+                  <SelectTrigger className="h-7 w-[90px] text-[11px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    {statuses("su_co").map((s) => (
+                      <SelectItem key={s.code} value={s.code}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            }
+            toolbarRight={
+              <div className="flex items-center gap-1">
+                 <AppTooltip noiDung="Xuất CSV">
+                   <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => exportList(filtered, "Tìm kiếm")}>
+                     <FileDownIcon className="h-3.5 w-3.5" />
+                   </Button>
+                 </AppTooltip>
+                 <div className="flex bg-muted/30 p-0.5 rounded-md border h-7 ml-1">
+                   <Button variant={period === "all" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("all")} className="h-6 px-2 text-[10px]">Cả năm</Button>
+                   <Button variant={period === "week" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("week")} className="h-6 px-2 text-[10px]">Tuần</Button>
+                   <Button variant={period === "month" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("month")} className="h-6 px-2 text-[10px]">Tháng</Button>
+                 </div>
+              </div>
+            }
+            bulkActions={({ selectedRows, clear }) => (
+              <Button
+                size="sm"
+                onClick={() => {
+                  exportList(selectedRows, `${selectedRows.length} sự cố đã chọn`);
+                  clear();
+                }}
+              >
+                <FileDown className="mr-1 h-4 w-4" /> Xuất ({selectedRows.length})
               </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          />
+        </DataState>
+      </div>
 
       {/* Dialog báo cáo kết thúc */}
       <Dialog open={!!closing} onOpenChange={(o) => !o && setClosing(null)}>

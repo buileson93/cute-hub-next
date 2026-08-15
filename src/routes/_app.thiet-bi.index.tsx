@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { useMemo, useRef, useState, useEffect } from "react";
 import {
   Search, HardDrive, Loader2, Building2, Layers, Network,
@@ -327,40 +328,38 @@ function ThietBiPage() {
         icon={BookOpen}
         title="Sổ lý lịch"
         actions={
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <button
-              type="button"
-              onClick={() => setOnlyAllocated((v) => !v)}
-              className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition-colors",
-                onlyAllocated ? "border-amber-300 bg-amber-50 text-amber-700" : "hover:bg-muted",
-              )}
-              title="Chỉ hiện tài sản đang được cấp phát"
-            >
-              <PackageCheck className="h-3.5 w-3.5" /> Đang cấp phát
-            </button>
-            {retiredCount > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowRetired((v) => !v)}
-                className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition-colors",
-                  showRetired ? "border-slate-400 bg-slate-100 text-slate-700" : "hover:bg-muted",
-                )}
-                title="Hiện cả tài sản đã ngừng khai thác / thanh lý"
+          <div className="flex gap-1 items-center">
+            <AppTooltip noiDung={onlyAllocated ? "Bỏ lọc cấp phát" : "Chỉ hiện tài sản đang cấp phát"}>
+              <Button
+                variant={onlyAllocated ? "default" : "outline"}
+                size="sm"
+                onClick={() => setOnlyAllocated((v) => !v)}
+                className="h-7 w-7 p-0"
               >
-                <Archive className="h-3.5 w-3.5" /> {showRetired ? "Đang hiện" : "Hiện"} nghỉ KT ({retiredCount})
-              </button>
+                <PackageCheck className="h-4 w-4" />
+              </Button>
+            </AppTooltip>
+            {retiredCount > 0 && (
+              <AppTooltip noiDung={showRetired ? "Ẩn tài sản nghỉ KT" : `Hiện ${retiredCount} tài sản nghỉ KT`}>
+                <Button
+                  variant={showRetired ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => setShowRetired((v) => !v)}
+                  className="h-7 w-7 p-0"
+                >
+                  <Archive className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
             )}
-            <div className="relative sm:w-64">
-              <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative w-36 sm:w-48">
+              <Search className="pointer-events-none absolute left-2 top-1/2 z-10 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => { if (blurTimer.current) clearTimeout(blurTimer.current); setFocused(true); }}
                 onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
-                placeholder="Tìm mã, tên, serial..."
-                className="h-8 pl-9 text-xs"
+                placeholder="Tìm mã, tên..."
+                className="h-7 pl-7 text-[11px]"
               />
               {openDropdown && suggestions && (
                 <div className="absolute right-0 top-full z-50 mt-2 max-h-96 w-[min(30rem,90vw)] overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-popover shadow-xl">
@@ -410,11 +409,8 @@ function ThietBiPage() {
         }
       />
 
-      <Card>
-        <CardHeader className="hidden">
-          <CardTitle>Cây phân cấp tài sản & hệ thống</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="mt-2 border-none shadow-none bg-transparent">
+        <CardContent className="p-0">
           <DataState
             state={state}
             loadingType="table"
