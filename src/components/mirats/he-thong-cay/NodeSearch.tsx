@@ -45,7 +45,7 @@ export function NodeSearch({ items, onPick, containerClassName }: { items: Searc
   }, [q, items]);
 
   return (
-    <div ref={boxRef} className="relative">
+    <div ref={boxRef} className={cn("relative", containerClassName)}>
       <div className="relative">
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
