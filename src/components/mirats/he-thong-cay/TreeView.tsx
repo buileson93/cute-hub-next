@@ -156,13 +156,13 @@ export function TreeView({
     
     return (
       <div key={ht.ma} className="space-y-1">
-        <div className="group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50">
-          <button onClick={() => toggle(htId)} className="rounded p-0.5 hover:bg-muted">
-            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        <div className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50">
+          <button onClick={() => toggle(htId)} className="rounded p-0.5 hover:bg-muted shrink-0">
+            {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           </button>
-          <Network className="h-4 w-4 shrink-0 text-primary" />
-          <span className="flex-1 truncate text-sm font-medium">{htMind(ht.ma)}</span>
-          <Badge variant="outline" className="shrink-0">{ht.count}</Badge>
+          <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
+          <span className="flex-1 truncate text-[13px] font-medium leading-tight">{htMind(ht.ma)}</span>
+          <Badge variant="outline" className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center">{ht.count}</Badge>
           
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
              <button onClick={() => onIncident(ht.ma)} className="rounded p-1 hover:bg-muted" title="Sự cố">
@@ -196,13 +196,13 @@ export function TreeView({
 
     return (
       <div key={nh.ma} className="space-y-1">
-        <div className="group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50">
-          <button onClick={() => toggle(nhId)} className="rounded p-0.5 hover:bg-muted">
-            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        <div className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50">
+          <button onClick={() => toggle(nhId)} className="rounded p-0.5 hover:bg-muted shrink-0">
+            {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           </button>
-          <FolderTree className="h-4 w-4 shrink-0 text-violet-500" />
-          <span className="flex-1 truncate text-sm font-semibold">{nhLabel(nh.ma)}</span>
-          <Badge variant="secondary" className="shrink-0">{nh.count}</Badge>
+          <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
+          <span className="flex-1 truncate text-[13px] font-semibold leading-tight">{nhLabel(nh.ma)}</span>
+          <Badge variant="secondary" className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center">{nh.count}</Badge>
         </div>
         {isExpanded && (
           <div className="ml-6 space-y-1 border-l pl-2">
@@ -221,14 +221,14 @@ export function TreeView({
         const isStopped = pl.ten === DUNG_KHAI_THAC_TEN;
         
         return (
-          <div key={pl.id} className={cn("rounded-lg border bg-card p-3", isStopped && "border-dashed opacity-80")}>
+          <div key={pl.id} className={cn("rounded-lg border bg-card p-2 shadow-sm", isStopped && "border-dashed opacity-80")}>
             <div className="flex items-center gap-2">
-              <button onClick={() => toggle(plId)} className="rounded p-1 hover:bg-muted">
-                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              <button onClick={() => toggle(plId)} className="rounded p-1 hover:bg-muted shrink-0">
+                {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </button>
-              <Boxes className={cn("h-5 w-5", isStopped ? "text-muted-foreground" : "text-rose-500")} />
-              <span className="text-base font-bold">{pl.ten}</span>
-              <Badge variant="outline" className="ml-auto">{pl.count}</Badge>
+              <Boxes className={cn("h-4 w-4 shrink-0", isStopped ? "text-muted-foreground" : "text-rose-500")} />
+              <span className="text-sm font-bold tracking-tight">{pl.ten}</span>
+              <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 h-4 min-w-[1.5rem] justify-center bg-muted/30">{pl.count}</Badge>
             </div>
             
             {isExpanded && (

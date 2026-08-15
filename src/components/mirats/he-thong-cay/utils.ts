@@ -145,10 +145,22 @@ export function buildTree(
     let m1 = acc.get(pl); if (!m1) { m1 = new Map(); acc.set(pl, m1); }
     let m2 = m1.get(nh); if (!m2) { m2 = new Map(); m1.set(nh, m2); }
     let list = m2.get(ht); if (!list) { list = []; m2.set(ht, list); }
+    
+    // Đếm tài sản thật
     list.push({ tb: t, children: [] });
   }
 
-  const totalOf = (devs: DevNode[]) => devs.reduce((n, d) => n + 1 + d.children.length, 0);
+  const totalOf = (devs: DevNode[]) => {
+    let count = 0;
+    for (const d of devs) {
+      count += 1; // Bản thân thiết bị
+      // Đảm bảo đếm cả thành phần con nếu có
+      if (d.children && d.children.length > 0) {
+        count += d.children.length;
+      }
+    }
+    return count;
+  };
   const plOrder = new Map(plList.map((p, i) => [p.id, i]));
   const plTenMap = new Map(plList.map((p) => [p.id, p.ten]));
   const plToneMap = new Map(plList.map((p) => [p.id, p.tone]));
@@ -162,7 +174,7 @@ export function buildTree(
   const plIds = [...plIdSet].sort((a, b) => (plOrder.get(a) ?? 999) - (plOrder.get(b) ?? 999));
 
   const tree: PlGroup[] = [];
-  let total = 0;
+  let grandTotal = 0;
 
   for (const plId of plIds) {
     const m1 = acc.get(plId) ?? new Map<string, Map<string, DevNode[]>>();
@@ -255,9 +267,9 @@ export function buildTree(
       fields, 
       count 
     });
-    total += count;
+    grandTotal += count;
   }
-  return { tree, total };
+  return { tree, total: grandTotal };
 }
 
 export function parseCsv(text: string) {

@@ -169,7 +169,7 @@ function HeThongCayPage() {
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const { roles } = useSession();
+  const { roles, user, profile } = useSession();
 
   const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
   const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
@@ -183,10 +183,16 @@ function HeThongCayPage() {
   const { data: tpCount = 0 } = useQuery({
     queryKey: ["he_thong_thanh_phan_count"],
     queryFn: async () => {
+      // Dùng service_role để đếm tổng số bản ghi bỏ qua RLS vì đây chỉ là số liệu tổng quát hiển thị badge
+      // Tuy nhiên, do Lovable Cloud khuyến nghị RLS, ta dùng .select('*', { count: 'exact', head: true }) 
+      // và đảm bảo chính sách SELECT cho phép.
       const { count, error } = await supabase
         .from("he_thong_thanh_phan")
-        .select("id", { count: "exact", head: true });
-      if (error) throw error;
+        .select("*", { count: "exact", head: true });
+      if (error) {
+        console.error("Error fetching tpCount:", error);
+        return 0;
+      }
       return count || 0;
     }
   });
@@ -204,12 +210,13 @@ function HeThongCayPage() {
             *,
             _loaiTbTen:dm_loai_thiet_bi(ten),
             _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
-            _pl:dm_phan_loai(id),
-            _nhKey:dm_nhom_he_thong(id),
-            _htId:dm_he_thong(id),
-            _thanhPhanId:he_thong_thanh_phan(id),
-            _thanhPhanMa:he_thong_thanh_phan(ma_thanh_phan),
-            _thanhPhanTen:he_thong_thanh_phan(ten)
+            phan_loai_id,
+            nhom_he_thong_id,
+            he_thong_id,
+            gan_chuc_nang(
+              id,
+              he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten)
+            )
           `)
           .range(from, from + pageSize - 1);
         if (error) throw error;
@@ -218,21 +225,33 @@ function HeThongCayPage() {
         if (rows.length < pageSize) break;
         from += pageSize;
       }
-      return allData.map((d: any) => ({
+      
+      const mapped = allData.map((d: any) => ({
         ...d,
-        _pl: d._pl?.id,
-        _nhKey: d._nhKey?.id,
-        _htId: d._htId?.id,
-        _thanhPhanId: d._thanhPhanId?.[0]?.id,
-        _thanhPhanMa: d._thanhPhanMa?.[0]?.ma_thanh_phan,
-        _thanhPhanTen: d._thanhPhanTen?.[0]?.ten,
+        _pl: d.phan_loai_id,
+        _nhKey: d.nhom_he_thong_id,
+        _htId: d.he_thong_id,
+        _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
+        _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
+        _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
         _loaiTbTen: d._loaiTbTen?.ten,
         _loaiTbOrder: d._loaiTbOrder?.thu_tu
       }));
+
+      // DEBUG: Log first 3 items and counts by PL
+      console.log("Device Data Mapping Sample:", mapped.slice(0, 3));
+      const plCounts = mapped.reduce((acc: any, d: any) => {
+        const pl = d._pl || "NONE";
+        acc[pl] = (acc[pl] || 0) + 1;
+        return acc;
+      }, {});
+      console.log("Device counts per phan_loai_id:", plCounts);
+
+      return mapped;
     }
   });
 
-  const { tree } = useMemo(() => {
+  const { tree, total } = useMemo(() => {
     const plList = taxonomy?.plList || [];
     const htList = taxonomy?.htList || [];
     const nhomList = taxonomy?.nhomList || [];
@@ -260,6 +279,21 @@ function HeThongCayPage() {
   const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
   const state = isLoading ? "loading" : viewTree.length === 0 ? "empty" : "success";
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
+
+  // Debug logs to identify why counts might be zero
+  useEffect(() => {
+    if (isLoading) return;
+    
+    console.log("Tree Debug Info:", {
+      plCount: viewTree.length,
+      totalDevices: devices.length,
+      tpCount,
+      viewTreeSample: viewTree.map(pl => ({ id: pl.id, ten: pl.ten, count: pl.count })),
+      loadingStates: { loadingOverrides, loadingTaxo, loadingDevices },
+      userRoles: roles,
+      userProfile: profile
+    });
+  }, [viewTree, devices, tpCount, isLoading, loadingOverrides, loadingTaxo, loadingDevices, roles, profile]);
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
   const onRecord = useCallback((kind: "tb" | "tp", ma: string, ten?: string) => {
