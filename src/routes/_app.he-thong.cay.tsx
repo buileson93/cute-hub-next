@@ -247,8 +247,6 @@ function HeThongCayPage() {
       return mapped;
     }
   });
-    }
-  });
 
   const { tree, total } = useMemo(() => {
     const plList = taxonomy?.plList || [];
