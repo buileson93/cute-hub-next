@@ -92,7 +92,7 @@ function ThanhPhanErrorView({ error, reset }: { error: Error; reset: () => void 
   return (
     <div className="mx-auto max-w-2xl p-6" role="alert">
       <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" title="đang bị lỗi này xem thử lý do" />
         <div className="min-w-0 flex-1 space-y-2">
           <div className="font-medium text-destructive">Không tải được bảng thành phần</div>
           <div className="break-words text-sm text-muted-foreground">{message || "Lỗi không xác định"}</div>
