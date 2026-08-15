@@ -10,7 +10,7 @@ import { useDbTaxonomy, useSystemNameOverrides } from "@/lib/mirats/db-taxonomy"
  * với các ô tìm kiếm nhỏ (cây Hệ thống, Sổ lý lịch).
  */
 
-export type SearchEntity = "he_thong" | "thiet_bi" | "giay_phep" | "form_submission";
+export type SearchEntity = "he_thong" | "thiet_bi" | "giay_phep" | "form_submission" | "tai_lieu";
 
 export type SearchRow = {
   entity: SearchEntity;
@@ -35,18 +35,23 @@ function hitTo(entity: SearchEntity, id: string, code: string | null): string {
       return "/giay-phep";
     case "form_submission":
       return `/forms/submissions/${id}`;
+    case "tai_lieu":
+      // Nếu subtitle chứa mã thiết bị, ta trỏ tới trang thiết bị đó và mở tab pháp lý
+      // Hoặc trỏ tới thư viện tài liệu toàn cục với ID cụ thể
+      return code ? `/thiet-bi/${code}?tab=phap-ly&doc=${id}` : `/tai-lieu?doc=${id}`;
     case "he_thong":
     default:
       return `/he-thong/${id}`;
   }
 }
 
-// Thứ tự phân cấp thống nhất: hệ thống > tài sản > giấy phép > biểu mẫu.
+// Thứ tự phân cấp thống nhất: hệ thống > tài sản > tài liệu > giấy phép > biểu mẫu.
 export const TIER: Record<SearchEntity, number> = {
   he_thong: 0,
   thiet_bi: 1,
-  giay_phep: 2,
-  form_submission: 3,
+  tai_lieu: 2,
+  giay_phep: 3,
+  form_submission: 4,
 };
 
 export const ENTITY_META: Record<
@@ -55,6 +60,7 @@ export const ENTITY_META: Record<
 > = {
   he_thong: { label: "Hệ thống", icon: BookOpen, to: (id) => `/he-thong/${id}` },
   thiet_bi: { label: "Tài sản", icon: HardDrive, to: (id) => `/thiet-bi/${id}` },
+  tai_lieu: { label: "Tài liệu", icon: FileText, to: (id) => `/tai-lieu?doc=${id}` },
   giay_phep: { label: "Giấy phép", icon: ShieldCheck, to: (id) => `/giay-phep/${id}` },
   form_submission: { label: "Biểu mẫu", icon: FileText, to: (id) => `/forms/submissions/${id}` },
 };

@@ -5346,6 +5346,7 @@ export type Database = {
           mime_type: string | null
           mo_ta: string | null
           model_id: string
+          search_tsv: unknown
           thu_tu: number
           updated_at: string
           uploaded_by: string | null
@@ -5361,6 +5362,7 @@ export type Database = {
           mime_type?: string | null
           mo_ta?: string | null
           model_id: string
+          search_tsv?: unknown
           thu_tu?: number
           updated_at?: string
           uploaded_by?: string | null
@@ -5376,6 +5378,7 @@ export type Database = {
           mime_type?: string | null
           mo_ta?: string | null
           model_id?: string
+          search_tsv?: unknown
           thu_tu?: number
           updated_at?: string
           uploaded_by?: string | null
@@ -7355,6 +7358,7 @@ export type Database = {
           loai: Database["public"]["Enums"]["thiet_bi_tep_loai"]
           mime_type: string | null
           mo_ta: string | null
+          search_tsv: unknown
           thiet_bi_id: string
           updated_at: string
           uploaded_by: string | null
@@ -7369,6 +7373,7 @@ export type Database = {
           loai: Database["public"]["Enums"]["thiet_bi_tep_loai"]
           mime_type?: string | null
           mo_ta?: string | null
+          search_tsv?: unknown
           thiet_bi_id: string
           updated_at?: string
           uploaded_by?: string | null
@@ -7383,6 +7388,7 @@ export type Database = {
           loai?: Database["public"]["Enums"]["thiet_bi_tep_loai"]
           mime_type?: string | null
           mo_ta?: string | null
+          search_tsv?: unknown
           thiet_bi_id?: string
           updated_at?: string
           uploaded_by?: string | null
