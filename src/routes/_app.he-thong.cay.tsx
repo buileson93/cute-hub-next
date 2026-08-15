@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { useSession } from "@/hooks/use-session";
+import { Check, Pencil } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 import { cn } from "@/lib/utils";
 import { ReactFlowProvider } from "@xyflow/react";
