@@ -169,7 +169,7 @@ function HeThongCayPage() {
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const { roles } = useSession();
+  const { roles, user } = useSession();
 
   const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
   const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
@@ -261,6 +261,19 @@ function HeThongCayPage() {
   const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
   const state = isLoading ? "loading" : viewTree.length === 0 ? "empty" : "success";
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
+
+  // Debug logs to identify why counts might be zero
+  useEffect(() => {
+    if (viewTree.length > 0) {
+      console.log("Tree Structure Data:", {
+        plCount: viewTree.length,
+        plSample: viewTree[0],
+        totalDevices: devices.length,
+        loadingStates: { loadingOverrides, loadingTaxo, loadingDevices },
+        userRole: roles
+      });
+    }
+  }, [viewTree, devices, loadingOverrides, loadingTaxo, loadingDevices, roles]);
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
   const onRecord = useCallback((kind: "tb" | "tp", ma: string, ten?: string) => {
