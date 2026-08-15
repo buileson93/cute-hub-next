@@ -209,6 +209,8 @@ function PmPage() {
               </TabsContent>
             ))}
           </Tabs>
+        </CardContent>
+      </Card>
 
       <HoanThanhDialog task={done} onClose={() => setDone(null)} />
       <BoQuaDialog task={skip} onClose={() => setSkip(null)} />
