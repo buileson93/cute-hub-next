@@ -784,7 +784,7 @@ export function StandardTable<T>({
 
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       {/* Vùng ẩn thông báo trạng thái cho screen reader */}
       <div className="sr-only" aria-live="polite" role="status">
         {liveAnnouncement}
@@ -857,11 +857,11 @@ export function StandardTable<T>({
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="h-7 gap-1.5 ml-1"
+                              className="h-7 w-7 p-0 ml-1"
                               disabled={!prefs.ready}
                             >
                               <Icon name="table.settings" size="small" />
-                              <span className="hidden sm:inline">Cột hiển thị</span>
+                              <span className="sr-only">Cột hiển thị</span>
                             </Button>
                           </DropdownMenuTrigger>
                         </TooltipTrigger>
@@ -983,39 +983,33 @@ export function StandardTable<T>({
                   </DropdownMenu>
                 )}
 
-                <TooltipProvider>
+                <div className="flex items-center">
                   {!hideReorderToggle && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn("h-7 w-7 ml-1 transition-colors", internalReorder && "text-primary bg-primary/10")}
-                          onClick={() => setInternalReorder(!internalReorder)}
-                        >
-                          <GripVertical className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Bật/tắt chế độ kéo thả đổi thứ tự cột</TooltipContent>
-                    </Tooltip>
+                    <AppTooltip noiDung="Bật/tắt chế độ kéo thả đổi thứ tự cột">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn("h-7 w-7 ml-0.5 transition-colors", internalReorder && "text-primary bg-primary/10")}
+                        onClick={() => setInternalReorder(!internalReorder)}
+                      >
+                        <GripVertical className="h-4 w-4" />
+                        <span className="sr-only">Kéo thả cột</span>
+                      </Button>
+                    </AppTooltip>
                   )}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 ml-1" onClick={autoFitWidths}>
-                        <Icon name="table.maximize" size="small" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Tự căn theo nội dung</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
-                        <Icon name="table.reset" size="small" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Đặt lại độ rộng mọi cột</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                  <AppTooltip noiDung="Tự căn theo nội dung">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 ml-0.5" onClick={autoFitWidths}>
+                      <Icon name="table.maximize" size="small" />
+                      <span className="sr-only">Tự căn</span>
+                    </Button>
+                  </AppTooltip>
+                  <AppTooltip noiDung="Đặt lại độ rộng mọi cột">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
+                      <Icon name="table.reset" size="small" />
+                      <span className="sr-only">Đặt lại độ rộng</span>
+                    </Button>
+                  </AppTooltip>
+                </div>
               </>
             )}
             {toolbarRight && renderToolbar(toolbarRight, { visibleRows: fullDisplay, visibleColumns: shownCols })}

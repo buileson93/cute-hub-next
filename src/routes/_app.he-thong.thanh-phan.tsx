@@ -33,19 +33,14 @@ function ThanhPhanListPage() {
   return (
     <div className="flex h-full flex-col">
       <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })} className="flex-1 flex flex-col min-h-0">
-        <div className="px-3 py-1.5 border-b flex items-center justify-between bg-background z-10 shrink-0">
-          <div className="flex items-center gap-4">
-            <PageHeader
-              title="Thành phần & tài sản"
-              icon={Puzzle}
-              help="Quản lý chi tiết từng vị trí lắp đặt và tài sản tương ứng trong hệ thống kỹ thuật."
-            />
+        <div className="px-3 py-1 border-b flex items-center justify-between bg-background z-10 shrink-0">
+          <div className="flex items-center gap-2">
             <TabsList>
-              <TabsTrigger value="table" className="gap-2"><List className="h-4 w-4"/>Bảng</TabsTrigger>
-              <TabsTrigger value="tree" className="gap-2"><ListTree className="h-4 w-4"/>Cây</TabsTrigger>
-              <TabsTrigger value="mindmap" className="gap-2"><GitFork className="h-4 w-4"/>Sơ đồ</TabsTrigger>
-              <TabsTrigger value="health" className="gap-2"><Activity className="h-4 w-4"/>Sức khỏe</TabsTrigger>
-              <TabsTrigger value="history" className="gap-2"><ClipboardList className="h-4 w-4"/>Nhật ký</TabsTrigger>
+              <TabsTrigger value="table" className="h-7 gap-1.5 px-2 text-xs"><List className="h-3.5 w-3.5"/>Bảng</TabsTrigger>
+              <TabsTrigger value="tree" className="h-7 gap-1.5 px-2 text-xs"><ListTree className="h-3.5 w-3.5"/>Cây</TabsTrigger>
+              <TabsTrigger value="mindmap" className="h-7 gap-1.5 px-2 text-xs"><GitFork className="h-3.5 w-3.5"/>Sơ đồ</TabsTrigger>
+              <TabsTrigger value="health" className="h-7 gap-1.5 px-2 text-xs"><Activity className="h-3.5 w-3.5"/>Sức khỏe</TabsTrigger>
+              <TabsTrigger value="history" className="h-7 gap-1.5 px-2 text-xs"><ClipboardList className="h-3.5 w-3.5"/>Nhật ký</TabsTrigger>
             </TabsList>
           </div>
 
