@@ -1332,8 +1332,8 @@ export function StandardTable<T>({
                             type="button"
                             onClick={() => cycleSort(c.key)}
                             className={cn(
-                              "group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none",
-                              c.align === "center" ? "justify-center w-full" : c.align === "right" ? "justify-end w-full text-right" : "justify-start text-left"
+                              "group inline-flex min-w-0 items-center gap-1 rounded hover:text-foreground transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none h-full px-2",
+                              c.align === "center" ? "justify-center w-full" : c.align === "right" ? "justify-end w-full text-right" : "justify-start text-left w-full"
                             )}
 
 
