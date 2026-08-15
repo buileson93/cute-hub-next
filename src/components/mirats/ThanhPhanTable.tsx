@@ -290,6 +290,8 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">("thanh-phan:view-mode", "component");
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
   const [internalEditMode, setInternalEditMode] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedTp, setSelectedTp] = useState<{ row: ThanhPhanRow; heThongId: string } | null>(null);
   const editMode = externalEditMode !== undefined ? externalEditMode : internalEditMode;
@@ -440,10 +442,9 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
 
 
   return (
-    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-3" : "space-y-4 p-4 sm:p-6 lg:p-8"}>
+    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-2 p-2"}>
       {!hideHeader && (
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {ModeToggle}
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
           {allowEdit && editMode && <KhaiThemCumButtons />}
           {allowEdit ? (
             <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
@@ -468,8 +469,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
       )}
 
       {hideHeader && (
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {ModeToggle}
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
           {allowEdit && editMode && <KhaiThemCumButtons />}
           {allowEdit && externalEditMode === undefined && (
             <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
@@ -574,7 +574,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   </AppTooltip>
                 }
               />
-              <AppTooltip noiDung="Bỏ chọn tất cả các dòng">
+              <AppTooltip noiDung="Bỏ chọn tất cả">
                 <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
                   <XIcon className="h-4 w-4" />
                   <span className="sr-only">Bỏ chọn</span>
@@ -584,24 +584,42 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           )}
 
           toolbarLeft={
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Tìm mã vai trò, tên, hệ thống, tài sản, serial…"
-                  className="h-8 w-[300px] pl-7 pr-7"
-                />
-                {q && (
-                  <button
-                    type="button"
-                    onClick={() => setQ("")}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label="Xoá tìm kiếm"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+            <div className="flex items-center gap-1.5">
+              {ModeToggle}
+              <div className="relative flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-7 w-7 transition-all",
+                    (searchExpanded || q) ? "text-primary" : "text-muted-foreground"
+                  )}
+                  onClick={() => {
+                    setSearchExpanded(!searchExpanded);
+                    if (!searchExpanded) setTimeout(() => searchInputRef.current?.focus(), 100);
+                  }}
+                >
+                  <Search className="h-3.5 w-3.5" />
+                </Button>
+                {(searchExpanded || q) && (
+                  <div className="absolute left-8 z-10">
+                    <Input
+                      ref={searchInputRef}
+                      value={q}
+                      onChange={(e) => setQ(e.target.value)}
+                      placeholder={viewMode === "asset" ? "Tìm tài sản…" : "Tìm vai trò, tên…"}
+                      className="h-7 w-[200px] bg-background text-xs shadow-sm"
+                    />
+                    {q && (
+                      <button
+                        type="button"
+                        onClick={() => setQ("")}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
               {/* Removed redundant "đã lắp tài sản" count as requested */}
@@ -938,7 +956,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   </AppTooltip>
                 }
               />
-              <AppTooltip noiDung="Bỏ chọn tất cả các dòng">
+              <AppTooltip noiDung="Bỏ chọn">
                 <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
                   <XIcon className="h-4 w-4" />
                   <span className="sr-only">Bỏ chọn</span>
@@ -948,24 +966,42 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
           )}
 
           toolbarLeft={
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Tìm mã tài sản, tên, serial, model, hệ thống…"
-                  className="h-8 w-[300px] pl-7 pr-7"
-                />
-                {q && (
-                  <button
-                    type="button"
-                    onClick={() => setQ("")}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label="Xoá tìm kiếm"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
+            <div className="flex items-center gap-1.5">
+              {ModeToggle}
+              <div className="relative flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-7 w-7 transition-all",
+                    (searchExpanded || q) ? "text-primary" : "text-muted-foreground"
+                  )}
+                  onClick={() => {
+                    setSearchExpanded(!searchExpanded);
+                    if (!searchExpanded) setTimeout(() => searchInputRef.current?.focus(), 100);
+                  }}
+                >
+                  <Search className="h-3.5 w-3.5" />
+                </Button>
+                {(searchExpanded || q) && (
+                  <div className="absolute left-8 z-10">
+                    <Input
+                      ref={searchInputRef}
+                      value={q}
+                      onChange={(e) => setQ(e.target.value)}
+                      placeholder="Tìm tài sản…"
+                      className="h-7 w-[200px] bg-background text-xs shadow-sm"
+                    />
+                    {q && (
+                      <button
+                        type="button"
+                        onClick={() => setQ("")}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

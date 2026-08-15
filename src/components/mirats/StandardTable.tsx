@@ -784,7 +784,7 @@ export function StandardTable<T>({
 
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       {/* Vùng ẩn thông báo trạng thái cho screen reader */}
       <div className="sr-only" aria-live="polite" role="status">
         {liveAnnouncement}
@@ -857,11 +857,11 @@ export function StandardTable<T>({
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="h-7 gap-1.5 ml-1"
+                              className="h-7 w-7 p-0 ml-1"
                               disabled={!prefs.ready}
                             >
                               <Icon name="table.settings" size="small" />
-                              <span className="hidden sm:inline">Cột hiển thị</span>
+                              <span className="sr-only">Cột hiển thị</span>
                             </Button>
                           </DropdownMenuTrigger>
                         </TooltipTrigger>
