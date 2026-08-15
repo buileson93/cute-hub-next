@@ -11,6 +11,12 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Plus, RefreshCw, Network, Component as ComponentIcon } from "lucide-react";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
