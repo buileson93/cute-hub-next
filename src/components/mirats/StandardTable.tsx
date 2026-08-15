@@ -1230,7 +1230,7 @@ export function StandardTable<T>({
                 density === "compact" ? "h-7" : density === "comfortable" ? "h-9" : "h-11"
               )}>
                 {viewMode === "tablet" && (
-                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50">
+                  <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
                     {/* Placeholder for expansion column header */}
                   </TableHead>
                 )}
@@ -1238,11 +1238,11 @@ export function StandardTable<T>({
                   <TableHead 
                     scope="col"
                     className={cn(
-                      "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50",
+                      "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0",
                       viewMode === "tablet" && "left-10"
                     )}
                   >
-                    <div className="flex justify-center items-center h-full">
+                    <div className="flex h-full w-full items-center justify-center">
                       <Checkbox 
                         checked={
                           filtered.length > 0 && selected?.size === filtered.length
@@ -1441,22 +1441,26 @@ export function StandardTable<T>({
                           {viewMode === "tablet" && (
                             <TableCell
                               onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
-                              className="sticky left-0 z-10 bg-card border-r border-border/30 text-center"
+                              className="sticky left-0 z-10 bg-card border-r border-border/30 p-0 text-center"
                             >
-                              <Button variant="ghost" size="icon" className="h-6 w-6">
-                                {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                              </Button>
+                              <div className="flex h-full w-full items-center justify-center">
+                                <Button variant="ghost" size="icon" className="h-6 w-6">
+                                  {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                </Button>
+                              </div>
                             </TableCell>
                           )}
                           {selectable && (
                             <TableCell
                               onClick={(e) => e.stopPropagation()}
                               className={cn(
-                                "sticky left-0 z-10 bg-card border-r border-border/30",
+                                "sticky left-0 z-10 bg-card border-r border-border/30 p-0",
                                 viewMode === "tablet" && "left-10"
                               )}
                             >
-                              <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} aria-label={`Chọn dòng ${rid}`} />
+                              <div className="flex h-full w-full items-center justify-center">
+                                <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} aria-label={`Chọn dòng ${rid}`} />
+                              </div>
                             </TableCell>
                           )}
 
