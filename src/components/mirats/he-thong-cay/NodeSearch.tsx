@@ -8,7 +8,7 @@ function normalize(s: string): string {
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
 }
 
-export function NodeSearch({ items, onPick }: { items: SearchItem[]; onPick: (it: SearchItem) => void }) {
+export function NodeSearch({ items, onPick, containerClassName }: { items: SearchItem[]; onPick: (it: SearchItem) => void; containerClassName?: string }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
