@@ -1453,8 +1453,9 @@ export function StandardTable<T>({
                                 viewMode === "tablet" && "left-10"
                               )}
                             >
-                              <div className="flex h-full w-full items-center justify-center">
+                              <div className="flex h-full w-full items-center justify-center py-2">
                                 <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} aria-label={`Chọn dòng ${rid}`} />
+
                               </div>
                             </TableCell>
                           )}
