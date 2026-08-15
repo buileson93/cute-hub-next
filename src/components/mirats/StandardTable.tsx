@@ -648,7 +648,6 @@ export function StandardTable<T>({
     // Nếu không có value thì trả về null
     if (val === undefined || val === null) return KHONG_CO;
 
-    const density = document.body.dataset.density as any;
     const isCompact = density === "compact";
 
     switch (c.type) {
