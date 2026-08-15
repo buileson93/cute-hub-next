@@ -411,26 +411,30 @@ function SuCoPage() {
         title="Sự cố kỹ thuật"
         help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng. Xuất báo cáo ban đầu / tuần / tháng khi cần."
         actions={
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <WeeklyReportImportDialog />
-            <Button asChild size="sm" variant="outline">
-              <Link to="/su-co/import-history">Lịch sử nhập</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to="/su-co/moi"><FilePlus2 className="mr-1 h-4 w-4" /> Báo cáo ban đầu</Link>
-            </Button>
+            <AppTooltip noiDung="Lịch sử nhập">
+              <Button asChild size="sm" variant="outline" className="h-7 w-7 p-0">
+                <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
+              </Button>
+            </AppTooltip>
+            <AppTooltip noiDung="Báo cáo ban đầu">
+              <Button asChild size="sm" className="h-7 w-7 p-0">
+                <Link to="/su-co/moi"><FilePlus2 className="h-4 w-4" /></Link>
+              </Button>
+            </AppTooltip>
           </div>
         }
       />
 
       {/* Dải thống kê gọn */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
-        <Stat icon={AlertTriangle} label="Sự cố" value={stats.total} />
-        <Stat icon={Activity} label="Đang mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
-        <Stat icon={AlertTriangle} label="Nghiêm trọng" value={stats.severe} tone="text-red-600 dark:text-red-400" />
-        <Stat icon={Clock} label="Downtime" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+        <Stat icon={AlertTriangle} label="SC" value={stats.total} />
+        <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
+        <Stat icon={AlertTriangle} label="Gắt" value={stats.severe} tone="text-red-600 dark:text-red-400" />
+        <Stat icon={Clock} label="DT" value={fmtDowntime(stats.downtime)} tone="text-sky-600 dark:text-sky-400" />
         <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600 dark:text-sky-400" />
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
           <Select value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
             <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
             <SelectContent>
