@@ -68,10 +68,6 @@ export function ThietBiDetail({
           <PageHeader
             title={asset.ten}
             icon="entity.system"
-            breadcrumb={[
-              { label: "Thiết bị", to: "/thiet-bi" },
-              { label: asset.ma_thiet_bi },
-            ]}
           />
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="font-mono">
