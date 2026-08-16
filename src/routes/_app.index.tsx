@@ -23,7 +23,9 @@ import { cn } from "@/lib/utils";
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
     // Không chạy prefetch trên server (SSR) để tránh lỗi 500 do thiếu session/key
-    if (typeof window === 'undefined') return;
+    // Không chạy fetch thực tế trên server (SSR) để tránh lỗi 500 do thiếu session/key.
+    // TanStack Start loader chạy cả trên server và client.
+    if (typeof window === 'undefined') return { completenessStats: null, completenessOverview: null };
 
     try {
       await Promise.all([
@@ -66,7 +68,7 @@ function Dashboard() {
     toast.success("Đã khôi phục bố cục mặc định");
   };
 
-  if (scope.loading) {
+  if (scope.loading && typeof window !== 'undefined') {
     return <div className="h-screen w-full flex items-center justify-center animate-pulse text-muted-foreground">Đang tải MIRATS 2.0...</div>;
   }
 

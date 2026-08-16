@@ -92,15 +92,16 @@ export function resolveBrowserBackend(): ResolvedBrowserBackend {
  * CHỈ gọi bên trong `.handler()` của server function hoặc trong server route handler.
  */
 export function resolveServerBackend(opts?: { withServiceRole?: boolean }): ResolvedServerBackend {
-  const env = (globalThis as any).process?.env || {};
+  const g = globalThis as any;
+  const env = g.process?.env || g.Deno?.env?.toObject() || {};
   const overrideUrl = pick(env.APP_SUPABASE_URL);
   const overrideKey = pick(env.APP_SUPABASE_PUBLISHABLE_KEY, env.APP_SUPABASE_ANON_KEY);
   const isSelfHosted = Boolean(overrideUrl && overrideKey);
 
   const cfg: ResolvedServerBackend = {
-    url: pick(overrideUrl, env.SUPABASE_URL) || "",
-    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || "",
-    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID),
+    url: pick(overrideUrl, env.SUPABASE_URL) || import.meta.env.VITE_SUPABASE_URL || "",
+    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
+    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID) || import.meta.env.VITE_SUPABASE_PROJECT_ID,
     provider: isSelfHosted ? "self-hosted" : "lovable-cloud",
   };
 

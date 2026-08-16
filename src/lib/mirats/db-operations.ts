@@ -52,11 +52,16 @@ function snap(r: Record<string, unknown>) {
 
 async function loadOperations(): Promise<OperationsData> {
   const [scRes, btRes, hhRes, bgRes] = await Promise.all([
-    fetchAllRows<Row>((from, to) => supabase.from("su_co").select("*").order("ngay_phat_hien", { ascending: false }).range(from, to)),
-    fetchAllRows<Row>((from, to) => supabase.from("bao_tri").select("*").order("ngay_bat_dau", { ascending: false }).range(from, to)),
-    fetchAllRows<Row>((from, to) => supabase.from("hong_hoc").select("*").order("ngay_hong", { ascending: false }).range(from, to)),
-    fetchAllRows<Row>((from, to) => supabase.from("ban_giao").select("*").order("ngay_nhan", { ascending: false }).range(from, to)),
+    fetchAllRows<Row>((from, to) => supabase.from("su_co").select("*").order("ngay_phat_hien", { ascending: false }).range(from, to)).catch(e => { console.warn("Ops SC fail:", e); return []; }),
+    fetchAllRows<Row>((from, to) => supabase.from("bao_tri").select("*").order("ngay_bat_dau", { ascending: false }).range(from, to)).catch(e => { console.warn("Ops BT fail:", e); return []; }),
+    fetchAllRows<Row>((from, to) => supabase.from("hong_hoc").select("*").order("ngay_hong", { ascending: false }).range(from, to)).catch(e => { console.warn("Ops HH fail:", e); return []; }),
+    fetchAllRows<Row>((from, to) => supabase.from("ban_giao").select("*").order("ngay_nhan", { ascending: false }).range(from, to)).catch(e => { console.warn("Ops BG fail:", e); return []; }),
   ]);
+
+  if (typeof window === 'undefined' && (!scRes.length || !btRes.length)) {
+     // If we are in SSR and have no data, it's likely a 401. Don't throw, just return empty.
+     return EMPTY_OPS;
+  }
 
   const suCo: SuCo[] = scRes.map((r: Row) => ({
     ma_su_co: s(r.ma_su_co) || s(r.id),

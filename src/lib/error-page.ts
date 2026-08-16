@@ -9,13 +9,29 @@ export function renderErrorPage(error?: any): string {
     name = error.name;
   } else if (error && typeof error === 'object') {
     try {
-      errorMsg = JSON.stringify(error, null, 2);
+      // Handle non-Error objects that might have useful properties
+      const details = {
+        message: error.message || error.error || 'Unknown object error',
+        code: error.code,
+        status: error.status,
+        ...error
+      };
+      errorMsg = JSON.stringify(details, null, 2);
     } catch {
       errorMsg = String(error);
     }
   } else {
     errorMsg = String(error || 'Unknown error');
   }
+
+  // Add environment context for diagnostics (server-only)
+  const isServer = typeof window === 'undefined';
+  const envContext = isServer ? `
+    <div style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280; border-top: 1px solid #e5e7eb; pt-2;">
+      Runtime: ${typeof (globalThis as any).process !== 'undefined' ? 'Node/Worker' : 'Browser'}
+      | URL: ${typeof (globalThis as any).Request !== 'undefined' ? 'Request available' : 'N/A'}
+    </div>
+  ` : '';
 
   return `<!doctype html>
 <html lang="en">
@@ -54,6 +70,7 @@ export function renderErrorPage(error?: any): string {
           <span class="label">Stack Trace:</span>
           <pre>${stack}</pre>
         </div>` : ''}
+        ${envContext}
       </div>
 
       <div class="actions">
