@@ -191,12 +191,14 @@ export function StandardTable<T>({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (!parentRef.current || typeof ResizeObserver === "undefined") return;
+    if (typeof window === "undefined" || !parentRef.current || typeof ResizeObserver === "undefined") return;
     
     let frameId: number;
     const observer = new ResizeObserver((entries) => {
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(() => {
+      if (typeof window !== "undefined" && window.cancelAnimationFrame) {
+        window.cancelAnimationFrame(frameId);
+      }
+      frameId = window.requestAnimationFrame(() => {
         for (const entry of entries) {
           setContainerWidth(entry.contentRect.width);
         }
