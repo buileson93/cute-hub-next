@@ -207,7 +207,7 @@ function TbCard({ title, tb, maFallback, tone }: { title: string; tb: ThietBi | 
       <div className="text-xs uppercase tracking-wide text-muted-foreground">{title}</div>
       {tb ? (
         <>
-          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan" }} className="mt-1 block font-medium text-primary hover:underline">{tb.ten}</Link>
+          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="mt-1 block font-medium text-primary hover:underline">{tb.ten}</Link>
           <div className="mt-1 flex items-center gap-2 text-xs">
             <span className="font-mono">{tb.ma_thiet_bi}</span>
             {tb.model && <span className="text-muted-foreground">· {tb.model}{tb.p_n ? ` · ${tb.p_n}` : ""}</span>}

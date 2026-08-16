@@ -102,7 +102,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
                   <TooltipTrigger asChild>
                     <Link 
                       to="/thiet-bi/$maThietBi" 
-                      params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan" }} as any
+                      params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} as any
                       className="text-xs hover:underline truncate flex-1"
                     >
                       {d.ten}
@@ -115,7 +115,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
                 <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2">
                    <AppTooltip noiDung="Xem sổ lý lịch tài sản">
                      <Button asChild variant="ghost" size="sm" className="h-6 w-6 p-0">
-                       <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan" }} as any>
+                       <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} as any>
                          <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
                          <span className="sr-only">Xem sổ lý lịch</span>
                        </Link>

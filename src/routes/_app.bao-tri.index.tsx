@@ -91,7 +91,7 @@ function BaoTriPage() {
         const tb = thietBiMap.get(b.thiet_bi);
         const dvo = donViMap.get(b.don_vi);
         return tb ? (
-          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan" }} className="text-primary hover:underline">
+          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="text-primary hover:underline">
             <div className="font-medium">{tb.ten}</div>
             <div className="text-xs font-mono text-muted-foreground">{tb.ma_thiet_bi} · {dvo?.ma}</div>
           </Link>

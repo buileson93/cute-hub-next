@@ -256,7 +256,7 @@ function BanGiaoPage() {
                   return (
                     <div>
                       {tb ? (
-                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan" }} className="group inline-flex items-center gap-1 hover:text-primary">
+                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="group inline-flex items-center gap-1 hover:text-primary">
                           <span className="font-medium">{tb.ten}</span>
                           <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100" />
                         </Link>
@@ -319,7 +319,7 @@ function BanGiaoPage() {
                   return (
                     <div>
                       {tb ? (
-                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan" }} className="font-medium hover:text-primary">{tb.ten}</Link>
+                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="font-medium hover:text-primary">{tb.ten}</Link>
                       ) : b.thiet_bi}
                       <div className="text-[11px] font-mono text-muted-foreground">{b.thiet_bi}</div>
                     </div>

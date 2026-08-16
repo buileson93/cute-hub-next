@@ -89,7 +89,7 @@ export function NhanVienSoftwareSheet({
                     </div>
                     <Link 
                       to="/thiet-bi/$maThietBi" 
-                      params={{ maThietBi: asset.ma_thiet_bi }} search={{ tab: "tong-quan" }}
+                      params={{ maThietBi: asset.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                       className="text-[10px] text-primary hover:underline flex items-center gap-1"
                     >
                       Sổ lý lịch <ExternalLink className="h-2.5 w-2.5" />

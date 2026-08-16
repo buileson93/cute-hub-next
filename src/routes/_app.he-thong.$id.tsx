@@ -965,7 +965,7 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOp
                       <div className="text-xs text-muted-foreground">Lắp từ: {openDev.tu_ngay || "—"}</div>
                       <div className="pt-2">
                         <Button asChild size="sm" variant="outline">
-                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: openDev.ma_thiet_bi }} search={{ tab: "tong-quan" }}>
+                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: openDev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
                             <ExternalLink className="mr-1 h-3.5 w-3.5" /> Mở sổ lý lịch tài sản
                           </Link>
                         </Button>
@@ -1574,7 +1574,7 @@ function MicroStat({ label, value, tone }: { label: string; value: string; tone?
 function DeviceChip({ tb, tenMap }: { tb: string; tenMap: Map<string, string> }) {
   if (!tb) return null;
   return (
-    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb }} search={{ tab: "tong-quan" }} className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs text-primary hover:underline">
+    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs text-primary hover:underline">
       <HardDrive className="h-3 w-3" />
       <span className="font-mono">{tb}</span>
       {tenMap.get(tb) && <span className="text-muted-foreground">· {tenMap.get(tb)}</span>}
