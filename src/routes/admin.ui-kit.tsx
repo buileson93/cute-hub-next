@@ -22,27 +22,26 @@ import {
   Icon,
   HStack,
   VStack,
-  DropdownMenu,
-  DropdownMenuItem
+  DropdownMenu
 } from "@astryxdesign/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/admin/ui-kit")({
   component: UIKitLab,
 });
 
 /**
- * UIKitLab (P5)
+ * ClientOnly
  * 
- * SSR-safe Component Lab for Astryx Design System.
- * Verified against @astryxdesign/core 0.4.1.
- * 
- * Final Types Sync:
- * - TextInput: 'value' prop is required.
- * - DropdownMenu: uses 'button' prop for trigger configuration in compound mode, OR data-driven 'items'.
- * - Button: variant 'danger' -> 'destructive' (per common theme mapping).
- * - DropdownMenuItem: variant 'danger' -> 'destructive'.
+ * Simple wrapper to delay rendering of browser-only components until hydration.
  */
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  if (!hydrated) return null;
+  return <>{children}</>;
+}
+
 function UIKitLab() {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
@@ -140,7 +139,7 @@ function UIKitLab() {
         </Section>
 
         {/* Inputs */}
-        <Section title="Forms & Inputs">
+        <Section title="Forms & Inputs (Client-Only Layered Components)">
           <VStack gap={2} className="max-w-md">
             <TextInput 
               label="Tên thiết bị" 
@@ -148,15 +147,17 @@ function UIKitLab() {
               value={inputValue} 
               onChange={setInputValue} 
             />
-            {/* Using data-mode for DropdownMenu to avoid complex trigger props in lab */}
-            <DropdownMenu 
-              button={{ label: "Chọn thao tác", variant: "secondary" }}
-              items={[
-                { label: "Chỉnh sửa", onClick: () => console.log("Edit") },
-                { label: "Sao chép", onClick: () => console.log("Copy") },
-                { label: "Xoá", variant: "destructive", onClick: () => console.log("Delete") }
-              ]}
-            />
+            {/* DropdownMenu uses Layer/Popover which may access browser globals during mount */}
+            <ClientOnly>
+              <DropdownMenu 
+                button={{ label: "Chọn thao tác", variant: "secondary" }}
+                items={[
+                  { label: "Chỉnh sửa", onClick: () => console.log("Edit") },
+                  { label: "Sao chép", onClick: () => console.log("Copy") },
+                  { label: "Xoá", variant: "destructive", onClick: () => console.log("Delete") }
+                ]}
+              />
+            </ClientOnly>
           </VStack>
         </Section>
 
