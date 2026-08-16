@@ -38,7 +38,7 @@ export const UI_DENSITY = {
   // --- Controls & Icons ---
   CONTROL_H: "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
   CONTROL_PX: "px-2 data-[density=comfortable]:px-3 data-[density=spacious]:px-4",
-  CONTROL_FS: "text-meta data-[density=comfortable]:text-body data-[density=spacious]:text-body",
+  CONTROL_FS: "text-meta data-[density=comfortable]:text-bodySm data-[density=spacious]:text-body",
   ICON_SM: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
   ICON_MD: "h-3.5 w-3.5 data-[density=comfortable]:h-4.5 data-[density=comfortable]:w-4.5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
