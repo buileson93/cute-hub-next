@@ -105,9 +105,9 @@ export function ContextualToolbar({
         return (
           <Button
             key={a.id}
-            size="icon"
+            size="default"
             variant={a.variant ?? "ghost"}
-            className="rounded-full px-2"
+            className="rounded-full px-3"
             onClick={a.onSelect}
           >
             {Icon ? <Icon className="mr-1 h-3.5 w-3.5" /> : null}

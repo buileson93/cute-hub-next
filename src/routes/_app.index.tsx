@@ -82,17 +82,18 @@ function Dashboard() {
                  currentLayout={layout}
                  onAdd={handleAddWidget}
                  trigger={
-                   <Button size="sm" variant="outline" className="h-8 gap-2 border-primary/20 hover:bg-primary/5 transition-all">
+                   <Button size="default" variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5 transition-all">
                      <Icon name="action.add" size="tiny" className="text-primary" />
                      <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
                    </Button>
                  }
                />
                <Button 
-                size="sm" 
+                 size="default" 
+
                 variant="ghost" 
                 onClick={handleReset}
-                className="h-8 gap-2 text-muted-foreground hover:text-destructive transition-all"
+                className="gap-2 text-muted-foreground hover:text-destructive transition-all"
               >
                 <Icon name="action.undo" size="tiny" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>

@@ -227,6 +227,14 @@ export function StandardTable<T>({
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [internalReorder, setInternalReorder] = useState(false);
   const reorder = (editMode || internalReorder) && !hideReorderToggle;
+  
+  // NGUYÊN NHÂN 2: Đồng bộ JS height với CSS TABLE_ROW_H token (28px compact / 32px comfortable)
+  const getEstimatedRowHeight = useCallback(() => {
+    if (density === "compact") return 28;
+    if (density === "spacious") return 44;
+    return 32;
+  }, [density]);
+
 
   // --- Tầng 1: Column Prefs (User Settings) ---
   const allKeys = useMemo(() => columns.map(c => c.key), [columns]);
@@ -855,8 +863,8 @@ export function StandardTable<T>({
 
                             <Button 
                               variant="outline" 
-                              size="sm" 
-                              className="h-7 w-7 p-0 ml-1"
+                              size="default" 
+                              className="h-auto w-auto p-1.5 ml-1"
                               disabled={!prefs.ready}
                             >
                               <Icon name="table.settings" size="small" />
