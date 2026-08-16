@@ -18,6 +18,8 @@ import {
   WidgetType 
 } from "@/lib/mirats/dashboard/widget-registry";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
