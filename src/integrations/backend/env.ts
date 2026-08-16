@@ -92,27 +92,22 @@ export function resolveBrowserBackend(): ResolvedBrowserBackend {
  * CHỈ gọi bên trong `.handler()` của server function hoặc trong server route handler.
  */
 export function resolveServerBackend(opts?: { withServiceRole?: boolean }): ResolvedServerBackend {
-  const env = process.env;
+  const env = (globalThis as any).process?.env || {};
   const overrideUrl = pick(env.APP_SUPABASE_URL);
   const overrideKey = pick(env.APP_SUPABASE_PUBLISHABLE_KEY, env.APP_SUPABASE_ANON_KEY);
   const isSelfHosted = Boolean(overrideUrl && overrideKey);
 
   const cfg: ResolvedServerBackend = {
-    url: required("APP_SUPABASE_URL / SUPABASE_URL", pick(overrideUrl, env.SUPABASE_URL)),
-    publishableKey: required(
-      "APP_SUPABASE_PUBLISHABLE_KEY / SUPABASE_PUBLISHABLE_KEY",
-      pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY),
-    ),
+    url: pick(overrideUrl, env.SUPABASE_URL) || "",
+    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || "",
     projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID),
     provider: isSelfHosted ? "self-hosted" : "lovable-cloud",
   };
 
   if (opts?.withServiceRole) {
-    // Khi đã trỏ sang Supabase riêng thì bắt buộc dùng service role của chính nó,
-    // không được lẫn key của Lovable Cloud.
     cfg.serviceRoleKey = isSelfHosted
-      ? required("APP_SUPABASE_SERVICE_ROLE_KEY", pick(env.APP_SUPABASE_SERVICE_ROLE_KEY))
-      : required("SUPABASE_SERVICE_ROLE_KEY", pick(env.SUPABASE_SERVICE_ROLE_KEY));
+      ? pick(env.APP_SUPABASE_SERVICE_ROLE_KEY)
+      : pick(env.SUPABASE_SERVICE_ROLE_KEY);
   }
 
   return cfg;
