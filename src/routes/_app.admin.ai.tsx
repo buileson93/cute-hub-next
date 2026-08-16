@@ -116,7 +116,7 @@ function AdminAiPage() {
               placeholder="Beta"
               maxLength={20}
             />
-            <p className="text-[11px] text-muted-foreground">Hiện trên nút và tiêu đề panel chat.</p>
+            <p className="text-meta text-muted-foreground">Hiện trên nút và tiêu đề panel chat.</p>
           </div>
           <div className="space-y-1.5">
             <Label>Giới hạn token / trả lời</Label>
@@ -199,7 +199,7 @@ function AdminAiPage() {
             rows={8}
             className="font-mono text-xs"
           />
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-meta text-muted-foreground">
             Xác định giọng điệu, ngôn ngữ và giới hạn của trợ lý. Nên yêu cầu trả lời tiếng Việt và chỉ dùng dữ liệu từ tool.
           </p>
         </div>
@@ -216,7 +216,7 @@ function AdminAiPage() {
           <li><code>list_form_submissions</code> — biểu mẫu</li>
           <li><code>count_thiet_bi_by_trang_thai</code> — thống kê</li>
         </ul>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-meta text-muted-foreground">
           Mọi tool <b>chỉ đọc</b> và tuân RLS đơn vị của người đang chat. Cùng bộ tool này được MCP server phát ra tại <code>/mcp</code> để dùng với ChatGPT/Claude bên ngoài.
         </p>
       </Card>

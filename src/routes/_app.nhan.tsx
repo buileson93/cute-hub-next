@@ -209,7 +209,7 @@ function NhanQrPage() {
         <PageHeader
           icon={QrCode}
           title="In nhãn QR tài sản"
-          help={<>Lọc tài sản → chọn nhãn → chọn khổ tem → bấm <b>In nhãn</b>. QR chỉ chứa link dạng <code className="mx-1 rounded bg-secondary px-1 text-[11px]">/q/&lt;mã&gt;</code> (không rò rỉ tên/đơn vị/model).</>}
+          help={<>Lọc tài sản → chọn nhãn → chọn khổ tem → bấm <b>In nhãn</b>. QR chỉ chứa link dạng <code className="mx-1 rounded bg-secondary px-1 text-meta">/q/&lt;mã&gt;</code> (không rò rỉ tên/đơn vị/model).</>}
         />
 
         {/* Bộ lọc */}
@@ -306,7 +306,7 @@ function NhanQrPage() {
               ) : (
                 <>
                   {filtered.length > shown.length && (
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-meta text-muted-foreground">
                       Hiển thị {shown.length}/{filtered.length}. Thu hẹp bộ lọc để thấy đủ hoặc dùng “Chọn tất cả”.
                     </p>
                   )}
@@ -325,7 +325,7 @@ function NhanQrPage() {
                               <Checkbox checked={on} onCheckedChange={() => toggle(t.ma_thiet_bi)} className="mt-0.5" />
                               <div className="min-w-0 flex-1">
                                 <div className="truncate text-sm font-medium">{t.ten}</div>
-                                <div className="truncate font-mono text-[11px] text-muted-foreground">{t.ma_thiet_bi}</div>
+                                <div className="truncate font-mono text-meta text-muted-foreground">{t.ma_thiet_bi}</div>
                               </div>
                             </label>
                           </li>
@@ -439,7 +439,7 @@ function FilterSelect({
             <SelectItem key={o.value} value={o.value}>
               <span className="truncate">{o.label}</span>
               {o.hint && o.hint !== o.label && (
-                <span className="ml-2 text-[11px] text-muted-foreground">{o.hint}</span>
+                <span className="ml-2 text-meta text-muted-foreground">{o.hint}</span>
               )}
             </SelectItem>
           ))}
@@ -466,9 +466,9 @@ function LabelCard({
       </div>
       <div className="min-w-0 flex-1">
         {showName && (
-          <div className="line-clamp-2 text-[11px] font-semibold leading-tight">{tenRutGon}</div>
+          <div className="line-clamp-2 text-meta font-semibold leading-tight">{tenRutGon}</div>
         )}
-        <div className={cn("truncate font-mono text-[11px] text-slate-800", showName && "mt-0.5")}>{ma}</div>
+        <div className={cn("truncate font-mono text-meta text-slate-800", showName && "mt-0.5")}>{ma}</div>
         <div className="mt-0.5 text-[8px] font-medium tracking-wide text-slate-400">MIRATS · VATM</div>
       </div>
     </div>

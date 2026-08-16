@@ -116,7 +116,7 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
                   <div className={`rounded-full border-2 h-8 w-8 flex items-center justify-center ${isCur ? "border-primary bg-primary/10" : done ? "border-emerald-600 bg-emerald-50" : "border-slate-300 bg-slate-50"}`}>
                     <Icon className="h-4 w-4" />
                   </div>
-                  <div className="text-[10px] text-center leading-tight px-1">{SU_CO_TRANG_THAI_LABEL[s]}</div>
+                  <div className="text-meta text-center leading-tight px-1">{SU_CO_TRANG_THAI_LABEL[s]}</div>
                 </div>
                 {i < MAIN_FLOW.length - 1 && (
                   <div className={`h-[2px] w-8 ${done ? "bg-emerald-600" : "bg-slate-300"}`} />
@@ -220,7 +220,7 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
 function Stat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div className="rounded-md border bg-card px-2 py-1">
-      <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
+      <div className="text-meta uppercase text-muted-foreground">{label}</div>
       <div className={`font-semibold tabular-nums ${tone ?? ""}`}>{value}</div>
     </div>
   );

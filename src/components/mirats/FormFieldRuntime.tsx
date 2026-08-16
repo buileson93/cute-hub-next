@@ -44,7 +44,7 @@ function LabelRow({ f }: { f: CompiledField }) {
         {f.required && <span className="ml-0.5 text-rose-600">*</span>}
       </Label>
       {f.unit && <span className="text-xs text-muted-foreground">({f.unit})</span>}
-      {f.tieu_chuan && <Badge variant="outline" className="text-[10px]">TC: {f.tieu_chuan}</Badge>}
+      {f.tieu_chuan && <Badge variant="outline" className="text-meta">TC: {f.tieu_chuan}</Badge>}
     </div>
   );
 }
@@ -199,7 +199,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             {status === "pass" ? "Đạt" : status === "fail" ? "Không đạt" : "—"}
           </div>
           {(f.min_value != null || f.max_value != null) && (
-            <p className="col-span-3 text-[11px] text-muted-foreground">
+            <p className="col-span-3 text-meta text-muted-foreground">
               Ngưỡng: {f.min_value ?? "—"} … {f.max_value ?? "—"} {f.unit ?? ""}
             </p>
           )}
@@ -212,11 +212,11 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
       return (
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-md border p-2">
-            <p className="mb-1 text-[11px] font-medium text-muted-foreground">TRƯỚC</p>
+            <p className="mb-1 text-meta font-medium text-muted-foreground">TRƯỚC</p>
             <Input value={v.before ?? ""} onChange={(e) => set({ ...v, before: e.target.value })} disabled={disabled} />
           </div>
           <div className="rounded-md border p-2">
-            <p className="mb-1 text-[11px] font-medium text-muted-foreground">SAU</p>
+            <p className="mb-1 text-meta font-medium text-muted-foreground">SAU</p>
             <Input value={v.after ?? ""} onChange={(e) => set({ ...v, after: e.target.value })} disabled={disabled} />
           </div>
         </div>
@@ -376,7 +376,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             <Plus className="mr-1 h-3.5 w-3.5" /> Thêm mục
           </Button>
           {cols.length === 0 && (
-            <p className="text-[11px] text-amber-600">Chưa cấu hình trường con — mở Inspector để thêm cột (key/label/kind).</p>
+            <p className="text-meta text-amber-600">Chưa cấu hình trường con — mở Inspector để thêm cột (key/label/kind).</p>
           )}
         </div>
       );

@@ -121,7 +121,7 @@ function BanGiaoPage() {
         help="Số hóa lịch sử bàn giao tài sản giữa đơn vị và cá nhân — theo dõi tình trạng khi nhận/trả."
         actions={
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
+            <Badge variant="outline" className="gap-1.5 font-mono text-meta">
               <ArrowLeftRight className="h-3 w-3" /> {stats.total} phiếu bàn giao
             </Badge>
             <Button size="sm" asChild>
@@ -261,7 +261,7 @@ function BanGiaoPage() {
                           <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100" />
                         </Link>
                       ) : b.thiet_bi}
-                      <div className="text-[11px] font-mono text-muted-foreground">{b.thiet_bi}</div>
+                      <div className="text-meta font-mono text-muted-foreground">{b.thiet_bi}</div>
                     </div>
                   );
                 },
@@ -321,7 +321,7 @@ function BanGiaoPage() {
                       {tb ? (
                         <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="font-medium hover:text-primary">{tb.ten}</Link>
                       ) : b.thiet_bi}
-                      <div className="text-[11px] font-mono text-muted-foreground">{b.thiet_bi}</div>
+                      <div className="text-meta font-mono text-muted-foreground">{b.thiet_bi}</div>
                     </div>
                   );
                 },
@@ -366,7 +366,7 @@ function BanGiaoPage() {
                     <TableRow key={r.ma}>
                       <TableCell>
                         <div className="flex items-center gap-2"><Building2 className="h-3.5 w-3.5 text-muted-foreground" /><span className="font-medium">{r.ten}</span></div>
-                        <div className="text-[11px] font-mono text-muted-foreground">{r.ma}</div>
+                        <div className="text-meta font-mono text-muted-foreground">{r.ma}</div>
                       </TableCell>
                       <TableCell className="text-right tabular-nums font-semibold">{r.dangGiu}</TableCell>
                       <TableCell className="text-right tabular-nums">{r.total}</TableCell>

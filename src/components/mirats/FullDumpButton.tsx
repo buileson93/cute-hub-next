@@ -273,7 +273,7 @@ export function FullDumpButton() {
         </Label>
       </div>
 
-      <p className="text-[11px] text-muted-foreground">
+      <p className="text-meta text-muted-foreground">
         Tên tệp gồm ngày giờ tạo, ví dụ <code>mirats-dump-20260728-153012.zip</code>. Gói .zip này dùng lại được
         ở mục “Phục hồi CSDL từ gói .zip” bên dưới.
       </p>
@@ -292,7 +292,7 @@ export function FullDumpButton() {
       )}
 
       {logs.length > 0 && (
-        <div className="max-h-56 overflow-auto rounded-md border bg-muted/30 p-2 text-[11px] leading-5">
+        <div className="max-h-56 overflow-auto rounded-md border bg-muted/30 p-2 text-meta leading-5">
           {logs.map((l, i) => (
             <div key={i} className={l.ok ? "text-muted-foreground" : "text-destructive"}>{l.t}</div>
           ))}

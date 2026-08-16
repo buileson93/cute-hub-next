@@ -13,25 +13,18 @@
 @custom-variant dark (&:is(.dark *));
 @custom-variant density-compact (&:is([data-density="compact"] *));
 
-
-/*
- * MIRATS 2.0 — VATM Middle Region ATC.
- * Editorial aviation shell: off-white paper, brand blue #1D52E0 as the
- * single accent, hairline slate borders, Space Grotesk display, IBM Plex
- * Mono for every numeric readout.
- */
-
 @theme inline {
+  --font-display: "Space Grotesk", "Space Grotesk Variable", var(--font-sans);
   --font-sans: "Inter", "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -201,6 +194,54 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+}
+
+@utility text-meta {
+  font-size: 11px;
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+@utility text-bodySm {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@utility text-body {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@utility text-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+@utility text-pageTitle {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+}
+
+@utility text-display {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+}
+
+@utility text-display {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-family: var(--font-display);
 }
 
 @utility surface-elegant {

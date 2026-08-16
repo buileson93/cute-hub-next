@@ -298,7 +298,7 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                                 <li
                                   key={`iss-${k}`}
                                   role={x.level === "error" ? "alert" : undefined}
-                                  className={x.level === "error" ? "text-[11px] text-destructive" : "text-[11px] text-amber-700 dark:text-amber-400"}
+                                  className={x.level === "error" ? "text-meta text-destructive" : "text-meta text-amber-700 dark:text-amber-400"}
                                 >
                                   <span aria-hidden="true">{x.level === "error" ? "• " : "! "}</span>
                                   <span className="sr-only">{x.level === "error" ? "Lỗi: " : "Cảnh báo: "}</span>
@@ -315,13 +315,13 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                                 </li>
                               ))}
                               {!st?.issues?.length && st?.messages?.map((m, k) => (
-                                <li key={`e-${k}`} role="alert" className="text-[11px] text-destructive">
+                                <li key={`e-${k}`} role="alert" className="text-meta text-destructive">
                                   <span aria-hidden="true">• </span>
                                   <span className="sr-only">Lỗi: </span>{m}
                                 </li>
                               ))}
                               {!st?.issues?.length && st?.warnings?.map((w, k) => (
-                                <li key={`w-${k}`} className="text-[11px] text-amber-700 dark:text-amber-400">
+                                <li key={`w-${k}`} className="text-meta text-amber-700 dark:text-amber-400">
                                   <span aria-hidden="true">! </span>
                                   <span className="sr-only">Cảnh báo: </span>{w}
                                 </li>

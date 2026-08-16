@@ -162,12 +162,12 @@ function ConversationList({ onOpen }: { onOpen: (id: string, title: string) => v
                     onClick={() => onOpen(c.id, title)}
                     className="flex w-full items-center gap-3 border-b border-border/50 px-4 py-3 text-left transition-colors hover:bg-secondary/60"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-meta font-semibold text-primary">
                       {title.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium">{title}</div>
-                      <div className="text-[11px] text-muted-foreground">{timeAgo(c.last_message_at)}</div>
+                      <div className="text-meta text-muted-foreground">{timeAgo(c.last_message_at)}</div>
                     </div>
                   </button>
                 </li>
@@ -292,12 +292,12 @@ function NewConversationDialog({
                 onClick={() => start(u)}
                 className="flex w-full items-center gap-3 border-b border-border/50 px-4 py-3 text-left transition-colors hover:bg-secondary/60 disabled:opacity-50"
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-semibold">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-meta font-semibold">
                   {(u.ho_ten ?? u.email).slice(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0">
                   <div className="truncate text-sm font-medium">{u.ho_ten ?? u.email}</div>
-                  <div className="truncate text-[11px] text-muted-foreground">{u.email}</div>
+                  <div className="truncate text-meta text-muted-foreground">{u.email}</div>
                 </div>
               </button>
             </li>
@@ -449,7 +449,7 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
         <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onBack} title="Quay lại" aria-label="Quay lại">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-meta font-semibold text-primary">
           {title.slice(0, 2).toUpperCase()}
         </div>
         <div className="truncate text-sm font-semibold">{title}</div>
@@ -471,7 +471,7 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
                   <div className="w-7 shrink-0">
                     {showHeader && (
                       <div className={cn(
-                        "flex h-7 w-7 items-center justify-center rounded-full text-[9px] font-semibold",
+                        "flex h-7 w-7 items-center justify-center rounded-full text-meta font-semibold",
                         mine ? "bg-primary text-primary-foreground" : "bg-secondary",
                       )}>
                         {(p?.ho_ten ?? p?.email ?? "?").slice(0, 2).toUpperCase()}
@@ -480,7 +480,7 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
                   </div>
                   <div className={cn("min-w-0 max-w-[78%]", mine && "text-right")}>
                     {showHeader && (
-                      <div className="mb-1 text-[10px] text-muted-foreground">
+                      <div className="mb-1 text-meta text-muted-foreground">
                         {p?.ho_ten ?? p?.email ?? "…"} · {formatDT(m.created_at)}
                       </div>
                     )}

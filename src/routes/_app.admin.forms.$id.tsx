@@ -355,19 +355,19 @@ function FormEditor() {
           className="h-8 max-w-md text-sm font-medium"
           placeholder="Tên mẫu…"
         />
-        <Badge variant="outline" className="font-mono text-[10px]">{tpl.nhom}</Badge>
+        <Badge variant="outline" className="font-mono text-meta">{tpl.nhom}</Badge>
 
         {/* Trạng thái validate */}
         {errorCount > 0 ? (
-          <Badge variant="destructive" className="gap-1 text-[10px]"><AlertTriangle className="h-3 w-3" />{errorCount} lỗi</Badge>
+          <Badge variant="destructive" className="gap-1 text-meta"><AlertTriangle className="h-3 w-3" />{errorCount} lỗi</Badge>
         ) : warnCount > 0 ? (
-          <Badge variant="outline" className="gap-1 border-amber-400 text-amber-700 text-[10px]"><AlertTriangle className="h-3 w-3" />{warnCount} cảnh báo</Badge>
+          <Badge variant="outline" className="gap-1 border-amber-400 text-amber-700 text-meta"><AlertTriangle className="h-3 w-3" />{warnCount} cảnh báo</Badge>
         ) : (
-          <Badge variant="outline" className="gap-1 border-emerald-400 text-emerald-700 text-[10px]"><CheckCircle2 className="h-3 w-3" />Hợp lệ</Badge>
+          <Badge variant="outline" className="gap-1 border-emerald-400 text-emerald-700 text-meta"><CheckCircle2 className="h-3 w-3" />Hợp lệ</Badge>
         )}
 
         {/* Trạng thái lưu */}
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-meta text-muted-foreground">
           {savingAuto ? "Đang autosave…"
             : dirty ? "Chưa lưu"
             : lastSavedAt ? `Đã lưu ${lastSavedAt.toLocaleTimeString("vi-VN")}`
@@ -375,7 +375,7 @@ function FormEditor() {
         </span>
 
         <div className="ml-auto flex items-center gap-1">
-          <label className="flex items-center gap-1 text-[11px] text-muted-foreground">
+          <label className="flex items-center gap-1 text-meta text-muted-foreground">
             <Switch checked={autosaveOn} onCheckedChange={setAutosaveOn} />
             Autosave
           </label>
@@ -422,7 +422,7 @@ function FormEditor() {
             </TabsList>
           </Tabs>
           {tab === "design" && (
-            <div className="ml-1 flex items-center rounded-md border bg-muted/40 p-0.5 text-[11px]">
+            <div className="ml-1 flex items-center rounded-md border bg-muted/40 p-0.5 text-meta">
               <button
                 type="button"
                 onClick={() => { setMode("simple"); setPreview(false); }}
@@ -540,9 +540,9 @@ function FormEditor() {
                             >
                               <span className="flex-1 truncate">
                                 <span className="font-medium">{f.label}</span>
-                                <span className="ml-1 font-mono text-[10px] text-muted-foreground">{f.key}</span>
+                                <span className="ml-1 font-mono text-meta text-muted-foreground">{f.key}</span>
                               </span>
-                              <Badge variant="outline" className="h-4 shrink-0 px-1 font-mono text-[9px]">{f.kind}</Badge>
+                              <Badge variant="outline" className="h-4 shrink-0 px-1 font-mono text-meta">{f.kind}</Badge>
                               <span className="flex opacity-0 transition group-hover:opacity-100">
                                 <button
                                   type="button"
@@ -651,7 +651,7 @@ function FormEditor() {
           ) : (
             <div className="flex flex-col h-full">
               {chkIssues.length > 0 && (
-                <div className="max-h-24 overflow-y-auto border-b bg-amber-50/60 px-4 py-1.5 text-[11px] dark:bg-amber-950/20">
+                <div className="max-h-24 overflow-y-auto border-b bg-amber-50/60 px-4 py-1.5 text-meta dark:bg-amber-950/20">
                   <ul className="space-y-0.5">
                     {chkIssues.slice(0, 5).map((iss, k) => (
                       <li key={k} className={iss.level === "error" ? "text-rose-700" : "text-amber-700"}>
@@ -749,7 +749,7 @@ function FormEditor() {
                             }`}
                           >
                             <span><span className="font-mono text-xs">{h.ma}</span> — {h.ten}</span>
-                            {on && <Badge variant="outline" className="text-[10px]">Đã gắn</Badge>}
+                            {on && <Badge variant="outline" className="text-meta">Đã gắn</Badge>}
                           </button>
                         );
                       })}

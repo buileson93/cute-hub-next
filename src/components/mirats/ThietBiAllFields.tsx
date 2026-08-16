@@ -230,7 +230,7 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
             </Label>
           </div>
         </div>
-        <div className="text-[11px] text-muted-foreground italic">
+        <div className="text-meta text-muted-foreground italic">
           Đang hiển thị {displayRows.length} trường
         </div>
       </div>
@@ -266,13 +266,13 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
                             </TooltipProvider>
                           )}
                         </div>
-                        <div className="font-mono text-[10px] text-muted-foreground group-hover:text-muted-foreground/80 mt-0.5">
+                        <div className="font-mono text-meta text-muted-foreground group-hover:text-muted-foreground/80 mt-0.5">
                           {r.key}
                         </div>
                       </td>
                       <td className={cn(
                         "align-top break-all font-medium",
-                        (r.isFK || r.isHidden) ? "font-mono text-[11px] text-muted-foreground bg-muted/10" : "text-foreground",
+                        (r.isFK || r.isHidden) ? "font-mono text-meta text-muted-foreground bg-muted/10" : "text-foreground",
                         r.isEmpty && "text-muted-foreground/40 italic font-normal"
                       )}>
                         {r.value}

@@ -16,7 +16,7 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
           <CardTitle className="text-base">Ma trận quyền theo dữ liệu</CardTitle>
           <CardDescription>Số dưới mỗi vai trò là số tài khoản thật đang giữ.</CardDescription>
         </div>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-meta">
           {(Object.keys(tierMeta) as (keyof typeof tierMeta)[]).map((t) => (
             <span key={t} className="inline-flex items-center gap-1.5 text-muted-foreground">
               <span className={cn("h-2.5 w-2.5 rounded-full", tierMeta[t].dot)} />
@@ -24,7 +24,7 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
             </span>
           ))}
           <span className="inline-flex items-center gap-1 text-muted-foreground">
-            <span className="rounded bg-muted px-1 font-mono text-[9px] font-semibold">ĐV</span>
+            <span className="rounded bg-muted px-1 font-mono text-meta font-semibold">ĐV</span>
             giới hạn đơn vị
           </span>
         </div>
@@ -37,7 +37,7 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
               {ROLE_ORDER.map((k) => (
                 <TableHead key={k} className="text-center min-w-[80px]">
                   <div className="text-xs font-medium">{roleMeta[k].short}</div>
-                  <div className="font-mono text-[10px] font-normal text-muted-foreground">
+                  <div className="font-mono text-meta font-normal text-muted-foreground">
                     {stats?.roles[k]?.total ?? 0}
                   </div>
                 </TableHead>
@@ -63,7 +63,7 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
                         <span
                           title={m.label + (dv ? " · giới hạn đơn vị" : "")}
                           className={cn(
-                            "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium cursor-default transition-all hover:scale-105",
+                            "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-meta font-medium cursor-default transition-all hover:scale-105",
                             m.cell,
                           )}
                         >

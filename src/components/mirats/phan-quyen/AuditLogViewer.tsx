@@ -79,7 +79,7 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
               {
                 key: "created_at", label: "Thời điểm", sortable: true,
                 value: (r) => r.created_at,
-                cell: (r) => <span className="font-mono text-[11px] text-muted-foreground">{fmtTs(r.created_at)}</span>,
+                cell: (r) => <span className="font-mono text-meta text-muted-foreground">{fmtTs(r.created_at)}</span>,
               },
               {
                 key: "nguoi", label: "Người thực hiện", filter: "text",
@@ -92,7 +92,7 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
                   return (
                     <div>
                       <div className="text-xs font-medium">{p?.ho_ten ?? "—"}</div>
-                      <div className="text-[10.5px] text-muted-foreground">{p?.don_vi ? dvLabel(p.don_vi) : "Hệ thống"}</div>
+                      <div className="text-meta text-muted-foreground">{p?.don_vi ? dvLabel(p.don_vi) : "Hệ thống"}</div>
                     </div>
                   );
                 },
@@ -105,12 +105,12 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
               {
                 key: "entity", label: "Đối tượng", filter: "cat",
                 value: (r) => ENTITY_LABEL[r.entity ?? ""] ?? r.entity ?? "",
-                cell: (r) => <Badge variant="outline" className="text-[10.5px]">{ENTITY_LABEL[r.entity ?? ""] ?? r.entity ?? "—"}</Badge>,
+                cell: (r) => <Badge variant="outline" className="text-meta">{ENTITY_LABEL[r.entity ?? ""] ?? r.entity ?? "—"}</Badge>,
               },
               {
                 key: "entity_id", label: "Mã bản ghi", filter: "text",
                 value: (r) => r.entity_id ?? "",
-                cell: (r) => <span className="font-mono text-[11px] text-muted-foreground">{r.entity_id ?? "—"}</span>,
+                cell: (r) => <span className="font-mono text-meta text-muted-foreground">{r.entity_id ?? "—"}</span>,
               },
               {
                 key: "kq", label: "KQ", align: "center",

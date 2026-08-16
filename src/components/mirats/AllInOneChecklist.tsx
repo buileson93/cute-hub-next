@@ -82,7 +82,7 @@ export function AllInOneChecklist() {
         <CardTitle className="flex items-center gap-2 text-base">
           <ListChecks className="h-4 w-4 text-primary" />
           Sheet trong mẫu all-in-one
-          <Badge variant="outline" className="text-[10px]">{ALLINONE_LAYERS.length}</Badge>
+          <Badge variant="outline" className="text-meta">{ALLINONE_LAYERS.length}</Badge>
           <InfoHint>
             Kiểm tra nhanh entity nào đã có sheet để nhập/xuất, entity nào chỉ khai qua form.
             Bấm mỗi dòng để xem mapping cột & tải mẫu CSV riêng.
@@ -96,7 +96,7 @@ export function AllInOneChecklist() {
         {(Object.keys(grouped) as LayerGroup[]).map((g) => (
           <div key={g} className={`rounded-md border ${GROUP_TONE[g]}`}>
             <div className="flex items-center gap-2 border-b px-3 py-1.5">
-              <Badge variant="outline" className="text-[11px]">{GROUP_LABEL[g]}</Badge>
+              <Badge variant="outline" className="text-meta">{GROUP_LABEL[g]}</Badge>
               <span className="text-xs text-muted-foreground">{grouped[g].length} sheet</span>
             </div>
             <div className="divide-y">
@@ -131,11 +131,11 @@ export function AllInOneChecklist() {
                     {isOpen && ent && (
                       <div className="mt-2 overflow-hidden rounded-md border bg-background">
                         {ent.note && (
-                          <p className="border-b bg-muted/40 px-2.5 py-1.5 text-[11px] text-muted-foreground">
+                          <p className="border-b bg-muted/40 px-2.5 py-1.5 text-meta text-muted-foreground">
                             {ent.note}
                           </p>
                         )}
-                        <table className="w-full text-[11px]">
+                        <table className="w-full text-meta">
                           <thead className="bg-muted/40 text-muted-foreground">
                             <tr>
                               <th className="px-2 py-1 text-left font-medium">Cột CSV</th>
@@ -151,7 +151,7 @@ export function AllInOneChecklist() {
                                 : f.ghi_chu ?? "";
                               return (
                                 <tr key={f.key} className="border-t" title={note}>
-                                  <td className="px-2 py-1 font-mono text-[10.5px]">{f.key}</td>
+                                  <td className="px-2 py-1 font-mono text-meta">{f.key}</td>
                                   <td className="px-2 py-1">{f.label}</td>
                                   <td className="px-2 py-1">
                                     {KIND_LABEL[f.kind]}
@@ -179,10 +179,10 @@ export function AllInOneChecklist() {
           <div className="mb-1.5 flex items-center gap-2 text-sm font-medium">
             <Circle className="h-4 w-4 text-muted-foreground" />
             Chỉ khai qua form
-            <Badge variant="outline" className="text-[10px]">{NOT_IN_ALLINONE.length}</Badge>
+            <Badge variant="outline" className="text-meta">{NOT_IN_ALLINONE.length}</Badge>
             <InfoHint>Dữ liệu giao dịch / sự kiện — không phù hợp import CSV hàng loạt.</InfoHint>
           </div>
-          <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] sm:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-meta sm:grid-cols-3">
             {NOT_IN_ALLINONE.map((n) => (
               <li key={n.key} className="flex items-start gap-1" title={n.why}>
                 <span className="mt-0.5 text-muted-foreground">•</span>

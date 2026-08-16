@@ -92,7 +92,7 @@ function OverviewReport() {
                 trigger={
                   <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl border-primary/20 hover:bg-primary/5 transition-all">
                     <Icon name="action.add" size="tiny" className="text-primary" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider">Thêm Widget</span>
+                    <span className="text-meta font-bold uppercase tracking-wider">Thêm Widget</span>
                   </Button>
                 }
               />
@@ -103,7 +103,7 @@ function OverviewReport() {
                 className="h-9 gap-2 rounded-xl text-muted-foreground hover:text-destructive transition-all"
               >
                 <Icon name="action.undo" size="tiny" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Khôi phục</span>
+                <span className="text-meta font-bold uppercase tracking-wider">Khôi phục</span>
               </Button>
             </>
           )}
@@ -117,7 +117,7 @@ function OverviewReport() {
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} className={cn(!isEditing && "text-primary")} />
-            <span className="font-bold text-[11px] uppercase tracking-wider">
+            <span className="font-bold text-meta uppercase tracking-wider">
               {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
             </span>
           </Button>
@@ -129,7 +129,7 @@ function OverviewReport() {
               className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
             >
               <Icon name="action.download" className="text-primary" />
-              <span className="font-bold text-[11px] uppercase tracking-wider">Xuất PDF</span>
+              <span className="font-bold text-meta uppercase tracking-wider">Xuất PDF</span>
             </Button>
           )}
         </div>

@@ -262,7 +262,7 @@ function LapThaoAuditPage() {
               <Plug className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <div className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">Sự kiện lắp</div>
+              <div className="truncate text-meta uppercase tracking-wide text-muted-foreground">Sự kiện lắp</div>
               <div className="font-mono text-base font-semibold tabular-nums">{totalLap}</div>
             </div>
           </button>
@@ -275,7 +275,7 @@ function LapThaoAuditPage() {
               <ArrowRightLeft className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <div className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">Sự kiện tháo</div>
+              <div className="truncate text-meta uppercase tracking-wide text-muted-foreground">Sự kiện tháo</div>
               <div className="font-mono text-base font-semibold tabular-nums">{totalThao}</div>
             </div>
           </button>
@@ -326,8 +326,8 @@ function LapThaoAuditPage() {
               <section key={day} className="space-y-2">
                 <div className="sticky top-0 z-10 -mx-1 flex items-center gap-2 bg-background/80 px-1 py-1 backdrop-blur">
                   <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{day}</span>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{items.length}</span>
+                  <span className="text-meta font-semibold uppercase tracking-wider text-muted-foreground">{day}</span>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-meta text-muted-foreground">{items.length}</span>
                   <div className="h-px flex-1 bg-border" />
                 </div>
                 <div className="space-y-2">
@@ -374,7 +374,7 @@ function EventRow({
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-sm font-semibold">{who}</span>
             <span className="text-sm text-muted-foreground">{isLap ? "lắp tài sản" : "tháo tài sản"}</span>
-            <Badge variant="outline" className="text-[10px] uppercase">{r.ly_do}</Badge>
+            <Badge variant="outline" className="text-meta uppercase">{r.ly_do}</Badge>
           </div>
 
           {/* Trước → Sau (chỉ cho sự kiện LẮP; nếu có tài sản đã tồn tại tại vị trí trước đó) */}
@@ -411,7 +411,7 @@ function EventRow({
           {/* Thẻ tài sản & vị trí */}
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="min-w-0 rounded-md border bg-muted/30 p-2 text-xs">
-              <div className="mb-1 flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+              <div className="mb-1 flex items-center gap-1 text-meta uppercase tracking-wide text-muted-foreground">
                 <HardDrive className="h-3 w-3" /> Tài sản
               </div>
               {dev ? (
@@ -424,7 +424,7 @@ function EventRow({
                     {dev.ma_thiet_bi}
                   </Link>
                   <span className="truncate">{dev.ten_thiet_bi}</span>
-                  {dev.ma_serial && <Badge variant="outline" className="text-[10px]">SN {dev.ma_serial}</Badge>}
+                  {dev.ma_serial && <Badge variant="outline" className="text-meta">SN {dev.ma_serial}</Badge>}
                   <Link
                     to="/thiet-bi/$maThietBi"
                     params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
@@ -436,7 +436,7 @@ function EventRow({
               ) : <span className="text-muted-foreground">—</span>}
             </div>
             <div className="min-w-0 rounded-md border bg-muted/30 p-2 text-xs">
-              <div className="mb-1 flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+              <div className="mb-1 flex items-center gap-1 text-meta uppercase tracking-wide text-muted-foreground">
                 <Plug className="h-3 w-3" /> Vị trí · Hệ thống
               </div>
               {tp ? (
@@ -458,7 +458,7 @@ function EventRow({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-meta text-muted-foreground">
             <span title={new Date(at).toLocaleString("vi-VN")}>
               <History className="mr-1 inline h-3 w-3" /> {fmtTime(at)}
             </span>

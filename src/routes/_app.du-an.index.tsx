@@ -142,19 +142,19 @@ function DuAnListPage() {
                         <CardTitle className="text-base leading-tight">{d.ten}</CardTitle>
                         <Badge variant="outline" className={cn(tt.tone, "shrink-0")}>{tt.label}</Badge>
                       </div>
-                      {d.ma && <div className="text-[11px] font-mono text-slate-400">{d.ma}</div>}
+                      {d.ma && <div className="text-meta font-mono text-slate-400">{d.ma}</div>}
                     </CardHeader>
                     <CardContent className="space-y-2 pt-0">
                       {d.mo_ta && <p className="text-xs text-slate-600 line-clamp-2">{d.mo_ta}</p>}
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
+                      <div className="flex items-center gap-1.5 text-meta text-slate-500">
                         <Calendar className="h-3 w-3" />
                         <span>{d.ngay_bat_dau ?? "—"} → {d.ngay_ket_thuc_du_kien ?? "—"}</span>
                       </div>
                       {d.don_vi_id && (
-                        <div className="text-[11px] text-slate-500">Đơn vị: {donViMap[d.don_vi_id] ?? "—"}</div>
+                        <div className="text-meta text-slate-500">Đơn vị: {donViMap[d.don_vi_id] ?? "—"}</div>
                       )}
                       <div className="pt-1">
-                        <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                        <div className="flex justify-between text-meta text-slate-500 mb-1">
                           <span>Tiến độ</span><span>{d.tien_do}%</span>
                         </div>
                         <Progress value={d.tien_do} className="h-1.5" />

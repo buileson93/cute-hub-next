@@ -76,12 +76,12 @@ function EventRow({
           <span className="text-sm font-medium">{deviceName(ev.deviceMa)}</span>
         )}
         {ev.daHoanTac && (
-          <Badge variant="outline" className="gap-1 text-[11px]">
+          <Badge variant="outline" className="gap-1 text-meta">
             <Undo2 className="h-3 w-3" /> Đã hoàn tác
           </Badge>
         )}
         {!ev.daApDung && (
-          <Badge variant="outline" className="text-[11px] text-muted-foreground">Chờ duyệt</Badge>
+          <Badge variant="outline" className="text-meta text-muted-foreground">Chờ duyệt</Badge>
         )}
       </div>
 

@@ -85,7 +85,7 @@ function PmPage() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Tìm PM..."
-                className="h-7 pl-7 text-[11px]"
+                className="h-7 pl-7 text-meta"
               />
             </div>
             <AppTooltip noiDung="Sinh công việc PM">
@@ -103,7 +103,7 @@ function PmPage() {
         }
       />
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-meta">
         <Stat icon={CalendarClock} label="Tổng" value={stats.total} />
         <Stat icon={AlertTriangle} label="Đến/sắp hạn" value={stats.due} tone="text-amber-600" />
         <Stat icon={AlertTriangle} label="Quá hạn" value={stats.overdue} tone="text-red-600" />
@@ -119,7 +119,7 @@ function PmPage() {
                   <TabsTrigger
                     key={t.value}
                     value={t.value}
-                    className="h-7 rounded-none border-b-2 border-transparent px-3 text-[11px] data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    className="h-7 rounded-none border-b-2 border-transparent px-3 text-meta data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   >
                     {t.label}
                   </TabsTrigger>
@@ -175,11 +175,11 @@ function PmPage() {
                             </TableCell>
                             <TableCell className="text-xs">
                               <Badge variant="outline">{r.doi_tuong_type === "thiet_bi" ? "Tài sản" : "Hệ thống"}</Badge>
-                              <div className="font-mono text-[10px] text-muted-foreground mt-1">{r.doi_tuong_id.slice(0, 8)}…</div>
+                              <div className="font-mono text-meta text-muted-foreground mt-1">{r.doi_tuong_id.slice(0, 8)}…</div>
                             </TableCell>
                             <TableCell className="text-xs">
                               {r.chinh_sach?.chu_ky_loai === "metric" ? "Chỉ số" : "Ngày"} · {r.chinh_sach?.chu_ky_gia_tri ?? "—"}
-                              {r.estimated && <div className="text-[10px] text-amber-600 flex items-center gap-1 mt-1"><AlertTriangle className="h-3 w-3" />ước lượng</div>}
+                              {r.estimated && <div className="text-meta text-amber-600 flex items-center gap-1 mt-1"><AlertTriangle className="h-3 w-3" />ước lượng</div>}
                             </TableCell>
                             <TableCell>{r.han}</TableCell>
                             <TableCell><Badge className={st.color} variant="outline">{st.label}</Badge></TableCell>

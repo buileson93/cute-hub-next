@@ -93,7 +93,7 @@ function BanQuyenPage() {
               </TooltipProvider>
             )}
           </div>
-          <div className="truncate font-mono text-[10.5px] text-muted-foreground uppercase tracking-tight">
+          <div className="truncate font-mono text-meta text-muted-foreground uppercase tracking-tight">
             {r.ma_ban_quyen}{r.phien_ban ? ` · v${r.phien_ban}` : ""}
           </div>
         </div>
@@ -114,7 +114,7 @@ function BanQuyenPage() {
         const pct = Math.round((r.gheDaDung / r.so_ghe) * 100);
         return (
           <div className="w-full max-w-[140px] space-y-1">
-            <div className="flex justify-between text-[11px] tabular-nums font-medium">
+            <div className="flex justify-between text-meta tabular-nums font-medium">
               <span>{r.gheDaDung}/{r.so_ghe}</span>
               <span className={pct >= 90 ? "text-red-500" : "text-muted-foreground"}>{pct}%</span>
             </div>
@@ -128,10 +128,10 @@ function BanQuyenPage() {
             {r.deviceSummary && r.deviceSummary.length > 0 && (
               <div className="flex flex-wrap gap-1 pt-1">
                 {r.deviceSummary.slice(0, 3).map(ma => (
-                  <Badge key={ma} variant="outline" className="text-[9px] px-1 py-0 h-4 font-mono bg-muted/30">{ma}</Badge>
+                  <Badge key={ma} variant="outline" className="text-meta px-1 py-0 h-4 font-mono bg-muted/30">{ma}</Badge>
                 ))}
                 {r.deviceSummary.length > 3 && (
-                  <span className="text-[9px] text-muted-foreground font-medium">+{r.deviceSummary.length - 3}</span>
+                  <span className="text-meta text-muted-foreground font-medium">+{r.deviceSummary.length - 3}</span>
                 )}
               </div>
             )}
@@ -154,7 +154,7 @@ function BanQuyenPage() {
             {r.ngay_het_han ?? "Vĩnh viễn"}
           </div>
           {r.soNgayConLai !== null && r.soNgayConLai >= 0 && (
-            <div className="text-[10px] text-muted-foreground italic">
+            <div className="text-meta text-muted-foreground italic">
               Còn {r.soNgayConLai} ngày
             </div>
           )}
@@ -168,7 +168,7 @@ function BanQuyenPage() {
       hideBelow: "sm",
       value: (r) => STATUS_LABEL[r.status],
       cell: (r) => (
-        <Badge variant="secondary" className={cn("px-2 py-0 h-5 text-[10px] font-semibold uppercase tracking-wider", STATUS_CLASS[r.status])}>
+        <Badge variant="secondary" className={cn("px-2 py-0 h-5 text-meta font-semibold uppercase tracking-wider", STATUS_CLASS[r.status])}>
           {STATUS_LABEL[r.status]}
         </Badge>
       ),
@@ -308,11 +308,11 @@ function BanQuyenPage() {
                 <ShieldCheck className="h-4 w-4 text-primary" /> 
                 Chi tiết License
               </CardTitle>
-              <CardDescription className="text-[11px]">
+              <CardDescription className="text-meta">
                 Theo dõi hiệu lực và cấp phát license theo ghế (Seats)
               </CardDescription>
             </div>
-            <div className="text-[10px] font-medium text-muted-foreground bg-white dark:bg-slate-900 px-2 py-0.5 rounded-full border border-muted/60 tabular-nums shadow-sm">
+            <div className="text-meta font-medium text-muted-foreground bg-white dark:bg-slate-900 px-2 py-0.5 rounded-full border border-muted/60 tabular-nums shadow-sm">
               Đã nạp {rows.length} mục
             </div>
           </CardHeader>
@@ -344,7 +344,7 @@ function BanQuyenPage() {
               <PieChart className="h-4 w-4 text-primary" />
               Hiệu suất sử dụng Ghế
             </CardTitle>
-            <CardDescription className="text-[11px]">
+            <CardDescription className="text-meta">
               Tỷ lệ cấp phát license cho tài sản
             </CardDescription>
           </CardHeader>
@@ -380,11 +380,11 @@ function BanQuyenPage() {
                   <span className="text-2xl font-bold tabular-nums tracking-tighter">
                     {Math.round(kpi.utilization)}%
                   </span>
-                  <span className="text-[9px] font-medium text-muted-foreground uppercase">Tỷ lệ dùng</span>
+                  <span className="text-meta font-medium text-muted-foreground uppercase">Tỷ lệ dùng</span>
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-[11px] font-semibold flex items-center gap-1.5 justify-center">
+                <div className="text-meta font-semibold flex items-center gap-1.5 justify-center">
                   <span className="text-primary">{kpi.gheDung}</span> / <span className="text-muted-foreground">{kpi.ghe}</span>
                   <span className="text-muted-foreground font-normal">Ghế đã cấp</span>
                 </div>
@@ -392,7 +392,7 @@ function BanQuyenPage() {
             </div>
 
             <div className="space-y-3">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Cảnh báo tài nguyên</div>
+              <div className="text-meta font-bold uppercase tracking-widest text-muted-foreground mb-1">Cảnh báo tài nguyên</div>
               <UsageItem label="Seats khả dụng" value={kpi.ghe - kpi.gheDung} total={kpi.ghe} color="bg-emerald-500" />
               <UsageItem label="Licenses quá hạn" value={kpi.expired} total={kpi.total} color="bg-red-500" />
               <UsageItem label="Sắp hết hạn" value={kpi.expiring} total={kpi.total} color="bg-amber-500" />
@@ -404,8 +404,8 @@ function BanQuyenPage() {
                   <Info className="h-4 w-4 text-primary" />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-[11px] font-bold text-primary">Mẹo vận hành</div>
-                  <p className="text-[10px] leading-relaxed text-muted-foreground/90 font-medium">
+                  <div className="text-meta font-bold text-primary">Mẹo vận hành</div>
+                  <p className="text-meta leading-relaxed text-muted-foreground/90 font-medium">
                     Hãy thu hồi bản quyền (Cap phat {"->"} Thu hoi) khi máy tính bị hỏng hoặc thanh lý để tối ưu hóa chi phí phần mềm.
                   </p>
                 </div>
@@ -433,8 +433,8 @@ function UsageItem({ label, value, total, color }: { label: string; value: numbe
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between items-end">
-        <span className="text-[11px] font-semibold text-foreground/80">{label}</span>
-        <span className="text-[10px] font-bold tabular-nums">{value}</span>
+        <span className="text-meta font-semibold text-foreground/80">{label}</span>
+        <span className="text-meta font-bold tabular-nums">{value}</span>
       </div>
       <Progress value={pct} className="h-1 bg-muted/40" indicatorClassName={color} />
     </div>
@@ -471,11 +471,11 @@ function Kpi({
           <Icon className="h-6 w-6 stroke-[2px]" />
         </div>
         <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 mb-0.5">{label}</div>
+          <div className="text-meta font-bold uppercase tracking-widest text-muted-foreground/80 mb-0.5">{label}</div>
           <div className="text-xl font-black tabular-nums tracking-tight">
             {typeof value === "number" ? value.toLocaleString("vi-VN") : value}
           </div>
-          {description && <div className="text-[10px] font-medium text-muted-foreground/70 truncate">{description}</div>}
+          {description && <div className="text-meta font-medium text-muted-foreground/70 truncate">{description}</div>}
         </div>
       </CardContent>
     </Card>

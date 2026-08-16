@@ -87,7 +87,7 @@ export function ChecklistRenderer({
           <div className="border-b bg-muted/40 px-4 py-2.5">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-sm">{sec.ten}</span>
-              <Badge variant="outline" className="font-mono text-[10px]">{sec.ma_section}</Badge>
+              <Badge variant="outline" className="font-mono text-meta">{sec.ma_section}</Badge>
             </div>
             {sec.mo_ta && <p className="mt-0.5 text-xs text-muted-foreground">{sec.mo_ta}</p>}
           </div>
@@ -100,7 +100,7 @@ export function ChecklistRenderer({
               return (
                 <div key={item.item_code}>
                   {showGroup && (
-                    <div className="bg-secondary/50 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    <div className="bg-secondary/50 px-4 py-1.5 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
                       {grp}
                     </div>
                   )}
@@ -176,20 +176,20 @@ function ItemRow({
             {item.bat_buoc && <span className="text-destructive" aria-hidden="true">*</span>}
           </Label>
           {opts.noi_dung_chi_tiet && (
-            <p className="mt-0.5 whitespace-pre-line text-[11px] text-foreground/80">{opts.noi_dung_chi_tiet}</p>
+            <p className="mt-0.5 whitespace-pre-line text-meta text-foreground/80">{opts.noi_dung_chi_tiet}</p>
           )}
           {item.huong_dan && (
-            <p className="mt-0.5 text-[11px] text-muted-foreground">{item.huong_dan}</p>
+            <p className="mt-0.5 text-meta text-muted-foreground">{item.huong_dan}</p>
           )}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {thresholdLabel && (
-            <Badge variant="secondary" className="font-mono text-[10px]" title="Ngưỡng tự chấm">
+            <Badge variant="secondary" className="font-mono text-meta" title="Ngưỡng tự chấm">
               {thresholdLabel}
             </Badge>
           )}
           {item.tieu_chuan && (
-            <span className="rounded bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground">
+            <span className="rounded bg-secondary px-2 py-0.5 text-meta text-muted-foreground">
               TC: {item.tieu_chuan}
             </span>
           )}
@@ -285,9 +285,9 @@ function ItemRow({
       {/* Ảnh chứng minh — chỉ hiện khi mẫu có bật, và form đang cho phép đính kèm */}
       {opts.cho_upload_anh && canAttach && templateCode && draftId && (
         <div className="mt-2 rounded-md border border-dashed p-2">
-          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+          <div className="mb-1.5 flex items-center gap-1.5 text-meta font-medium text-muted-foreground">
             <Camera className="h-3 w-3" /> Ảnh chứng minh
-            {photos.length > 0 && <Badge variant="secondary" className="text-[10px]">{photos.length}</Badge>}
+            {photos.length > 0 && <Badge variant="secondary" className="text-meta">{photos.length}</Badge>}
           </div>
           <PhotoUpload
             value={photos}
@@ -302,7 +302,7 @@ function ItemRow({
         </div>
       )}
 
-      {err && <p role="alert" className="mt-1 text-[11px] text-destructive">{err}</p>}
+      {err && <p role="alert" className="mt-1 text-meta text-destructive">{err}</p>}
     </div>
   );
 }
@@ -371,21 +371,21 @@ function KetQuaSegmented({
 function LiveStatusBadge({ status, hasValue }: { status: "dat" | "khong_dat" | null; hasValue: boolean }) {
   if (!hasValue) {
     return (
-      <Badge variant="outline" className="gap-1 text-[10px]">
+      <Badge variant="outline" className="gap-1 text-meta">
         <MinusCircle className="h-2.5 w-2.5" /> Chưa đo
       </Badge>
     );
   }
   if (status === "dat") {
     return (
-      <Badge className="gap-1 border-emerald-500/40 bg-emerald-500/15 text-[10px] text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300">
+      <Badge className="gap-1 border-emerald-500/40 bg-emerald-500/15 text-meta text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300">
         <CheckCircle2 className="h-2.5 w-2.5" /> Trong ngưỡng
       </Badge>
     );
   }
   if (status === "khong_dat") {
     return (
-      <Badge className="gap-1 border-rose-500/40 bg-rose-500/15 text-[10px] text-rose-700 hover:bg-rose-500/15 dark:text-rose-300">
+      <Badge className="gap-1 border-rose-500/40 bg-rose-500/15 text-meta text-rose-700 hover:bg-rose-500/15 dark:text-rose-300">
         <XCircle className="h-2.5 w-2.5" /> Ngoài ngưỡng
       </Badge>
     );
@@ -401,7 +401,7 @@ function KetQuaBadge({ value }: { value: KetQua }) {
   };
   const { cls, icon: Icon } = map[value];
   return (
-    <Badge className={cn("gap-1 text-[10px] hover:bg-transparent", cls)}>
+    <Badge className={cn("gap-1 text-meta hover:bg-transparent", cls)}>
       <Icon className="h-2.5 w-2.5" /> {KET_QUA_LABEL[value]}
     </Badge>
   );

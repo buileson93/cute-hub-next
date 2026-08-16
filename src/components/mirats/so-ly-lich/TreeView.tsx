@@ -68,12 +68,12 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             <span className={cn("truncate text-sm", node.kind === 'ht' ? "font-bold" : "font-medium")}>
               {node.label}
             </span>
-            <Badge variant="secondary" className="px-1 py-0 text-[10px] tabular-nums">
+            <Badge variant="secondary" className="px-1 py-0 text-meta tabular-nums">
               {node.count}
             </Badge>
           </div>
           {node.hist && (node.hist.bt > 0 || node.hist.sc > 0) && (
-            <div className="flex gap-2 text-[10px]">
+            <div className="flex gap-2 text-meta">
                {node.hist.bt > 0 && <span className="text-muted-foreground">BD: {node.hist.bt}</span>}
                {node.hist.sc > 0 && <span className="text-amber-600 font-medium">SC: {node.hist.sc}</span>}
             </div>

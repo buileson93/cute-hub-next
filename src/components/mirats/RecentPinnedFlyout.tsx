@@ -243,7 +243,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
           <Button
             size="sm"
             variant={selectMode ? "secondary" : "ghost"}
-            className="h-7 gap-1 px-2 text-[11px]"
+            className="h-7 gap-1 px-2 text-meta"
             onClick={() => {
               setSelectMode((v) => !v);
               setSelectedPinned(new Set());
@@ -257,7 +257,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
             <Button
               size="sm"
               variant="destructive"
-              className="h-7 gap-1 px-2 text-[11px]"
+              className="h-7 gap-1 px-2 text-meta"
               disabled={selectedPinned.size + selectedRecent.size === 0}
               onClick={bulkDelete}
             >
@@ -271,12 +271,12 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
       {/* Ghim */}
       <div>
         <div className="mb-1 flex items-center justify-between gap-1 px-1">
-          <span className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="text-meta font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Ghim
           </span>
           <div className="flex items-center gap-1">
             <Select value={pinnedSort} onValueChange={(v) => setPinnedSort(v as PinnedSort)}>
-              <SelectTrigger className="h-6 w-auto gap-1 border-0 bg-transparent px-1 text-[10.5px] text-muted-foreground hover:text-foreground">
+              <SelectTrigger className="h-6 w-auto gap-1 border-0 bg-transparent px-1 text-meta text-muted-foreground hover:text-foreground">
                 <ArrowDownUp className="h-3 w-3" />
                 <SelectValue />
               </SelectTrigger>
@@ -289,7 +289,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 gap-1 px-1.5 text-[10.5px]"
+              className="h-6 gap-1 px-1.5 text-meta"
               onClick={togglePinCurrent}
               title={isCurrentPinned ? "Bỏ ghim trang này" : "Ghim trang này"}
             >
@@ -367,11 +367,11 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
       {/* Gần đây */}
       <div>
         <div className="mb-1 flex items-center justify-between gap-1 px-1">
-          <span className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="text-meta font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Gần đây
           </span>
           <Select value={recentSort} onValueChange={(v) => setRecentSort(v as RecentSort)}>
-            <SelectTrigger className="h-6 w-auto gap-1 border-0 bg-transparent px-1 text-[10.5px] text-muted-foreground hover:text-foreground">
+            <SelectTrigger className="h-6 w-auto gap-1 border-0 bg-transparent px-1 text-meta text-muted-foreground hover:text-foreground">
               <ArrowDownUp className="h-3 w-3" />
               <SelectValue />
             </SelectTrigger>
@@ -445,7 +445,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
         )}
       </div>
 
-      <div className="border-t border-border/50 px-1 pt-1.5 text-[10px] text-muted-foreground">
+      <div className="border-t border-border/50 px-1 pt-1.5 text-meta text-muted-foreground">
         ↑/↓ chọn · Enter mở · Del bỏ ghim/xoá
       </div>
     </div>

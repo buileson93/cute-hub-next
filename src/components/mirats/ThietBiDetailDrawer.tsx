@@ -116,7 +116,7 @@ function TuongThichSection({ deviceId }: { deviceId: string }) {
 
   return (
     <section className="space-y-2">
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+      <div className="flex items-center gap-2 text-meta font-bold uppercase tracking-wider text-muted-foreground/80">
         <ShieldCheck className="h-3 w-3 text-emerald-600" /> Hệ thống có thể thay thế
       </div>
       <div className="space-y-1.5 rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-2.5">
@@ -126,12 +126,12 @@ function TuongThichSection({ deviceId }: { deviceId: string }) {
               <span className="text-sm font-medium text-foreground">
                 {(item.he_thong as any)?.ten || "Hệ thống"}
               </span>
-              <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal">
+              <Badge variant="outline" className="h-5 px-1.5 text-meta font-normal">
                 {item.phan_loai}
               </Badge>
             </div>
             {item.danh_gia && (
-              <p className="text-[11px] italic text-muted-foreground line-clamp-1">
+              <p className="text-meta italic text-muted-foreground line-clamp-1">
                 “{item.danh_gia}”
               </p>
             )}
@@ -166,15 +166,15 @@ function ThanhPhanSection({ device }: { device: DbDevice }) {
                   <div key={r.gan_id} className="flex flex-wrap items-baseline gap-1.5">
                     <span className="font-medium">{r.ten_thanh_phan}</span>
                     {r.ma_thanh_phan && (
-                      <span className="font-mono text-[11px] font-normal text-muted-foreground">{r.ma_thanh_phan}</span>
+                      <span className="font-mono text-meta font-normal text-muted-foreground">{r.ma_thanh_phan}</span>
                     )}
                     {r.ten_he_thong && (
-                      <span className="text-[11px] text-muted-foreground">· {r.ten_he_thong}</span>
+                      <span className="text-meta text-muted-foreground">· {r.ten_he_thong}</span>
                     )}
                   </div>
                 ))}
                 {multi && (
-                  <div className="mt-1 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-[11px] text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                  <div className="mt-1 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-meta text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
                     Tài sản đang đảm nhận đồng thời {vaiTroList.length} vai trò trong các hệ thống khác nhau.
                   </div>
                 )}
@@ -243,7 +243,7 @@ export function ThietBiDetailDrawer({
                   <SheetTitle className="truncate text-base leading-tight">{deviceName(device)}</SheetTitle>
                   <div className="mt-0.5 flex flex-wrap items-center gap-2">
                     <CodeBadge code={device.ma_thiet_bi} title={`Mã tài sản: ${device.ma_thiet_bi}`} />
-                    {device.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {device.serial}</span>}
+                    {device.serial && <span className="font-mono text-meta text-muted-foreground">S/N: {device.serial}</span>}
                     <StatusBadge domain="thiet_bi" code={device.trang_thai} />
                   </div>
                 </div>
@@ -259,7 +259,7 @@ export function ThietBiDetailDrawer({
                     {imgUrl ? (
                       <img src={imgUrl} alt={device._modelTen} className="max-h-32 w-auto rounded object-contain" />
                     ) : (
-                      <div className="flex h-28 w-full flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground">
+                      <div className="flex h-28 w-full flex-col items-center justify-center gap-1 text-meta text-muted-foreground">
                         <Package className="h-6 w-6 opacity-40" />
                         Chưa có hình ảnh
                       </div>

@@ -87,11 +87,11 @@ export function CayThayDoiPanel({
                       <div className="flex items-center gap-1.5 text-sm font-medium">
                         <Icon className="h-4 w-4 text-primary" /> {meta.label}
                       </div>
-                      <span className={cn("rounded border px-1.5 py-0.5 text-[10px]", st.badge)}>{st.label}</span>
+                      <span className={cn("rounded border px-1.5 py-0.5 text-meta", st.badge)}>{st.label}</span>
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">{describe(c)}</div>
                     {htTen && <div className="mt-0.5 text-xs">Hệ thống: <span className="font-medium">{htTen}</span></div>}
-                    <div className="mt-1 text-[10px] text-muted-foreground">
+                    <div className="mt-1 text-meta text-muted-foreground">
                       {new Date(c.created_at).toLocaleString("vi-VN")}
                     </div>
 

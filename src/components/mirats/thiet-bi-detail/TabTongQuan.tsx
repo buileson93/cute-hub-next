@@ -166,7 +166,7 @@ function InfoRow({
     <div className="flex items-start gap-3 group relative">
       <Icon className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
       <div className="min-w-0 flex-1">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-2">
+        <div className="text-meta uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-2">
           {label}
           {canEdit && field && !isEditing && (
             <button 
@@ -190,8 +190,8 @@ function InfoRow({
                 }}
                 className="h-7 text-xs py-1"
               />
-              <button onClick={handleCommit} className="text-[10px] text-primary hover:underline">Lưu</button>
-              <button onClick={() => setIsEditing(false)} className="text-[10px] text-muted-foreground hover:underline">Huỷ</button>
+              <button onClick={handleCommit} className="text-meta text-primary hover:underline">Lưu</button>
+              <button onClick={() => setIsEditing(false)} className="text-meta text-muted-foreground hover:underline">Huỷ</button>
             </div>
           ) : (
             value

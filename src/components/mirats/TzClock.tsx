@@ -43,7 +43,7 @@ export function TzClock() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-secondary lg:flex"
+          className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-meta font-medium text-foreground transition-colors hover:bg-secondary lg:flex"
           aria-label="Chọn múi giờ"
         >
           <Clock className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={2} />
@@ -52,7 +52,7 @@ export function TzClock() {
           </span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold",
+              "rounded-full px-1.5 py-0.5 text-meta font-semibold",
               tz === "UTC" ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary",
             )}
           >
@@ -70,7 +70,7 @@ export function TzClock() {
             <div className="flex w-full items-center justify-between gap-3">
               <div>
                 <div className="font-medium">{TZ_LABEL[m]}</div>
-                <div className="font-mono text-[10px] text-muted-foreground">
+                <div className="font-mono text-meta text-muted-foreground">
                   {new Intl.DateTimeFormat("vi-VN", {
                     timeZone: m === "UTC" ? "UTC" : "Asia/Ho_Chi_Minh",
                     hour: "2-digit",
@@ -85,7 +85,7 @@ export function TzClock() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <div className="px-2 py-1.5 text-[10px] leading-relaxed text-muted-foreground">
+        <div className="px-2 py-1.5 text-meta leading-relaxed text-muted-foreground">
           Thời gian đồng bộ từ máy chủ, không dùng giờ máy local.
         </div>
       </DropdownMenuContent>

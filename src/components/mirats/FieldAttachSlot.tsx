@@ -24,7 +24,7 @@ export function FieldAttachSlot({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+        className="inline-flex items-center gap-1 text-meta text-muted-foreground hover:text-foreground"
       >
         <Paperclip className="h-3 w-3" />
         Đính kèm {attachments.length > 0 && `(${attachments.length})`}

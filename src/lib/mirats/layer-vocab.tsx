@@ -78,7 +78,7 @@ export function LayerBadge({ layer, className }: { layer: LayerKey; className?: 
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0 text-[10px] font-semibold leading-5",
+        "inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0 text-meta font-semibold leading-5",
         m.badge,
         className,
       )}
@@ -113,7 +113,7 @@ export function LayerSectionHeader({
       <span className={cn("h-3.5 w-1 shrink-0 rounded-full", m.accent)} />
       <Icon className={cn("h-4 w-4 shrink-0", m.text)} />
       <span className={cn("text-xs font-semibold uppercase tracking-wide", m.text)}>{m.label}</span>
-      {subtitle && <span className="truncate text-[11px] font-normal text-muted-foreground">· {subtitle}</span>}
+      {subtitle && <span className="truncate text-meta font-normal text-muted-foreground">· {subtitle}</span>}
       {right && <span className="ml-auto">{right}</span>}
     </div>
   );

@@ -144,7 +144,7 @@ function BaoTriDetail() {
                       <div className="text-xs uppercase text-muted-foreground">Nhân sự thực hiện:</div>
                       <div className="flex -space-x-2">
                         {bt.nguoi_thuc_hien.map((n: string) => (
-                          <div key={n} title={n} className="h-7 w-7 rounded-full border-2 border-background bg-secondary grid place-items-center text-[10px] font-bold uppercase">
+                          <div key={n} title={n} className="h-7 w-7 rounded-full border-2 border-background bg-secondary grid place-items-center text-meta font-bold uppercase">
                             {n.slice(0, 2)}
                           </div>
                         ))}
@@ -173,7 +173,7 @@ function BaoTriDetail() {
                   <CardTitle className="text-sm font-semibold">Bảng Checklist ({hangMuc.length})</CardTitle>
                   <div className="flex gap-2">
                     {Object.entries(kqCount).map(([k, v]) => (
-                      <Badge key={k} variant="secondary" className={cn("text-[10px]", kqColor[k])}>{k}: {v}</Badge>
+                      <Badge key={k} variant="secondary" className={cn("text-meta", kqColor[k])}>{k}: {v}</Badge>
                     ))}
                   </div>
                 </div>
@@ -206,7 +206,7 @@ function BaoTriDetail() {
                             <TableCell className="font-medium">{h.ten_hang_muc}</TableCell>
                             <TableCell className="text-sm tabular-nums">{h.gia_tri_do || "—"}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">{h.tieu_chuan || "—"}</TableCell>
-                            <TableCell><Badge variant="secondary" className={cn("text-[10px]", kqColor[h.ket_qua])}>{h.ket_qua}</Badge></TableCell>
+                            <TableCell><Badge variant="secondary" className={cn("text-meta", kqColor[h.ket_qua])}>{h.ket_qua}</Badge></TableCell>
                             <TableCell className="text-xs text-muted-foreground">{h.ghi_chu || "—"}</TableCell>
                           </TableRow>
                         );
@@ -265,7 +265,7 @@ function InfoCard({ icon: Icon, label, value }: { icon: React.ComponentType<{ cl
       <CardContent className="flex items-center gap-3 p-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"><Icon className="h-5 w-5 text-foreground/70" /></div>
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground truncate">{label}</div>
+          <div className="text-meta uppercase tracking-wide text-muted-foreground truncate">{label}</div>
           <div className="text-sm font-semibold truncate">{value}</div>
         </div>
       </CardContent>
