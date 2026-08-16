@@ -14,7 +14,7 @@
 // libraries settle on their no-op/server behavior. Real DOM behavior still only
 // runs in the browser where the genuine globals exist.
 {
-  const g = globalThis as unknown as Record<string, unknown>;
+  const g = globalThis as unknown as Record<string, any>;
 
   const makeInert = (): unknown => {
     const fn = function () {
