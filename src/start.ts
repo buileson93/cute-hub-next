@@ -11,16 +11,23 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
     
-    // Fallback: If it's a TanStack specific error that shouldn't be caught by UI
     if (error instanceof Error && error.message.includes("createServerFn")) {
       throw error;
     }
 
-    console.error("errorMiddleware caught critical error:", error);
+    console.error("CRITICAL SERVER ERROR:", error);
     
-    const details = error instanceof Error 
-      ? { message: error.message, stack: error.stack, name: error.name } 
-      : { message: String(error), stack: 'No stack trace available' };
+    // Attempt to stringify if it's not a standard Error
+    let details = { message: 'Unknown error', stack: 'No stack', name: 'Error' };
+    if (error instanceof Error) {
+      details = { message: error.message, stack: error.stack || '', name: error.name };
+    } else {
+      try {
+        details.message = JSON.stringify(error);
+      } catch {
+        details.message = String(error);
+      }
+    }
 
     return new Response(renderErrorPage(details), {
       status: 500,
