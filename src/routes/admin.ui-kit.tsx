@@ -13,10 +13,18 @@ function UIKitLab() {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
+  if (!hydrated) {
+    return (
+      <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
       <Heading level={1}>Heading Only</Heading>
-      <Text>Hydration: {hydrated ? "True" : "False"}</Text>
+      <Text>Hydration: True</Text>
     </div>
   );
 }
