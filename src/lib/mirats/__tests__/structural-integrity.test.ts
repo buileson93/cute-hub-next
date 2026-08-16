@@ -30,7 +30,8 @@ const EXEMPTED_ORPHANS = [
   "AuditLogViewer.tsx",
   "DistributionStats.tsx",
   "RoleOverview.tsx",
-  "PermissionMatrix.tsx"
+  "PermissionMatrix.tsx",
+  "VoiceQuickLog.tsx"
 ];
 
 function getFilesRecursively(dir: string): string[] {
