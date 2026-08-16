@@ -14,7 +14,9 @@ import {
   Skeleton, 
   EmptyState, 
   TabList, 
+  Tab,
   Breadcrumbs,
+  BreadcrumbItem,
   Stack,
   VStack,
   HStack,
@@ -34,6 +36,10 @@ export const Route = createFileRoute("/_app/admin/ui-kit")({
 function UIKitPage() {
   const [density, setDensity] = useDensity();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const [tabValue, setTabValue] = useState("overview");
+  const [textValue, setTextValue] = useState("");
+  const [selectorValue, setSelectorValue] = useState("");
+  const [switchValue, setSwitchValue] = useState(false);
 
   const toggleTheme = () => {
     const next = !isDark;
@@ -50,7 +56,7 @@ function UIKitPage() {
     name: `Tài sản kỹ thuật ${i + 1}`,
     code: `TB-${1000 + i}`,
     value: (Math.random() * 1000000).toFixed(0),
-    status: i % 3 === 0 ? "active" : i % 3 === 1 ? "warning" : "error"
+    status: i % 3 === 0 ? "success" : i % 3 === 1 ? "warning" : "error"
   }));
 
   return (
@@ -58,15 +64,17 @@ function UIKitPage() {
       <HStack justify="between" align="center" className="sticky top-0 bg-background/80 backdrop-blur z-10 py-4 border-b">
         <VStack gap={1}>
           <Heading level={1}>Astryx UI Kit — VATM Foundation</Heading>
-          <Text variant="secondary">Trình bày các thành phần nền tảng của design system mới.</Text>
+          <Text color="secondary">Trình bày các thành phần nền tảng của design system mới.</Text>
         </VStack>
         
         <HStack gap={4}>
           <HStack gap={2} align="center">
             <Text size="sm">Mật độ:</Text>
             <Selector 
+              label="Mật độ"
+              isLabelHidden
               value={density} 
-              onValueChange={(v: any) => setDensity(v)}
+              onChange={(v) => setDensity(v as any)}
               options={[
                 { label: "Gọn", value: "compact" },
                 { label: "Vừa", value: "comfortable" },
@@ -77,7 +85,12 @@ function UIKitPage() {
           
           <HStack gap={2} align="center">
             <Text size="sm">Chế độ tối:</Text>
-            <Switch checked={isDark} onCheckedChange={toggleTheme} />
+            <Switch 
+              label="Chế độ tối"
+              isLabelHidden
+              value={switchValue} 
+              onChange={setSwitchValue} 
+            />
           </HStack>
         </HStack>
       </HStack>
@@ -87,24 +100,23 @@ function UIKitPage() {
         <Heading level={2}>Buttons & Icons</Heading>
         <Card className="p-6">
           <VStack gap={6}>
-            <HStack gap={4} wrap>
-              <Button variant="primary">Primary Button</Button>
-              <Button variant="secondary">Secondary Button</Button>
-              <Button variant="outline">Outline Button</Button>
-              <Button variant="ghost">Ghost Button</Button>
-              <Button variant="danger">Danger Button</Button>
+            <HStack gap={4} wrap="wrap">
+              <Button label="Primary Button" variant="primary" />
+              <Button label="Secondary Button" variant="secondary" />
+              <Button label="Ghost Button" variant="ghost" />
+              <Button label="Destructive Button" variant="destructive" />
             </HStack>
             
-            <HStack gap={4} wrap>
-              <Button size="sm">Small</Button>
-              <Button size="md">Medium</Button>
-              <Button size="lg">Large</Button>
+            <HStack gap={4} wrap="wrap">
+              <Button label="Small" size="sm" />
+              <Button label="Medium" size="md" />
+              <Button label="Large" size="lg" />
             </HStack>
 
             <HStack gap={4}>
-              <IconButton icon="action.add" aria-label="Add" />
-              <IconButton icon="action.edit" aria-label="Edit" variant="secondary" />
-              <IconButton icon="action.delete" aria-label="Delete" variant="danger" />
+              <IconButton label="Add" icon="action.add" />
+              <IconButton label="Edit" icon="action.edit" variant="secondary" />
+              <IconButton label="Delete" icon="action.delete" variant="destructive" />
             </HStack>
           </VStack>
         </Card>
@@ -116,19 +128,19 @@ function UIKitPage() {
         <Card className="p-6">
           <VStack gap={6}>
             <HStack gap={4}>
-              <Badge color="blue">Blue Badge</Badge>
-              <Badge color="green">Green Badge</Badge>
-              <Badge color="orange">Orange Badge</Badge>
-              <Badge color="red">Red Badge</Badge>
-              <Badge color="gray">Gray Badge</Badge>
+              <Badge label="Blue Badge" variant="blue" />
+              <Badge label="Green Badge" variant="green" />
+              <Badge label="Orange Badge" variant="orange" />
+              <Badge label="Red Badge" variant="red" />
+              <Badge label="Neutral Badge" variant="neutral" />
             </HStack>
             
             <HStack gap={6}>
-              <HStack gap={2} align="center"><StatusDot color="blue" /> <Text size="sm">San sàng</Text></HStack>
-              <HStack gap={2} align="center"><StatusDot color="green" /> <Text size="sm">Hoạt động</Text></HStack>
-              <HStack gap={2} align="center"><StatusDot color="orange" /> <Text size="sm">Cảnh báo</Text></HStack>
-              <HStack gap={2} align="center"><StatusDot color="red" /> <Text size="sm">Lỗi</Text></HStack>
-              <HStack gap={2} align="center"><StatusDot color="gray" /> <Text size="sm">Ngắt kết nối</Text></HStack>
+              <HStack gap={2} align="center"><StatusDot variant="accent" label="Sẵn sàng" /> <Text size="sm">Sẵn sàng</Text></HStack>
+              <HStack gap={2} align="center"><StatusDot variant="success" label="Hoạt động" /> <Text size="sm">Hoạt động</Text></HStack>
+              <HStack gap={2} align="center"><StatusDot variant="warning" label="Cảnh báo" /> <Text size="sm">Cảnh báo</Text></HStack>
+              <HStack gap={2} align="center"><StatusDot variant="error" label="Lỗi" /> <Text size="sm">Lỗi</Text></HStack>
+              <HStack gap={2} align="center"><StatusDot variant="neutral" label="Ngắt kết nối" /> <Text size="sm">Ngắt kết nối</Text></HStack>
             </HStack>
           </VStack>
         </Card>
@@ -139,13 +151,23 @@ function UIKitPage() {
         <Heading level={2}>Forms</Heading>
         <Card className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Field label="Tên tài sản" help="Nhập tên chính thức của thiết bị.">
-              <TextInput placeholder="VD: VHF Radio..." />
+            <Field label="Tên tài sản" inputID="asset-name">
+              <TextInput 
+                label="Tên tài sản"
+                isLabelHidden
+                placeholder="VD: VHF Radio..." 
+                value={textValue}
+                onChange={setTextValue}
+              />
             </Field>
             
-            <Field label="Trạng thái khai thác">
+            <Field label="Trạng thái khai thác" inputID="asset-status">
               <Selector 
+                label="Trạng thái khai thác"
+                isLabelHidden
                 placeholder="Chọn trạng thái..."
+                value={selectorValue}
+                onChange={setSelectorValue}
                 options={[
                   { label: "Đang sử dụng", value: "active" },
                   { label: "Dự phòng", value: "standby" },
@@ -164,21 +186,19 @@ function UIKitPage() {
           <Table 
             data={tableData}
             columns={[
-              { header: "#", accessorKey: "id", width: 60 },
-              { header: "Tên tài sản", accessorKey: "name" },
-              { header: "Mã thiết bị", accessorKey: "code" },
+              { header: "#", cell: (row) => row.id, width: 60 },
+              { header: "Tên tài sản", cell: (row) => row.name },
+              { header: "Mã thiết bị", cell: (row) => row.code },
               { 
                 header: "Giá trị (VNĐ)", 
-                accessorKey: "value",
-                cell: (v: string) => <span className="font-mono tabular-nums">{Number(v).toLocaleString()}</span>
+                cell: (row) => <span className="font-mono tabular-nums">{Number(row.value).toLocaleString()}</span>
               },
               { 
                 header: "Trạng thái", 
-                accessorKey: "status",
-                cell: (s: string) => (
+                cell: (row) => (
                   <HStack gap={2} align="center">
-                    <StatusDot color={s === "active" ? "green" : s === "warning" ? "orange" : "red"} />
-                    <Text size="sm">{s.toUpperCase()}</Text>
+                    <StatusDot variant={row.status as any} label={row.status} />
+                    <Text size="sm">{row.status.toUpperCase()}</Text>
                   </HStack>
                 )
               }
@@ -187,65 +207,28 @@ function UIKitPage() {
         </Card>
       </section>
 
-      {/* Feedback & Overlays */}
-      <section className="space-y-6">
-        <Heading level={2}>Feedback & Overlays</Heading>
-        <Card className="p-6">
-          <HStack gap={4} wrap>
-            <Dialog 
-              trigger={<Button variant="outline">Mở Dialog</Button>}
-              title="Xác nhận thao tác"
-              description="Bạn có chắc chắn muốn thực hiện hành động này không? Dữ liệu sẽ không thể khôi phục."
-            >
-              <HStack justify="end" gap={2}>
-                <Button variant="ghost">Hủy</Button>
-                <Button variant="danger">Xác nhận</Button>
-              </HStack>
-            </Dialog>
-            
-            <Toast 
-              trigger={<Button variant="outline">Hiện Toast</Button>}
-              title="Thành công"
-              description="Dữ liệu đã được lưu trữ an toàn."
-            />
-            
-            <Button variant="outline" onClick={() => {}}>
-              <HStack gap={2} align="center">
-                <Skeleton width={20} height={20} circle />
-                <span>Skeleton Example</span>
-              </HStack>
-            </Button>
-          </HStack>
-        </Card>
-      </section>
-
       {/* Navigation */}
       <section className="space-y-6">
         <Heading level={2}>Navigation</Heading>
         <Card className="p-6 space-y-8">
           <VStack gap={4}>
-            <Text size="sm" variant="secondary">Breadcrumbs:</Text>
-            <Breadcrumbs 
-              items={[
-                { label: "Trang chủ", href: "/" },
-                { label: "Admin", href: "/admin" },
-                { label: "UI Kit" }
-              ]}
-            />
+            <Text size="sm" color="secondary">Breadcrumbs:</Text>
+            <Breadcrumbs label="Breadcrumb">
+              <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
+              <BreadcrumbItem href="/admin">Admin</BreadcrumbItem>
+              <BreadcrumbItem isCurrent>UI Kit</BreadcrumbItem>
+            </Breadcrumbs>
           </VStack>
           
           <Divider />
           
           <VStack gap={4}>
-            <Text size="sm" variant="secondary">Tab List:</Text>
-            <TabList 
-              items={[
-                { label: "Tổng quan", value: "overview" },
-                { label: "Cấu hình", value: "config" },
-                { label: "Lịch sử", value: "history" }
-              ]}
-              defaultValue="overview"
-            />
+            <Text size="sm" color="secondary">Tab List:</Text>
+            <TabList value={tabValue} onChange={setTabValue}>
+              <Tab value="overview" label="Tổng quan" />
+              <Tab value="config" label="Cấu hình" />
+              <Tab value="history" label="Lịch sử" />
+            </TabList>
           </VStack>
         </Card>
       </section>
@@ -257,7 +240,7 @@ function UIKitPage() {
           <EmptyState 
             title="Chưa có dữ liệu"
             description="Hãy bắt đầu bằng cách thêm mới một bản ghi."
-            action={<Button variant="primary">Thêm mới</Button>}
+            actions={<Button label="Thêm mới" variant="primary" />}
           />
         </Card>
       </section>
