@@ -1,5 +1,4 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
-
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/backend/auth-attacher";
 
@@ -15,13 +14,6 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
 
-    if (error instanceof Error) {
-      console.error("SERVER ERROR:", error.name, error.message);
-      if (error.stack) console.error(error.stack);
-    } else {
-      console.error("UNKNOWN SERVER ERROR:", error);
-    }
-    
     return new Response(renderErrorPage(error), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
