@@ -1,5 +1,12 @@
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
+
 @import "tailwindcss" source(none);
 @source "../src";
+
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
+@import "@astryxdesign/theme-neutral/theme.css";
+
 @import "tw-animate-css";
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
@@ -8,8 +15,6 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant density-compact (&:is([data-density="compact"] *));
-
-
 /*
  * MIRATS 2.0 — VATM Middle Region ATC.
  * Editorial aviation shell: off-white paper, brand blue #1D52E0 as the
