@@ -123,16 +123,22 @@ async function getServerEntry(): Promise<ServerEntry> {
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/json")) return response;
+  
+  // If it's already HTML, it might be our error page or a Vite error, let it pass.
+  if (contentType.includes("text/html")) return response;
 
   const body = await response.clone().text();
-  if (!isH3SwallowedErrorBody(body)) return response;
+  const capturedError = consumeLastCapturedError();
+  
+  if (isH3SwallowedErrorBody(body) || !contentType.includes("application/json")) {
+    console.error(capturedError ?? new Error(`SSR error detected (Status ${response.status}): ${body.slice(0, 500)}`));
+    return new Response(renderErrorPage(capturedError || body), {
+      status: 500,
+      headers: { "content-type": "text/html; charset=utf-8" },
+    });
+  }
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
-  return new Response(renderErrorPage(), {
-    status: 500,
-    headers: { "content-type": "text/html; charset=utf-8" },
-  });
+  return response;
 }
 
 function isH3SwallowedErrorBody(body: string): boolean {

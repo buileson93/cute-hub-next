@@ -200,30 +200,38 @@ function HeThongCayPage() {
   const { data: devices = EMPTY_ROWS, isLoading: loadingDevices, refetch: refetchDevices } = useQuery({
     queryKey: ["thiet_bi_cay"],
     queryFn: async () => {
+      // Safety check for SSR
+      if (typeof window === 'undefined') return EMPTY_ROWS;
+
       const pageSize = 1000;
       let from = 0;
       const allData: any[] = [];
-      for (;;) {
-        const { data, error } = await supabase
-          .from("thiet_bi")
-          .select(`
-            *,
-            _loaiTbTen:dm_loai_thiet_bi(ten),
-            _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
-            phan_loai_id,
-            nhom_he_thong_id,
-            he_thong_id,
-            gan_chuc_nang(
-              id,
-              he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten)
-            )
-          `)
-          .range(from, from + pageSize - 1);
-        if (error) throw error;
-        const rows = data || [];
-        allData.push(...rows);
-        if (rows.length < pageSize) break;
-        from += pageSize;
+      try {
+        for (;;) {
+          const { data, error } = await supabase
+            .from("thiet_bi")
+            .select(`
+              *,
+              _loaiTbTen:dm_loai_thiet_bi(ten),
+              _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
+              phan_loai_id,
+              nhom_he_thong_id,
+              he_thong_id,
+              gan_chuc_nang(
+                id,
+                he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten)
+              )
+            `)
+            .range(from, from + pageSize - 1);
+          if (error) throw error;
+          const rows = data || [];
+          allData.push(...rows);
+          if (rows.length < pageSize) break;
+          from += pageSize;
+        }
+      } catch (err) {
+        console.error("Error fetching devices:", err);
+        return EMPTY_ROWS;
       }
       
       const mapped = allData.map((d: any) => ({
@@ -237,15 +245,6 @@ function HeThongCayPage() {
         _loaiTbTen: d._loaiTbTen?.ten,
         _loaiTbOrder: d._loaiTbOrder?.thu_tu
       }));
-
-      // DEBUG: Log first 3 items and counts by PL
-      console.log("Device Data Mapping Sample:", mapped.slice(0, 3));
-      const plCounts = mapped.reduce((acc: any, d: any) => {
-        const pl = d._pl || "NONE";
-        acc[pl] = (acc[pl] || 0) + 1;
-        return acc;
-      }, {});
-      console.log("Device counts per phan_loai_id:", plCounts);
 
       return mapped;
     }
