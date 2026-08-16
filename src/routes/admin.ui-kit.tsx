@@ -36,7 +36,7 @@ export const Route = createFileRoute("/admin/ui-kit")({
 });
 
 function AdminUiKit() {
-  const { toast } = useToast();
+  const showToast = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("buttons");
   const [textValue, setTextValue] = useState("");
@@ -82,7 +82,7 @@ function AdminUiKit() {
             label="Gửi thông báo" 
             variant="primary" 
             icon={<Bell size={16} />}
-            onClick={() => toast({ body: "Thông báo đã được gửi thành công!" })}
+            onClick={() => showToast({ body: "Thông báo đã được gửi thành công!" })}
           />
         </HStack>
         <Divider />
@@ -250,7 +250,7 @@ function AdminUiKit() {
                           <Button label="Hủy" variant="ghost" onClick={() => setIsDialogOpen(false)} />
                           <Button label="Áp dụng" variant="primary" onClick={() => {
                             setIsDialogOpen(false);
-                            toast({ body: "Cấu hình đã được áp dụng." });
+                            showToast({ body: "Cấu hình đã được áp dụng." });
                           }} />
                         </HStack>
                       </LayoutFooter>
