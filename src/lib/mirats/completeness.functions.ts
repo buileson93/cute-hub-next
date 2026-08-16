@@ -5,13 +5,21 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 export const getCompletenessStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, unauthenticated } = context as any;
-    if (unauthenticated || !supabase) {
-      return { avg_thiet_bi: 0 }; // Return safe default for SSR
+    try {
+      const { supabase, unauthenticated } = context as any;
+      if (unauthenticated || !supabase) {
+        return { avg_thiet_bi: 0 }; 
+      }
+      const { data, error } = await supabase.rpc("get_completeness_stats");
+      if (error) {
+        console.warn("get_completeness_stats error:", error.message);
+        return { avg_thiet_bi: 0 };
+      }
+      return (data || { avg_thiet_bi: 0 }) as any;
+    } catch (e) {
+      console.warn("get_completeness_stats exception:", e);
+      return { avg_thiet_bi: 0 };
     }
-    const { data, error } = await supabase.rpc("get_completeness_stats");
-    if (error) throw new Error(error.message);
-    return (data || {}) as any;
   });
 
 export const getCompletenessOverview = createServerFn({ method: "GET" })
