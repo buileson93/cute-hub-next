@@ -275,7 +275,7 @@ function BanQuyenDetailView() {
                           </Button>
                         )}
                         <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.maThietBi }}><ExternalLink className="h-3.5 w-3.5" /></Link>
+                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.maThietBi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}><ExternalLink className="h-3.5 w-3.5" /></Link>
                         </Button>
                       </div>
                     )

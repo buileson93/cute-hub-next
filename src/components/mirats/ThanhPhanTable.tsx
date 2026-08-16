@@ -737,7 +737,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                       <div className="flex items-start gap-1.5">
                         <Link
                           to="/thiet-bi/$maThietBi"
-                          params={{ maThietBi: r.thietBiMa }}
+                          params={{ maThietBi: r.thietBiMa }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                           className="group flex min-w-0 flex-1 items-start gap-1.5 rounded-sm hover:bg-primary/5 -mx-1 px-1 py-0.5"
                           title="Mở sổ lý lịch tài sản"
                         >
@@ -876,7 +876,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
             heThongId={selectedTp.heThongId}
             canManage={allowEdit}
             onClose={() => setSelectedTp(null)}
-            onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } })}
+            onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma }, search: { tab: "tong-quan", doc: undefined, q: undefined } })}
           />
         )}
       </>
@@ -1041,7 +1041,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                 <div className="flex items-start gap-1.5">
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: r.ma }}
+                    params={{ maThietBi: r.ma }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="group flex flex-1 items-start gap-1 hover:text-primary"
                   >
                     <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug group-hover:underline">{r.ten || "—"}</span>
@@ -1142,7 +1142,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
                   className="h-7 gap-1 px-2 text-xs"
                   title="Mở sổ lý lịch tài sản"
                 >
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: (r as any).thietBiMa || (r as any).ma }}>
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: (r as any).thietBiMa || (r as any).ma }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
                     <ExternalLink className="h-3.5 w-3.5" /> Sổ lý lịch
                   </Link>
                 </Button>

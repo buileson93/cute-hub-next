@@ -333,7 +333,7 @@ function TuoiThoPage() {
                 value: (r) => `${r.t.ten} ${r.t.ma_thiet_bi}`,
                 cell: (r) => (
                   <div>
-                    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.t.ma_thiet_bi }} className="group inline-flex items-center gap-1 font-medium hover:text-primary">
+                    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.t.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="group inline-flex items-center gap-1 font-medium hover:text-primary">
                       {r.t.ten}
                       <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100" />
                     </Link>
@@ -405,7 +405,7 @@ function TuoiThoPage() {
                 value: (r) => `${r.t.ten} ${r.t.ma_thiet_bi}`,
                 cell: (r) => (
                   <div>
-                    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.t.ma_thiet_bi }} className="font-medium hover:text-primary">{r.t.ten}</Link>
+                    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.t.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="font-medium hover:text-primary">{r.t.ten}</Link>
                     <div className="text-[11px] font-mono text-muted-foreground">{r.t.ma_thiet_bi}</div>
                   </div>
                 ),

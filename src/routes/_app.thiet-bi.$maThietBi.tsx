@@ -6,22 +6,23 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
   component: ThietBiDetailRoute,
   validateSearch: (search: Record<string, unknown>) => ({
-    tab: (search.tab as string | undefined),
-    doc: (search.doc as string | undefined),
-    q: (search.q as string | undefined),
+    tab: (search.tab as string | undefined) || undefined,
+    doc: (search.doc as string | undefined) || undefined,
+    q: (search.q as string | undefined) || undefined,
   }),
 });
 
 function ThietBiDetailRoute() {
   const { maThietBi: ma } = Route.useParams();
   const { tab, doc: initialDocId } = Route.useSearch();
-  const { getAssetByCode } = useDbTaxonomy();
-  const asset = getAssetByCode(ma);
+  
+  const { data: taxonomy } = useDbTaxonomy();
+  const asset = taxonomy?.devices.find(d => d.ma_thiet_bi === ma);
 
-  const { suCo, baoTri, hongHoc, isLoading } = useOperationsData({
-    maThietBi: ma,
-  });
+  const { ops, isLoading } = useOperationsData();
+  const { suCo, baoTri, hongHoc } = ops;
 
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Đang tải dữ liệu...</div>;
   if (!asset) {
     return (
       <div className="p-8 text-center text-muted-foreground">

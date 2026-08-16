@@ -182,7 +182,7 @@ export function OperationDialog({ mode, target, onClose, onSuccess }: OperationD
               <p className="text-muted-foreground">Lịch sử lắp đặt đã được ghi nhận.</p>
               <Link 
                 to="/thiet-bi/$maThietBi" 
-                params={{ maThietBi: targetMa || "" }}
+                params={{ maThietBi: targetMa || "" }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                 className="flex items-center gap-1 text-primary hover:underline mt-1"
               >
                 <History className="h-3 w-3" /> Xem lý lịch tài sản {targetMa}

@@ -111,7 +111,7 @@ function HongHocPage() {
           const tb = thietBiMap.get(h.thiet_bi_hong);
           const dvo = tb ? donViMap.get(tb.don_vi) : null;
           return tb ? (
-            <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} className="text-primary hover:underline">
+            <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="text-primary hover:underline">
               <div className="font-medium">{tb.ten}</div>
               <div className="text-xs font-mono text-muted-foreground">{tb.ma_thiet_bi} · {dvo?.ma}</div>
             </Link>
@@ -134,7 +134,7 @@ function HongHocPage() {
         cell: (h) => {
           const tbT = h.thiet_bi_thay_the ? thietBiMap.get(h.thiet_bi_thay_the) : null;
           return tbT ? (
-            <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tbT.ma_thiet_bi }} className="flex items-center gap-1 text-primary hover:underline">
+            <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tbT.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="flex items-center gap-1 text-primary hover:underline">
               <ArrowRight className="h-3 w-3" /><span className="font-mono text-xs">{tbT.ma_thiet_bi}</span>
             </Link>
           ) : <span className="text-xs text-muted-foreground">—</span>;

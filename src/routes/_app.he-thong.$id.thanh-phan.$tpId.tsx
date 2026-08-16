@@ -187,7 +187,7 @@ function ThanhPhanSoLyLich() {
                   </div>
                   <div className="mt-3">
                     <Button asChild size="sm" variant="outline">
-                      <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dangLap.ma_thiet_bi }}>
+                      <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dangLap.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
                         <ExternalLink className="mr-1 h-3.5 w-3.5" /> Mở sổ lý lịch tài sản
                       </Link>
                     </Button>
@@ -232,7 +232,7 @@ function ThanhPhanSoLyLich() {
                             ) : (
                               <Badge variant="outline">Đã tháo</Badge>
                             )}
-                            <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: h.ma_thiet_bi }} className="ml-auto text-xs text-primary hover:underline">
+                            <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: h.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="ml-auto text-xs text-primary hover:underline">
                               Mở →
                             </Link>
                           </div>

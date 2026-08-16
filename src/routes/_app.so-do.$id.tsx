@@ -244,7 +244,7 @@ function ElementNode({ id, data, selected }: NodeProps<ElementNodeType>) {
 
   const open = () => {
     if (data.kind === "thiet_bi" && data.ref) {
-      nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: data.ref } });
+      nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: data.ref }, search: { tab: "tong-quan", doc: undefined, q: undefined } });
     } else if (data.kind === "he_thong") {
       nav({ to: "/he-thong/cay" });
     }
