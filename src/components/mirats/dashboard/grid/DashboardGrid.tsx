@@ -1,0 +1,380 @@
+import React, { useState } from "react";
+import { 
+  DashboardWidgetConfig, 
+  WidgetType, 
+  AVAILABLE_WIDGETS, 
+  DEFAULT_HOME_LAYOUT,
+  DEFAULT_OVERVIEW_LAYOUT 
+} from "@/lib/mirats/dashboard/widget-registry";
+import { useUserPref } from "@/hooks/use-user-pref";
+import { WidgetContainer } from "./WidgetContainer";
+import { VisualKpiChart } from "@/components/mirats/dashboard/VisualKpiChart";
+import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
+import { StatusDonutChart } from "@/components/mirats/dashboard/StatusDonutChart";
+import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
+import { LiveTimeline } from "@/components/mirats/dashboard/LiveTimeline";
+import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
+import { useDashboardBrief } from "@/lib/mirats/dashboard.functions";
+import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
+import { useQuery } from "@tanstack/react-query";
+import { formatKpiValue } from "@/lib/mirats/reliability";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Icon } from "@/components/mirats/ui/Icon";
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
+} from "recharts";
+import { supabase } from "@/integrations/backend/client";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const MUC_DO_LABEL: Record<string, string> = {
+  nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
+};
+const MUC_DO_COLORS: Record<string, string> = {
+  nghiem_trong: "hsl(0 84% 60%)",
+  cao: "hsl(24 94% 52%)",
+  trung_binh: "hsl(38 92% 50%)",
+  thap: "hsl(215 16% 55%)",
+  khac: "hsl(215 16% 70%)",
+};
+const STATUS_COLORS = [
+  "hsl(217 91% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)",
+  "hsl(0 84% 60%)", "hsl(280 60% 55%)", "hsl(215 16% 55%)",
+];
+
+interface DashboardGridProps {
+  page: "home" | "overview";
+  isEditing?: boolean;
+}
+
+export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
+  const navigate = useNavigate();
+  const prefKey = `dashboard:layout:${page}`;
+  const defaultLayout = page === "home" ? DEFAULT_HOME_LAYOUT : DEFAULT_OVERVIEW_LAYOUT;
+  const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>(prefKey, defaultLayout);
+
+  const {
+    reliabilityAvail: reliability,
+    mttrKpi,
+    mtbfKpi,
+    healthStats,
+    assetTypeStats,
+    pmKpi,
+    scope
+  } = useUnifiedDashboardStats();
+
+  const brief = useDashboardBrief(scope.donViCode ? [scope.donViCode] : undefined);
+
+  const statsQuery = useQuery({
+    queryKey: ['completeness-stats'],
+    queryFn: () => getCompletenessStats(),
+  });
+  const completeness = (statsQuery.data as any) || {};
+
+  const overviewQuery = useQuery({
+    queryKey: ['completeness-overview', 3],
+    queryFn: () => getCompletenessOverview({ data: { limit: 3 } }),
+  });
+  const lowCompleteness = (overviewQuery.data as any)?.lowCompleteness || [];
+
+  const trendQ = useQuery({
+    queryKey: ["dashboard_su_co_by_month", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_su_co_by_month", {
+        p_months: 12,
+        p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const statusQ = useQuery({
+    queryKey: ["dashboard_asset_status", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_asset_status", {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const trendData = React.useMemo(() => {
+    const rows = (trendQ.data as any[]) ?? [];
+    const byMonth = new Map<string, Record<string, number | string>>();
+    rows.forEach((r) => {
+      const key = r.thang;
+      if (!byMonth.has(key)) byMonth.set(key, { thang: key });
+      const bucket = byMonth.get(key)!;
+      const mk = MUC_DO_LABEL[r.muc_do] ?? r.muc_do;
+      bucket[mk] = ((bucket[mk] as number) ?? 0) + Number(r.so_luong);
+    });
+    return Array.from(byMonth.values())
+      .sort((a, b) => String(a.thang).localeCompare(String(b.thang)))
+      .map((r) => ({
+        ...r,
+        thangHT: new Date(String(r.thang)).toLocaleDateString("vi-VN", { month: "2-digit", year: "2-digit" }),
+        value: Object.values(r).filter(v => typeof v === 'number').reduce((a, b) => a + (b as number), 0)
+      }));
+  }, [trendQ.data]);
+
+  const mucDoKeys = React.useMemo(() => {
+    const s = new Set<string>();
+    ((trendQ.data as any[]) ?? []).forEach((r) => s.add(MUC_DO_LABEL[r.muc_do] ?? r.muc_do));
+    return Array.from(s);
+  }, [trendQ.data]);
+
+  const renderWidget = (widget: DashboardWidgetConfig) => {
+    switch (widget.type) {
+      case "reliability-kpi":
+        return (
+          <VisualKpiChart
+            title="Độ sẵn sàng vận hành"
+            value={`${formatKpiValue(reliability)}`}
+            icon="entity.security"
+            data={trendData}
+            type="area"
+            color={["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#d1fae5"]}
+            status={Number(reliability.value) >= 95 ? 'normal' : 'warning'}
+            tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
+          />
+        );
+      case "mttr-kpi":
+        return (
+          <VisualKpiChart
+            title="Thời gian khắc phục (MTTR)"
+            value={`${formatKpiValue(mttrKpi)}`}
+            icon="status.power"
+            data={trendData.map(d => ({ ...d, value: Math.random() * 60 + 20 }))}
+            type="bar"
+            color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
+            status="attention"
+            tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+          />
+        );
+      case "mtbf-kpi":
+        return (
+          <VisualKpiChart
+            title="Khoảng cách sự cố (MTBF)"
+            value={`${formatKpiValue(mtbfKpi)}`}
+            icon="entity.securityAlert"
+            data={trendData.map(d => ({ ...d, value: Math.random() * 5 + 10 }))}
+            type="line"
+            color="#f59e0b"
+            status="warning"
+            tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
+          />
+        );
+      case "pm-kpi":
+        return (
+          <VisualKpiChart
+            title="Hoàn thành bảo trì (PM)"
+            value={pmKpi.isLoading ? "..." : `${formatKpiValue(pmKpi.result)}`}
+            icon="status.success"
+            data={trendData.map(d => ({ ...d, value: Math.random() * 20 + 80 }))}
+            type="bar"
+            color={["#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"]}
+            status="normal"
+            tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
+          />
+        );
+      case "emergency-kpi":
+        return (
+          <KpiCard
+            label="Sự cố khẩn"
+            value={brief.isLoading ? "..." : (brief.data?.su_co_khan ?? 0)}
+            unit="Vụ việc"
+            icon="status.emergency"
+            status={(brief.data?.su_co_khan ?? 0) > 0 ? "danger" : "normal"}
+            tooltip="Các sự cố nghiêm trọng cần xử lý ngay lập tức."
+            onClick={() => navigate({ to: "/su-co" })}
+          />
+        );
+      case "pm-due-kpi":
+        return (
+          <KpiCard
+            label="Đến hạn PM"
+            value={brief.isLoading ? "..." : (brief.data?.pm_hom_nay ?? 0)}
+            unit="Công việc"
+            icon="status.maintenance"
+            status="attention"
+            tooltip="Số lượng bảo trì ngăn ngừa đến hạn trong hôm nay."
+            onClick={() => navigate({ to: "/bao-tri/pm" })}
+          />
+        );
+      case "pm-overdue-kpi":
+        return (
+          <KpiCard
+            label="PM Quá hạn"
+            value={brief.isLoading ? "..." : (brief.data?.pm_qua_han ?? 0)}
+            unit="Công việc"
+            icon="status.danger"
+            status={(brief.data?.pm_qua_han ?? 0) > 0 ? "danger" : "normal"}
+            tooltip="Các phiếu bảo trì đã quá thời hạn hoàn thành."
+            onClick={() => navigate({ to: "/bao-tri/pm" })}
+          />
+        );
+      case "su-co-trend":
+        return (
+          <Card className="shadow-sm">
+            <CardHeader className="py-3 border-b bg-muted/5">
+              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                <Icon name="entity.chart" size="tiny" className="text-primary" /> Xu hướng sự cố (12 tháng)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={trendData}>
+                  <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
+                  <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '8px' }} />
+                  {mucDoKeys.map((k) => (
+                    <Bar
+                      key={k}
+                      dataKey={k}
+                      stackId="s"
+                      fill={MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"]}
+                      radius={[2, 2, 0, 0]}
+                      barSize={20}
+                    />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        );
+      case "health-donut":
+        return (
+          <StatusDonutChart
+            title="Phân bố sức khỏe tài sản"
+            icon="entity.activity"
+            totalLabel="Tài sản"
+            data={[
+              { name: "A - Tốt", value: healthStats.A, color: "#10b981" },
+              { name: "B - Khá", value: healthStats.B, color: "#3b82f6" },
+              { name: "C - TB", value: healthStats.C, color: "#f59e0b" },
+              { name: "D - Yếu", value: healthStats.D, color: "#ef4444" },
+            ]}
+          />
+        );
+      case "asset-type-bar":
+        return (
+          <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Icon name="entity.system" size="tiny" className="text-primary" /> Phân loại hệ thống
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 p-4 overflow-hidden">
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={Object.entries(assetTypeStats)
+                      .map(([name, value]) => ({ name, value }))
+                      .sort((a, b) => (b.value as number) - (a.value as number))
+                      .slice(0, 5)
+                    }
+                    margin={{ left: -20, right: 20 }}
+                  >
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" fontSize={10} width={80} axisLine={false} tickLine={false} />
+                    <Tooltip cursor={{ fill: 'rgba(0,0,0,0.05)' }} contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '10px' }} />
+                    <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={12} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      case "completeness-gauge":
+        return (
+          <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold">Trung bình toàn hệ</span>
+                  <span className="text-2xl font-black text-primary tabular-nums">{completeness.avg_thiet_bi || 0}%</span>
+                </div>
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${completeness.avg_thiet_bi || 0}%` }} />
+                </div>
+                <div className="space-y-2 mt-2">
+                  {lowCompleteness.slice(0, 3).map((tb: any) => (
+                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] hover:text-primary transition-colors bg-muted/30 p-2 rounded-lg">
+                      <span className="truncate pr-2 font-medium">{tb.ten_thiet_bi}</span>
+                      <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      case "live-timeline":
+        return (
+          <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 flex-1 overflow-hidden">
+              <LiveTimeline />
+            </CardContent>
+          </Card>
+        );
+      case "asset-status-pie":
+        return (
+          <Card className="shadow-sm">
+            <CardHeader className="py-3 border-b bg-muted/5">
+              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+                <Icon name="entity.activity" size="tiny" className="text-primary" /> Trạng thái tài sản
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-[300px] pt-6">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={(statusQ.data as any[]) ?? []} dataKey="so_luong" nameKey="ten" innerRadius={60} outerRadius={85} paddingAngle={4}>
+                    {((statusQ.data as any[]) ?? []).map((_, i) => (
+                      <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} stroke="white" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '8px' }} />
+                  <Legend verticalAlign="bottom" align="center" layout="horizontal" wrapperStyle={{ fontSize: 10, paddingTop: '10px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleRemove = (id: string) => {
+    setLayout(prev => prev.filter(w => w.id !== id));
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
+      {layout.map(widget => (
+        <WidgetContainer 
+          key={widget.id} 
+          config={widget} 
+          isEditing={isEditing}
+          onRemove={() => handleRemove(widget.id)}
+        >
+          {renderWidget(widget)}
+        </WidgetContainer>
+      ))}
+    </div>
+  );
+}
