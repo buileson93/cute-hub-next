@@ -17,12 +17,18 @@ export function MiratsSkeleton({
   radius = 'md',
   className
 }: MiratsSkeletonProps) {
+  // Mapping radius to Astryx tokens
+  let astryxRadius: any = 'rounded';
+  if (radius === 'none') astryxRadius = 'none';
+  if (radius === 'full') astryxRadius = 'rounded'; // Astryx might not have a full circle token yet, fallback to rounded
+
   return (
-    <AstryxSkeleton 
-      width={width as any} 
-      height={height as any} 
-      radius={radius} 
-      className={className} 
-    />
+    <div className={className}>
+      <AstryxSkeleton 
+        width={width as any} 
+        height={height as any} 
+        radius={astryxRadius} 
+      />
+    </div>
   );
 }

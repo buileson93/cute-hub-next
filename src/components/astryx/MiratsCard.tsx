@@ -5,6 +5,7 @@ interface MiratsCardProps {
   children: React.ReactNode;
   padding?: 0 | 0.5 | 1 | 1.5 | 2 | 3 | 4 | 5 | 6 | 8 | 10;
   className?: string;
+  id?: string; // Support for legacy transition
   elevation?: 'none' | 'low' | 'med' | 'high';
   xstyle?: any; // Falling back to any to avoid StyleX import issues for now
 }
@@ -17,11 +18,15 @@ export function MiratsCard({
   children, 
   padding = 4, 
   elevation = 'low',
+  className,
+  id,
   xstyle 
 }: MiratsCardProps) {
   return (
-    <AstryxCard padding={padding} elevation={elevation} xstyle={xstyle}>
-      {children}
-    </AstryxCard>
+    <div className={className} id={id}>
+      <AstryxCard padding={padding} elevation={elevation} xstyle={xstyle}>
+        {children}
+      </AstryxCard>
+    </div>
   );
 }
