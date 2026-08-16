@@ -11,55 +11,30 @@ import { backendFetch, resolveServerBackend } from "./env";
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
     try {
+      const { resolveServerBackend, backendFetch } = await import("./env");
+      const { createClient } = await import("@supabase/supabase-js");
+      const { getRequest } = await import("@tanstack/react-start/server");
+
       const cfg = resolveServerBackend();
       const request = getRequest();
 
       if (!request?.headers) {
-        console.warn("requireSupabaseAuth: No request headers available");
         return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
+          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
         });
       }
 
       const authHeader = request.headers.get("authorization");
-      if (!authHeader) {
+      if (!authHeader?.startsWith("Bearer ")) {
         return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
-        });
-      }
-
-      if (!authHeader.startsWith("Bearer ")) {
-        console.warn("requireSupabaseAuth: Only Bearer tokens are supported");
-        return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
+          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
         });
       }
 
       const token = authHeader.slice("Bearer ".length);
       if (!token || token.split(".").length !== 3) {
-        console.warn("requireSupabaseAuth: Invalid token format");
         return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
+          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
         });
       }
 
@@ -72,15 +47,9 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       });
 
       const { data, error } = await supabase.auth.getClaims(token);
-      if (error || !data?.claims || !data.claims.sub) {
-        console.warn("requireSupabaseAuth: Failed to get claims or no user ID", error);
+      if (error || !data?.claims?.sub) {
         return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
+          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
         });
       }
 
@@ -95,12 +64,7 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
     } catch (err) {
       console.error("requireSupabaseAuth unexpected error:", err);
       return next({
-        context: {
-          supabase: null as any,
-          userId: null as any,
-          claims: null as any,
-          unauthenticated: true,
-        },
+        context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
       });
     }
   },
