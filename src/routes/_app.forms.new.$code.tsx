@@ -13,9 +13,9 @@ import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, Send, Save } from "lucide-react";
+import { MiratsButton } from "@/components/astryx/MiratsButton";
+import { MiratsInput } from "@/components/astryx/MiratsFormControls";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/backend/client";
@@ -299,9 +299,9 @@ function NewSubmission() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-8 lg:px-12">
-      <Button asChild variant="ghost" size="sm" className="mb-4">
+      <MiratsButton asChild variant="ghost" size="sm" className="mb-4">
         <Link to="/forms"><ArrowLeft className="mr-2 h-4 w-4" />Quay lại</Link>
-      </Button>
+      </MiratsButton>
 
       <div className="mb-6">
         <div className="font-mono text-xs text-muted-foreground">{t.code}</div>
@@ -312,10 +312,19 @@ function NewSubmission() {
       <Card className="mb-4">
         <CardHeader><CardTitle className="text-base">Thông tin chung</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div><Label>Tiêu đề biên bản</Label>
-            <Input value={tieuDe} onChange={(e) => setTieuDe(e.target.value)} maxLength={200} placeholder={t.ten} /></div>
-          <div><Label>Kỳ báo cáo (VD: Q1/2026)</Label>
-            <Input value={kyBaoCao} onChange={(e) => setKyBaoCao(e.target.value)} maxLength={40} /></div>
+          <MiratsInput
+            label="Tiêu đề biên bản"
+            value={tieuDe}
+            onChange={(val) => setTieuDe(val)}
+            maxLength={200}
+            placeholder={t.ten}
+          />
+          <MiratsInput
+            label="Kỳ báo cáo (VD: Q1/2026)"
+            value={kyBaoCao}
+            onChange={(val) => setKyBaoCao(val)}
+            maxLength={40}
+          />
           {profile?.don_vi && (
             <div className="text-xs text-muted-foreground md:col-span-2">
               Đơn vị: <Badge variant="outline">{profile.don_vi}</Badge>
@@ -330,7 +339,13 @@ function NewSubmission() {
             Tài sản liên quan ({t.thiet_bi_mode === "single" ? "chọn 1" : "chọn nhiều"})
           </CardTitle></CardHeader>
           <CardContent className="space-y-2">
-            <Input placeholder="Tìm mã hoặc tên tài sản…" value={tbSearch} onChange={(e) => setTbSearch(e.target.value)} />
+            <MiratsInput
+              label="Tìm tài sản"
+              isLabelHidden
+              placeholder="Tìm mã hoặc tên tài sản…"
+              value={tbSearch}
+              onChange={(val) => setTbSearch(val)}
+            />
             <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
               {(thietBiList ?? []).map((tb) => {
                 const on = selectedTb.includes(tb.id);
@@ -370,13 +385,19 @@ function NewSubmission() {
                 <span className="font-mono text-xs text-muted-foreground">{heThongInfo.ma}</span>
                 <span className="ml-2 font-medium">{heThongInfo.ten}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => { setHeThongId(null); setHeThongTouched(true); }}>
+              <MiratsButton variant="ghost" size="sm" onClick={() => { setHeThongId(null); setHeThongTouched(true); }}>
                 Đổi
-              </Button>
+              </MiratsButton>
             </div>
           ) : (
             <>
-              <Input placeholder="Tìm mã hoặc tên hệ thống…" value={heThongSearch} onChange={(e) => setHeThongSearch(e.target.value)} />
+              <MiratsInput
+                label="Tìm hệ thống"
+                isLabelHidden
+                placeholder="Tìm mã hoặc tên hệ thống…"
+                value={heThongSearch}
+                onChange={(val) => setHeThongSearch(val)}
+              />
               <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
                 {(heThongList ?? []).map((h) => (
                   <button type="button" key={h.id}
@@ -435,13 +456,13 @@ function NewSubmission() {
       </Card>
 
       <div className="sticky bottom-4 mt-6 flex justify-end gap-2">
-        <Button variant="outline" onClick={() => saveM.mutate("draft")} disabled={saveM.isPending}>
+        <MiratsButton variant="outline" onClick={() => saveM.mutate("draft")} disabled={saveM.isPending}>
           <Save className="mr-2 h-4 w-4" />Lưu nháp
-        </Button>
-        <Button onClick={() => saveM.mutate("submitted")} disabled={saveM.isPending}>
-          {saveM.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+        </MiratsButton>
+        <MiratsButton onClick={() => saveM.mutate("submitted")} disabled={saveM.isPending} loading={saveM.isPending}>
+          <Send className="mr-2 h-4 w-4" />
           Gửi biên bản
-        </Button>
+        </MiratsButton>
       </div>
     </div>
   );
