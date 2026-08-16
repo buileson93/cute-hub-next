@@ -12,7 +12,7 @@ export function renderErrorPage(error?: any): string {
     if ('name' in error) name = String(error.name);
     if ('stack' in error) stack = String(error.stack);
     
-    if (errorMsg === 'Hệ thống đã xảy ra một lỗi không xác định.') {
+    if (errorMsg === 'Hệ thống đã xảy ra một lỗi không xác định.' || errorMsg === '[object Object]') {
       try {
         errorMsg = JSON.stringify(error, null, 2);
       } catch {
