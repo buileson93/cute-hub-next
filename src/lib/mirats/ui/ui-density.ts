@@ -29,7 +29,7 @@ export const UI_DENSITY = {
   KPI_VALUE_FS: "text-[20px] data-[density=comfortable]:text-[24px] data-[density=spacious]:text-[26px] font-semibold",
 
   // --- Tables ---
-  TABLE_ROW_H: "h-7 data-[density=comfortable]:h-9 data-[density=spacious]:h-11",
+  TABLE_ROW_H: "h-7 data-[density=comfortable]:h-8.5 data-[density=spacious]:h-11",
   TABLE_HEADER_FS: "text-[10px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider font-bold",
   TABLE_CELL_PX: "px-1.5 data-[density=comfortable]:px-3.5 data-[density=spacious]:px-4",
   TABLE_CELL_PY: "py-0.5 data-[density=comfortable]:py-1.5 data-[density=spacious]:py-2",
