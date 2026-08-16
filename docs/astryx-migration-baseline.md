@@ -1,36 +1,48 @@
+# MIRATS Astryx Migration Baseline Report (Phase 0)
+
+## 1. Môi trường & Hệ thống (System Baseline)
+- **Package Manager**: \`npm\` (Lockfile: \`package-lock.json\`).
+- **Node Version**: v22.22.0.
+- **Vite Version**: v8.0.16.
+- **Scripts**: \`dev\`, \`build\`, \`build:dev\`, \`preview\`, \`lint\`, \`typecheck\`, \`test\`.
+- **Git Status**: Sạch (Clean working tree).
+- **Build Status**: \`npm run build:dev\` vượt qua (Success).
+
+## 2. Số liệu Kỹ thuật UI (Technical Debt Metrics)
+- **Typography tùy ý (\`text-[...]\`)**: 860 lỗi.
+- **Mã màu Hex trực tiếp trong TSX**: 114 lỗi.
+- **Trạng thái tương tác (\`hover:\`, \`group-hover:\`)**: 563 instances.
+- **Hiệu ứng (\`animate-\`, \`motion\`)**: 288 instances.
+- **Thành phần Overlay (\`Dialog\`, \`Sheet\`, \`Drawer\`)**: 2143 instances.
+- **Bảng dữ liệu chuẩn (\`StandardTable\`)**: 98 instances.
+
+## 3. Xác nhận 5 Route Pilot (Pilot Verification)
+Tất cả các route dưới đây đã được kiểm tra runtime và hoạt động đúng logic:
+- [x] **Trang chủ (Dashboard)**: \`src/routes/_app.index.tsx\`
+- [x] **Danh mục tài sản (Catalog)**: \`src/routes/_app.danh-muc.thiet-bi.tsx\`
+- [x] **Form nghiệp vụ (Wizard)**: \`src/routes/_app.forms.new.$code.tsx\`
+- [x] **Chi tiết hệ thống (Detail)**: \`src/routes/_app.he-thong.$id.tsx\`
+- [x] **Sơ đồ (Diagram)**: \`src/routes/_app.so-do.$id.tsx\`
+
+## 4. Phân loại Route (Route Inventory)
+- **Dashboard**: \`/\`, \`/tong-quan\`.
+- **Danh mục/Bảng**: \`/danh-muc/*\`, \`/bao-tri\`, \`/su-co\`, \`/hong-hoc\`.
+- **Form**: \`/forms/*\`, \`/admin/forms/*\`.
+- **Chi tiết**: \`/he-thong/$id\`, \`/thiet-bi/$maThietBi\`.
+- **Nghiệp vụ**: \`/bao-tri/pm\`, \`/giam-sat\`.
+- **Quản trị**: \`/admin\`, \`/phan-quyen\`.
+- **Sơ đồ/Đồ thị**: \`/so-do\`, \`/he-thong/cay\`.
+
+## 5. Hợp đồng Component (Component Contracts)
+Các component UI hiện tại tuân thủ chuẩn:
+- **Ref**: Hỗ trợ \`forwardRef\`.
+- **Props**: Hỗ trợ \`asChild\` (Radix Slot).
+- **Handler**: Đầy đủ sự kiện bàn phím/chuột.
+- **Density**: Hỗ trợ \`data-density\` (Compact: 28px, Comfortable: 32px, Spacious: 44px cho dòng bảng).
+
+## 6. Rủi ro & Allowlist P1
+- **Rủi ro**: Mất độ đậm đặc dữ liệu (Density) khi chuyển sang Astryx mặc định. Cần port thủ công các token \`ui-density.ts\`.
+- **Allowlist P1**: Chuyển đổi \`StandardTable\` và \`Button\` sang nguyên mẫu Astryx đầu tiên.
+
 ---
-name: MIRATS Astryx Safe Migration Plan (Phase 0)
-description: Baseline audit and safety documentation for Astryx design system migration.
-type: feature
----
-
-# MIRATS Astryx Safe Migration Plan (Phase 0)
-
-## Audit Baseline (P0)
-
-### Technical Stats
-- **Arbitrary Typography (`text-[...]`)**: 860 instances.
-- **Hex Colors in TSX**: 114 instances.
-- **Interaction States (`hover:`, `group-hover:`)**: 563 instances.
-- **Animations (`animate-`, `motion`)**: 288 instances.
-- **Complex UI Overlay Nodes (`Dialog`, `Sheet`, `Drawer`)**: 2143 instances.
-- **Standardized Data Nodes (`StandardTable`)**: 98 instances.
-
-### Pilot Routes Status
-1. `/` (Dashboard): Verified (Hydrated).
-2. `/danh-muc/thiet-bi` (Asset Catalog): Verified (Hydrated).
-3. `/forms/new/SUCO` (Incident Form): Verified (Dynamic Wizard).
-4. `/he-thong/$id` (System Detail): Verified (Tabs/Panels).
-5. `/so-do/$id` (Diagram Editor): Verified (React Flow).
-
-### Component Contracts
-All `src/components/ui` primitives follow Radix + shadcn pattern:
-- `forwardRef` support for focus management.
-- `asChild` prop for slot composition.
-- Tailwind class merging via `cn()`.
-- Density support via `data-density` attribute on `html` / `body`.
-
-### Risks
-- **Density Regression**: Astryx must support the "Compact" (28px row) and "Spacious" (36px row) requirements.
-- **Compound Components**: Dialog/Select portals must not break context when moved to Astryx primitives.
-- **Motion Parity**: Existing `motion/react` transitions must be replicated or improved, not removed.
+*Báo cáo được khởi tạo tự động bởi Lovable Agent — 2026-08-16*
