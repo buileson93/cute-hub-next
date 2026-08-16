@@ -13,6 +13,14 @@ if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("unhandledrejection", (event) =>
     record((event as PromiseRejectionEvent).reason),
   );
+} else {
+  // Cloudflare Workers and some Node versions don't have addEventListener on globalThis
+  // but might have process.on or other mechanisms.
+  const g = globalThis as any;
+  if (g.process && typeof g.process.on === "function") {
+    g.process.on("uncaughtException", record);
+    g.process.on("unhandledRejection", record);
+  }
 }
 
 export function consumeLastCapturedError(): unknown {

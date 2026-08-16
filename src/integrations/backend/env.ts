@@ -98,9 +98,9 @@ export function resolveServerBackend(opts?: { withServiceRole?: boolean }): Reso
   const isSelfHosted = Boolean(overrideUrl && overrideKey);
 
   const cfg: ResolvedServerBackend = {
-    url: pick(overrideUrl, env.SUPABASE_URL) || "",
-    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || "",
-    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID),
+    url: pick(overrideUrl, env.SUPABASE_URL) || import.meta.env.VITE_SUPABASE_URL || "",
+    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
+    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID) || import.meta.env.VITE_SUPABASE_PROJECT_ID,
     provider: isSelfHosted ? "self-hosted" : "lovable-cloud",
   };
 
