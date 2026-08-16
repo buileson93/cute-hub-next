@@ -605,7 +605,7 @@ export function StandardTable<T>({
     if (trangThai.loi) {
       return errorContent ?? (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-          <div className="text-sm text-destructive font-medium">
+          <div className="text-body text-destructive font-medium">
             {String(trangThai.loi)}
           </div>
           {trangThai.loi.retry && (
@@ -825,7 +825,7 @@ export function StandardTable<T>({
                     <DropdownMenuContent align="end" className="w-[280px]">
                       <div className="p-2 space-y-4">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold">Bộ lọc & Sắp xếp</span>
+                          <span className="text-body font-semibold">Bộ lọc & Sắp xếp</span>
                           <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-7 px-2 text-meta uppercase font-bold text-destructive">
                             Xoá hết
                           </Button>
@@ -882,7 +882,7 @@ export function StandardTable<T>({
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="text-xs">
+                            <DropdownMenuSubTrigger className="text-meta">
                               <Icon name="action.view" size="small" className="mr-2" />
                               Khung nhìn mẫu
                             </DropdownMenuSubTrigger>
@@ -891,7 +891,7 @@ export function StandardTable<T>({
                                 {presets.map((p) => (
                                   <DropdownMenuItem 
                                     key={p.id} 
-                                    className="text-xs flex flex-col items-start gap-0.5"
+                                    className="text-meta flex flex-col items-start gap-0.5"
                                     onClick={() => {
                                       const keys = p.columns || p.cot || p.visibleKeys || [];
                                       const finalKeys = (p.id === "day-du" && keys.length === 0) ? allKeys : keys;
@@ -1024,7 +1024,7 @@ export function StandardTable<T>({
 
       {hasFilter && (
         <div className="flex flex-wrap items-center gap-2 px-1">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
+          <span className="text-meta font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
           {Object.entries(textFilters).map(([key, val]) => {
             if (!val) return null;
             const col = columns.find(c => c.key === key);
@@ -1100,7 +1100,7 @@ export function StandardTable<T>({
                       <div className="flex items-start justify-between p-4 bg-muted/20 border-b border-border/40">
                         <div className="flex-1 space-y-1 min-w-0 pr-6">
                           {primaryCols.map((col, idx) => (
-                            <div key={col.key} className={idx === 0 ? "font-semibold text-sm truncate" : "text-bodySm text-muted-foreground truncate"}>
+                            <div key={col.key} className={idx === 0 ? "font-semibold text-body truncate" : "text-bodySm text-muted-foreground truncate"}>
                               {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                             </div>
                           ))}
@@ -1608,7 +1608,7 @@ function ColFilter({
                 placeholder="Tìm nội dung..."
                 value={textVal}
                 onChange={(e) => onText(e.target.value)}
-                className="h-8 pl-8 text-sm"
+                className="h-8 pl-8 text-body"
               />
             </div>
             <p className="text-meta text-muted-foreground px-1 italic">
@@ -1624,7 +1624,7 @@ function ColFilter({
                 placeholder="Tìm giá trị..."
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                className="h-8 pl-8 text-sm"
+                className="h-8 pl-8 text-body"
               />
             </div>
             <div className="max-h-[300px] overflow-y-auto pr-1">
@@ -1636,7 +1636,7 @@ function ColFilter({
                     checked={catSel.has(v.value)}
                     onCheckedChange={() => onToggleCat(v.value)}
                     onSelect={(e) => e.preventDefault()}
-                    className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
+                    className="text-body py-1.5 px-2 cursor-pointer flex items-center justify-between"
                   >
                     <span className="truncate mr-2">{v.value}</span>
                     <Badge variant="outline" className="text-meta font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
@@ -1645,7 +1645,7 @@ function ColFilter({
                   </DropdownMenuCheckboxItem>
                 ))}
               {catValues.length === 0 && (
-                <div className="py-6 text-center text-xs text-muted-foreground italic">
+                <div className="py-6 text-center text-meta text-muted-foreground italic">
                   Không có giá trị khả dụng
                 </div>
               )}
