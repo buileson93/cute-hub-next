@@ -192,7 +192,7 @@ function AdminUiKit() {
                       ]}
                       hasSearch
                     />
-                  </Stack>
+                  </VStack>
                 </Card>
               </VStack>
             </Section>
@@ -254,9 +254,9 @@ function AdminUiKit() {
                           }} />
                         </HStack>
                       </LayoutFooter>
-                    </Dialog>
-                  </Stack>
-                </Card>
+                      </Dialog>
+                    </VStack>
+                  </Card>
 
                 <Card padding={6}>
                   <VStack gap={4}>
@@ -268,7 +268,7 @@ function AdminUiKit() {
                       actions={<Button label="Tạo kế hoạch" variant="primary" />}
                       isCompact
                     />
-                  </Stack>
+                  </VStack>
                 </Card>
               </VStack>
             </Section>
