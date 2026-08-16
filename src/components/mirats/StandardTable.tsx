@@ -500,9 +500,9 @@ export function StandardTable<T>({
   const [density] = useDensity();
 
   const estimateRowHeight = useMemo(() => {
-    if (density === "compact") return 32;
-    if (density === "comfortable") return 44;
-    return 48;
+    if (density === "compact") return 28;
+    if (density === "comfortable") return 36;
+    return 44;
   }, [density]);
 
   const rowVirtualizer = useVirtualizer({
