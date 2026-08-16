@@ -67,13 +67,11 @@ function AuthPage() {
         email: z.string().trim().email("Email không hợp lệ"),
         password: z.string().min(1, "Nhập mật khẩu"),
       }).safeParse({ email, password });
-      
       if (!parsed.success) {
         toast.error(parsed.error.issues[0].message);
         return;
       }
-      
-      const { error, data } = await supabase.auth.signInWithPassword(parsed.data);
+      const { error } = await supabase.auth.signInWithPassword(parsed.data);
       if (error) {
         toast.error(error.message === "Invalid login credentials"
           ? "Sai email hoặc mật khẩu"

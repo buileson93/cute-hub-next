@@ -154,20 +154,14 @@ export const verifyRegistration = createServerFn({ method: "POST" })
 // ─────────────────────────────────────────────────────────────
 export const getAuthenticationOptions = createServerFn({ method: "POST" }).handler(
   async () => {
-    try {
-      const { rpID, secure } = getRp();
-      const options = await generateAuthenticationOptions({
-        rpID,
-        userVerification: "preferred",
-        // empty allowCredentials → discoverable (resident) keys, usernameless
-      });
-      setChallengeCookie(AUTH_COOKIE, options.challenge, secure);
-      return options;
-    } catch (e) {
-      console.warn("Passkey options generation skipped or failed:", e);
-      // Return a shape that doesn't break the client, though simplewebauthn might still throw.
-      return { error: "Không thể khởi tạo Passkey" } as any;
-    }
+    const { rpID, secure } = getRp();
+    const options = await generateAuthenticationOptions({
+      rpID,
+      userVerification: "preferred",
+      // empty allowCredentials → discoverable (resident) keys, usernameless
+    });
+    setChallengeCookie(AUTH_COOKIE, options.challenge, secure);
+    return options;
   },
 );
 

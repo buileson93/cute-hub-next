@@ -14,7 +14,7 @@
 // libraries settle on their no-op/server behavior. Real DOM behavior still only
 // runs in the browser where the genuine globals exist.
 {
-  const g = globalThis as unknown as Record<string, any>;
+  const g = globalThis as unknown as Record<string, unknown>;
 
   const makeInert = (): unknown => {
     const fn = function () {
@@ -63,103 +63,8 @@
     } as unknown;
   }
   if (typeof g.document === "undefined") g.document = makeInert();
-  if (typeof g.window === "undefined") {
-    const win = makeInert() as any;
-    win.location = {
-      href: "http://localhost/",
-      origin: "http://localhost",
-      protocol: "http:",
-      host: "localhost",
-      hostname: "localhost",
-      port: "",
-      pathname: "/",
-      search: "",
-      hash: "",
-      assign: () => {},
-      replace: () => {},
-      reload: () => {},
-    };
-    win.history = {
-      pushState: () => {},
-      replaceState: () => {},
-      go: () => {},
-      back: () => {},
-      forward: () => {},
-      length: 0,
-      state: null,
-    };
-    g.window = win;
-  }
-  if (typeof g.navigator === "undefined") {
-    const nav = makeInert() as any;
-    nav.userAgent = "Mozilla/5.0 (Server; Node.js) MIRATS/2.0";
-    nav.platform = "Server";
-    nav.appName = "Netscape";
-    nav.appVersion = "5.0";
-    nav.language = "vi-VN";
-    nav.languages = ["vi-VN", "en-US"];
-    nav.onLine = true;
-    g.navigator = nav;
-  }
-
-  // Astryx/StyleX and framer-motion may need these for layout calculations during import/init
-  if (typeof g.getComputedStyle === "undefined") {
-    g.getComputedStyle = () => {
-      const style = makeInert() as any;
-      style.getPropertyValue = () => "";
-      style.getPropertyPriority = () => "";
-      style.item = () => "";
-      style.removeProperty = () => "";
-      style.setProperty = () => {};
-      style.length = 0;
-      style.parentRule = null;
-      return style;
-    };
-  }
-  if (typeof g.matchMedia === "undefined") {
-    g.matchMedia = (query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    });
-  }
-  if (typeof g.requestAnimationFrame === "undefined") {
-    g.requestAnimationFrame = (cb: FrameRequestCallback) => setTimeout(cb, 0);
-  }
-  if (typeof g.cancelAnimationFrame === "undefined") {
-    g.cancelAnimationFrame = (id: any) => clearTimeout(id);
-  }
-
-  // Modern browser observers
-  if (typeof g.IntersectionObserver === "undefined") {
-    g.IntersectionObserver = class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
-  }
-  if (typeof g.ResizeObserver === "undefined") {
-    g.ResizeObserver = class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
-  }
-
-  // Constructors often used at top-level
-  if (typeof g.Image === "undefined") g.Image = class {};
-  if (typeof g.Audio === "undefined") g.Audio = class {};
-  if (typeof g.Video === "undefined") g.Video = class {};
-
-  // Navigation and focus
-  if (typeof g.scrollTo === "undefined") g.scrollTo = () => {};
-  if (typeof g.focus === "undefined") g.focus = () => {};
-  if (typeof g.blur === "undefined") g.blur = () => {};
+  if (typeof g.window === "undefined") g.window = makeInert();
+  if (typeof g.navigator === "undefined") g.navigator = makeInert();
 
   // Defining `window` above makes isomorphic libs (e.g. the Supabase browser
   // client) take their browser path, which reads bare `localStorage`. Provide a
@@ -218,22 +123,16 @@ async function getServerEntry(): Promise<ServerEntry> {
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
-  
-  // If it's already HTML, it might be our error page or a Vite error, let it pass.
-  if (contentType.includes("text/html")) return response;
+  if (!contentType.includes("application/json")) return response;
 
   const body = await response.clone().text();
-  const capturedError = consumeLastCapturedError();
-  
-  if (isH3SwallowedErrorBody(body) || !contentType.includes("application/json")) {
-    console.error(capturedError ?? new Error(`SSR error detected (Status ${response.status}): ${body.slice(0, 500)}`));
-    return new Response(renderErrorPage(capturedError || body), {
-      status: 500,
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
-  }
+  if (!isH3SwallowedErrorBody(body)) return response;
 
-  return response;
+  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  return new Response(renderErrorPage(), {
+    status: 500,
+    headers: { "content-type": "text/html; charset=utf-8" },
+  });
 }
 
 function isH3SwallowedErrorBody(body: string): boolean {

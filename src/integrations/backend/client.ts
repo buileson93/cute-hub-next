@@ -18,7 +18,7 @@ function createBackendClient(): Client {
   const cfg = resolveBrowserBackend();
 
   // Không tạo thêm GoTrue instance thứ hai khi vẫn chạy trên Lovable Cloud.
-  if (cfg.provider === "lovable-cloud" && cfg.url !== "http://localhost:54321") return cloudSupabase;
+  if (cfg.provider === "lovable-cloud") return cloudSupabase;
 
   return createClient<Database>(cfg.url, cfg.publishableKey, {
     global: { fetch: backendFetch(cfg.publishableKey) },

@@ -1,7 +1,7 @@
 import { Laptop, ShieldCheck, CheckCircle2, XCircle, AlertCircle, Info, Download, Filter, Search, User, Upload } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
-import { MiratsPageHeader, MiratsPageBody } from "@/components/astryx/MiratsPageLayout";
+import { PageHeader } from "@/components/mirats/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -225,11 +225,11 @@ function MayTinhStatsPage() {
   ];
 
   return (
-    <MiratsPageBody padding={0}>
-      <MiratsPageHeader
+    <div className={`space-y-6 ${UI_DENSITY.PAGE_PADDING}`}>
+      <PageHeader
         icon={Laptop}
         title="Thống kê Máy tính & Bản quyền"
-        description="Quản lý chi tiết tình trạng cấp phát thiết bị và phần mềm theo nhân sự"
+        subtitle="Quản lý chi tiết tình trạng cấp phát thiết bị và phần mềm theo nhân sự"
         actions={
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="gap-1.5 shadow-sm" onClick={() => setImportOpen(true)}>
@@ -326,13 +326,13 @@ function MayTinhStatsPage() {
           <p className="text-xs text-blue-800 leading-relaxed font-medium">
             Sử dụng chức năng này để rà soát các máy tính (Laptop/PC) chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
           </p>
-        </div>
       </div>
 
       <AssetImportDialog 
         open={importOpen} 
         onOpenChange={setImportOpen} 
       />
-    </MiratsPageBody>
+    </div>
+    </div>
   );
 }

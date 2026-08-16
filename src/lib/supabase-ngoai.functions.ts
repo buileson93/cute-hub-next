@@ -795,20 +795,14 @@ export const setActiveSupabaseNgoai = createServerFn({ method: "POST" })
  */
 export const getActiveBackend = createServerFn({ method: "GET" }).handler(
   async (): Promise<{ url: string; publishableKey: string; ten: string } | null> => {
-    try {
-      const sb = await admin();
-      if (!sb?.from) return null; // Tránh lỗi khi admin client chưa sẵn sàng hoặc thiếu key
-      const { data, error } = await sb
-        .from("supabase_ngoai")
-        .select("ten,url,publishable_key")
-        .eq("kich_hoat", true)
-        .limit(1)
-        .maybeSingle();
-      if (error || !data?.url || !data?.publishable_key) return null;
-      return { url: normUrl(data.url), publishableKey: data.publishable_key, ten: data.ten };
-    } catch (err) {
-      console.error("[getActiveBackend] Lỗi truy vấn nguồn dữ liệu:", err);
-      return null;
-    }
+    const sb = await admin();
+    const { data } = await sb
+      .from("supabase_ngoai")
+      .select("ten,url,publishable_key")
+      .eq("kich_hoat", true)
+      .limit(1)
+      .maybeSingle();
+    if (!data?.url || !data?.publishable_key) return null;
+    return { url: normUrl(data.url), publishableKey: data.publishable_key, ten: data.ten };
   },
 );

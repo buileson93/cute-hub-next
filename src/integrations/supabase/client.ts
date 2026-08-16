@@ -28,36 +28,24 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 
 function createSupabaseClient() {
-  const g = globalThis as any;
-  const env = g.process?.env || g || {};
-
   // Use import.meta.env for client-side (Vite build-time replacement)
-  // Fall back to runtime env for SSR (server-side rendering)
-  const SUPABASE_URL = pick(
-    import.meta.env.VITE_SUPABASE_URL,
-    env.SUPABASE_URL,
-    env.VITE_SUPABASE_URL,
-    "http://localhost:54321"
-  );
-  
-  const SUPABASE_PUBLISHABLE_KEY = pick(
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    env.SUPABASE_PUBLISHABLE_KEY,
-    env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    "sb_placeholder"
-  );
+  // Fall back to process.env for SSR (server-side rendering)
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+  const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
 
-  function pick(...values: any[]) {
-    return values.find(v => typeof v === 'string' && v.trim().length > 0);
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    const missing = [
+      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
+      ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
+    ];
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
+    console.error(`[Supabase] ${message}`);
+    throw new Error(message);
   }
 
-  if (!SUPABASE_URL || SUPABASE_URL === "http://localhost:54321") {
-     console.warn("[Supabase] SUPABASE_URL missing or default, using placeholder for SSR");
-  }
-
-  return createClient<Database>(SUPABASE_URL!, SUPABASE_PUBLISHABLE_KEY!, {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {
-      fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY!),
+      fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
     },
     auth: {
       storage: typeof window !== 'undefined' ? localStorage : undefined,

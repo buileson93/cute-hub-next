@@ -234,16 +234,8 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
       supabase.from("cay_node_edit").select("ma, du_lieu").eq("kind", "ht"),
       fetchAllThietBi(),
     ]);
-  
-  // Safe validation instead of immediate throw
-  const errors = [plRes, nhomRes, htRes, dvRes, ttRes, vtRes, ltRes, mdRes, nsxRes, editRes].filter(r => r.error);
-  if (errors.length > 0) {
-    console.error("[Taxonomy] Failed to load some catalog data:", errors.map(e => e.error?.message));
-    // If it's a 401/session error, we might be in SSR without a token
-    if (typeof window === 'undefined') {
-       console.warn("[Taxonomy] SSR context detected, skipping throw to allow client-side hydration.");
-       return { devices: [], plList: [], plNameMap: new Map(), lvNameMap: new Map(), htNameMap: new Map(), htMaMap: new Map(), nhomNameMap: new Map(), nhomMaMap: new Map(), donViList: [], lvList: [], nhomList: [], htList: [], viTriList: [], trangThaiList: [] };
-    }
+  for (const r of [plRes, nhomRes, htRes, dvRes, ttRes, vtRes, ltRes, mdRes, nsxRes, editRes]) {
+    if (r.error) throw r.error;
   }
 
   const pl = (plRes.data ?? []) as CatRow[];

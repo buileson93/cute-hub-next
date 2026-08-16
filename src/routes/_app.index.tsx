@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { MiratsPageHeader as PageHeader, MiratsPageBody as PageBody } from "@/components/astryx/MiratsPageLayout";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useSession } from "@/hooks/use-session";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
@@ -22,14 +23,6 @@ import { cn } from "@/lib/utils";
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
-    // Không chạy fetch thực tế trên server (SSR) để tránh lỗi 500 do thiếu session/key.
-    if (typeof window === 'undefined') {
-      return { 
-        completenessStats: { total: 0, completed: 0, percentage: 0 }, 
-        completenessOverview: [] 
-      };
-    }
-
     try {
       await Promise.all([
         context.queryClient.prefetchQuery({
@@ -42,7 +35,7 @@ export const Route = (createFileRoute("/_app/") as any)({
         })
       ]);
     } catch (e) {
-      console.warn("Dashboard prefetch skipped:", e instanceof Error ? e.message : e);
+      console.warn("Dashboard SSR prefetch skipped:", e instanceof Error ? e.message : e);
     }
   },
   component: Dashboard,
@@ -71,7 +64,7 @@ function Dashboard() {
     toast.success("Đã khôi phục bố cục mặc định");
   };
 
-  if (scope.loading && typeof window !== 'undefined') {
+  if (scope.loading) {
     return <div className="h-screen w-full flex items-center justify-center animate-pulse text-muted-foreground">Đang tải MIRATS 2.0...</div>;
   }
 
@@ -97,13 +90,14 @@ function Dashboard() {
                />
                <Button 
                  size="default" 
-                 variant="ghost" 
-                 onClick={handleReset}
-                 className="gap-2 text-muted-foreground hover:text-destructive transition-all"
-               >
-                 <Icon name="action.undo" size="tiny" />
-                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
-               </Button>
+
+                variant="ghost" 
+                onClick={handleReset}
+                className="gap-2 text-muted-foreground hover:text-destructive transition-all"
+              >
+                <Icon name="action.undo" size="tiny" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
+              </Button>
              </>
           )}
           <Button 
@@ -123,7 +117,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-2 -mx-2 md:-mx-3 data-[density=comfortable]:-mx-4 md:data-[density=comfortable]:-mx-6 data-[density=spacious]:-mx-6 md:data-[density=spacious]:-mx-8">
+      <div className="mt-2 -mx-6">
         <HeartBeatStrip />
       </div>
 
@@ -133,3 +127,4 @@ function Dashboard() {
     </PageBody>
   );
 }
+

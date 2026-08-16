@@ -9,8 +9,13 @@
 
 import { useMemo, useState } from "react";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { MiratsButton } from "@/components/astryx/MiratsButton";
-import { MiratsInput, MiratsSelector } from "@/components/astryx/MiratsFormControls";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import type { AddLienKetInput, LoaiLienKet } from "@/lib/mirats/lien-ket";
 import type { DoThiRow, Lop, Huong } from "@/lib/mirats/system-graph";
@@ -99,11 +104,11 @@ export function LienKetForm({
   return (
     <div className="grid gap-3 py-2">
       <div className="grid gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Hệ thống nguồn</label>
+        <Label>Hệ thống nguồn</Label>
         <Combobox options={heThongOptions} value={v.nguonId} onChange={(x) => set("nguonId", x)} placeholder="Chọn hệ thống nguồn…" />
       </div>
       <div className="grid gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Hệ thống đích</label>
+        <Label>Hệ thống đích</Label>
         <Combobox options={heThongOptions} value={v.dichId} onChange={(x) => set("dichId", x)} placeholder="Chọn hệ thống đích…" />
       </div>
 
@@ -119,96 +124,87 @@ export function LienKetForm({
       )}
 
       <div className="grid grid-cols-2 gap-3">
-        <MiratsSelector
-          label="Loại liên kết"
-          value={v.loaiId}
-          onChange={(x) => set("loaiId", x)}
-          placeholder="Chọn loại…"
-          options={loaiList.map(l => ({
-            value: l.id,
-            label: l.ten,
-            icon: <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: l.mau_sac }} />
-          }))}
-        />
-        <MiratsSelector
-          label="Lớp"
-          value={v.lop}
-          onChange={(x) => set("lop", x as Lop)}
-          options={[
-            { value: "logic", label: "Logic" },
-            { value: "vat_ly", label: "Vật lý" }
-          ]}
-        />
+        <div className="grid gap-1.5">
+          <Label>Loại liên kết</Label>
+          <Select value={v.loaiId} onValueChange={(x) => set("loaiId", x)}>
+            <SelectTrigger aria-label="Loại liên kết"><SelectValue placeholder="Chọn loại…" /></SelectTrigger>
+            <SelectContent>
+              {loaiList.map((l) => (
+                <SelectItem key={l.id} value={l.id}>
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: l.mau_sac }} aria-hidden />
+                    {l.ten}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Lớp</Label>
+          <Select value={v.lop} onValueChange={(x) => set("lop", x as Lop)}>
+            <SelectTrigger aria-label="Lớp"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="logic">Logic</SelectItem>
+              <SelectItem value="vat_ly">Vật lý</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <MiratsSelector
-          label="Hướng"
-          value={v.huong}
-          onChange={(x) => set("huong", x as Huong)}
-          options={[
-            { value: "mot_chieu", label: "Một chiều" },
-            { value: "hai_chieu", label: "Hai chiều" }
-          ]}
-        />
-        <MiratsSelector
-          label="Vai trò dự phòng"
-          value={v.vaiTro || NONE}
-          onChange={(x) => set("vaiTro", x === NONE ? "" : (x as "chinh" | "du_phong"))}
-          placeholder="Không xác định"
-          options={[
-            { value: NONE, label: "Không xác định" },
-            { value: "chinh", label: "Chính" },
-            { value: "du_phong", label: "Dự phòng" }
-          ]}
-        />
+        <div className="grid gap-1.5">
+          <Label>Hướng</Label>
+          <Select value={v.huong} onValueChange={(x) => set("huong", x as Huong)}>
+            <SelectTrigger aria-label="Hướng"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mot_chieu">Một chiều</SelectItem>
+              <SelectItem value="hai_chieu">Hai chiều</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Vai trò dự phòng</Label>
+          <Select value={v.vaiTro || NONE} onValueChange={(x) => set("vaiTro", x === NONE ? "" : (x as "chinh" | "du_phong"))}>
+            <SelectTrigger aria-label="Vai trò dự phòng"><SelectValue placeholder="Không xác định" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NONE}>Không xác định</SelectItem>
+              <SelectItem value="chinh">Chính</SelectItem>
+              <SelectItem value="du_phong">Dự phòng</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <MiratsInput
-          label="Giao diện nguồn"
-          value={v.gdNguon}
-          onChange={(val) => set("gdNguon", val)}
-          placeholder="E1/IP…"
-        />
-        <MiratsInput
-          label="Giao diện đích"
-          value={v.gdDich}
-          onChange={(val) => set("gdDich", val)}
-          placeholder="E1/IP…"
-        />
+        <div className="grid gap-1.5">
+          <Label>Giao diện nguồn</Label>
+          <Input value={v.gdNguon} onChange={(e) => set("gdNguon", e.target.value)} placeholder="E1/IP…" />
+        </div>
+        <div className="grid gap-1.5">
+          <Label>Giao diện đích</Label>
+          <Input value={v.gdDich} onChange={(e) => set("gdDich", e.target.value)} placeholder="E1/IP…" />
+        </div>
       </div>
-      <MiratsInput
-        label="Giao thức"
-        value={v.giaoThuc}
-        onChange={(val) => set("giaoThuc", val)}
-        placeholder="VoIP/E1…"
-      />
-      <MiratsInput
-        label="Mô tả tín hiệu"
-        value={v.moTa}
-        onChange={(val) => set("moTa", val)}
-        placeholder="Kết nối thoại VHF vào VCCS…"
-      />
       <div className="grid gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Ghi chú</label>
-        <textarea
-          className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          value={v.ghiChu}
-          onChange={(e) => set("ghiChu", e.target.value)}
-          rows={2}
-        />
+        <Label>Giao thức</Label>
+        <Input value={v.giaoThuc} onChange={(e) => set("giaoThuc", e.target.value)} placeholder="VoIP/E1…" />
+      </div>
+      <div className="grid gap-1.5">
+        <Label>Mô tả tín hiệu</Label>
+        <Input value={v.moTa} onChange={(e) => set("moTa", e.target.value)} placeholder="Kết nối thoại VHF vào VCCS…" />
+      </div>
+      <div className="grid gap-1.5">
+        <Label>Ghi chú</Label>
+        <Textarea value={v.ghiChu} onChange={(e) => set("ghiChu", e.target.value)} rows={2} />
       </div>
 
       <div className="mt-1 flex justify-end gap-2">
-        {onCancel && (
-          <MiratsButton variant="outline" onClick={onCancel}>
-            Hủy
-          </MiratsButton>
-        )}
-        <MiratsButton onClick={submit} disabled={disabled} loading={submitting}>
+        {onCancel && <Button variant="outline" onClick={onCancel}>Hủy</Button>}
+        <Button onClick={submit} disabled={disabled}>
+          {submitting && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
           Lưu liên kết
-        </MiratsButton>
+        </Button>
       </div>
     </div>
   );

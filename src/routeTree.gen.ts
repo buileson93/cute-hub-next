@@ -23,7 +23,6 @@ import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminUiKitRouteImport } from './routes/admin.ui-kit'
 import { Route as AdminSupabaseNgoaiRouteImport } from './routes/admin.supabase-ngoai'
 import { Route as AdminSchemaRouteImport } from './routes/admin.schema'
 import { Route as AdminBackupRouteImport } from './routes/admin.backup'
@@ -67,7 +66,6 @@ import { Route as AppDuAnIndexRouteImport } from './routes/_app.du-an.index'
 import { Route as AppBaoTriIndexRouteImport } from './routes/_app.bao-tri.index'
 import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
 import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
-import { Route as ApiPublicDebugSsrRouteImport } from './routes/api/public/debug-ssr'
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
 import { Route as AppThongKeLaptopRouteImport } from './routes/_app.thong-ke.laptop'
@@ -205,11 +203,6 @@ const ApiBackupRunRoute = ApiBackupRunRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUiKitRoute = AdminUiKitRouteImport.update({
-  id: '/ui-kit',
-  path: '/ui-kit',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSupabaseNgoaiRoute = AdminSupabaseNgoaiRouteImport.update({
@@ -430,11 +423,6 @@ const ApiPublicQaResetTestPasswordsRoute =
     path: '/api/public/qa-reset-test-passwords',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicDebugSsrRoute = ApiPublicDebugSsrRouteImport.update({
-  id: '/api/public/debug-ssr',
-  path: '/api/public/debug-ssr',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminAuditLapThaoRoute = AdminAuditLapThaoRouteImport.update({
   id: '/lap-thao',
   path: '/lap-thao',
@@ -834,7 +822,6 @@ export interface FileRoutesByFullPath {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -890,7 +877,6 @@ export interface FileRoutesByFullPath {
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
-  '/api/public/debug-ssr': typeof ApiPublicDebugSsrRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri/': typeof AppBaoTriIndexRoute
@@ -957,7 +943,6 @@ export interface FileRoutesByTo {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -1012,7 +997,6 @@ export interface FileRoutesByTo {
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
-  '/api/public/debug-ssr': typeof ApiPublicDebugSsrRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri': typeof AppBaoTriIndexRoute
@@ -1086,7 +1070,6 @@ export interface FileRoutesById {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -1143,7 +1126,6 @@ export interface FileRoutesById {
   '/_app/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/_app/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
-  '/api/public/debug-ssr': typeof ApiPublicDebugSsrRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/_app/bao-tri/': typeof AppBaoTriIndexRoute
@@ -1218,7 +1200,6 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1274,7 +1255,6 @@ export interface FileRouteTypes {
     | '/thong-ke/laptop'
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
-    | '/api/public/debug-ssr'
     | '/api/public/qa-reset-test-passwords'
     | '/qr/thiet-bi/$id'
     | '/bao-tri/'
@@ -1341,7 +1321,6 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1396,7 +1375,6 @@ export interface FileRouteTypes {
     | '/thong-ke/laptop'
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
-    | '/api/public/debug-ssr'
     | '/api/public/qa-reset-test-passwords'
     | '/qr/thiet-bi/$id'
     | '/bao-tri'
@@ -1469,7 +1447,6 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1526,7 +1503,6 @@ export interface FileRouteTypes {
     | '/_app/thong-ke/laptop'
     | '/_app/tickets/$id'
     | '/admin/audit/lap-thao'
-    | '/api/public/debug-ssr'
     | '/api/public/qa-reset-test-passwords'
     | '/qr/thiet-bi/$id'
     | '/_app/bao-tri/'
@@ -1575,7 +1551,6 @@ export interface RootRouteChildren {
   QIndexRoute: typeof QIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicDebugSsrRoute: typeof ApiPublicDebugSsrRoute
   ApiPublicQaResetTestPasswordsRoute: typeof ApiPublicQaResetTestPasswordsRoute
   QrThietBiIdRoute: typeof QrThietBiIdRoute
   ApiPublicHooksBootstrapAdminRoute: typeof ApiPublicHooksBootstrapAdminRoute
@@ -1690,13 +1665,6 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/ui-kit': {
-      id: '/admin/ui-kit'
-      path: '/ui-kit'
-      fullPath: '/admin/ui-kit'
-      preLoaderRoute: typeof AdminUiKitRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/supabase-ngoai': {
@@ -1998,13 +1966,6 @@ declare module '@tanstack/react-router' {
       path: '/api/public/qa-reset-test-passwords'
       fullPath: '/api/public/qa-reset-test-passwords'
       preLoaderRoute: typeof ApiPublicQaResetTestPasswordsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/debug-ssr': {
-      id: '/api/public/debug-ssr'
-      path: '/api/public/debug-ssr'
-      fullPath: '/api/public/debug-ssr'
-      preLoaderRoute: typeof ApiPublicDebugSsrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/audit/lap-thao': {
@@ -2826,7 +2787,6 @@ interface AdminRouteChildren {
   AdminBackupRoute: typeof AdminBackupRoute
   AdminSchemaRoute: typeof AdminSchemaRoute
   AdminSupabaseNgoaiRoute: typeof AdminSupabaseNgoaiRoute
-  AdminUiKitRoute: typeof AdminUiKitRoute
   AdminUsersRoute: typeof AdminUsersRoute
 }
 
@@ -2835,7 +2795,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBackupRoute: AdminBackupRoute,
   AdminSchemaRoute: AdminSchemaRoute,
   AdminSupabaseNgoaiRoute: AdminSupabaseNgoaiRoute,
-  AdminUiKitRoute: AdminUiKitRoute,
   AdminUsersRoute: AdminUsersRoute,
 }
 
@@ -2859,7 +2818,6 @@ const rootRouteChildren: RootRouteChildren = {
   QIndexRoute: QIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicDebugSsrRoute: ApiPublicDebugSsrRoute,
   ApiPublicQaResetTestPasswordsRoute: ApiPublicQaResetTestPasswordsRoute,
   QrThietBiIdRoute: QrThietBiIdRoute,
   ApiPublicHooksBootstrapAdminRoute: ApiPublicHooksBootstrapAdminRoute,

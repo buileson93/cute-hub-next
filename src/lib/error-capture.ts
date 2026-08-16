@@ -13,27 +13,15 @@ if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("unhandledrejection", (event) =>
     record((event as PromiseRejectionEvent).reason),
   );
-} else {
-  const g = globalThis as any;
-  if (g.process && typeof g.process.on === "function") {
-    g.process.on("uncaughtException", (error: any) => {
-      console.error("[Capture] Uncaught Exception:", error);
-      record(error);
-    });
-    g.process.on("unhandledRejection", (reason: any) => {
-      console.error("[Capture] Unhandled Rejection:", reason);
-      record(reason);
-    });
-  }
 }
 
 export function consumeLastCapturedError(): unknown {
-  const captured = lastCapturedError;
-  if (!captured) return undefined;
-  if (Date.now() - captured.at > TTL_MS) {
+  if (!lastCapturedError) return undefined;
+  if (Date.now() - lastCapturedError.at > TTL_MS) {
     lastCapturedError = undefined;
     return undefined;
   }
+  const { error } = lastCapturedError;
   lastCapturedError = undefined;
-  return captured.error;
+  return error;
 }

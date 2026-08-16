@@ -77,12 +77,7 @@ async function loadLicenses(): Promise<LicenseRow[]> {
     .from("v_giay_phep")
     .select("*")
     .order("ngay_het_han", { ascending: true, nullsFirst: false });
-  
-  if (error) {
-    console.warn("Licenses load error:", error);
-    if (typeof window === 'undefined') return [];
-    throw error;
-  }
+  if (error) throw error;
 
   return (data ?? []).map((r) => ({
     id: txt(r.so_giay_phep) ?? txt(r.ma_giay_phep) ?? String(r.id),

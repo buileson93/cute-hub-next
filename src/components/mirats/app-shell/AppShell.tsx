@@ -157,7 +157,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TooltipProvider delayDuration={300}>
         <div 
           data-density={density}
-          className="astryx-shell flex min-h-dvh w-full bg-surface-sunken text-foreground"
+          className="flex min-h-dvh w-full bg-background text-foreground"
         >
           {/* Desktop Navigation Container */}
           <div 
@@ -170,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             {/* Rail (Desktop) */}
             <aside className={cn(
-              "astryx-shell-rail h-full shrink-0 flex-col items-center border-r border-border bg-surface-sunken py-3 flex transition-[width]",
+              "h-full shrink-0 flex-col items-center border-r border-border bg-sidebar py-3 flex transition-[width]",
               UI_DENSITY.RAIL_W
             )}>
               <SidebarLogoRail />
@@ -231,12 +231,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "astryx-shell-sidebar h-full shrink-0 flex-col border-r border-border bg-surface-muted/50 flex transition-[width] duration-300 ease-in-out overflow-hidden",
+                "h-full shrink-0 flex-col border-r border-border bg-sidebar/40 flex transition-[width] duration-300 ease-in-out overflow-hidden",
                 (isCollapsed && !isHovered) ? "w-0 border-r-0" : UI_DENSITY.SIDEBAR_W
               )}
             >
               <div className={cn(
-                "astryx-text-label-bold flex items-center border-b px-3 data-[density=comfortable]:px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
+                "flex items-center border-b px-3 data-[density=comfortable]:px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
                 UI_DENSITY.APP_HEADER_H,
                 (isCollapsed && !isHovered) && "opacity-0"
               )}>
@@ -254,7 +254,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className={cn(
-              "astryx-shell-header sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-surface/90 px-4 backdrop-blur-md",
+              "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md",
               UI_DENSITY.APP_HEADER_H
             )}>
 

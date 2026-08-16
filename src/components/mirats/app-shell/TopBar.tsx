@@ -35,7 +35,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <Input
             type="search"
             placeholder="Tìm tài sản, sự cố..."
-            className="astryx-text-body h-8 w-full cursor-pointer rounded-full bg-surface-muted/50 pl-9 pr-4 text-[13px] focus-visible:ring-1 border-transparent hover:border-border transition-mirats-fast"
+            className="h-8 w-full cursor-pointer rounded-full bg-muted/40 pl-9 pr-4 text-[13px] focus-visible:ring-1 border-transparent hover:border-border transition-mirats-fast"
             readOnly
             onClick={handleOpenSearch}
             onFocus={handleOpenSearch}
@@ -84,7 +84,7 @@ function RealtimeStatusIndicator() {
 
   return (
     <AppTooltip noiDung={<p className="text-xs font-medium">{config.label}</p>} ben="bottom">
-      <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-muted cursor-help transition-mirats-fast active:scale-[var(--scale-active)]">
+      <div className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted cursor-help transition-mirats-fast active:scale-[var(--scale-active)]">
         <Icon className={cn("h-4 w-4", config.color)} />
       </div>
     </AppTooltip>
