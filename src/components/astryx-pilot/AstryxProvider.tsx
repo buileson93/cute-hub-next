@@ -27,8 +27,14 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
   // if the provider itself is not SSR-safe (some design system themes 
   // calculate values using browser APIs). If children also use Astryx tokens,
   // we might need a more complex solution, but usually the provider is the bottleneck.
+  // During SSR, we render a minimal container to avoid hydration mismatch 
+  // and prevent child components from trying to use theme tokens before hydration.
   if (!isHydrated) {
-    return <>{children}</>;
+    return (
+      <div className="astryx-ssr-placeholder" style={{ display: 'contents' }}>
+        {children}
+      </div>
+    );
   }
 
   return (

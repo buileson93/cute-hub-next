@@ -68,13 +68,23 @@
 
   // Astryx/StyleX and framer-motion may need these for layout calculations during import/init
   if (typeof g.getComputedStyle === "undefined") {
-    g.getComputedStyle = () => ({
-      getPropertyValue: () => "",
-    });
+    g.getComputedStyle = () => {
+      const style = makeInert() as any;
+      style.getPropertyValue = () => "";
+      style.getPropertyPriority = () => "";
+      style.item = () => "";
+      style.removeProperty = () => "";
+      style.setProperty = () => {};
+      style.length = 0;
+      style.parentRule = null;
+      return style;
+    };
   }
   if (typeof g.matchMedia === "undefined") {
-    g.matchMedia = () => ({
+    g.matchMedia = (query: string) => ({
       matches: false,
+      media: query,
+      onchange: null,
       addListener: () => {},
       removeListener: () => {},
       addEventListener: () => {},
@@ -86,8 +96,34 @@
     g.requestAnimationFrame = (cb: FrameRequestCallback) => setTimeout(cb, 0);
   }
   if (typeof g.cancelAnimationFrame === "undefined") {
-    g.cancelAnimationFrame = (id: number) => clearTimeout(id);
+    g.cancelAnimationFrame = (id: any) => clearTimeout(id);
   }
+
+  // Modern browser observers
+  if (typeof g.IntersectionObserver === "undefined") {
+    g.IntersectionObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
+  if (typeof g.ResizeObserver === "undefined") {
+    g.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
+
+  // Constructors often used at top-level
+  if (typeof g.Image === "undefined") g.Image = class {};
+  if (typeof g.Audio === "undefined") g.Audio = class {};
+  if (typeof g.Video === "undefined") g.Video = class {};
+
+  // Navigation and focus
+  if (typeof g.scrollTo === "undefined") g.scrollTo = () => {};
+  if (typeof g.focus === "undefined") g.focus = () => {};
+  if (typeof g.blur === "undefined") g.blur = () => {};
 
   // Defining `window` above makes isomorphic libs (e.g. the Supabase browser
   // client) take their browser path, which reads bare `localStorage`. Provide a

@@ -67,6 +67,7 @@ import { Route as AppDuAnIndexRouteImport } from './routes/_app.du-an.index'
 import { Route as AppBaoTriIndexRouteImport } from './routes/_app.bao-tri.index'
 import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
 import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
+import { Route as ApiPublicDebugSsrRouteImport } from './routes/api/public/debug-ssr'
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
 import { Route as AppThongKeLaptopRouteImport } from './routes/_app.thong-ke.laptop'
@@ -429,6 +430,11 @@ const ApiPublicQaResetTestPasswordsRoute =
     path: '/api/public/qa-reset-test-passwords',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicDebugSsrRoute = ApiPublicDebugSsrRouteImport.update({
+  id: '/api/public/debug-ssr',
+  path: '/api/public/debug-ssr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuditLapThaoRoute = AdminAuditLapThaoRouteImport.update({
   id: '/lap-thao',
   path: '/lap-thao',
@@ -884,6 +890,7 @@ export interface FileRoutesByFullPath {
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
+  '/api/public/debug-ssr': typeof ApiPublicDebugSsrRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri/': typeof AppBaoTriIndexRoute
@@ -1005,6 +1012,7 @@ export interface FileRoutesByTo {
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
+  '/api/public/debug-ssr': typeof ApiPublicDebugSsrRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri': typeof AppBaoTriIndexRoute
@@ -1135,6 +1143,7 @@ export interface FileRoutesById {
   '/_app/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/_app/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
+  '/api/public/debug-ssr': typeof ApiPublicDebugSsrRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/_app/bao-tri/': typeof AppBaoTriIndexRoute
@@ -1265,6 +1274,7 @@ export interface FileRouteTypes {
     | '/thong-ke/laptop'
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
+    | '/api/public/debug-ssr'
     | '/api/public/qa-reset-test-passwords'
     | '/qr/thiet-bi/$id'
     | '/bao-tri/'
@@ -1386,6 +1396,7 @@ export interface FileRouteTypes {
     | '/thong-ke/laptop'
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
+    | '/api/public/debug-ssr'
     | '/api/public/qa-reset-test-passwords'
     | '/qr/thiet-bi/$id'
     | '/bao-tri'
@@ -1515,6 +1526,7 @@ export interface FileRouteTypes {
     | '/_app/thong-ke/laptop'
     | '/_app/tickets/$id'
     | '/admin/audit/lap-thao'
+    | '/api/public/debug-ssr'
     | '/api/public/qa-reset-test-passwords'
     | '/qr/thiet-bi/$id'
     | '/_app/bao-tri/'
@@ -1563,6 +1575,7 @@ export interface RootRouteChildren {
   QIndexRoute: typeof QIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicDebugSsrRoute: typeof ApiPublicDebugSsrRoute
   ApiPublicQaResetTestPasswordsRoute: typeof ApiPublicQaResetTestPasswordsRoute
   QrThietBiIdRoute: typeof QrThietBiIdRoute
   ApiPublicHooksBootstrapAdminRoute: typeof ApiPublicHooksBootstrapAdminRoute
@@ -1985,6 +1998,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/qa-reset-test-passwords'
       fullPath: '/api/public/qa-reset-test-passwords'
       preLoaderRoute: typeof ApiPublicQaResetTestPasswordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/debug-ssr': {
+      id: '/api/public/debug-ssr'
+      path: '/api/public/debug-ssr'
+      fullPath: '/api/public/debug-ssr'
+      preLoaderRoute: typeof ApiPublicDebugSsrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/audit/lap-thao': {
@@ -2839,6 +2859,7 @@ const rootRouteChildren: RootRouteChildren = {
   QIndexRoute: QIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicDebugSsrRoute: ApiPublicDebugSsrRoute,
   ApiPublicQaResetTestPasswordsRoute: ApiPublicQaResetTestPasswordsRoute,
   QrThietBiIdRoute: QrThietBiIdRoute,
   ApiPublicHooksBootstrapAdminRoute: ApiPublicHooksBootstrapAdminRoute,
