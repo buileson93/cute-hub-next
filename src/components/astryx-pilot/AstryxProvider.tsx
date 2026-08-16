@@ -1,5 +1,11 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Theme } from "@astryxdesign/core/theme";
+import { ReactNode, useEffect, useState, Suspense, lazy } from "react";
+
+// Lazy load the Theme component to ensure its internal StyleX/browser logic
+// only executes after the hydration boundary.
+const AstryxTheme = lazy(() => 
+  import("@astryxdesign/core/theme").then(m => ({ default: m.Theme }))
+);
+
 import { vatmTheme } from "@/styles/theme-vatm";
 
 interface AstryxProviderProps {
@@ -26,8 +32,10 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
   }
 
   return (
-    <Theme theme={vatmTheme} mode="system">
-      {children}
-    </Theme>
+    <Suspense fallback={<>{children}</>}>
+      <AstryxTheme theme={vatmTheme} mode="system">
+        {children}
+      </AstryxTheme>
+    </Suspense>
   );
 }
