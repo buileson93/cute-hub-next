@@ -93,15 +93,23 @@ export function resolveBrowserBackend(): ResolvedBrowserBackend {
  */
 export function resolveServerBackend(opts?: { withServiceRole?: boolean }): ResolvedServerBackend {
   const g = globalThis as any;
-  const env = g.process?.env || g.Deno?.env?.toObject() || {};
-  const overrideUrl = pick(env.APP_SUPABASE_URL);
-  const overrideKey = pick(env.APP_SUPABASE_PUBLISHABLE_KEY, env.APP_SUPABASE_ANON_KEY);
+  // Cloudflare Workers use `globalThis` for env vars, or `process.env` if nodejs_compat is on.
+  // We check both for maximum stability across different Worker environments.
+  const env = g.process?.env || g.Deno?.env?.toObject() || g || {};
+  
+  const overrideUrl = pick(env.APP_SUPABASE_URL, import.meta.env.VITE_APP_SUPABASE_URL);
+  const overrideKey = pick(
+    env.APP_SUPABASE_PUBLISHABLE_KEY, 
+    env.APP_SUPABASE_ANON_KEY,
+    import.meta.env.VITE_APP_SUPABASE_PUBLISHABLE_KEY,
+    import.meta.env.VITE_APP_SUPABASE_ANON_KEY
+  );
   const isSelfHosted = Boolean(overrideUrl && overrideKey);
 
   const cfg: ResolvedServerBackend = {
-    url: pick(overrideUrl, env.SUPABASE_URL) || import.meta.env.VITE_SUPABASE_URL || "",
-    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
-    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID) || import.meta.env.VITE_SUPABASE_PROJECT_ID,
+    url: pick(overrideUrl, env.SUPABASE_URL, import.meta.env.VITE_SUPABASE_URL) || "",
+    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) || "",
+    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID, import.meta.env.VITE_SUPABASE_PROJECT_ID),
     provider: isSelfHosted ? "self-hosted" : "lovable-cloud",
   };
 
