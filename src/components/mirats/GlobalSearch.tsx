@@ -120,7 +120,7 @@ export function GlobalSearch() {
               })}
             </ul>
           )}
-          <div className="border-t border-border bg-muted/40 px-4 py-1.5 text-[10px] text-muted-foreground">
+          <div className="astryx-command-palette-footer border-t border-border bg-muted/40 px-4 py-1.5 text-[10px] text-muted-foreground">
             ↑↓ chọn · Enter mở · Esc đóng
           </div>
         </div>
