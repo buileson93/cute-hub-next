@@ -1,13 +1,12 @@
 import React from 'react';
 import { Card as AstryxCard } from '@astryxdesign/core/Card';
-import { type StyleXStyles } from '@astryxdesign/core';
 
 interface MiratsCardProps {
   children: React.ReactNode;
   padding?: 0 | 0.5 | 1 | 1.5 | 2 | 3 | 4 | 5 | 6 | 8 | 10;
-  className?: string; // For legacy Tailwind compatibility if absolutely needed, but preferred via props
+  className?: string;
   elevation?: 'none' | 'low' | 'med' | 'high';
-  xstyle?: StyleXStyles;
+  xstyle?: any; // Falling back to any to avoid StyleX import issues for now
 }
 
 /**
