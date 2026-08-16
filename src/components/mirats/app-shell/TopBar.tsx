@@ -9,6 +9,7 @@ import { TzClock } from "../TzClock";
 import { RecentPinnedRailButton } from "../RecentPinnedRailButton";
 import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { BrandMark } from "./index";
 import { cn } from "@/lib/utils";
 
 const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
@@ -28,6 +29,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   return (
     <div className="flex h-full items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-2 flex-1 min-w-0">
+        <BrandMark className="hidden md:block h-7 w-auto mr-2" />
         {renderMobileMenu}
         
         <div className="relative w-full max-w-sm" data-tour="search">
