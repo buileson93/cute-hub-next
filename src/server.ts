@@ -68,16 +68,17 @@
 
   // Astryx/StyleX and framer-motion may need these for layout calculations during import/init
   if (typeof g.getComputedStyle === "undefined") {
-    g.getComputedStyle = () => ({
-      getPropertyValue: () => "",
-      getPropertyPriority: () => "",
-      item: () => "",
-      removeProperty: () => "",
-      setProperty: () => {},
-      length: 0,
-      parentRule: null,
-      ...makeInert(),
-    });
+    g.getComputedStyle = () => {
+      const style = makeInert() as any;
+      style.getPropertyValue = () => "";
+      style.getPropertyPriority = () => "";
+      style.item = () => "";
+      style.removeProperty = () => "";
+      style.setProperty = () => {};
+      style.length = 0;
+      style.parentRule = null;
+      return style;
+    };
   }
   if (typeof g.matchMedia === "undefined") {
     g.matchMedia = (query: string) => ({
