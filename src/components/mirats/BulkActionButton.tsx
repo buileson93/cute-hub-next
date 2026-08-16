@@ -34,9 +34,8 @@ export function BulkActionButton({
 
   const nut = (
     <Button
-      size="sm"
+      size="icon"
       variant={duocPhep ? variant : "outline"}
-      className="h-7 w-7 p-0"
       disabled={!duocPhep || busy}
       aria-disabled={!duocPhep || busy}
       onClick={() => {

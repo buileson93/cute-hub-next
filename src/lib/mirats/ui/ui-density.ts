@@ -36,9 +36,11 @@ export const UI_DENSITY = {
   TABLE_MAX_H: "max-h-[calc(100vh-8rem)] data-[density=comfortable]:max-h-[calc(100vh-10rem)]",
 
   // --- Controls & Icons ---
-  CONTROL_H: "h-7 data-[density=comfortable]:h-9 data-[density=spacious]:h-9",
-  ICON_SM: "h-2.5 w-2.5 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
-  ICON_MD: "h-3 w-3 data-[density=comfortable]:h-5 data-[density=comfortable]:w-5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
+  CONTROL_H: "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
+  CONTROL_PX: "px-2 data-[density=comfortable]:px-3 data-[density=spacious]:px-4",
+  CONTROL_FS: "text-[10px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
+  ICON_SM: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
+  ICON_MD: "h-3.5 w-3.5 data-[density=comfortable]:h-4.5 data-[density=comfortable]:w-4.5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
   // --- Typography ---
   TEXT_BODY: "text-[11px] data-[density=comfortable]:text-[14px] data-[density=spacious]:text-[14px]",
