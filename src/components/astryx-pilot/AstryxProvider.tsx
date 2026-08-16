@@ -1,18 +1,18 @@
 import { ReactNode } from "react";
 import { Theme } from "@astryxdesign/core/theme";
-import { neutralTheme } from "@astryxdesign/theme-neutral/built";
+import { vatmTheme } from "@/styles/theme-vatm";
 
 interface AstryxProviderProps {
   children: ReactNode;
 }
 
 /**
- * AstryxProvider integrates the Astryx design system theme into the MIRATS 2.0 app.
- * It uses the predefined neutral theme and synchronizes with the existing dark mode logic.
+ * AstryxProvider integrates the VATM design system theme into the MIRATS 2.0 app.
+ * It uses the custom VATM theme mapped from MIRATS brand assets.
  */
 export function AstryxProvider({ children }: AstryxProviderProps) {
   return (
-    <Theme theme={neutralTheme} mode="system">
+    <Theme theme={vatmTheme} mode="system">
       {children}
     </Theme>
   );
