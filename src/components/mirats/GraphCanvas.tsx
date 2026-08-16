@@ -482,7 +482,7 @@ function GraphCanvasInner({
       const y = ev.clientY - rect.top;
       laserPosRef.current = { x, y };
       const arr = laserTrailRef.current;
-      const now = performance.now();
+      const now = typeof performance !== "undefined" ? performance.now() : Date.now();
       const last = arr[arr.length - 1];
       if (!last || (x - last.x) * (x - last.x) + (y - last.y) * (y - last.y) > 4) {
         arr.push({ x, y, t: now });

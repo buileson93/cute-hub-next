@@ -38,7 +38,7 @@ interface DemoData extends Record<string, unknown> {
 
 function UIKitPage() {
   const [density, setDensity] = useDensity();
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const [isDark, setIsDark] = useState(() => typeof window !== "undefined" ? document.documentElement.classList.contains("dark") : false);
   const [tabValue, setTabValue] = useState("overview");
   const [textValue, setTextValue] = useState("");
   const [selectorValue, setSelectorValue] = useState("");
