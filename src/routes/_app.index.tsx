@@ -104,7 +104,7 @@ function Dashboard() {
             variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "h-8 px-4 rounded-xl transition-all gap-2",
+              "h-8 px-4 transition-all gap-2",
               !isEditing && "border-primary/20 hover:bg-primary/5"
             )}
           >
