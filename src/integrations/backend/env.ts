@@ -95,6 +95,7 @@ export function resolveServerBackend(opts?: { withServiceRole?: boolean }): Reso
   const g = globalThis as any;
   // Cloudflare Workers use `globalThis` for env vars, or `process.env` if nodejs_compat is on.
   // We check both for maximum stability across different Worker environments.
+  // IMPORTANT: Do not access process.env directly at module level.
   const env = g.process?.env || g.Deno?.env?.toObject() || g || {};
   
   const overrideUrl = pick(env.APP_SUPABASE_URL, import.meta.env.VITE_APP_SUPABASE_URL);
