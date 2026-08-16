@@ -66,6 +66,29 @@
   if (typeof g.window === "undefined") g.window = makeInert();
   if (typeof g.navigator === "undefined") g.navigator = makeInert();
 
+  // Astryx/StyleX and framer-motion may need these for layout calculations during import/init
+  if (typeof g.getComputedStyle === "undefined") {
+    g.getComputedStyle = () => ({
+      getPropertyValue: () => "",
+    });
+  }
+  if (typeof g.matchMedia === "undefined") {
+    g.matchMedia = () => ({
+      matches: false,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    });
+  }
+  if (typeof g.requestAnimationFrame === "undefined") {
+    g.requestAnimationFrame = (cb: FrameRequestCallback) => setTimeout(cb, 0);
+  }
+  if (typeof g.cancelAnimationFrame === "undefined") {
+    g.cancelAnimationFrame = (id: number) => clearTimeout(id);
+  }
+
   // Defining `window` above makes isomorphic libs (e.g. the Supabase browser
   // client) take their browser path, which reads bare `localStorage`. Provide a
   // real, in-memory Storage polyfill so `getItem` returns `null` (not a proxy)
