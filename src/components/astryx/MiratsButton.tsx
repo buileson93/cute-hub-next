@@ -53,18 +53,21 @@ export const MiratsButton = React.forwardRef<HTMLButtonElement, MiratsButtonProp
     }
 
     // 2. Map legacy variants to Astryx variants
+    // Cast to string first to handle overlap safely with the new type definitions
+    const vStr = variant as string;
     const astryxVariant =
-      variant === "outline" || variant === "secondary" || variant === "default"
+      vStr === "outline" || vStr === "secondary" || vStr === "default"
         ? "secondary"
-        : variant === "link"
-          ? "ghost" // Astryx ghost is the closest for link-style behavior
+        : vStr === "link"
+          ? "ghost" 
           : variant;
 
     // 3. Map sizes
-    const astryxSize = size === "xs" || size === "default" || size === "icon" ? "sm" : size;
+    const sStr = size as string;
+    const astryxSize = sStr === "xs" || sStr === "default" || sStr === "icon" ? "sm" : size;
 
     // 4. Determine if it's an icon-only button (Astryx preferred)
-    const isIconOnly = (size === "icon" || !children) && !!icon;
+    const isIconOnly = (sStr === "icon" || !children) && !!icon;
 
     // 5. Tooltip logic (compatible with legacy auto-tooltip)
     const ariaLabel = props["aria-label"] || (typeof children === "string" ? children : undefined);
