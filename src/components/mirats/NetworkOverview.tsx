@@ -1289,9 +1289,9 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
   useEffect(() => {
     if (!markedId && !connectDialog) return;
     let raf = 0;
-    const tick = () => { fgRef.current?.refresh?.(); raf = window.requestAnimationFrame(tick); };
-    raf = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(raf);
+    const tick = () => { fgRef.current?.refresh?.(); raf = typeof window !== "undefined" && window.requestAnimationFrame(tick); };
+    raf = typeof window !== "undefined" && window.requestAnimationFrame(tick);
+    return () => typeof window !== "undefined" && window.cancelAnimationFrame(raf);
   }, [markedId, connectDialog]);
 
 

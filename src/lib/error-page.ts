@@ -1,20 +1,26 @@
 export function renderErrorPage(error?: any): string {
-  let errorMsg = 'Unknown error';
+  let errorMsg = 'Hệ thống đã xảy ra một lỗi không xác định.';
   let stack = '';
-  let name = 'Error';
+  let name = 'Lỗi Hệ Thống';
   
   if (error instanceof Error) {
     errorMsg = error.message;
     stack = error.stack || '';
     name = error.name;
   } else if (error && typeof error === 'object') {
-    try {
-      errorMsg = JSON.stringify(error, null, 2);
-    } catch {
-      errorMsg = String(error);
+    if ('message' in error) errorMsg = String(error.message);
+    if ('name' in error) name = String(error.name);
+    if ('stack' in error) stack = String(error.stack);
+    
+    if (errorMsg === 'Hệ thống đã xảy ra một lỗi không xác định.') {
+      try {
+        errorMsg = JSON.stringify(error, null, 2);
+      } catch {
+        errorMsg = String(error);
+      }
     }
-  } else {
-    errorMsg = String(error || 'Unknown error');
+  } else if (error) {
+    errorMsg = String(error);
   }
 
   return `<!doctype html>
