@@ -208,17 +208,17 @@ function QuetQrLanding() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="h-16 text-lg font-bold shadow-md active:scale-95 transition-transform border-2 border-primary/20">
-                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} hash="bao-tri">
+                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} search={{ tab: "van-hanh" }}>
                   <Wrench className="h-6 w-6 mr-2" /> Ghi bảo trì
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-14 text-base shadow-sm">
-                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }}>
+                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} search={{ tab: "tong-quan" }}>
                   <BookOpen className="h-5 w-5 mr-2" /> Xem lý lịch
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-14 text-base shadow-sm">
-                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} hash="chung-chi">
+                <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} search={{ tab: "ho-so" }}>
                   <FileBadge className="h-5 w-5 mr-2" /> Giấy phép / Chứng chỉ
                 </Link>
               </Button>
