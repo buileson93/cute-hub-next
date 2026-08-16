@@ -3,7 +3,7 @@
 @import "tw-animate-css";
 
 /* Astryx Design System — Core Styles & Reset */
-@import "@astryxdesign/core/src/astryx.css";
+@import "@astryxdesign/core/astryx.css";
 @import "@astryxdesign/theme-stone/dist/theme.css";
 
 @import "@fontsource-variable/space-grotesk";
