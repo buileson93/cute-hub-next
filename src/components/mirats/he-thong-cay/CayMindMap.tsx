@@ -13,6 +13,7 @@ import {
   Download, Upload, ExternalLink, FolderTree, ArrowRightLeft, ArrowUp, ArrowDown, Palette,
   History, Wrench, AlertTriangle, Package, Users, FileText, ClipboardList, BookMarked, Trash2, Info, Plug, Tags,
 } from "lucide-react";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -179,7 +180,8 @@ function MindNode({ data }: { data: MindData }) {
     <div
       onDoubleClick={(e) => { e.stopPropagation(); startInline(); }}
       className={cn(
-        "group relative flex h-8 cursor-pointer items-center text-[11px] leading-none transition-mirats-fast animate-fade-in",
+        "group relative flex cursor-pointer items-center text-[11px] leading-none transition-mirats-fast animate-fade-in",
+        UI_DENSITY.CONTROL_H,
         KIND_WIDTH[data.kind],
       )}
     >
