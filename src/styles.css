@@ -376,4 +376,11 @@ table th { line-height: 1; font-weight: 700; }
 .gap-4 { gap: 1rem; }
 .gap-3 { gap: 0.75rem; }
 
+#lovable-badge {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
 
