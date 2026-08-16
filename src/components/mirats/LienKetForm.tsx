@@ -168,26 +168,26 @@ export function LienKetForm({
         <MiratsInput
           label="Giao diện nguồn"
           value={v.gdNguon}
-          onChange={(e) => set("gdNguon", e.target.value)}
+          onChange={(val) => set("gdNguon", val)}
           placeholder="E1/IP…"
         />
         <MiratsInput
           label="Giao diện đích"
           value={v.gdDich}
-          onChange={(e) => set("gdDich", e.target.value)}
+          onChange={(val) => set("gdDich", val)}
           placeholder="E1/IP…"
         />
       </div>
       <MiratsInput
         label="Giao thức"
         value={v.giaoThuc}
-        onChange={(e) => set("giaoThuc", e.target.value)}
+        onChange={(val) => set("giaoThuc", val)}
         placeholder="VoIP/E1…"
       />
       <MiratsInput
         label="Mô tả tín hiệu"
         value={v.moTa}
-        onChange={(e) => set("moTa", e.target.value)}
+        onChange={(val) => set("moTa", val)}
         placeholder="Kết nối thoại VHF vào VCCS…"
       />
       <div className="grid gap-1.5">
