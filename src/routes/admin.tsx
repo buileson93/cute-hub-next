@@ -22,7 +22,7 @@ function AdminLayout() {
 
     if (!session) {
       toast.error("Vui lòng đăng nhập để truy cập trang quản trị");
-      nav({ to: "/auth", search: { redirect: location.pathname } });
+      nav({ to: "/auth", search: { redirect: location.pathname } as any });
       return;
     }
 
