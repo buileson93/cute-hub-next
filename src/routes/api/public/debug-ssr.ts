@@ -18,7 +18,8 @@ export const Route = createFileRoute('/api/public/debug-ssr')({
           env: {
             isWorker: typeof (globalThis as any).WebSocketPair !== 'undefined',
             hasProcess: typeof process !== 'undefined',
-            nodeEnv: process.env.NODE_ENV
+            nodeEnv: process.env?.NODE_ENV,
+            url: (globalThis as any).process?.env?.SUPABASE_URL || (globalThis as any).SUPABASE_URL || 'missing'
           }
         };
 

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MiratsPageHeader as PageHeader, MiratsPageBody as PageBody } from "@/components/astryx/MiratsPageLayout";
 import { Icon } from "@/components/mirats/ui/Icon";
@@ -22,10 +22,13 @@ import { cn } from "@/lib/utils";
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
-    // Không chạy prefetch trên server (SSR) để tránh lỗi 500 do thiếu session/key
     // Không chạy fetch thực tế trên server (SSR) để tránh lỗi 500 do thiếu session/key.
-    // TanStack Start loader chạy cả trên server và client.
-    if (typeof window === 'undefined') return { completenessStats: null, completenessOverview: null };
+    if (typeof window === 'undefined') {
+      return { 
+        completenessStats: { total: 0, completed: 0, percentage: 0 }, 
+        completenessOverview: [] 
+      };
+    }
 
     try {
       await Promise.all([
@@ -94,14 +97,13 @@ function Dashboard() {
                />
                <Button 
                  size="default" 
-
-                variant="ghost" 
-                onClick={handleReset}
-                className="gap-2 text-muted-foreground hover:text-destructive transition-all"
-              >
-                <Icon name="action.undo" size="tiny" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
-              </Button>
+                 variant="ghost" 
+                 onClick={handleReset}
+                 className="gap-2 text-muted-foreground hover:text-destructive transition-all"
+               >
+                 <Icon name="action.undo" size="tiny" />
+                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
+               </Button>
              </>
           )}
           <Button 
@@ -131,4 +133,3 @@ function Dashboard() {
     </PageBody>
   );
 }
-

@@ -28,18 +28,36 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 
 function createSupabaseClient() {
-  // Use import.meta.env for client-side (Vite build-time replacement)
-  // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || (typeof process !== 'undefined' ? process.env.SUPABASE_URL : undefined) || "http://localhost:54321";
-  const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || (typeof process !== 'undefined' ? process.env.SUPABASE_PUBLISHABLE_KEY : undefined) || "sb_placeholder";
+  const g = globalThis as any;
+  const env = g.process?.env || g || {};
 
-  if (!SUPABASE_URL || SUPABASE_URL === "http://localhost:54321") {
-     console.warn("[Supabase] SUPABASE_URL missing, using placeholder for SSR");
+  // Use import.meta.env for client-side (Vite build-time replacement)
+  // Fall back to runtime env for SSR (server-side rendering)
+  const SUPABASE_URL = pick(
+    import.meta.env.VITE_SUPABASE_URL,
+    env.SUPABASE_URL,
+    env.VITE_SUPABASE_URL,
+    "http://localhost:54321"
+  );
+  
+  const SUPABASE_PUBLISHABLE_KEY = pick(
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    env.SUPABASE_PUBLISHABLE_KEY,
+    env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    "sb_placeholder"
+  );
+
+  function pick(...values: any[]) {
+    return values.find(v => typeof v === 'string' && v.trim().length > 0);
   }
 
-  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  if (!SUPABASE_URL || SUPABASE_URL === "http://localhost:54321") {
+     console.warn("[Supabase] SUPABASE_URL missing or default, using placeholder for SSR");
+  }
+
+  return createClient<Database>(SUPABASE_URL!, SUPABASE_PUBLISHABLE_KEY!, {
     global: {
-      fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
+      fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY!),
     },
     auth: {
       storage: typeof window !== 'undefined' ? localStorage : undefined,
