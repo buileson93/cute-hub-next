@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
   Heading, 
-  Text
+  Text,
+  VStack
 } from "@astryxdesign/core";
 
 export const Route = createFileRoute("/admin/ui-kit")({
@@ -11,8 +12,10 @@ export const Route = createFileRoute("/admin/ui-kit")({
 function UIKitLab() {
   return (
     <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
-      <Heading level={1}>Astryx SSR Component Lab</Heading>
-      <Text>Isolating 500 error... Heading and Text only.</Text>
+      <VStack gap={4}>
+        <Heading level={1}>Astryx SSR Component Lab</Heading>
+        <Text>Isolating 500 error... Heading, Text, and VStack.</Text>
+      </VStack>
     </div>
   );
 }
