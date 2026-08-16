@@ -152,7 +152,7 @@ function ModelHoverContent({ d }: { d: DbDevice }) {
         {imgUrl ? (
           <img src={imgUrl} alt={d._modelTen} className="max-h-40 w-auto rounded object-contain" />
         ) : (
-          <div className="flex h-24 w-full items-center justify-center rounded bg-muted/40 text-[11px] text-muted-foreground">
+          <div className="flex h-24 w-full items-center justify-center rounded bg-muted/40 text-meta text-muted-foreground">
             Chưa có hình ảnh
           </div>
         )}
@@ -561,9 +561,9 @@ function DanhMucThietBiPage() {
           <div className="min-w-0">
             <div className="truncate font-medium">{tbName(d)}</div>
             <div className="flex items-center gap-2">
-              <code className="text-[10px] text-muted-foreground">{d.ma_thiet_bi}</code>
-              {d.serial && <span className="text-[10px] text-muted-foreground/60">SN: {d.serial}</span>}
-              {d._maBravo && <span className="text-[10px] text-muted-foreground/60">B: {d._maBravo}</span>}
+              <code className="text-meta text-muted-foreground">{d.ma_thiet_bi}</code>
+              {d.serial && <span className="text-meta text-muted-foreground/60">SN: {d.serial}</span>}
+              {d._maBravo && <span className="text-meta text-muted-foreground/60">B: {d._maBravo}</span>}
             </div>
           </div>
         </div>
@@ -580,7 +580,7 @@ function DanhMucThietBiPage() {
           {d._modelTen && (
             <CenterHoverCard
               openDelay={250} closeDelay={100} contentClassName="p-0"
-              trigger={<span className="block cursor-help truncate text-[13px] underline decoration-dotted underline-offset-2">{d._modelTen}</span>}
+              trigger={<span className="block cursor-help truncate text-body underline decoration-dotted underline-offset-2">{d._modelTen}</span>}
             >
               <ModelHoverContent d={d} />
             </CenterHoverCard>
@@ -618,15 +618,15 @@ function DanhMucThietBiPage() {
         <div className="space-y-0.5">
           <div className="flex items-center gap-1">
             {d._htId ? (
-              <span className="truncate font-medium text-[13px]">{htName(d._htId, d._htTen)}</span>
+              <span className="truncate font-medium text-body">{htName(d._htId, d._htTen)}</span>
             ) : (
-              <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-medium text-amber-600">
+              <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-meta font-medium text-amber-600">
                 <PackageOpen className="h-3 w-3" /> Độc lập
               </span>
             )}
           </div>
           {(d._viTriTen || d.vi_tri) && (
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1 text-meta text-muted-foreground">
               <MapPin className="h-3 w-3" />
               <span className="truncate">{d._viTriTen || d.vi_tri}</span>
             </div>
@@ -776,7 +776,7 @@ function DanhMucThietBiPage() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
+                <p className="text-meta font-semibold uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
                 <h3 className="mt-1 text-2xl font-bold tracking-tight">{kpi.value.toLocaleString("vi-VN")}</h3>
               </div>
               <div className={cn("rounded-lg p-2.5", kpi.bg)}>
@@ -873,7 +873,7 @@ function DanhMucThietBiPage() {
                   <Tag className="h-3.5 w-3.5" />
                   Nhãn tài sản
                   {tagSelected.length > 0 && (
-                    <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                    <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-meta">
                       {tagMode === "any" ? "bất kỳ" : tagMode === "all" ? "đủ" : "trừ"} · {tagSelected.length}
                     </Badge>
                   )}
@@ -905,7 +905,7 @@ function DanhMucThietBiPage() {
                             }}
                           />
                           <span className="text-xs">{t.ten}</span>
-                          <span className="ml-auto font-mono text-[10px] text-muted-foreground">{t.ma}</span>
+                          <span className="ml-auto font-mono text-meta text-muted-foreground">{t.ma}</span>
                         </label>
                       );
                     })}
@@ -916,7 +916,7 @@ function DanhMucThietBiPage() {
                 </div>
                 {tagSelected.length > 0 && (
                   <div className="flex items-center justify-between border-t px-3 py-2">
-                    <span className="text-[11px] text-muted-foreground">Đã chọn {tagSelected.length}</span>
+                    <span className="text-meta text-muted-foreground">Đã chọn {tagSelected.length}</span>
                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setTagSelected([])}>
                       Bỏ chọn tất cả
                     </Button>
@@ -931,7 +931,7 @@ function DanhMucThietBiPage() {
             )}
           </div>
           {tagSelected.length > 0 && (
-            <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-[11px] text-muted-foreground">
+            <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-meta text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 shrink-0" />
               <span>
                 Nhãn tài sản là đa trị: khi <b>gom nhóm theo nhãn tài sản</b>, một tài sản có thể vào nhiều nhóm (nhân dòng) — hãy dùng <b>đếm distinct</b> theo mã tài sản; đếm theo tag có thể lớn hơn tổng tài sản.
@@ -1141,7 +1141,7 @@ function DanhMucThietBiPage() {
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 font-medium text-destructive">
-                    <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn {!isAdmin && <span className="text-[10px] font-normal text-muted-foreground">(chỉ admin)</span>}
+                    <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn {!isAdmin && <span className="text-meta font-normal text-muted-foreground">(chỉ admin)</span>}
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Chỉ dành cho bản ghi <b>nhập nhầm</b>. Hệ thống sẽ tự bỏ qua các tài sản đã có

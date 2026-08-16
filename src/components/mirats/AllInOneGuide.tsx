@@ -48,7 +48,7 @@ export function AllInOneGuide() {
           <section className="space-y-1.5">
             <h3 className="font-semibold">Thứ tự sheet</h3>
             <div className="overflow-hidden rounded-md border">
-              <table className="w-full text-[11px]">
+              <table className="w-full text-meta">
                 <thead className="bg-muted/50 text-left">
                   <tr><th className="px-2 py-1 font-medium">Sheet</th><th className="px-2 py-1 font-medium">Bảng</th></tr>
                 </thead>
@@ -76,7 +76,7 @@ export function AllInOneGuide() {
 
           <section className="space-y-1.5 rounded-md border border-dashed border-primary/40 bg-primary/5 p-2.5">
             <h3 className="flex items-center gap-1.5 text-xs font-semibold"><Bot className="h-3.5 w-3.5 text-primary" /> Dành cho AI agent</h3>
-            <ol className="list-decimal space-y-0.5 pl-4 text-[11px] text-muted-foreground">
+            <ol className="list-decimal space-y-0.5 pl-4 text-meta text-muted-foreground">
               <li>Xuất kèm dữ liệu để lấy đúng <code>ma</code> hợp lệ.</li>
               <li>Điền theo thứ tự 1 → 10, cột <code>ref</code> chỉ dùng giá trị đã tồn tại.</li>
               <li>Chỉ điền <code>model</code> ở dòng tài sản — không lặp NSX/Loại.</li>
@@ -85,8 +85,8 @@ export function AllInOneGuide() {
           </section>
 
           <div className="flex flex-wrap gap-1">
-            <Badge variant="secondary" className="gap-1 text-[10px]"><KeyRound className="h-2.5 w-2.5" />ma = khoá</Badge>
-            <Badge variant="secondary" className="gap-1 text-[10px]"><Layers className="h-2.5 w-2.5" />10 lớp</Badge>
+            <Badge variant="secondary" className="gap-1 text-meta"><KeyRound className="h-2.5 w-2.5" />ma = khoá</Badge>
+            <Badge variant="secondary" className="gap-1 text-meta"><Layers className="h-2.5 w-2.5" />10 lớp</Badge>
           </div>
         </div>
       </SheetContent>

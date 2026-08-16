@@ -347,7 +347,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                       <Layers className="h-3.5 w-3.5" />
                       <span>Tài sản liên quan ({selected.length})</span>
                     </div>
-                    <div className="text-[11px] text-muted-foreground line-clamp-2">
+                    <div className="text-meta text-muted-foreground line-clamp-2">
                       {selected.map(d => d.ma_thiet_bi).join(", ")}
                     </div>
                   </div>
@@ -401,7 +401,7 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                         <Label htmlFor="closing-intent" className="text-sm font-bold text-amber-900 dark:text-amber-200 cursor-pointer">
                           Đóng sự cố ngay
                         </Label>
-                        <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                        <p className="text-meta text-amber-700 dark:text-amber-400">
                           Xác nhận sự cố đã được khắc phục dứt điểm.
                         </p>
                       </div>

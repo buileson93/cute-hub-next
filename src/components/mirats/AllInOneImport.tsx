@@ -434,19 +434,19 @@ export function AllInOneImport() {
                           <TableCell className="text-xs font-medium">
                             {l.parsed.layer.sheet}
                             {l.parsed.unmapped.length > 0 && (
-                              <span className="ml-1 text-[10px] text-amber-600" title={l.parsed.unmapped.join(", ")}>
+                              <span className="ml-1 text-meta text-amber-600" title={l.parsed.unmapped.join(", ")}>
                                 (bỏ {l.parsed.unmapped.length} cột)
                               </span>
                             )}
                           </TableCell>
                           <TableCell className="text-right text-xs tabular-nums">{l.parsed.rows.length}</TableCell>
                           <TableCell>
-                            {empty ? <span className="text-[11px] text-muted-foreground">trống</span>
+                            {empty ? <span className="text-meta text-muted-foreground">trống</span>
                               : l.status === "checking" || l.status === "writing" ? <Loader2 className="h-4 w-4 animate-spin text-primary" />
                               : l.status === "done" ? <Badge className="bg-emerald-600">Đã ghi</Badge>
                               : l.status === "checked" ? <Badge variant="outline">Đã soát</Badge>
                               : l.status === "error" ? <Badge variant="destructive">Lỗi</Badge>
-                              : <span className="text-[11px] text-muted-foreground">chờ</span>}
+                              : <span className="text-meta text-muted-foreground">chờ</span>}
                           </TableCell>
                           <TableCell className="text-xs text-muted-foreground">
                             {l.errorMsg && <span className="text-destructive">{l.errorMsg}</span>}

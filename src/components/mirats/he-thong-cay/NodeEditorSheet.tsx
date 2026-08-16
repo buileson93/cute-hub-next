@@ -84,7 +84,7 @@ export function NodeEditorSheet({
           <SheetTitle className="flex items-center gap-2">
             <span>{title}</span>
             {target && target.kind !== "pl" && (
-              <Badge variant="outline" className="shrink-0 border-primary/30 bg-primary/10 font-mono text-[11px] font-semibold text-primary">
+              <Badge variant="outline" className="shrink-0 border-primary/30 bg-primary/10 font-mono text-meta font-semibold text-primary">
                 {target.ma}
               </Badge>
             )}
@@ -122,7 +122,7 @@ export function NodeEditorSheet({
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <Label className="text-[10px] uppercase text-muted-foreground">Số serial</Label>
+                  <Label className="text-meta uppercase text-muted-foreground">Số serial</Label>
                   <Input 
                     value={tbMap.get(target.ma)?.ma_serial || ""} 
                     onChange={(e) => saveCell.mutate({ ma: target.ma, col: "ma_serial", value: e.target.value, userRoles: roles })}
@@ -130,7 +130,7 @@ export function NodeEditorSheet({
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[10px] uppercase text-muted-foreground">Vị trí</Label>
+                  <Label className="text-meta uppercase text-muted-foreground">Vị trí</Label>
                   <Input 
                     value={tbMap.get(target.ma)?.vi_tri || ""} 
                     onChange={(e) => saveCell.mutate({ ma: target.ma, col: "vi_tri", value: e.target.value, userRoles: roles })}
@@ -211,7 +211,7 @@ export function NodeEditorSheet({
           {target?.kind === "ht" && <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="he_thong" />}
           {target?.kind === "tb" && <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="thiet_bi" />}
           {target?.kind === "tb" && (
-             <div className="pt-4 border-t text-[10px] text-muted-foreground italic">
+             <div className="pt-4 border-t text-meta text-muted-foreground italic">
                * Nếu bạn không có quyền ghi trực tiếp, thay đổi sẽ được tạo thành đề xuất phê duyệt.
              </div>
           )}

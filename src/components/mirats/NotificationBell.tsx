@@ -35,7 +35,7 @@ export function NotificationBell() {
           {unread > 0 && (
             <span
               aria-hidden
-              className="absolute right-1.5 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background"
+              className="absolute right-1.5 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-meta font-bold text-primary-foreground ring-2 ring-background"
             >
               {unread > 9 ? "9+" : unread}
             </span>
@@ -98,7 +98,7 @@ export function NotificationBell() {
                     {n.noi_dung && (
                       <div className="mt-0.5 truncate text-xs text-muted-foreground">{n.noi_dung}</div>
                     )}
-                    <div className="mt-1 text-[10.5px] text-muted-foreground/70">
+                    <div className="mt-1 text-meta text-muted-foreground/70">
                       {formatDT(n.created_at)}
                     </div>
                   </div>

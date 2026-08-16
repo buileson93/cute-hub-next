@@ -203,7 +203,7 @@ function ChatPane() {
                     {showHeader && (
                       <div
                         className={cn(
-                          "flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-semibold",
+                          "flex h-8 w-8 items-center justify-center rounded-full text-meta font-semibold",
                           mine ? "bg-primary text-primary-foreground" : "bg-secondary",
                         )}
                       >
@@ -213,7 +213,7 @@ function ChatPane() {
                   </div>
                   <div className={cn("min-w-0 max-w-[70%]", mine && "text-right")}>
                     {showHeader && (
-                      <div className="mb-1 text-[10.5px] text-muted-foreground">
+                      <div className="mb-1 text-meta text-muted-foreground">
                         {p?.ho_ten ?? p?.email ?? "…"} · {formatDT(m.created_at)}
                       </div>
                     )}
@@ -297,7 +297,7 @@ function ChatPane() {
             <Send className="h-4 w-4" />
           </Button>
         </div>
-        <div className="mx-auto mt-1 max-w-3xl text-center text-[10px] text-muted-foreground">
+        <div className="mx-auto mt-1 max-w-3xl text-center text-meta text-muted-foreground">
           Enter để gửi · Shift+Enter xuống dòng · File tối đa 20MB (ảnh, PDF, Office)
         </div>
       </div>

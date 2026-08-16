@@ -15,7 +15,7 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
   return (
     <Card className="border-none shadow-md bg-card/50 backdrop-blur-sm h-full flex flex-col">
       <CardHeader className="p-4 pb-0">
-        <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+        <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
           {icon && <Icon name={icon as any} size="tiny" className="text-primary" />}
           {title}
         </CardTitle>

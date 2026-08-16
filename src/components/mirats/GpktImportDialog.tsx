@@ -477,11 +477,11 @@ function Field({ label, meta, children }: { label: string; meta?: FieldMeta; chi
         <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
         {meta && (
           <span className="flex items-center gap-1">
-            {meta.source === "regex" && <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-emerald-500 text-emerald-700">regex</Badge>}
-            {meta.source === "ai" && <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-primary text-primary">AI</Badge>}
-            {meta.source === "manual" && <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-sky-400 text-sky-700">sửa tay</Badge>}
+            {meta.source === "regex" && <Badge variant="outline" className="text-meta px-1 py-0 h-4 border-emerald-500 text-emerald-700">regex</Badge>}
+            {meta.source === "ai" && <Badge variant="outline" className="text-meta px-1 py-0 h-4 border-primary text-primary">AI</Badge>}
+            {meta.source === "manual" && <Badge variant="outline" className="text-meta px-1 py-0 h-4 border-sky-400 text-sky-700">sửa tay</Badge>}
             {meta.needsCheck && (
-              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-amber-500 text-amber-700" title={meta.reason ?? "Cần kiểm tra"}>
+              <Badge variant="outline" className="text-meta px-1 py-0 h-4 border-amber-500 text-amber-700" title={meta.reason ?? "Cần kiểm tra"}>
                 cần KT
               </Badge>
             )}
@@ -490,7 +490,7 @@ function Field({ label, meta, children }: { label: string; meta?: FieldMeta; chi
       </div>
       {children}
       {meta?.needsCheck && meta.reason && (
-        <p className="text-[11px] text-amber-600">{meta.reason}</p>
+        <p className="text-meta text-amber-600">{meta.reason}</p>
       )}
     </div>
   );

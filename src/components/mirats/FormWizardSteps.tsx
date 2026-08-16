@@ -45,7 +45,7 @@ export function FormWizardSteps({ steps, currentStep, className }: FormWizardSte
               
               <div className="mt-2 text-center">
                 <span className={cn(
-                  "block text-[10px] font-bold uppercase tracking-wider",
+                  "block text-meta font-bold uppercase tracking-wider",
                   isCurrent ? "text-primary" : "text-muted-foreground"
                 )}>
                   Bước {step.id}

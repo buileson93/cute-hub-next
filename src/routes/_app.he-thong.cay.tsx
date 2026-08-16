@@ -310,11 +310,11 @@ function HeThongCayPage() {
          <div className="flex items-center gap-3">
             <Tabs value={display} onValueChange={handleDisplayChange}>
               <TabsList className={UI_DENSITY.CONTROL_H}>
-                <TabsTrigger value="table" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
-                <TabsTrigger value="tree" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
-                <TabsTrigger value="mindmap" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
-                <TabsTrigger value="health" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="h-full gap-2 px-2 text-[12px]" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
+                <TabsTrigger value="table" className="h-full gap-2 px-2 text-bodySm"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
+                <TabsTrigger value="tree" className="h-full gap-2 px-2 text-bodySm"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
+                <TabsTrigger value="mindmap" className="h-full gap-2 px-2 text-bodySm"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
+                <TabsTrigger value="health" className="h-full gap-2 px-2 text-bodySm"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
+                <TabsTrigger value="history" className="h-full gap-2 px-2 text-bodySm" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
          </div>

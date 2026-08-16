@@ -439,7 +439,7 @@ function AdminAuditPage() {
               <Icon className="h-3.5 w-3.5 text-muted-foreground" />
               {e.verb}
             </div>
-            <div className="font-mono text-[10px] text-muted-foreground">{e.row.action}</div>
+            <div className="font-mono text-meta text-muted-foreground">{e.row.action}</div>
           </div>
         );
       },
@@ -454,7 +454,7 @@ function AdminAuditPage() {
         return (
           <div className="flex flex-col">
             <div className="font-medium">{p.ho_ten}</div>
-            <div className="text-[10px] text-muted-foreground">{p.email}</div>
+            <div className="text-meta text-muted-foreground">{p.email}</div>
           </div>
         );
       },
@@ -466,7 +466,7 @@ function AdminAuditPage() {
       render: (e) => (
         <div className="flex flex-col">
           <div className="font-medium">{entityLabel(e.row.entity)}</div>
-          <div className="text-[10px] text-muted-foreground font-mono">{e.row.entity_id}</div>
+          <div className="text-meta text-muted-foreground font-mono">{e.row.entity_id}</div>
         </div>
       ),
     },
@@ -481,7 +481,7 @@ function AdminAuditPage() {
       header: "Thời điểm",
       width: 160,
       render: (e) => (
-        <div className="flex flex-col text-muted-foreground tabular-nums font-mono text-[11px]">
+        <div className="flex flex-col text-muted-foreground tabular-nums font-mono text-meta">
           {fmtTime(e.row.created_at)}
         </div>
       ),
@@ -570,7 +570,7 @@ function AdminAuditPage() {
                   <Icon className={`h-3.5 w-3.5 ${m.text}`} />
                 </span>
                 <div className="min-w-0">
-                  <div className={`text-[11px] uppercase tracking-wide ${m.text}`}>{m.label}</div>
+                  <div className={`text-meta uppercase tracking-wide ${m.text}`}>{m.label}</div>
                   <div className="font-mono text-base font-semibold tabular-nums leading-tight">{sevCount[s]}</div>
                 </div>
               </button>
@@ -680,18 +680,18 @@ function AdminAuditPage() {
                 {/* Meta info */}
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-muted-foreground border-b pb-3">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-[10px] uppercase">ID:</span>
+                    <span className="font-semibold text-meta uppercase">ID:</span>
                     <span className="font-mono">{e.row.id}</span>
                   </div>
                   {email && (
                     <div className="flex items-center gap-1.5">
-                      <span className="font-semibold text-[10px] uppercase">Email:</span>
+                      <span className="font-semibold text-meta uppercase">Email:</span>
                       <span>{email}</span>
                     </div>
                   )}
                   {ip && (
                     <div className="flex items-center gap-1.5">
-                      <span className="font-semibold text-[10px] uppercase">IP:</span>
+                      <span className="font-semibold text-meta uppercase">IP:</span>
                       <span className="font-mono">{ip}</span>
                     </div>
                   )}
@@ -699,7 +699,7 @@ function AdminAuditPage() {
                     <Button 
                       size="sm" 
                       variant="destructive" 
-                      className="h-6 px-2 text-[10px]"
+                      className="h-6 px-2 text-meta"
                       onClick={() => setRollbackTarget(e.row)}
                     >
                       <RotateCcw className="mr-1 h-3 w-3" /> Hoàn tác thay đổi
@@ -712,7 +712,7 @@ function AdminAuditPage() {
                   <div className="rounded-md border bg-background/50 overflow-hidden">
                     <table className="w-full border-collapse">
                       <thead>
-                        <tr className="bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b">
+                        <tr className="bg-muted/30 text-meta font-bold uppercase tracking-wider text-muted-foreground border-b">
                           <th className="px-3 py-2 text-left w-1/4">Trường</th>
                           <th className="px-3 py-2 text-left w-3/8">Trước</th>
                           <th className="px-3 py-2 text-left w-3/8">Sau</th>
@@ -731,11 +731,11 @@ function AdminAuditPage() {
                   </div>
                 ) : e.kind === "create" || e.kind === "delete" ? (
                   <div className="space-y-2">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <div className="text-meta font-bold uppercase tracking-wider text-muted-foreground">
                       Dữ liệu {e.kind === "create" ? "mới" : "đã xoá"}
                     </div>
 
-                    <pre className="p-3 bg-muted/30 rounded-md font-mono text-[11px] overflow-auto max-h-[400px]">
+                    <pre className="p-3 bg-muted/30 rounded-md font-mono text-meta overflow-auto max-h-[400px]">
                       {JSON.stringify(detail.new || detail.old, null, 2)}
                     </pre>
                   </div>
@@ -853,19 +853,19 @@ function LogRow({
         className="grid w-full grid-cols-[28px_170px_80px_180px_1fr_140px] items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-muted/40"
       >
         <ChevronRight className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${expanded ? "rotate-90" : ""}`} />
-        <span className="font-mono tabular-nums text-[11px] text-muted-foreground">{fmtTime(row.created_at)}</span>
+        <span className="font-mono tabular-nums text-meta text-muted-foreground">{fmtTime(row.created_at)}</span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2 w-2 rounded-full ${sev.dot}`} />
-          <span className={`text-[11px] uppercase ${sev.text}`}>{sev.label}</span>
+          <span className={`text-meta uppercase ${sev.text}`}>{sev.label}</span>
         </span>
         <span className="truncate">{who}</span>
         <span className="flex min-w-0 items-center gap-1.5">
           <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <span className="text-muted-foreground">{verb.toLowerCase()}</span>
-          <Badge variant="outline" className="h-4 px-1.5 text-[10px]">{entLabel}</Badge>
+          <Badge variant="outline" className="h-4 px-1.5 text-meta">{entLabel}</Badge>
           {label && <span className="truncate font-medium">{label}</span>}
         </span>
-        <span className="truncate text-[11px] text-muted-foreground">{pg}</span>
+        <span className="truncate text-meta text-muted-foreground">{pg}</span>
       </button>
 
       {expanded && (
@@ -893,7 +893,7 @@ function LogRow({
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-1.5 text-[11px] sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-1.5 text-meta sm:grid-cols-3">
             <MetaRow label="Mã hành động" value={row.action} mono />
             <MetaRow label="Loại dữ liệu" value={entLabel} />
             <MetaRow label="ID bản ghi" value={row.entity_id ?? "—"} mono />
@@ -905,7 +905,7 @@ function LogRow({
           {row.detail && Object.keys(row.detail).length > 0 && (
             <details className="text-xs">
               <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Xem dữ liệu thô (JSON)</summary>
-              <pre className="mt-1 max-h-64 overflow-auto rounded bg-background p-2 font-mono text-[10px] leading-snug">
+              <pre className="mt-1 max-h-64 overflow-auto rounded bg-background p-2 font-mono text-meta leading-snug">
                 {JSON.stringify(row.detail, null, 2)}
               </pre>
             </details>
@@ -913,7 +913,7 @@ function LogRow({
 
           {canRollback && onRollback && (
             <div className="flex items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 dark:border-amber-500/30 dark:bg-amber-500/10">
-              <span className="text-[11px] text-amber-800 dark:text-amber-200">
+              <span className="text-meta text-amber-800 dark:text-amber-200">
                 {kind === "create" ? "Hoàn tác sẽ xoá bản ghi vừa được tạo."
                   : kind === "delete" ? "Hoàn tác sẽ khôi phục lại bản ghi đã xoá."
                   : "Hoàn tác sẽ đưa bản ghi về đúng giá trị trước khi sửa."}

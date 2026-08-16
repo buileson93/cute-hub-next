@@ -61,11 +61,11 @@ export function RoleOverview({ stats, loading, error }: RoleOverviewProps) {
               </span>
               <div className="text-right">
                 <span className="font-mono text-2xl font-semibold leading-none tabular-nums">{r.total}</span>
-                <div className="text-[10px] text-muted-foreground mt-1">{r.active} hoạt động</div>
+                <div className="text-meta text-muted-foreground mt-1">{r.active} hoạt động</div>
               </div>
             </div>
             <div className="mt-3 text-sm font-semibold leading-tight">{r.name}</div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">{r.scope}</div>
+            <div className="mt-0.5 text-meta text-muted-foreground">{r.scope}</div>
           </Card>
         );
       })}

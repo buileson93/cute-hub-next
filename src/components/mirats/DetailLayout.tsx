@@ -44,7 +44,7 @@ export function DetailLayout({
                 'component' in b ? (
                   <div key={i}>{b.component}</div>
                 ) : (
-                  <Badge key={i} variant="secondary" className={cn("text-[10px] font-mono", b.className)}>
+                  <Badge key={i} variant="secondary" className={cn("text-meta font-mono", b.className)}>
                     {b.label}
                   </Badge>
                 )
@@ -120,7 +120,7 @@ export function KpiCard({ icon: Icon, label, value, tone, className }: { icon: a
           <Icon className={cn("h-4 w-4", tone || "text-foreground/70")} />
         </div>
         <div className="min-w-0">
-          <div className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">{label}</div>
+          <div className="text-meta uppercase tracking-wider text-muted-foreground font-bold">{label}</div>
           <div className={cn("text-sm font-bold", tone)}>{value}</div>
         </div>
       </CardContent>

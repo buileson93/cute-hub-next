@@ -22,7 +22,7 @@ export function AnomalyBadge({ score, count90d, className }: AnomalyBadgeProps) 
             aria-label={label}
             className={
               "inline-flex h-5 items-center gap-1 rounded-full border border-amber-500/40 " +
-              "bg-amber-500/15 px-1.5 text-[10px] font-medium text-amber-700 " +
+              "bg-amber-500/15 px-1.5 text-meta font-medium text-amber-700 " +
               "dark:text-amber-400 " +
               (className ?? "")
             }

@@ -61,10 +61,10 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
             {Object.entries(LOAI_META).map(([k, m]) => <SelectItem key={k} value={k}>{m.label}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Badge variant="outline" className="text-[11px]">{filtered.length} công văn</Badge>
-        <Badge variant="outline" className="text-[11px]">{soLuong} luồng liên kết</Badge>
+        <Badge variant="outline" className="text-meta">{filtered.length} công văn</Badge>
+        <Badge variant="outline" className="text-meta">{soLuong} luồng liên kết</Badge>
         {quaHan.length > 0 && (
-          <Badge variant="outline" className="border-rose-200 bg-rose-50 text-[11px] text-rose-700">
+          <Badge variant="outline" className="border-rose-200 bg-rose-50 text-meta text-rose-700">
             <AlertTriangle className="mr-1 h-3 w-3" />{quaHan.length} quá hạn phúc đáp
           </Badge>
         )}

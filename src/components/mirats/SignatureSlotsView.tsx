@@ -48,7 +48,7 @@ function SignatureImg({ src, alt }: { src: SigLike; alt: string }) {
     );
   }
   if (!resolved) {
-    return <div className="mt-2 flex h-14 items-center justify-center rounded border bg-muted/20 text-[11px] text-muted-foreground">Không tải được ảnh</div>;
+    return <div className="mt-2 flex h-14 items-center justify-center rounded border bg-muted/20 text-meta text-muted-foreground">Không tải được ảnh</div>;
   }
   return <img src={resolved} alt={alt} className="mt-2 h-14 w-full rounded border bg-white object-contain" />;
 }
@@ -64,7 +64,7 @@ export function SignatureSlotsView({ slots, compact }: { slots: SignatureSlot[];
         return (
           <div key={s.key ?? i} className={`rounded border bg-background p-2 ${compact ? "w-44" : ""}`}>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="font-mono text-[10px]">#{i + 1}</Badge>
+              <Badge variant="outline" className="font-mono text-meta">#{i + 1}</Badge>
               <span className="truncate text-sm font-medium">{s.label}</span>
               {signed ? (
                 <Badge className="bg-emerald-600 text-white"><Check className="mr-1 h-3 w-3" />Đã ký</Badge>
@@ -74,7 +74,7 @@ export function SignatureSlotsView({ slots, compact }: { slots: SignatureSlot[];
             </div>
             {signed && <SignatureImg src={s.data_url as SigLike} alt={`chữ ký ${s.label}`} />}
             {signed && (
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-meta text-muted-foreground">
                 {s.signer_name || s.signer_id || "?"}
                 {s.signed_at ? ` · ${new Date(s.signed_at).toLocaleString("vi-VN")}` : ""}
               </p>
@@ -95,7 +95,7 @@ export function SingleSignatureView({ value, signedAt }: { value: unknown; signe
     <div className="inline-block rounded border bg-white p-1">
       <SignatureImg src={src} alt="chữ ký" />
       {signedAt && (
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="mt-1 text-meta text-muted-foreground">
           {new Date(signedAt).toLocaleString("vi-VN")}
         </p>
       )}

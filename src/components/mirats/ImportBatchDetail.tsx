@@ -178,7 +178,7 @@ export function ImportBatchDetail({ items, batchName }: { items: Item[]; batchNa
                     <TableCell>
                       <Badge variant="outline">{STATUS_LABEL[it.status ?? ""] ?? (it.status ?? "—")}</Badge>
                     </TableCell>
-                    <TableCell className="max-w-[420px] truncate text-[11px] text-muted-foreground">
+                    <TableCell className="max-w-[420px] truncate text-meta text-muted-foreground">
                       {msgs[0] ?? Object.entries(it.raw_row ?? {}).slice(0, 4).map(([k, v]) => `${k}=${fmt(v)}`).join(" · ")}
                     </TableCell>
                   </TableRow>
@@ -194,7 +194,7 @@ export function ImportBatchDetail({ items, batchName }: { items: Item[]; batchNa
                           </div>
                         )}
                         {it.target_table && (
-                          <div className="mb-2 text-[11px] text-muted-foreground">
+                          <div className="mb-2 text-meta text-muted-foreground">
                             Đích: <span className="font-mono">{it.target_table}</span>
                             {it.target_id && <> · id <span className="font-mono">{it.target_id}</span></>}
                           </div>
@@ -221,7 +221,7 @@ export function ImportBatchDetail({ items, batchName }: { items: Item[]; batchNa
                             </Table>
                           </div>
                         ) : (
-                          <div className="text-[11px] text-muted-foreground">Không có thay đổi trường.</div>
+                          <div className="text-meta text-muted-foreground">Không có thay đổi trường.</div>
                         )}
                       </TableCell>
                     </TableRow>

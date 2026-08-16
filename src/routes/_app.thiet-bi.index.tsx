@@ -359,13 +359,13 @@ function ThietBiPage() {
                 onFocus={() => { if (blurTimer.current) clearTimeout(blurTimer.current); setFocused(true); }}
                 onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
                 placeholder="Tìm mã, tên..."
-                className="h-7 pl-7 text-[11px]"
+                className="h-7 pl-7 text-meta"
               />
               {openDropdown && suggestions && (
                 <div className="absolute right-0 top-full z-50 mt-2 max-h-96 w-[min(30rem,90vw)] overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-popover shadow-xl">
                   {suggestions.sysHits.length > 0 && (
                     <div className="py-1">
-                      <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Hệ thống</div>
+                      <div className="px-3 py-1 text-meta font-semibold uppercase tracking-wide text-muted-foreground">Hệ thống</div>
                       {suggestions.sysHits.map((s) => (
                         <button
                           key={s.id}
@@ -382,7 +382,7 @@ function ThietBiPage() {
                   )}
                   {suggestions.devHits.length > 0 && (
                     <div className="border-t border-border py-1">
-                      <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Tài sản</div>
+                      <div className="px-3 py-1 text-meta font-semibold uppercase tracking-wide text-muted-foreground">Tài sản</div>
                       {suggestions.devHits.map((d) => (
                         <button
                           key={d.id}
@@ -394,9 +394,9 @@ function ThietBiPage() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="truncate font-medium">{tbName(d)}</span>
-                              <span className="text-[10px] font-mono text-muted-foreground">{d.ma_thiet_bi}</span>
+                              <span className="text-meta font-mono text-muted-foreground">{d.ma_thiet_bi}</span>
                             </div>
-                            <div className="text-[10px] text-muted-foreground">{htName(d._htId, d._htTen)}</div>
+                            <div className="text-meta text-muted-foreground">{htName(d._htId, d._htTen)}</div>
                           </div>
                         </button>
                       ))}
@@ -444,7 +444,7 @@ function ThietBiPage() {
                     <CardContent className="p-4 space-y-2">
                       <div className="flex justify-between items-start">
                         <h3 className="font-bold text-sm">{n.label}</h3>
-                        <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
+                        <Badge variant="outline" className="text-meta">{n.count} TB</Badge>
                       </div>
                       <div className="flex gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
@@ -455,7 +455,7 @@ function ThietBiPage() {
                         </div>
                       </div>
                       <div className="pt-2 border-t mt-2 flex justify-between items-center">
-                        <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
+                        <span className="text-meta text-muted-foreground uppercase">{n.key}</span>
                         <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
                            <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
                         </Button>

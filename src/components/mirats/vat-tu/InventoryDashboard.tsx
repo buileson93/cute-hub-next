@@ -58,7 +58,7 @@ function StatCard({
           <div className={cn("text-lg font-semibold leading-none", alert && "text-red-600")}>
             {value}
           </div>
-          <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+          <div className="mt-1 text-meta uppercase tracking-wide text-muted-foreground">
             {label}
           </div>
         </div>

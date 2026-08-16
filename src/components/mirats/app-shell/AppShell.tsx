@@ -188,7 +188,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         )}
                       >
                         <ws.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
-                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
+                        <span className="w-full truncate text-center leading-tight text-meta font-medium hidden data-[density=comfortable]:block">
                           {ws.short}
                         </span>
                         {ws.id === activeWs.id && (
@@ -217,7 +217,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         )}
                       >
                         <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
-                        <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
+                        <span className="w-full truncate text-center leading-tight text-meta font-medium hidden data-[density=comfortable]:block">
                           {adminWs.short}
                         </span>
                       </button>

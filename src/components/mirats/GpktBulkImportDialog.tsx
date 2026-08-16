@@ -245,7 +245,7 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
         {/* Rows */}
         {rows.length > 0 && (
           <div className="border rounded-md overflow-hidden">
-            <div className="grid grid-cols-[24px_1fr_140px_90px_90px_140px_60px] gap-2 items-center px-3 py-2 text-[11px] font-medium bg-muted/50 uppercase text-muted-foreground">
+            <div className="grid grid-cols-[24px_1fr_140px_90px_90px_140px_60px] gap-2 items-center px-3 py-2 text-meta font-medium bg-muted/50 uppercase text-muted-foreground">
               <span></span>
               <span>Tệp / Số GP / Hệ thống</span>
               <span>Nguồn</span>

@@ -103,10 +103,10 @@ export function UserMenu() {
           >
             <UserAvatar name={profile.ho_ten} email={profile.email} url={profile.avatar_url} className="h-8 w-8" />
             <div className="hidden text-left leading-tight sm:block">
-              <div className="max-w-[120px] truncate text-[13px] font-semibold text-foreground">
+              <div className="max-w-[120px] truncate text-body font-semibold text-foreground">
                 {typeof profile.ho_ten === 'string' ? profile.ho_ten : profile.email.split("@")[0]}
               </div>
-              <div className="text-[10.5px] text-muted-foreground">
+              <div className="text-meta text-muted-foreground">
                 {typeof roles[0] === 'string' ? roles[0] : "—"}
               </div>
             </div>
@@ -116,11 +116,11 @@ export function UserMenu() {
         <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuLabel>
             <div className="text-xs font-medium">{profile.email}</div>
-            <div className="text-[10.5px] font-normal text-muted-foreground">
+            <div className="text-meta font-normal text-muted-foreground">
               {typeof profile.ho_ten === 'string' ? profile.ho_ten : "—"}
             </div>
             <div className="mt-2 flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full font-mono text-[10px] tracking-wider">
+              <Badge variant="outline" className="rounded-full font-mono text-meta tracking-wider">
                 {hasRole("admin") || hasRole("phong_kt")
                   ? "TOÀN HỆ THỐNG"
                   : `ĐV: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? String(profile.don_vi ?? "—")}`}

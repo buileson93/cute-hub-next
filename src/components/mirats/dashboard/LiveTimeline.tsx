@@ -77,11 +77,11 @@ function TimelineItem({ item, isFirst }: { item: AuditTimelineItem; isFirst: boo
       </div>
 
       <div className="flex flex-col gap-1">
-        <div className="text-[13px] leading-snug text-foreground/90 group-hover:text-primary transition-colors">
+        <div className="text-body leading-snug text-foreground/90 group-hover:text-primary transition-colors">
           {item.description}
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <span className="font-bold text-[11px] uppercase bg-muted/50 px-1 rounded flex items-center gap-1">
+        <div className="flex items-center gap-2 text-meta text-muted-foreground">
+          <span className="font-bold text-meta uppercase bg-muted/50 px-1 rounded flex items-center gap-1">
             <User className="w-3 h-3" />
             {item.user_ho_ten || "Hệ thống"}
           </span>

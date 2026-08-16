@@ -207,7 +207,7 @@ export function CongVanSheet({
           <SheetHeader className="pb-2">
             <SheetTitle className="flex items-center gap-2">
               {editing ? editing.so_cong_van : "Công văn mới"}
-              <Badge variant="outline" className={cn("text-[10px]", LOAI_META[draft.loai].tone)}>
+              <Badge variant="outline" className={cn("text-meta", LOAI_META[draft.loai].tone)}>
                 {LOAI_META[draft.loai].short}
               </Badge>
             </SheetTitle>
@@ -289,7 +289,7 @@ export function CongVanSheet({
               <Textarea rows={2} value={draft.can_cu_text} disabled={!canEdit}
                 onChange={(e) => setDraft({ ...draft, can_cu_text: e.target.value })} />
               {goiYCanCu && !editing && (
-                <p className="mt-1 text-[11px] text-muted-foreground">
+                <p className="mt-1 text-meta text-muted-foreground">
                   Sẽ tự nối tới công văn gốc <b>{goiYCanCu.so_cong_van}</b>.
                 </p>
               )}

@@ -273,10 +273,10 @@ function TopologyPage() {
                       <td className="py-2 pr-3">
                         <div className="flex flex-wrap items-center gap-1.5">
                           <span className="font-medium">{k.tu_ten ?? k.tu_ma}</span>
-                          {k.tu_cong && <Badge variant="secondary" className="text-[10px]">{k.tu_cong}</Badge>}
+                          {k.tu_cong && <Badge variant="secondary" className="text-meta">{k.tu_cong}</Badge>}
                           <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
                           <span className="font-medium">{k.den_ten ?? k.den_ma}</span>
-                          {k.den_cong && <Badge variant="secondary" className="text-[10px]">{k.den_cong}</Badge>}
+                          {k.den_cong && <Badge variant="secondary" className="text-meta">{k.den_cong}</Badge>}
                         </div>
                         {k.mo_ta && <p className="mt-0.5 text-xs text-muted-foreground">{k.mo_ta}</p>}
                       </td>

@@ -429,7 +429,7 @@ function SuCoPage() {
       />
 
       {/* Dải thống kê gọn */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-meta">
         <Stat icon={AlertTriangle} label="SC" value={stats.total} />
         <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600 dark:text-amber-400" />
         <Stat icon={AlertTriangle} label="Gắt" value={stats.severe} tone="text-red-600 dark:text-red-400" />
@@ -618,18 +618,18 @@ function SuCoPage() {
             maxHeightClass="min-h-0 flex-1"
             toolbarLeft={
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mr-1">Nhật ký</span>
+                <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground mr-1">Nhật ký</span>
                 <div className="relative w-36 sm:w-48">
                   <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Tìm SC..."
-                    className="h-7 pl-7 text-[11px]"
+                    className="h-7 pl-7 text-meta"
                   />
                 </div>
                 <Select value={tt} onValueChange={setTt}>
-                  <SelectTrigger className="h-7 w-[90px] text-[11px]"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-7 w-[90px] text-meta"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả</SelectItem>
                     {statuses("su_co").map((s) => (
@@ -647,9 +647,9 @@ function SuCoPage() {
                    </Button>
                  </AppTooltip>
                  <div className="flex bg-muted/30 p-0.5 rounded-md border h-7 ml-1">
-                   <Button variant={period === "all" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("all")} className="h-6 px-2 text-[10px]">Cả năm</Button>
-                   <Button variant={period === "week" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("week")} className="h-6 px-2 text-[10px]">Tuần</Button>
-                   <Button variant={period === "month" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("month")} className="h-6 px-2 text-[10px]">Tháng</Button>
+                   <Button variant={period === "all" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("all")} className="h-6 px-2 text-meta">Cả năm</Button>
+                   <Button variant={period === "week" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("week")} className="h-6 px-2 text-meta">Tuần</Button>
+                   <Button variant={period === "month" ? "default" : "ghost"} size="sm" onClick={() => setPeriod("month")} className="h-6 px-2 text-meta">Tháng</Button>
                  </div>
               </div>
             }

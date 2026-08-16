@@ -485,21 +485,21 @@ function TableGraphNode({ data, selected }: NodeProps) {
       >
         <div className="flex items-center gap-1.5">
           <span className={cn("h-2 w-2 rounded-full shrink-0", d.colorDot)} />
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 truncate">{d.group}</span>
+          <span className="text-meta uppercase tracking-wider text-slate-500 truncate">{d.group}</span>
           {d.expanded
             ? <ChevronDown className="ml-auto h-3.5 w-3.5 text-slate-400 shrink-0" />
             : <ChevronRight className="ml-auto h-3.5 w-3.5 text-slate-400 shrink-0" />}
         </div>
         <div className="font-semibold text-sm leading-tight truncate">{d.viName}</div>
-        <div className="text-[11px] font-mono text-slate-500 truncate">{d.rawName}</div>
-        <div className="mt-0.5 text-[11px] text-slate-500">{d.colCount} cột · {d.fkCount} liên kết</div>
+        <div className="text-meta font-mono text-slate-500 truncate">{d.rawName}</div>
+        <div className="mt-0.5 text-meta text-slate-500">{d.colCount} cột · {d.fkCount} liên kết</div>
       </button>
       {d.expanded && (
         <div className="border-t bg-slate-50/40 overflow-auto" style={{ maxHeight: EXPANDED_MAX - HEAD_H }}>
           {d.columns.map((col) => (
             <div
               key={col.name}
-              className="flex items-center gap-1.5 px-3 py-1 text-[11px] border-b border-slate-100 last:border-b-0"
+              className="flex items-center gap-1.5 px-3 py-1 text-meta border-b border-slate-100 last:border-b-0"
               title={typeVi(col)}
             >
               {col.is_pk && <KeyRound className="h-3 w-3 text-amber-600 shrink-0" />}
@@ -637,7 +637,7 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
         </div>
       </Panel>
       <Panel position="top-left">
-        <div className="rounded-md border bg-white/95 px-2 py-1 text-[11px] text-slate-500 shadow-sm backdrop-blur">
+        <div className="rounded-md border bg-white/95 px-2 py-1 text-meta text-slate-500 shadow-sm backdrop-blur">
           Bấm vào khối để mở/đóng danh sách cột
         </div>
       </Panel>
@@ -701,7 +701,7 @@ function TableNode({
               {open ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}
               <div className="min-w-0">
                 <div className="font-medium text-sm truncate">{tableVi(tbl.table_name)}</div>
-                <div className="text-[11px] font-mono text-slate-500 truncate">{tbl.table_name}</div>
+                <div className="text-meta font-mono text-slate-500 truncate">{tbl.table_name}</div>
               </div>
             </button>
           </CollapsibleTrigger>
@@ -753,7 +753,7 @@ function TableNode({
                         <li key={f.constraint} className="flex items-center gap-1.5">
                           <span className="text-slate-500">Mỗi {tableVi(tbl.table_name).toLowerCase()} gắn với một</span>
                           <span className="font-medium">{tableVi(f.to_table)}</span>
-                          <span className="font-mono text-slate-400 text-[10px]">({f.from_column})</span>
+                          <span className="font-mono text-slate-400 text-meta">({f.from_column})</span>
                         </li>
                       ))}
                     </ul>
@@ -767,7 +767,7 @@ function TableNode({
                         <li key={f.constraint} className="flex items-center gap-1.5">
                           <span className="font-medium">{tableVi(f.from_table)}</span>
                           <span className="text-slate-500">tham chiếu đến bảng này</span>
-                          <span className="font-mono text-slate-400 text-[10px]">({f.from_column})</span>
+                          <span className="font-mono text-slate-400 text-meta">({f.from_column})</span>
                         </li>
                       ))}
                     </ul>

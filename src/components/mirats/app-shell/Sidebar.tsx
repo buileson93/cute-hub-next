@@ -37,7 +37,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
             {!collapsed && (
-              <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60">
+              <div className="mb-2 px-2.5 text-meta font-bold uppercase tracking-wider text-muted-foreground/60">
                 {group.nhan}
               </div>
             )}
@@ -73,7 +73,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     {!collapsed && <span className="truncate">{item.nhan}</span>}
                     {!collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
                       <div 
-                        className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-[10px] font-bold text-primary data-[density=compact]:h-4 data-[density=compact]:min-w-4"
+                        className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-meta font-bold text-primary data-[density=compact]:h-4 data-[density=compact]:min-w-4"
                         aria-label={`${badges[item.badgeKey]} việc cần xử lý`}
                       >
                         {badges[item.badgeKey] > 99 ? "99+" : badges[item.badgeKey]}

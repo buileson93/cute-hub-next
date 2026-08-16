@@ -137,12 +137,12 @@ export function AssetImportDialog({
                 <div className="flex items-center gap-2">
                   <FileSpreadsheet className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium truncate max-w-[200px]">{file.name}</span>
-                  <Badge variant="outline" className="text-[10px]">{previewData.length} dòng</Badge>
+                  <Badge variant="outline" className="text-meta">{previewData.length} dòng</Badge>
                 </div>
                 <Button variant="ghost" size="sm" onClick={reset} className="h-8 text-xs">Chọn file khác</Button>
               </div>
 
-              <div className="flex items-center gap-2 text-[11px] text-amber-600 bg-amber-50 p-2 rounded border border-amber-100">
+              <div className="flex items-center gap-2 text-meta text-amber-600 bg-amber-50 p-2 rounded border border-amber-100">
                 <AlertCircle className="h-3.5 w-3.5" />
                 <span>Vui lòng kiểm tra kỹ dữ liệu trước khi xác nhận. Hệ thống sẽ bỏ qua nếu trùng Mã thiết bị.</span>
               </div>
@@ -182,7 +182,7 @@ export function AssetImportDialog({
 
           <div className="flex items-start gap-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
             <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-            <div className="text-[11px] text-blue-700 leading-normal">
+            <div className="text-meta text-blue-700 leading-normal">
               <strong>Mẹo:</strong> Cột <code>nhan_vien_id</code> phải chứa UUID của nhân viên để gán tự động. 
               Cột <code>loai_thiet_bi_id</code> nên để trống để hệ thống tự nhận diện Máy tính (Laptop/PC).
             </div>

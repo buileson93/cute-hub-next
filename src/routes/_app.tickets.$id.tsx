@@ -200,7 +200,7 @@ function TicketDetailPage() {
               <Badge variant="outline" className={cn(TRANG_THAI_COLOR[ticket.trang_thai])}>
                 {TICKET_TRANG_THAI[ticket.trang_thai]}
               </Badge>
-              <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", UU_TIEN_COLOR[ticket.uu_tien])}>
+              <span className={cn("rounded px-1.5 py-0.5 text-meta font-medium", UU_TIEN_COLOR[ticket.uu_tien])}>
                 {TICKET_UU_TIEN[ticket.uu_tien]}
               </span>
               <span className="text-xs text-muted-foreground">{TICKET_LOAI[ticket.loai]}</span>
@@ -234,22 +234,22 @@ function TicketDetailPage() {
 
         <div className="mt-4 flex flex-wrap gap-4 border-t border-border pt-4 text-xs text-muted-foreground">
           <div>
-            <span className="text-[10px] uppercase tracking-wide">Người tạo</span>
+            <span className="text-meta uppercase tracking-wide">Người tạo</span>
             <div className="mt-0.5 flex items-center gap-1.5 text-foreground">
               <UserIcon className="h-3 w-3" /> {creator?.ho_ten ?? creator?.email ?? "…"}
             </div>
           </div>
           <div>
-            <span className="text-[10px] uppercase tracking-wide">Người xử lý</span>
+            <span className="text-meta uppercase tracking-wide">Người xử lý</span>
             <div className="mt-0.5 text-foreground">{assignee?.ho_ten ?? assignee?.email ?? "Chưa gán"}</div>
           </div>
           <div>
-            <span className="text-[10px] uppercase tracking-wide">Tạo lúc</span>
+            <span className="text-meta uppercase tracking-wide">Tạo lúc</span>
             <div className="mt-0.5 text-foreground">{formatDT(ticket.created_at)}</div>
           </div>
           {ticket.sla_han && (
             <div>
-              <span className="text-[10px] uppercase tracking-wide">Hạn SLA</span>
+              <span className="text-meta uppercase tracking-wide">Hạn SLA</span>
               <div
                 className={cn(
                   "mt-0.5 flex items-center gap-1",
@@ -311,14 +311,14 @@ function TicketDetailPage() {
                 <div key={c.id} className={cn("flex gap-3", mine && "flex-row-reverse")}>
                   <div
                     className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold",
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-meta font-semibold",
                       mine ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground",
                     )}
                   >
                     {(p?.ho_ten ?? p?.email ?? "?").slice(0, 2).toUpperCase()}
                   </div>
                   <div className={cn("min-w-0 max-w-[80%]", mine && "text-right")}>
-                    <div className="text-[11px] text-muted-foreground">
+                    <div className="text-meta text-muted-foreground">
                       {p?.ho_ten ?? p?.email ?? "…"} · {timeAgo(c.created_at)}
                     </div>
                     <div
@@ -354,7 +354,7 @@ function TicketDetailPage() {
               <Send className="mr-1.5 h-3.5 w-3.5" /> Gửi
             </Button>
           </div>
-          <div className="mt-1 text-[10px] text-muted-foreground">Ctrl/⌘ + Enter để gửi nhanh</div>
+          <div className="mt-1 text-meta text-muted-foreground">Ctrl/⌘ + Enter để gửi nhanh</div>
         </div>
       </div>
     </div>

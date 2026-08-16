@@ -29,7 +29,7 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
                     <span className="text-xs font-mono text-muted-foreground">
                       {new Date(row.thoi_diem).toLocaleString("vi-VN")}
                     </span>
-                    <Badge variant="outline" className="text-[10px] px-1.5 h-4 bg-amber-50 border-amber-200 text-amber-700">Vòng đời</Badge>
+                    <Badge variant="outline" className="text-meta px-1.5 h-4 bg-amber-50 border-amber-200 text-amber-700">Vòng đời</Badge>
                   </div>
                   <div className="flex items-center gap-2 font-medium">
                     <span className="text-muted-foreground">{tuTen}</span>

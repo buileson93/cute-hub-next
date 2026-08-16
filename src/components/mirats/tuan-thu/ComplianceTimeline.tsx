@@ -68,7 +68,7 @@ function KpiCard({ icon: Icon, label, value, tone }: { icon: any, label: string,
         </div>
         <div>
           <div className={cn("text-xl font-bold leading-none", tone)}>{value}</div>
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-1">{label}</div>
+          <div className="text-meta uppercase tracking-wide text-muted-foreground mt-1">{label}</div>
         </div>
       </CardContent>
     </Card>

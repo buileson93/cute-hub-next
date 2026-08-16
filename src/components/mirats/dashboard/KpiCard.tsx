@@ -63,7 +63,7 @@ export function KpiCard({
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground">
               {label}
             </span>
             {tooltip && (
@@ -86,7 +86,7 @@ export function KpiCard({
             {isLoading ? "..." : value}
           </div>
           {unit && !isLoading && (
-            <div className="text-[12px] font-bold text-muted-foreground uppercase">
+            <div className="text-bodySm font-bold text-muted-foreground uppercase">
               {unit}
             </div>
           )}
@@ -94,7 +94,7 @@ export function KpiCard({
 
         {trend && !isLoading && (
           <div className={cn(
-            "text-[11px] font-bold mt-1 flex items-center gap-1",
+            "text-meta font-bold mt-1 flex items-center gap-1",
             trend.isUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
           )}>
             <Icon name={trend.isUp ? "entity.trendingUp" : "entity.trendingDown" as any} size="tiny" />

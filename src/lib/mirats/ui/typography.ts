@@ -5,13 +5,13 @@
 
 export const TYPOGRAPHY = {
   // meta: 11px - Metadata, small tags, captive mono numbers
-  meta: "text-[11px] leading-tight font-medium tracking-tight",
+  meta: "text-meta leading-tight font-medium tracking-tight",
   
   // bodySm: 12px - Secondary body, table cells, secondary labels
-  bodySm: "text-[12px] leading-normal",
+  bodySm: "text-bodySm leading-normal",
   
   // body: 14px - Primary reading text, form labels
-  body: "text-[14px] leading-relaxed",
+  body: "text-body leading-relaxed",
   
   // title: 16px - Block headings, card titles
   title: "text-[16px] font-semibold leading-snug tracking-tight",

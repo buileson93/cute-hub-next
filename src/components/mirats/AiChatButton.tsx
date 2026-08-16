@@ -185,12 +185,12 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
             <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
               {tab === "ai" ? "MIRATS AI" : "Tin nhắn"}
               {tab === "ai" && (
-                <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 px-1.5 py-0 text-[9px] font-bold uppercase text-primary">
+                <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 px-1.5 py-0 text-meta font-bold uppercase text-primary">
                   {betaLabel}
                 </Badge>
               )}
             </div>
-            <div className="text-[10.5px] text-muted-foreground">
+            <div className="text-meta text-muted-foreground">
               {tab === "ai" ? "Trợ lý dữ liệu MIRATS · thử nghiệm" : "Trao đổi với đồng nghiệp"}
             </div>
           </div>
@@ -246,7 +246,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
       ) : (
         <div className="flex min-h-0 flex-1">
           <div className="hidden w-[140px] shrink-0 flex-col border-r border-border bg-muted/30 py-2 sm:flex">
-            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Lịch sử</div>
+            <div className="px-2 pb-1 text-meta font-medium uppercase tracking-wider text-muted-foreground">Lịch sử</div>
             <div className="flex-1 overflow-y-auto">
               {conversations.map((c: any) => (
                 <div key={c.id} className={cn(
@@ -257,7 +257,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
                     type="button"
                     onClick={() => setActiveId(c.id)}
                     className={cn(
-                      "flex-1 truncate rounded px-1.5 py-1.5 text-left text-[11px] transition-colors",
+                      "flex-1 truncate rounded px-1.5 py-1.5 text-left text-meta transition-colors",
                       activeId === c.id ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground transition-colors"
                     )}
                   >
@@ -376,14 +376,14 @@ function ChatArea({
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
             <Sparkles className="h-8 w-8 text-primary/60" />
             <div className="text-sm font-medium text-foreground">Bạn muốn hỏi gì về MIRATS?</div>
-            <div className="text-[11px] text-muted-foreground">Trợ lý chỉ đọc dữ liệu bạn có quyền truy cập</div>
+            <div className="text-meta text-muted-foreground">Trợ lý chỉ đọc dữ liệu bạn có quyền truy cập</div>
             <div className="mt-2 grid w-full max-w-[320px] gap-1.5">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => { setInput(s); inputRef.current?.focus(); }}
-                  className="rounded-lg border border-border bg-card px-3 py-2 text-left text-[12px] text-foreground transition-colors hover:bg-accent"
+                  className="rounded-lg border border-border bg-card px-3 py-2 text-left text-bodySm text-foreground transition-colors hover:bg-accent"
                 >
                   {s}
                 </button>
@@ -429,7 +429,7 @@ function ChatArea({
             {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
           </Button>
         </div>
-        <div className="mt-1.5 text-center text-[10px] text-muted-foreground">
+        <div className="mt-1.5 text-center text-meta text-muted-foreground">
           AI có thể sai. Luôn kiểm tra dữ liệu quan trọng.
         </div>
       </div>
@@ -482,11 +482,11 @@ function MessageBubble({
                 key={i}
                 className="mb-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-foreground"
               >
-                <div className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold">
+                <div className="mb-1 flex items-center gap-1.5 text-bodySm font-semibold">
                   <Wrench className="h-3.5 w-3.5" /> Xác nhận ghi dữ liệu: {label}
                 </div>
                 {input && (
-                  <div className="mb-2 space-y-0.5 text-[11px] text-muted-foreground">
+                  <div className="mb-2 space-y-0.5 text-meta text-muted-foreground">
                     {Object.entries(input)
                       .filter(([, v]) => v != null && v !== "")
                       .map(([k, v]) => (
@@ -499,7 +499,7 @@ function MessageBubble({
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="h-7 px-3 text-[12px]"
+                    className="h-7 px-3 text-bodySm"
                     onClick={() => onApprove({ id: approvalId as string, approved: true })}
                   >
                     Đồng ý ghi
@@ -507,7 +507,7 @@ function MessageBubble({
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-7 px-3 text-[12px]"
+                    className="h-7 px-3 text-bodySm"
                     onClick={() => onApprove({ id: approvalId as string, approved: false })}
                   >
                     Huỷ
@@ -518,7 +518,7 @@ function MessageBubble({
           }
 
           return (
-            <div key={i} className="mb-1.5 flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+            <div key={i} className="mb-1.5 flex items-center gap-1.5 text-meta text-muted-foreground">
               <Wrench className="h-3 w-3" />
               <span className="font-mono">{label}</span>
             </div>

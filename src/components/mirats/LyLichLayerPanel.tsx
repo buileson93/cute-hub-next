@@ -121,7 +121,7 @@ function Timeline({
                 </span>
                 <Badge variant="outline">{m.name}</Badge>
                 {it.ma_thiet_bi && (
-                  <Badge variant="secondary" className="gap-1 font-mono text-[10px]">
+                  <Badge variant="secondary" className="gap-1 font-mono text-meta">
                     <Cpu className="h-3 w-3" />{it.ma_thiet_bi}
                   </Badge>
                 )}

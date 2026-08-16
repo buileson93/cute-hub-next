@@ -285,7 +285,7 @@ function BackupPage() {
                   <span className="font-mono text-xs text-muted-foreground">{prog.pct}%</span>
                 </div>
                 <Progress value={prog.pct} className="h-2" />
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-meta text-muted-foreground">
                   Đang sao lưu <b>toàn bộ</b>: mọi bảng (kể cả tài khoản, phân quyền, nhật ký), tài liệu và hình ảnh trong Storage.
                 </p>
               </div>
@@ -359,7 +359,7 @@ function BackupPage() {
                               const sync = b.dong_bo?.[d];
                               const ok = d === "storage" ? true : sync?.ok;
                               return (
-                                <Badge key={d} variant="outline" className="gap-1 text-[11px]">
+                                <Badge key={d} variant="outline" className="gap-1 text-meta">
                                   {d !== "storage" && (ok ? <CheckCircle2 className="h-3 w-3 text-emerald-600" /> : <XCircle className="h-3 w-3 text-rose-500" />)}
                                   {DICH_LABEL[d] ?? d}
                                 </Badge>

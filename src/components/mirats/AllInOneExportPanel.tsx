@@ -142,7 +142,7 @@ export function AllInOneExportPanel() {
                         {l.sheet}
                         <span className="text-xs font-normal text-muted-foreground">({l.count})</span>
                         {st.mode === "some" && (
-                          <Badge className="ml-1 bg-primary/90 text-[10px]">{st.ids.size} chọn</Badge>
+                          <Badge className="ml-1 bg-primary/90 text-meta">{st.ids.size} chọn</Badge>
                         )}
                       </button>
                       <div className="flex gap-1">
@@ -187,7 +187,7 @@ export function AllInOneExportPanel() {
                           ) : filtered.map((r) => (
                             <label key={r.id} className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-xs hover:bg-background">
                               <Checkbox checked={st.ids.has(r.id)} onCheckedChange={() => toggleId(l.table, r.id)} />
-                              <span className="font-mono text-[11px] text-muted-foreground">{r.ma}</span>
+                              <span className="font-mono text-meta text-muted-foreground">{r.ma}</span>
                               <span className="truncate">{r.ten}</span>
                             </label>
                           ))}
@@ -220,7 +220,7 @@ export function AllInOneExportPanel() {
                 {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />}
                 Xuất file .xlsx theo phạm vi
               </Button>
-              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1 text-meta text-muted-foreground">
                 <Info className="h-3 w-3" /> Giữ cột <b>mã</b> để nhập lại là cập nhật, không nhân bản.
               </span>
             </div>

@@ -177,7 +177,7 @@ function DuAnDetailPage() {
             <Stat label="Bắt đầu" value={duAn.ngay_bat_dau ?? "—"} icon={CalendarIcon} />
             <Stat label="Kết thúc dự kiến" value={duAn.ngay_ket_thuc_du_kien ?? "—"} icon={CalendarIcon} />
             <div>
-              <div className="text-[11px] text-slate-500 mb-1">Tiến độ tổng thể · {duAn.tien_do}%</div>
+              <div className="text-meta text-slate-500 mb-1">Tiến độ tổng thể · {duAn.tien_do}%</div>
               <Progress value={duAn.tien_do} className="h-2" />
             </div>
           </CardContent>
@@ -269,7 +269,7 @@ function DuAnDetailPage() {
 function Stat({ label, value, icon: Icon }: { label: string; value: string; icon: typeof CalendarIcon }) {
   return (
     <div>
-      <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1.5"><Icon className="h-3 w-3" />{label}</div>
+      <div className="text-meta text-slate-500 mb-1 flex items-center gap-1.5"><Icon className="h-3 w-3" />{label}</div>
       <div className="text-sm font-medium truncate">{value}</div>
     </div>
   );
@@ -305,14 +305,14 @@ function KanbanView({
                 >
                   <div className="font-medium text-sm leading-snug">{t.ten}</div>
                   {mocMap[t.moc_id] && (
-                    <div className="text-[10px] text-slate-400 mt-0.5">{mocMap[t.moc_id].ten}</div>
+                    <div className="text-meta text-slate-400 mt-0.5">{mocMap[t.moc_id].ten}</div>
                   )}
-                  <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-500">
+                  <div className="flex items-center gap-2 mt-2 text-meta text-slate-500">
                     <UserIcon className="h-3 w-3" />
                     <span className="truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
                   </div>
                   {t.ngay_ket_thuc_du_kien && (
-                    <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                    <div className="text-meta text-slate-500 mt-1 flex items-center gap-1">
                       <CalendarIcon className="h-3 w-3" /> {t.ngay_ket_thuc_du_kien}
                     </div>
                   )}
@@ -322,7 +322,7 @@ function KanbanView({
                 </button>
               ))}
               {list.length === 0 && (
-                <div className="text-[11px] text-slate-400 italic text-center py-4">— trống —</div>
+                <div className="text-meta text-slate-400 italic text-center py-4">— trống —</div>
               )}
             </div>
           </div>
@@ -452,7 +452,7 @@ function ListView({
                 <div className="min-w-0">
                   <CardTitle className="text-base">{m.ten}</CardTitle>
                   {m.mo_ta && <CardDescription>{m.mo_ta}</CardDescription>}
-                  <div className="text-[11px] text-slate-500 mt-1">
+                  <div className="text-meta text-slate-500 mt-1">
                     {m.ngay_bat_dau ?? "—"} → {m.ngay_ket_thuc_du_kien ?? "—"} · {list.length} công việc
                   </div>
                 </div>
@@ -502,7 +502,7 @@ function ListView({
                       >
                         <div className="col-span-5 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
-                          {t.mo_ta && <div className="text-[11px] text-slate-500 truncate">{t.mo_ta}</div>}
+                          {t.mo_ta && <div className="text-meta text-slate-500 truncate">{t.mo_ta}</div>}
                         </div>
                         <div className="col-span-2 text-xs text-slate-600 truncate flex items-center gap-1">
                           <UserIcon className="h-3 w-3 shrink-0" />{nameOf(t.nguoi_xu_ly_chinh)}
@@ -512,10 +512,10 @@ function ListView({
                         </div>
                         <div className="col-span-2 flex items-center gap-2">
                           <Progress value={t.tien_do} className="h-1.5 flex-1" />
-                          <span className="text-[11px] text-slate-500 tabular-nums">{t.tien_do}%</span>
+                          <span className="text-meta text-slate-500 tabular-nums">{t.tien_do}%</span>
                         </div>
                         <div className="col-span-1 text-right">
-                          <Badge variant="outline" className={cn(c.tone, "text-[10px]")}>{c.label}</Badge>
+                          <Badge variant="outline" className={cn(c.tone, "text-meta")}>{c.label}</Badge>
                         </div>
                       </button>
                     );
