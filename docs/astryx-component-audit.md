@@ -46,7 +46,7 @@ This audit evaluates the current state of Astryx design system adoption in MIRAT
 | **Navigation** | `AppShell` | 1 | **B** | Legacy MIRATS logic, themed with Astryx tokens. |
 | **Navigation** | `Sidebar` | 1 | **B** | Aligned colors, but still uses legacy shadcn components inside. |
 | **Actions** | `Button` | 81 | **C** | Still importing `@/components/ui/button` directly in many routes. |
-| **Actions** | `MiratsButton` | ~15 | **B** | Proper Astryx wrapper, needs full rollout. |
+| **Actions** | `MiratsButton` | 1 | **B** | Proper Astryx wrapper, needs full rollout. |
 | **Layout** | `Card` | 65 | **C** | High usage of legacy `Card`. `MiratsCard` usage is low. |
 | **Inputs** | `Input` | 53 | **C** | Legacy `Input` still dominant. |
 | **Overlays** | `Dialog` | 25 | **B** | Rethemed via CSS layers (Astryx-consistent), but legacy implementation. |
@@ -57,11 +57,11 @@ This audit evaluates the current state of Astryx design system adoption in MIRAT
 
 ## D. Visual Mismatches vs. Astryx Gallery
 
-1. **Border Radii**: Computed button radius is `16px` (shadcn-like) vs Astryx's typically smaller, more precise radii in some contexts.
-2. **Surface Density**: Tables are extremely compact (12px font) which is a MIRATS requirement, but differs from standard Astryx comfortable density.
+1. **Typography Rollout**: Headings are not yet mapped to `Space Grotesk` via wrappers, causing a significant visual gap from the intended Astryx look.
+2. **Border Radii**: Computed button/input radius is inherited from shadcn defaults (`16px`/`20px`) vs Astryx's intended `8px` (`radius-control`).
 3. **Empty States**: Most routes still use `div` placeholders instead of `MiratsEmptyState`.
 4. **Command Palette**: `TopBar.tsx` still lazy-loads legacy `CommandPalette` instead of native Astryx component.
-5. **Loading States**: Many pages use `Loader2` (Lucide) directly instead of `MiratsSkeleton` or `Spinner`.
+5. **Hardcoded Colors**: ~20 instances of hardcoded hex colors remain in `src/routes/_app.so-do.$id.tsx` and `AtcTowerScene.tsx`.
 
 ---
 
@@ -71,8 +71,9 @@ This audit evaluates the current state of Astryx design system adoption in MIRAT
 2. **Rollout Data Containers**: Migrate dashboard and list pages from legacy `Card` to `MiratsCard`.
 3. **Typography Standard**: Replace `h1`/`h2` with `MiratsHeading` to force `Space Grotesk` rendering.
 4. **Form Controls**: Bulk update top routes to use `MiratsFormControls` (Input, Selector).
-5. **Global Search**: Finalize migration of `TopBar` search trigger to fully adopt the already-integrated Astryx Command Palette logic.
+5. **Visual Debt Cleanup**: Migrate hardcoded hex colors in Diagrams and 3D scenes to use Astryx semantic tokens.
 
 ---
 
 *Audit performed on 2026-08-16. No code changes made during this turn.*
+
