@@ -99,14 +99,14 @@ export function UserMenu() {
           <button
             type="button"
             data-tour="user"
-            className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 text-sm transition-colors hover:bg-secondary"
+            className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 text-sm transition-colors hover:bg-surface-muted"
           >
             <UserAvatar name={profile.ho_ten} email={profile.email} url={profile.avatar_url} className="h-8 w-8" />
             <div className="hidden text-left leading-tight sm:block">
-              <div className="max-w-[120px] truncate text-[13px] font-semibold text-foreground">
+              <div className="max-w-[120px] truncate astryx-text-body-bold text-foreground">
                 {typeof profile.ho_ten === 'string' ? profile.ho_ten : profile.email.split("@")[0]}
               </div>
-              <div className="text-[10.5px] text-muted-foreground">
+              <div className="astryx-text-label text-muted-foreground">
                 {typeof roles[0] === 'string' ? roles[0] : "—"}
               </div>
             </div>
@@ -210,7 +210,7 @@ export function TourButton() {
           whileHover={reduce ? undefined : { scale: 1.06 }}
           whileTap={reduce ? undefined : { scale: 0.92 }}
           transition={{ type: "spring", stiffness: 500, damping: 25 }}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
           aria-label="Hướng dẫn sử dụng"
         >
           <LifeBuoy className="h-[18px] w-[18px]" strokeWidth={1.8} />

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { PageBody } from '@/components/mirats/PageBody';
-import { PageHeader } from '@/components/mirats/PageHeader';
+import { MiratsPageHeader, MiratsPageBody } from '@/components/astryx/MiratsPageLayout';
+import { MiratsHeading, MiratsText } from '@/components/astryx/MiratsTypography';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
@@ -48,15 +48,12 @@ function ChatLuongDuLieu() {
   const { lowCompleteness = [], tasks = [] } = (overviewQuery.data as any) || {};
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="px-6 py-4 border-b">
-        <PageHeader 
-          title="Chất lượng dữ liệu" 
-          icon={Database} 
-          subtitle="Thống kê độ hoàn thiện thông tin hệ thống"
-        />
-      </div>
-      <PageBody>
+    <MiratsPageBody padding={0} className="flex flex-col flex-1 overflow-hidden">
+      <MiratsPageHeader 
+        title="Chất lượng dữ liệu" 
+        icon={Database} 
+        description="Thống kê độ hoàn thiện thông tin hệ thống"
+      />
       <div className="mb-6">
         <CompletenessStats stats={stats} />
       </div>
@@ -120,7 +117,6 @@ function ChatLuongDuLieu() {
             </CardContent>
           </Card>
         </div>
-      </PageBody>
-    </div>
+    </MiratsPageBody>
   );
 }
