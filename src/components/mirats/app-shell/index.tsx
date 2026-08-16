@@ -9,7 +9,7 @@ import {
 } from "@/components/mirats/ProductTour";
 import { useBranding } from "@/lib/mirats/branding";
 import vatmMark from "@/assets/vatm-mark-square.svg.asset.json";
-import vatmLogoFull from "@/assets/vatm-mirats-full-hover.svg.asset.json";
+import vatmLogoFull from "@/assets/vatm-mirats-full-v2.svg.asset.json";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";

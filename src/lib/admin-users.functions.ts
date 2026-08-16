@@ -73,7 +73,7 @@ export const createUser = createServerFn({ method: "POST" })
       email: data.email,
       password: data.password,
       email_confirm: true,
-      user_metadata: { full_name: data.ho_ten },
+      user_metadata: { ho_ten: data.ho_ten },
     });
     if (authErr || !created.user) throw new Error(authErr?.message ?? "Không tạo được user");
     const uid = created.user.id;

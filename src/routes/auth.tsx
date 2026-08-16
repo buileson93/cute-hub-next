@@ -184,7 +184,7 @@ function AuthPage() {
               <img
                 src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
-                className="h-auto w-full max-w-[280px] mx-auto object-contain"
+                className="h-auto w-full max-w-[560px] object-contain"
               />
             </motion.div>
 

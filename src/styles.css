@@ -1,12 +1,5 @@
-@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
-
 @import "tailwindcss" source(none);
 @source "../src";
-
-@import "@astryxdesign/core/reset.css";
-@import "@astryxdesign/core/astryx.css";
-@import "@astryxdesign/theme-neutral/theme.css";
-
 @import "tw-animate-css";
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
@@ -15,6 +8,8 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant density-compact (&:is([data-density="compact"] *));
+
+
 /*
  * MIRATS 2.0 — VATM Middle Region ATC.
  * Editorial aviation shell: off-white paper, brand blue #1D52E0 as the
@@ -356,58 +351,13 @@
 /* Bảng: nén padding các ô cho tất cả TableCell/TableHead của shadcn */
 table th,
 table td {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  font-size: 13px;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  padding-left: 0.375rem;
+  padding-right: 0.375rem;
+  font-size: 12px;
 }
-table th { line-height: 1.25; font-weight: 700; }
-
-/* Astryx Design System Bridge Fixes */
-[data-astryx-theme] input,
-[data-astryx-theme] select,
-[data-astryx-theme] textarea {
-  color: var(--color-foreground) !important;
-  background-color: var(--color-background) !important;
-}
-
-[data-astryx-theme] .dark input,
-[data-astryx-theme] .dark select,
-[data-astryx-theme] .dark textarea {
-  color: #ffffff !important;
-  background-color: #1a1a1a !important; /* Ensure dark background */
-}
-
-[data-astryx-theme] label,
-[data-astryx-theme] .text-foreground,
-[data-astryx-theme] .text-muted-foreground {
-  color: inherit !important;
-}
-
-[data-astryx-theme] .dark label,
-[data-astryx-theme] .dark .text-foreground,
-[data-astryx-theme] .dark [data-slot="label"] {
-  color: #ffffff !important;
-}
-
-[data-astryx-theme] .dark .text-muted-foreground {
-  color: oklch(0.72 0.004 260) !important;
-}
-
-/* Force visibility for auth form elements in dark mode */
-.dark form label,
-.dark form input,
-.dark form .text-muted-foreground,
-.dark form a {
-  color: #ffffff !important;
-}
-.dark form input::placeholder {
-  color: oklch(0.72 0.004 260) !important;
-}
-.dark form .text-muted-foreground {
-  color: oklch(0.72 0.004 260) !important;
-}
+table th { line-height: 1; font-weight: 700; }
 
 /* Badge / chip nhỏ hơn */
 .badge,

@@ -7,7 +7,6 @@ import { useSession } from "@/hooks/use-session";
 import { useNavBadges } from "@/hooks/use-nav-badges";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
-import vatmLogoFull from "@/assets/vatm-mirats-full-hover.svg.asset.json";
 
 
 export function Sidebar({ onNavigate, collapsed, activeWsId }: { 
@@ -34,17 +33,6 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
 
   return (
     <div className="flex flex-col gap-4 data-[density=compact]:gap-4 data-[density=comfortable]:gap-6 py-3 overflow-x-hidden">
-      {!collapsed && (
-        <div className="mb-2 flex items-center justify-center px-4">
-          <Link to="/" className="transition-opacity hover:opacity-80" onClick={onNavigate}>
-            <img 
-              src={vatmLogoFull.url} 
-              alt="MIRATS" 
-              className="h-8 w-auto object-contain"
-            />
-          </Link>
-        </div>
-      )}
       {filteredGroups.map((group) => {
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
