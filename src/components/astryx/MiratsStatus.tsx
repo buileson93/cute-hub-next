@@ -1,23 +1,26 @@
 import React from 'react';
 import { Badge as AstryxBadge } from '@astryxdesign/core/Badge';
 import { StatusDot as AstryxStatusDot } from '@astryxdesign/core/StatusDot';
-import { HStack } from '@astryxdesign/core/Stack';
+import { HStack } from '@astryxdesign/core/Layout';
 import { Text } from '@astryxdesign/core/Text';
 
-export type MiratsStatusVariant = 'success' | 'warning' | 'error' | 'info' | 'accent' | 'neutral';
+export type MiratsStatusVariant = 
+  | 'neutral' | 'info' | 'success' | 'warning' | 'error' 
+  | 'blue' | 'cyan' | 'gray' | 'green' | 'orange' | 'pink' | 'purple' | 'red' | 'teal' | 'yellow'
+  | 'secondary' | 'outline' | 'default';
 
 interface MiratsStatusProps {
   variant: MiratsStatusVariant;
   label: string;
   type?: 'badge' | 'dot';
   isPulsing?: boolean;
-  icon?: React.ReactNode;
+  icon?: any;
   showLabelWithDot?: boolean;
 }
 
 /**
- * Unified status component for MIRATS 2.0.
- * Can render as a Badge or a StatusDot based on the type prop.
+ * Unified wrapper for Astryx Badge and StatusDot.
+ * Maps MIRATS domain variants to Astryx semantic variants.
  */
 export function MiratsStatus({
   variant,
@@ -28,16 +31,19 @@ export function MiratsStatus({
   showLabelWithDot = true
 }: MiratsStatusProps) {
   // Mapping Mirats variant to Astryx variant
-  // Astryx Badge supports: neutral, info, success, warning, error, plus color variants
-  // Astryx StatusDot supports: success, warning, error, accent, neutral
-  
-  const astryxVariant = variant as any;
+  let astryxVariant = variant as any;
+  if (variant === 'secondary') astryxVariant = 'neutral';
+  if (variant === 'outline') astryxVariant = 'neutral';
+  if (variant === 'default') astryxVariant = 'neutral';
 
   if (type === 'dot') {
+    const dotVariant = astryxVariant === 'info' ? 'accent' : 
+                      (['success', 'warning', 'error', 'accent', 'neutral'].includes(astryxVariant) ? astryxVariant : 'neutral');
+    
     return (
       <HStack align="center" gap={2}>
         <AstryxStatusDot 
-          variant={astryxVariant === 'info' ? 'accent' : astryxVariant} 
+          variant={dotVariant} 
           label={label} 
           isPulsing={isPulsing} 
         />
