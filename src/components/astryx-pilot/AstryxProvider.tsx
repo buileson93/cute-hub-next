@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Theme } from "@astryxdesign/core/theme";
-import neutralTheme from "@astryxdesign/theme-neutral/built";
+import { neutralTheme } from "@astryxdesign/theme-neutral/built";
 
 interface AstryxProviderProps {
   children: ReactNode;

@@ -1,10 +1,17 @@
-@import "tailwindcss" source(none);
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
+
+@import "tailwindcss" source(none) layer(theme);
 @source "../src";
-@import "tw-animate-css";
-@import "@fontsource-variable/space-grotesk";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
-@import "@fontsource/ibm-plex-mono/600.css";
+
+@import "@astryxdesign/core/reset.css" layer(reset);
+@import "@astryxdesign/core/astryx.css" layer(astryx-base);
+@import "@astryxdesign/theme-neutral/theme.css" layer(astryx-theme);
+
+@import "tw-animate-css" layer(utilities);
+@import "@fontsource-variable/space-grotesk" layer(base);
+@import "@fontsource/ibm-plex-mono/400.css" layer(base);
+@import "@fontsource/ibm-plex-mono/500.css" layer(base);
+@import "@fontsource/ibm-plex-mono/600.css" layer(base);
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant density-compact (&:is([data-density="compact"] *));
