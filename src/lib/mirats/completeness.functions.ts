@@ -31,28 +31,33 @@ export const getCompletenessOverview = createServerFn({ method: "GET" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, unauthenticated } = context as any;
-    if (unauthenticated || !supabase) {
+    try {
+      const { supabase, unauthenticated } = context as any;
+      if (unauthenticated || !supabase) {
+        return { lowCompleteness: [], tasks: [] };
+      }
+      const [lcRes, tasksRes] = await Promise.all([
+        supabase
+          .from("thiet_bi")
+          .select("id, ten_thiet_bi, completeness_pct, he_thong_id, don_vi_id, dm_he_thong(ten)")
+          .order("completeness_pct", { ascending: true })
+          .limit(data.limit),
+        supabase
+          .from("nhiem_vu_nhap_lieu")
+          .select("*")
+          .eq("trang_thai", "moi")
+          .limit(10)
+      ]);
+
+      if (lcRes.error) console.warn("lcRes error:", lcRes.error.message);
+      if (tasksRes.error) console.warn("tasksRes error:", tasksRes.error.message);
+
+      return {
+        lowCompleteness: (lcRes.data || []) as any[],
+        tasks: (tasksRes.data || []) as any[]
+      };
+    } catch (e) {
+      console.warn("getCompletenessOverview exception:", e);
       return { lowCompleteness: [], tasks: [] };
     }
-    const { data: lowCompleteness, error: err1 } = await supabase
-      .from("thiet_bi")
-      .select("id, ten_thiet_bi, completeness_pct, he_thong_id, don_vi_id, dm_he_thong(ten)")
-      .order("completeness_pct", { ascending: true })
-      .limit(data.limit);
-
-    if (err1) throw new Error(err1.message);
-
-    // Lấy danh sách nhiệm vụ còn lại
-    const { data: tasks, error: err2 } = await supabase
-      .from("nhiem_vu_nhap_lieu")
-      .select("*")
-      .eq("trang_thai", "moi")
-      .limit(10);
-
-    if (err2) throw new Error(err2.message);
-
-    return {
-      lowCompleteness: (lowCompleteness || []) as any[],
-      tasks: (tasks || []) as any[]
-    };
   });
