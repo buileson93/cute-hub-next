@@ -1,5 +1,4 @@
 import { Theme, Badge, Button, Icon } from "@astryxdesign/core";
-// Note: Neutral theme import probe
 import { neutralTheme } from "@astryxdesign/theme-neutral";
 
 /**
@@ -13,18 +12,18 @@ export function AstryxCompileProbe() {
   return (
     <Theme theme={neutralTheme}>
       <div className="p-4 space-y-4">
-        <Button>Astryx Button</Button>
-        <Badge>Astryx Badge</Badge>
+        <Button label="Astryx Button" />
+        <Badge label="Astryx Badge" />
         <div className="flex gap-2">
-          {/* Exact import names for P1 verified via core/dist/Icon/defaultIcons.js */}
-          <Icon name="search" />
-          <Icon name="check" />
-          <Icon name="error" />
-          <Icon name="warning" />
-          <Icon name="info" />
-          <Icon name="moreHorizontal" />
-          <Icon name="chevronDown" />
-          <Icon name="close" />
+          {/* Exact icon names verified via core/dist/Icon/defaultIcons.js */}
+          <Icon icon="search" />
+          <Icon icon="check" />
+          <Icon icon="error" />
+          <Icon icon="warning" />
+          <Icon icon="info" />
+          <Icon icon="moreHorizontal" />
+          <Icon icon="chevronDown" />
+          <Icon icon="close" />
         </div>
       </div>
     </Theme>
