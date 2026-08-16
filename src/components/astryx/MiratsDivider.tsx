@@ -2,21 +2,16 @@ import React from 'react';
 import { Divider as AstryxDivider } from '@astryxdesign/core/Divider';
 
 interface MiratsDividerProps {
-  orientation?: 'horizontal' | 'vertical';
-  variant?: 'subtle' | 'strong';
-  label?: string;
+  className?: string;
 }
 
-export function MiratsDivider({
-  orientation = 'horizontal',
-  variant = 'subtle',
-  label
-}: MiratsDividerProps) {
+/**
+ * Wrapper for Astryx Divider to be used in MIRATS 2.0.
+ */
+export function MiratsDivider({ className }: MiratsDividerProps) {
   return (
-    <AstryxDivider
-      orientation={orientation}
-      variant={variant}
-      label={label}
-    />
+    <div className={className}>
+      <AstryxDivider />
+    </div>
   );
 }

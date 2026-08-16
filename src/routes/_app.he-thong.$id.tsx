@@ -13,8 +13,16 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { MiratsCard as Card } from "@/components/astryx/MiratsCard";
+import { MiratsHeading as CardTitle } from "@/components/astryx/MiratsTypography";
+function CardHeader({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+function CardContent({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+
+import { MiratsStatus as Badge } from "@/components/astryx/MiratsStatus";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";

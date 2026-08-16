@@ -24,9 +24,12 @@ import { useSession } from "@/hooks/use-session";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useScope } from "@/lib/mirats/scope";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { MiratsCard as Card } from "@/components/astryx/MiratsCard";
+function CardContent({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+import { MiratsSkeleton as Skeleton } from "@/components/astryx/MiratsSkeleton";
+import { MiratsStatus as Badge } from "@/components/astryx/MiratsStatus";
 import { Separator } from "@/components/ui/separator";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
