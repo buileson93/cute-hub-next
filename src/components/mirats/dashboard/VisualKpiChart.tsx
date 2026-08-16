@@ -49,13 +49,13 @@ export function VisualKpiChart({
     <Card className="overflow-hidden border-none shadow-md bg-card/50 backdrop-blur-sm transition-all hover:shadow-lg">
       <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between space-y-0">
         <div className="space-y-1">
-          <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+          <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
             {icon && <Icon name={icon as any} size="tiny" className={statusColors[status]} />}
-            {title}
+            <span className="truncate">{title}</span>
             {tooltip && (
               <AppTooltip noiDung={tooltip}>
-                <div className="cursor-help">
-                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/50" />
+                <div className="cursor-help shrink-0 opacity-70 hover:opacity-100 transition-opacity">
+                  <Icon name="entity.info" size="tiny" className="text-muted-foreground" />
                 </div>
               </AppTooltip>
             )}

@@ -80,7 +80,7 @@ function OverviewReport() {
     <PageBody>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <PageHeader
-          title="Báo cáo Tổng quan KPI"
+          title="Brief hôm nay"
           icon="entity.chart"
         />
         <div className="flex items-center gap-2">

@@ -254,7 +254,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className={cn(
-              "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md",
+              "sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md",
               UI_DENSITY.APP_HEADER_H
             )}>
 
