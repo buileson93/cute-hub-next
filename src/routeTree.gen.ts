@@ -23,6 +23,7 @@ import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminUiKitRouteImport } from './routes/admin.ui-kit'
 import { Route as AdminSupabaseNgoaiRouteImport } from './routes/admin.supabase-ngoai'
 import { Route as AdminSchemaRouteImport } from './routes/admin.schema'
 import { Route as AdminBackupRouteImport } from './routes/admin.backup'
@@ -203,6 +204,11 @@ const ApiBackupRunRoute = ApiBackupRunRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUiKitRoute = AdminUiKitRouteImport.update({
+  id: '/ui-kit',
+  path: '/ui-kit',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSupabaseNgoaiRoute = AdminSupabaseNgoaiRouteImport.update({
@@ -822,6 +828,7 @@ export interface FileRoutesByFullPath {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
+  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -943,6 +950,7 @@ export interface FileRoutesByTo {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
+  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -1070,6 +1078,7 @@ export interface FileRoutesById {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
+  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -1200,6 +1209,7 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
+    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1321,6 +1331,7 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
+    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1447,6 +1458,7 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
+    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1665,6 +1677,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ui-kit': {
+      id: '/admin/ui-kit'
+      path: '/ui-kit'
+      fullPath: '/admin/ui-kit'
+      preLoaderRoute: typeof AdminUiKitRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/supabase-ngoai': {
@@ -2787,6 +2806,7 @@ interface AdminRouteChildren {
   AdminBackupRoute: typeof AdminBackupRoute
   AdminSchemaRoute: typeof AdminSchemaRoute
   AdminSupabaseNgoaiRoute: typeof AdminSupabaseNgoaiRoute
+  AdminUiKitRoute: typeof AdminUiKitRoute
   AdminUsersRoute: typeof AdminUsersRoute
 }
 
@@ -2795,6 +2815,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBackupRoute: AdminBackupRoute,
   AdminSchemaRoute: AdminSchemaRoute,
   AdminSupabaseNgoaiRoute: AdminSupabaseNgoaiRoute,
+  AdminUiKitRoute: AdminUiKitRoute,
   AdminUsersRoute: AdminUsersRoute,
 }
 
