@@ -15,13 +15,14 @@ export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
 function ThietBiDetailRoute() {
   const { maThietBi: ma } = Route.useParams();
   const { tab, doc: initialDocId } = Route.useSearch();
-  const { getAssetByCode } = useDbTaxonomy();
-  const asset = getAssetByCode(ma);
+  
+  const { data: taxonomy } = useDbTaxonomy();
+  const asset = taxonomy?.devices.find(d => d.ma_thiet_bi === ma);
 
-  const { suCo, baoTri, hongHoc, isLoading } = useOperationsData({
-    maThietBi: ma,
-  });
+  const { ops, isLoading } = useOperationsData();
+  const { suCo, baoTri, hongHoc } = ops;
 
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Đang tải dữ liệu...</div>;
   if (!asset) {
     return (
       <div className="p-8 text-center text-muted-foreground">
