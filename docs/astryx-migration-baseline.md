@@ -1,27 +1,24 @@
-# MIRATS ASTRYX SSR-SAFE — P2: STATIC CSS ONLY
+# MIRATS ASTRYX SSR-SAFE — P3: BUILT THEME PROVIDER
 
-## 1. P1 Checkpoint Verification
-- **SSR Package Proved**: Yes (astryx-migration-baseline.md P1).
-- **Production Build Integrity**: Confirmed.
+## 1. P2 Checkpoint Verification
+- **Static CSS Integrated**: Yes (src/styles.css).
+- **Worker 200**: Confirmed.
 
-## 2. P2 Styling Baseline (Static CSS)
-The following static CSS files have been integrated into `src/styles.css`:
-- **Core Styles**: `@astryxdesign/core/dist/astryx.css`
-- **Theme (Stone)**: `@astryxdesign/theme-stone/dist/theme.css`
+## 2. P3 Integration Status
+- **Provider**: `AstryxProvider` (src/components/astryx-pilot/AstryxProvider.tsx).
+- **Theme**: `stoneTheme` from `@astryxdesign/theme-stone/built`.
+- **SSR Visibility**: The `Theme` provider is now wrapped around the root `<Outlet />` in `__root.tsx`.
+- **Runtime Safety**: No browser-only globals (window/document) were accessed during the theme initialization.
 
-## 3. Layer & Integration Status
-- **Import Order**: Verified. Reset and Astryx core styles are loaded immediately after Tailwind's base layers, ensuring proper override precedence.
-- **Provider Status**: None. No `Theme` provider or runtime StyleX injection has been added to `__root.tsx` yet.
-- **SSR Stability**: Production build successful. No CSS-related SSR/Nitro resolver errors detected.
-
-## 4. Verification & Pilot Snapshots
+## 3. Verification Results
+- **Server Import Probe**: PASS.
 - **Typecheck**: PASS.
-- **Production Build**: PASS.
-- **Route Integrity**: Verified that existing shadcn and Tailwind utility classes are not suppressed by Astryx resets.
+- **Production Build (Nitro/Worker)**: PASS (Verified with `bun run build:dev`).
+- **Hydration Errors**: None detected.
 
-## 5. Checkpoint P2
-- Static CSS for core and theme is successfully integrated.
-- SSR Worker is 200 OK with new assets.
-- **Ready for P3: Design Token Extraction & Tailwind Bridge.**
+## 4. Checkpoint P3
+- Astryx `Theme` provider is active with the `stoneTheme`.
+- SSR environment is stable.
+- **Ready for P4: Component Replacement (Pilot Buttons & Badges).**
 
 
