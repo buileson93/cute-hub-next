@@ -11,12 +11,13 @@ export type MiratsStatusVariant =
 
 interface MiratsStatusProps {
   variant: MiratsStatusVariant;
-  label: string;
+  label?: string;
   type?: 'badge' | 'dot';
   isPulsing?: boolean;
   icon?: any;
   showLabelWithDot?: boolean;
-  className?: string; // Support for legacy transition
+  className?: string;
+  children?: React.ReactNode;
 }
 
 /**
@@ -29,7 +30,9 @@ export function MiratsStatus({
   type = 'badge',
   isPulsing = false,
   icon,
-  showLabelWithDot = true
+  showLabelWithDot = true,
+  className,
+  children
 }: MiratsStatusProps) {
   // Mapping Mirats variant to Astryx variant
   let astryxVariant = variant as any;
@@ -37,27 +40,26 @@ export function MiratsStatus({
   if (variant === 'outline') astryxVariant = 'neutral';
   if (variant === 'default') astryxVariant = 'neutral';
 
-  if (type === 'dot') {
-    const dotVariant = astryxVariant === 'info' ? 'accent' : 
-                      (['success', 'warning', 'error', 'accent', 'neutral'].includes(astryxVariant) ? astryxVariant : 'neutral');
-    
-    return (
-      <HStack align="center" gap={2}>
-        <AstryxStatusDot 
-          variant={dotVariant} 
-          label={label} 
-          isPulsing={isPulsing} 
-        />
-        {showLabelWithDot && <Text type="body">{label}</Text>}
-      </HStack>
-    );
-  }
+  const finalLabel = label || (typeof children === 'string' ? children : '');
 
-  return (
+  const content = type === 'dot' ? (
+    <HStack align="center" gap={2}>
+      <AstryxStatusDot 
+        variant={astryxVariant === 'info' ? 'accent' : (['success', 'warning', 'error', 'accent', 'neutral'].includes(astryxVariant) ? astryxVariant : 'neutral')} 
+        label={finalLabel} 
+        isPulsing={isPulsing} 
+      />
+      {showLabelWithDot && <Text type="body">{finalLabel || children}</Text>}
+    </HStack>
+  ) : (
     <AstryxBadge 
       variant={astryxVariant} 
-      label={label} 
+      label={finalLabel} 
       icon={icon} 
-    />
+    >
+      {children}
+    </AstryxBadge>
   );
+
+  return <div className={className}>{content}</div>;
 }
