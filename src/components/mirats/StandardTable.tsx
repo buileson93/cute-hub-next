@@ -228,12 +228,6 @@ export function StandardTable<T>({
   const [internalReorder, setInternalReorder] = useState(false);
   const reorder = (editMode || internalReorder) && !hideReorderToggle;
   
-  // NGUYÊN NHÂN 2: Đồng bộ JS height với CSS TABLE_ROW_H token (28px compact / 32px comfortable)
-  const getEstimatedRowHeight = useCallback(() => {
-    if (density === "compact") return 28;
-    if (density === "spacious") return 44;
-    return 32;
-  }, [density]);
 
 
   // --- Tầng 1: Column Prefs (User Settings) ---
@@ -508,9 +502,10 @@ export function StandardTable<T>({
   const [density] = useDensity();
 
   const estimateRowHeight = useMemo(() => {
+    // Đồng bộ với TABLE_ROW_H trong ui-density.ts: 28px (compact) / 32px (comfortable) / 44px (spacious)
     if (density === "compact") return 28;
-    if (density === "comfortable") return 32;
-    return 44;
+    if (density === "spacious") return 44;
+    return 32;
   }, [density]);
 
   const rowVirtualizer = useVirtualizer({
