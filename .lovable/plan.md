@@ -30,4 +30,3 @@ Tạo 2 tài khoản mới với mật khẩu mặc định `Vatm@2026` và gán
 - Mật khẩu: `Vatm@2026`.
 - Vai trò: `phong_kt` (Phòng kỹ thuật).
 - Đơn vị mặc định: `null` (hoặc sẽ gán sau qua giao diện Admin).
-
