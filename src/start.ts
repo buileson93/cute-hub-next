@@ -17,19 +17,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
 
     console.error("CRITICAL SERVER ERROR:", error);
     
-    // Attempt to stringify if it's not a standard Error
-    let details = { message: 'Unknown error', stack: 'No stack', name: 'Error' };
-    if (error instanceof Error) {
-      details = { message: error.message, stack: error.stack || '', name: error.name };
-    } else {
-      try {
-        details.message = JSON.stringify(error);
-      } catch {
-        details.message = String(error);
-      }
-    }
-
-    return new Response(renderErrorPage(details), {
+    return new Response(renderErrorPage(error), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
     });
