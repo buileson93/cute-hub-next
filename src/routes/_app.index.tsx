@@ -82,7 +82,7 @@ function Dashboard() {
                  currentLayout={layout}
                  onAdd={handleAddWidget}
                  trigger={
-                   <Button size="sm" variant="outline" className="h-8 gap-2 rounded-xl border-primary/20 hover:bg-primary/5 transition-all">
+                   <Button size="sm" variant="outline" className="h-8 gap-2 border-primary/20 hover:bg-primary/5 transition-all">
                      <Icon name="action.add" size="tiny" className="text-primary" />
                      <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
                    </Button>
@@ -92,7 +92,7 @@ function Dashboard() {
                 size="sm" 
                 variant="ghost" 
                 onClick={handleReset}
-                className="h-8 gap-2 rounded-xl text-muted-foreground hover:text-destructive transition-all"
+                className="h-8 gap-2 text-muted-foreground hover:text-destructive transition-all"
               >
                 <Icon name="action.undo" size="tiny" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
@@ -104,7 +104,7 @@ function Dashboard() {
             variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "h-8 px-4 rounded-xl transition-all gap-2",
+              "h-8 px-4 transition-all gap-2",
               !isEditing && "border-primary/20 hover:bg-primary/5"
             )}
           >

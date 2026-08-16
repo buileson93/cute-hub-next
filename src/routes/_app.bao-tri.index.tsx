@@ -155,17 +155,17 @@ function BaoTriPage() {
                 <div className="flex flex-wrap gap-2">
                   <div className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã BT, tài sản, mô tả..." className="h-9 w-56 pl-9" />
+                    <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mã BT, tài sản, mô tả..." className="w-56 pl-9" />
                   </div>
                   <Select value={loai} onValueChange={setLoai}>
-                    <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Loại" /></SelectTrigger>
+                    <SelectTrigger className="w-[140px]"><SelectValue placeholder="Loại" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi loại</SelectItem>
                       {["Định kỳ", "Đột xuất", "Hiệu chuẩn", "Nâng cấp"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Select value={tt} onValueChange={setTt}>
-                    <SelectTrigger className="h-9 w-[150px]"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
+                    <SelectTrigger className="w-[150px]"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi trạng thái</SelectItem>
                       {statuses("bao_tri").map((s) => <SelectItem key={s.code} value={s.code}>{s.label}</SelectItem>)}

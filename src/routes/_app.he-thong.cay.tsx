@@ -8,7 +8,7 @@ import { PageBody } from "@/components/mirats/PageBody";
 import { useSession } from "@/hooks/use-session";
 import { Check, Pencil } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
-
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { cn } from "@/lib/utils";
 import { ReactFlowProvider } from "@xyflow/react";
 
@@ -309,12 +309,12 @@ function HeThongCayPage() {
       <div className="px-4 py-1.5 border-b flex items-center justify-between bg-background z-10 shrink-0">
          <div className="flex items-center gap-3">
             <Tabs value={display} onValueChange={handleDisplayChange}>
-              <TabsList className="h-8">
-                <TabsTrigger value="table" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
-                <TabsTrigger value="tree" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
-                <TabsTrigger value="mindmap" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
-                <TabsTrigger value="health" className="h-7 gap-2 px-2 text-[12px]"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="h-7 gap-2 px-2 text-[12px]" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
+              <TabsList className={UI_DENSITY.CONTROL_H}>
+                <TabsTrigger value="table" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
+                <TabsTrigger value="tree" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
+                <TabsTrigger value="mindmap" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
+                <TabsTrigger value="health" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
+                <TabsTrigger value="history" className="h-full gap-2 px-2 text-[12px]" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
               </TabsList>
             </Tabs>
          </div>
@@ -351,10 +351,9 @@ function HeThongCayPage() {
             {canManage && (
               <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
                 <Button 
-                  size="sm" 
+                  size="icon" 
                   variant={editMode ? "default" : "outline"} 
                   onClick={() => setEditMode(!editMode)} 
-                  className="h-7 w-7 p-0"
                 >
                   {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
                   <span className="sr-only">{editMode ? "Đang sửa" : "Chỉnh sửa"}</span>
