@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // MiratsInput: Thin wrapper for Astryx TextInput
 export const MiratsInput = React.forwardRef<
   HTMLInputElement,
-  React.ComponentPropsWithoutRef<typeof TextInput>
+  React.ComponentPropsWithoutRef<typeof TextInput> & { maxLength?: number }
 >((props, ref) => {
   return <TextInput ref={ref} {...props} />;
 });
