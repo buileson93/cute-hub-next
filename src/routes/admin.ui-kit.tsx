@@ -10,16 +10,7 @@ import {
   StatusDot,
   Card,
   Divider,
-  SearchIcon,
-  AddIcon,
-  EditIcon,
-  DeleteIcon,
-  FilterIcon,
-  MoreIcon,
-  ChevronRightIcon,
-  CloseIcon,
-  CheckIcon,
-  WarningIcon
+  Icon
 } from "@astryxdesign/core";
 import { useState, useEffect } from "react";
 
@@ -49,22 +40,6 @@ function UIKitLab() {
 
         <Divider />
 
-        {/* Brand Foundation */}
-        <VStack gap={4} align="stretch">
-          <Heading level={2}>Brand Foundation</Heading>
-          <HStack gap={4} wrap>
-            <div className="p-4 rounded-lg bg-[var(--color-accent)] text-white w-32 h-20 flex items-end">
-              <Text weight="bold" size="xs">Primary</Text>
-            </div>
-            <div className="p-4 rounded-lg bg-[var(--color-accent-emphasis)] text-white w-32 h-20 flex items-end">
-              <Text weight="bold" size="xs">Emphasis</Text>
-            </div>
-            <div className="p-4 rounded-lg bg-[var(--color-warning)] text-white w-32 h-20 flex items-end">
-              <Text weight="bold" size="xs">Warning</Text>
-            </div>
-          </HStack>
-        </VStack>
-
         {/* Buttons & Icons */}
         <VStack gap={4} align="stretch">
           <Heading level={2}>Buttons & Icons</Heading>
@@ -73,19 +48,19 @@ function UIKitLab() {
             <Button variant="secondary">Secondary</Button>
             <Button variant="destructive">Destructive</Button>
             <Button variant="ghost">Ghost</Button>
-            <IconButton icon={<SearchIcon />} aria-label="Search" />
-            <IconButton icon={<AddIcon />} variant="primary" aria-label="Add" />
-            <IconButton icon={<EditIcon />} variant="secondary" aria-label="Edit" />
-            <IconButton icon={<DeleteIcon />} variant="destructive" aria-label="Delete" />
+            <IconButton icon={<Icon name="search" />} aria-label="Search" />
+            <IconButton icon={<Icon name="add" />} variant="primary" aria-label="Add" />
+            <IconButton icon={<Icon name="edit" />} variant="secondary" aria-label="Edit" />
+            <IconButton icon={<Icon name="delete" />} variant="destructive" aria-label="Delete" />
           </HStack>
           <HStack gap={4} align="center" wrap>
-            <SearchIcon size="sm" />
-            <FilterIcon size="sm" />
-            <MoreIcon size="sm" />
-            <ChevronRightIcon size="sm" />
-            <CloseIcon size="sm" />
-            <CheckIcon size="sm" color="success" />
-            <WarningIcon size="sm" color="warning" />
+            <Icon name="search" size="sm" />
+            <Icon name="filter" size="sm" />
+            <Icon name="more" size="sm" />
+            <Icon name="chevron-right" size="sm" />
+            <Icon name="close" size="sm" />
+            <Icon name="check" size="sm" color="success" />
+            <Icon name="warning" size="sm" color="warning" />
           </HStack>
         </VStack>
 
