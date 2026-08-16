@@ -22,6 +22,9 @@ import { cn } from "@/lib/utils";
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
+    // Không chạy prefetch trên server (SSR) để tránh lỗi 500 do thiếu session/key
+    if (typeof window === 'undefined') return;
+
     try {
       await Promise.all([
         context.queryClient.prefetchQuery({
@@ -34,7 +37,7 @@ export const Route = (createFileRoute("/_app/") as any)({
         })
       ]);
     } catch (e) {
-      console.warn("Dashboard SSR prefetch skipped:", e instanceof Error ? e.message : e);
+      console.warn("Dashboard prefetch skipped:", e instanceof Error ? e.message : e);
     }
   },
   component: Dashboard,
