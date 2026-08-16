@@ -31,7 +31,11 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
   // and prevent child components from trying to use theme tokens before hydration.
   if (!isHydrated) {
     return (
-      <div className="astryx-ssr-placeholder" style={{ display: 'contents' }}>
+      <div 
+        className="astryx-ssr-placeholder" 
+        style={{ display: 'contents' }}
+        data-ssr-loading="true"
+      >
         {children}
       </div>
     );

@@ -63,8 +63,44 @@
     } as unknown;
   }
   if (typeof g.document === "undefined") g.document = makeInert();
-  if (typeof g.window === "undefined") g.window = makeInert();
-  if (typeof g.navigator === "undefined") g.navigator = makeInert();
+  if (typeof g.window === "undefined") {
+    const win = makeInert() as any;
+    win.location = {
+      href: "http://localhost/",
+      origin: "http://localhost",
+      protocol: "http:",
+      host: "localhost",
+      hostname: "localhost",
+      port: "",
+      pathname: "/",
+      search: "",
+      hash: "",
+      assign: () => {},
+      replace: () => {},
+      reload: () => {},
+    };
+    win.history = {
+      pushState: () => {},
+      replaceState: () => {},
+      go: () => {},
+      back: () => {},
+      forward: () => {},
+      length: 0,
+      state: null,
+    };
+    g.window = win;
+  }
+  if (typeof g.navigator === "undefined") {
+    const nav = makeInert() as any;
+    nav.userAgent = "Mozilla/5.0 (Server; Node.js) MIRATS/2.0";
+    nav.platform = "Server";
+    nav.appName = "Netscape";
+    nav.appVersion = "5.0";
+    nav.language = "vi-VN";
+    nav.languages = ["vi-VN", "en-US"];
+    nav.onLine = true;
+    g.navigator = nav;
+  }
 
   // Astryx/StyleX and framer-motion may need these for layout calculations during import/init
   if (typeof g.getComputedStyle === "undefined") {

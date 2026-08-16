@@ -153,6 +153,9 @@ function RootComponent() {
 
   useEffect(() => {
     // Đồng bộ nguồn dữ liệu (Lovable Cloud hay Supabase ngoài do quản trị chọn).
+    // Chỉ thực thi ở trình duyệt.
+    if (typeof window === "undefined") return;
+
     void (async () => {
       try {
         const [{ getActiveBackend }, rt] = await Promise.all([
@@ -160,9 +163,14 @@ function RootComponent() {
           import("@/lib/backend/runtime-source"),
         ]);
         const active = await getActiveBackend();
-        if (rt.writeBackendOverride(active)) rt.applyBackendOverrideAndReload(active);
-      } catch {
-        /* không đồng bộ được → giữ nguyên nguồn hiện tại */
+        // Chỉ reload nếu nguồn CÔNG KHAI thực sự khác với nguồn đang lưu.
+        // writeBackendOverride trả về true nếu có thay đổi.
+        if (active && rt.writeBackendOverride(active)) {
+          console.log("[Backend] Chuyển sang nguồn dữ liệu cấu hình:", active.ten);
+          rt.applyBackendOverrideAndReload(active);
+        }
+      } catch (err) {
+        console.warn("[Backend] Không thể đồng bộ nguồn dữ liệu:", err);
       }
     })();
   }, []);
