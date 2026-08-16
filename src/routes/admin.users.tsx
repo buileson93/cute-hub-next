@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSession, type AppRole } from "@/hooks/use-session";
 import { listUsers, createUser, updateUser, setUserActive, resetUserPassword } from "@/lib/admin-users.functions";
+import { fixTriggerAndSync } from "@/lib/fix-sync.functions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -85,6 +86,21 @@ function AdminUsers() {
   const update = useServerFn(updateUser);
   const toggle = useServerFn(setUserActive);
   const resetPw = useServerFn(resetUserPassword);
+  const runSync = useServerFn(fixTriggerAndSync);
+
+  const [syncing, setSyncing] = useState(false);
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await runSync({ data: {} });
+      toast.success(res.message);
+      invalidate();
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -133,7 +149,13 @@ function AdminUsers() {
           <h1 className="text-2xl font-semibold tracking-tight">Quản lý tài khoản</h1>
           <p className="text-sm text-muted-foreground">Chỉ Admin được tạo/khoá/gán vai trò. Người dùng không thể tự đăng ký.</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)}><UserPlus className="mr-2 h-4 w-4" />Tạo tài khoản</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleSync} disabled={syncing}>
+            {syncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldAlert className="mr-2 h-4 w-4" />}
+            Đồng bộ tài khoản
+          </Button>
+          <Button onClick={() => setCreateOpen(true)}><UserPlus className="mr-2 h-4 w-4" />Tạo tài khoản</Button>
+        </div>
       </header>
 
       <Card>
