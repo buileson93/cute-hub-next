@@ -87,7 +87,7 @@ export function GlobalSearch() {
                       onMouseEnter={() => setActive(i)}
                       onClick={() => go(h)}
                       className={cn(
-                        "flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors",
+                        "astryx-command-palette-item flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors",
                         i === active ? "bg-accent" : "hover:bg-accent/60"
                       )}
                     >
