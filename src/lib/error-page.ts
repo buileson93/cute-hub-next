@@ -1,8 +1,22 @@
 export function renderErrorPage(error?: any): string {
-  const errorMsg = error?.message || 'Unknown error';
-  const stack = error?.stack || '';
-  const name = error?.name || 'Error';
+  let errorMsg = 'Unknown error';
+  let stack = '';
+  let name = 'Error';
   
+  if (error instanceof Error) {
+    errorMsg = error.message;
+    stack = error.stack || '';
+    name = error.name;
+  } else if (error && typeof error === 'object') {
+    try {
+      errorMsg = JSON.stringify(error, null, 2);
+    } catch {
+      errorMsg = String(error);
+    }
+  } else {
+    errorMsg = String(error || 'Unknown error');
+  }
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -32,13 +46,14 @@ export function renderErrorPage(error?: any): string {
       
       <div class="error-details">
         <span class="label">Loại lỗi: ${name}</span>
-        <span class="label">Thông điệp:</span>
+        <span class="label">Chi tiết:</span>
         <pre>${errorMsg}</pre>
         
+        ${stack ? `
         <div style="margin-top: 1.5rem;">
           <span class="label">Stack Trace:</span>
           <pre>${stack}</pre>
-        </div>
+        </div>` : ''}
       </div>
 
       <div class="actions">
