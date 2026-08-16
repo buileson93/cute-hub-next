@@ -1287,11 +1287,14 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
   // Vòng lặp rAF nhỏ để canvas được repaint trong lúc có hiệu ứng nháy
   // (kết quả tìm kiếm, xem trước liên kết khe sắp tạo).
   useEffect(() => {
-    if (!markedId && !connectDialog) return;
+    if ((!markedId && !connectDialog) || typeof window === "undefined") return;
     let raf = 0;
-    const tick = () => { fgRef.current?.refresh?.(); raf = typeof window !== "undefined" && window.requestAnimationFrame(tick); };
-    raf = typeof window !== "undefined" && window.requestAnimationFrame(tick);
-    return () => typeof window !== "undefined" && window.cancelAnimationFrame(raf);
+    const tick = () => { 
+      fgRef.current?.refresh?.(); 
+      raf = window.requestAnimationFrame(tick); 
+    };
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
   }, [markedId, connectDialog]);
 
 
