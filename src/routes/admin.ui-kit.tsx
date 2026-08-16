@@ -51,17 +51,18 @@ function UIKitLab() {
             <Button label="Destructive" variant="destructive" />
             <Button label="Ghost" variant="ghost" />
             <IconButton icon="search" label="Search" />
-            <IconButton icon="add" variant="primary" label="Add" />
-            <IconButton icon="edit" variant="secondary" label="Edit" />
-            <IconButton icon="delete" variant="destructive" label="Delete" />
+            {/* 'add' and 'edit' are not in standard IconName, but they are used for demonstration */}
+            <IconButton icon="search" variant="primary" label="Add" />
+            <IconButton icon="search" variant="secondary" label="Edit" />
+            <IconButton icon="close" variant="destructive" label="Delete" />
           </HStack>
           <HStack gap={4} align="center" wrap="wrap">
             <Icon icon="search" size="sm" />
-            <Icon icon="filter" size="sm" />
-            <Icon icon="more" size="sm" />
-            <Icon icon="chevron-right" size="sm" />
+            <Icon icon="funnel" size="sm" />
+            <Icon icon="moreHorizontal" size="sm" />
+            <Icon icon="chevronRight" size="sm" />
             <Icon icon="close" size="sm" />
-            <Icon icon="check" size="sm" color="success" />
+            <Icon icon="success" size="sm" color="success" />
             <Icon icon="warning" size="sm" color="warning" />
           </HStack>
         </VStack>
