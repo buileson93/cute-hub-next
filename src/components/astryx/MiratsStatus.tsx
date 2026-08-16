@@ -16,6 +16,7 @@ interface MiratsStatusProps {
   isPulsing?: boolean;
   icon?: any;
   showLabelWithDot?: boolean;
+  className?: string; // Support for legacy transition
 }
 
 /**
