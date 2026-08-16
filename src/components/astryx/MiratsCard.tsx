@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card as AstryxCard } from '@astryxdesign/core/Card';
-import { type StyleXStyles } from '@astryxdesign/core/theme';
+import { type StyleXStyles } from '@astryxdesign/core';
 
 interface MiratsCardProps {
   children: React.ReactNode;
