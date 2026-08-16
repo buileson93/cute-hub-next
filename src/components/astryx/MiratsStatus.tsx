@@ -56,9 +56,7 @@ export function MiratsStatus({
       variant={astryxVariant} 
       label={finalLabel} 
       icon={icon} 
-    >
-      {children}
-    </AstryxBadge>
+    />
   );
 
   return <div className={className}>{content}</div>;
