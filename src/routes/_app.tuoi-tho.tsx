@@ -134,11 +134,11 @@ function TuoiThoPage() {
   }, [rows]);
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
-      <PageHeader
+    <MiratsPageBody padding={0}>
+      <MiratsPageHeader
         icon={HeartPulse}
         title="Đánh giá Tuổi thọ & Vòng đời"
-        help="Đánh giá sức khỏe tài sản dựa trên tuổi, lịch sử sự cố, thời gian dừng hoạt động, chi phí, bảo hành và tình trạng hiện tại; xếp loại và đề xuất thay thế khi cần."
+        description="Đánh giá sức khỏe tài sản dựa trên tuổi, lịch sử sự cố, thời gian dừng hoạt động, chi phí, bảo hành và tình trạng hiện tại; xếp loại và đề xuất thay thế khi cần."
         actions={
           <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
             <HeartPulse className="h-3 w-3" /> {stats.total} tài sản đánh giá
@@ -446,6 +446,6 @@ function TuoiThoPage() {
           />
         </TabsContent>
       </Tabs>
-    </div>
+    </MiratsPageBody>
   );
 }

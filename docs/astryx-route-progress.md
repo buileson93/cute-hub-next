@@ -6,8 +6,8 @@ Lưu ý: Tổng cộng có 109 route vật lý được tìm thấy trong `src/r
 - [x] `src/routes/_app.index.tsx` (Dashboard)
 - [x] `src/routes/_app.tong-quan.tsx` (Tổng quan KPI)
 - [x] `src/routes/_app.thong-ke.laptop.tsx`
-- [ ] `src/routes/_app.tuoi-tho.tsx`
-- [ ] `src/routes/_app.chat-luong-du-lieu.tsx`
+- [x] `src/routes/_app.tuoi-tho.tsx`
+- [x] `src/routes/_app.chat-luong-du-lieu.tsx`
 
 ## Nhóm 2: Danh mục & Bảng (Catalog)
 - [ ] `src/routes/_app.danh-muc.thiet-bi.tsx`
@@ -56,6 +56,6 @@ Lưu ý: Tổng cộng có 109 route vật lý được tìm thấy trong `src/r
 
 ## Trạng thái
 - **Tổng cộng**: 109
-- **Hoàn thành**: 3
+- **Hoàn thành**: 5
 - **Legacy**: 0
 - **Đang thực hiện**: 0
