@@ -57,7 +57,10 @@ export function GlobalSearch() {
 
   return (
     <div ref={rootRef} className="relative hidden max-w-md flex-1 md:block">
-      <div className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm text-muted-foreground transition-colors focus-within:bg-accent">
+      <div 
+        className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm text-muted-foreground transition-colors focus-within:bg-accent cursor-text"
+        onClick={() => setOpen(true)}
+      >
         {loading ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : <Search className="h-4 w-4 shrink-0" strokeWidth={1.8} />}
         <input
           type="search"
@@ -70,37 +73,58 @@ export function GlobalSearch() {
         />
       </div>
 
-      {open && hasQuery && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl">
-          {/* Trạng thái tải */}
+      <CommandPalette 
+        isOpen={open && hasQuery} 
+        onOpenChange={setOpen}
+        isInline
+        width="100%"
+        maxHeight="400px"
+        xstyle={{ 
+          position: 'absolute', 
+          top: 'calc(100% + 8px)', 
+          left: 0, 
+          right: 0, 
+          zIndex: 50,
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-2xl)',
+          backgroundColor: 'var(--color-popover)',
+          boxShadow: 'var(--shadow-xl)',
+          overflow: 'hidden'
+        }}
+      >
+        <CommandPaletteList>
           {rows.length === 0 && loading && (
-            <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Đang tìm…
-            </div>
+             <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-muted-foreground">
+               <Loader2 className="h-4 w-4 animate-spin" /> Đang tìm…
+             </div>
           )}
-          {/* Không có kết quả */}
+          
           {rows.length === 0 && !loading && (
-            <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+            <CommandPaletteEmpty>
               Không tìm thấy kết quả cho “{q.trim()}”
-            </div>
+            </CommandPaletteEmpty>
           )}
+
           {rows.length > 0 && (
-            <ul className="max-h-96 overflow-y-auto py-1">
+            <CommandPaletteGroup heading="Kết quả tìm kiếm">
               {rows.map((h, i) => {
                 const meta = ENTITY_META[h.entity];
-                const Icon = meta.icon;
+                const EntityIcon = meta.icon;
                 return (
-                  <li key={`${h.entity}-${h.id}`}>
-                    <button
-                      type="button"
+                  <CommandPaletteItem
+                    key={`${h.entity}-${h.id}`}
+                    onSelect={() => go(h)}
+                    isActive={i === active}
+                    xstyle={{ padding: 0 }}
+                  >
+                    <div 
                       onMouseEnter={() => setActive(i)}
-                      onClick={() => go(h)}
                       className={cn(
-                        "flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors",
+                        "flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors cursor-pointer",
                         i === active ? "bg-accent" : "hover:bg-accent/60"
                       )}
                     >
-                      <Icon className={cn("h-4 w-4 shrink-0", h.entity === "he_thong" ? "text-primary" : "text-muted-foreground")} />
+                      <EntityIcon className={cn("h-4 w-4 shrink-0", h.entity === "he_thong" ? "text-primary" : "text-muted-foreground")} />
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-medium text-foreground">
                           <Highlight text={h.title || "(không tiêu đề)"} query={activeTerm} />
@@ -123,17 +147,17 @@ export function GlobalSearch() {
                       <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                         {meta.label}
                       </span>
-                    </button>
-                  </li>
+                    </div>
+                  </CommandPaletteItem>
                 );
               })}
-            </ul>
+            </CommandPaletteGroup>
           )}
-          <div className="border-t border-border bg-muted/40 px-4 py-1.5 text-[10px] text-muted-foreground">
-            ↑↓ chọn · Enter mở · Esc đóng
-          </div>
-        </div>
-      )}
+        </CommandPaletteList>
+        <CommandPaletteFooter>
+          ↑↓ chọn · Enter mở · Esc đóng
+        </CommandPaletteFooter>
+      </CommandPalette>
     </div>
   );
 }
