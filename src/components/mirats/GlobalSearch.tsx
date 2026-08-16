@@ -79,18 +79,8 @@ export function GlobalSearch() {
         isInline
         width="100%"
         maxHeight="400px"
-        xstyle={{ 
-          position: 'absolute', 
-          top: 'calc(100% + 8px)', 
-          left: 0, 
-          right: 0, 
-          zIndex: 50,
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-2xl)',
-          backgroundColor: 'var(--color-popover)',
-          boxShadow: 'var(--shadow-xl)',
-          overflow: 'hidden'
-        }}
+        xstyle={undefined}
+        className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl"
       >
         <CommandPaletteList>
           {rows.length === 0 && loading && (
