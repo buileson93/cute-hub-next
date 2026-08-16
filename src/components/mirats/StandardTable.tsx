@@ -1424,7 +1424,7 @@ export function StandardTable<T>({
                             (onRowClick || selectable) && "cursor-pointer", 
                             isSel && "bg-primary/5", 
                             expandedRows.has(rid) && "bg-muted/40",
-                            density === "compact" ? "h-8 min-h-[32px]" : density === "comfortable" ? "h-9" : "h-11",
+                            UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r)
                           )}
                           onClick={() => onRowClick?.(r)}
