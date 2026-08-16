@@ -37,7 +37,7 @@ function UIKitLab() {
       <VStack gap={8} align="stretch">
         <VStack gap={2}>
           <Heading level={1}>MIRATS Astryx UI Kit</Heading>
-          <Text variant="description">Phòng thí nghiệm hợp phần giao diện SSR-safe.</Text>
+          <Text>Phòng thí nghiệm hợp phần giao diện SSR-safe.</Text>
         </VStack>
 
         <Divider />
@@ -45,24 +45,24 @@ function UIKitLab() {
         {/* Buttons & Icons */}
         <VStack gap={4} align="stretch">
           <Heading level={2}>Buttons & Icons</Heading>
-          <HStack gap={4} align="center" wrap>
-            <Button variant="primary">Primary Button</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="ghost">Ghost</Button>
-            <IconButton icon={<Icon name="search" />} aria-label="Search" />
-            <IconButton icon={<Icon name="add" />} variant="primary" aria-label="Add" />
-            <IconButton icon={<Icon name="edit" />} variant="secondary" aria-label="Edit" />
-            <IconButton icon={<Icon name="delete" />} variant="destructive" aria-label="Delete" />
+          <HStack gap={4} align="center" wrap="wrap">
+            <Button label="Primary Button" variant="primary" />
+            <Button label="Secondary" variant="secondary" />
+            <Button label="Destructive" variant="destructive" />
+            <Button label="Ghost" variant="ghost" />
+            <IconButton icon="search" label="Search" />
+            <IconButton icon="add" variant="primary" label="Add" />
+            <IconButton icon="edit" variant="secondary" label="Edit" />
+            <IconButton icon="delete" variant="destructive" label="Delete" />
           </HStack>
-          <HStack gap={4} align="center" wrap>
-            <Icon name="search" size="sm" />
-            <Icon name="filter" size="sm" />
-            <Icon name="more" size="sm" />
-            <Icon name="chevron-right" size="sm" />
-            <Icon name="close" size="sm" />
-            <Icon name="check" size="sm" color="success" />
-            <Icon name="warning" size="sm" color="warning" />
+          <HStack gap={4} align="center" wrap="wrap">
+            <Icon icon="search" size="sm" />
+            <Icon icon="filter" size="sm" />
+            <Icon icon="more" size="sm" />
+            <Icon icon="chevron-right" size="sm" />
+            <Icon icon="close" size="sm" />
+            <Icon icon="check" size="sm" color="success" />
+            <Icon icon="warning" size="sm" color="warning" />
           </HStack>
         </VStack>
 
@@ -70,23 +70,23 @@ function UIKitLab() {
         <VStack gap={4} align="stretch">
           <Heading level={2}>Status & Indicators</Heading>
           <HStack gap={4} align="center">
-            <Badge variant="neutral">Neutral</Badge>
-            <Badge variant="success">Success</Badge>
-            <Badge variant="warning">Warning</Badge>
-            <Badge variant="error">Error</Badge>
-            <Badge variant="info">Info</Badge>
+            <Badge label="Neutral" variant="neutral" />
+            <Badge label="Success" variant="success" />
+            <Badge label="Warning" variant="warning" />
+            <Badge label="Error" variant="error" />
+            <Badge label="Info" variant="info" />
           </HStack>
           <HStack gap={6} align="center">
             <HStack gap={2} align="center">
-              <StatusDot status="success" />
+              <StatusDot variant="success" label="Hoạt động" />
               <Text size="sm">Hoạt động</Text>
             </HStack>
             <HStack gap={2} align="center">
-              <StatusDot status="warning" />
+              <StatusDot variant="warning" label="Bảo trì" />
               <Text size="sm">Bảo trì</Text>
             </HStack>
             <HStack gap={2} align="center">
-              <StatusDot status="error" />
+              <StatusDot variant="error" label="Sự cố" />
               <Text size="sm">Sự cố</Text>
             </HStack>
           </HStack>
@@ -102,7 +102,7 @@ function UIKitLab() {
               <Divider />
               <HStack justify="between">
                 <Text weight="medium">Trạng thái:</Text>
-                <Badge variant="success">Sẵn sàng</Badge>
+                <Badge label="Sẵn sàng" variant="success" />
               </HStack>
             </VStack>
           </Card>
