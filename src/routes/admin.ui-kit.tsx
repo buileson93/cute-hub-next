@@ -23,8 +23,7 @@ import {
   HStack,
   VStack,
   DropdownMenu,
-  DropdownMenuItem,
-  Stack
+  DropdownMenuItem
 } from "@astryxdesign/core";
 import { useState } from "react";
 
@@ -38,15 +37,16 @@ export const Route = createFileRoute("/admin/ui-kit")({
  * SSR-safe Component Lab for Astryx Design System.
  * Verified against @astryxdesign/core 0.4.1.
  * 
- * Types fixed after server definition check:
- * - Text: size uses 'sm', 'base', etc. (not 'small'). color uses 'secondary', 'primary'.
- * - Button: variant uses 'primary', 'secondary'. loading is isLoading. disabled is isDisabled.
- * - Spacing: gap uses 0.5, 1, 2, 3 (steps), not raw pixels.
- * - Icons: icon prop is string, verified search/check/error/warning/info.
+ * Final Types Sync:
+ * - TextInput: 'value' prop is required.
+ * - DropdownMenu: uses 'button' prop for trigger configuration in compound mode, OR data-driven 'items'.
+ * - Button: variant 'danger' -> 'destructive' (per common theme mapping).
+ * - DropdownMenuItem: variant 'danger' -> 'destructive'.
  */
 function UIKitLab() {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
+  const [inputValue, setInputValue] = useState("");
 
   const demoColumns = [
     { key: "id", header: "ID", width: "10%" },
@@ -85,7 +85,7 @@ function UIKitLab() {
             {icons.map(name => (
               <VStack key={name} gap={1} align="center" className="w-24 p-2 border rounded-lg">
                 <Icon icon={name as any} size="md" />
-                <Text size="xsm" className="truncate w-full text-center">{name}</Text>
+                <Text size="xsm" className="truncate w-full text-center text-secondary">{name}</Text>
               </VStack>
             ))}
           </HStack>
@@ -109,7 +109,7 @@ function UIKitLab() {
           <HStack gap={2} wrap="wrap" align="center">
             <Button label="Primary Button" variant="primary" />
             <Button label="Secondary" variant="secondary" />
-            <Button label="Danger" variant="danger" />
+            <Button label="Danger" variant="destructive" />
             <IconButton icon="search" label="Tìm kiếm" />
             <Badge label="Active" variant="success" />
             <Badge label="Critical" variant="error" />
@@ -142,20 +142,28 @@ function UIKitLab() {
         {/* Inputs */}
         <Section title="Forms & Inputs">
           <VStack gap={2} className="max-w-md">
-            <TextInput label="Tên thiết bị" placeholder="Nhập mã hoặc tên..." />
-            <TextInput label="Mô tả" placeholder="Thông tin chi tiết..." />
-            <DropdownMenu trigger={<Button label="Chọn thao tác" />}>
-              <DropdownMenuItem label="Chỉnh sửa" />
-              <DropdownMenuItem label="Sao chép" />
-              <DropdownMenuItem label="Xoá" variant="danger" />
-            </DropdownMenu>
+            <TextInput 
+              label="Tên thiết bị" 
+              placeholder="Nhập mã hoặc tên..." 
+              value={inputValue} 
+              onChange={setInputValue} 
+            />
+            {/* Using data-mode for DropdownMenu to avoid complex trigger props in lab */}
+            <DropdownMenu 
+              button={{ label: "Chọn thao tác", variant: "secondary" }}
+              items={[
+                { label: "Chỉnh sửa", onClick: () => console.log("Edit") },
+                { label: "Sao chép", onClick: () => console.log("Copy") },
+                { label: "Xoá", variant: "destructive", onClick: () => console.log("Delete") }
+              ]}
+            />
           </VStack>
         </Section>
 
         {/* Data Display */}
         <Section title="Data & Feedback">
           <VStack gap={2}>
-            <Card className="p-0 overflow-hidden">
+            <Card className="p-0 overflow-hidden border">
               <Table 
                 columns={demoColumns as any} 
                 data={demoData} 
@@ -180,10 +188,10 @@ function UIKitLab() {
             </VStack>
             
             <HStack gap={2} align="center">
-              <Avatar name="Vũ Hồng Sơn" src="https://i.pravatar.cc/150?u=son" />
+              <Avatar name="Vũ Hồng Sơn" />
               <VStack gap={0}>
                 <Text weight="bold">Vũ Hồng Sơn</Text>
-                <Text size="sm">Quản trị viên</Text>
+                <Text size="sm" color="secondary">Quản trị viên</Text>
               </VStack>
             </HStack>
           </VStack>
@@ -195,8 +203,8 @@ function UIKitLab() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <VStack gap={2} className="w-full">
-      <Heading level={3} className="text-accent border-b pb-2">{title}</Heading>
+    <VStack gap={3} className="w-full">
+      <Heading level={3} color="accent" className="border-b pb-2">{title}</Heading>
       {children}
     </VStack>
   );
