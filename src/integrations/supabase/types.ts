@@ -5856,7 +5856,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           don_vi: Database["public"]["Enums"]["don_vi_code"] | null
-          email: string
+          email: string | null
           ho_ten: string | null
           id: string
           tour_hoan_thanh: boolean
@@ -5867,7 +5867,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           don_vi?: Database["public"]["Enums"]["don_vi_code"] | null
-          email: string
+          email?: string | null
           ho_ten?: string | null
           id: string
           tour_hoan_thanh?: boolean
@@ -5878,7 +5878,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           don_vi?: Database["public"]["Enums"]["don_vi_code"] | null
-          email?: string
+          email?: string | null
           ho_ten?: string | null
           id?: string
           tour_hoan_thanh?: boolean
