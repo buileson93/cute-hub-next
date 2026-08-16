@@ -113,7 +113,7 @@ function BaoTriDetail() {
                   <div>
                     <div className="text-xs uppercase text-muted-foreground">Tài sản</div>
                     {tb ? (
-                      <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} className="text-primary hover:underline font-medium">
+                      <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan" }} className="text-primary hover:underline font-medium">
                         {tb.ma_thiet_bi} — {tb.ten}
                       </Link>
                     ) : <span className="font-medium">{bt.thiet_bi}</span>}
