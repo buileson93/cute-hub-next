@@ -415,12 +415,12 @@ function SuCoPage() {
           <div className="flex gap-1 items-center">
             <WeeklyReportImportDialog />
             <AppTooltip noiDung="Lịch sử nhập">
-              <Button asChild size="sm" variant="outline" className="h-7 w-7 p-0">
+              <Button asChild size="icon" variant="outline">
                 <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
               </Button>
             </AppTooltip>
             <AppTooltip noiDung="Báo cáo ban đầu">
-              <Button asChild size="sm" className="h-7 w-7 p-0">
+              <Button asChild size="icon">
                 <Link to="/su-co/moi"><FilePlus2 className="h-4 w-4" /></Link>
               </Button>
             </AppTooltip>
