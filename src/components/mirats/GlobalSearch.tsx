@@ -62,7 +62,7 @@ export function GlobalSearch() {
       </div>
 
       {open && hasQuery && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl">
+        <div className="astryx-command-palette absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl">
           {/* Trạng thái tải */}
           {rows.length === 0 && loading && (
             <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-muted-foreground">
@@ -87,7 +87,7 @@ export function GlobalSearch() {
                       onMouseEnter={() => setActive(i)}
                       onClick={() => go(h)}
                       className={cn(
-                        "flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors",
+                        "astryx-command-palette-item flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors",
                         i === active ? "bg-accent" : "hover:bg-accent/60"
                       )}
                     >
@@ -120,7 +120,7 @@ export function GlobalSearch() {
               })}
             </ul>
           )}
-          <div className="border-t border-border bg-muted/40 px-4 py-1.5 text-[10px] text-muted-foreground">
+          <div className="astryx-command-palette-footer border-t border-border bg-muted/40 px-4 py-1.5 text-[10px] text-muted-foreground">
             ↑↓ chọn · Enter mở · Esc đóng
           </div>
         </div>
