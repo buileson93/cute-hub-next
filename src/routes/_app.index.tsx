@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { PageHeader } from "@/components/mirats/PageHeader";
-import { PageBody } from "@/components/mirats/PageBody";
+import { MiratsPageHeader as PageHeader, MiratsPageBody as PageBody } from "@/components/astryx/MiratsPageLayout";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useSession } from "@/hooks/use-session";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";

@@ -18,7 +18,14 @@ import { useDashboardBrief } from "@/lib/mirats/dashboard.functions";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
 import { useQuery } from "@tanstack/react-query";
 import { formatKpiValue } from "@/lib/mirats/reliability";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MiratsCard as Card } from "@/components/astryx/MiratsCard";
+import { MiratsHeading as CardTitle } from "@/components/astryx/MiratsTypography";
+function CardHeader({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+function CardContent({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
 import { Icon } from "@/components/mirats/ui/Icon";
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
