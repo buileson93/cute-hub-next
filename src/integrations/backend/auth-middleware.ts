@@ -3,10 +3,8 @@
  * Thay thế `requireSupabaseAuth` sinh tự động, nhưng đọc cấu hình qua lớp `backend/env`.
  */
 import { createMiddleware } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
-import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import { backendFetch, resolveServerBackend } from "./env";
+
 
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
