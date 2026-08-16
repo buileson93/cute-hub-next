@@ -99,12 +99,12 @@ function UIKitLab() {
               <div className="p-4 border rounded-lg bg-card shadow-sm">
                 <VStack gap={3}>
                   <Heading level={3}>Heading Level 3</Heading>
-                  <Text>
+                  <Text type="body">
                     Sử dụng phông chữ hệ thống để đảm bảo hiệu suất và sự ổn định trong môi trường SSR.
                     Văn bản tiếng Việt hiển thị chính xác với phông sans-serif chuẩn.
                   </Text>
-                  <Text size="sm" color="muted">
-                    Văn bản nhỏ hơn với màu sắc được làm mờ (muted).
+                  <Text type="supporting">
+                    Văn bản nhỏ hơn với màu sắc được làm mờ (supporting/secondary).
                   </Text>
                 </VStack>
               </div>
@@ -117,7 +117,7 @@ function UIKitLab() {
                     <Badge label="Vị trí" variant="info" />
                   </HStack>
                   <Divider />
-                  <Text size="xs">
+                  <Text size="2xs">
                     Phần chân trang với văn bản cực nhỏ (extra small).
                   </Text>
                 </VStack>
