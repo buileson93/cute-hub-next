@@ -26,10 +26,15 @@ export function renderErrorPage(error?: any): string {
 
   // Add environment context for diagnostics (server-only)
   const isServer = typeof window === 'undefined';
+  const g = globalThis as any;
+  const env = g.process?.env || g || {};
+  
   const envContext = isServer ? `
     <div style="margin-top: 1rem; font-size: 0.75rem; color: #6b7280; border-top: 1px solid #e5e7eb; pt-2;">
       Runtime: ${typeof (globalThis as any).process !== 'undefined' ? 'Node/Worker' : 'Browser'}
-      | URL: ${typeof (globalThis as any).Request !== 'undefined' ? 'Request available' : 'N/A'}
+      | URL: ${env.SUPABASE_URL ? 'SUPABASE_URL present' : 'SUPABASE_URL missing'}
+      | Key: ${env.SUPABASE_PUBLISHABLE_KEY ? 'SUPABASE_KEY present' : 'SUPABASE_KEY missing'}
+      | Request: ${typeof (globalThis as any).Request !== 'undefined' ? 'Request available' : 'N/A'}
     </div>
   ` : '';
 
