@@ -23,7 +23,8 @@ import {
   HStack,
   VStack,
   DropdownMenu,
-  DropdownMenuItem
+  DropdownMenuItem,
+  Stack
 } from "@astryxdesign/core";
 import { useState } from "react";
 
@@ -36,15 +37,21 @@ export const Route = createFileRoute("/admin/ui-kit")({
  * 
  * SSR-safe Component Lab for Astryx Design System.
  * Verified against @astryxdesign/core 0.4.1.
+ * 
+ * Types fixed after server definition check:
+ * - Text: size uses 'sm', 'base', etc. (not 'small'). color uses 'secondary', 'primary'.
+ * - Button: variant uses 'primary', 'secondary'. loading is isLoading. disabled is isDisabled.
+ * - Spacing: gap uses 0.5, 1, 2, 3 (steps), not raw pixels.
+ * - Icons: icon prop is string, verified search/check/error/warning/info.
  */
 function UIKitLab() {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
 
   const demoColumns = [
-    { key: "id", header: "ID" },
+    { key: "id", header: "ID", width: "10%" },
     { key: "name", header: "Tên tài sản" },
-    { key: "status", header: "Trạng thái" },
+    { key: "status", header: "Trạng thái", width: "20%" },
   ];
 
   const demoData = [
@@ -61,7 +68,7 @@ function UIKitLab() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
-      <VStack gap={4}>
+      <VStack gap={6}>
         {/* Header */}
         <VStack gap={1}>
           <Heading level={1}>Astryx SSR Component Lab</Heading>
@@ -78,7 +85,7 @@ function UIKitLab() {
             {icons.map(name => (
               <VStack key={name} gap={1} align="center" className="w-24 p-2 border rounded-lg">
                 <Icon icon={name as any} size="md" />
-                <Text size="xsmall" className="truncate w-full text-center">{name}</Text>
+                <Text size="xsm" className="truncate w-full text-center">{name}</Text>
               </VStack>
             ))}
           </HStack>
@@ -93,21 +100,21 @@ function UIKitLab() {
               Đây là nội dung văn bản mặc định (Body Text) sử dụng phông chữ Inter đã được cấu hình trong P4.
             </Text>
             <Text color="secondary">Văn bản phụ (Secondary Text) cho các ghi chú hoặc mô tả.</Text>
-            <Text size="small">Small text cho các nhãn nhỏ hoặc metadata.</Text>
+            <Text size="sm">Small text cho các nhãn nhỏ hoặc metadata.</Text>
           </VStack>
         </Section>
 
         {/* Buttons & Indicators */}
         <Section title="Buttons & Status">
           <HStack gap={2} wrap="wrap" align="center">
-            <Button label="Primary Button" color="primary" />
-            <Button label="Secondary" color="secondary" />
-            <Button label="Danger" color="destructive" />
+            <Button label="Primary Button" variant="primary" />
+            <Button label="Secondary" variant="secondary" />
+            <Button label="Danger" variant="danger" />
             <IconButton icon="search" label="Tìm kiếm" />
-            <Badge label="Active" color="success" />
-            <Badge label="Critical" color="destructive" />
+            <Badge label="Active" variant="success" />
+            <Badge label="Critical" variant="error" />
             <HStack gap={1} align="center">
-              <StatusDot color="success" label="Active" />
+              <StatusDot variant="success" label="Active" />
               <Text>Hệ thống ổn định</Text>
             </HStack>
             <Button label="Loading..." isLoading />
@@ -121,10 +128,10 @@ function UIKitLab() {
             <Breadcrumbs>
               <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
               <BreadcrumbItem href="/admin">Quản trị</BreadcrumbItem>
-              <BreadcrumbItem active>UI Kit</BreadcrumbItem>
+              <BreadcrumbItem isCurrent>UI Kit</BreadcrumbItem>
             </Breadcrumbs>
             
-            <TabList value={activeTab} onValueChange={setActiveTab}>
+            <TabList value={activeTab} onChange={setActiveTab}>
               <Tab value="overview" label="Tổng quan" />
               <Tab value="components" label="Thành phần" />
               <Tab value="docs" label="Tài liệu" />
@@ -135,13 +142,12 @@ function UIKitLab() {
         {/* Inputs */}
         <Section title="Forms & Inputs">
           <VStack gap={2} className="max-w-md">
-            <TextInput label="Tên thiết bị" placeholder="Nhập mã hoặc tên..." value="" />
-            <TextInput label="Mô tả" placeholder="Thông tin chi tiết..." value="" />
-            <DropdownMenu>
-              <Button label="Chọn thao tác" />
+            <TextInput label="Tên thiết bị" placeholder="Nhập mã hoặc tên..." />
+            <TextInput label="Mô tả" placeholder="Thông tin chi tiết..." />
+            <DropdownMenu trigger={<Button label="Chọn thao tác" />}>
               <DropdownMenuItem label="Chỉnh sửa" />
               <DropdownMenuItem label="Sao chép" />
-              <DropdownMenuItem label="Xoá" color="destructive" />
+              <DropdownMenuItem label="Xoá" variant="danger" />
             </DropdownMenu>
           </VStack>
         </Section>
@@ -159,7 +165,7 @@ function UIKitLab() {
             <Pagination 
               page={page} 
               totalPages={10} 
-              onPageChange={setPage} 
+              onChange={setPage} 
             />
 
             <EmptyState 
@@ -177,7 +183,7 @@ function UIKitLab() {
               <Avatar name="Vũ Hồng Sơn" src="https://i.pravatar.cc/150?u=son" />
               <VStack gap={0}>
                 <Text weight="bold">Vũ Hồng Sơn</Text>
-                <Text size="small">Quản trị viên</Text>
+                <Text size="sm">Quản trị viên</Text>
               </VStack>
             </HStack>
           </VStack>
