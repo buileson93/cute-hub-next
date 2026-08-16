@@ -1,0 +1,34 @@
+/*
+ * VATM Astryx Theme Foundation
+ * Mapping MIRATS 2.0 brand identity to Astryx semantic tokens.
+ */
+
+:root {
+  /* Brand Palette Mapping */
+  --color-accent: #1C51E0; /* primary */
+  --color-error: #FF8F00; /* attention/destructive */
+  --color-text-primary: #000000;
+  --color-text-secondary: #4C5055; /* graphite */
+  --color-background-body: #FFFFFF;
+  --color-background-surface: #FFFFFF;
+  
+  /* Borders & Radii */
+  --color-border: rgba(0, 0, 0, 0.08); /* 8% hairline */
+  --radius-element: 8px; /* radius control */
+  --radius-container: 16px; /* radius surface */
+  
+  /* Motion Parity */
+  --duration-fast: 120ms;
+  --duration-medium: 200ms;
+  --duration-slow: 320ms;
+}
+
+.dark {
+  --color-accent: #1C51E0;
+  --color-error: #FF8F00;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #AAAFB5;
+  --color-background-body: #111112;
+  --color-background-surface: #1F1F22;
+  --color-border: rgba(255, 255, 255, 0.08);
+}

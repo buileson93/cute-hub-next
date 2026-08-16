@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "@astryxdesign/core";
 import {
   Outlet,
   Link,
@@ -185,7 +186,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider theme="vatm">
+        <Outlet />
+      </ThemeProvider>
       <Toaster />
       <SavingIndicator />
       <OfflineBanner />
