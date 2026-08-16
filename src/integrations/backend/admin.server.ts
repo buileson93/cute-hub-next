@@ -10,7 +10,14 @@ import { backendFetch, resolveServerBackend } from "./env";
 
 function createBackendAdminClient() {
   const cfg = resolveServerBackend({ withServiceRole: true });
-  const key = cfg.serviceRoleKey!;
+  const key = cfg.serviceRoleKey;
+  if (!key) {
+    throw new Error(
+      `[backend-admin] Thiếu serviceRoleKey. ` +
+      `Đảm bảo đã cấu hình APP_SUPABASE_SERVICE_ROLE_KEY (nếu dùng Supabase riêng) ` +
+      `hoặc kết nối Lovable Cloud.`
+    );
+  }
   return createClient<Database>(cfg.url, key, {
     global: { fetch: backendFetch(key) },
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
