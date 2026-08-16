@@ -339,7 +339,13 @@ function NewSubmission() {
             Tài sản liên quan ({t.thiet_bi_mode === "single" ? "chọn 1" : "chọn nhiều"})
           </CardTitle></CardHeader>
           <CardContent className="space-y-2">
-            <Input placeholder="Tìm mã hoặc tên tài sản…" value={tbSearch} onChange={(e) => setTbSearch(e.target.value)} />
+            <MiratsInput
+              label="Tìm tài sản"
+              isLabelHidden
+              placeholder="Tìm mã hoặc tên tài sản…"
+              value={tbSearch}
+              onChange={(val) => setTbSearch(val)}
+            />
             <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
               {(thietBiList ?? []).map((tb) => {
                 const on = selectedTb.includes(tb.id);
