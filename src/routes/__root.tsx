@@ -14,7 +14,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { SavingIndicator } from "@/components/mirats/SavingIndicator";
 import { OfflineBanner } from "@/components/mirats/OfflineBanner";
-import { AstryxProvider } from "@/components/astryx-pilot/AstryxProvider";
+import React from "react";
+
+const AstryxProvider = React.lazy(() => import("@/components/astryx-pilot/AstryxProvider").then(m => ({ default: m.AstryxProvider })));
 
 function NotFoundComponent() {
   return (
@@ -185,10 +187,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AstryxProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </AstryxProvider>
+      <React.Suspense fallback={<Outlet />}>
+        <AstryxProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </AstryxProvider>
+      </React.Suspense>
       <Toaster />
       <SavingIndicator />
       <OfflineBanner />
