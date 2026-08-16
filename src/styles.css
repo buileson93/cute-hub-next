@@ -4,7 +4,7 @@
 
 /* Astryx Design System — Core Styles & Reset */
 @import "@astryxdesign/core/astryx.css";
-@import "@astryxdesign/theme-stone/dist/theme.css";
+@import "@astryxdesign/theme-stone/theme.css";
 
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
