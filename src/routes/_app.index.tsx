@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MiratsPageHeader as PageHeader, MiratsPageBody as PageBody } from "@/components/astryx/MiratsPageLayout";
 import { Icon } from "@/components/mirats/ui/Icon";
@@ -29,9 +29,6 @@ export const Route = (createFileRoute("/_app/") as any)({
         completenessOverview: [] 
       };
     }
-    // ... logic nạp dữ liệu thật ...
-  },
-})
 
     try {
       await Promise.all([
@@ -100,14 +97,13 @@ function Dashboard() {
                />
                <Button 
                  size="default" 
-
-                variant="ghost" 
-                onClick={handleReset}
-                className="gap-2 text-muted-foreground hover:text-destructive transition-all"
-              >
-                <Icon name="action.undo" size="tiny" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
-              </Button>
+                 variant="ghost" 
+                 onClick={handleReset}
+                 className="gap-2 text-muted-foreground hover:text-destructive transition-all"
+               >
+                 <Icon name="action.undo" size="tiny" />
+                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
+               </Button>
              </>
           )}
           <Button 
@@ -137,4 +133,3 @@ function Dashboard() {
     </PageBody>
   );
 }
-
