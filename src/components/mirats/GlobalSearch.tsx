@@ -1,8 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Search, Loader2, Network } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Search, Loader2 } from "lucide-react";
+import {
+  CommandPalette,
+  CommandPaletteInput,
+  CommandPaletteList,
+  CommandPaletteItem,
+  CommandPaletteGroup,
+  CommandPaletteEmpty,
+  CommandPaletteFooter,
+} from "@astryxdesign/core/CommandPalette";
 import {
   useGlobalSearch,
   ENTITY_META,
