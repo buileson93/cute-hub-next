@@ -456,13 +456,13 @@ function NewSubmission() {
       </Card>
 
       <div className="sticky bottom-4 mt-6 flex justify-end gap-2">
-        <Button variant="outline" onClick={() => saveM.mutate("draft")} disabled={saveM.isPending}>
+        <MiratsButton variant="outline" onClick={() => saveM.mutate("draft")} disabled={saveM.isPending}>
           <Save className="mr-2 h-4 w-4" />Lưu nháp
-        </Button>
-        <Button onClick={() => saveM.mutate("submitted")} disabled={saveM.isPending}>
-          {saveM.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+        </MiratsButton>
+        <MiratsButton onClick={() => saveM.mutate("submitted")} disabled={saveM.isPending} loading={saveM.isPending}>
+          <Send className="mr-2 h-4 w-4" />
           Gửi biên bản
-        </Button>
+        </MiratsButton>
       </div>
     </div>
   );
