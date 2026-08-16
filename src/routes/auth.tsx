@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { z } from "zod";
+
+const AstryxButton = lazy(() => import("@astryxdesign/core").then(m => ({ default: m.Button })));
 import { LogIn, Loader2, ScanFace, UserPlus } from "lucide-react";
 import { startAuthentication, browserSupportsWebAuthn } from "@simplewebauthn/browser";
 import { supabase } from "@/integrations/backend/client";
