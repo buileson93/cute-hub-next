@@ -78,11 +78,22 @@ export const createUser = createServerFn({ method: "POST" })
     if (authErr || !created.user) throw new Error(authErr?.message ?? "Không tạo được user");
     const uid = created.user.id;
 
-    // profile được tạo bởi trigger. Cập nhật thêm ho_ten & don_vi.
-    await supabaseAdmin.from("profiles").update({
-      ho_ten: data.ho_ten,
-      don_vi: data.don_vi,
-    }).eq("id", uid);
+    // Cố gắng tạo profile nếu trigger thất bại
+    const { data: profile } = await supabaseAdmin.from("profiles").select("id").eq("id", uid).maybeSingle();
+    if (!profile) {
+      await supabaseAdmin.from("profiles").insert({
+        id: uid,
+        email: data.email,
+        ho_ten: data.ho_ten,
+        active: true,
+        don_vi: data.don_vi,
+      });
+    } else {
+      await supabaseAdmin.from("profiles").update({
+        ho_ten: data.ho_ten,
+        don_vi: data.don_vi,
+      }).eq("id", uid);
+    }
 
     // insert roles
     await supabaseAdmin.from("user_roles").insert(
