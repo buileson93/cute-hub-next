@@ -181,8 +181,11 @@ function AuthPage() {
             <motion.div
               {...enter}
               transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-8"
+              className="mb-8 flex flex-col items-center gap-6"
             >
+              <Suspense fallback={<div className="h-10 w-32 bg-muted animate-pulse rounded-md" />}>
+                <AstryxButton label="Astryx Pilot Active" variant="secondary" size="sm" />
+              </Suspense>
               <img
                 src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
