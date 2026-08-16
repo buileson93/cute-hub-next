@@ -1,211 +1,113 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { 
   Heading, 
-  Text, 
-  Divider, 
-  Card, 
-  Button, 
-  IconButton, 
-  Badge, 
-  StatusDot, 
-  EmptyState, 
-  Skeleton, 
-  Avatar, 
-  Breadcrumbs, 
-  BreadcrumbItem,
-  TabList, 
-  Tab,
-  Pagination, 
-  Toolbar, 
-  TextInput, 
-  Table,
-  Icon,
-  HStack,
+  Text,
   VStack,
-  DropdownMenu,
-  DropdownMenuItem
+  HStack,
+  Button,
+  IconButton,
+  Badge,
+  StatusDot,
+  Card,
+  Divider,
+  Icon
 } from "@astryxdesign/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/admin/ui-kit")({
   component: UIKitLab,
 });
 
-/**
- * UIKitLab (P5)
- * 
- * SSR-safe Component Lab for Astryx Design System.
- * Verified against @astryxdesign/core 0.4.1.
- * 
- * Final Types Sync:
- * - TextInput: 'value' prop is required.
- * - DropdownMenu: uses 'button' prop for trigger configuration in compound mode, OR data-driven 'items'.
- * - Button: variant 'danger' -> 'destructive' (per common theme mapping).
- * - DropdownMenuItem: variant 'danger' -> 'destructive'.
- */
 function UIKitLab() {
-  const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState("overview");
-  const [inputValue, setInputValue] = useState("");
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
-  const demoColumns = [
-    { key: "id", header: "ID", width: "10%" },
-    { key: "name", header: "Tên tài sản" },
-    { key: "status", header: "Trạng thái", width: "20%" },
-  ];
-
-  const demoData = [
-    { id: "TB-001", name: "Đài chỉ huy Chu Lai", status: "Hoạt động" },
-    { id: "TB-002", name: "Radar thứ cấp Sơn Trà", status: "Bảo trì" },
-    { id: "TB-003", name: "Máy phát điện FG Wilson", status: "Hỏng hóc" },
-  ];
-
-  const icons = [
-    "search", "check", "error", "warning", "info", 
-    "moreHorizontal", "chevronDown", "chevronLeft", "chevronRight",
-    "calendar", "clock", "externalLink", "menu", "copy", "funnel"
-  ];
+  if (!hydrated) {
+    return (
+      <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen flex items-center justify-center">
+        <div className="text-muted-foreground">Đang tải giao diện...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
-      <VStack gap={6}>
-        {/* Header */}
-        <VStack gap={1}>
-          <Heading level={1}>Astryx SSR Component Lab</Heading>
-          <Text color="secondary">
-            MIRATS 2.0 Design System Pilot (Phase 5)
-          </Text>
+      <VStack gap={8} align="stretch">
+        <VStack gap={2}>
+          <Heading level={1}>MIRATS Astryx UI Kit</Heading>
+          <Text variant="description">Phòng thí nghiệm hợp phần giao diện SSR-safe.</Text>
         </VStack>
 
         <Divider />
 
-        {/* Icons Gallery */}
-        <Section title="Icon Gallery (Semantic Icons)">
-          <HStack gap={2} wrap="wrap">
-            {icons.map(name => (
-              <VStack key={name} gap={1} align="center" className="w-24 p-2 border rounded-lg">
-                <Icon icon={name as any} size="md" />
-                <Text size="xsm" className="truncate w-full text-center text-secondary">{name}</Text>
-              </VStack>
-            ))}
+        {/* Buttons & Icons */}
+        <VStack gap={4} align="stretch">
+          <Heading level={2}>Buttons & Icons</Heading>
+          <HStack gap={4} align="center" wrap>
+            <Button variant="primary">Primary Button</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="destructive">Destructive</Button>
+            <Button variant="ghost">Ghost</Button>
+            <IconButton icon={<Icon name="search" />} aria-label="Search" />
+            <IconButton icon={<Icon name="add" />} variant="primary" aria-label="Add" />
+            <IconButton icon={<Icon name="edit" />} variant="secondary" aria-label="Edit" />
+            <IconButton icon={<Icon name="delete" />} variant="destructive" aria-label="Delete" />
           </HStack>
-        </Section>
+          <HStack gap={4} align="center" wrap>
+            <Icon name="search" size="sm" />
+            <Icon name="filter" size="sm" />
+            <Icon name="more" size="sm" />
+            <Icon name="chevron-right" size="sm" />
+            <Icon name="close" size="sm" />
+            <Icon name="check" size="sm" color="success" />
+            <Icon name="warning" size="sm" color="warning" />
+          </HStack>
+        </VStack>
 
-        {/* Typography */}
-        <Section title="Typography & Headings">
-          <VStack gap={2}>
-            <Heading level={2}>H2 Heading (Section Title)</Heading>
-            <Heading level={3}>H3 Heading (Sub-section)</Heading>
-            <Text>
-              Đây là nội dung văn bản mặc định (Body Text) sử dụng phông chữ Inter đã được cấu hình trong P4.
-            </Text>
-            <Text color="secondary">Văn bản phụ (Secondary Text) cho các ghi chú hoặc mô tả.</Text>
-            <Text size="sm">Small text cho các nhãn nhỏ hoặc metadata.</Text>
-          </VStack>
-        </Section>
-
-        {/* Buttons & Indicators */}
-        <Section title="Buttons & Status">
-          <HStack gap={2} wrap="wrap" align="center">
-            <Button label="Primary Button" variant="primary" />
-            <Button label="Secondary" variant="secondary" />
-            <Button label="Danger" variant="destructive" />
-            <IconButton icon="search" label="Tìm kiếm" />
-            <Badge label="Active" variant="success" />
-            <Badge label="Critical" variant="error" />
-            <HStack gap={1} align="center">
-              <StatusDot variant="success" label="Active" />
-              <Text>Hệ thống ổn định</Text>
+        {/* Status & Badges */}
+        <VStack gap={4} align="stretch">
+          <Heading level={2}>Status & Indicators</Heading>
+          <HStack gap={4} align="center">
+            <Badge variant="neutral">Neutral</Badge>
+            <Badge variant="success">Success</Badge>
+            <Badge variant="warning">Warning</Badge>
+            <Badge variant="error">Error</Badge>
+            <Badge variant="info">Info</Badge>
+          </HStack>
+          <HStack gap={6} align="center">
+            <HStack gap={2} align="center">
+              <StatusDot status="success" />
+              <Text size="sm">Hoạt động</Text>
             </HStack>
-            <Button label="Loading..." isLoading />
-            <Button label="Disabled" isDisabled />
+            <HStack gap={2} align="center">
+              <StatusDot status="warning" />
+              <Text size="sm">Bảo trì</Text>
+            </HStack>
+            <HStack gap={2} align="center">
+              <StatusDot status="error" />
+              <Text size="sm">Sự cố</Text>
+            </HStack>
           </HStack>
-        </Section>
-
-        {/* Navigation & Tabs */}
-        <Section title="Navigation & Tabs">
-          <VStack gap={2}>
-            <Breadcrumbs>
-              <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
-              <BreadcrumbItem href="/admin">Quản trị</BreadcrumbItem>
-              <BreadcrumbItem isCurrent>UI Kit</BreadcrumbItem>
-            </Breadcrumbs>
-            
-            <TabList value={activeTab} onChange={setActiveTab}>
-              <Tab value="overview" label="Tổng quan" />
-              <Tab value="components" label="Thành phần" />
-              <Tab value="docs" label="Tài liệu" />
-            </TabList>
-          </VStack>
-        </Section>
-
-        {/* Inputs */}
-        <Section title="Forms & Inputs">
-          <VStack gap={2} className="max-w-md">
-            <TextInput 
-              label="Tên thiết bị" 
-              placeholder="Nhập mã hoặc tên..." 
-              value={inputValue} 
-              onChange={setInputValue} 
-            />
-            {/* Using data-mode for DropdownMenu to avoid complex trigger props in lab */}
-            <DropdownMenu 
-              button={{ label: "Chọn thao tác", variant: "secondary" }}
-              items={[
-                { label: "Chỉnh sửa", onClick: () => console.log("Edit") },
-                { label: "Sao chép", onClick: () => console.log("Copy") },
-                { label: "Xoá", variant: "destructive", onClick: () => console.log("Delete") }
-              ]}
-            />
-          </VStack>
-        </Section>
+        </VStack>
 
         {/* Data Display */}
-        <Section title="Data & Feedback">
-          <VStack gap={2}>
-            <Card className="p-0 overflow-hidden border">
-              <Table 
-                columns={demoColumns as any} 
-                data={demoData} 
-              />
-            </Card>
-
-            <Pagination 
-              page={page} 
-              totalPages={10} 
-              onChange={setPage} 
-            />
-
-            <EmptyState 
-              title="Không tìm thấy dữ liệu" 
-              description="Vui lòng thử lại với bộ lọc khác hoặc tạo mới tài sản."
-              icon="search"
-            />
-            
-            <VStack gap={1}>
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
+        <VStack gap={4} align="stretch">
+          <Heading level={2}>Data Display</Heading>
+          <Card padding={4}>
+            <VStack gap={3}>
+              <Heading level={3}>Thành phần hệ thống</Heading>
+              <Text>Thông tin chi tiết về thiết bị và lịch sử vận hành.</Text>
+              <Divider />
+              <HStack justify="between">
+                <Text weight="medium">Trạng thái:</Text>
+                <Badge variant="success">Sẵn sàng</Badge>
+              </HStack>
             </VStack>
-            
-            <HStack gap={2} align="center">
-              <Avatar name="Vũ Hồng Sơn" />
-              <VStack gap={0}>
-                <Text weight="bold">Vũ Hồng Sơn</Text>
-                <Text size="sm" color="secondary">Quản trị viên</Text>
-              </VStack>
-            </HStack>
-          </VStack>
-        </Section>
+          </Card>
+        </VStack>
       </VStack>
     </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <VStack gap={3} className="w-full">
-      <Heading level={3} color="accent" className="border-b pb-2">{title}</Heading>
-      {children}
-    </VStack>
   );
 }
