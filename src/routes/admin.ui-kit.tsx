@@ -26,14 +26,14 @@ function UIKitLab() {
   if (!hydrated) {
     return (
       <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Đang tải giao diện...</div>
+        <div className="text-muted-foreground font-sans">Đang tải giao diện...</div>
       </div>
     );
   }
 
   return (
-    <Suspense fallback={<div>Đang tải thành phần...</div>}>
-      <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
+    <Suspense fallback={<div className="p-8 font-sans">Đang tải thành phần...</div>}>
+      <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen font-sans">
         <VStack gap={8} align="stretch">
           <VStack gap={2}>
             <Heading level={1}>MIRATS Astryx UI Kit</Heading>
@@ -69,14 +69,14 @@ function UIKitLab() {
           {/* Status & Badges */}
           <VStack gap={4} align="stretch">
             <Heading level={2}>Status & Indicators</Heading>
-            <HStack gap={4} align="center">
+            <HStack gap={4} align="center" wrap="wrap">
               <Badge label="Neutral" variant="neutral" />
               <Badge label="Success" variant="success" />
               <Badge label="Warning" variant="warning" />
               <Badge label="Error" variant="error" />
               <Badge label="Info" variant="info" />
             </HStack>
-            <HStack gap={6} align="center">
+            <HStack gap={6} align="center" wrap="wrap">
               <HStack gap={2} align="center">
                 <StatusDot variant="success" label="Hoạt động" />
                 <Text size="sm">Hoạt động</Text>
@@ -90,6 +90,39 @@ function UIKitLab() {
                 <Text size="sm">Sự cố</Text>
               </HStack>
             </HStack>
+          </VStack>
+
+          {/* Typography */}
+          <VStack gap={4} align="stretch">
+            <Heading level={2}>Typography & Layout</Heading>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-4 border rounded-lg bg-card shadow-sm">
+                <VStack gap={3}>
+                  <Heading level={3}>Heading Level 3</Heading>
+                  <Text>
+                    Sử dụng phông chữ hệ thống để đảm bảo hiệu suất và sự ổn định trong môi trường SSR.
+                    Văn bản tiếng Việt hiển thị chính xác với phông sans-serif chuẩn.
+                  </Text>
+                  <Text size="sm" color="muted">
+                    Văn bản nhỏ hơn với màu sắc được làm mờ (muted).
+                  </Text>
+                </VStack>
+              </div>
+              <div className="p-4 border rounded-lg bg-card shadow-sm">
+                <VStack gap={3}>
+                  <Heading level={3}>Thành phần Bố cục</Heading>
+                  <HStack gap={2} wrap="wrap">
+                    <Badge label="Thanh phần" variant="info" />
+                    <Badge label="Thiết bị" variant="info" />
+                    <Badge label="Vị trí" variant="info" />
+                  </HStack>
+                  <Divider />
+                  <Text size="xs">
+                    Phần chân trang với văn bản cực nhỏ (extra small).
+                  </Text>
+                </VStack>
+              </div>
+            </div>
           </VStack>
         </VStack>
       </div>
