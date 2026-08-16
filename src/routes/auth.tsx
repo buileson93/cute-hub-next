@@ -1,8 +1,6 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
-
-const AstryxButton = lazy(() => import("@astryxdesign/core").then(m => ({ default: m.Button })));
 import { LogIn, Loader2, ScanFace, UserPlus } from "lucide-react";
 import { startAuthentication, browserSupportsWebAuthn } from "@simplewebauthn/browser";
 import { supabase } from "@/integrations/backend/client";
@@ -181,11 +179,8 @@ function AuthPage() {
             <motion.div
               {...enter}
               transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-8 flex flex-col items-center gap-6"
+              className="mb-8"
             >
-              <Suspense fallback={<div className="h-10 w-32 bg-muted animate-pulse rounded-md" />}>
-                <AstryxButton label="Astryx Pilot Active" variant="secondary" size="sm" />
-              </Suspense>
               <img
                 src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
