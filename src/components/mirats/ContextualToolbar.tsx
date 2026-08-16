@@ -105,9 +105,9 @@ export function ContextualToolbar({
         return (
           <Button
             key={a.id}
-            size="sm"
+            size="icon"
             variant={a.variant ?? "ghost"}
-            className="h-7 rounded-full px-2 text-xs"
+            className="rounded-full px-2"
             onClick={a.onSelect}
           >
             {Icon ? <Icon className="mr-1 h-3.5 w-3.5" /> : null}
@@ -119,7 +119,7 @@ export function ContextualToolbar({
       <Button
         size="sm"
         variant="ghost"
-        className="h-7 w-7 rounded-full p-0"
+        className="rounded-full p-0"
         onClick={onDismiss}
         aria-label="Đóng thanh hành động"
       >
