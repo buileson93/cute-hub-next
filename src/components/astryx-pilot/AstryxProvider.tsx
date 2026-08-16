@@ -20,8 +20,11 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
       import("@astryxdesign/core"),
       import("@astryxdesign/theme-stone/built")
     ]).then(([core, theme]) => {
+      console.log("[Astryx] Hydrated theme provider", theme.stoneTheme ? "OK" : "MISSING THEME");
       setComponents({ Theme: core.Theme, stoneTheme: theme.stoneTheme });
       setHydrated(true);
+    }).catch(err => {
+      console.error("[Astryx] Failed to hydrate", err);
     });
   }, []);
 
