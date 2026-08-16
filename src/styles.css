@@ -3,10 +3,8 @@
 @import "tw-animate-css";
 
 /* Astryx Design System — Core Styles & Reset */
-@import "@astryxdesign/core/dist/astryx.css";
-
-/* Astryx Design System — Stone Theme (VATM Pilot) */
-@import "@astryxdesign/theme-stone/dist/theme.css";
+@import "@astryxdesign/core/astryx.css";
+@import "@astryxdesign/theme-stone/theme.css";
 
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
