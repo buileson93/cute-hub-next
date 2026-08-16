@@ -15,7 +15,12 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
 
-    console.error("CRITICAL SERVER ERROR:", error);
+    if (error instanceof Error) {
+      console.error("SERVER ERROR:", error.name, error.message);
+      if (error.stack) console.error(error.stack);
+    } else {
+      console.error("UNKNOWN SERVER ERROR:", error);
+    }
     
     return new Response(renderErrorPage(error), {
       status: 500,
