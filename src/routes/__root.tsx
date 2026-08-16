@@ -16,7 +16,7 @@ import { SavingIndicator } from "@/components/mirats/SavingIndicator";
 import { OfflineBanner } from "@/components/mirats/OfflineBanner";
 import React from "react";
 
-const AstryxProvider = React.lazy(() => import("@/components/astryx-pilot/AstryxProvider").then(m => ({ default: m.AstryxProvider })));
+import { AstryxProvider } from "@/components/astryx-pilot/AstryxProvider";
 
 function NotFoundComponent() {
   return (
@@ -187,12 +187,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <React.Suspense fallback={<Outlet />}>
-        <AstryxProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-        </AstryxProvider>
-      </React.Suspense>
+      <AstryxProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </AstryxProvider>
       <Toaster />
       <SavingIndicator />
       <OfflineBanner />

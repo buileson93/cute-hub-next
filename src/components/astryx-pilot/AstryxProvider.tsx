@@ -1,6 +1,4 @@
-import { Theme } from "@astryxdesign/core";
-import { stoneTheme } from "@astryxdesign/theme-stone/built";
-import { ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 interface AstryxProviderProps {
   children: ReactNode;
@@ -10,9 +8,29 @@ interface AstryxProviderProps {
  * AstryxProvider
  * 
  * Binds the published Stone theme to the application.
- * Uses a module-constant theme object to ensure deterministic SSR.
+ * Only active in the browser to prevent SSR crashes from Astryx components.
  */
 export function AstryxProvider({ children }: AstryxProviderProps) {
+  const [hydrated, setHydrated] = useState(false);
+  const [components, setComponents] = useState<{ Theme: any; stoneTheme: any } | null>(null);
+
+  useEffect(() => {
+    // Dynamic import inside useEffect ensures browser-only execution
+    Promise.all([
+      import("@astryxdesign/core"),
+      import("@astryxdesign/theme-stone/built")
+    ]).then(([core, theme]) => {
+      setComponents({ Theme: core.Theme, stoneTheme: theme.stoneTheme });
+      setHydrated(true);
+    });
+  }, []);
+
+  if (!hydrated || !components) {
+    return <>{children}</>;
+  }
+
+  const { Theme, stoneTheme } = components;
+
   return (
     <Theme theme={stoneTheme}>
       {children}
