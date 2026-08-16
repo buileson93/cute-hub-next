@@ -116,7 +116,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-2 -mx-6">
+      <div className="mt-2 -mx-2 md:-mx-3 data-[density=comfortable]:-mx-4 md:data-[density=comfortable]:-mx-6 data-[density=spacious]:-mx-6 md:data-[density=spacious]:-mx-8">
         <HeartBeatStrip />
       </div>
 

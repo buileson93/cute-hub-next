@@ -1,6 +1,6 @@
-import { PageHeader } from "@/components/mirats/PageHeader";
+import { MiratsPageHeader, MiratsPageBody } from "@/components/astryx/MiratsPageLayout";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { InfoHint } from "@/components/mirats/InfoHint";
+import { MiratsHeading, MiratsText } from "@/components/astryx/MiratsTypography";
 import { useMemo, useState } from "react";
 import {
   Search, HeartPulse, TrendingDown, TrendingUp, AlertTriangle, ShieldCheck,

@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { PageHeader } from "@/components/mirats/PageHeader";
-import { PageBody } from "@/components/mirats/PageBody";
+import { MiratsPageHeader as PageHeader, MiratsPageBody as PageBody } from "@/components/astryx/MiratsPageLayout";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
@@ -135,7 +134,7 @@ function OverviewReport() {
         </div>
       </div>
 
-      <div className="mt-2 -mx-6">
+      <div className="mt-2 -mx-2 md:-mx-3 data-[density=comfortable]:-mx-4 md:data-[density=comfortable]:-mx-6 data-[density=spacious]:-mx-6 md:data-[density=spacious]:-mx-8">
         <HeartBeatStrip />
       </div>
 
