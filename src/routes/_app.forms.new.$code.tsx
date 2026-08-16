@@ -385,13 +385,19 @@ function NewSubmission() {
                 <span className="font-mono text-xs text-muted-foreground">{heThongInfo.ma}</span>
                 <span className="ml-2 font-medium">{heThongInfo.ten}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => { setHeThongId(null); setHeThongTouched(true); }}>
+              <MiratsButton variant="ghost" size="sm" onClick={() => { setHeThongId(null); setHeThongTouched(true); }}>
                 Đổi
-              </Button>
+              </MiratsButton>
             </div>
           ) : (
             <>
-              <Input placeholder="Tìm mã hoặc tên hệ thống…" value={heThongSearch} onChange={(e) => setHeThongSearch(e.target.value)} />
+              <MiratsInput
+                label="Tìm hệ thống"
+                isLabelHidden
+                placeholder="Tìm mã hoặc tên hệ thống…"
+                value={heThongSearch}
+                onChange={(val) => setHeThongSearch(val)}
+              />
               <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
                 {(heThongList ?? []).map((h) => (
                   <button type="button" key={h.id}
