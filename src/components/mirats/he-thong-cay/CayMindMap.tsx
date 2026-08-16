@@ -91,11 +91,11 @@ function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
 
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || typeof window === "undefined") return;
     
     let frameId: number;
     const update = () => {
-      frameId = requestAnimationFrame(() => {
+      frameId = window.requestAnimationFrame(() => {
         if (!el) return;
         const isTruncated = el.scrollWidth > el.clientWidth + 1;
         setTruncated(prev => prev !== isTruncated ? isTruncated : prev);
@@ -108,7 +108,7 @@ function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
     window.addEventListener("resize", update);
     return () => {
       ro?.disconnect();
-      cancelAnimationFrame(frameId);
+      if (frameId) window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", update);
     };
   }, [label]);
