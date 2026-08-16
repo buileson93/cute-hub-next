@@ -387,7 +387,7 @@ function ThietBiPage() {
                         <button
                           key={d.id}
                           type="button"
-                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi } }); }, search: { tab: "tong-quan", doc: undefined, q: undefined }}
+                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi }, search: { tab: "tong-quan", doc: undefined, q: undefined } }); }}
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
