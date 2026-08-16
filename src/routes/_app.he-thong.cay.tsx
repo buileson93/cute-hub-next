@@ -297,7 +297,7 @@ function HeThongCayPage() {
 
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
   const onRecord = useCallback((kind: "tb" | "tp", ma: string, ten?: string) => {
-     if (kind === "tb") nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } });
+     if (kind === "tb") nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma }, search: { tab: "tong-quan" } });
   }, [nav]);
   const onHistory = useCallback((ma: string) => {
      const sysId = parseHtSysMa(ma).sysName;

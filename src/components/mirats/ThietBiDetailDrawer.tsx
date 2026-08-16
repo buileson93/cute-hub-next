@@ -352,7 +352,7 @@ export function ThietBiDetailDrawer({
               )}
               <AppTooltip noiDung="Mở trang hồ sơ chi tiết đầy đủ của tài sản">
                 <Button asChild size="sm" variant="ghost" className="ml-auto h-8 w-8 p-0">
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: device.ma_thiet_bi }}>
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: device.ma_thiet_bi }} search={{ tab: "tong-quan" }}>
                     <ExternalLink className="h-4 w-4" />
                     <span className="sr-only">Mở trang chi tiết</span>
                   </Link>
