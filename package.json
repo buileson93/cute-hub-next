@@ -21,8 +21,9 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.5",
     "@ai-sdk/react": "^4.0.17",
-    "@astryxdesign/core": "^0.4.1",
-    "@astryxdesign/theme-neutral": "^0.4.1",
+    "@astryxdesign/core": "0.4.1",
+    "@astryxdesign/theme-neutral": "0.4.1",
+    "@astryxdesign/theme-stone": "0.4.1",
     "@aws-sdk/client-s3": "^3.1093.0",
     "@aws-sdk/s3-request-presigner": "^3.1093.0",
     "@dagrejs/dagre": "^3.0.0",
@@ -122,6 +123,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@astryxdesign/cli": "0.4.1",
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "2.13.1",
     "@testing-library/dom": "^10.4.1",
