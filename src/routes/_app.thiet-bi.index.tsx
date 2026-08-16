@@ -5,14 +5,20 @@ import {
   Search, HardDrive, Loader2, Building2, Layers, Network,
   Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu, ChevronRight, Monitor
 } from "lucide-react";
-import { PageBody } from "@/components/mirats/PageBody";
+import { MiratsPageHeader as PageHeader, MiratsPageBody as PageBody } from "@/components/astryx/MiratsPageLayout";
+import { MiratsCard as Card } from "@/components/astryx/MiratsCard";
+import { MiratsHeading as CardTitle } from "@/components/astryx/MiratsTypography";
+function CardHeader({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
+function CardContent({ children, className }: { children: React.ReactNode, className?: string }) {
+  return <div className={className}>{children}</div>;
+}
 
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { MiratsStatus as Badge } from "@/components/astryx/MiratsStatus";
 import { InfoHint } from "@/components/mirats/InfoHint";
-import { PageHeader } from "@/components/mirats/PageHeader";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
 
