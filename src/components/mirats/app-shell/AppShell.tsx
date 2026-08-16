@@ -40,6 +40,7 @@ import { type UiDensityMode, UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 import { 
   SidebarLogoRail, 
+  BrandMark,
   UserMenu, 
   TourButton, 
   TOUR_STEPS 
