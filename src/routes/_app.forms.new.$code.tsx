@@ -313,9 +313,9 @@ function NewSubmission() {
         <CardHeader><CardTitle className="text-base">Thông tin chung</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div><Label>Tiêu đề biên bản</Label>
-            <Input value={tieuDe} onChange={(e) => setTieuDe(e.target.value)} maxLength={200} placeholder={t.ten} /></div>
+            <MiratsInput value={tieuDe} onChange={(val) => setTieuDe(val)} maxLength={200} placeholder={t.ten} /></div>
           <div><Label>Kỳ báo cáo (VD: Q1/2026)</Label>
-            <Input value={kyBaoCao} onChange={(e) => setKyBaoCao(e.target.value)} maxLength={40} /></div>
+            <MiratsInput value={kyBaoCao} onChange={(val) => setKyBaoCao(val)} maxLength={40} /></div>
           {profile?.don_vi && (
             <div className="text-xs text-muted-foreground md:col-span-2">
               Đơn vị: <Badge variant="outline">{profile.don_vi}</Badge>
