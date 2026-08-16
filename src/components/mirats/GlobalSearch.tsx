@@ -62,7 +62,7 @@ export function GlobalSearch() {
       </div>
 
       {open && hasQuery && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl">
+        <div className="astryx-command-palette absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border bg-popover shadow-xl">
           {/* Trạng thái tải */}
           {rows.length === 0 && loading && (
             <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-muted-foreground">
