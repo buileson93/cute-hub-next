@@ -3,6 +3,9 @@ import * as path from "path";
 import * as fs from "fs";
 
 const project = new Project();
+project.addSourceFilesAtPaths(path.join(process.cwd(), "src/**/*.tsx"));
+project.addSourceFilesAtPaths(path.join(process.cwd(), "src/**/*.ts"));
+
 const componentsDir = path.join(process.cwd(), "src/components/mirats");
 const EXEMPT_LIST = [
   "AppShell.tsx",
