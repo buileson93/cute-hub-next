@@ -15,12 +15,10 @@ export const MiratsInput = React.forwardRef<
 MiratsInput.displayName = "MiratsInput";
 
 // MiratsSelector: Thin wrapper for Astryx Selector
-export const MiratsSelector = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentPropsWithoutRef<typeof Selector>
->((props, ref) => {
-  return <Selector ref={ref as any} {...props} />;
-});
+// Selector in Astryx doesn't always accept a standard ref on the component itself
+export const MiratsSelector = (props: React.ComponentPropsWithoutRef<typeof Selector>) => {
+  return <Selector {...props} />;
+};
 MiratsSelector.displayName = "MiratsSelector";
 
 // MiratsCheckbox: Thin wrapper for Astryx CheckboxInput
