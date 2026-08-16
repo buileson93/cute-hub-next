@@ -2,7 +2,9 @@
 @source "../src";
 @import "tw-animate-css";
 
-/* Astryx Design System — Core Styles & Reset disabled */
+/* Astryx Design System — Core Styles & Reset */
+@import "@astryxdesign/core/astryx.css" layer(astryx-core);
+@import "@astryxdesign/theme-stone/theme.css" layer(astryx-theme);
 
 /* MIRATS Brand Foundation — Astryx Overrides */
 @layer astryx-brand {
