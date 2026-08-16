@@ -61,7 +61,6 @@ function AuthPage() {
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
-    console.log("[Auth] Bắt đầu đăng nhập:", email);
     setLoading(true);
     try {
       const parsed = z.object({
@@ -71,12 +70,10 @@ function AuthPage() {
       
       if (!parsed.success) {
         toast.error(parsed.error.issues[0].message);
-        setLoading(false);
         return;
       }
       
       const { error, data } = await supabase.auth.signInWithPassword(parsed.data);
-      console.log("[Auth] Kết quả đăng nhập:", { success: !error, user: data?.user?.id });
       if (error) {
         toast.error(error.message === "Invalid login credentials"
           ? "Sai email hoặc mật khẩu"
