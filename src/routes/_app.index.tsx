@@ -22,10 +22,16 @@ import { cn } from "@/lib/utils";
 
 export const Route = (createFileRoute("/_app/") as any)({
   loader: async ({ context }: any) => {
-    // Không chạy prefetch trên server (SSR) để tránh lỗi 500 do thiếu session/key
     // Không chạy fetch thực tế trên server (SSR) để tránh lỗi 500 do thiếu session/key.
-    // TanStack Start loader chạy cả trên server và client.
-    if (typeof window === 'undefined') return { completenessStats: null, completenessOverview: null };
+    if (typeof window === 'undefined') {
+      return { 
+        completenessStats: { total: 0, completed: 0, percentage: 0 }, 
+        completenessOverview: [] 
+      };
+    }
+    // ... logic nạp dữ liệu thật ...
+  },
+})
 
     try {
       await Promise.all([
