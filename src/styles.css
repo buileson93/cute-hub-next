@@ -402,6 +402,9 @@ table th { line-height: 1.25; font-weight: 700; }
 .dark form a {
   color: #ffffff !important;
 }
+.dark form input::placeholder {
+  color: oklch(0.72 0.004 260) !important;
+}
 .dark form .text-muted-foreground {
   color: oklch(0.72 0.004 260) !important;
 }
