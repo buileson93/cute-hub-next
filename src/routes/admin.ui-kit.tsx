@@ -20,7 +20,6 @@ import {
   TextInput, 
   Table,
   Icon,
-  Stack,
   HStack,
   VStack,
   DropdownMenu,
@@ -43,9 +42,9 @@ function UIKitLab() {
   const [activeTab, setActiveTab] = useState("overview");
 
   const demoColumns = [
-    { key: "id", header: "ID", width: 80 },
+    { key: "id", header: "ID" },
     { key: "name", header: "Tên tài sản" },
-    { key: "status", header: "Trạng thái", width: 120 },
+    { key: "status", header: "Trạng thái" },
   ];
 
   const demoData = [
@@ -62,11 +61,11 @@ function UIKitLab() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto bg-background min-h-screen">
-      <VStack gap={32}>
+      <VStack gap={4}>
         {/* Header */}
-        <VStack gap={8}>
+        <VStack gap={1}>
           <Heading level={1}>Astryx SSR Component Lab</Heading>
-          <Text variant="secondary">
+          <Text color="secondary">
             MIRATS 2.0 Design System Pilot (Phase 5)
           </Text>
         </VStack>
@@ -75,11 +74,11 @@ function UIKitLab() {
 
         {/* Icons Gallery */}
         <Section title="Icon Gallery (Semantic Icons)">
-          <HStack gap={16} wrap="wrap">
+          <HStack gap={2} wrap="wrap">
             {icons.map(name => (
-              <VStack key={name} gap={4} align="center" className="w-24 p-2 border rounded-lg">
-                <Icon icon={name} size={24} />
-                <Text variant="caption" className="truncate w-full text-center">{name}</Text>
+              <VStack key={name} gap={1} align="center" className="w-24 p-2 border rounded-lg">
+                <Icon icon={name as any} size="md" />
+                <Text size="xsmall" className="truncate w-full text-center">{name}</Text>
               </VStack>
             ))}
           </HStack>
@@ -87,77 +86,78 @@ function UIKitLab() {
 
         {/* Typography */}
         <Section title="Typography & Headings">
-          <VStack gap={16}>
+          <VStack gap={2}>
             <Heading level={2}>H2 Heading (Section Title)</Heading>
             <Heading level={3}>H3 Heading (Sub-section)</Heading>
             <Text>
               Đây là nội dung văn bản mặc định (Body Text) sử dụng phông chữ Inter đã được cấu hình trong P4.
             </Text>
-            <Text variant="secondary">Văn bản phụ (Secondary Text) cho các ghi chú hoặc mô tả.</Text>
-            <Text variant="caption">Caption text (12px) cho các nhãn nhỏ hoặc metadata.</Text>
+            <Text color="secondary">Văn bản phụ (Secondary Text) cho các ghi chú hoặc mô tả.</Text>
+            <Text size="small">Small text cho các nhãn nhỏ hoặc metadata.</Text>
           </VStack>
         </Section>
 
         {/* Buttons & Indicators */}
         <Section title="Buttons & Status">
-          <HStack gap={16} wrap="wrap" align="center">
-            <Button label="Primary Button" variant="primary" />
-            <Button label="Secondary" variant="secondary" />
-            <Button label="Danger" variant="danger" />
-            <IconButton icon="search" aria-label="Tìm kiếm" />
-            <Badge label="Active" variant="success" />
-            <Badge label="Critical" variant="danger" />
-            <HStack gap={8} align="center">
-              <StatusDot variant="success" />
+          <HStack gap={2} wrap="wrap" align="center">
+            <Button label="Primary Button" color="primary" />
+            <Button label="Secondary" color="secondary" />
+            <Button label="Danger" color="destructive" />
+            <IconButton icon="search" label="Tìm kiếm" />
+            <Badge label="Active" color="success" />
+            <Badge label="Critical" color="destructive" />
+            <HStack gap={1} align="center">
+              <StatusDot color="success" label="Active" />
               <Text>Hệ thống ổn định</Text>
             </HStack>
-            <Button label="Loading..." loading />
-            <Button label="Disabled" disabled />
+            <Button label="Loading..." isLoading />
+            <Button label="Disabled" isDisabled />
           </HStack>
         </Section>
 
         {/* Navigation & Tabs */}
         <Section title="Navigation & Tabs">
-          <VStack gap={16}>
+          <VStack gap={2}>
             <Breadcrumbs>
-              <BreadcrumbItem label="Trang chủ" href="/" />
-              <BreadcrumbItem label="Quản trị" href="/admin" />
-              <BreadcrumbItem label="UI Kit" active />
+              <BreadcrumbItem href="/">Trang chủ</BreadcrumbItem>
+              <BreadcrumbItem href="/admin">Quản trị</BreadcrumbItem>
+              <BreadcrumbItem active>UI Kit</BreadcrumbItem>
             </Breadcrumbs>
             
-            <TabList activeItem={activeTab} onItemChange={setActiveTab}>
-              <Tab id="overview" label="Tổng quan" />
-              <Tab id="components" label="Thành phần" />
-              <Tab id="docs" label="Tài liệu" />
+            <TabList value={activeTab} onValueChange={setActiveTab}>
+              <Tab value="overview" label="Tổng quan" />
+              <Tab value="components" label="Thành phần" />
+              <Tab value="docs" label="Tài liệu" />
             </TabList>
           </VStack>
         </Section>
 
         {/* Inputs */}
         <Section title="Forms & Inputs">
-          <VStack gap={16} className="max-w-md">
-            <TextInput label="Tên thiết bị" placeholder="Nhập mã hoặc tên..." />
-            <TextInput label="Mô tả" placeholder="Thông tin chi tiết..." prefixIcon="info" />
-            <DropdownMenu trigger={<Button label="Chọn thao tác" icon="chevronDown" />}>
-              <DropdownMenuItem label="Chỉnh sửa" icon="edit" />
-              <DropdownMenuItem label="Sao chép" icon="copy" />
-              <DropdownMenuItem label="Xoá" variant="danger" icon="delete" />
+          <VStack gap={2} className="max-w-md">
+            <TextInput label="Tên thiết bị" placeholder="Nhập mã hoặc tên..." value="" />
+            <TextInput label="Mô tả" placeholder="Thông tin chi tiết..." value="" />
+            <DropdownMenu>
+              <Button label="Chọn thao tác" />
+              <DropdownMenuItem label="Chỉnh sửa" />
+              <DropdownMenuItem label="Sao chép" />
+              <DropdownMenuItem label="Xoá" color="destructive" />
             </DropdownMenu>
           </VStack>
         </Section>
 
         {/* Data Display */}
         <Section title="Data & Feedback">
-          <VStack gap={16}>
+          <VStack gap={2}>
             <Card className="p-0 overflow-hidden">
               <Table 
-                columns={demoColumns} 
+                columns={demoColumns as any} 
                 data={demoData} 
               />
             </Card>
 
             <Pagination 
-              currentPage={page} 
+              page={page} 
               totalPages={10} 
               onPageChange={setPage} 
             />
@@ -168,16 +168,16 @@ function UIKitLab() {
               icon="search"
             />
             
-            <VStack gap={8}>
+            <VStack gap={1}>
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />
             </VStack>
             
-            <HStack gap={12} align="center">
+            <HStack gap={2} align="center">
               <Avatar name="Vũ Hồng Sơn" src="https://i.pravatar.cc/150?u=son" />
               <VStack gap={0}>
                 <Text weight="bold">Vũ Hồng Sơn</Text>
-                <Text variant="caption">Quản trị viên</Text>
+                <Text size="small">Quản trị viên</Text>
               </VStack>
             </HStack>
           </VStack>
@@ -189,7 +189,7 @@ function UIKitLab() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <VStack gap={16} className="w-full">
+    <VStack gap={2} className="w-full">
       <Heading level={3} className="text-accent border-b pb-2">{title}</Heading>
       {children}
     </VStack>
