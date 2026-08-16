@@ -168,7 +168,7 @@ function SuCoDetail() {
                     <InfoRow icon={Network} label="Hệ thống" value={ht?.ten ?? sc.he_thong} />
                     <InfoRow icon={HardDrive} label="Tài sản" value={
                       tb ? (
-                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} className="text-primary hover:underline">
+                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: tb.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="text-primary hover:underline">
                           {tb.ma_thiet_bi} — {tb.ten}
                         </Link>
                       ) : sc.thiet_bi

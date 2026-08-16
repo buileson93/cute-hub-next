@@ -126,7 +126,7 @@ function KiemDinhPage() {
       cell: (r) => (
         <Link
           to="/thiet-bi/$maThietBi"
-          params={{ maThietBi: r.ma_thiet_bi }}
+          params={{ maThietBi: r.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
           className="font-mono text-primary hover:underline"
         >
           {r.ma_thiet_bi}
@@ -205,7 +205,7 @@ function KiemDinhPage() {
       key: "actions", label: "", align: "right",
       cell: (r) => (
         <Button asChild size="sm" variant="ghost">
-          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma_thiet_bi }}>
+          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
             <Eye className="mr-1 h-3.5 w-3.5" /> Xem
           </Link>
         </Button>

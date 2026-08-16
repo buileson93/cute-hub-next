@@ -326,7 +326,7 @@ function SuCoPage() {
         return (
           <>
             {dev ? (
-              <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dev.ma_thiet_bi }} className="text-primary hover:underline">
+              <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="text-primary hover:underline">
                 <div className="font-medium">{dev.ten}</div>
               </Link>
             ) : <div className="font-medium">{s.thiet_bi}</div>}
@@ -586,7 +586,7 @@ function SuCoPage() {
               <div key={d.ma} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted/60">
                 <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted-foreground">{i + 1}</span>
                 <div className="min-w-0 flex-1">
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma }} className="block truncate font-medium text-primary hover:underline">{d.ten}</Link>
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="block truncate font-medium text-primary hover:underline">{d.ten}</Link>
                   <div className="truncate text-xs text-muted-foreground">{d.ht}</div>
                 </div>
                 <Badge variant="secondary" className="shrink-0">{d.count}</Badge>

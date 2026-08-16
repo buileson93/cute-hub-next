@@ -248,7 +248,7 @@ function KiemKePage() {
                     />
                     <Link
                       to="/thiet-bi/$maThietBi"
-                      params={{ maThietBi: dev.ma_thiet_bi }}
+                      params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                       className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                     >
                       Chi tiết <ExternalLink className="h-3 w-3" />
@@ -296,7 +296,7 @@ function KiemKePage() {
                     pending={busyId === dev.id}
                     onSubmit={(input) => handleSubmit(dev, input)}
                   />
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dev.ma_thiet_bi }} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
                     Chi tiết <ExternalLink className="h-3 w-3" />
                   </Link>
                 </div>

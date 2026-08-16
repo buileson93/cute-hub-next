@@ -384,7 +384,7 @@ function EventRow({
               <HardDrive className="h-3.5 w-3.5 text-muted-foreground" />
               <Link
                 to="/thiet-bi/$maThietBi"
-                params={{ maThietBi: prev.thiet_bi?.ma_thiet_bi ?? "" }}
+                params={{ maThietBi: prev.thiet_bi?.ma_thiet_bi ?? "" }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                 className="font-mono hover:underline"
               >
                 {prev.thiet_bi?.ma_thiet_bi}
@@ -397,7 +397,7 @@ function EventRow({
                 <>
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="font-mono hover:underline"
                   >
                     {dev.ma_thiet_bi}
@@ -418,7 +418,7 @@ function EventRow({
                 <div className="flex flex-wrap items-center gap-1.5">
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="font-mono font-medium hover:underline"
                   >
                     {dev.ma_thiet_bi}
@@ -427,7 +427,7 @@ function EventRow({
                   {dev.ma_serial && <Badge variant="outline" className="text-[10px]">SN {dev.ma_serial}</Badge>}
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="ml-auto text-muted-foreground hover:text-foreground"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
