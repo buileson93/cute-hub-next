@@ -32,18 +32,29 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
+    const g = globalThis as any;
+    const env = g.process?.env || g || {};
     
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+    const SUPABASE_URL = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
+    const SUPABASE_PUBLISHABLE_KEY = env.SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [
         ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
         ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
       ];
-      const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-      console.error(`[Supabase] ${message}`);
-      throw new Error(message);
+      const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. SSR context may be restricted.`;
+      console.warn(`[Supabase Auth] ${message}`);
+      
+      // Fallback: Continue as unauthenticated instead of crashing the whole page
+      return next({
+        context: {
+          supabase: null as any,
+          userId: null as any,
+          claims: null as any,
+          unauthenticated: true,
+        },
+      });
     }
     
     const request = getRequest();
