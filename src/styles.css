@@ -15,6 +15,7 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant density-compact (&:is([data-density="compact"] *));
+/*
  * MIRATS 2.0 — VATM Middle Region ATC.
  * Editorial aviation shell: off-white paper, brand blue #1D52E0 as the
  * single accent, hairline slate borders, Space Grotesk display, IBM Plex
