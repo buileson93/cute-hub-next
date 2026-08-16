@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-x-auto overflow-y-visible mirats-scroll">
-      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
+    <div className="relative w-full overflow-x-auto overflow-y-visible mirats-scroll astryx-table-scroll-wrapper">
+      <table ref={ref} className={cn("w-full caption-bottom text-sm astryx-table", className)} {...props} />
     </div>
   ),
 );
@@ -19,9 +19,9 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
+      "astryx-table-header",
       "[&_tr]:border-b",
-      // Sticky header cho bảng dài — nền đục để tránh lộ hàng khi cuộn dọc
-      "[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-background [&_th]:shadow-[inset_0_-1px_0_var(--color-border)]",
+      "[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-surface [&_th]:shadow-[inset_0_-1px_0_var(--color-border)]",
       className,
     )}
     {...props}
@@ -29,12 +29,11 @@ const TableHeader = React.forwardRef<
 ));
 TableHeader.displayName = "TableHeader";
 
-
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+  <tbody ref={ref} className={cn("astryx-table-body", "[&_tr:last-child]:border-0", className)} {...props} />
 ));
 TableBody.displayName = "TableBody";
 
@@ -44,7 +43,7 @@ const TableFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
-    className={cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)}
+    className={cn("astryx-table-footer border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)}
     {...props}
   />
 ));
@@ -55,7 +54,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "astryx-table-row border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
         className,
       )}
       {...props}
@@ -71,7 +70,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-7 px-1.5 text-left align-middle font-bold text-muted-foreground border-r border-border/10 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px]",
+      "astryx-table-header-cell h-7 px-1.5 text-left align-middle font-bold text-muted-foreground border-r border-border/10 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px]",
       className,
     )}
     {...props}
@@ -86,7 +85,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-1 align-middle border-r border-border/10 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px]",
+      "astryx-table-cell p-1 align-middle border-r border-border/10 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px]",
       className,
     )}
     {...props}
