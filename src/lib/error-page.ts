@@ -12,7 +12,7 @@ export function renderErrorPage(error?: any): string {
     if ('name' in error) name = String(error.name);
     if ('stack' in error) stack = String(error.stack);
     
-    if (errorMsg === 'Hệ thống đã xảy ra một lỗi không xác định.') {
+    if (errorMsg === 'Hệ thống đã xảy ra một lỗi không xác định.' || errorMsg === '[object Object]') {
       try {
         errorMsg = JSON.stringify(error, null, 2);
       } catch {
@@ -24,10 +24,10 @@ export function renderErrorPage(error?: any): string {
   }
 
   return `<!doctype html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="utf-8" />
-    <title>Critical Error - MIRATS 2.0</title>
+    <title>Lỗi nghiêm trọng - MIRATS 2.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font: 15px/1.5 system-ui, -apple-system, sans-serif; background: #fafafa; color: #111; display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 1.5rem; }

@@ -29,7 +29,9 @@ export function QRScanner({ onDetect, className }: Props) {
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
   function cleanup() {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (typeof window !== "undefined" && rafRef.current) {
+      window.cancelAnimationFrame(rafRef.current);
+    }
     rafRef.current = null;
     zxingControlsRef.current?.stop();
     zxingControlsRef.current = null;
@@ -68,9 +70,13 @@ export function QRScanner({ onDetect, className }: Props) {
               return;
             }
           } catch { /* ignore per-frame errors */ }
-          rafRef.current = requestAnimationFrame(tick);
+          if (typeof window !== "undefined") {
+            rafRef.current = window.requestAnimationFrame(tick);
+          }
         };
-        rafRef.current = requestAnimationFrame(tick);
+        if (typeof window !== "undefined") {
+          rafRef.current = window.requestAnimationFrame(tick);
+        }
         return;
       }
 

@@ -152,12 +152,14 @@ export function NodeNoteDrawer(props: Props) {
     setMentionStart(-1);
     setMentionQuery(null);
     // Đưa caret về sau chuỗi vừa chèn.
-    requestAnimationFrame(() => {
-      if (!ta) return;
-      const pos = (before + token).length;
-      ta.focus();
-      ta.setSelectionRange(pos, pos);
-    });
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        if (!ta) return;
+        const pos = (before + token).length;
+        ta.focus();
+        ta.setSelectionRange(pos, pos);
+      });
+    }
   };
 
   const onKeyDownTextarea = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

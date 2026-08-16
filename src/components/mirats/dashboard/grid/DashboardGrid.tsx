@@ -151,7 +151,8 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             type="bar"
             color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
             status="attention"
-            tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+            tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair). Bấm để xem chi tiết bảo trì."
+            onClick={() => navigate({ to: "/bao-tri" })}
           />
         );
       case "mtbf-kpi":

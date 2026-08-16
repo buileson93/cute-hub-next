@@ -208,7 +208,9 @@ export function StandardTable<T>({
     observer.observe(parentRef.current);
     return () => {
       observer.disconnect();
-      cancelAnimationFrame(frameId);
+      if (typeof window !== "undefined" && frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
     };
   }, []);
 
