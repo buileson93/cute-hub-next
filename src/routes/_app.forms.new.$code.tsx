@@ -299,9 +299,9 @@ function NewSubmission() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-8 lg:px-12">
-      <Button asChild variant="ghost" size="sm" className="mb-4">
+      <MiratsButton asChild variant="ghost" size="sm" className="mb-4">
         <Link to="/forms"><ArrowLeft className="mr-2 h-4 w-4" />Quay lại</Link>
-      </Button>
+      </MiratsButton>
 
       <div className="mb-6">
         <div className="font-mono text-xs text-muted-foreground">{t.code}</div>
