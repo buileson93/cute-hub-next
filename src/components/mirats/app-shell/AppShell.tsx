@@ -259,7 +259,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}>
 
                <div className="flex flex-1 items-center gap-4">
-                  <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
+                  <Link to="/" className="md:hidden shrink-0">
+                    <BrandMark className="h-7 w-auto" />
+                  </Link>
                   <div className="hidden md:block"><TourButton /></div>
                   <TopBar 
                     renderMobileMenu={
