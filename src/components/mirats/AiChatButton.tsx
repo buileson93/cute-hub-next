@@ -41,10 +41,19 @@ export function AiChatButton() {
   const publicCfgFn = useServerFn(getAiPublicConfig);
   const { data: cfg } = useQuery({
     queryKey: ["ai-public-config"],
-    queryFn: () => publicCfgFn(),
+    queryFn: async () => {
+      try {
+        return await publicCfgFn();
+      } catch (err) {
+        console.warn("Failed to fetch AI public config:", err);
+        return { enabled: false, model: "", beta_label: "Beta" };
+      }
+    },
     enabled: !!session,
     staleTime: 60_000,
+    retry: 1,
   });
+
 
   // Mở panel AI từ nơi khác (Bảng lệnh) kèm câu hỏi soạn sẵn
   useEffect(() => {

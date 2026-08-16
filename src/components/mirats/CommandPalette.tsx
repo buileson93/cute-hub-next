@@ -404,9 +404,17 @@ export function CommandPalette() {
   const publicCfgFn = useServerFn(getAiPublicConfig);
   const { data: aiCfg } = useQuery({
     queryKey: ["ai-public-config"],
-    queryFn: () => publicCfgFn(),
+    queryFn: async () => {
+      try {
+        return await publicCfgFn();
+      } catch (err) {
+        console.warn("CommandPalette: Failed to fetch AI public config:", err);
+        return { enabled: false, model: "", beta_label: "Beta" };
+      }
+    },
     enabled: !!session,
     staleTime: 60_000,
+    retry: 1,
   });
   const aiEnabled = !!aiCfg?.enabled;
 
