@@ -1220,7 +1220,7 @@ export function StandardTable<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-20">
               <TableRow className={cn(
                 "hover:bg-transparent border-b border-border/60",
-                density === "compact" ? "h-8 min-h-[32px]" : density === "comfortable" ? "h-9" : "h-11"
+                UI_DENSITY.TABLE_ROW_H
               )}>
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
