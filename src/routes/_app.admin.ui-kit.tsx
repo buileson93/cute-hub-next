@@ -9,29 +9,32 @@ import {
   Selector, 
   Field, 
   Table, 
-  Dialog, 
-  Toast, 
-  Skeleton, 
-  EmptyState, 
   TabList, 
   Tab,
   Breadcrumbs,
   BreadcrumbItem,
-  Stack,
   VStack,
   HStack,
   Heading,
   Text,
   Card,
   Divider,
-  Switch
+  Switch,
+  EmptyState
 } from "@astryxdesign/core";
-import { cn } from "@/lib/utils";
 import { useDensity } from "@/components/mirats/DensityToggle";
 
 export const Route = createFileRoute("/_app/admin/ui-kit")({
   component: UIKitPage,
 });
+
+interface DemoData extends Record<string, unknown> {
+  id: number;
+  name: string;
+  code: string;
+  value: string;
+  status: string;
+}
 
 function UIKitPage() {
   const [density, setDensity] = useDensity();
@@ -41,17 +44,17 @@ function UIKitPage() {
   const [selectorValue, setSelectorValue] = useState("");
   const [switchValue, setSwitchValue] = useState(false);
 
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
+  const toggleTheme = (checked: boolean) => {
+    setIsDark(checked);
+    setSwitchValue(checked);
+    if (checked) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
   };
 
-  const tableData = Array.from({ length: 10 }).map((_, i) => ({
+  const tableData: DemoData[] = Array.from({ length: 10 }).map((_, i) => ({
     id: i + 1,
     name: `Tài sản kỹ thuật ${i + 1}`,
     code: `TB-${1000 + i}`,
@@ -88,8 +91,8 @@ function UIKitPage() {
             <Switch 
               label="Chế độ tối"
               isLabelHidden
-              value={switchValue} 
-              onChange={setSwitchValue} 
+              value={isDark} 
+              onChange={toggleTheme} 
             />
           </HStack>
         </HStack>
@@ -186,19 +189,21 @@ function UIKitPage() {
           <Table 
             data={tableData}
             columns={[
-              { header: "#", cell: (row) => row.id, width: 60 },
-              { header: "Tên tài sản", cell: (row) => row.name },
-              { header: "Mã thiết bị", cell: (row) => row.code },
+              { key: "id", header: "#" },
+              { key: "name", header: "Tên tài sản" },
+              { key: "code", header: "Mã thiết bị" },
               { 
+                key: "value",
                 header: "Giá trị (VNĐ)", 
-                cell: (row) => <span className="font-mono tabular-nums">{Number(row.value).toLocaleString()}</span>
+                renderCell: (row) => <span className="font-mono tabular-nums">{Number(row.value).toLocaleString()}</span>
               },
               { 
+                key: "status",
                 header: "Trạng thái", 
-                cell: (row) => (
+                renderCell: (row) => (
                   <HStack gap={2} align="center">
-                    <StatusDot variant={row.status as any} label={row.status} />
-                    <Text size="sm">{row.status.toUpperCase()}</Text>
+                    <StatusDot variant={row.status as any} label={row.status as string} />
+                    <Text size="sm">{(row.status as string).toUpperCase()}</Text>
                   </HStack>
                 )
               }
