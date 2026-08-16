@@ -43,14 +43,14 @@ export function PageHeader({
         ) : null}
         <h1
           data-testid="page-header-title"
-          className="truncate text-title leading-tight uppercase tracking-tight"
+          className="truncate text-xs font-bold leading-tight uppercase tracking-tight"
         >
           {typeof title === 'string' ? title : String(title)}
         </h1>
         {hasSubtitle ? (
           <span
             data-testid="page-header-subtitle"
-            className="truncate text-meta text-muted-foreground"
+            className="truncate text-xs text-muted-foreground"
           >
             {subtitle}
           </span>
@@ -61,13 +61,13 @@ export function PageHeader({
             <div className="space-y-1.5">
               {description && (
                 <div className={cn(
-                  "text-body font-normal text-foreground",
-                  typeof description === 'string' && description.length > 80 && "text-bodySm"
+                  "text-sm font-normal text-foreground",
+                  typeof description === 'string' && description.length > 80 && "text-xs"
                 )}>
                   {description}
                 </div>
               )}
-              {help && <div className="text-meta text-muted-foreground">{help}</div>}
+              {help && <div className="text-xs text-muted-foreground">{help}</div>}
             </div>
           </InfoHint>
         ) : null}

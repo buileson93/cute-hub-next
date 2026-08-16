@@ -251,7 +251,7 @@ function ThungRacPage() {
                     <TableCell>
                       <div className="font-medium">{r.ten}</div>
                       {r.ma_thanh_phan && (
-                        <div className="font-mono text-meta text-muted-foreground">{r.ma_thanh_phan}</div>
+                        <div className="font-mono text-[11px] text-muted-foreground">{r.ma_thanh_phan}</div>
                       )}
                     </TableCell>
                     <TableCell className="text-sm">{r.he_thong_ten ?? "—"}</TableCell>
@@ -259,21 +259,21 @@ function ThungRacPage() {
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {r.refs.gan_active > 0 && (
-                          <Badge variant="destructive" className="text-meta">
+                          <Badge variant="destructive" className="text-[10px]">
                             {r.refs.gan_active} tài sản đang lắp
                           </Badge>
                         )}
                         {r.refs.bao_tri > 0 && (
-                          <Badge variant="secondary" className="text-meta">{r.refs.bao_tri} bảo trì</Badge>
+                          <Badge variant="secondary" className="text-[10px]">{r.refs.bao_tri} bảo trì</Badge>
                         )}
                         {r.refs.su_co > 0 && (
-                          <Badge variant="secondary" className="text-meta">{r.refs.su_co} sự cố</Badge>
+                          <Badge variant="secondary" className="text-[10px]">{r.refs.su_co} sự cố</Badge>
                         )}
                         {r.refs.hong_hoc > 0 && (
-                          <Badge variant="secondary" className="text-meta">{r.refs.hong_hoc} hỏng hóc</Badge>
+                          <Badge variant="secondary" className="text-[10px]">{r.refs.hong_hoc} hỏng hóc</Badge>
                         )}
                         {clean && (
-                          <Badge variant="outline" className="text-meta text-emerald-600">Không ràng buộc</Badge>
+                          <Badge variant="outline" className="text-[10px] text-emerald-600">Không ràng buộc</Badge>
                         )}
                       </div>
                     </TableCell>

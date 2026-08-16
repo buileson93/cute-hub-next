@@ -191,14 +191,12 @@ export function StandardTable<T>({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (typeof window === "undefined" || !parentRef.current || typeof ResizeObserver === "undefined") return;
+    if (!parentRef.current || typeof ResizeObserver === "undefined") return;
     
     let frameId: number;
     const observer = new ResizeObserver((entries) => {
-      if (typeof window !== "undefined" && window.cancelAnimationFrame) {
-        window.cancelAnimationFrame(frameId);
-      }
-      frameId = window.requestAnimationFrame(() => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
         for (const entry of entries) {
           setContainerWidth(entry.contentRect.width);
         }
@@ -208,9 +206,7 @@ export function StandardTable<T>({
     observer.observe(parentRef.current);
     return () => {
       observer.disconnect();
-      if (typeof window !== "undefined" && frameId) {
-        window.cancelAnimationFrame(frameId);
-      }
+      cancelAnimationFrame(frameId);
     };
   }, []);
 
@@ -607,7 +603,7 @@ export function StandardTable<T>({
     if (trangThai.loi) {
       return errorContent ?? (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-          <div className="text-body text-destructive font-medium">
+          <div className="text-sm text-destructive font-medium">
             {String(trangThai.loi)}
           </div>
           {trangThai.loi.retry && (
@@ -692,14 +688,14 @@ export function StandardTable<T>({
                 url={v.avatar_url || v.url} 
                 className="h-6 w-6" 
               />
-              <span className="truncate text-bodySm">{v.ho_ten || v.ten || "—"}</span>
+              <span className="truncate text-[12px]">{v.ho_ten || v.ten || "—"}</span>
             </div>
           );
         }
         return (
           <div className="flex items-center gap-2">
             <UserAvatar name={String(val)} className="h-6 w-6" />
-            <span className="truncate text-bodySm">{String(val)}</span>
+            <span className="truncate text-[12px]">{String(val)}</span>
           </div>
         );
 
@@ -713,7 +709,7 @@ export function StandardTable<T>({
         const p = Number(val);
         return (
           <div className="flex items-center gap-2 w-full">
-            <span className="w-8 tabular-nums text-meta font-semibold">{p}%</span>
+            <span className="w-8 tabular-nums text-[11px] font-semibold">{p}%</span>
             <Progress value={p} className="h-1.5 flex-1" />
           </div>
         );
@@ -721,7 +717,7 @@ export function StandardTable<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-bodySm tabular-nums">{fmtNgay(val)}</span>
+            <span className="text-[12px] tabular-nums">{fmtNgay(val)}</span>
           </AppTooltip>
         );
 
@@ -744,7 +740,7 @@ export function StandardTable<T>({
         const last = parts[parts.length - 1];
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-bodySm truncate">{last}</span>
+            <span className="text-[12px] truncate">{last}</span>
           </AppTooltip>
         );
 
@@ -753,7 +749,7 @@ export function StandardTable<T>({
           <AppTooltip noiDung={String(val)}>
             <div
               className={cn(
-                "text-bodySm break-words [overflow-wrap:anywhere] [word-break:break-word]",
+                "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
                 (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
               )}
             >
@@ -771,7 +767,7 @@ export function StandardTable<T>({
         return (
           <div
             className={cn(
-              "text-bodySm break-words [overflow-wrap:anywhere] [word-break:break-word]",
+              "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
               (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
             )}
             title={String(val)}
@@ -827,8 +823,8 @@ export function StandardTable<T>({
                     <DropdownMenuContent align="end" className="w-[280px]">
                       <div className="p-2 space-y-4">
                         <div className="flex items-center justify-between">
-                          <span className="text-body font-semibold">Bộ lọc & Sắp xếp</span>
-                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-7 px-2 text-meta uppercase font-bold text-destructive">
+                          <span className="text-sm font-semibold">Bộ lọc & Sắp xếp</span>
+                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-7 px-2 text-[10px] uppercase font-bold text-destructive">
                             Xoá hết
                           </Button>
                         </div>
@@ -884,7 +880,7 @@ export function StandardTable<T>({
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="text-meta">
+                            <DropdownMenuSubTrigger className="text-xs">
                               <Icon name="action.view" size="small" className="mr-2" />
                               Khung nhìn mẫu
                             </DropdownMenuSubTrigger>
@@ -893,7 +889,7 @@ export function StandardTable<T>({
                                 {presets.map((p) => (
                                   <DropdownMenuItem 
                                     key={p.id} 
-                                    className="text-meta flex flex-col items-start gap-0.5"
+                                    className="text-xs flex flex-col items-start gap-0.5"
                                     onClick={() => {
                                       const keys = p.columns || p.cot || p.visibleKeys || [];
                                       const finalKeys = (p.id === "day-du" && keys.length === 0) ? allKeys : keys;
@@ -904,7 +900,7 @@ export function StandardTable<T>({
                                       <span className="font-medium">{p.ten || p.label}</span>
                                       {prefs.activePreset === p.id && <Check className="ml-auto h-3 w-3 text-primary" />}
                                     </div>
-                                    {p.moTa && <span className="text-meta text-muted-foreground leading-tight">{p.moTa}</span>}
+                                    {p.moTa && <span className="text-[10px] text-muted-foreground leading-tight">{p.moTa}</span>}
                                   </DropdownMenuItem>
                                 ))}
                               </DropdownMenuSubContent>
@@ -925,7 +921,7 @@ export function StandardTable<T>({
                         }, {} as Record<string, StdColumn<T>[]>)
                       ).map(([group, cols], idx, arr) => (
                         <div key={group}>
-                          {group !== "Khác" && <DropdownMenuLabel className="text-meta font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
+                          {group !== "Khác" && <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
                           {cols.map((col) => {
                             const isCurrentlyVisible = !prefs.isHidden(col.key);
                             
@@ -962,7 +958,7 @@ export function StandardTable<T>({
                                 
                                 {isHiddenByWidth && isCurrentlyVisible && (
                                   <AppTooltip noiDung={`Cột này đang tạm ẩn do màn hình hẹp (< ${thresholdLabel}). Hãy mở rộng trình duyệt hoặc xem ở dòng mở rộng.`}>
-                                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-meta font-bold uppercase tracking-tighter">
+                                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[9px] font-bold uppercase tracking-tighter">
                                       <Icon name="status.warning" size="tiny" />
                                       Hẹp
                                     </div>
@@ -1026,7 +1022,7 @@ export function StandardTable<T>({
 
       {hasFilter && (
         <div className="flex flex-wrap items-center gap-2 px-1">
-          <span className="text-meta font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
           {Object.entries(textFilters).map(([key, val]) => {
             if (!val) return null;
             const col = columns.find(c => c.key === key);
@@ -1066,7 +1062,7 @@ export function StandardTable<T>({
             variant="ghost" 
             size="sm" 
             onClick={clearAllFilters}
-            className="h-6 px-2 text-meta font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-destructive"
+            className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-destructive"
           >
             Xoá tất cả bộ lọc
           </Button>
@@ -1102,7 +1098,7 @@ export function StandardTable<T>({
                       <div className="flex items-start justify-between p-4 bg-muted/20 border-b border-border/40">
                         <div className="flex-1 space-y-1 min-w-0 pr-6">
                           {primaryCols.map((col, idx) => (
-                            <div key={col.key} className={idx === 0 ? "font-semibold text-body truncate" : "text-bodySm text-muted-foreground truncate"}>
+                            <div key={col.key} className={idx === 0 ? "font-semibold text-sm truncate" : "text-[12px] text-muted-foreground truncate"}>
                               {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
                             </div>
                           ))}
@@ -1122,10 +1118,10 @@ export function StandardTable<T>({
                       <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
                         {secondaryCols.map((col) => (
                           <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
-                            <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                               {col.header || col.label}
                             </span>
-                            <div className={cn("text-bodySm truncate", col.cellClassName)}>
+                            <div className={cn("text-[12px] truncate", col.cellClassName)}>
                               {renderCellContent(col, r)}
                             </div>
                           </div>
@@ -1137,10 +1133,10 @@ export function StandardTable<T>({
                         <div className="px-4 py-3 bg-muted/10 border-t border-border/20 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1">
                           {detailCols.map((col) => (
                             <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
-                              <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                                 {col.header || col.label}
                               </span>
-                              <div className={cn("text-bodySm break-words", col.cellClassName)}>
+                              <div className={cn("text-[12px] break-words", col.cellClassName)}>
                                 {renderCellContent(col, r)}
                               </div>
                             </div>
@@ -1153,7 +1149,7 @@ export function StandardTable<T>({
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="h-8 px-2 text-bodySm gap-1.5 text-muted-foreground"
+                          className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
                           onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
                         >
                         {expandedRows.has(rid) ? (
@@ -1173,7 +1169,7 @@ export function StandardTable<T>({
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="h-8 px-2 text-bodySm gap-1 text-primary"
+                            className="h-8 px-2 text-[12px] gap-1 text-primary"
                             onClick={() => onRowClick?.(r)}
                           >
                             <span>Chi tiết</span>
@@ -1193,9 +1189,9 @@ export function StandardTable<T>({
         <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass)}>
           <Table className={cn(
             "border-separate border-spacing-0 caption-bottom",
-            density === "compact" && "text-bodySm",
-            density === "comfortable" && "text-body",
-            density === "spacious" && "text-body",
+            density === "compact" && "text-[12px]",
+            density === "comfortable" && "text-[13px]",
+            density === "spacious" && "text-[14px]",
             prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed"
           )}>
             <colgroup>
@@ -1510,10 +1506,10 @@ export function StandardTable<T>({
                                   .filter(c => !shownCols.find(sc => sc.key === c.key)) // Lấy các cột đang bị ẩn
                                   .map(col => (
                                     <div key={col.key} className="flex flex-col gap-1 min-w-0 text-left">
-                                      <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground/70">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
                                         {col.header || col.label}
                                       </span>
-                                      <div className="text-bodySm break-words">
+                                      <div className="text-[12px] break-words">
                                         {renderCellContent(col, r)}
                                       </div>
                                     </div>
@@ -1585,12 +1581,12 @@ function ColFilter({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()} side="bottom">
         <div className="flex items-center justify-between mb-2 px-1">
-          <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
           {active && (
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 px-1.5 text-meta text-destructive hover:bg-destructive/10"
+              className="h-5 px-1.5 text-[10px] text-destructive hover:bg-destructive/10"
               onClick={() => {
                 if (type === "text") onText("");
                 else onClearCat();
@@ -1610,10 +1606,10 @@ function ColFilter({
                 placeholder="Tìm nội dung..."
                 value={textVal}
                 onChange={(e) => onText(e.target.value)}
-                className="h-8 pl-8 text-body"
+                className="h-8 pl-8 text-sm"
               />
             </div>
-            <p className="text-meta text-muted-foreground px-1 italic">
+            <p className="text-[10px] text-muted-foreground px-1 italic">
               * Lọc theo từ khóa chứa trong cột
             </p>
           </div>
@@ -1626,7 +1622,7 @@ function ColFilter({
                 placeholder="Tìm giá trị..."
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                className="h-8 pl-8 text-body"
+                className="h-8 pl-8 text-sm"
               />
             </div>
             <div className="max-h-[300px] overflow-y-auto pr-1">
@@ -1638,16 +1634,16 @@ function ColFilter({
                     checked={catSel.has(v.value)}
                     onCheckedChange={() => onToggleCat(v.value)}
                     onSelect={(e) => e.preventDefault()}
-                    className="text-body py-1.5 px-2 cursor-pointer flex items-center justify-between"
+                    className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
                   >
                     <span className="truncate mr-2">{v.value}</span>
-                    <Badge variant="outline" className="text-meta font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
+                    <Badge variant="outline" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
                       {v.count}
                     </Badge>
                   </DropdownMenuCheckboxItem>
                 ))}
               {catValues.length === 0 && (
-                <div className="py-6 text-center text-meta text-muted-foreground italic">
+                <div className="py-6 text-center text-xs text-muted-foreground italic">
                   Không có giá trị khả dụng
                 </div>
               )}

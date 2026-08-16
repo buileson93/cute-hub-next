@@ -115,7 +115,7 @@ function TaiLieuLibraryPage() {
               {row.file_name}
             </button>
             {row.mo_ta && (
-              <div className="text-meta text-muted-foreground truncate">{row.mo_ta}</div>
+              <div className="text-[10px] text-muted-foreground truncate">{row.mo_ta}</div>
             )}
           </div>
         </div>
@@ -135,7 +135,7 @@ function TaiLieuLibraryPage() {
             <span className="text-xs">{row.sourceName}</span>
           </div>
           {row.sourceCode && (
-            <span className="text-meta font-mono text-muted-foreground">{row.sourceCode}</span>
+            <span className="text-[10px] font-mono text-muted-foreground">{row.sourceCode}</span>
           )}
         </div>
       )
@@ -144,7 +144,7 @@ function TaiLieuLibraryPage() {
       header: "Kích thước",
       key: "kich_thuoc",
       render: (row) => (
-        <span className="text-meta text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           {row.kich_thuoc ? (row.kich_thuoc / 1024).toFixed(1) + " KB" : "-"}
         </span>
       )
@@ -153,7 +153,7 @@ function TaiLieuLibraryPage() {
       header: "Ngày tải",
       key: "created_at",
       render: (row) => (
-        <span className="text-meta text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           {new Date(row.created_at).toLocaleDateString("vi-VN")}
         </span>
       )

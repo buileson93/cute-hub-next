@@ -106,7 +106,7 @@ export function AssignSystemDialog({
                 />
                 <div className="min-w-0">
                   <div className="truncate font-medium">{s._label}</div>
-                  {s.ma && <div className="truncate font-mono text-meta text-muted-foreground">{s.ma}</div>}
+                  {s.ma && <div className="truncate font-mono text-[11px] text-muted-foreground">{s.ma}</div>}
                 </div>
               </button>
             ))

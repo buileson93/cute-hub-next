@@ -342,7 +342,7 @@ function NewSubmission() {
                     }}
                     className={`flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition ${on ? "bg-primary/10 text-primary" : "hover:bg-secondary"}`}>
                     <span><span className="font-mono text-xs">{tb.ma_thiet_bi}</span> — {tb.ten_thiet_bi}</span>
-                    {on && <Badge variant="outline" className="text-meta">Đã chọn</Badge>}
+                    {on && <Badge variant="outline" className="text-[10px]">Đã chọn</Badge>}
                   </button>
                 );
               })}

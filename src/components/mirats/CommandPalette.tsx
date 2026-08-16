@@ -225,8 +225,8 @@ function compact(pairs: [string, string | null | undefined][]): PreviewField[] {
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 flex flex-col gap-1">
-      <div className="text-meta font-bold uppercase tracking-widest text-muted-foreground/60">{label}</div>
-      <div className="truncate text-body font-semibold text-foreground/90">{value}</div>
+      <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{label}</div>
+      <div className="truncate text-[13px] font-semibold text-foreground/90">{value}</div>
     </div>
   );
 }
@@ -277,13 +277,13 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
             )}
             <div className="min-w-0 space-y-1">
               {brand.tag && (
-                <span className="inline-block rounded-md bg-muted/50 px-2 py-0.5 text-meta font-bold uppercase tracking-wider text-muted-foreground/80">
+                <span className="inline-block rounded-md bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
                   {brand.tag}
                 </span>
               )}
               <div className="text-base font-bold leading-tight tracking-tight text-foreground">{brand.title}</div>
               {brand.status && (
-                <span className="inline-block rounded-md bg-primary/10 px-2 py-0.5 text-meta font-semibold text-primary">
+                <span className="inline-block rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
                   {brand.status}
                 </span>
               )}
@@ -298,7 +298,7 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
 
           {brand.desc && (
             <div className="pt-2 border-t border-border/40">
-              <p className="text-bodySm leading-relaxed text-muted-foreground italic">{brand.desc}</p>
+              <p className="text-[12px] leading-relaxed text-muted-foreground italic">{brand.desc}</p>
             </div>
           )}
         </div>
@@ -313,7 +313,7 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
               </div>
               <div className="absolute bottom-3 left-3">
                 {brand.tag && (
-                  <span className="rounded-lg border border-border/50 bg-background/80 px-2.5 py-1 text-meta font-bold uppercase tracking-widest text-muted-foreground backdrop-blur-md">
+                  <span className="rounded-lg border border-border/50 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground backdrop-blur-md">
                     {brand.tag}
                   </span>
                 )}
@@ -328,15 +328,15 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
               <MetaCell label="Phân loại" value={CAT_LABEL[brand.cat]} />
             </div>
             {brand.desc && (
-              <p className="mt-6 text-bodySm leading-relaxed text-muted-foreground/90">{brand.desc}</p>
+              <p className="mt-6 text-[12px] leading-relaxed text-muted-foreground/90">{brand.desc}</p>
             )}
           </div>
         </>
       )}
 
       <div className="mt-auto flex items-center justify-end gap-2 border-t border-border/50 px-5 py-3.5 bg-muted/20">
-        <span className="text-meta font-medium text-muted-foreground/70 uppercase tracking-widest">Mở trang</span>
-        <kbd className="flex h-6 min-w-6 items-center justify-center rounded-md border border-border/60 bg-background px-1.5 font-sans text-meta font-bold shadow-sm">
+        <span className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-widest">Mở trang</span>
+        <kbd className="flex h-6 min-w-6 items-center justify-center rounded-md border border-border/60 bg-background px-1.5 font-sans text-[11px] font-bold shadow-sm">
           <CornerDownLeft className="h-3.5 w-3.5" />
         </kbd>
       </div>
@@ -844,8 +844,8 @@ export function CommandPalette() {
                   <ArrowRight className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-0.5">
-                  <div className="truncate text-body font-bold text-foreground">{describeIntent(intent)}</div>
-                  <div className="truncate text-meta text-muted-foreground/80">
+                  <div className="truncate text-[13px] font-bold text-foreground">{describeIntent(intent)}</div>
+                  <div className="truncate text-[11px] text-muted-foreground/80">
                     Enter để tiếp tục · độ tin cậy {Math.round(intent.confidence * 100)}%
                   </div>
                 </div>
@@ -883,10 +883,10 @@ export function CommandPalette() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-0.5">
-                      <div className="truncate text-body font-bold text-foreground">{h.title}</div>
-                      {h.subtitle && <div className="truncate text-meta text-muted-foreground/80">{h.subtitle}</div>}
+                      <div className="truncate text-[13px] font-bold text-foreground">{h.title}</div>
+                      {h.subtitle && <div className="truncate text-[11px] text-muted-foreground/80">{h.subtitle}</div>}
                     </div>
-                    <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-meta font-bold uppercase tracking-wider text-muted-foreground">
+                    <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
                       {meta?.label || "Tài sản"}
                     </span>
                   </CommandItem>
@@ -909,10 +909,10 @@ export function CommandPalette() {
                     <SparklesIcon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1 space-y-0.5">
-                    <div className="truncate text-body font-bold text-foreground">Hỏi MIRATS AI</div>
-                    <div className="truncate text-meta text-muted-foreground/80">“{q.trim()}”</div>
+                    <div className="truncate text-[13px] font-bold text-foreground">Hỏi MIRATS AI</div>
+                    <div className="truncate text-[11px] text-muted-foreground/80">“{q.trim()}”</div>
                   </div>
-                  <span className="ml-auto shrink-0 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-meta font-bold uppercase tracking-wider text-primary">
+                  <span className="ml-auto shrink-0 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
                     AI
                   </span>
                 </CommandItem>
@@ -946,18 +946,18 @@ export function CommandPalette() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-0.5">
-                      <div className="truncate text-body font-bold text-foreground">
+                      <div className="truncate text-[13px] font-bold text-foreground">
                         <Highlight text={h.title || "(không tiêu đề)"} query={activeTerm} />
                       </div>
                       {h.subtitle && (
-                        <div className="truncate text-meta text-muted-foreground/80">
+                        <div className="truncate text-[11px] text-muted-foreground/80">
                           <Highlight text={h.subtitle} query={activeTerm} />
                         </div>
                       )}
                     </div>
                     {h.entity === "thiet_bi" && h.sysName && (
                       <span
-                        className="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-meta font-bold uppercase tracking-wider text-primary"
+                        className="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary"
                         title={`Hệ thống: ${h.sysName}`}
                       >
                         <Network className="h-3 w-3" />
@@ -965,12 +965,12 @@ export function CommandPalette() {
                       </span>
                     )}
                     {h.entity === "he_thong" && typeof h.count === "number" && (
-                      <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-meta font-bold tabular-nums tracking-wider text-muted-foreground">
+                      <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold tabular-nums tracking-wider text-muted-foreground">
                         {h.count} TB
                       </span>
                     )}
                     <span
-                      className="shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-meta font-bold uppercase tracking-wider text-muted-foreground"
+                      className="shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground"
                     >
                       {meta.label}
                     </span>
@@ -996,16 +996,16 @@ export function CommandPalette() {
                     <Search className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1 space-y-0.5">
-                    <div className="truncate text-body font-bold text-foreground">
+                    <div className="truncate text-[13px] font-bold text-foreground">
                       <Highlight text={r.tieuDe} query={activeTerm} />
                     </div>
                     {r.motaNgan && (
-                      <div className="truncate text-meta text-muted-foreground/80">
+                      <div className="truncate text-[11px] text-muted-foreground/80">
                         <Highlight text={r.motaNgan} query={activeTerm} />
                       </div>
                     )}
                   </div>
-                  <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-meta font-bold uppercase tracking-wider text-muted-foreground">
+                  <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
                     {nhanLoai(r.loai)}
                   </span>
                 </CommandItem>
@@ -1029,7 +1029,7 @@ export function CommandPalette() {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
                     <Icon className="h-4 w-4" />
                   </div>
-                  <span className="text-body font-bold text-foreground">{it.label}</span>
+                  <span className="text-[13px] font-bold text-foreground">{it.label}</span>
                   <ArrowRight className="ml-auto h-3.5 w-3.5 opacity-30 group-data-[selected=true]:opacity-60 transition-opacity" />
                 </CommandItem>
               );
@@ -1043,24 +1043,24 @@ export function CommandPalette() {
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
               <Sparkles className="h-4 w-4" />
             </div>
-            <span className="text-body font-bold text-foreground">Đổi chế độ sáng / tối</span>
+            <span className="text-[13px] font-bold text-foreground">Đổi chế độ sáng / tối</span>
           </CommandItem>
           <CommandItem value="action-reload" onSelect={() => runAction("reload")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
               <CommandIcon className="h-4 w-4" />
             </div>
-            <span className="text-body font-bold text-foreground">Tải lại ứng dụng</span>
+            <span className="text-[13px] font-bold text-foreground">Tải lại ứng dụng</span>
           </CommandItem>
           <CommandItem value="action-signout" onSelect={() => runAction("signout")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors text-red-500">
               <LogOut className="h-4 w-4" />
             </div>
-            <span className="text-body font-bold text-foreground">Đăng xuất</span>
+            <span className="text-[13px] font-bold text-foreground">Đăng xuất</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
 
-      <div className="flex items-center justify-between border-t border-border bg-muted/40 px-3 py-1.5 text-meta text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-border bg-muted/40 px-3 py-1.5 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Search className="h-3 w-3" /> Alt + Space để mở nhanh
         </span>

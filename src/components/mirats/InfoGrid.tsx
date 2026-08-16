@@ -21,7 +21,7 @@ export function InfoGrid({ fields, cot = 2, className }: InfoGridProps) {
   return (
     <dl
       className={cn(
-        "grid gap-x-4 gap-y-1.5 text-body",
+        "grid gap-x-4 gap-y-1.5 text-[13px]",
         cot === 2 ? "grid-cols-[auto_1fr]" : "grid-cols-1",
         className,
       )}

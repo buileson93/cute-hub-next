@@ -91,11 +91,11 @@ function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
 
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || typeof window === "undefined") return;
+    if (!el) return;
     
     let frameId: number;
     const update = () => {
-      frameId = window.requestAnimationFrame(() => {
+      frameId = requestAnimationFrame(() => {
         if (!el) return;
         const isTruncated = el.scrollWidth > el.clientWidth + 1;
         setTruncated(prev => prev !== isTruncated ? isTruncated : prev);
@@ -108,7 +108,7 @@ function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
     window.addEventListener("resize", update);
     return () => {
       ro?.disconnect();
-      if (frameId) window.cancelAnimationFrame(frameId);
+      cancelAnimationFrame(frameId);
       window.removeEventListener("resize", update);
     };
   }, [label]);
@@ -128,7 +128,7 @@ function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
   const content = code ? (
     <div className="flex flex-col gap-0.5">
       <div className="font-semibold">{label}</div>
-      <div className="text-meta opacity-80 font-mono">Mã: {code}</div>
+      <div className="text-[10px] opacity-80 font-mono">Mã: {code}</div>
     </div>
   ) : (
     label
@@ -180,7 +180,7 @@ function MindNode({ data }: { data: MindData }) {
     <div
       onDoubleClick={(e) => { e.stopPropagation(); startInline(); }}
       className={cn(
-        "group relative flex cursor-pointer items-center text-meta leading-none transition-mirats-fast animate-fade-in",
+        "group relative flex cursor-pointer items-center text-[11px] leading-none transition-mirats-fast animate-fade-in",
         UI_DENSITY.CONTROL_H,
         KIND_WIDTH[data.kind],
       )}
@@ -199,7 +199,7 @@ function MindNode({ data }: { data: MindData }) {
         {data.collapsible ? (
           <span
             className={cn(
-              "flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border text-meta transition-colors",
+              "flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border text-[9px] transition-colors",
               data.expanded ? "border-primary/50 bg-primary/15 text-primary" : "border-muted-foreground/30 bg-background text-muted-foreground",
             )}
             title={data.expanded ? "Thu nhỏ" : "Mở rộng"}
@@ -216,7 +216,7 @@ function MindNode({ data }: { data: MindData }) {
           <TruncatedNodeLabel label={data.label} code={data.code} />
         </div>
         
-        {data.count !== undefined && <Badge variant="secondary" className="text-meta opacity-70 shrink-0">{data.count}</Badge>}
+        {data.count !== undefined && <Badge variant="secondary" className="text-[9px] opacity-70 shrink-0">{data.count}</Badge>}
         
         <div className="flex shrink-0 items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
            {data.onOpenEditor && (
@@ -254,7 +254,7 @@ function MindNode({ data }: { data: MindData }) {
 function LayerNode({ data }: NodeProps) {
   const d = data as { label: string };
   return (
-    <div className="pointer-events-none select-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-1 text-meta font-semibold uppercase tracking-wide text-primary">
+    <div className="pointer-events-none select-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
       {d.label}
     </div>
   );

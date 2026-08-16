@@ -17,7 +17,7 @@ export function RecentPinnedRailButton() {
             <button
               type="button"
               aria-label="Ghim và trang gần đây"
-              className="flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-meta font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               <Bookmark className="h-5 w-5" strokeWidth={1.8} />
               <span className="w-full truncate text-center leading-tight">Ghim</span>

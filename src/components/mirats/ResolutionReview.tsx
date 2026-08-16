@@ -88,13 +88,13 @@ export function ResolutionReview({
                 <TableCell className="text-xs text-muted-foreground">
                   {candidateLabel(cand)}
                   {r.candidates.length > 1 && (
-                    <span className="ml-1 text-meta text-amber-600">+{r.candidates.length - 1} ứng viên</span>
+                    <span className="ml-1 text-[10px] text-amber-600">+{r.candidates.length - 1} ứng viên</span>
                   )}
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
                     <Badge variant={DECISION_VARIANT[r.decision]} className="w-fit">{KIND_LABEL[r.kind]}</Badge>
-                    <span className="text-meta text-muted-foreground">
+                    <span className="text-[10px] text-muted-foreground">
                       {r.confidence > 0 ? `${Math.round(r.confidence * 100)}% · ` : ""}{r.reason}
                     </span>
                   </div>

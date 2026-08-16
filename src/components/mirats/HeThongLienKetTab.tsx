@@ -44,13 +44,13 @@ function LienKetItem({ r, heThongId, all }: { r: DoThiRow; heThongId: string; al
       <span className="font-medium">{other}</span>
       <span className="text-xs text-muted-foreground">· {LOP_LABEL[r.lop]}</span>
       {r.vai_tro_du_phong && (
-        <Badge variant="secondary" className="text-meta">
+        <Badge variant="secondary" className="text-[10px]">
           {r.vai_tro_du_phong === "chinh" ? "Chính" : "Dự phòng"}
         </Badge>
       )}
       {r.giao_thuc && <span className="text-xs text-muted-foreground">· {r.giao_thuc}</span>}
       {missingBackup && (
-        <Badge variant="destructive" className="gap-1 text-meta" title="Liên kết chính chưa có liên kết dự phòng tương ứng">
+        <Badge variant="destructive" className="gap-1 text-[10px]" title="Liên kết chính chưa có liên kết dự phòng tương ứng">
           <ShieldAlert className="h-3 w-3" /> Thiếu dự phòng
         </Badge>
       )}

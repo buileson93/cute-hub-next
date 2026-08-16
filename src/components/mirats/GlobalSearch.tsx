@@ -111,7 +111,7 @@ export function GlobalSearch() {
                       {h.entity === "he_thong" && typeof h.count === "number" && (
                         <Badge variant="secondary" className="shrink-0 tabular-nums">{h.count} TB</Badge>
                       )}
-                      <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-meta font-medium text-muted-foreground">
+                      <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                         {meta.label}
                       </span>
                     </button>
@@ -120,7 +120,7 @@ export function GlobalSearch() {
               })}
             </ul>
           )}
-          <div className="border-t border-border bg-muted/40 px-4 py-1.5 text-meta text-muted-foreground">
+          <div className="border-t border-border bg-muted/40 px-4 py-1.5 text-[10px] text-muted-foreground">
             ↑↓ chọn · Enter mở · Esc đóng
           </div>
         </div>

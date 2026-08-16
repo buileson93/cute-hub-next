@@ -210,7 +210,7 @@ export function ChecklistDesigner({
                     className="flex-1 truncate text-left text-xs font-semibold"
                   >
                     {s.ten}
-                    <span className="ml-1 font-mono text-meta text-muted-foreground">{s.ma_section}</span>
+                    <span className="ml-1 font-mono text-[10px] text-muted-foreground">{s.ma_section}</span>
                   </button>
                   <button type="button" onClick={() => moveSection(si, -1)} className="rounded p-0.5 hover:bg-background" title="Lên">
                     <ChevronUp className="h-3 w-3" />
@@ -234,10 +234,10 @@ export function ChecklistDesigner({
                           }`}
                         >
                           <span className="flex-1 truncate">
-                            <span className="font-mono text-meta text-muted-foreground">{it.item_code}</span>
+                            <span className="font-mono text-[10px] text-muted-foreground">{it.item_code}</span>
                             <span className="ml-1">{it.ten}</span>
                           </span>
-                          <Badge variant="outline" className="h-4 shrink-0 px-1 text-meta">{it.result_kind}</Badge>
+                          <Badge variant="outline" className="h-4 shrink-0 px-1 text-[9px]">{it.result_kind}</Badge>
                           <span className="flex opacity-0 transition group-hover:opacity-100">
                             <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); moveItem(si, ii, -1); }} className="rounded p-0.5 hover:bg-secondary">
                               <ChevronUp className="h-3 w-3" />
@@ -259,7 +259,7 @@ export function ChecklistDesigner({
                   <li>
                     <button
                       type="button" onClick={() => addItem(si)}
-                      className="mt-0.5 flex w-full items-center justify-center gap-1 rounded border border-dashed px-2 py-1 text-meta text-muted-foreground hover:bg-background"
+                      className="mt-0.5 flex w-full items-center justify-center gap-1 rounded border border-dashed px-2 py-1 text-[11px] text-muted-foreground hover:bg-background"
                     >
                       <Plus className="h-3 w-3" /> Thêm hạng mục
                     </button>
@@ -281,7 +281,7 @@ export function ChecklistDesigner({
         <div className="mx-auto max-w-3xl">
           <div className="mb-4 text-center">
             <h1 className="text-lg font-bold uppercase">{tplName || "Mẫu bảng kiểm"}</h1>
-            <p className="mt-1 text-meta text-muted-foreground">Xem trước theo giao diện lập phiếu — có thể điền thử.</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">Xem trước theo giao diện lập phiếu — có thể điền thử.</p>
           </div>
           {previewSections.length === 0 || previewSections.every((s) => s.items.length === 0) ? (
             <div className="rounded-md border border-dashed p-12 text-center text-sm text-muted-foreground">
@@ -330,7 +330,7 @@ export function ChecklistDesigner({
             title="Hoàn tác (Ctrl+Z)" data-testid="chk-undo"
           >
             <Undo2 className="mr-1 h-3.5 w-3.5" /> Hoàn tác
-            {history.length > 0 && <span className="ml-1 text-meta text-muted-foreground">{history.length}</span>}
+            {history.length > 0 && <span className="ml-1 text-[10px] text-muted-foreground">{history.length}</span>}
           </Button>
           <div className="h-4 w-px bg-border" />
           <Button
@@ -339,7 +339,7 @@ export function ChecklistDesigner({
             title="Làm lại (Ctrl+Shift+Z)" data-testid="chk-redo"
           >
             <Redo2 className="mr-1 h-3.5 w-3.5" /> Làm lại
-            {future.length > 0 && <span className="ml-1 text-meta text-muted-foreground">{future.length}</span>}
+            {future.length > 0 && <span className="ml-1 text-[10px] text-muted-foreground">{future.length}</span>}
           </Button>
         </div>
       </div>
@@ -429,7 +429,7 @@ function ItemInspector({
 
       {item.result_kind === "so" && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">Ngưỡng đo</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Ngưỡng đo</p>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label className="text-xs">Min (≥)</Label>
@@ -456,13 +456,13 @@ function ItemInspector({
               />
             </div>
           </div>
-          <p className="mt-1 text-meta text-muted-foreground">Giá trị đo ngoài ngưỡng sẽ tự chấm Không đạt.</p>
+          <p className="mt-1 text-[10px] text-muted-foreground">Giá trị đo ngoài ngưỡng sẽ tự chấm Không đạt.</p>
         </div>
       )}
 
       {item.result_kind === "chon" && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">Lựa chọn (mỗi dòng 1 giá trị)</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Lựa chọn (mỗi dòng 1 giá trị)</p>
           <Textarea
             rows={4}
             value={(opts.choices ?? item.tuy_chon ?? []).join("\n")}
@@ -483,7 +483,7 @@ function ItemInspector({
       </div>
 
       <div className="rounded-md border border-primary/30 bg-primary/5 p-2">
-        <p className="mb-2 text-meta font-semibold uppercase text-primary">
+        <p className="mb-2 text-[11px] font-semibold uppercase text-primary">
           Chỉ số đánh giá (CSDL lâu dài)
         </p>
         <div className="space-y-2">
@@ -495,7 +495,7 @@ function ItemInspector({
               onChange={(e) => onPatchItem({ metric_key: e.target.value.trim() || null })}
               placeholder="vd: awos.visibility_range, radar.vswr"
             />
-            <p className="mt-1 text-meta text-muted-foreground">
+            <p className="mt-1 text-[10px] text-muted-foreground">
               Chuẩn hoá xuyên mẫu để cùng 1 chỉ số ở nhiều phiếu gộp được thống kê chung.
             </p>
           </div>

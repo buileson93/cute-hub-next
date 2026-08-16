@@ -113,7 +113,7 @@ function FormsPage() {
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="font-mono text-meta text-muted-foreground">{t.code}</div>
+                        <div className="font-mono text-[10px] text-muted-foreground">{t.code}</div>
                         <CardTitle className="text-base leading-tight">{t.ten}</CardTitle>
                       </div>
                       <FileText className="h-5 w-5 shrink-0 text-primary/70" />
@@ -122,7 +122,7 @@ function FormsPage() {
                   <CardContent>
                     <p className="mb-3 text-xs text-muted-foreground line-clamp-2 min-h-[2.5rem]">{t.mo_ta ?? "—"}</p>
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-meta">{t.thiet_bi_mode === "none" ? "Không TB" : t.thiet_bi_mode === "single" ? "1 TB" : "Nhiều TB"}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{t.thiet_bi_mode === "none" ? "Không TB" : t.thiet_bi_mode === "single" ? "1 TB" : "Nhiều TB"}</Badge>
                       <Button asChild size="sm">
                         <Link to="/forms/new/$code" params={{ code: t.code }}><Plus className="mr-1 h-3.5 w-3.5" />Lập</Link>
                       </Button>

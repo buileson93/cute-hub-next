@@ -112,7 +112,7 @@ export function FormLivePreview({ tplName, tplDesc, fields }: FormLivePreviewPro
             <ul className="space-y-1 text-xs">
               {errors.map((e, i) => (
                 <li key={i} className="flex items-center gap-2">
-                  <Badge variant="outline" className="font-mono text-meta">{e.key}</Badge>
+                  <Badge variant="outline" className="font-mono text-[10px]">{e.key}</Badge>
                   <span className="text-muted-foreground">{e.label}: {e.message}</span>
                 </li>
               ))}

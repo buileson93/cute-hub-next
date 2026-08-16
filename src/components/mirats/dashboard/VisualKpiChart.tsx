@@ -16,7 +16,6 @@ interface VisualKpiChartProps {
   height?: number;
   status?: 'normal' | 'attention' | 'warning' | 'danger';
   tooltip?: string;
-  onClick?: () => void;
 }
 
 export function VisualKpiChart({
@@ -29,8 +28,7 @@ export function VisualKpiChart({
   icon,
   height = 140,
   status = 'normal',
-  tooltip,
-  onClick
+  tooltip
 }: VisualKpiChartProps) {
   
   const statusColors = {
@@ -48,22 +46,16 @@ export function VisualKpiChart({
   };
 
   return (
-    <Card 
-      className={cn(
-        "overflow-hidden border-none shadow-md bg-card/50 backdrop-blur-sm transition-all hover:shadow-lg",
-        onClick && "cursor-pointer active:scale-[0.98]"
-      )}
-      onClick={onClick}
-    >
+    <Card className="overflow-hidden border-none shadow-md bg-card/50 backdrop-blur-sm transition-all hover:shadow-lg">
       <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between space-y-0">
         <div className="space-y-1">
-          <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+          <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
             {icon && <Icon name={icon as any} size="tiny" className={statusColors[status]} />}
-            <span className="truncate">{title}</span>
+            {title}
             {tooltip && (
               <AppTooltip noiDung={tooltip}>
-                <div className="cursor-help shrink-0 opacity-70 hover:opacity-100 transition-opacity">
-                  <Icon name="entity.info" size="tiny" className="text-muted-foreground" />
+                <div className="cursor-help">
+                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/50" />
                 </div>
               </AppTooltip>
             )}
@@ -72,7 +64,7 @@ export function VisualKpiChart({
             <span className="text-2xl font-black tabular-nums tracking-tighter">
               {value}
             </span>
-            {unit && <span className="text-meta font-bold text-muted-foreground uppercase">{unit}</span>}
+            {unit && <span className="text-[10px] font-bold text-muted-foreground uppercase">{unit}</span>}
           </div>
         </div>
       </CardHeader>

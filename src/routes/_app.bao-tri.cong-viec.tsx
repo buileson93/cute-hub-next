@@ -269,7 +269,7 @@ function CongViecPage() {
                 </div>
                 <div className="flex flex-wrap gap-1 pt-1">
                   {orphans.phieuThieuBienBan.slice(0, 30).map((id) => (
-                    <Badge key={id} variant="outline" className="font-mono text-meta">
+                    <Badge key={id} variant="outline" className="font-mono text-[11px]">
                       {maByPhieuId.get(id) ?? id}
                     </Badge>
                   ))}
@@ -288,7 +288,7 @@ function CongViecPage() {
                 </div>
                 <div className="flex flex-wrap gap-1 pt-1">
                   {orphans.bienBanKhongThuocPhieu.slice(0, 30).map((id) => (
-                    <Badge key={id} variant="outline" className="font-mono text-meta">
+                    <Badge key={id} variant="outline" className="font-mono text-[11px]">
                       {id}
                     </Badge>
                   ))}

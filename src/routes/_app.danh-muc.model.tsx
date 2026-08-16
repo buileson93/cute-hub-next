@@ -551,7 +551,7 @@ function ModelCatalogPage() {
                 : <span className="text-muted-foreground">—</span> },
             { key: "soThietBi", label: "Số TB", align: "center", value: (m) => m.soThietBi,
               cell: (m) => m.soThietBi > 0
-                ? <Badge variant="secondary" className="gap-1 text-meta"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
+                ? <Badge variant="secondary" className="gap-1 text-[10px]"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
                 : <span className="text-muted-foreground">0</span> },
             { key: "info", label: "", align: "center" as const,
               cell: (m: ModelRow) => (
@@ -686,7 +686,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
           <Package className="h-10 w-10 text-muted-foreground/40 transition-transform duration-500 group-hover:scale-110" />
         )}
         {m.soThietBi > 0 && (
-          <Badge variant="secondary" className="absolute right-1.5 top-1.5 gap-1 text-meta">
+          <Badge variant="secondary" className="absolute right-1.5 top-1.5 gap-1 text-[10px]">
             <Boxes className="h-3 w-3" /> {m.soThietBi}
           </Badge>
         )}
@@ -730,10 +730,10 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
         {m.p_n && <p className="truncate font-mono text-xs text-muted-foreground">{m.p_n}</p>}
         <div className="flex flex-wrap gap-1 pt-0.5">
           {m.nhaSanXuat && (
-            <NsxLink name={m.nhaSanXuat} className="rounded bg-muted px-1.5 py-0.5 text-meta" />
+            <NsxLink name={m.nhaSanXuat} className="rounded bg-muted px-1.5 py-0.5 text-[10px]" />
           )}
           {m.loaiThietBi && (
-            <LtbLink name={m.loaiThietBi} className="rounded bg-muted px-1.5 py-0.5 text-meta" />
+            <LtbLink name={m.loaiThietBi} className="rounded bg-muted px-1.5 py-0.5 text-[10px]" />
           )}
         </div>
       </CardContent>
@@ -818,7 +818,7 @@ function ModelInfoCard({ m }: { m: ModelRow }) {
         <div className="min-w-0">
           <p className="text-sm font-semibold leading-snug">{m.ten}</p>
           {m.p_n && <p className="mt-0.5 font-mono text-xs text-muted-foreground">P/N: {m.p_n}</p>}
-          <Badge variant="secondary" className="mt-1 gap-1 text-meta">
+          <Badge variant="secondary" className="mt-1 gap-1 text-[10px]">
             <Boxes className="h-3 w-3" /> {m.soThietBi} tài sản
           </Badge>
         </div>
@@ -843,7 +843,7 @@ function ModelInfoCard({ m }: { m: ModelRow }) {
           </div>
         )}
         {m.mo_ta && <p className="line-clamp-3 pt-1 text-muted-foreground">{m.mo_ta}</p>}
-        <p className="flex items-center gap-1 pt-1 text-meta font-medium text-primary">
+        <p className="flex items-center gap-1 pt-1 text-[11px] font-medium text-primary">
           Bấm để xem tài sản đang dùng mẫu này <ChevronRight className="h-3 w-3" />
         </p>
       </div>
@@ -885,7 +885,7 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
         <Boxes className="h-4 w-4 shrink-0 text-primary" />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold leading-snug">{m.ten}</p>
-          <p className="text-meta text-muted-foreground">{m.soThietBi} tài sản đang dùng mẫu</p>
+          <p className="text-[11px] text-muted-foreground">{m.soThietBi} tài sản đang dùng mẫu</p>
         </div>
       </div>
       <div className="max-h-64 overflow-y-auto p-2 text-xs">
@@ -902,7 +902,7 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
             {rows.slice(0, 10).map((r) => (
               <div key={r.id} className="rounded border bg-muted/30 px-2 py-1.5">
                 <p className="truncate font-medium">{r.ten || "(Không tên)"}</p>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-meta text-muted-foreground">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-muted-foreground">
                   {r.donVi && (
                     <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" /> {r.donVi}</span>
                   )}
@@ -916,11 +916,11 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
               </div>
             ))}
             {rows.length > 10 && (
-              <p className="px-1 pt-0.5 text-meta text-muted-foreground">…và {rows.length - 10} tài sản khác</p>
+              <p className="px-1 pt-0.5 text-[11px] text-muted-foreground">…và {rows.length - 10} tài sản khác</p>
             )}
           </div>
         )}
-        <p className="flex items-center gap-1 px-1 pt-1.5 text-meta font-medium text-primary">
+        <p className="flex items-center gap-1 px-1 pt-1.5 text-[11px] font-medium text-primary">
           Bấm để xem đầy đủ <ChevronRight className="h-3 w-3" />
         </p>
       </div>
@@ -993,7 +993,7 @@ function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => 
                 <div key={unit}>
                   <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
                     <Building2 className="h-4 w-4 text-muted-foreground" /> {unit}
-                    <Badge variant="secondary" className="ml-1 text-meta">{list.length}</Badge>
+                    <Badge variant="secondary" className="ml-1 text-[10px]">{list.length}</Badge>
                   </div>
                   <div className="space-y-1">
                     {list.map((r) => {
@@ -1001,7 +1001,7 @@ function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => 
                         <>
                           <span className="font-mono text-xs text-muted-foreground">{r.ma || "—"}</span>
                           <span className="font-medium">{r.ten || "(Không tên)"}</span>
-                          {r.serial && <span className="font-mono text-meta text-muted-foreground">S/N: {r.serial}</span>}
+                          {r.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {r.serial}</span>}
                           {r.heThong && (
                             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                               <Layers className="h-3 w-3" /> {r.heThong}
@@ -1098,8 +1098,8 @@ function MergeModelsDialog({
                   <p className="truncate font-medium">{m.ten}{m.p_n ? <span className="ml-1 font-mono text-xs text-muted-foreground">· {m.p_n}</span> : null}</p>
                   <p className="truncate text-xs text-muted-foreground">{m.nhaSanXuat || "—"} · {m.loaiThietBi || "Chưa phân loại"}</p>
                 </div>
-                <Badge variant="secondary" className="gap-1 text-meta"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
-                {m.id === targetId && <Badge className="text-meta">Giữ lại</Badge>}
+                <Badge variant="secondary" className="gap-1 text-[10px]"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
+                {m.id === targetId && <Badge className="text-[10px]">Giữ lại</Badge>}
               </label>
             ))}
           </div>
@@ -1406,7 +1406,7 @@ function ModelDialog({
                   <X className="h-4 w-4" /> Bỏ ảnh
                 </Button>
               )}
-              <p className="text-meta text-muted-foreground">PNG, JPG, WebP, SVG · tối đa 5MB · nên dùng ảnh nền trắng, vuông.</p>
+              <p className="text-[11px] text-muted-foreground">PNG, JPG, WebP, SVG · tối đa 5MB · nên dùng ảnh nền trắng, vuông.</p>
             </div>
           </div>
 
@@ -1418,7 +1418,7 @@ function ModelDialog({
             <div className="space-y-1.5">
               <Label>P/N (Part number)</Label>
               <Input value={pn} onChange={(e) => setPn(e.target.value)} placeholder="VD: 671396-001" />
-              <p className="text-meta text-muted-foreground">Tài sản chọn mẫu này sẽ tự kế thừa P/N.</p>
+              <p className="text-[11px] text-muted-foreground">Tài sản chọn mẫu này sẽ tự kế thừa P/N.</p>
             </div>
             <div className="space-y-1.5">
               <Label>Nhà sản xuất</Label>
@@ -1491,7 +1491,7 @@ function ModelDialog({
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-meta text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 Tài sản chọn mẫu này sẽ tự kế thừa chủng loại, nhà sản xuất và bộ thuộc tính.
               </p>
             </div>
@@ -1502,10 +1502,10 @@ function ModelDialog({
             <div className="space-y-2 sm:col-span-2">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" /> Nhãn tài sản (đa chọn)</Label>
-                <Link to="/danh-muc/dac-tinh" className="text-meta text-primary hover:underline">Quản lý</Link>
+                <Link to="/danh-muc/dac-tinh" className="text-[11px] text-primary hover:underline">Quản lý</Link>
               </div>
               {dacTinhSorted.length === 0 ? (
-                <div className="rounded-md border bg-muted/20 p-3 text-meta text-muted-foreground">
+                <div className="rounded-md border bg-muted/20 p-3 text-[11px] text-muted-foreground">
                   Chưa có nhãn tài sản nào. Thêm ở <Link to="/danh-muc/dac-tinh" className="text-primary hover:underline">Danh mục › Nhãn tài sản</Link>.
                 </div>
               ) : (
@@ -1533,7 +1533,7 @@ function ModelDialog({
                   </div>
                 </div>
               )}
-              <p className="text-meta text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 Tài sản của mẫu này sẽ tự kế thừa nhãn tài sản qua view <code>v_thiet_bi_dac_tinh</code>. Không thay thế Chủng loại.
               </p>
             </div>

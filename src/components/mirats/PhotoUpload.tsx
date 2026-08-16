@@ -175,7 +175,7 @@ export function PhotoUpload({
               ? ` · ${Math.round((1 - r.status.compressedSize / r.size) * 100)}% nhỏ hơn`
               : "";
             return (
-              <div key={r.key} className="text-meta">
+              <div key={r.key} className="text-[11px]">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   {r.status.phase === "done" && <Check className="h-3 w-3 text-emerald-600" />}
                   {r.status.phase === "dedup" && <CopyIcon className="h-3 w-3 text-emerald-600" />}
@@ -211,7 +211,7 @@ export function PhotoUpload({
                   </div>
                 )}
                 <p className="mt-1 truncate" title={a.name}>{a.name}</p>
-                <p className="text-meta text-muted-foreground">{(a.size / 1024).toFixed(0)} KB</p>
+                <p className="text-[10px] text-muted-foreground">{(a.size / 1024).toFixed(0)} KB</p>
                 {!disabled && (
                   <button
                     type="button" onClick={() => remove(a)}

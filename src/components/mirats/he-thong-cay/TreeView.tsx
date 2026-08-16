@@ -108,7 +108,7 @@ export function TreeView({
               </TooltipContent>
             </Tooltip>
             {chips.map((c, i) => (
-              <Badge key={i} variant="outline" className={cn("px-1 py-0 text-meta", c.className)} title={c.title}>
+              <Badge key={i} variant="outline" className={cn("px-1 py-0 text-[9px]", c.className)} title={c.title}>
                 {c.text}
               </Badge>
             ))}
@@ -161,8 +161,8 @@ export function TreeView({
             {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           </button>
           <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
-          <span className="flex-1 truncate text-body font-medium leading-tight">{htMind(ht.ma)}</span>
-          <Badge variant="outline" className="shrink-0 text-meta px-1 py-0 h-4 min-w-[1.25rem] justify-center">{ht.count}</Badge>
+          <span className="flex-1 truncate text-[13px] font-medium leading-tight">{htMind(ht.ma)}</span>
+          <Badge variant="outline" className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center">{ht.count}</Badge>
           
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
              <button onClick={() => onIncident(ht.ma)} className="rounded p-1 hover:bg-muted" title="Sự cố">
@@ -201,8 +201,8 @@ export function TreeView({
             {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           </button>
           <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
-          <span className="flex-1 truncate text-body font-semibold leading-tight">{nhLabel(nh.ma)}</span>
-          <Badge variant="secondary" className="shrink-0 text-meta px-1 py-0 h-4 min-w-[1.25rem] justify-center">{nh.count}</Badge>
+          <span className="flex-1 truncate text-[13px] font-semibold leading-tight">{nhLabel(nh.ma)}</span>
+          <Badge variant="secondary" className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center">{nh.count}</Badge>
         </div>
         {isExpanded && (
           <div className="ml-6 space-y-1 border-l pl-2">
@@ -228,7 +228,7 @@ export function TreeView({
               </button>
               <Boxes className={cn("h-4 w-4 shrink-0", isStopped ? "text-muted-foreground" : "text-rose-500")} />
               <span className="text-sm font-bold tracking-tight">{pl.ten}</span>
-              <Badge variant="outline" className="ml-auto text-meta px-1 py-0 h-4 min-w-[1.5rem] justify-center bg-muted/30">{pl.count}</Badge>
+              <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 h-4 min-w-[1.5rem] justify-center bg-muted/30">{pl.count}</Badge>
             </div>
             
             {isExpanded && (

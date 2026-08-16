@@ -12,7 +12,7 @@ export function AutoFilledBadge({ onUndo, label = "auto" }: Props) {
   return (
     <Badge
       variant="outline"
-      className="ml-1 h-4 gap-1 border-primary/40 bg-primary/10 px-1.5 text-meta font-medium text-primary"
+      className="ml-1 h-4 gap-1 border-primary/40 bg-primary/10 px-1.5 text-[10px] font-medium text-primary"
       data-testid="auto-badge"
     >
       <Sparkles className="h-2.5 w-2.5" />

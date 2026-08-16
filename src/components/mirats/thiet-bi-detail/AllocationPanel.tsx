@@ -55,7 +55,7 @@ export function AllocationPanel({ thietBiId, donViTenMap }: { thietBiId: string;
                   )}
                   
                   {row.thuc_hien_boi && (
-                    <div className="mt-2 text-meta text-muted-foreground text-right">
+                    <div className="mt-2 text-[10px] text-muted-foreground text-right">
                       Người thực hiện: {row.thuc_hien_boi}
                     </div>
                   )}

@@ -140,12 +140,12 @@ function TicketsPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <div className="truncate text-sm font-semibold">{t.tieu_de}</div>
-                          <Badge variant="outline" className={cn("text-meta", TRANG_THAI_COLOR[t.trang_thai])}>
+                          <Badge variant="outline" className={cn("text-[10px]", TRANG_THAI_COLOR[t.trang_thai])}>
                             {TICKET_TRANG_THAI[t.trang_thai]}
                           </Badge>
                           <span
                             className={cn(
-                              "rounded px-1.5 py-0.5 text-meta font-medium",
+                              "rounded px-1.5 py-0.5 text-[10px] font-medium",
                               UU_TIEN_COLOR[t.uu_tien],
                             )}
                           >
@@ -155,7 +155,7 @@ function TicketsPage() {
                         {t.mo_ta && (
                           <div className="mt-1 line-clamp-1 text-xs text-muted-foreground">{t.mo_ta}</div>
                         )}
-                        <div className="mt-1.5 flex items-center gap-3 text-meta text-muted-foreground">
+                        <div className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
                           <span className="inline-flex items-center gap-1">
                             <UserIcon className="h-3 w-3" />
                             {TICKET_LOAI[t.loai]}

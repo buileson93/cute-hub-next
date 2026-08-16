@@ -392,7 +392,7 @@ function MergeDialog({ rows, onClose, onDone }: { rows: Nsx[]; onClose: () => vo
             <div className="flex flex-wrap gap-1.5">
               {groups.slice(0, 8).map((g, i) => (
                 <Button key={i} size="sm" variant="secondary" className="h-7 gap-1 text-xs" onClick={() => applyGroup(g)}>
-                  {g[0].ten} <Badge variant="outline" className="ml-0.5 h-4 px-1 text-meta">{g.length}</Badge>
+                  {g[0].ten} <Badge variant="outline" className="ml-0.5 h-4 px-1 text-[10px]">{g.length}</Badge>
                 </Button>
               ))}
             </div>
@@ -425,7 +425,7 @@ function MergeDialog({ rows, onClose, onDone }: { rows: Nsx[]; onClose: () => vo
                       </td>
                       <td className="p-2">
                         <div className="font-medium">{r.ten}</div>
-                        <div className="font-mono text-meta text-muted-foreground">{r.ma ?? "—"}</div>
+                        <div className="font-mono text-[11px] text-muted-foreground">{r.ma ?? "—"}</div>
                       </td>
                       <td className="p-2 text-center text-xs">{r.soMau}</td>
                       <td className="p-2 text-center text-xs">{r.soThietBi}</td>

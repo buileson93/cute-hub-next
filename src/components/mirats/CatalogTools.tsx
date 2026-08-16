@@ -848,7 +848,7 @@ function MergeDialog({
             <div className="flex flex-wrap gap-1.5">
               {groups.slice(0, 8).map((g, i) => (
                 <Button key={i} size="sm" variant="secondary" className="h-7 gap-1 text-xs" onClick={() => applyGroup(g)}>
-                  {g[0].ten} <Badge variant="outline" className="ml-0.5 h-4 px-1 text-meta">{g.length}</Badge>
+                  {g[0].ten} <Badge variant="outline" className="ml-0.5 h-4 px-1 text-[10px]">{g.length}</Badge>
                 </Button>
               ))}
             </div>
@@ -880,7 +880,7 @@ function MergeDialog({
                       </td>
                       <td className="p-2">
                         <div className="font-medium">{r.ten}</div>
-                        <div className="font-mono text-meta text-muted-foreground">{r.ma ?? "—"}</div>
+                        <div className="font-mono text-[11px] text-muted-foreground">{r.ma ?? "—"}</div>
                       </td>
                       {config.counts.map((c) => <td key={c.key} className="p-2 text-center text-xs">{r.counts[c.key] ?? 0}</td>)}
                     </tr>

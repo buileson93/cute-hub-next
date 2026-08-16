@@ -161,7 +161,7 @@ export function ImageCropDialog({
                 <ClipboardPaste className="mr-2 h-4 w-4" /> Dán từ clipboard
               </Button>
             </div>
-            <p className="text-meta text-muted-foreground">JPG/PNG/WebP · tối đa {maxMb}MB</p>
+            <p className="text-[11px] text-muted-foreground">JPG/PNG/WebP · tối đa {maxMb}MB</p>
           </div>
         ) : (
           <div className="space-y-3">

@@ -549,7 +549,7 @@ export function CatalogTable({
               key: "xuat_xu", label: "Xuất xứ", minW: "min-w-[120px]", filter: "cat" as const,
               value: (r: Row) => r.xuat_xu ?? "",
               cell: (r: Row) => r.xuat_xu
-                ? <Badge variant="outline" className="text-meta">{r.xuat_xu}</Badge>
+                ? <Badge variant="outline" className="text-[11px]">{r.xuat_xu}</Badge>
                 : <span className="text-xs text-muted-foreground">—</span>,
             }] : []),
             ...(supportsGhiChu ? [{
@@ -561,17 +561,17 @@ export function CatalogTable({
               key: "parent", label: "Trực thuộc", minW: "min-w-[160px]", filter: "cat" as const,
               value: (r: Row) => (r.parent_id ? parentNameMap.get(r.parent_id) ?? "—" : "—"),
               cell: (r: Row) => r.parent_id
-                ? <Badge variant="outline" className="text-meta">{parentNameMap.get(r.parent_id) ?? "—"}</Badge>
+                ? <Badge variant="outline" className="text-[11px]">{parentNameMap.get(r.parent_id) ?? "—"}</Badge>
                 : <span className="text-xs text-muted-foreground">—</span>,
             }] : []),
             { key: "soThietBi", label: "Tài sản", align: "center", value: (r) => r.soThietBi,
               cell: (r) => r.soThietBi > 0
-                ? <button type="button" onClick={() => setUsageRow(r)} title={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`} className="inline-flex"><Badge variant="secondary" className="gap-1 text-meta transition-colors hover:bg-primary/15"><Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}</Badge></button>
+                ? <button type="button" onClick={() => setUsageRow(r)} title={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`} className="inline-flex"><Badge variant="secondary" className="gap-1 text-[11px] transition-colors hover:bg-primary/15"><Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}</Badge></button>
                 : <span className="text-xs text-muted-foreground">0</span> },
             { key: "active", label: "Trạng thái", align: "center", filter: "cat", value: (r) => (r.active ? "Đang dùng" : "Ẩn"),
               cell: (r) => r.active
-                ? <Badge variant="outline" className="text-meta">Đang dùng</Badge>
-                : <Badge variant="outline" className="text-meta text-muted-foreground">Ẩn</Badge> },
+                ? <Badge variant="outline" className="text-[11px]">Đang dùng</Badge>
+                : <Badge variant="outline" className="text-[11px] text-muted-foreground">Ẩn</Badge> },
             {
               key: "actions", label: "", align: "right" as const,
               cell: (r: Row) => (
@@ -756,7 +756,7 @@ function CatalogUsageDialog({
                 <div key={unit}>
                   <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
                     <Building2 className="h-4 w-4 text-muted-foreground" /> {unit}
-                    <Badge variant="secondary" className="ml-1 text-meta">{list.length}</Badge>
+                    <Badge variant="secondary" className="ml-1 text-[10px]">{list.length}</Badge>
                   </div>
                   <div className="space-y-1">
                     {list.map((r) => {
@@ -764,7 +764,7 @@ function CatalogUsageDialog({
                         <>
                           <span className="font-medium">{r.ten || "(Không tên)"}</span>
 
-                          {r.serial && <span className="font-mono text-meta text-muted-foreground">S/N: {r.serial}</span>}
+                          {r.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {r.serial}</span>}
                           {r.heThong && (
                             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                               <Layers className="h-3 w-3" /> {r.heThong}
@@ -891,12 +891,12 @@ function DonViNode({
         </span>
         {row.ma && !hideCode && <CodeBadge code={row.ma} className="mr-0.5" />}
         {row.soThietBi > 0 && (
-          <Badge variant="secondary" className="gap-1 text-meta">
+          <Badge variant="secondary" className="gap-1 text-[10px]">
             <Boxes className="h-3 w-3" /> {row.soThietBi.toLocaleString("vi-VN")}
           </Badge>
         )}
         {hasKids && (
-          <span className="text-meta text-muted-foreground">· {kids.length} {childLabel} con</span>
+          <span className="text-[11px] text-muted-foreground">· {kids.length} {childLabel} con</span>
         )}
         <div className="ml-auto flex shrink-0 items-center gap-0.5">
           <AppTooltip noiDung={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}>
@@ -1141,7 +1141,7 @@ function CatalogDialog({
                   {dupHits.map((h) => (
                     <li key={h.id} className="flex items-center gap-2">
                       <span className="truncate">{h.ten}</span>
-                      <Badge variant="outline" className="h-4 px-1 text-meta">
+                      <Badge variant="outline" className="h-4 px-1 text-[10px]">
                         {h.reason === "exact-normalized" ? "trùng" : h.reason === "contains" ? "chứa" : `${Math.round(h.score * 100)}%`}
                       </Badge>
                     </li>
@@ -1301,7 +1301,7 @@ function MergeCatalogDialog({
               />
               <span className="truncate font-medium">{r.ten}</span>
               {r.soThietBi > 0 && (
-                <Badge variant="secondary" className="ml-auto gap-1 text-meta">
+                <Badge variant="secondary" className="ml-auto gap-1 text-[10px]">
                   <Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}
                 </Badge>
               )}
@@ -1383,7 +1383,7 @@ function MergePickDialog({
               <span className="truncate font-medium">{r.ten}</span>
               {r.ma && <CodeBadge code={r.ma} />}
               {r.soThietBi > 0 && (
-                <Badge variant="secondary" className="ml-auto gap-1 text-meta">
+                <Badge variant="secondary" className="ml-auto gap-1 text-[10px]">
                   <Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}
                 </Badge>
               )}

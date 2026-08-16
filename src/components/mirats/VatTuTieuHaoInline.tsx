@@ -117,7 +117,7 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
           return (
             <div key={r.key} className="grid grid-cols-[1fr_1fr_90px_36px] items-end gap-2">
               <div>
-                <Label className="text-meta text-muted-foreground">Vật tư</Label>
+                <Label className="text-[11px] text-muted-foreground">Vật tư</Label>
                 <Select value={r.vat_tu_id} onValueChange={(v) => update(r.key, { vat_tu_id: v, don_gia: vatTuList?.find((x) => x.id === v)?.don_gia ?? undefined })}>
                   <SelectTrigger className="h-9"><SelectValue placeholder="Chọn vật tư" /></SelectTrigger>
                   <SelectContent>
@@ -135,7 +135,7 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
                 </Select>
               </div>
               <div>
-                <Label className="text-meta text-muted-foreground">Kho xuất</Label>
+                <Label className="text-[11px] text-muted-foreground">Kho xuất</Label>
                 <Select value={r.kho_id} onValueChange={(v) => update(r.key, { kho_id: v })}>
                   <SelectTrigger className="h-9"><SelectValue placeholder="Chọn kho" /></SelectTrigger>
                   <SelectContent>
@@ -146,7 +146,7 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
                 </Select>
               </div>
               <div>
-                <Label className="text-meta text-muted-foreground">SL{vt?.don_vi_tinh ? ` (${vt.don_vi_tinh})` : ""}</Label>
+                <Label className="text-[11px] text-muted-foreground">SL{vt?.don_vi_tinh ? ` (${vt.don_vi_tinh})` : ""}</Label>
                 <Input
                   type="number"
                   min={0}

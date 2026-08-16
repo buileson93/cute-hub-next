@@ -352,7 +352,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                               <p className="text-xs text-muted-foreground mt-1">{r.tinh_trang || "(chưa có tình trạng)"}</p>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
                                 <div>
-                                  <label className="text-meta text-muted-foreground">Hệ thống trong DB</label>
+                                  <label className="text-[11px] text-muted-foreground">Hệ thống trong DB</label>
                                   <Select value={r.he_thong_id} onValueChange={(v) => setIncidents((cur) => cur.map((x, j) => j === i ? { ...x, he_thong_id: v } : x))}>
                                     <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="— chưa gán —" /></SelectTrigger>
                                     <SelectContent>
@@ -368,12 +368,12 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                                   </Select>
                                 </div>
                                 <div className="md:col-span-2">
-                                  <label className="text-meta text-muted-foreground">Hiện tượng (tiêu đề)</label>
+                                  <label className="text-[11px] text-muted-foreground">Hiện tượng (tiêu đề)</label>
                                   <Input className="h-8 text-xs" value={r.hien_tuong}
                                     onChange={(e) => setIncidents((cur) => cur.map((x, j) => j === i ? { ...x, hien_tuong: e.target.value } : x))} />
                                 </div>
                               </div>
-                              <div className="text-meta text-muted-foreground mt-1 flex gap-3">
+                              <div className="text-[11px] text-muted-foreground mt-1 flex gap-3">
                                 <span>⏱ {r.thoi_diem_raw || "—"} {r.thoi_gian_bat_dau && `→ ${r.thoi_gian_bat_dau}`}</span>
                                 <span>📍 {r.vi_tri || "—"}</span>
                               </div>
@@ -400,11 +400,11 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                               <Badge variant="outline">{r.don_vi_ql || "?"}</Badge>
                               <Badge variant="secondary">{r.tinh_trang || "—"}</Badge>
                             </div>
-                            <div className="text-meta text-muted-foreground mt-1">
+                            <div className="text-[11px] text-muted-foreground mt-1">
                               Ngày hỏng: {r.ngay_hong_raw || "—"} {r.ngay_hong_iso && `→ ${r.ngay_hong_iso.slice(0, 10)}`} · SC: {r.don_vi_sc || "—"} · Ghi chú: {r.ghi_chu || "—"}
                             </div>
                             <div className="mt-2">
-                              <label className="text-meta text-muted-foreground">Hệ thống trong DB</label>
+                              <label className="text-[11px] text-muted-foreground">Hệ thống trong DB</label>
                               <Select value={r.he_thong_id} onValueChange={(v) => setHongs((cur) => cur.map((x, j) => j === i ? { ...x, he_thong_id: v } : x))}>
                                 <SelectTrigger className="h-8 text-xs w-full md:w-96"><SelectValue placeholder="— chưa gán —" /></SelectTrigger>
                                 <SelectContent>

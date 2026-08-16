@@ -54,7 +54,7 @@ export function ChangeDiffDialog({
         {event && event.changes.length > 0 ? (
           <ScrollArea className="max-h-[65vh] pr-3">
             {/* Header hàng cột */}
-            <div className="mb-2 grid grid-cols-[minmax(120px,1fr)_1fr_auto_1fr] items-center gap-2 px-0.5 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="mb-2 grid grid-cols-[minmax(120px,1fr)_1fr_auto_1fr] items-center gap-2 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               <span>Trường</span>
               <span className="flex items-center gap-1">
                 <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">Trước</Badge>

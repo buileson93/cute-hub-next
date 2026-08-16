@@ -286,7 +286,7 @@ function TourOverlay({
               <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 text-primary">
                 <Compass className="h-4 w-4" />
               </span>
-              <span className="text-meta font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Bước {index + 1}/{steps.length}
               </span>
             </div>

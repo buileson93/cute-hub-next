@@ -177,7 +177,7 @@ export function ZoomableImage({
         </Button>
       </div>
 
-      <span className="pointer-events-none absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-meta text-white/80">
+      <span className="pointer-events-none absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[11px] text-white/80">
         <Maximize2 className="h-3 w-3" /> Lăn chuột / bấm đúp để zoom
       </span>
     </div>

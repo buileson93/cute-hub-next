@@ -175,7 +175,7 @@ function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boole
       <CardContent className="p-2">
         <div className="truncate text-xs font-medium" title={row.file_name}>{row.file_name}</div>
         {row.mo_ta && <div className="truncate text-xs text-muted-foreground">{row.mo_ta}</div>}
-        <div className="text-meta text-muted-foreground">{fmtSize(row.kich_thuoc)}</div>
+        <div className="text-[10px] text-muted-foreground">{fmtSize(row.kich_thuoc)}</div>
       </CardContent>
     </Card>
   );
@@ -192,7 +192,7 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
         <div className="min-w-0">
           <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <Badge variant="outline" className="text-meta">{row.mime_type ?? "PDF"}</Badge>
+            <Badge variant="outline" className="text-[10px]">{row.mime_type ?? "PDF"}</Badge>
             <span>{fmtSize(row.kich_thuoc)}</span>
             {row.mo_ta && <span className="truncate">· {row.mo_ta}</span>}
           </div>

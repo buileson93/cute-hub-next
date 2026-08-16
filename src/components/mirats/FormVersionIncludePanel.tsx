@@ -202,7 +202,7 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
               }`}
             >
               <span className="font-mono">v{v.version}</span>
-              <Badge variant={v.status === "draft" ? "secondary" : "outline"} className="text-meta">
+              <Badge variant={v.status === "draft" ? "secondary" : "outline"} className="text-[10px]">
                 {v.status !== "draft" && <Lock className="mr-1 h-2.5 w-2.5" />}
                 {STATUS_LABEL[v.status] ?? v.status}
               </Badge>

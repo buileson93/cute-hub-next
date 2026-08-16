@@ -93,17 +93,14 @@ export function resolveBrowserBackend(): ResolvedBrowserBackend {
  */
 export function resolveServerBackend(opts?: { withServiceRole?: boolean }): ResolvedServerBackend {
   const env = (globalThis as any).process?.env || {};
-  
-  // Ưu tiên cao nhất: nguồn dữ liệu do quản trị viên chọn (nếu có thể đọc từ process.env hoặc global state)
   const overrideUrl = pick(env.APP_SUPABASE_URL);
   const overrideKey = pick(env.APP_SUPABASE_PUBLISHABLE_KEY, env.APP_SUPABASE_ANON_KEY);
   const isSelfHosted = Boolean(overrideUrl && overrideKey);
 
-  // TanStack Start server functions environment variables are injected into process.env
   const cfg: ResolvedServerBackend = {
-    url: pick(overrideUrl, env.SUPABASE_URL, env.VITE_SUPABASE_URL) || "",
-    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY, env.VITE_SUPABASE_PUBLISHABLE_KEY) || "",
-    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID, env.VITE_SUPABASE_PROJECT_ID),
+    url: pick(overrideUrl, env.SUPABASE_URL) || "",
+    publishableKey: pick(overrideKey, env.SUPABASE_PUBLISHABLE_KEY) || "",
+    projectId: pick(env.APP_SUPABASE_PROJECT_ID, env.SUPABASE_PROJECT_ID),
     provider: isSelfHosted ? "self-hosted" : "lovable-cloud",
   };
 

@@ -232,7 +232,7 @@ export function SystemInternalGraph({
           <span>· thành phần &amp; liên kết nội bộ</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Badge variant="secondary" className="gap-1 text-meta"><Link2 className="h-3 w-3" />{doThi.links.length} liên kết</Badge>
+          <Badge variant="secondary" className="gap-1 text-[11px]"><Link2 className="h-3 w-3" />{doThi.links.length} liên kết</Badge>
           {canManage && (
             <Button size="sm" variant={edit ? "default" : "outline"} onClick={() => { setEdit((v) => !v); dragFrom.current = null; setDragging(false); }}>
               {edit ? <><Eye className="mr-1 h-4 w-4" />Xem</> : <><Pencil className="mr-1 h-4 w-4" />Vẽ liên kết</>}
@@ -450,7 +450,7 @@ function EmptyStateWithSuggestions({
               <li key={s.id} className="flex items-center justify-between gap-2">
                 <span className="truncate text-foreground">{s.ten}</span>
                 <span className="flex shrink-0 items-center gap-2">
-                  <Badge variant="secondary" className="text-meta">{s.count} TP</Badge>
+                  <Badge variant="secondary" className="text-[10px]">{s.count} TP</Badge>
                   {onJumpSystem ? (
                     <Button size="sm" variant="outline" onClick={() => onJumpSystem(s.id, s.ten)}>
                       Mở

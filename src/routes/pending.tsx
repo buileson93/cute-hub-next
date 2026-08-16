@@ -41,7 +41,7 @@ function PendingPage() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">MIRATS 2.0</div>
-            <div className="text-meta uppercase tracking-[0.14em] text-muted-foreground">TÀI KHOẢN CHỜ DUYỆT</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">TÀI KHOẢN CHỜ DUYỆT</div>
           </div>
         </div>
 
@@ -57,7 +57,7 @@ function PendingPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-md border bg-muted/40 px-4 py-3 text-sm">
-              <div className="text-muted-foreground text-meta uppercase tracking-wider">Tài khoản</div>
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wider">Tài khoản</div>
               <div className="font-medium">{profile?.ho_ten ?? profile?.email}</div>
               <div className="text-xs text-muted-foreground">{profile?.email}</div>
             </div>

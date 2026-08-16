@@ -51,7 +51,7 @@ function UndoToastBody({
               style={{ width: `${pct}%` }}
             />
           </div>
-          <span className="w-14 shrink-0 text-right text-meta tabular-nums text-muted-foreground">
+          <span className="w-14 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">
             {left}s để hoàn tác
           </span>
         </div>

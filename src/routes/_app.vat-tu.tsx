@@ -113,7 +113,7 @@ function VatTuPage() {
         <TabsList className="flex-wrap">
           <TabsTrigger value="ton">Tồn kho</TabsTrigger>
           <TabsTrigger value="canhbao">
-            Cảnh báo {canhBaoCount > 0 && <span className="ml-1 rounded bg-red-100 px-1.5 text-meta text-red-700">{canhBaoCount}</span>}
+            Cảnh báo {canhBaoCount > 0 && <span className="ml-1 rounded bg-red-100 px-1.5 text-[11px] text-red-700">{canhBaoCount}</span>}
           </TabsTrigger>
           <TabsTrigger value="vattu">Danh mục vật tư</TabsTrigger>
           <TabsTrigger value="kho">Kho</TabsTrigger>
@@ -149,7 +149,7 @@ function VatTuPage() {
                     cell: (r) => (
                       <div>
                         <div className="font-medium">{r.ten_vat_tu}</div>
-                        {r.ma_vat_tu && <div className="font-mono text-meta text-muted-foreground">{r.ma_vat_tu}</div>}
+                        {r.ma_vat_tu && <div className="font-mono text-[11px] text-muted-foreground">{r.ma_vat_tu}</div>}
                       </div>
                     ),
                   },
@@ -184,7 +184,7 @@ function VatTuPage() {
                     cell: (v) => (
                       <div>
                         <div className="font-medium">{v.ten}</div>
-                        {v.ma_vat_tu && <div className="font-mono text-meta text-muted-foreground">{v.ma_vat_tu}</div>}
+                        {v.ma_vat_tu && <div className="font-mono text-[11px] text-muted-foreground">{v.ma_vat_tu}</div>}
                       </div>
                     ),
                   },
@@ -213,7 +213,7 @@ function VatTuPage() {
                 emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Chưa có kho. Thêm kho để bắt đầu.</div>}
                 columns={[
                   { key: "ten", label: "Tên kho", filter: "text", value: (k) => k.ten, cell: (k) => <span className="font-medium">{k.ten}</span> },
-                  { key: "ma_kho", label: "Mã", hideBelow: "sm", value: (k) => k.ma_kho ?? "", cell: (k) => <span className="font-mono text-meta text-muted-foreground">{k.ma_kho ?? "—"}</span> },
+                  { key: "ma_kho", label: "Mã", hideBelow: "sm", value: (k) => k.ma_kho ?? "", cell: (k) => <span className="font-mono text-[11px] text-muted-foreground">{k.ma_kho ?? "—"}</span> },
                   { key: "ghi_chu", label: "Ghi chú", filter: "text", hideBelow: "md", value: (k) => k.ghi_chu ?? "", cell: (k) => <span className="text-sm text-muted-foreground">{k.ghi_chu ?? "—"}</span> },
                 ]}
               />

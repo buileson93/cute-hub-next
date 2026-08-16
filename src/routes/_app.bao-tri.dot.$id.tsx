@@ -235,13 +235,13 @@ function DotDetailPage() {
                 <div key={a.don_vi_id} className={`rounded border p-2 text-xs ${tone}`}>
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{a.don_vi_ma} — {a.don_vi_ten}</div>
-                    <Badge variant="outline" className="text-meta">{label}</Badge>
+                    <Badge variant="outline" className="text-[10px]">{label}</Badge>
                   </div>
                   <div className="mt-1 text-muted-foreground">
                     Hạn: {a.han_ngay ?? "—"} · Tổng {a.tong} · HT {a.hoan_thanh} · Duyệt {a.da_duyet}
                   </div>
                   {(a.qua_han > 0 || a.sap_han > 0) && (
-                    <div className="mt-1 flex gap-2 text-meta">
+                    <div className="mt-1 flex gap-2 text-[11px]">
                       {a.qua_han > 0 && <span className="text-rose-600">● Quá hạn: {a.qua_han}</span>}
                       {a.sap_han > 0 && <span className="text-amber-600">● Sắp hạn: {a.sap_han}</span>}
                     </div>

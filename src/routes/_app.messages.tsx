@@ -142,12 +142,12 @@ function MessagesLayout() {
                         active && "bg-secondary",
                       )}
                     >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-meta font-semibold text-primary">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
                         {title.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium">{title}</div>
-                        <div className="text-meta text-muted-foreground">{timeAgo(c.last_message_at)}</div>
+                        <div className="text-[11px] text-muted-foreground">{timeAgo(c.last_message_at)}</div>
                       </div>
                     </Link>
                   </li>
@@ -279,12 +279,12 @@ function NewConversationDialog({
                   onClick={() => start(u)}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-secondary/60 disabled:opacity-60"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-meta font-semibold text-primary">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
                     {(u.ho_ten ?? u.email).slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium">{u.ho_ten ?? u.email}</div>
-                    <div className="truncate text-meta text-muted-foreground">{u.email}</div>
+                    <div className="truncate text-[11px] text-muted-foreground">{u.email}</div>
                   </div>
                 </button>
               </li>

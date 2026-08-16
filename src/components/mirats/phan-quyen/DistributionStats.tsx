@@ -80,7 +80,7 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
                 const Icon = e.icon;
                 return (
                   <div key={e.label} className="rounded-lg border bg-muted/30 p-3 transition-colors hover:bg-muted/50">
-                    <div className="flex items-center gap-1.5 text-meta uppercase tracking-wide text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wide text-muted-foreground">
                       <Icon className="h-3 w-3" /> {e.label}
                     </div>
                     <div className="mt-1 font-mono text-xl font-semibold tabular-nums">

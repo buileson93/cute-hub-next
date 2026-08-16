@@ -84,7 +84,7 @@ function Dashboard() {
                  trigger={
                    <Button size="default" variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5 transition-all">
                      <Icon name="action.add" size="tiny" className="text-primary" />
-                     <span className="text-meta font-bold uppercase tracking-wider">Thêm Widget</span>
+                     <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
                    </Button>
                  }
                />
@@ -96,7 +96,7 @@ function Dashboard() {
                 className="gap-2 text-muted-foreground hover:text-destructive transition-all"
               >
                 <Icon name="action.undo" size="tiny" />
-                <span className="text-meta font-bold uppercase tracking-wider">Khôi phục</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
               </Button>
              </>
           )}
@@ -110,7 +110,7 @@ function Dashboard() {
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} size="tiny" className={cn(!isEditing && "text-primary")} />
-            <span className="text-meta font-bold uppercase tracking-wider">
+            <span className="text-[10px] font-bold uppercase tracking-wider">
               {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
             </span>
           </Button>

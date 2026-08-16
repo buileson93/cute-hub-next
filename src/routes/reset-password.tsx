@@ -91,7 +91,7 @@ function ResetPasswordPage() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">MIRATS 2.0</div>
-            <div className="text-meta uppercase tracking-[0.14em] text-muted-foreground">Đặt lại mật khẩu</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Đặt lại mật khẩu</div>
           </div>
         </div>
 

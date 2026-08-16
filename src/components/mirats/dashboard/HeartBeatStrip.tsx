@@ -23,7 +23,7 @@ export function HeartBeatStrip() {
   return (
     <div className="w-full bg-card/50 border-y border-border py-2 px-4 overflow-x-auto no-scrollbar">
       <div className="flex items-center gap-2 min-w-max">
-        <span className="text-meta font-bold uppercase tracking-widest text-muted-foreground mr-2">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-2">
           Hệ thống
         </span>
         
@@ -73,7 +73,7 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
         <Link 
           to="/he-thong/cay" 
           className={cn(
-            "w-7 h-7 rounded transition-all duration-300 flex items-center justify-center text-meta font-bold text-white cursor-pointer select-none",
+            "w-7 h-7 rounded transition-all duration-300 flex items-center justify-center text-[10px] font-bold text-white cursor-pointer select-none",
             statusColors[group.status],
             isFlashing && "animate-in fade-in zoom-in duration-500 ring-2 ring-white/50",
             "motion-reduce:animate-none"
@@ -85,14 +85,14 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
       <TooltipContent className="p-2 max-w-[180px]">
         <div className="space-y-1">
           <div className="flex justify-between items-center border-b border-border pb-1 mb-1">
-            <span className="font-bold text-bodySm uppercase">{group.ten}</span>
-            <span className="text-meta bg-muted px-1 rounded font-black">{group.systemCount}</span>
+            <span className="font-bold text-[12px] uppercase">{group.ten}</span>
+            <span className="text-[10px] bg-muted px-1 rounded font-black">{group.systemCount}</span>
           </div>
           
           {group.reasons.length > 0 ? (
             <div className="space-y-1">
               {group.reasons.map((r, i) => (
-                <div key={i} className="text-meta flex items-start gap-1">
+                <div key={i} className="text-[11px] flex items-start gap-1">
                   <span className={cn(
                     "w-1.5 h-1.5 rounded-full mt-1 shrink-0",
                     group.status === 'critical' ? 'bg-red-500' : 'bg-amber-500'
@@ -102,7 +102,7 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
               ))}
             </div>
           ) : (
-            <div className="text-meta text-emerald-600 dark:text-emerald-400 font-bold uppercase">
+            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">
               OK
             </div>
           )}

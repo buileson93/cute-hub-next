@@ -95,7 +95,7 @@ export function DetailDrawer({
         <SheetHeader className="space-y-1 border-b px-6 py-4 text-left">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="text-meta font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {view.ten}
               </div>
               <SheetTitle className="truncate text-base font-semibold">
@@ -132,7 +132,7 @@ export function DetailDrawer({
           {/* Task 31 — Inline edit ghi chú (chỉ hiện nếu row có id + loại hỗ trợ) */}
           {Boolean(row?.id) && (loai === "thiet_bi" || loai === "vat_tu") && row && (
             <div className="border-t px-6 py-4">
-              <div className="mb-1 text-meta font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Ghi chú
               </div>
               <InlineField

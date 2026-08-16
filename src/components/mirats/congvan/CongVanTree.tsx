@@ -85,18 +85,18 @@ export function CongVanTree({
             <span className="w-[110px] shrink-0 text-xs tabular-nums text-muted-foreground">
               {fmtDate(cv.ngay_ban_hanh ?? cv.ngay_tiep_nhan)}
             </span>
-            <Badge variant="outline" className={cn("shrink-0 text-meta", meta.tone)}>{meta.short}</Badge>
+            <Badge variant="outline" className={cn("shrink-0 text-[10px]", meta.tone)}>{meta.short}</Badge>
             <span className="shrink-0 font-medium">{cv.so_cong_van}</span>
             <span className="min-w-0 flex-1 truncate text-muted-foreground">
               {cv.trich_yeu || "(chưa có trích yếu)"}
             </span>
-            {rel && <span className="hidden shrink-0 text-meta text-muted-foreground lg:inline">{rel}</span>}
+            {rel && <span className="hidden shrink-0 text-[11px] text-muted-foreground lg:inline">{rel}</span>}
             {files > 0 && (
-              <span className="inline-flex shrink-0 items-center gap-1 text-meta text-muted-foreground">
+              <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-muted-foreground">
                 <Paperclip className="h-3 w-3" />{files}
               </span>
             )}
-            <Badge variant="outline" className={cn("shrink-0 text-meta", st.tone)}>{st.label}</Badge>
+            <Badge variant="outline" className={cn("shrink-0 text-[10px]", st.tone)}>{st.label}</Badge>
           </button>
         );
       })}

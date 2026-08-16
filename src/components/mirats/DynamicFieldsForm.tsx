@@ -60,7 +60,7 @@ export function DynamicFieldsForm({
         const id = `dyn-${s.field_key}`;
         return (
           <div key={s.field_key} className="space-y-1.5">
-            <Label htmlFor={id} className="text-meta flex items-center gap-1">
+            <Label htmlFor={id} className="text-[11px] flex items-center gap-1">
               {s.nhan}
               {s.bat_buoc && <span className="text-destructive" aria-hidden="true">*</span>}
             </Label>
@@ -105,10 +105,10 @@ export function DynamicFieldsForm({
             )}
 
             {s.help_text && !err && (
-              <p className="text-meta text-muted-foreground">{s.help_text}</p>
+              <p className="text-[10px] text-muted-foreground">{s.help_text}</p>
             )}
             {err && (
-              <p role="alert" className="text-meta text-destructive">{err}</p>
+              <p role="alert" className="text-[10px] text-destructive">{err}</p>
             )}
           </div>
         );
@@ -134,7 +134,7 @@ function ReferenceField({
 }) {
   const { data: options, isLoading } = useReferenceOptions(source);
   if (!source) {
-    return <p className="text-meta text-destructive">Trường liên kết CSDL chưa chọn nguồn danh mục.</p>;
+    return <p className="text-[10px] text-destructive">Trường liên kết CSDL chưa chọn nguồn danh mục.</p>;
   }
   return (
     <Combobox

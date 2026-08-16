@@ -94,7 +94,7 @@ export function CongVanTimeline({
   return (
     <div className="rounded-lg border bg-card">
       {/* Thanh trạng thái luồng */}
-      <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2 text-meta">
+      <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2 text-[11px]">
         <span className="text-muted-foreground">Luồng liên kết:</span>
         {graph.chains.map((ch) => {
           const c = chainColor(ch.index);
@@ -118,7 +118,7 @@ export function CongVanTimeline({
           );
         })}
         {focusRow && (
-          <Button size="sm" variant="ghost" className="ml-auto h-6 px-2 text-meta"
+          <Button size="sm" variant="ghost" className="ml-auto h-6 px-2 text-[11px]"
             onClick={() => setFocusId(null)}>
             <X className="mr-1 h-3 w-3" /> Bỏ tiêu điểm {focusRow.so_cong_van}
           </Button>
@@ -128,7 +128,7 @@ export function CongVanTimeline({
       <div className="overflow-x-auto">
         <div className="relative" style={{ width: geom.width, height: geom.height }}>
           {/* Trục thời gian */}
-          <div className="absolute inset-x-0 top-0 flex h-[34px] items-center justify-between border-b px-6 text-meta text-muted-foreground">
+          <div className="absolute inset-x-0 top-0 flex h-[34px] items-center justify-between border-b px-6 text-[11px] text-muted-foreground">
             <span>{fmtDate(new Date(geom.min).toISOString())}</span>
             <span className="uppercase tracking-wide">Dòng thời gian &amp; liên kết công văn</span>
             <span>{fmtDate(new Date(geom.max).toISOString())}</span>
@@ -165,7 +165,7 @@ export function CongVanTimeline({
                       x={(x1 + x2) / 2}
                       y={mid - 3}
                       textAnchor="middle"
-                      className="fill-current text-meta"
+                      className="fill-current text-[10px]"
                     >
                       {LIEN_KET_META[l.loai].label}
                       {Number.isFinite(d) ? ` · ${d >= 0 ? "+" : ""}${d} ngày` : ""}
@@ -207,14 +207,14 @@ export function CongVanTimeline({
                       <div className="flex items-center gap-2">
                         <span className={cn("h-2 w-2 shrink-0 rounded-full", meta.dot)} />
                         <span className="truncate text-sm font-semibold">{cv.so_cong_van}</span>
-                        <Badge variant="outline" className={cn("ml-auto shrink-0 text-meta", meta.tone)}>
+                        <Badge variant="outline" className={cn("ml-auto shrink-0 text-[10px]", meta.tone)}>
                           {meta.short}
                         </Badge>
                       </div>
                       <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                         {cv.trich_yeu || "(chưa có trích yếu)"}
                       </div>
-                      <div className="mt-1.5 flex items-center gap-2 text-meta text-muted-foreground">
+                      <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                         <CalendarClock className="h-3 w-3" />
                         {fmtDate(cv.ngay_ban_hanh ?? cv.ngay_tiep_nhan)}
                         {files > 0 && (
@@ -224,14 +224,14 @@ export function CongVanTimeline({
                         )}
                       </div>
                       <div className="mt-1.5 flex items-center gap-1.5">
-                        <Badge variant="outline" className={cn("text-meta", st.tone)}>{st.label}</Badge>
+                        <Badge variant="outline" className={cn("text-[10px]", st.tone)}>{st.label}</Badge>
                         {late && (
-                          <Badge variant="outline" className="border-rose-200 bg-rose-50 text-meta text-rose-700">
+                          <Badge variant="outline" className="border-rose-200 bg-rose-50 text-[10px] text-rose-700">
                             <AlertTriangle className="mr-0.5 h-2.5 w-2.5" /> quá hạn
                           </Badge>
                         )}
                         {(preds.length > 0 || succs.length > 0) && (
-                          <span className="ml-auto text-meta text-muted-foreground">
+                          <span className="ml-auto text-[10px] text-muted-foreground">
                             ←{preds.length} · {succs.length}→
                           </span>
                         )}

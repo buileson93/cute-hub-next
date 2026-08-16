@@ -1287,12 +1287,9 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
   // Vòng lặp rAF nhỏ để canvas được repaint trong lúc có hiệu ứng nháy
   // (kết quả tìm kiếm, xem trước liên kết khe sắp tạo).
   useEffect(() => {
-    if ((!markedId && !connectDialog) || typeof window === "undefined") return;
+    if (!markedId && !connectDialog) return;
     let raf = 0;
-    const tick = () => { 
-      fgRef.current?.refresh?.(); 
-      raf = window.requestAnimationFrame(tick); 
-    };
+    const tick = () => { fgRef.current?.refresh?.(); raf = window.requestAnimationFrame(tick); };
     raf = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(raf);
   }, [markedId, connectDialog]);
@@ -1506,7 +1503,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                             : <Cpu className="h-3.5 w-3.5 text-sky-500" />}
                           <span className="truncate font-medium">{h.label}</span>
                         </span>
-                        <span className="shrink-0 font-mono text-meta text-muted-foreground">{h.sub}</span>
+                        <span className="shrink-0 font-mono text-[10px] text-muted-foreground">{h.sub}</span>
                       </button>
                     ))}
                   </div>
@@ -1687,7 +1684,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                     {!hoverNode.la_thanh_phan && <div className="text-muted-foreground">Phạm vi: {hoverNode.ben_ngoai ? "Bên ngoài" : "Nội bộ"}</div>}
                     {typeof hoverNode.so_thanh_vien === "number" && <div className="text-muted-foreground">Thành viên: {hoverNode.so_thanh_vien}</div>}
                     {!hoverNode.la_cum && !hoverNode.la_thanh_phan && (
-                      <div className="pt-1 text-meta text-muted-foreground">Nhấn đúp để bung/thu thành phần</div>
+                      <div className="pt-1 text-[11px] text-muted-foreground">Nhấn đúp để bung/thu thành phần</div>
                     )}
                   </div>
                 ) : hoverLink ? (() => {
@@ -1794,7 +1791,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
             )}
 
             {/* Legend — chú giải màu sắc / lớp / trọng số cạnh (thu gọn được) */}
-            <div className="absolute bottom-2 left-2 max-w-[260px] rounded-md border bg-background/95 text-meta shadow-sm backdrop-blur">
+            <div className="absolute bottom-2 left-2 max-w-[260px] rounded-md border bg-background/95 text-[10px] shadow-sm backdrop-blur">
               <button
                 type="button"
                 onClick={() => setLegendOpen((v) => !v)}
@@ -1809,7 +1806,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                 <div className="space-y-2 border-t px-2 py-1.5">
                   {/* Loại liên kết (màu) */}
                   <div>
-                    <div className="mb-0.5 text-meta uppercase tracking-wide text-muted-foreground">Loại liên kết</div>
+                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">Loại liên kết</div>
                     {LEGEND.map((l) => (
                       <div key={l.ma} className="flex items-center gap-1.5">
                         <span className="inline-block h-0.5 w-5" style={{ backgroundColor: LOAI_LIEN_KET_MAU[l.ma] }} />
@@ -1820,7 +1817,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
 
                   {/* Điểm: cụm / nội bộ / bên ngoài */}
                   <div>
-                    <div className="mb-0.5 text-meta uppercase tracking-wide text-muted-foreground">Điểm</div>
+                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">Điểm</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-full bg-primary/80" /> Hệ thống nội bộ</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full border border-dashed border-slate-400" /> Hệ thống bên ngoài</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-3 w-3 rounded-full bg-muted-foreground/60" /> Cụm tổ chức (nhấn đúp để bung)</div>
@@ -1828,14 +1825,14 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
 
                   {/* Lớp vật lý / logic */}
                   <div>
-                    <div className="mb-0.5 text-meta uppercase tracking-wide text-muted-foreground">Lớp</div>
+                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">Lớp</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5 bg-foreground/80" /> Vật lý (nét liền)</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5 border-t border-dashed border-foreground/80" /> Logic (nét đứt)</div>
                   </div>
 
                   {/* Trọng số & hover */}
                   <div>
-                    <div className="mb-0.5 text-meta uppercase tracking-wide text-muted-foreground">Trọng số cạnh</div>
+                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">Trọng số cạnh</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-[1px] w-5 bg-foreground/70" /> Trọng số thấp</div>
                     <div className="flex items-center gap-1.5"><span className="inline-block h-[3px] w-5 bg-foreground/80" /> Trọng số cao (dày hơn)</div>
                     <div className="mt-0.5 text-muted-foreground">Hover 1 điểm: hàng xóm tô đậm, phần còn lại mờ đi. Hover 1 cạnh: cạnh nổi bật &amp; hiển thị chi tiết trọng số/giao thức.</div>
@@ -1869,7 +1866,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                 }}
               >
                 <StickyNote className="mr-2 h-4 w-4" />
-                {has ? "Xem / sửa ghi chú" : "Ghi chú Markdown"} <span className="ml-auto text-meta text-muted-foreground">N</span>
+                {has ? "Xem / sửa ghi chú" : "Ghi chú Markdown"} <span className="ml-auto text-[10px] text-muted-foreground">N</span>
               </Button>
             );
           })()}
@@ -1981,16 +1978,16 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: srcLay?.color ?? "#22c55e" }} />
                     <span className="font-medium truncate max-w-[9rem]" title={connectDialog.srcTen}>{connectDialog.srcTen}</span>
-                    {srcLay?.family && <Badge variant="outline" className="h-4 px-1 text-meta">{srcLay.family}</Badge>}
+                    {srcLay?.family && <Badge variant="outline" className="h-4 px-1 text-[9px]">{srcLay.family}</Badge>}
                   </span>
                   <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: dstLay?.color ?? "#f43f5e" }} />
                     <span className="font-medium truncate max-w-[9rem]" title={connectDialog.dstTen}>{connectDialog.dstTen}</span>
-                    {dstLay?.family && <Badge variant="outline" className="h-4 px-1 text-meta">{dstLay.family}</Badge>}
+                    {dstLay?.family && <Badge variant="outline" className="h-4 px-1 text-[9px]">{dstLay.family}</Badge>}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-meta text-muted-foreground">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
                   <div>Hệ thống nguồn: <span className="text-foreground">{heThongTen}</span></div>
                   <div>Loại: <span className="text-foreground">{loaiTen}</span></div>
                   {connectGdN && <div>GD nguồn: <span className="text-foreground">{connectGdN}</span></div>}
@@ -2104,7 +2101,7 @@ function PanelSlider({ label, value, min, max, step, onChange }: {
 }) {
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between text-meta text-muted-foreground">
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
         <span>{label}</span>
         <span className="tabular-nums">{Number.isInteger(step) ? value : value.toFixed(2)}</span>
       </div>
@@ -2115,7 +2112,7 @@ function PanelSlider({ label, value, min, max, step, onChange }: {
 
 function PanelToggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label className="flex items-center justify-between text-meta">
+    <label className="flex items-center justify-between text-[11px]">
       <span className="text-muted-foreground">{label}</span>
       <Switch checked={checked} onCheckedChange={onChange} />
     </label>
@@ -2128,7 +2125,7 @@ function PanelSelect({ label, value, onChange, options }: {
   const SENTINEL = "__all";
   return (
     <div className="space-y-1">
-      <div className="text-meta text-muted-foreground">{label}</div>
+      <div className="text-[11px] text-muted-foreground">{label}</div>
       <Select value={value || SENTINEL} onValueChange={(v) => onChange(v === SENTINEL ? "" : v)}>
         <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
         <SelectContent>
@@ -2314,7 +2311,7 @@ function LinkList({ title, icon, rows, self, onEdit, canManage }: {
               >
                 <div className="min-w-0">
                   <div className="truncate font-medium">{other}</div>
-                  <div className="flex items-center gap-1 text-meta text-muted-foreground">
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
                     <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: r.mau_sac ?? LOAI_LIEN_KET_MAU[r.loai_ma as LoaiLienKetMa] }} />
                     {r.loai_ten ?? r.loai_ma}
                     {r.giao_dien_nguon || r.giao_dien_dich ? ` · ${[r.giao_dien_nguon, r.giao_dien_dich].filter(Boolean).join("→")}` : ""}
@@ -2335,7 +2332,7 @@ function LinkList({ title, icon, rows, self, onEdit, canManage }: {
 function Kbd({ k, v }: { k: string; v: string }) {
   return (
     <>
-      <kbd className="justify-self-start rounded border bg-muted px-1.5 py-0.5 font-mono text-meta">{k}</kbd>
+      <kbd className="justify-self-start rounded border bg-muted px-1.5 py-0.5 font-mono text-[11px]">{k}</kbd>
       <span className="text-muted-foreground">{v}</span>
     </>
   );

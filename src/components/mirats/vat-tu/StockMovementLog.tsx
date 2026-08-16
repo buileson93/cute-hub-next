@@ -29,7 +29,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           label: "Số CT",
           filter: "text",
           value: (g) => g.so_ct ?? "",
-          cell: (g) => <span className="font-mono text-meta">{g.so_ct ?? "—"}</span>,
+          cell: (g) => <span className="font-mono text-[11px]">{g.so_ct ?? "—"}</span>,
         },
         {
           key: "ngay",

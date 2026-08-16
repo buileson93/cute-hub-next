@@ -168,7 +168,7 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
                     onChange={(id) => setThietBiThayTheId(id)}
                     heThongId={heThongId}
                   />
-                  <p className="text-meta text-muted-foreground italic">
+                  <p className="text-[10px] text-muted-foreground italic">
                     Lưu ý: Tài sản thay thế phải có sẵn trong kho hoặc đang ở trạng thái sẵn sàng.
                   </p>
                 </div>

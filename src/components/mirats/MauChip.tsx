@@ -81,7 +81,7 @@ export function MauSwatchPicker({
           disabled={disabled}
           onClick={() => onChange(null)}
           className={cn(
-            "ml-1 rounded-md border px-2 py-0.5 text-meta text-muted-foreground hover:bg-muted",
+            "ml-1 rounded-md border px-2 py-0.5 text-[11px] text-muted-foreground hover:bg-muted",
             disabled && "cursor-not-allowed opacity-50",
           )}
           title="Bỏ đặt màu (mặc định xám)"

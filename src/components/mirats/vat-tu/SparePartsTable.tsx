@@ -33,7 +33,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
             <div>
               <div className="font-medium">{r.ten_vat_tu}</div>
               {r.ma_vat_tu && (
-                <div className="font-mono text-meta text-muted-foreground">{r.ma_vat_tu}</div>
+                <div className="font-mono text-[11px] text-muted-foreground">{r.ma_vat_tu}</div>
               )}
             </div>
           ),

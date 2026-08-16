@@ -211,7 +211,7 @@ function TbCard({ title, tb, maFallback, tone }: { title: string; tb: ThietBi | 
           <div className="mt-1 flex items-center gap-2 text-xs">
             <span className="font-mono">{tb.ma_thiet_bi}</span>
             {tb.model && <span className="text-muted-foreground">· {tb.model}{tb.p_n ? ` · ${tb.p_n}` : ""}</span>}
-            <Badge variant="secondary" className="text-meta">{tb.trang_thai}</Badge>
+            <Badge variant="secondary" className="text-[10px]">{tb.trang_thai}</Badge>
           </div>
         </>
       ) : (

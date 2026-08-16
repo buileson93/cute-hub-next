@@ -103,12 +103,12 @@ function GraphNodeCard({ data }: NodeProps) {
         <span className="truncate text-sm font-semibold">{d.label}</span>
       </div>
       {d.laCum ? (
-        <div className="truncate text-meta text-muted-foreground">{d.soThanhVien ?? 0} hệ thống</div>
+        <div className="truncate text-[10px] text-muted-foreground">{d.soThanhVien ?? 0} hệ thống</div>
       ) : (
         <>
-          {d.don_vi && <div className="truncate text-meta text-muted-foreground">{d.don_vi}</div>}
+          {d.don_vi && <div className="truncate text-[10px] text-muted-foreground">{d.don_vi}</div>}
           {d.benNgoai && d.toChuc && (
-            <div className="truncate text-meta italic text-muted-foreground">⧉ {d.toChuc}</div>
+            <div className="truncate text-[10px] italic text-muted-foreground">⧉ {d.toChuc}</div>
           )}
         </>
       )}
@@ -482,7 +482,7 @@ function GraphCanvasInner({
       const y = ev.clientY - rect.top;
       laserPosRef.current = { x, y };
       const arr = laserTrailRef.current;
-      const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+      const now = performance.now();
       const last = arr[arr.length - 1];
       if (!last || (x - last.x) * (x - last.x) + (y - last.y) * (y - last.y) > 4) {
         arr.push({ x, y, t: now });

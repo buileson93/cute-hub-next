@@ -190,7 +190,7 @@ export function HeThongTruongEditor({
             <div key={r.key} className="space-y-2 rounded-md border bg-background/60 p-2.5">
               <div className="flex items-start gap-2">
                 <div className="flex-1 space-y-1.5">
-                  <Label className="text-meta">Tên trường</Label>
+                  <Label className="text-[11px]">Tên trường</Label>
                   <Input
                     value={r.nhan}
                     disabled={!canManage}
@@ -211,7 +211,7 @@ export function HeThongTruongEditor({
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-meta">Kiểu dữ liệu</Label>
+                  <Label className="text-[11px]">Kiểu dữ liệu</Label>
                   <Select value={r.kieu} disabled={!canManage} onValueChange={(v) => patch(r.key, { kieu: v as FieldKind })}>
                     <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -223,7 +223,7 @@ export function HeThongTruongEditor({
                 </div>
                 {r.kieu === "select" && (
                   <div className="space-y-1.5">
-                    <Label className="text-meta">Lựa chọn (cách nhau dấu phẩy)</Label>
+                    <Label className="text-[11px]">Lựa chọn (cách nhau dấu phẩy)</Label>
                     <Input
                       value={r.tuy_chon}
                       disabled={!canManage}
@@ -235,7 +235,7 @@ export function HeThongTruongEditor({
                 )}
                 {r.kieu === "reference" && (
                   <div className="space-y-1.5">
-                    <Label className="text-meta">Nguồn danh mục (CSDL)</Label>
+                    <Label className="text-[11px]">Nguồn danh mục (CSDL)</Label>
                     <Select
                       value={r.rb_ref || undefined}
                       disabled={!canManage}
@@ -252,14 +252,14 @@ export function HeThongTruongEditor({
                 )}
               </div>
               {r.kieu === "reference" && (
-                <p className="text-meta text-muted-foreground">
+                <p className="text-[10px] text-muted-foreground">
                   Người nhập sẽ chọn giá trị từ danh mục này bằng ô tìm kiếm; giá trị lưu là tên mục đã chọn.
                 </p>
               )}
 
               {/* Ghi chú hướng dẫn hiển thị dưới ô nhập */}
               <div className="space-y-1.5">
-                <Label className="text-meta">Ghi chú hướng dẫn (help text)</Label>
+                <Label className="text-[11px]">Ghi chú hướng dẫn (help text)</Label>
                 <Input
                   value={r.help_text}
                   disabled={!canManage}
@@ -272,7 +272,7 @@ export function HeThongTruongEditor({
               <div className="grid grid-cols-2 gap-2">
                 {/* Giá trị mặc định */}
                 <div className="space-y-1.5">
-                  <Label className="text-meta">Giá trị mặc định</Label>
+                  <Label className="text-[11px]">Giá trị mặc định</Label>
                   <Input
                     value={r.mac_dinh}
                     disabled={!canManage}
@@ -284,7 +284,7 @@ export function HeThongTruongEditor({
                 </div>
                 {/* Nhóm trường / field set */}
                 <div className="space-y-1.5">
-                  <Label className="text-meta">Nhóm trường</Label>
+                  <Label className="text-[11px]">Nhóm trường</Label>
                   <Select
                     value={r.nhom_field || NONE}
                     disabled={!canManage}
@@ -305,7 +305,7 @@ export function HeThongTruongEditor({
               {r.kieu === "number" ? (
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1.5">
-                    <Label className="text-meta">Giá trị tối thiểu</Label>
+                    <Label className="text-[11px]">Giá trị tối thiểu</Label>
                     <Input
                       value={r.rb_min}
                       type="number"
@@ -315,7 +315,7 @@ export function HeThongTruongEditor({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-meta">Giá trị tối đa</Label>
+                    <Label className="text-[11px]">Giá trị tối đa</Label>
                     <Input
                       value={r.rb_max}
                       type="number"
@@ -327,7 +327,7 @@ export function HeThongTruongEditor({
                 </div>
               ) : r.kieu !== "select" && r.kieu !== "reference" ? (
                 <div className="space-y-1.5">
-                  <Label className="text-meta">Ràng buộc định dạng (regex)</Label>
+                  <Label className="text-[11px]">Ràng buộc định dạng (regex)</Label>
                   <Input
                     value={r.rb_regex}
                     disabled={!canManage}
@@ -340,7 +340,7 @@ export function HeThongTruongEditor({
 
               {/* Bắt buộc */}
               <div className="flex items-center justify-between rounded border bg-background/40 px-2.5 py-1.5">
-                <Label className="text-meta">Bắt buộc nhập</Label>
+                <Label className="text-[11px]">Bắt buộc nhập</Label>
                 <Switch
                   checked={r.bat_buoc}
                   disabled={!canManage}

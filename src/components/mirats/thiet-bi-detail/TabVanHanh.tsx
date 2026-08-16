@@ -99,7 +99,7 @@ function EventRow({ title, date, label, desc, tag, tone }: any) {
       <div className="min-w-0 flex-1 pr-4">
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{title}</span>
-          {tag && <Badge variant="secondary" className={`text-meta h-4 ${tone}`}>{tag}</Badge>}
+          {tag && <Badge variant="secondary" className={`text-[10px] h-4 ${tone}`}>{tag}</Badge>}
         </div>
         <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
           <span className="font-mono">{date || "—"}</span>

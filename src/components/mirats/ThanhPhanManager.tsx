@@ -221,7 +221,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                       <span className="font-mono text-xs text-muted-foreground">{v.ma_thanh_phan}</span>
                       <span className="font-medium">{v.ten}</span>
                       {hasChildren && (
-                        <Badge variant="outline" className="text-meta" title="Số thành phần con">
+                        <Badge variant="outline" className="text-[10px]" title="Số thành phần con">
                           {v.children.length} con
                         </Badge>
                       )}
@@ -256,7 +256,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                               <HardDrive className="h-3 w-3" />
                               <span className="font-mono">{tb.ma_thiet_bi}</span>
                               {tb.ma_serial && <span className="opacity-70">· SN {tb.ma_serial}</span>}
-                              <span className="ml-1 rounded px-1 text-meta font-semibold" style={{ backgroundColor: col!.border, color: "white" }}>
+                              <span className="ml-1 rounded px-1 text-[10px] font-semibold" style={{ backgroundColor: col!.border, color: "white" }}>
                                 ×{mr!.count}
                               </span>
                             </Badge>
@@ -266,7 +266,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                               <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: col!.dot }} />
                               Tài sản đa vai trò ({mr!.count})
                             </div>
-                            <div className="mb-1 font-mono text-meta text-muted-foreground">
+                            <div className="mb-1 font-mono text-[11px] text-muted-foreground">
                               {tb.ma_thiet_bi}{tb.ma_serial ? ` · SN ${tb.ma_serial}` : ""}
                             </div>
                             <ul className="space-y-1.5">
@@ -276,9 +276,9 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                                   <li key={r.thanh_phan_id} className={here ? "rounded bg-muted/60 px-1.5 py-1" : ""}>
                                     <div className="flex items-baseline gap-1.5">
                                       <span className="font-medium">{r.ten_thanh_phan}</span>
-                                      {here && <span className="text-meta text-primary">(vai trò này)</span>}
+                                      {here && <span className="text-[10px] text-primary">(vai trò này)</span>}
                                     </div>
-                                    <div className="text-meta text-muted-foreground">
+                                    <div className="text-[11px] text-muted-foreground">
                                       {r.ma_thanh_phan}
                                       {r.ten_he_thong && (
                                         <> · <Link to="/he-thong/$id" params={{ id: r.he_thong_id }} className="text-primary hover:underline">{r.ten_he_thong}</Link></>

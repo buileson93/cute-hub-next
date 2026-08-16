@@ -125,7 +125,7 @@ function ThongBaoPage() {
                       ) : (
                         <span className="text-sm font-medium">{n.tieu_de}</span>
                       )}
-                      <Badge variant="outline" className="text-meta">
+                      <Badge variant="outline" className="text-[10px]">
                         {n.loai}
                       </Badge>
                     </div>
@@ -134,7 +134,7 @@ function ThongBaoPage() {
                         {n.noi_dung}
                       </div>
                     )}
-                    <div className="mt-1 text-meta text-muted-foreground/70">
+                    <div className="mt-1 text-[11px] text-muted-foreground/70">
                       {formatDT(n.created_at)}
                     </div>
                   </div>

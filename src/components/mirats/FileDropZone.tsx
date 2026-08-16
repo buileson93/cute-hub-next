@@ -77,7 +77,7 @@ export function FileDropZone({
       {over && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-primary/10 text-meta font-medium text-primary"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-primary/10 text-[11px] font-medium text-primary"
         >
           Thả {accept.join("/")} để nhập
         </div>

@@ -151,8 +151,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             type="bar"
             color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
             status="attention"
-            tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair). Bấm để xem chi tiết bảo trì."
-            onClick={() => navigate({ to: "/bao-tri" })}
+            tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
           />
         );
       case "mtbf-kpi":
@@ -264,7 +263,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Icon name="entity.system" size="tiny" className="text-primary" /> Phân loại hệ thống
               </CardTitle>
             </CardHeader>
@@ -294,7 +293,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
               </CardTitle>
             </CardHeader>
@@ -309,7 +308,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                 </div>
                 <div className="space-y-2 mt-2">
                   {lowCompleteness.slice(0, 3).map((tb: any) => (
-                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-meta hover:text-primary transition-colors bg-muted/30 p-2 rounded-lg">
+                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] hover:text-primary transition-colors bg-muted/30 p-2 rounded-lg">
                       <span className="truncate pr-2 font-medium">{tb.ten_thiet_bi}</span>
                       <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
                     </Link>
@@ -323,7 +322,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-meta font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
               </CardTitle>
             </CardHeader>

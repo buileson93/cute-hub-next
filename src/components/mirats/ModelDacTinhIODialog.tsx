@@ -217,7 +217,7 @@ export function ModelDacTinhIODialog({
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Download className="h-4 w-4" /> Xuất dữ liệu hiện tại
                 </div>
-                <div className="text-meta text-muted-foreground font-mono">
+                <div className="text-[11px] text-muted-foreground font-mono">
                   schema {EXPORT_SCHEMA_VERSION} · cột: {EXPORT_COLUMNS.join(", ")} · {exportMeta.stamp}
                 </div>
               </div>

@@ -210,15 +210,15 @@ export function BanQuyenCapPhatDialog({
                       if (!tb) return null;
                       return (
                         <>
-                          <Badge variant={tb.nhanVien ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-meta">
+                          <Badge variant={tb.nhanVien ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-[10px]">
                             {tb.nhanVien ? <CheckCircle2 className="h-3 w-3 text-emerald-500" /> : <AlertCircle className="h-3 w-3" />}
                             Nhân viên: {tb.nhanVien ? tb.nhanVien.ho_ten : "Chưa gán"}
                           </Badge>
-                          <Badge variant={tb.hasModel ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-meta">
+                          <Badge variant={tb.hasModel ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-[10px]">
                             {tb.hasModel ? <CheckCircle2 className="h-3 w-3 text-emerald-500" /> : <AlertCircle className="h-3 w-3" />}
                             Model: {tb.hasModel ? "OK" : "Thiếu"}
                           </Badge>
-                          <Badge variant={tb.hasSerial ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-meta">
+                          <Badge variant={tb.hasSerial ? "outline" : "destructive"} className="gap-1 px-1.5 py-0.5 text-[10px]">
                             {tb.hasSerial ? <CheckCircle2 className="h-3 w-3 text-emerald-500" /> : <AlertCircle className="h-3 w-3" />}
                             Serial: {tb.hasSerial ? "OK" : "Thiếu"}
                           </Badge>
@@ -275,7 +275,7 @@ export function BanQuyenCapPhatDialog({
                         {c.nguoi_cai ? ` · ${c.nguoi_cai}` : ""}
                       </div>
                       {c.nhanVien && (
-                        <div className="text-meta text-primary/70 font-medium">
+                        <div className="text-[10px] text-primary/70 font-medium">
                           👤 {c.nhanVien.hoTen} ({c.nhanVien.donVi || 'KĐĐ'})
                         </div>
                       )}

@@ -52,7 +52,7 @@ export function CompletenessRing({
         />
       </svg>
       {showText && (
-        <span className="absolute text-meta font-bold">
+        <span className="absolute text-[10px] font-bold">
           {Math.round(value)}%
         </span>
       )}

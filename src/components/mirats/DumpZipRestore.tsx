@@ -206,7 +206,7 @@ export function DumpZipRestore() {
         </div>
       )}
 
-      <p className="text-meta text-muted-foreground">
+      <p className="text-[11px] text-muted-foreground">
         Chấp nhận gói <code>.zip</code> do “Tải .zip dump về máy” hoặc trang Sao lưu tạo ra. Tài khoản, phân quyền,
         nhật ký và tin nhắn luôn được giữ nguyên (không ghi đè). Mọi lần phục hồi đều được ghi vào nhật ký kiểm toán
         (ai thực hiện, tệp nào, bảng nào, lúc nào).
@@ -221,7 +221,7 @@ export function DumpZipRestore() {
       )}
 
       {logs.length > 0 && (
-        <div className="max-h-56 overflow-auto rounded-md border bg-muted/30 p-2 text-meta leading-5">
+        <div className="max-h-56 overflow-auto rounded-md border bg-muted/30 p-2 text-[11px] leading-5">
           {logs.map((l, i) => (
             <div key={i} className={l.ok ? "text-muted-foreground" : "text-amber-600"}>{l.t}</div>
           ))}

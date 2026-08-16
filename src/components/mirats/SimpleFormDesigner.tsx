@@ -196,7 +196,7 @@ export function SimpleFormDesigner({
                 Kéo một ô bên dưới thả vào biểu mẫu để thêm câu hỏi mới. Hoặc bấm để thêm vào cuối.
               </HelpDot>
             </div>
-            <div className="mb-2 flex items-center gap-1 rounded-md bg-muted/60 px-2 py-1 text-meta text-muted-foreground">
+            <div className="mb-2 flex items-center gap-1 rounded-md bg-muted/60 px-2 py-1 text-[10.5px] text-muted-foreground">
               <MousePointerClick className="h-3 w-3" />
               Kéo &amp; thả vào biểu mẫu
             </div>
@@ -228,7 +228,7 @@ export function SimpleFormDesigner({
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium">{k.label}</span>
-                        <span className="block truncate text-meta text-muted-foreground">{k.desc}</span>
+                        <span className="block truncate text-[10px] text-muted-foreground">{k.desc}</span>
                       </span>
                       <GripVertical className="h-3 w-3 text-muted-foreground opacity-0 transition group-hover:opacity-100" />
                     </button>
@@ -274,7 +274,7 @@ export function SimpleFormDesigner({
               Kéo biểu tượng <GripVertical className="mx-0.5 inline h-3 w-3" /> bên trái mỗi thẻ để sắp xếp lại thứ tự.
               Bấm <Eye /> <i>Xem trước</i> ở đầu trang để điền thử.
             </div>
-            <div className="mt-2 grid grid-cols-1 gap-1 text-meta sm:grid-cols-2">
+            <div className="mt-2 grid grid-cols-1 gap-1 text-[11px] sm:grid-cols-2">
               {KINDS.slice(0, 8).map((k) => (
                 <div key={k.value} className="flex items-start gap-1.5">
                   <k.Icon className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
@@ -426,7 +426,7 @@ export function SimpleFormDesigner({
                         <KI className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                         <div className="min-w-0">
                           <div className="font-medium">{k.label}</div>
-                          <div className="truncate text-meta opacity-70">{k.desc}</div>
+                          <div className="truncate text-[10px] opacity-70">{k.desc}</div>
                         </div>
                       </button>
                     );
@@ -517,7 +517,7 @@ export function SimpleFormDesigner({
           Thêm câu hỏi (Chữ ngắn)
         </Button>
 
-        <p className="pt-2 text-center text-meta text-muted-foreground">
+        <p className="pt-2 text-center text-[11px] text-muted-foreground">
           Cần cấu hình nâng cao (công thức, ẩn hiện có điều kiện, tiêu chuẩn…)? Chuyển sang chế độ <b>Nâng cao</b> ở đầu trang.
         </p>
         </div>
@@ -552,7 +552,7 @@ function DropSlot({
       }`}
     >
       {hover && (
-        <div className="absolute inset-0 grid place-items-center text-meta font-medium text-primary">
+        <div className="absolute inset-0 grid place-items-center text-[11px] font-medium text-primary">
           Thả vào đây để chèn
         </div>
       )}

@@ -136,7 +136,7 @@ export function FieldInspector({
           <SelectContent>
             {FIELD_KIND_GROUPS.map((g) => (
               <div key={g.label}>
-                <div className="px-2 py-1 text-meta font-semibold uppercase text-muted-foreground">{g.label}</div>
+                <div className="px-2 py-1 text-[10px] font-semibold uppercase text-muted-foreground">{g.label}</div>
                 {g.items.map((it) => (
                   <SelectItem key={it.v} value={it.v}>{it.l}</SelectItem>
                 ))}
@@ -199,7 +199,7 @@ export function FieldInspector({
 
       {hasNumeric && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">Đo lường</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Đo lường</p>
           <div className="grid grid-cols-2 gap-2">
             <div className="col-span-2">
               <Label className="text-xs">Đơn vị</Label>
@@ -225,7 +225,7 @@ export function FieldInspector({
 
       {hasOptions && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">Lựa chọn</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Lựa chọn</p>
           <Textarea
             rows={4}
             placeholder="Mỗi dòng 1 giá trị"
@@ -239,7 +239,7 @@ export function FieldInspector({
 
       {isRating && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 flex items-center justify-between text-meta font-semibold uppercase text-muted-foreground">
+          <p className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase text-muted-foreground">
             Mức đánh giá
             <Button size="sm" variant="ghost" className="h-6 px-2"
               onClick={() => onChange({
@@ -267,7 +267,7 @@ export function FieldInspector({
               </div>
             ))}
             {(f.ratings ?? []).length === 0 && (
-              <p className="text-meta text-muted-foreground">Chưa có mức. Bấm + để thêm.</p>
+              <p className="text-[11px] text-muted-foreground">Chưa có mức. Bấm + để thêm.</p>
             )}
           </div>
         </div>
@@ -275,7 +275,7 @@ export function FieldInspector({
 
       {isTable && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 flex items-center justify-between text-meta font-semibold uppercase text-muted-foreground">
+          <p className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase text-muted-foreground">
             Cột của bảng
             <Button size="sm" variant="ghost" className="h-6 px-2"
               onClick={() => onChange({
@@ -319,7 +319,7 @@ export function FieldInspector({
               </div>
             ))}
             {(f.columns ?? []).length === 0 && (
-              <p className="text-meta text-muted-foreground">Chưa có cột.</p>
+              <p className="text-[11px] text-muted-foreground">Chưa có cột.</p>
             )}
           </div>
         </div>
@@ -327,17 +327,17 @@ export function FieldInspector({
 
       {isComputed && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">Công thức</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Công thức</p>
           <Input value={f.formula ?? ""} onChange={(e) => onChange({ formula: e.target.value })}
             placeholder="vd: {gia_tri_do} * 0.8" className="font-mono text-xs" />
-          <p className="mt-1 text-meta text-muted-foreground">Dùng &#123;key_của_trường&#125; để tham chiếu.</p>
+          <p className="mt-1 text-[10px] text-muted-foreground">Dùng &#123;key_của_trường&#125; để tham chiếu.</p>
         </div>
       )}
 
       {/* GĐ1-03 — Panel Nâng cao mặc định thu gọn */}
       <Collapsible open={advOpen} onOpenChange={setAdvOpen} className="rounded-md border">
         <CollapsibleTrigger
-          className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-meta font-semibold uppercase text-muted-foreground"
+          className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-[11px] font-semibold uppercase text-muted-foreground"
           aria-expanded={advOpen}
         >
           <ChevronDown className={`h-3 w-3 transition-transform ${advOpen ? "rotate-180" : ""}`} aria-hidden />
@@ -346,7 +346,7 @@ export function FieldInspector({
         <CollapsibleContent className="space-y-3 border-t p-2">
 
       <div className="rounded-md border p-2">
-        <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">Điều kiện hiển thị</p>
+        <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Điều kiện hiển thị</p>
         {f.visible_if ? (
           <div className="space-y-1">
             <div className="grid grid-cols-[1fr_70px] gap-1">
@@ -389,7 +389,7 @@ export function FieldInspector({
 
       {!isDisplay && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">
             Bắt buộc theo điều kiện (required_if)
           </p>
           {f.required_if ? (
@@ -426,7 +426,7 @@ export function FieldInspector({
 
       {!isDisplay && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">
             Kiểm tra chéo trường (constraint)
           </p>
           <Input value={f.constraint_formula ?? ""}
@@ -435,7 +435,7 @@ export function FieldInspector({
           <Input value={f.constraint_message ?? ""}
             onChange={(e) => onChange({ constraint_message: e.target.value })}
             className="mt-1 text-xs" placeholder="Thông báo khi vi phạm (tuỳ chọn)" maxLength={200} />
-          <p className="mt-1 text-meta text-muted-foreground">
+          <p className="mt-1 text-[10px] text-muted-foreground">
             Biểu thức boolean: dùng &#123;key&#125;, phép so sánh &lt;,&gt;,==, &amp;&amp;, ||, !.
           </p>
         </div>
@@ -446,9 +446,9 @@ export function FieldInspector({
 
 
 
-      <div className="text-meta text-muted-foreground">
-        <Badge variant="outline" className="mr-1 font-mono text-meta">kind={f.kind}</Badge>
-        <Badge variant="outline" className="font-mono text-meta">col={f.col_span}</Badge>
+      <div className="text-[10px] text-muted-foreground">
+        <Badge variant="outline" className="mr-1 font-mono text-[10px]">kind={f.kind}</Badge>
+        <Badge variant="outline" className="font-mono text-[10px]">col={f.col_span}</Badge>
       </div>
     </div>
   );

@@ -252,7 +252,7 @@ function BackendOption({
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">{icon}</span>
           <span className="text-sm font-medium">{title}</span>
-          {active && <Badge variant="secondary" className="text-meta">Đang dùng</Badge>}
+          {active && <Badge variant="secondary" className="text-[10px]">Đang dùng</Badge>}
         </div>
         <p className="text-xs text-muted-foreground">{desc}</p>
       </div>
@@ -343,7 +343,7 @@ function R2ParamsCard() {
             </CardDescription>
           </div>
           {cfg && (
-            <Badge variant={cfg.source === "db" ? "secondary" : "outline"} className="text-meta">
+            <Badge variant={cfg.source === "db" ? "secondary" : "outline"} className="text-[10px]">
               Nguồn: {cfg.source === "db" ? "Cấu hình trong ứng dụng" : "Biến môi trường"}
             </Badge>
           )}
@@ -595,19 +595,19 @@ function HealthHistoryCard() {
                     </TableCell>
                     <TableCell className="text-xs">
                       <div className="space-y-1">
-                        {r.error_code && <Badge variant="destructive" className="text-meta">{r.error_code}</Badge>}
+                        {r.error_code && <Badge variant="destructive" className="text-[10px]">{r.error_code}</Badge>}
                         <p className={r.ok ? "text-muted-foreground" : "text-destructive"}>{r.message}</p>
                         {r.detail != null && (
                           <>
                             <button
                               type="button"
-                              className="text-meta underline text-muted-foreground"
+                              className="text-[11px] underline text-muted-foreground"
                               onClick={() => setOpenDetail(openDetail === r.id ? null : r.id)}
                             >
                               {openDetail === r.id ? "Ẩn chi tiết kỹ thuật" : "Xem chi tiết kỹ thuật"}
                             </button>
                             {openDetail === r.id && (
-                              <pre className="max-w-[520px] overflow-x-auto rounded bg-muted p-2 text-meta">
+                              <pre className="max-w-[520px] overflow-x-auto rounded bg-muted p-2 text-[11px]">
                                 {JSON.stringify(r.detail, null, 2)}
                               </pre>
                             )}

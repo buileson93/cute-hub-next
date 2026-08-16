@@ -91,7 +91,7 @@ function GopGachPage() {
             <Trophy className="size-4" />
             {userScore || 0}
           </div>
-          <p className="text-meta uppercase text-muted-foreground">Điểm tích luỹ</p>
+          <p className="text-[10px] uppercase text-muted-foreground">Điểm tích luỹ</p>
         </div>
       </div>
 

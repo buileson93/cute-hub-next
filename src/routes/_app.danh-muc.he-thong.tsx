@@ -177,7 +177,7 @@ function HeThongPage() {
               cell: (r) => r.gpSo ? <span className="font-mono text-xs text-muted-foreground">{r.gpSo}</span> : <span className="text-xs text-muted-foreground">—</span> },
             { key: "soTb", label: "Tài sản", align: "center", value: (r) => r.soTb,
               cell: (r) => r.soTb > 0
-                ? <Badge variant="secondary" className="gap-1 text-meta"><Boxes className="h-3 w-3" /> {r.soTb.toLocaleString("vi-VN")}</Badge>
+                ? <Badge variant="secondary" className="gap-1 text-[11px]"><Boxes className="h-3 w-3" /> {r.soTb.toLocaleString("vi-VN")}</Badge>
                 : <span className="text-xs text-muted-foreground">0</span> },
             ...(canManage ? [{
               key: "actions", label: "", align: "right" as const,

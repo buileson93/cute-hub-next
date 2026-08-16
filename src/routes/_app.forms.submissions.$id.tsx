@@ -260,7 +260,7 @@ function SubmissionDetail() {
               <Badge className={st.cls} variant="outline">{st.label}</Badge>
               {s.don_vi && <Badge variant="outline">{s.don_vi.ten}</Badge>}
               {s.signed_at && <Badge className="bg-emerald-100 text-emerald-700" variant="outline">Đã ký {new Date(s.signed_at).toLocaleDateString("vi-VN")}</Badge>}
-              <Badge variant="outline" className="gap-1 text-meta text-muted-foreground" title={`Realtime · ${rtBeat} cập nhật`}>
+              <Badge variant="outline" className="gap-1 text-[10px] text-muted-foreground" title={`Realtime · ${rtBeat} cập nhật`}>
                 <Radio className="h-3 w-3 text-emerald-500" />Live
               </Badge>
             </div>
@@ -403,7 +403,7 @@ function SubmissionDetail() {
               {sigs.map((sg) => (
                 <div key={sg.id} className="flex items-center justify-between rounded border p-2 text-sm">
                   <div>
-                    <div className="font-medium">{sg.signer_name || "(không rõ)"} <Badge variant="outline" className="ml-1 text-meta">{sg.signer_role}</Badge></div>
+                    <div className="font-medium">{sg.signer_name || "(không rõ)"} <Badge variant="outline" className="ml-1 text-[10px]">{sg.signer_role}</Badge></div>
                     <div className="text-xs text-muted-foreground">
                       {new Date(sg.signed_at).toLocaleString("vi-VN")} · {sg.alg} · hash {shortHash(sg.content_hash)}
                     </div>

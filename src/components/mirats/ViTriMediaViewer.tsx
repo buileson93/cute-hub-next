@@ -323,7 +323,7 @@ export function ViTriMediaViewer({
                 <Icon className="h-3.5 w-3.5" />
                 {label}
                 {id !== "thu-vien" && diemGps.length > 0 && (
-                  <span className="ml-0.5 rounded-full bg-emerald-500/20 px-1.5 text-meta text-emerald-600 dark:text-emerald-400">
+                  <span className="ml-0.5 rounded-full bg-emerald-500/20 px-1.5 text-[10px] text-emerald-600 dark:text-emerald-400">
                     {diemGps.length}
                   </span>
                 )}
@@ -340,7 +340,7 @@ export function ViTriMediaViewer({
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> Đang tải lên…
             </span>
           )}
-          <div className="ml-auto flex items-center gap-1.5 text-meta text-muted-foreground">
+          <div className="ml-auto flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Badge variant="outline" className="gap-1"><ImageIcon className="h-3 w-3" />{counts.anh}</Badge>
             <Badge variant="outline" className="gap-1"><Globe className="h-3 w-3" />{counts.pano360}</Badge>
             <Badge variant="outline" className="gap-1"><Box className="h-3 w-3" />{counts.model3d}</Badge>
@@ -358,7 +358,7 @@ export function ViTriMediaViewer({
               <Button size="sm" variant="outline" onClick={() => modelRef.current?.click()} disabled={uploading}>
                 <Box className="mr-1.5 h-4 w-4" /> Mô hình 3D / LiDAR
               </Button>
-              <span className="flex items-center gap-1 text-meta text-emerald-600 dark:text-emerald-400">
+              <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
                 <MapPin className="h-3.5 w-3.5" /> Bắt buộc quyền GPS · giờ máy chủ
               </span>
             </>
@@ -423,12 +423,12 @@ export function ViTriMediaViewer({
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-xs font-medium">{d.ten_tep}</div>
-                          <div className="flex items-center gap-1 text-meta text-emerald-600 dark:text-emerald-400">
+                          <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
                             <MapPin className="h-3 w-3" />
                             {dinhDangToaDo(d.vi_do, d.kinh_do)}
                             {d.do_chinh_xac != null && <span className="text-muted-foreground"> · ±{Math.round(d.do_chinh_xac)}m</span>}
                           </div>
-                          <div className="flex items-center gap-1 text-meta text-muted-foreground">
+                          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                             <Clock className="h-3 w-3" />
                             {new Date(d.chup_luc ?? d.created_at).toLocaleString("vi-VN")}
                           </div>
@@ -477,7 +477,7 @@ export function ViTriMediaViewer({
                             className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                         )}
                       </button>
-                      <span className={cn("absolute left-1.5 top-1.5 flex items-center gap-1 rounded border px-1.5 py-0.5 text-meta font-medium", meta.cls)}>
+                      <span className={cn("absolute left-1.5 top-1.5 flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] font-medium", meta.cls)}>
                         <meta.Icon className="h-2.5 w-2.5" />{meta.label}
                       </span>
                       <button
@@ -490,13 +490,13 @@ export function ViTriMediaViewer({
                       </button>
                       {it.vi_do != null && it.kinh_do != null && (
                         <span
-                          className="absolute bottom-8 left-1.5 flex items-center gap-1 rounded bg-emerald-600/90 px-1.5 py-0.5 text-meta font-medium text-white"
+                          className="absolute bottom-8 left-1.5 flex items-center gap-1 rounded bg-emerald-600/90 px-1.5 py-0.5 text-[9px] font-medium text-white"
                           title={dinhDangToaDo(it.vi_do, it.kinh_do) ?? ""}
                         >
                           <MapPin className="h-2.5 w-2.5" /> GPS
                         </span>
                       )}
-                      <div className="truncate px-2 py-1 text-meta text-muted-foreground">
+                      <div className="truncate px-2 py-1 text-[10px] text-muted-foreground">
                         {it.ten_tep} · {fmtSize(it.kich_thuoc)}
                       </div>
                     </div>
@@ -559,7 +559,7 @@ export function ViTriMediaViewer({
               )}
             </div>
             {(active.vi_do != null && active.kinh_do != null) || active.chup_luc ? (
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t bg-muted/30 px-3 py-2 text-meta text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
                 {active.vi_do != null && active.kinh_do != null && (
                   <a
                     href={linkGoogleMaps(active.vi_do, active.kinh_do) ?? "#"}

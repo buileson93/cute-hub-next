@@ -200,11 +200,11 @@ export function AtcTowerScene() {
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/15" />
-            <div className="absolute left-4 top-3 flex items-center gap-2 font-mono text-meta uppercase tracking-[0.24em] text-amber-100">
+            <div className="absolute left-4 top-3 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.24em] text-amber-100">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
               TWR Interior · Phù Cát
             </div>
-            <div className="absolute bottom-3 right-4 font-mono text-meta uppercase tracking-[0.2em] text-white/90">
+            <div className="absolute bottom-3 right-4 font-mono text-[11px] uppercase tracking-[0.2em] text-white/90">
               Cabin 60m² · Tháp 45m
             </div>
           </motion.div>
@@ -224,14 +224,14 @@ export function AtcTowerScene() {
             className="pointer-events-none absolute z-30 max-w-[420px] rounded-xl border border-amber-200/25 bg-black/60 p-4 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur-md"
             style={{ top: "40%", right: "6%" }}
           >
-            <div className="mb-2 flex items-center gap-2 font-mono text-meta uppercase tracking-[0.24em] text-amber-200/90">
+            <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.24em] text-amber-200/90">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
               Đài KSKL · Phù Cát
             </div>
             <div className="mb-3 text-[15px] font-semibold leading-snug text-white">
               Tháp 45m · Cabin 60m² · VATM
             </div>
-            <div className="min-h-[9rem] whitespace-pre-line font-mono text-bodySm leading-relaxed text-white/85">
+            <div className="min-h-[9rem] whitespace-pre-line font-mono text-[12px] leading-relaxed text-white/85">
               {INFO_TEXT.slice(0, typed)}
               <motion.span
                 className="ml-0.5 inline-block h-[1em] w-[2px] -mb-[2px] bg-amber-200/90 align-middle"
@@ -421,7 +421,7 @@ export function AtcTowerScene() {
       />
 
       {/* HUD — top */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-6 font-mono text-meta uppercase tracking-[0.24em] text-white/85">
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-6 font-mono text-[10px] uppercase tracking-[0.24em] text-white/85">
         <div className="flex flex-col gap-1.5">
           <span className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
@@ -445,7 +445,7 @@ export function AtcTowerScene() {
       <div className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 px-8 text-center">
         <div className="flex items-center gap-2 rounded-full border border-white/25 bg-black/35 px-3 py-1 backdrop-blur">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          <span className="font-mono text-meta uppercase tracking-[0.28em] text-white/85">
+          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/85">
             Air Traffic · Live Ops
           </span>
         </div>
@@ -475,7 +475,7 @@ function AtmMonitor({ time, reduce }: { time: string; reduce: boolean }) {
 
   return (
     <div className="pointer-events-none absolute bottom-[calc(2rem+3%)] right-[calc(2rem+3%)] w-[220px] font-mono">
-      <div className="mb-2 flex items-center justify-between px-1 text-meta uppercase tracking-[0.24em] text-amber-100/85">
+      <div className="mb-2 flex items-center justify-between px-1 text-[9px] uppercase tracking-[0.24em] text-amber-100/85">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
           VN-ATM · HAN-04
@@ -589,7 +589,7 @@ function AtmMonitor({ time, reduce }: { time: string; reduce: boolean }) {
         <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-100 shadow-[0_0_8px_rgba(255,220,150,0.95)]" />
       </div>
 
-      <div className="mt-2 flex items-center justify-between px-1 text-meta uppercase tracking-[0.22em] text-amber-100/75">
+      <div className="mt-2 flex items-center justify-between px-1 text-[9px] uppercase tracking-[0.22em] text-amber-100/75">
         <span>Trk · <span className="text-white">04</span></span>
         <span className="text-emerald-300/90">Link · OK</span>
       </div>

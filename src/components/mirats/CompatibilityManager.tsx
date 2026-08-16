@@ -90,7 +90,7 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
           <CardContent className="p-3 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-meta uppercase tracking-wider text-muted-foreground">Hệ thống</Label>
+                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Hệ thống</Label>
                 <Combobox
                   options={availableOptions}
                   value={newItem.he_thong_id}
@@ -99,7 +99,7 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-meta uppercase tracking-wider text-muted-foreground">Phân loại</Label>
+                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Phân loại</Label>
                 <Select
                   value={newItem.phan_loai}
                   onValueChange={(val) => setNewItem(prev => ({ ...prev, phan_loai: val }))}
@@ -116,7 +116,7 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-meta uppercase tracking-wider text-muted-foreground">Đánh giá khả năng thay thế</Label>
+              <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Đánh giá khả năng thay thế</Label>
               <Input
                 className="h-9"
                 placeholder="VD: Có thể thay thế trực tiếp, cần cài đặt lại cấu hình..."
@@ -145,7 +145,7 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-medium text-sm truncate">{sys?.label ?? "Hệ thống không xác định"}</span>
-                  <Badge variant="secondary" className="text-meta py-0 h-5">
+                  <Badge variant="secondary" className="text-[10px] py-0 h-5">
                     {item.phan_loai}
                   </Badge>
                 </div>

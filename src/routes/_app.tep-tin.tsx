@@ -366,7 +366,7 @@ function FilesPage() {
                   </Button>
                 </div>
                 <Progress value={s.percent ?? 0} className="h-1.5" />
-                <div className="text-meta text-muted-foreground">
+                <div className="text-[11px] text-muted-foreground">
                   Bắt đầu: {new Date(s.createdAt).toLocaleString("vi-VN")}
                   {s.updatedAt ? ` · cập nhật ${new Date(s.updatedAt).toLocaleTimeString("vi-VN")}` : ""}
                 </div>

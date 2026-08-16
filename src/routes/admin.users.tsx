@@ -164,24 +164,24 @@ function AdminUsers() {
                 cell: (u) => (
                   <div>
                     <div className="text-xs font-medium">{u.email}</div>
-                    <div className="text-meta text-muted-foreground">{u.ho_ten ?? "—"}</div>
+                    <div className="text-[10.5px] text-muted-foreground">{u.ho_ten ?? "—"}</div>
                   </div>
                 ),
               },
               {
                 key: "don_vi", label: "Đơn vị", filter: "cat",
                 value: (u) => u.don_vi ?? "",
-                cell: (u) => <span className="font-mono text-meta">{u.don_vi ?? "—"}</span>,
+                cell: (u) => <span className="font-mono text-[11px]">{u.don_vi ?? "—"}</span>,
               },
               {
                 key: "roles", label: "Vai trò", filter: "text",
                 value: (u) => u.roles.join(", "),
                 cell: (u) => (
                   <div className="flex flex-wrap gap-1">
-                    {u.roles.length === 0 ? <span className="text-meta text-muted-foreground">—</span> :
+                    {u.roles.length === 0 ? <span className="text-[11px] text-muted-foreground">—</span> :
                       u.roles.map((r) => {
                         const meta = ROLES.find((x) => x.value === r);
-                        return <span key={r} className={cn("rounded-md border px-1.5 py-0.5 text-meta font-medium", meta?.tone ?? "bg-muted")}>{meta?.label ?? r}</span>;
+                        return <span key={r} className={cn("rounded-md border px-1.5 py-0.5 text-[10.5px] font-medium", meta?.tone ?? "bg-muted")}>{meta?.label ?? r}</span>;
                       })}
                   </div>
                 ),
@@ -190,10 +190,10 @@ function AdminUsers() {
                 key: "trang_thai", label: "Trạng thái", filter: "cat",
                 value: (u) => u.active ? "Hoạt động" : (u.banned_until ? "Đã khoá" : "Chờ duyệt"),
                 cell: (u) => u.active
-                  ? <Badge className="bg-emerald-100 text-emerald-700 text-meta" variant="secondary">Hoạt động</Badge>
+                  ? <Badge className="bg-emerald-100 text-emerald-700 text-[10.5px]" variant="secondary">Hoạt động</Badge>
                   : u.banned_until
-                    ? <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-meta" variant="outline">Đã khoá</Badge>
-                    : <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-meta" variant="outline">Chờ duyệt</Badge>,
+                    ? <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-[10.5px]" variant="outline">Đã khoá</Badge>
+                    : <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-[10.5px]" variant="outline">Chờ duyệt</Badge>,
               },
               {
                 key: "actions", label: "Thao tác", align: "right",
@@ -327,7 +327,7 @@ function UserForm({
                     checked={roles.includes(r.value)}
                     onCheckedChange={(c) => setRoles((prev) => c ? [...prev, r.value] : prev.filter((x) => x !== r.value))}
                   />
-                  <span className={cn("rounded px-1.5 py-0.5 text-meta font-medium border", r.tone)}>{r.label}</span>
+                  <span className={cn("rounded px-1.5 py-0.5 text-[10.5px] font-medium border", r.tone)}>{r.label}</span>
                 </label>
               ))}
             </div>

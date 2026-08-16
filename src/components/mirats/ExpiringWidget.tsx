@@ -77,13 +77,13 @@ export function ExpiringWidget({
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium text-foreground">{r.ten ?? "—"}</div>
                   <div className="mt-0.5 flex items-center gap-2">
-                    <Badge variant="outline" className={cn("border-0 text-meta", meta.cls)}>
+                    <Badge variant="outline" className={cn("border-0 text-[10.5px]", meta.cls)}>
                       {meta.label}
                     </Badge>
-                    <span className="text-meta text-muted-foreground">Hết hạn {r.ngay_het_han}</span>
+                    <span className="text-[11px] text-muted-foreground">Hết hạn {r.ngay_het_han}</span>
                   </div>
                 </div>
-                <Badge variant="outline" className={cn("border-0 shrink-0 text-meta font-semibold", ngayBadge(r.so_ngay_con_lai))}>
+                <Badge variant="outline" className={cn("border-0 shrink-0 text-[11px] font-semibold", ngayBadge(r.so_ngay_con_lai))}>
                   còn {r.so_ngay_con_lai} ngày
                 </Badge>
               </div>

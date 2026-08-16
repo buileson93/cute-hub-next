@@ -54,7 +54,7 @@ const CommandDialog = ({
           shouldFilter={shouldFilter}
           value={value}
           onValueChange={onValueChange}
-          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-meta [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:mx-1 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-primary/10 [&_[cmdk-item][data-selected=true]]:text-foreground [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-muted-foreground/80"
+          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:mx-1 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-primary/10 [&_[cmdk-item][data-selected=true]]:text-foreground [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-muted-foreground/80"
         >
           {preview ? (
             <div className="flex">
@@ -82,7 +82,7 @@ const CommandInput = React.forwardRef<
       <CommandPrimitive.Input
         ref={ref}
         className={cn(
-          "flex h-10 w-full bg-transparent py-3 text-body font-medium placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-10 w-full bg-transparent py-3 text-[14px] font-medium placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
           "!focus:ring-0 !focus:ring-offset-0 !focus-visible:ring-0 !focus-visible:outline-none !outline-none !border-none",
           className,
         )}
