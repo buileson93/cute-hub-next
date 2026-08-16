@@ -3,8 +3,34 @@
 @import "tw-animate-css";
 
 /* Astryx Design System — Core Styles & Reset */
-@import "@astryxdesign/core/astryx.css";
-@import "@astryxdesign/theme-stone/theme.css";
+@import "@astryxdesign/core/astryx.css" layer(astryx-core);
+@import "@astryxdesign/theme-stone/theme.css" layer(astryx-theme);
+
+/* MIRATS Brand Foundation — Astryx Overrides */
+@layer astryx-brand {
+  [data-astryx-theme="stone"] {
+    /* Colors */
+    --color-accent: light-dark(#1C51E0, #4C82FF);
+    --color-icon-accent: var(--color-accent);
+    --color-text-accent: var(--color-accent);
+    --color-warning: light-dark(#FF8F00, #FFA726);
+    
+    /* Typography */
+    --font-family-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-heading: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-code: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    
+    /* Spacing & Radius */
+    --radius-container: 1rem;
+    --radius-element: 0.5rem;
+    
+    /* Motion */
+    --duration-fast: 120ms;
+    --duration-medium: 200ms;
+    --duration-slow: 320ms;
+  }
+}
+
 
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
