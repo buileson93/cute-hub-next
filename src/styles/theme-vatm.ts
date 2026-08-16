@@ -31,8 +31,6 @@ export const vatmTheme = defineTheme({
   tokens: {
     "--color-warning": ["#FF8F00", "#FFB74D"], // [Light, Dark]
     "--color-text-secondary": ["#4C5055", "#AAAFB5"],
-    // Bridge aliases to ensure UI legacy consistency if needed
-    "--astryx-primary": "var(--primary)",
   },
   components: {
     button: {
