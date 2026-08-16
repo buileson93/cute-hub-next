@@ -70,14 +70,8 @@ export function resolveBrowserBackend(): ResolvedBrowserBackend {
   const isSelfHosted = Boolean(overrideUrl && overrideKey);
 
   return {
-    url: required(
-      "VITE_APP_SUPABASE_URL / VITE_SUPABASE_URL",
-      pick(overrideUrl, import.meta.env.VITE_SUPABASE_URL as string | undefined),
-    ),
-    publishableKey: required(
-      "VITE_APP_SUPABASE_PUBLISHABLE_KEY / VITE_SUPABASE_PUBLISHABLE_KEY",
-      pick(overrideKey, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined),
-    ),
+    url: pick(overrideUrl, import.meta.env.VITE_SUPABASE_URL as string | undefined) || "",
+    publishableKey: pick(overrideKey, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) || "",
     projectId: pick(
       import.meta.env.VITE_APP_SUPABASE_PROJECT_ID as string | undefined,
       import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined,
