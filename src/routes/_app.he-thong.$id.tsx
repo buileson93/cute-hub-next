@@ -436,9 +436,10 @@ function HeThongInner({
                   cot={1}
                   fields={[
                     { nhan: "Hệ thống", giaTri: tenHt, highlight: true },
-                    { nhan: "Mã BraVO", giaTri: maBravo || "—" },
+                    { nhan: "Mã BraVO", giaTri: maBravo || "—", highlight: false },
                     { 
                       nhan: "Đơn vị quản lý", 
+                      highlight: false,
                       giaTri: (
                         <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="hover:text-primary hover:underline inline-flex items-center gap-1">
                           {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
@@ -446,7 +447,7 @@ function HeThongInner({
                         </Link>
                       )
                     },
-                    { nhan: "GPKT", giaTri: hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có" }
+                    { nhan: "GPKT", giaTri: hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có", highlight: false }
                   ]} 
                 />
                 
