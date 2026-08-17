@@ -830,11 +830,32 @@ export function CommandPalette() {
         />
       </div>
       <CommandList className="max-h-[420px]">
+        {showLoading && (
+          <div className="flex flex-col items-center justify-center gap-2 py-12 text-sm text-muted-foreground animate-in fade-in zoom-in duration-300">
+            <Loader2 className="h-8 w-8 animate-spin text-[#0074e2]" />
+            <span className="font-medium">Đang tìm kiếm dữ liệu...</span>
+          </div>
+        )}
+
+        {hasQuery && !loading && rows.length === 0 && rowsMoRong.length === 0 && (
+          <CommandEmpty className="py-12 text-center animate-in fade-in zoom-in duration-300">
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/50 text-muted-foreground">
+                <Search className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-foreground">Không tìm thấy kết quả</p>
+                <p className="text-[12px] text-muted-foreground">Thử tìm kiếm với từ khóa khác hoặc dùng MIRATS AI.</p>
+              </div>
+            </div>
+          </CommandEmpty>
+        )}
+
         {hasQuery && (() => {
           const intent = matchIntent(q);
           if (intent.kind === "jump-to" || intent.confidence < 0.7) return null;
           return (
-            <CommandGroup heading="Hành động">
+            <CommandGroup heading="Hành động thông minh">
               <CommandItem
                 value={`intent-${intent.kind}`}
                 onSelect={() => runIntent(intent)}
@@ -846,25 +867,15 @@ export function CommandPalette() {
                 <div className="min-w-0 flex-1 space-y-0.5">
                   <div className="truncate text-[13px] font-bold text-foreground">{describeIntent(intent)}</div>
                   <div className="truncate text-[11px] text-muted-foreground/80">
-                    Enter để tiếp tục · độ tin cậy {Math.round(intent.confidence * 100)}%
+                    Nhấn Enter để thực hiện hành động này
                   </div>
                 </div>
               </CommandItem>
             </CommandGroup>
           );
         })()}
-        {!showLoading && (
-          <CommandEmpty>
-            {hasQuery ? `Không tìm thấy kết quả cho “${q.trim()}”.` : "Nhập để tìm kiếm…"}
-          </CommandEmpty>
-        )}
 
 
-        {showLoading && (
-          <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Đang tìm…
-          </div>
-        )}
 
         {!hasQuery && recentHits.length > 0 && (
           <>
@@ -876,7 +887,10 @@ export function CommandPalette() {
                   <CommandItem
                     key={`recent-${h.entity}-${h.id}`}
                     value={`recent-${h.entity}-${h.id}-${h.title}`}
-                    onSelect={() => go(h.to)}
+                    onSelect={() => {
+                      saveRecent(h);
+                      go(h.to);
+                    }}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
@@ -989,7 +1003,16 @@ export function CommandPalette() {
                 <CommandItem
                   key={`tkc-${r.loai}-${r.id}`}
                   value={`tkc-${r.loai}-${r.id}-${r.tieuDe}`}
-                  onSelect={() => go(r.route)}
+                  onSelect={() => {
+                    saveRecent({
+                      entity: r.loai,
+                      id: r.id,
+                      title: r.tieuDe,
+                      subtitle: r.motaNgan,
+                      to: r.route
+                    } as any);
+                    go(r.route);
+                  }}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
@@ -1023,7 +1046,16 @@ export function CommandPalette() {
                 <CommandItem
                   key={it.to}
                   value={`nav-${it.to}-${it.label}`}
-                  onSelect={() => go(it.to)}
+                  onSelect={() => {
+                    saveRecent({
+                      entity: 'nav',
+                      id: it.to,
+                      title: it.label,
+                      subtitle: it.desc,
+                      to: it.to
+                    } as any);
+                    go(it.to);
+                  }}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
@@ -1060,11 +1092,24 @@ export function CommandPalette() {
         </CommandGroup>
       </CommandList>
 
-      <div className="flex items-center justify-between border-t border-border bg-muted/40 px-3 py-1.5 text-[10px] text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <Search className="h-3 w-3" /> Alt + Space để mở nhanh
-        </span>
-        <span>↑↓ chọn · Enter mở · Esc đóng</span>
+      <div className="flex items-center justify-between border-t border-border bg-muted/20 px-4 py-2 text-[10px] text-muted-foreground font-medium">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">Alt</kbd>
+            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">Space</kbd>
+            để mở nhanh
+          </span>
+          <span className="flex items-center gap-1.5">
+            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">⌘</kbd>
+            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">K</kbd>
+            tìm kiếm
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span>↑↓ di chuyển</span>
+          <span>↵ mở</span>
+          <span>esc đóng</span>
+        </div>
       </div>
     </CommandDialog>
   );
