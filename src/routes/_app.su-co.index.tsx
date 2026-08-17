@@ -407,7 +407,8 @@ function SuCoPage() {
   }
 
   return (
-    <PageBody className="flex flex-col gap-4">
+    <PageFrame density="comfortable">
+      <div className="flex flex-col gap-4">
 
       <PageHeader
         icon={AlertTriangle}
