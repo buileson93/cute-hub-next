@@ -28,8 +28,6 @@ type CommandDialogProps = DialogProps & {
   shouldFilter?: boolean;
   value?: string;
   onValueChange?: (value: string) => void;
-  /** Optional preview pane rendered to the right of the command list (Lovable-style). */
-  preview?: React.ReactNode;
 };
 
 const CommandDialog = ({
@@ -38,16 +36,12 @@ const CommandDialog = ({
   shouldFilter,
   value,
   onValueChange,
-  preview,
   ...props
 }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent
-        className={cn(
-          "overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-3xl",
-          preview && "sm:max-w-5xl",
-        )}
+        className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-2xl"
       >
         <Command
           filter={filter}
@@ -56,18 +50,9 @@ const CommandDialog = ({
           onValueChange={onValueChange}
           className="rounded-3xl border border-border/50 bg-popover shadow-2xl [&_[cmdk-group-heading]]:px-5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:text-muted-foreground/50 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:h-14 [&_[cmdk-item]]:mx-2 [&_[cmdk-item]]:rounded-2xl [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-3.5 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 [&_[cmdk-item][data-selected=true]]:bg-muted/60 [&_[cmdk-item][data-selected=true]]:text-foreground"
         >
-          {preview ? (
-            <div className="flex h-[min(75vh,640px)]">
-              <div className="flex min-w-0 flex-1 flex-col">{children}</div>
-              <div className="hidden w-[340px] shrink-0 border-l border-border/40 bg-muted/5 md:block">
-                {preview}
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col max-h-[min(70vh,560px)]">
-              {children}
-            </div>
-          )}
+          <div className="flex flex-col max-h-[min(70dvh,520px)]">
+            {children}
+          </div>
         </Command>
       </DialogContent>
     </Dialog>
