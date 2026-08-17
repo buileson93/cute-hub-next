@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxInput } from "@/components/ui/checkbox-input";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -335,10 +336,14 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                     <p className="text-center text-xs text-muted-foreground py-8">Hệ thống chưa có thành phần nào.</p>
                   ) : (
                     tpList.map(tp => (
-                      <div key={tp.id} className="flex items-center gap-2 p-2 hover:bg-muted/50 rounded-md transition-colors">
-                        <Checkbox id={`tp-${tp.id}`} checked={selectedTpIds.has(tp.id)} onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }} />
-                        <Label htmlFor={`tp-${tp.id}`} className="flex-1 cursor-pointer">{tp.ten}</Label>
-                      </div>
+                      <CheckboxInput 
+                        key={tp.id}
+                        id={`tp-${tp.id}`} 
+                        checked={selectedTpIds.has(tp.id)} 
+                        onCheckedChange={v => { const n = new Set(selectedTpIds); v ? n.add(tp.id) : n.delete(tp.id); setSelectedTpIds(n); }}
+                        label={tp.ten}
+                        className="p-2 hover:bg-muted/50 rounded-md transition-colors"
+                      />
                     ))
                   )}
                 </div>

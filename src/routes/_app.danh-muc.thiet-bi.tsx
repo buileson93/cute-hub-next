@@ -27,6 +27,7 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxInput } from "@/components/ui/checkbox-input";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -897,16 +898,16 @@ function DanhMucThietBiPage() {
                       const id = t.id;
                       const checked = tagSelected.includes(id);
                       return (
-                        <label key={id} className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 hover:bg-muted/50">
-                          <Checkbox
-                            checked={checked}
-                            onCheckedChange={(c) => {
-                              setTagSelected((prev) => c ? [...prev, id] : prev.filter((x) => x !== id));
-                            }}
-                          />
-                          <span className="text-xs">{t.ten}</span>
-                          <span className="ml-auto font-mono text-[10px] text-muted-foreground">{t.ma}</span>
-                        </label>
+                        <CheckboxInput
+                          key={id}
+                          checked={checked}
+                          onCheckedChange={(c) => {
+                            setTagSelected((prev) => c ? [...prev, id] : prev.filter((x) => x !== id));
+                          }}
+                          label={t.ten}
+                          description={t.ma}
+                          className="px-1.5 py-1 hover:bg-muted/50 rounded transition-colors"
+                        />
                       );
                     })}
                   </div>
