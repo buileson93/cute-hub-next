@@ -1188,7 +1188,7 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass)}>
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass, className)}>
           <Table className={cn(
             "border-separate border-spacing-0 caption-bottom",
             density === "compact" && "text-[12px]",
