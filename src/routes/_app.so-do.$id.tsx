@@ -59,6 +59,29 @@ export const Route = createFileRoute("/_app/so-do/$id")({
   component: SoDoEditorPage,
 });
 
+/**
+ * HydrationSafeEditor
+ * 
+ * Bọc Editor bằng một lớp bảo vệ Hydration để tránh lỗi XYFlow/DOM 
+ * truy cập window/document sớm trong quá trình SSR.
+ */
+function SoDoEditorPage() {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => setIsClient(true), []);
+  
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  
+  return <SoDoEditorContent />;
+}
+
+function SoDoEditorContent() {
+
 const BUCKET = "so-do-tep";
 const LIB_BUCKET = "so-do-thu-vien";
 const LIB_URL_TTL = 315360000; // ~10 năm
