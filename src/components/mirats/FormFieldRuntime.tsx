@@ -331,9 +331,9 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
       const addRow = () => set([...rows, {}]);
       const delRow = (i: number) => set(rows.filter((_, x) => x !== i));
       return (
-        <div className="space-y-2 rounded-md border bg-muted/10 p-2">
+        <div className="space-y-3 astryx-surface border-border/30 bg-muted/5 p-3">
           {rows.length === 0 && (
-            <p className="text-xs text-muted-foreground">Chưa có mục. Nhấn "Thêm mục" bên dưới.</p>
+            <p className="astryx-text-muted text-[11px] text-center py-4 border border-dashed border-border/50 rounded-md">Chưa có mục. Nhấn "Thêm mục" bên dưới.</p>
           )}
           {rows.map((r, i) => (
             <div key={i} className="astryx-card border-border/50 p-3 bg-card shadow-none">
