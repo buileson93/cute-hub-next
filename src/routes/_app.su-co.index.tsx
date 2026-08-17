@@ -706,7 +706,7 @@ function SuCoPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageBody>
+    </PageFrame>
   );
 }
 
