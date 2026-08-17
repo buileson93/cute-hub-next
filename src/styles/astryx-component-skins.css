@@ -195,5 +195,45 @@
   .astryx-switch[data-state="checked"] .astryx-switch-thumb {
     transform: translateX(1rem);
   }
+
+  /* Overlays & Elevated Surfaces */
+  .astryx-popover {
+    background-color: var(--color-popover);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+    backdrop-filter: blur(8px);
+  }
+
+  .astryx-dialog {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
+  }
+
+  .astryx-tooltip {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+    border-radius: var(--radius-element);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    box-shadow: 0 4px 6px -1px oklch(0 0 0 / 0.1);
+  }
+
+  .astryx-toast {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    box-shadow: 0 10px 15px -3px oklch(0 0 0 / 0.1);
+  }
+
+  .astryx-command {
+    background-color: var(--color-popover);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    overflow: hidden;
+  }
 }
 
