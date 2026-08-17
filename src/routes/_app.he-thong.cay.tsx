@@ -493,6 +493,20 @@ function HeThongCayPage() {
       />
 
       {search.moveHt && (
+         <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4">
+            <div className="bg-background p-6 rounded-2xl shadow-2xl max-w-md w-full border animate-in fade-in zoom-in duration-200">
+               <h3 className="text-lg font-bold mb-2">Di chuyển Hệ thống</h3>
+               <p className="text-sm text-muted-foreground mb-6">
+                 Chọn nhóm hệ thống mới để chuyển <strong>{taxonomy?.htNameMap.get(parseHtSysMa(search.moveHt).sysName) || search.moveHt}</strong> vào.
+               </p>
+               <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>Hủy</Button>
+               </div>
+            </div>
+         </div>
+      )}
+
+      {search.moveHt && (
          <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
             <div className="bg-background p-6 rounded-2xl shadow-2xl max-w-md w-full border">
                <h3 className="text-lg font-bold mb-2">Di chuyển Hệ thống</h3>
