@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { ArrowLeft, ArrowRight, CalendarClock, DollarSign, Users, FileText, Package, AlertTriangle } from "lucide-react";
+import { 
+  ArrowLeft, ArrowRight, CalendarClock, DollarSign, Users, FileText, Package, 
+  AlertTriangle, LayoutList, History, Info as InfoIcon, Building2, ReplaceIcon,
+  ArrowLeftRight, Wrench
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +15,11 @@ import { useScope } from "@/lib/mirats/scope";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
 import { VatTuTieuHaoView } from "@/components/mirats/VatTuTieuHaoView";
 import { VongDoiPanel } from "@/components/mirats/VongDoiPanel";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+import { EdgeTabs } from "@/components/mirats/EdgeTabs";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
 
 export const Route = createFileRoute("/_app/hong-hoc/$maHongHoc")({
   head: () => ({
@@ -22,7 +31,6 @@ export const Route = createFileRoute("/_app/hong-hoc/$maHongHoc")({
   component: HongHocDetail,
 });
 
-import { StatusBadge } from "@/components/mirats/StatusBadge";
 
 
 function HongHocDetail() {
@@ -52,152 +60,230 @@ function HongHocDetail() {
 
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm"><Link to="/hong-hoc"><ArrowLeft className="mr-1 h-4 w-4" />Hỏng hóc</Link></Button>
-          <div>
-            <h1 className="text-xl font-semibold flex items-center gap-2">
-              <span className="font-mono">{h.ma_hong_hoc}</span>
-              <StatusBadge domain="hong_hoc" code={h.phuong_an} label={h.phuong_an} />
-              <StatusBadge domain="thiet_bi" code={h.trang_thai} label={h.trang_thai} />
-            </h1>
-            <p className="text-sm text-muted-foreground">Bộ phận hỏng: <strong>{h.bo_phan_hong}</strong> · {dvo?.ten ?? "—"}</p>
+    <PageFrame density="compact">
+      <PageHeader
+        title={h.ma_hong_hoc}
+        subtitle={h.bo_phan_hong}
+        icon={ReplaceIcon}
+        breadcrumbs={[
+          { label: "Hỏng hóc", to: "/hong-hoc" },
+          { label: h.ma_hong_hoc }
+        ]}
+        metadata={
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge domain="hong_hoc" code={h.phuong_an} label={h.phuong_an} />
+            <StatusBadge domain="thiet_bi" code={h.trang_thai} label={h.trang_thai} />
+            {dvo && (
+              <Badge variant="outline" className="text-[10px]">
+                <Building2 className="mr-1 h-3 w-3" /> {dvo.ma}
+              </Badge>
+            )}
           </div>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm" className="h-8">
+              <Link to="/hong-hoc"><ArrowLeft className="mr-2 h-4 w-4" /> Hỏng hóc</Link>
+            </Button>
+            {sc && (
+              <Button asChild variant="outline" size="sm" className="h-8">
+                <Link to="/su-co/$maSuCo" params={{ maSuCo: sc.ma_su_co }}>
+                  <AlertTriangle className="mr-2 h-4 w-4" /> Sự cố {sc.ma_su_co}
+                </Link>
+              </Button>
+            )}
+          </div>
+        }
+      />
+
+      <PageBody>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 mb-6">
+          <KpiCard icon={CalendarClock} label="Ngày phát hiện" value={h.ngay_hong} />
+          <KpiCard icon={CalendarClock} label="Ngày hoàn thành" value={h.ngay_hoan_thanh ?? "—"} />
+          <KpiCard icon={DollarSign} label="Chi phí" value={`${fmtVND(h.chi_phi)} đ`} />
+          <KpiCard icon={Users} label="Đơn vị thực hiện" value={h.don_vi_thuc_hien} />
         </div>
-        {sc && (
-          <Button asChild variant="outline" size="sm">
-            <Link to="/su-co/$maSuCo" params={{ maSuCo: sc.ma_su_co }}><AlertTriangle className="mr-1 h-4 w-4" />Sự cố liên quan {sc.ma_su_co}</Link>
-          </Button>
-        )}
-      </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Info icon={CalendarClock} label="Ngày phát hiện" value={h.ngay_hong} />
-        <Info icon={CalendarClock} label="Ngày hoàn thành" value={h.ngay_hoan_thanh ?? "—"} />
-        <Info icon={DollarSign} label="Chi phí" value={`${fmtVND(h.chi_phi)} đ`} />
-        <Info icon={Users} label="Đơn vị thực hiện" value={h.don_vi_thuc_hien} />
-      </div>
+        <VongDoiPanel bang={"hong_hoc" as any} id={h.id} trangThaiHienTai={h.trang_thai} />
+        <div className="mb-6" />
 
-      <VongDoiPanel bang="hong_hoc" id={h.id} trangThaiHienTai={h.trang_thai} />
+        <EdgeTabs
+          tabs={[
+            {
+              id: "tong-quan",
+              label: "Tổng quan",
+              icon: <LayoutList className="h-4 w-4" />,
+              content: (
+                <div className="space-y-6">
+                  <div className="grid gap-4 lg:grid-cols-3">
+                    <Card className="lg:col-span-2">
+                      <CardHeader className="pb-3 pt-4 px-5">
+                        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-primary" />
+                          Mô tả & Kết quả
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="px-5 pb-5 text-sm space-y-3">
+                        <div>
+                          <div className="text-xs uppercase text-muted-foreground">Mô tả hỏng hóc</div>
+                          <p className="mt-1">{h.mo_ta_hong_hoc}</p>
+                        </div>
+                        <div>
+                          <div className="text-xs uppercase text-muted-foreground">Kết quả xử lý</div>
+                          <p className="mt-1 text-muted-foreground">{h.ket_qua ?? "— chưa có —"}</p>
+                        </div>
+                        {h.file_dinh_kem && (
+                          <div className="flex items-center gap-2 text-primary pt-2 border-t border-dashed">
+                            <FileText className="h-4 w-4" /><span className="font-mono text-xs">{h.file_dinh_kem}</span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-3 pt-4 px-5">
+                        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                          <Users className="h-4 w-4 text-primary" />
+                          Người thực hiện
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="px-5 pb-5 space-y-2">
+                        {h.nguoi_thuc_hien.length === 0 && <p className="text-sm text-muted-foreground italic">Chưa phân công.</p>}
+                        {h.nguoi_thuc_hien.map((nguoi: string) => (
+                          <div key={nguoi} className="flex items-center gap-2 rounded-md border p-2 text-sm bg-muted/20">
+                            <div className="h-6 w-6 rounded-full bg-secondary grid place-items-center text-[10px] font-bold uppercase">{nguoi.slice(0, 2)}</div>
+                            <span className="font-medium">{nguoi}</span>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  </div>
 
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle className="text-base">Mô tả & Kết quả</CardTitle></CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div>
-              <div className="text-xs uppercase text-muted-foreground">Mô tả hỏng hóc</div>
-              <p className="mt-1">{h.mo_ta_hong_hoc}</p>
-            </div>
-            <div>
-              <div className="text-xs uppercase text-muted-foreground">Kết quả xử lý</div>
-              <p className="mt-1 text-muted-foreground">{h.ket_qua ?? "— chưa có —"}</p>
-            </div>
-            {h.file_dinh_kem && (
-              <div className="flex items-center gap-2 text-primary">
-                <FileText className="h-4 w-4" /><span className="font-mono text-xs">{h.file_dinh_kem}</span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><Users className="h-4 w-4" />Người thực hiện</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {h.nguoi_thuc_hien.length === 0 && <p className="text-sm text-muted-foreground">Chưa phân công.</p>}
-            {h.nguoi_thuc_hien.map((nguoi: string) => (
-              <div key={nguoi} className="flex items-center gap-2 rounded-md border p-2 text-sm">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{nguoi}</span>
-              </div>
-            ))}
-          </CardContent>
-
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Truy vết tài sản</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
-            <TbCard title="Tài sản hỏng" tb={tb} maFallback={h.thiet_bi_hong} tone="border-red-200 bg-red-50/40" />
-            <div className="hidden justify-center md:flex">
-              <ArrowRight className="h-6 w-6 text-muted-foreground" />
-            </div>
-            {tbThay ? (
-              <TbCard title="Tài sản thay thế" tb={tbThay} maFallback={h.thiet_bi_thay_the ?? ""} tone="border-emerald-200 bg-emerald-50/40" />
-            ) : (
-              <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
-                Không thay nguyên tài sản — chỉ thay linh kiện/sửa chữa.
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2"><Package className="h-4 w-4" /> Vật tư đã tiêu hao</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <VatTuTieuHaoView
-            cot="lien_ket_hong_hoc_id"
-            id={h.id}
-            empty={
-              h.vat_tu_su_dung.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Không có vật tư xuất kho cho phiếu này.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  <div className="text-xs text-muted-foreground w-full">Dữ liệu cũ (chưa có bút toán xuất kho):</div>
-                  {h.vat_tu_su_dung.map((ma: string) => (
-                    <Badge key={ma} variant="secondary" className="gap-1 font-mono text-xs">
-                      <Package className="h-3 w-3" />{ma}
-                    </Badge>
-                  ))}
+                  <Card>
+                    <CardHeader className="pb-3 pt-4 px-5">
+                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                        <ArrowLeftRight className="h-4 w-4 text-primary" />
+                        Truy vết tài sản
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-5 pb-5">
+                      <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
+                        <TbCard title="Tài sản hỏng" tb={tb} maFallback={h.thiet_bi_hong} tone="border-red-200 bg-red-50/40" />
+                        <div className="hidden justify-center md:flex">
+                          <ArrowRight className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        {tbThay ? (
+                          <TbCard title="Tài sản thay thế" tb={tbThay} maFallback={h.thiet_bi_thay_the ?? ""} tone="border-emerald-200 bg-emerald-50/40" />
+                        ) : (
+                          <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground flex flex-col items-center justify-center min-h-[80px]">
+                            <span>Không thay nguyên tài sản</span>
+                            <span className="text-[10px] uppercase opacity-60">Chỉ thay linh kiện/sửa chữa</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               )
+            },
+            {
+              id: "vat-tu",
+              label: "Vật tư & Tiêu hao",
+              icon: <Package className="h-4 w-4" />,
+              content: (
+                <Card>
+                  <CardHeader className="pb-3 pt-4 px-5">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                      <Package className="h-4 w-4 text-primary" />
+                      Vật tư đã tiêu hao
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-5 pb-5">
+                    <VatTuTieuHaoView
+                      cot="lien_ket_hong_hoc_id"
+                      id={h.id}
+                      empty={
+                        h.vat_tu_su_dung.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">Không có vật tư xuất kho cho phiếu này.</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            <div className="text-xs text-muted-foreground w-full mb-1">Dữ liệu cũ (chưa có bút toán xuất kho):</div>
+                            {h.vat_tu_su_dung.map((ma: string) => (
+                              <Badge key={ma} variant="secondary" className="gap-1 font-mono text-[10px]">
+                                <Package className="h-3 w-3" />{ma}
+                              </Badge>
+                            ))}
+                          </div>
+                        )
+                      }
+                    />
+                  </CardContent>
+                </Card>
+              )
+            },
+            {
+              id: "lich-su",
+              label: "Lịch sử hỏng hóc",
+              icon: <History className="h-4 w-4" />,
+              content: (
+                <Card>
+                  <CardHeader className="pb-3 pt-4 px-5">
+                    <CardTitle className="text-sm font-semibold">Lịch sử hỏng hóc khác của tài sản</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 border-t">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent">
+                            <TableHead className="w-24">Mã HH</TableHead>
+                            <TableHead>Ngày</TableHead>
+                            <TableHead>Bộ phận</TableHead>
+                            <TableHead>Phương án</TableHead>
+                            <TableHead className="text-right">Chi phí</TableHead>
+                            <TableHead>Trạng thái</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {relatedByTb.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">Không có bản ghi khác.</TableCell>
+                            </TableRow>
+                          ) : relatedByTb.map((x) => (
+                            <TableRow key={x.ma_hong_hoc}>
+                              <TableCell><Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: x.ma_hong_hoc }} className="font-mono text-xs text-primary hover:underline">{x.ma_hong_hoc}</Link></TableCell>
+                              <TableCell className="text-xs text-muted-foreground">{x.ngay_hong}</TableCell>
+                              <TableCell className="text-sm">{x.bo_phan_hong}</TableCell>
+                              <TableCell><StatusBadge domain="hong_hoc" code={x.phuong_an} label={x.phuong_an} /></TableCell>
+                              <TableCell className="text-right text-sm tabular-nums font-mono">{fmtVND(x.chi_phi)}</TableCell>
+                              <TableCell><StatusBadge domain="thiet_bi" code={x.trang_thai} label={x.trang_thai} /></TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
             }
-          />
-        </CardContent>
-      </Card>
+          ]}
+        />
+      </PageBody>
+    </PageFrame>
+  );
+}
 
-
-      {relatedByTb.length > 0 && (
-        <Card>
-          <CardHeader><CardTitle className="text-base">Lịch sử hỏng hóc khác của tài sản</CardTitle></CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Mã HH</TableHead>
-                    <TableHead>Ngày</TableHead>
-                    <TableHead>Bộ phận</TableHead>
-                    <TableHead>Phương án</TableHead>
-                    <TableHead className="text-right">Chi phí</TableHead>
-                    <TableHead>Trạng thái</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {relatedByTb.map((x) => (
-                    <TableRow key={x.ma_hong_hoc}>
-                      <TableCell><Link to="/hong-hoc/$maHongHoc" params={{ maHongHoc: x.ma_hong_hoc }} className="font-mono text-xs text-primary hover:underline">{x.ma_hong_hoc}</Link></TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{x.ngay_hong}</TableCell>
-                      <TableCell className="text-sm">{x.bo_phan_hong}</TableCell>
-                      <TableCell><StatusBadge domain="hong_hoc" code={x.phuong_an} label={x.phuong_an} /></TableCell>
-                      <TableCell className="text-right text-sm tabular-nums">{fmtVND(x.chi_phi)}</TableCell>
-                      <TableCell><StatusBadge domain="thiet_bi" code={x.trang_thai} label={x.trang_thai} /></TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+function KpiCard({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
+  return (
+    <Card>
+      <CardContent className="flex items-center gap-3 p-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-primary">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold truncate leading-tight mb-0.5">{label}</div>
+          <div className="text-sm font-bold truncate leading-none">{value}</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
