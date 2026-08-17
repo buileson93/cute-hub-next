@@ -120,8 +120,8 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: ColumnDef<T>[];

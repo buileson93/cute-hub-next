@@ -19,9 +19,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "[&_tr]:border-b astryx-table-header",
-      // Sticky header cho bảng dài — nền đục để tránh lộ hàng khi cuộn dọc
-      "[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-background [&_th]:shadow-[inset_0_-1px_0_var(--color-border)] astryx-table-sticky-header",
+      "mirats-table-header sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b shadow-sm",
       className,
     )}
     {...props}
@@ -55,7 +53,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted astryx-table-row",
+        "border-b transition-colors hover:bg-muted/40 data-[state=selected]:bg-primary/5 astryx-table-row",
         className,
       )}
       {...props}
@@ -71,7 +69,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-7 px-1.5 text-left align-middle font-bold text-muted-foreground border-r border-border/10 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
+      "h-8 px-2 text-left align-middle font-bold text-[11px] uppercase tracking-wider text-muted-foreground border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
       className,
     )}
     {...props}
@@ -86,7 +84,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-1 align-middle border-r border-border/10 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell",
+      "p-2 align-middle border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell text-[13px]",
       className,
     )}
     {...props}
