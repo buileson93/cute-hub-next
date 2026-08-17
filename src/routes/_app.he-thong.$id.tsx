@@ -863,7 +863,7 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOp
               <HoverCardTrigger asChild>
                 <button
                   type="button"
-                  onClick={() => onOpenHistory(tp.id)}
+                  onClick={() => onOpenHistory?.(tp.id)}
                   className="flex w-full items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-left text-sm hover:bg-primary/5 hover:border-primary/30 transition-all group"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 group-hover:bg-emerald-500/20">
