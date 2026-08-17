@@ -20,8 +20,7 @@ import {
   useGlobalSearch, normalize,
 } from "@/lib/mirats/global-search";
 import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
-import { useDbTaxonomy, useSystemNameOverrides, type DbDevice, type DbTaxonomy } from "@/lib/mirats/db-taxonomy";
-import { storage } from "@/lib/storage";
+import { useDbTaxonomy, useSystemNameOverrides } from "@/lib/mirats/db-taxonomy";
 import { toast } from "sonner";
 import { matchIntent, describeIntent, type Intent } from "@/lib/mirats/command-intent";
 
@@ -90,7 +89,6 @@ type Hit = {
   count?: number;
 };
 
-// Simple local storage wrapper since 'storage' from '@/lib/storage' is for files
 const RECENT_HITS_KEY = "mirats-recent-hits";
 const getRecentHits = (): Hit[] => {
   if (typeof window === "undefined") return [];
@@ -119,9 +117,6 @@ export function CommandPalette() {
 
   const daHienThi = new Set(rows.map((r: any) => `${r.entity}:${r.id}`));
   const rowsMoRong = rowsToanCuc.filter((r: any) => !daHienThi.has(`${r.loai}:${r.id}`));
-
-  const { data: taxo } = useDbTaxonomy();
-  const { data: nameOv } = useSystemNameOverrides();
 
   const publicCfgFn = useServerFn(getAiPublicConfig);
   const { data: aiCfg } = useQuery({
@@ -188,7 +183,6 @@ export function CommandPalette() {
         break;
       case "jump-to":
         break;
-      // Handle non-TS defined intents or legacy intents if any
       default:
         toast.info(describeIntent(intent));
     }
@@ -351,31 +345,30 @@ export function CommandPalette() {
           >
             <LogOut className="h-4 w-4 shrink-0" />
             <div className="text-[14px] font-semibold">Đăng xuất</div>
-          </kbd>
-        </CommandItem>
-      </CommandGroup>
-    </CommandList>
+          </CommandItem>
+        </CommandGroup>
+      </CommandList>
 
-    <div className="mt-auto hidden sm:flex items-center justify-end gap-4 border-t border-border/50 px-5 py-2.5 bg-muted/20">
-      <div className="flex items-center gap-1.5">
-        <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
-          ↑↓
-        </kbd>
-        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Navigate</span>
+      <div className="mt-auto hidden sm:flex items-center justify-end gap-4 border-t border-border/50 px-5 py-2.5 bg-muted/20">
+        <div className="flex items-center gap-1.5">
+          <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
+            ↑↓
+          </kbd>
+          <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Navigate</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
+            <CornerDownLeft className="h-3 w-3" />
+          </kbd>
+          <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Select</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
+            Esc
+          </kbd>
+          <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Close</span>
+        </div>
       </div>
-      <div className="flex items-center gap-1.5">
-        <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
-          <CornerDownLeft className="h-3 w-3" />
-        </kbd>
-        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Select</span>
-      </div>
-      <div className="flex items-center gap-1.5">
-        <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
-          Esc
-        </kbd>
-        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Close</span>
-      </div>
-    </div>
     </CommandDialog>
   );
 }
