@@ -853,20 +853,17 @@ export function CommandPalette() {
           const intent = matchIntent(q);
           if (intent.kind === "jump-to" || intent.confidence < 0.7) return null;
           return (
-            <CommandGroup heading="Hành động thông minh">
+            <CommandGroup heading="Hành động">
               <CommandItem
                 value={`intent-${intent.kind}`}
                 onSelect={() => runIntent(intent)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#0074e2]/10 text-[#0074e2] group-data-[selected=true]:bg-[#0074e2]/20 transition-colors">
-                  <ArrowRight className="h-4 w-4" />
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground/60 group-data-[selected=true]:text-foreground transition-colors">
+                  <ArrowRight className="h-4.5 w-4.5" />
                 </div>
-                <div className="min-w-0 flex-1 space-y-0.5">
-                  <div className="truncate text-[13px] font-bold text-foreground">{describeIntent(intent)}</div>
-                  <div className="truncate text-[11px] text-muted-foreground/80">
-                    Nhấn Enter để thực hiện hành động này
-                  </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[15px] font-medium text-foreground">{describeIntent(intent)}</div>
                 </div>
               </CommandItem>
             </CommandGroup>
@@ -877,10 +874,9 @@ export function CommandPalette() {
 
         {!hasQuery && recentHits.length > 0 && (
           <>
-            <CommandGroup heading="Truy cập gần đây">
+            <CommandGroup>
               {recentHits.map((h) => {
                 const meta = (ENTITY_META as any)[h.entity];
-                const Icon = meta?.icon || Search;
                 return (
                   <CommandItem
                     key={`recent-${h.entity}-${h.id}`}
@@ -889,18 +885,11 @@ export function CommandPalette() {
                       saveRecent(h);
                       go(h.to);
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
+                    className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
-                      <Icon className="h-4 w-4" />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[15px] font-medium text-foreground">{h.title}</div>
                     </div>
-                    <div className="min-w-0 flex-1 space-y-0.5">
-                      <div className="truncate text-[13px] font-bold text-foreground">{h.title}</div>
-                      {h.subtitle && <div className="truncate text-[11px] text-muted-foreground/80">{h.subtitle}</div>}
-                    </div>
-                    <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-                      {meta?.label || "Tài sản"}
-                    </span>
                   </CommandItem>
                 );
               })}
@@ -949,43 +938,13 @@ export function CommandPalette() {
                       saveRecent(h);
                       go(h.to);
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
+                    className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all"
                   >
-                    <div className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                      h.entity === "he_thong" ? "bg-[#0074e2]/5 text-[#0074e2] group-data-[selected=true]:bg-[#0074e2]/20" : "bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2]"
-                    )}>
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-0.5">
-                      <div className="truncate text-[13px] font-bold text-foreground">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[15px] font-medium text-foreground">
                         <Highlight text={h.title || "(không tiêu đề)"} query={activeTerm} />
                       </div>
-                      {h.subtitle && (
-                        <div className="truncate text-[11px] text-muted-foreground/80">
-                          <Highlight text={h.subtitle} query={activeTerm} />
-                        </div>
-                      )}
                     </div>
-                    {h.entity === "thiet_bi" && h.sysName && (
-                      <span
-                        className="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-[#0074e2]/20 bg-[#0074e2]/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#0074e2]"
-                        title={`Hệ thống: ${h.sysName}`}
-                      >
-                        <Network className="h-3 w-3" />
-                        <span className="max-w-[7rem] truncate">{h.sysName}</span>
-                      </span>
-                    )}
-                    {h.entity === "he_thong" && typeof h.count === "number" && (
-                      <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold tabular-nums tracking-wider text-muted-foreground">
-                        {h.count} TB
-                      </span>
-                    )}
-                    <span
-                      className="shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground"
-                    >
-                      {meta.label}
-                    </span>
                   </CommandItem>
                 );
               })}
@@ -1011,24 +970,13 @@ export function CommandPalette() {
                     } as any);
                     go(r.route);
                   }}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
+                  className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
-                    <Search className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1 space-y-0.5">
-                    <div className="truncate text-[13px] font-bold text-foreground">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[15px] font-medium text-foreground">
                       <Highlight text={r.tieuDe} query={activeTerm} />
                     </div>
-                    {r.motaNgan && (
-                      <div className="truncate text-[11px] text-muted-foreground/80">
-                        <Highlight text={r.motaNgan} query={activeTerm} />
-                      </div>
-                    )}
                   </div>
-                  <span className="ml-auto shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-                    {nhanLoai(r.loai)}
-                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -1039,7 +987,6 @@ export function CommandPalette() {
         {visibleNav.map((g) => (
           <CommandGroup key={g.header} heading={g.header}>
             {g.items.map((it) => {
-              const Icon = it.icon;
               return (
                 <CommandItem
                   key={it.to}
@@ -1054,13 +1001,9 @@ export function CommandPalette() {
                     } as any);
                     go(it.to);
                   }}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
+                  className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <span className="text-[13px] font-bold text-foreground">{it.label}</span>
-                  <ArrowRight className="ml-auto h-3.5 w-3.5 opacity-30 group-data-[selected=true]:opacity-60 transition-opacity" />
+                  <span className="text-[15px] font-medium text-foreground">{it.label}</span>
                 </CommandItem>
               );
             })}
@@ -1068,46 +1011,33 @@ export function CommandPalette() {
         ))}
 
         <CommandSeparator />
-        <CommandGroup heading="Hành động">
-          <CommandItem value="action-theme" onSelect={() => runAction("theme")} className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <span className="text-[13px] font-bold text-foreground">Đổi chế độ sáng / tối</span>
+        <CommandGroup heading="Actions">
+          <CommandItem value="action-theme" onSelect={() => runAction("theme")} className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all">
+            <span className="text-[15px] font-medium text-foreground">Theme</span>
           </CommandItem>
-          <CommandItem value="action-reload" onSelect={() => runAction("reload")} className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
-              <CommandIcon className="h-4 w-4" />
-            </div>
-            <span className="text-[13px] font-bold text-foreground">Tải lại ứng dụng</span>
+          <CommandItem value="action-reload" onSelect={() => runAction("reload")} className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all">
+            <span className="text-[15px] font-medium text-foreground">Reload</span>
           </CommandItem>
-          <CommandItem value="action-signout" onSelect={() => runAction("signout")} className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors text-red-500">
-              <LogOut className="h-4 w-4" />
-            </div>
-            <span className="text-[13px] font-bold text-foreground">Đăng xuất</span>
+          <CommandItem value="action-signout" onSelect={() => runAction("signout")} className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all">
+            <span className="text-[15px] font-medium text-foreground">Sign Out</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
 
-      <div className="flex items-center justify-between border-t border-border bg-muted/20 px-4 py-2 text-[10px] text-muted-foreground font-medium">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5">
-            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">Alt</kbd>
-            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">Space</kbd>
-            để mở nhanh
-          </span>
-          <span className="flex items-center gap-1.5">
-            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">⌘</kbd>
-            <kbd className="rounded border bg-background px-1.5 py-0.5 text-[9px] font-bold">K</kbd>
-            tìm kiếm
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>↑↓ di chuyển</span>
-          <span>↵ mở</span>
-          <span>esc đóng</span>
-        </div>
+      <div className="flex items-center gap-5 border-t border-border/40 px-5 py-3 text-[12px] text-muted-foreground font-medium">
+        <span className="flex items-center gap-1.5">
+          <kbd className="flex h-5 w-5 items-center justify-center rounded bg-muted/50 text-[10px] font-bold">↑</kbd>
+          <kbd className="flex h-5 w-5 items-center justify-center rounded bg-muted/50 text-[10px] font-bold">↓</kbd>
+          Navigate
+        </span>
+        <span className="flex items-center gap-1.5">
+          <kbd className="flex h-5 w-8 items-center justify-center rounded bg-muted/50 text-[10px] font-bold">↵</kbd>
+          Select
+        </span>
+        <span className="flex items-center gap-1.5">
+          <kbd className="flex h-5 w-10 items-center justify-center rounded bg-muted/50 text-[10px] font-bold">Esc</kbd>
+          Close
+        </span>
       </div>
     </CommandDialog>
   );
