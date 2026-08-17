@@ -163,7 +163,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex h-[480px]">
+        <div className="flex h-[min(65dvh,520px)]">
           {/* Left Column: Search Results */}
           <div className="flex-1 flex flex-col border-r border-border/30 min-w-0">
             <CommandList className="flex-1">
