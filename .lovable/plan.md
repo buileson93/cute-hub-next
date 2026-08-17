@@ -1,27 +1,34 @@
-# [MIRATS ASTRYX TEMPLATES — U10: FORM PAGE ARCHETYPE]
+# [MIRATS ASTRYX TEMPLATES — U11: SETTINGS/ADMIN/WORKFLOW]
 
-## Pilot Route
-- `src/routes/_app.forms.new.$code.tsx`
+## Archetype Decision & Route Checkpoints
 
-## Proposed Refactor
-- **Anatomy**:
-  - Replace current root `div` with `PageFrame` (density: comfortable).
-  - Use `PageHeader` for title, subtitle (code), breadcrumbs, and primary actions (Save, Submit).
-  - Wrap content in `PageBody` with a max-width container (approx. 800px) for readability.
-  - Divide form into logical `PageSection` units.
-  - Implement a sticky `PageFooter` for the save/submit bar.
-- **Visuals**:
-  - Remove full-page `astryx-surface` card.
-  - Standardize `Label` and `Input` appearance using `FormLabel` (Astryx typography).
-  - Use `InfoHint` in header for template description.
-- **UX Parity**:
-  - Keep all `useQuery`, `useMutation`, and local state (`values`, `checklist`, etc.).
-  - Preserve `visible_if` and `evalVisible` logic for dynamic fields.
-  - Maintain the asset and system picker logic.
-  - Ensure error validation messages are prominently displayed using an error summary at the top of the body if validation fails.
+### Batch 1: Admin Management (Table Archetype)
+- **Route**: `src/routes/_app.admin.nhan-vien.tsx` (Quản lý Nhân viên)
+- **Archetype**: Table Archetype (`PageFrame` -> `PageHeader` -> `PageBody` -> `StandardTable`).
+- **Plan**: 
+  - Refactor to use `PageFrame` (comfortable).
+  - Move Search/Toolbar into a compact toolbar section below `PageHeader`.
+  - Maintain `SchemaDialog` and `NhanVienSoftwareSheet` as overlays.
 
-## Technical Tasks
-1. Update imports in `src/routes/_app.forms.new.$code.tsx` to include new UI primitives.
-2. Refactor the `return` JSX structure to follow `PageFrame` -> `PageHeader` -> `PageBody` -> `PageSection` pattern.
-3. Clean up legacy Tailwind utility classes that conflict with the new design system.
-4. Verify build and basic form interaction.
+### Batch 2: Settings & Storage (Settings Archetype)
+- **Route**: `src/routes/_app.admin.luu-tru.tsx` (Quản lý Lưu trữ / Storage)
+- **Archetype**: Settings Archetype (`StartPanel` for sections, `PageBody` for config forms).
+- **Plan**:
+  - Implement `StartPanel` for storage providers or bucket categories if the UI supports it.
+  - Use `Heading` + `description` primitives for configuration sections.
+
+### Batch 3: Workflow/Operations (Workflow Archetype)
+- **Route**: `src/routes/_app.su-co.index.tsx` (Danh sách Sự cố)
+- **Archetype**: Workflow/List Archetype.
+- **Plan**:
+  - Transition to `PageFrame` + `StandardTable`.
+  - Ensure filters/tabs are preserved and integrated into the Astryx toolbar pattern.
+
+## UX Parity Matrix
+- **RBAC**: Enforce `isAdmin` checks at the component level as currently implemented.
+- **Handlers**: Keep all `useMutation` and `useQuery` logic intact.
+- **Safety**: Preserve all `confirm()` calls and permission guards for destructive actions (Delete).
+
+## Metrics & Rollback
+- **Gate**: All workflows must function post-refactor (Add/Edit/Delete).
+- **Rollback**: Revert individual route files to their respective `origin/main` states.
