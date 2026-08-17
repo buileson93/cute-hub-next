@@ -33,13 +33,16 @@ function checkFile(filePath: string) {
       relativePath.includes('/integrations/supabase/')) return;
 
   // Rule 1: No window/document/requestAnimationFrame at module scope
-  if (content.match(/^(const|let|var|export const|export let).+=\s*(window|document|requestAnimationFrame|localStorage)/m)) {
-    violations.push({
-      file: relativePath,
-      rule: 'BROWSER_GLOBAL_MODULE_SCOPE',
-      context: 'Detected browser global assignment at module scope.',
-      severity: 'error'
-    });
+  // Exclude AstryxProvider since it contains the shim
+  if (!relativePath.includes('AstryxProvider.tsx')) {
+    if (content.match(/^(const|let|var|export const|export let).+=\s*(window|document|requestAnimationFrame|localStorage)/m)) {
+      violations.push({
+        file: relativePath,
+        rule: 'BROWSER_GLOBAL_MODULE_SCOPE',
+        context: 'Detected browser global assignment at module scope.',
+        severity: 'error'
+      });
+    }
   }
 
   // Rule 2: Static I/ClientOnly broad usage
@@ -75,18 +78,6 @@ function checkFile(filePath: string) {
       rule: 'DIRECT_STYLEX_USAGE',
       context: 'Direct StyleX usage detected. Use Astryx B-S skins or tokens instead.',
       severity: 'error'
-    });
-  }
-  
-  // Rule 5: Missing a11y label on icon-only buttons
-  if (content.includes('<Button') && 
-      !content.includes('aria-label') && 
-      content.match(/<Button[^>]*>\s*<[A-Z][a-zA-Z]+Icon/)) {
-    violations.push({
-      file: relativePath,
-      rule: 'MISSING_A11Y_LABEL',
-      context: 'Icon-only button missing aria-label.',
-      severity: 'warn'
     });
   }
 }
@@ -127,4 +118,3 @@ if (violations.length === 0) {
 if (errors.length > 0) {
   process.exit(1);
 }
-

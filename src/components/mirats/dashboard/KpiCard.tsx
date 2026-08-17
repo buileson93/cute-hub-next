@@ -44,17 +44,18 @@ export function KpiCard({
 
   const textColors = {
     normal: "text-foreground",
-    attention: "text-blue-600 dark:text-blue-400",
-    warning: "text-amber-600 dark:text-amber-400",
-    danger: "text-red-600 dark:text-red-400",
+    attention: "text-success",
+    warning: "text-warning",
+    danger: "text-destructive",
   };
 
   const iconBg = {
     normal: "bg-muted text-muted-foreground",
-    attention: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-    warning: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    danger: "bg-red-500/10 text-red-600 dark:text-red-400",
+    attention: "bg-success/10 text-success",
+    warning: "bg-warning/10 text-warning",
+    danger: "bg-destructive/10 text-destructive",
   };
+
 
   return (
     <Card 

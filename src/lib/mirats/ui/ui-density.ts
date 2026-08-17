@@ -18,7 +18,7 @@ export const UI_DENSITY = {
   CONT_SM: 480,
 
   // --- Cards ---
-  CARD_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl data-[density=spacious]:rounded-3xl",
+  CARD_RADIUS: "rounded-lg data-[density=comfortable]:rounded-xl data-[density=spacious]:rounded-2xl",
   CONTROL_RADIUS: "rounded-md data-[density=comfortable]:rounded-lg",
   BADGE_RADIUS: "rounded-full",
   CARD_PADDING: "p-2 data-[density=comfortable]:p-4 data-[density=spacious]:p-6",
