@@ -86,7 +86,7 @@ export function PageHeader({
               data-testid="page-header-title"
               className={cn(
                 "truncate font-bold leading-tight tracking-tight text-foreground",
-                "text-[13px] data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
+                "text-sm data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
               )}
             >
               {title}
