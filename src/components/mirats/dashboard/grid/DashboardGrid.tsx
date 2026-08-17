@@ -261,14 +261,15 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "asset-type-bar":
         return (
-          <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.system" size="tiny" className="text-primary" /> Phân loại hệ thống
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 p-4 overflow-hidden">
               <div className="h-[200px] w-full">
+
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
@@ -291,14 +292,15 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "completeness-gauge":
         return (
-          <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="flex flex-col gap-4">
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold">Trung bình toàn hệ</span>
                   <span className="text-2xl font-black text-primary tabular-nums">{completeness.avg_thiet_bi || 0}%</span>
@@ -320,13 +322,14 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "live-timeline":
         return (
-          <Card className="shadow-md border-none bg-card/50 backdrop-blur-sm h-full flex flex-col">
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 flex-1 overflow-hidden">
+
               <LiveTimeline />
             </CardContent>
           </Card>

@@ -69,12 +69,15 @@ function Dashboard() {
   }
 
   return (
-    <PageBody>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-        <PageHeader
-          title={`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? ""}`.trim()}
-          icon="entity.dashboard"
-        />
+    <PageBody className="bg-background min-h-screen">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="space-y-1">
+          <h1 className="astryx-heading-1">
+            {`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? ""}`.trim()}
+          </h1>
+          <p className="astryx-text-muted">MIRATS 2.0 — Hệ thống quản lý tài sản kỹ thuật.</p>
+        </div>
+        
         <div className="flex items-center gap-2">
           {isEditing && (
              <>
@@ -82,7 +85,7 @@ function Dashboard() {
                  currentLayout={layout}
                  onAdd={handleAddWidget}
                  trigger={
-                   <Button size="default" variant="outline" className="gap-2 border-primary/20 hover:bg-primary/5 transition-all">
+                   <Button size="default" variant="outline" className="astryx-control gap-2 border-primary/20 hover:bg-primary/5">
                      <Icon name="action.add" size="tiny" className="text-primary" />
                      <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
                    </Button>
@@ -90,14 +93,13 @@ function Dashboard() {
                />
                <Button 
                  size="default" 
-
-                variant="ghost" 
-                onClick={handleReset}
-                className="gap-2 text-muted-foreground hover:text-destructive transition-all"
-              >
-                <Icon name="action.undo" size="tiny" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
-              </Button>
+                 variant="ghost" 
+                 onClick={handleReset}
+                 className="astryx-control gap-2 text-muted-foreground hover:text-destructive"
+               >
+                 <Icon name="action.undo" size="tiny" />
+                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
+               </Button>
              </>
           )}
           <Button 
@@ -105,7 +107,7 @@ function Dashboard() {
             variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "h-8 px-4 transition-all gap-2",
+              "astryx-control h-8 px-4 transition-all gap-2",
               !isEditing && "border-primary/20 hover:bg-primary/5"
             )}
           >
@@ -117,7 +119,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-2 -mx-6">
+      <div className="mb-8 p-1 astryx-surface overflow-hidden">
         <HeartBeatStrip />
       </div>
 
@@ -125,6 +127,7 @@ function Dashboard() {
         <DashboardGrid page="home" isEditing={isEditing} />
       </div>
     </PageBody>
+
   );
 }
 

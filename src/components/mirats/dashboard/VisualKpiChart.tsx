@@ -46,28 +46,29 @@ export function VisualKpiChart({
   };
 
   return (
-    <Card className="overflow-hidden border-none shadow-md bg-card/50 backdrop-blur-sm transition-all hover:shadow-lg">
+    <Card className="astryx-card overflow-hidden">
       <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between space-y-0">
         <div className="space-y-1">
-          <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+          <CardTitle className="astryx-text-label flex items-center gap-2">
             {icon && <Icon name={icon as any} size="tiny" className={statusColors[status]} />}
             {title}
             {tooltip && (
               <AppTooltip noiDung={tooltip}>
                 <div className="cursor-help">
-                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/50" />
+                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/30" />
                 </div>
               </AppTooltip>
             )}
           </CardTitle>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black tabular-nums tracking-tighter">
+            <span className="text-2xl font-black astryx-number tracking-tighter">
               {value}
             </span>
-            {unit && <span className="text-[10px] font-bold text-muted-foreground uppercase">{unit}</span>}
+            {unit && <span className="astryx-text-label opacity-70">{unit}</span>}
           </div>
         </div>
       </CardHeader>
+
       <CardContent className="p-0 mt-2">
         <div style={{ height }} className="w-full relative">
           <div className={cn("absolute inset-0 bg-gradient-to-b opacity-50", bgGradients[status])} />
