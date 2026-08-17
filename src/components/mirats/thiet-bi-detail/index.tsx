@@ -13,6 +13,10 @@ import { Share2 } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 import TabTongQuan from "./TabTongQuan";
+import TabVanHanh from "./TabVanHanh";
+import TabCauHinh from "./TabCauHinh";
+import TabHoSoPhapLy from "./TabHoSoPhapLy";
+import TabNangCao from "./TabNangCao";
 import { TelemetryPanel, AllocationPanel, LifecyclePanel } from "./Panels";
 
 interface ThietBiDetailProps {
