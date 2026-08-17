@@ -105,6 +105,7 @@ export type StdColumn<T> = ColumnDef<T>;
 
 
 export interface StandardTableProps<T> {
+  className?: string;
   rows: T[];
   columns: ColumnDef<T>[];
   getRowId?: (r: T) => string;
@@ -150,6 +151,7 @@ export interface StandardTableProps<T> {
 
 
 export function StandardTable<T>({
+  className,
   rows = [],
   columns = [],
   getRowId,
