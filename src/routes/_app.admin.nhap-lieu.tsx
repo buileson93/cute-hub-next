@@ -1045,18 +1045,15 @@ function NhapLieuPage() {
                       {ent.fields.map((f) => {
                         const locked = f.key === ent.keyHeader;
                         return (
-                          <label key={f.key} className="flex items-center gap-2 text-xs">
-                            <Checkbox
-                              checked={picked.has(f.key) || locked}
-                              disabled={locked}
-                              onCheckedChange={() => togglePick(f.key)}
-                            />
-                            <span className={locked ? "font-medium" : ""}>
-                              {f.label}
-                              {f.required && <span className="text-destructive"> *</span>}
-                              {locked && <span className="text-muted-foreground"> (khóa)</span>}
-                            </span>
-                          </label>
+                          <CheckboxInput
+                            key={f.key}
+                            checked={picked.has(f.key) || locked}
+                            disabled={locked}
+                            onCheckedChange={() => togglePick(f.key)}
+                            label={f.label + (f.required ? " *" : "")}
+                            description={locked ? "(Khóa định danh)" : undefined}
+                            className="text-xs"
+                          />
                         );
                       })}
                     </div>
