@@ -6,15 +6,13 @@ import { cn } from "@/lib/utils";
 // từ `han-canh-bao.ts` (Task 13): 30 đỏ · 60 cam · 90 vàng · khác xám.
 
 const NGUONG_CLS: Record<number, string> = {
-  30: "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/25",
-  60: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-500/25",
-  90: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/25",
+  30: "bg-error/10 text-destructive border-error/20",
+  60: "bg-warning/10 text-warning border-warning/20",
+  90: "bg-warning/5 text-warning/80 border-warning/10",
 };
 
-const OVERDUE_CLS =
-  "bg-red-600 text-white border-red-700 dark:bg-red-500 dark:text-white dark:border-red-500";
-const FAR_CLS =
-  "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/15 dark:text-slate-300 dark:border-slate-500/25";
+const OVERDUE_CLS = "bg-destructive text-destructive-foreground border-destructive shadow-sm";
+const FAR_CLS = "bg-muted text-muted-foreground border-border";
 
 export function expiringColor(soNgay: number | null | undefined): string {
   if (soNgay == null || !Number.isFinite(soNgay)) return FAR_CLS;
