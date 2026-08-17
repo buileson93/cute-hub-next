@@ -81,9 +81,6 @@ function SoDoEditorPage() {
 }
 
 function SoDoEditorContent() {
-}
-
-function SoDoEditorContent() {
 
 const BUCKET = "so-do-tep";
 const LIB_BUCKET = "so-do-thu-vien";
