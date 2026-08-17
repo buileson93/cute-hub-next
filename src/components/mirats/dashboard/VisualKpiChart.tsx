@@ -75,7 +75,9 @@ export function VisualKpiChart({
           <div className={cn("absolute inset-0 bg-gradient-to-b opacity-30", bgGradients[status])} />
           <ResponsiveContainer width="100%" height="100%">
             {type === 'area' ? (
-              <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+              <AreaChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <XAxis dataKey="thangHT" hide />
+                <YAxis hide domain={['auto', 'auto']} />
                 <defs>
                   <linearGradient id={`gradient-${title.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor={Array.isArray(color) ? color[0] : color} stopOpacity={0.3}/>
