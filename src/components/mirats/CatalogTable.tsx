@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxInput } from "@/components/ui/checkbox-input";
 import { Switch } from "@/components/ui/switch";
 import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
@@ -1176,7 +1177,7 @@ function CatalogDialog({
                 </ul>
                 {!value && (
                   <label className="mt-2 flex cursor-pointer items-center gap-1.5 text-amber-900 dark:text-amber-100">
-                    <Checkbox checked={dupAck} onCheckedChange={(checked) => setDupAck(!!checked)} />
+                    <CheckboxInput label="Tôi đã kiểm tra và xác nhận cập nhật đè dữ liệu trùng mã" checked={dupAck} onCheckedChange={(checked) => setDupAck(!!checked)} />
                     <span>Vẫn tạo mới (đã kiểm tra, không phải bản trùng)</span>
                   </label>
                 )}
