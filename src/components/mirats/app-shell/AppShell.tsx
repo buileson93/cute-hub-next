@@ -34,6 +34,7 @@ import {
   workspaces,
   routeTitles,
   resolveActiveWorkspace,
+  resolveRouteMeta,
   firstItemOf,
 } from "@/lib/mirats/nav-contract";
 import { type UiDensityMode, UI_DENSITY } from "@/lib/mirats/ui/ui-density";
@@ -147,6 +148,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         : firstItemOf(ws, hasRole);
     navigate({ to: target as never });
   }
+
+  const routeMeta = useMemo(() => resolveRouteMeta(pathname), [pathname]);
 
   return (
     <ProductTourProvider steps={TOUR_STEPS}>
@@ -263,15 +266,22 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <BreadcrumbList>
                         <BreadcrumbItem>
                           <BreadcrumbLink asChild>
-                            <Link to="/">Hệ thống</Link>
+                            <button 
+                              onClick={() => gotoWorkspace(activeWs)}
+                              className="cursor-pointer"
+                            >
+                              {activeWs.label}
+                            </button>
                           </BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                          <BreadcrumbPage>
-                            {(hoveredWsId ? visibleWorkspaces.find(w => w.id === hoveredWsId) : activeWs)?.label}
-                          </BreadcrumbPage>
-                        </BreadcrumbItem>
+                        {routeMeta.crumb !== activeWs.label && routeMeta.crumb !== "MIRATS" && (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <BreadcrumbPage>{routeMeta.crumb}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                          </>
+                        )}
                       </BreadcrumbList>
                     </Breadcrumb>
                   </div>
