@@ -382,7 +382,7 @@ function HeThongInner({
             {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
             {compact ? "Đầy đủ" : "Gọn"}
           </Button>
-          <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => window.print()}>
+          <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => { if (typeof window !== 'undefined') window.print(); }}>
             <Printer className="h-3.5 w-3.5" /> In / PDF
           </Button>
         </div>
@@ -397,7 +397,7 @@ function HeThongInner({
                 <Network className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <h1 className="truncate text-xl font-semibold sm:text-2xl">{tenHt}</h1>
+                <h1 className="astryx-heading-2 truncate">{tenHt}</h1>
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   {maBravo && <span>Mã Bravo: <span className="font-mono text-foreground/80">{maBravo}</span></span>}
                   {donVi ? (
@@ -439,7 +439,7 @@ function HeThongInner({
         <div className="space-y-4 lg:col-span-1">
           <Card className="lg:sticky lg:top-24">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Định danh &amp; chỉ số vận hành</CardTitle>
+              <CardTitle className="astryx-heading-3">Định danh &amp; chỉ số vận hành</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
@@ -490,7 +490,7 @@ function HeThongInner({
             trend6={trend6}
             onPickStatus={() => {
               if (typeof document !== "undefined") {
-                document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                if (typeof document !== 'undefined') document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
               }
             }}
             months={chartMonths}
@@ -561,11 +561,11 @@ function HeThongInner({
             )}
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-                <TabsTrigger value="tl"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
-                <TabsTrigger value="bt"><Wrench className="mr-1 h-3.5 w-3.5" />Bảo dưỡng ({baoTri.length})</TabsTrigger>
-                <TabsTrigger value="sc"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
-                <TabsTrigger value="hh"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
-                <TabsTrigger value="bg"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
+                <TabsTrigger value="tl" className="astryx-control"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
+                <TabsTrigger value="bt" className="astryx-control"><Wrench className="mr-1 h-3.5 w-3.5" />Bảo dưỡng ({baoTri.length})</TabsTrigger>
+                <TabsTrigger value="sc" className="astryx-control"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
+                <TabsTrigger value="hh" className="astryx-control"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
+                <TabsTrigger value="bg" className="astryx-control"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
                 <TabsTrigger value="ll"><HistoryIcon className="mr-1 h-3.5 w-3.5" />Sổ lý lịch gộp</TabsTrigger>
                 <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết</TabsTrigger>
                 <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư ({tuongThich?.length || 0})</TabsTrigger>
@@ -763,13 +763,17 @@ function HeThongInner({
         donViMa={donViMa}
         onSave={(v) => {
           setThr(v);
+        if (typeof window !== 'undefined') {
           try { window.localStorage.setItem(thrKey, JSON.stringify(v)); } catch { /* ignore */ }
+        }
           setThrOpen(false);
         }}
         onReset={() => {
           const def = { good: 85, ok: 60, warn: 40 };
           setThr(def);
+        if (typeof window !== 'undefined') {
           try { window.localStorage.removeItem(thrKey); } catch { /* ignore */ }
+        }
         }}
       />
     </div>
@@ -1059,7 +1063,7 @@ function ThanhPhanChiTietWrapper({
           heThongId={heThongId}
           canManage={canManage}
           onClose={onClose}
-          onOpenDevice={(ma) => window.location.href = `/thiet-bi/${ma}`}
+          onOpenDevice={(ma) => { if (typeof window !== 'undefined') window.location.href = `/thiet-bi/${ma}`; }}
         />
       )}
 

@@ -298,20 +298,20 @@ function NewSubmission() {
   const { t } = template;
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8 lg:px-12">
-      <Button asChild variant="ghost" size="sm" className="mb-4">
+    <div className="astryx-surface mx-auto max-w-5xl px-6 py-8 lg:px-12 mt-4">
+      <Button asChild variant="ghost" size="sm" className="astryx-control mb-4">
         <Link to="/forms"><ArrowLeft className="mr-2 h-4 w-4" />Quay lại</Link>
       </Button>
 
       <div className="mb-6">
-        <div className="font-mono text-xs text-muted-foreground">{t.code}</div>
-        <h1 className="text-2xl font-bold">{t.ten}</h1>
-        {t.mo_ta && <p className="mt-1 text-sm text-muted-foreground">{t.mo_ta}</p>}
+        <div className="astryx-number text-xs text-muted-foreground">{t.code}</div>
+        <h1 className="astryx-heading-1">{t.ten}</h1>
+        {t.mo_ta && <p className="astryx-text-muted mt-1">{t.mo_ta}</p>}
       </div>
 
-      <Card className="mb-4">
-        <CardHeader><CardTitle className="text-base">Thông tin chung</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <Card className="astryx-card mb-4">
+        <CardHeader><CardTitle className="astryx-heading-3">Thông tin chung</CardTitle></CardHeader>
+        <CardContent className="astryx-text-body grid grid-cols-1 gap-3 md:grid-cols-2">
           <div><Label>Tiêu đề biên bản</Label>
             <Input value={tieuDe} onChange={(e) => setTieuDe(e.target.value)} maxLength={200} placeholder={t.ten} /></div>
           <div><Label>Kỳ báo cáo (VD: Q1/2026)</Label>

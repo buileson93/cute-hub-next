@@ -59,6 +59,30 @@ export const Route = createFileRoute("/_app/so-do/$id")({
   component: SoDoEditorPage,
 });
 
+/**
+ * HydrationSafeEditor
+ * 
+ * Bọc Editor bằng một lớp bảo vệ Hydration để tránh lỗi XYFlow/DOM 
+ * truy cập window/document sớm trong quá trình SSR.
+ */
+function SoDoEditorPage() {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => setIsClient(true), []);
+  
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  
+  return <SoDoEditorContent />;
+}
+
+// Dữ liệu và cấu hình cho Editor
+
+
 const BUCKET = "so-do-tep";
 const LIB_BUCKET = "so-do-thu-vien";
 const LIB_URL_TTL = 315360000; // ~10 năm
@@ -590,7 +614,7 @@ const edgeTypes: EdgeTypes = { styled: StyledEdge, wave: WaveEdge };
 
 
 
-function SoDoEditorPage() {
+function SoDoEditorContent() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
   const isMobile = useIsMobile();
@@ -710,6 +734,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     const imageWidth = Math.min(4096, Math.max(640, Math.ceil(bounds.width) + pad * 2));
     const imageHeight = Math.min(4096, Math.max(480, Math.ceil(bounds.height) + pad * 2));
     const vp = getViewportForBounds(bounds, imageWidth, imageHeight, 0.2, 2, 0.1);
+    if (typeof document === 'undefined') { toast.error("Môi trường không hỗ trợ xuất ảnh"); return; }
     const el = document.querySelector<HTMLElement>(".react-flow__viewport");
     if (!el) { toast.error("Không tìm thấy khung sơ đồ"); return; }
     const { toPng } = await import("html-to-image");
@@ -725,10 +750,12 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       },
     })
       .then((dataUrl) => {
-        const a = document.createElement("a");
-        a.download = `${(row.ten || "so-do").replace(/[^\w\-]+/g, "_")}.png`;
-        a.href = dataUrl;
-        a.click();
+        if (typeof document !== 'undefined') {
+          const a = document.createElement("a");
+          a.download = `${(row.ten || "so-do").replace(/[^\w\-]+/g, "_")}.png`;
+          a.href = dataUrl;
+          a.click();
+        }
         toast.success("Đã xuất ảnh sơ đồ");
       })
       .catch(() => toast.error("Không xuất được ảnh"));
@@ -741,7 +768,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       snapshot();
       setNodes(autoLayoutNodes(rf.getNodes() as ElementNodeType[], edges, dir));
       toast.success("Đã tự động bố trí sơ đồ");
-      window.setTimeout(() => rf.fitView({ padding: 0.2, duration: 400 }), 80);
+      if (typeof window !== 'undefined') window.setTimeout(() => rf.fitView({ padding: 0.2, duration: 400 }), 80);
     },
     [nodes, edges, snapshot, setNodes, rf],
   );
@@ -773,7 +800,8 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     staleTime: 60_000,
   });
 
-  const previewApi = useMemo<PreviewApi>(() => {
+  const previewApi = useMemo<PreviewApi | null>(() => {
+    if (typeof window === 'undefined') return null;
     const deviceMap = new Map(scope.thietBi.map((t) => [t.ma_thiet_bi, t]));
     const systemMap = new Map(scope.heThong.map((h) => [h.ma, h]));
     const diagBySystem = new Map<string, DiagramLite[]>();
@@ -947,11 +975,11 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm" className="astryx-control">
           <Link to="/so-do"><ArrowLeft className="mr-1 h-4 w-4" /> Danh sách</Link>
         </Button>
         <div className="mr-auto flex min-w-0 flex-wrap items-center gap-2">
-          <h1 className="truncate text-lg font-semibold">{row.ten}</h1>
+          <h1 className="astryx-heading-2 truncate">{row.ten}</h1>
           {row.he_thong_ten && (
             <Link to="/he-thong/cay">
               <Badge variant="secondary" className="gap-1 font-normal hover:bg-secondary/70">
@@ -965,10 +993,10 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
           </InfoHint>
         </div>
 
-        <Button variant="outline" size="icon" className="h-9 w-9" onClick={undo} disabled={!canUndo} title="Hoàn tác (Ctrl+Z)" aria-label="Undo2">
+        <Button variant="outline" size="icon" className="astryx-control h-9 w-9" onClick={undo} disabled={!canUndo} title="Hoàn tác (Ctrl+Z)" aria-label="Undo2">
           <Undo2 className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="icon" className="h-9 w-9" onClick={redo} disabled={!canRedo} title="Làm lại (Ctrl+Shift+Z)" aria-label="Redo2">
+        <Button variant="outline" size="icon" className="astryx-control h-9 w-9" onClick={redo} disabled={!canRedo} title="Làm lại (Ctrl+Shift+Z)" aria-label="Redo2">
           <Redo2 className="h-4 w-4" />
         </Button>
         <Separator orientation="vertical" className="mx-1 hidden h-6 sm:block" />
@@ -1030,7 +1058,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
             <Background gap={16} />
             <Controls />
             <MiniMap pannable zoomable className="!bg-card" />
-            <Panel position="bottom-center">
+            <Panel position="bottom-center" className="astryx-surface mb-4">
               <FigJamToolbar
                 edgeKind={edgeKind}
                 onEdgeKind={applyEdgeKind}

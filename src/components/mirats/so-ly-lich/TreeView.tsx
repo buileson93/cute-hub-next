@@ -49,7 +49,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
       <div key={node.key} className="space-y-1">
         <div 
           className={cn(
-            "group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50",
+            "astryx-control group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50",
             level > 0 && "ml-4"
           )}
         >
@@ -68,9 +68,9 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             <span className={cn("truncate text-sm", node.kind === 'ht' ? "font-bold" : "font-medium")}>
               {node.label}
             </span>
-            <Badge variant="secondary" className="px-1 py-0 text-[10px] tabular-nums">
+            <span className="astryx-badge astryx-badge-primary astryx-number">
               {node.count}
-            </Badge>
+            </span>
           </div>
           {node.hist && (node.hist.bt > 0 || node.hist.sc > 0) && (
             <div className="flex gap-2 text-[10px]">
