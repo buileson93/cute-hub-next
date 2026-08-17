@@ -710,6 +710,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     const imageWidth = Math.min(4096, Math.max(640, Math.ceil(bounds.width) + pad * 2));
     const imageHeight = Math.min(4096, Math.max(480, Math.ceil(bounds.height) + pad * 2));
     const vp = getViewportForBounds(bounds, imageWidth, imageHeight, 0.2, 2, 0.1);
+    if (typeof document === 'undefined') { toast.error("Môi trường không hỗ trợ xuất ảnh"); return; }
     const el = document.querySelector<HTMLElement>(".react-flow__viewport");
     if (!el) { toast.error("Không tìm thấy khung sơ đồ"); return; }
     const { toPng } = await import("html-to-image");
@@ -725,10 +726,12 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       },
     })
       .then((dataUrl) => {
-        const a = document.createElement("a");
-        a.download = `${(row.ten || "so-do").replace(/[^\w\-]+/g, "_")}.png`;
-        a.href = dataUrl;
-        a.click();
+        if (typeof document !== 'undefined') {
+          const a = document.createElement("a");
+          a.download = `${(row.ten || "so-do").replace(/[^\w\-]+/g, "_")}.png`;
+          a.href = dataUrl;
+          a.click();
+        }
         toast.success("Đã xuất ảnh sơ đồ");
       })
       .catch(() => toast.error("Không xuất được ảnh"));
