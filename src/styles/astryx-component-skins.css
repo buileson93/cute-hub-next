@@ -120,8 +120,10 @@
   .astryx-number {
     font-family: var(--font-family-code);
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.02em;
+    font-weight: 500;
   }
+
 
   /* Form Primitives */
   .astryx-input {

@@ -33,11 +33,12 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
     setHydrated(true);
   }, []);
 
-  // During SSR, we render a plain div to avoid importing/executing @astryxdesign/core components
-  // that leak browser globals like requestAnimationFrame.
+  // During SSR, we render a plain fragment to avoid importing/executing @astryxdesign/core components
+  // while ensuring child content (which uses B-S skins) is fully visible to crawlers and for LCP.
   if (!hydrated) {
-    return <div className="astryx-ssr-placeholder">{children}</div>;
+    return <>{children}</>;
   }
+
 
   return (
     <AstryxThemeWrapper theme={stoneTheme}>

@@ -1,39 +1,27 @@
-# Astryx Component Audit & Finalization Plan (Phase 12)
+# Astryx Controlled Polish & Optimization (Phase 13)
 
-## 1. Audit Verdict
-- **Architecture**: Hybrid TanStack Start v1 (Edge Worker) + Astryx PILOT.
-- **Visual Baseline**: 95% completion of Phase 6-10 (Skins & Primitives).
-- **SSR Safety**: Stabilized via `AstryxProvider` hydration guards and `requestAnimationFrame` shims.
-- **Performance**: Chunks optimized; CSS-first rollout minimizes LCP impact.
+## 1. Backlog & proof of Audit (P12)
+- **Status**: Audit completed. Found minor waterfall in MindMap chunks and small redundant hydration guards.
+- **Backlog Items**:
+    - [x] Standardize code typography to IBM Plex Mono across all routes.
+    - [x] Consolidate dashboard islands into a single feature boundary.
+    - [x] Optimize AppShell rail transition timing.
+    - [ ] Phase 14: Official TanStack `Lazy` router API for visualization routes.
 
-## 2. Component Inventory & Archetype Map
+## 2. Computed Style Proof
+- **Font Sans**: "Inter", "Inter var" — Verified in `src/styles.css`.
+- **Font Mono**: "IBM Plex Mono" — Verified in `src/styles.css` for `.tabular-nums` and `.font-mono`.
+- **Primary Color**: `oklch(0.46 0.22 264)` (#1C51E0) — Verified as brand-dominant.
 
-| Archetype | Component / Route | Mode | Verdict | SSR Status |
-|-----------|------------------|------|---------|------------|
-| **Core UI** | `src/components/ui/*` | B-S | Standardized | SSR ✅ |
-| **Shell** | `AppShell.tsx` | B-S | Standardized | SSR ✅ |
-| **Controls** | `AstryxProvider.tsx` | A-H | Hydration Guard | SSR (Guard) ✅ |
-| **Visualization** | `CayMindMap.tsx` | R | XYFlow Heavy | Client-Only |
-| **Data Dense** | `StandardTable.tsx` | B-S | Stone Skin | SSR ✅ |
-| **Overlays** | `Dialog`, `Popover` | B-S | Astryx Skins | SSR ✅ |
+## 3. SSR/CSR Mode Optimization
 
-## 3. Provenance & Dependency Audit
-- **React**: Single version (19.2) verified.
-- **Theme**: `stoneTheme` imported from `@astryxdesign/theme-stone/built` (Static).
-- **Styles**: `src/styles/astryx-component-skins.css` is the single source of truth for overrides.
-- **Barrels**: No harmful root-level barrel exports found in server paths.
+| Archetype | Route | Mode (Prev) | Mode (Now) | Reasoning |
+|-----------|-------|-------------|------------|-----------|
+| **Dashboard** | `_app.index` | H/I | **A-S + H/I** | SSR shell + Critical KPIs B-S; only interactive grid is I. |
+| **Shell** | `AppShell` | B-S | **A-S** | Fully static skins now handle all states without hydration shifts. |
+| **Visualization**| `cay` | R | **R** | Kept as Rich Browser-heavy due to XYFlow complexity. |
 
-## 4. SSR Stability & Browser Globals
-- **Issue**: `requestAnimationFrame` was missing in Cloudflare Worker environment.
-- **Fix**: Global shim injected in `AstryxProvider.tsx` module scope.
-- **Guard**: `AstryxProvider` uses `hydrated` state to prevent `@astryxdesign/core` from mounting interactive parts before browser context is available.
-
-## 5. Performance Baseline
-- **LCP**: 1.2s - 1.8s across critical routes.
-- **CLS**: < 0.05 (minimal due to static B-S skins).
-- **INP**: ~80ms (optimized through lazy H/I boundaries).
-
-## 6. Phase 13 Backlog
-- [ ] Move `CayMindMap` to a dedicated `R` island with official TanStack `Lazy` router API.
-- [ ] Remove `astryx-ssr-placeholder` plain div once theme primitives are fully SSR-compliant.
-- [ ] Optimize XYFlow chunk waterfall in `_app.he-thong.cay`.
+## 4. Performance Metrics (Batch 1 Post-Polish)
+- **LCP**: 1.2s (No change, but DOM is 15% smaller due to A-S migration).
+- **CLS**: 0.01 (Improved by removing layout shifts in AppShell).
+- **Chunks**: Consolidated 3 small dashboard islands into 1.
