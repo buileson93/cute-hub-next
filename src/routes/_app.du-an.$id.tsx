@@ -241,7 +241,7 @@ function DuAnDetailPage() {
                 />
               </div>
               {canAddTask && (
-                <Button size="sm" className="h-8 px-3 text-xs bg-slate-900 hover:bg-slate-800" onClick={() => { setDefaultMocId(mocs[0]?.id); setEditingCV(null); setOpenCV(true); }}>
+                <Button size="sm" className="h-8 px-3 text-xs bg-slate-900 hover:bg-slate-800" onClick={() => { setDefaultMocId(mocs?.[0]?.id ?? null); setEditingCV(null); setOpenCV(true); }}>
                   <Plus className="h-3.5 w-3.5 mr-1.5" /> Thêm việc
                 </Button>
               )}
