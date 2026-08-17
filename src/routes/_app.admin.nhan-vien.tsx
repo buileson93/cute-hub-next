@@ -6,6 +6,9 @@ import { Users, Plus, Search, Pencil, Trash2, Mail, Phone, UserCircle, ShieldChe
 import { createFileRoute } from "@tanstack/react-router";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageSection } from "@/components/mirats/layout/PageSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SchemaDialog, type SchemaField } from "@/components/mirats/SchemaDialog";
