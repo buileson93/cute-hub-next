@@ -226,7 +226,7 @@ function AuthPage() {
                   <Field id="password" label="Mật khẩu" type="password" autoComplete="current-password"
                     value={password} onChange={setPassword} disabled={busy}
                     rightSlot={
-                      <a href="/forgot-password" className="text-xs font-medium text-muted-foreground hover:text-primary">
+                      <a href="/forgot-password" className="text-xs font-medium text-muted-foreground hover:text-[#0074e2]">
                         Quên mật khẩu?
                       </a>
                     } />
@@ -329,7 +329,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="h-12 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="h-12 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-[#0074e2]/40 focus-visible:border-[#0074e2]/50"
       />
     </div>
   );
