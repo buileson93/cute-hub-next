@@ -139,8 +139,8 @@ export function VisualKpiChart({
                 />
                 <Bar 
                   dataKey="value" 
-                  radius={[4, 4, 0, 0]} 
-                  barSize={12}
+                  radius={[6, 6, 0, 0]} 
+                  barSize={14}
                   isAnimationActive={true}
                   animationDuration={1000}
                 >
