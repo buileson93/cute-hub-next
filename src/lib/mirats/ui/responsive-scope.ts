@@ -1,5 +1,5 @@
 /**
- * Thống nhất các hằng số Breakpoint cho toàn hệ thống MIRATS 2.0
+ * Thống nhất các hằng số Breakpoint cho toàn hệ thống MIRATS
  * Dựa trên cấu hình của StandardTable và Tailwind mặc định
  */
 

@@ -21,7 +21,7 @@ export function renderErrorPage(error?: any): string {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Critical Error - MIRATS 2.0</title>
+    <title>Critical Error - MIRATS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font: 15px/1.5 system-ui, -apple-system, sans-serif; background: #fafafa; color: #111; display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 1.5rem; }

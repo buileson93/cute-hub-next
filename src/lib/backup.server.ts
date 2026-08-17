@@ -54,7 +54,7 @@ export async function exportAllTables(supabaseAdmin: any, onProgress?: ProgressF
     });
   }
   return {
-    meta: { version: 2, created_at: new Date().toISOString(), tables: tables.length, rows: totalRows, source: "MIRATS 2.0" },
+    meta: { version: 2, created_at: new Date().toISOString(), tables: tables.length, rows: totalRows, source: "MIRATS" },
     data,
   };
 }
@@ -105,7 +105,7 @@ export function buildSqlDump(dump: { meta: any; data: Record<string, any[]> }, s
   for (const t of schema?.tables ?? []) schemaMap.set(t.table_name, t.columns);
 
   const out: string[] = [];
-  out.push(`-- MIRATS 2.0 — Bản sao lưu cơ sở dữ liệu (Supabase / PostgreSQL)`);
+  out.push(`-- MIRATS — Bản sao lưu cơ sở dữ liệu (Supabase / PostgreSQL)`);
   out.push(`-- Tạo lúc: ${dump.meta.created_at}`);
   out.push(`-- Số bảng: ${dump.meta.tables} · Số dòng: ${dump.meta.rows}`);
   out.push(`-- Khôi phục: psql "$DATABASE_URL" -f database.sql`);

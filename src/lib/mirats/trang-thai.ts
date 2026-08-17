@@ -1,5 +1,5 @@
 // ============================================================================
-// NGUỒN DUY NHẤT ĐỊNH NGHĨA TRẠNG THÁI cho 5 domain của MIRATS 2.0:
+// NGUỒN DUY NHẤT ĐỊNH NGHĨA TRẠNG THÁI cho 5 domain của MIRATS:
 //   su_co · van_de · cong_viec · hong_hoc · ban_giao
 //
 // Mỗi trạng thái có `code` (khoá ổn định, snake_case ASCII), `label` (VN

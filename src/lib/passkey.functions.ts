@@ -14,7 +14,7 @@ import type {
 } from "@simplewebauthn/server";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
-const RP_NAME = "MIRATS 2.0";
+const RP_NAME = "MIRATS";
 const REG_COOKIE = "wa_reg_challenge";
 const AUTH_COOKIE = "wa_auth_challenge";
 
