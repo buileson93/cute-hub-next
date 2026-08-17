@@ -10,7 +10,12 @@ import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
 import type { RenderedField } from "@/lib/mirats/display/types";
 
 export interface InfoGridProps {
-  fields: RenderedField[];
+  fields: Array<{
+    nhan: string;
+    giaTri: React.ReactNode;
+    highlight?: boolean;
+    soNgay?: number | null;
+  }>;
   /** 1 hoặc 2 cột. Mặc định 2. */
   cot?: 1 | 2;
   className?: string;
