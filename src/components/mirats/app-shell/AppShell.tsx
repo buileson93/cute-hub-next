@@ -169,10 +169,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className={cn(
-              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] astryx-rail",
-              UI_DENSITY.RAIL_W
-            )}>
+              <aside className={cn(
+                "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10",
+                UI_DENSITY.RAIL_W
+              )}>
               <SidebarLogoRail />
               <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1 data-[density=compact]:gap-1 comfortable:gap-2">
                 {railWorkspaces.map((ws) => (
@@ -182,9 +182,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(ws)}
                         onPointerEnter={() => setHoveredWsId(ws.id)}
                         className={cn(
-                          "group relative flex items-center justify-center transition-mirats-fast astryx-rail-item",
-                          "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          ws.id === activeWs.id ? "astryx-rail-item-active" : ""
+                          "group relative flex items-center justify-center transition-mirats-fast rounded-full",
+                          "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
+                          ws.id === activeWs.id ? "bg-[#0074e2] text-white shadow-md shadow-[#0074e2]/20" : "text-muted-foreground hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
                         )}
                         data-active={ws.id === activeWs.id}
                       >
@@ -192,12 +192,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                         <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
                           {ws.short}
                         </span>
-                        {ws.id === activeWs.id && (
-                          <motion.div 
-                            layoutId="active-ws"
-                            className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-[#0074e2]"
-                          />
-                        )}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="right">{ws.label}</TooltipContent>
@@ -212,9 +206,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(adminWs)}
                         onPointerEnter={() => setHoveredWsId(adminWs.id)}
                         className={cn(
-                          "flex items-center justify-center rounded-lg transition-mirats-fast",
-                          "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          adminWs.id === activeWs.id ? "bg-[#0074e2]/10 text-[#0074e2]" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          "flex items-center justify-center rounded-full transition-mirats-fast",
+                          "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
+                          adminWs.id === activeWs.id ? "bg-[#0074e2] text-white shadow-md shadow-[#0074e2]/20" : "text-muted-foreground hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
                         )}
                       >
                         <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
