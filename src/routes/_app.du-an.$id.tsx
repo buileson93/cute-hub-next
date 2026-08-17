@@ -893,7 +893,7 @@ function EditCongViecDialog({
                 onChange={(v) => setForm({ ...form, moc_id: v })}
                 placeholder="Chọn mốc"
                 searchPlaceholder="Tìm mốc…"
-                options={mocs.map((m) => ({ value: m.id, label: m.ten }))}
+                options={mocs?.map((m) => ({ value: m.id, label: m.ten })) ?? []}
               />
             </div>
             <div className="col-span-2">
