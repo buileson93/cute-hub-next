@@ -19,7 +19,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "mirats-table-header sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b shadow-sm",
+      "mirats-table-header sticky top-0 z-10 bg-background/95 backdrop-blur-[4px] border-b shadow-sm",
       className,
     )}
     {...props}
@@ -53,7 +53,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "border-b transition-colors hover:bg-muted/40 data-[state=selected]:bg-primary/5 astryx-table-row",
+        "border-b transition-colors hover:bg-muted/30 data-[state=selected]:bg-primary/5 active:scale-[0.998] astryx-table-row",
         className,
       )}
       {...props}
@@ -69,7 +69,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-8 px-2 text-left align-middle font-bold text-[11px] uppercase tracking-wider text-muted-foreground border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
+      "h-7 px-2 text-left align-middle font-bold text-[10px] uppercase tracking-wider text-muted-foreground border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
       className,
     )}
     {...props}
@@ -84,7 +84,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-2 align-middle border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell text-[13px]",
+      "p-1.5 align-middle border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell text-[12px] tabular-nums",
       className,
     )}
     {...props}

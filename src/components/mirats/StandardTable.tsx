@@ -702,24 +702,24 @@ export function StandardTable<T>({
         );
 
       case "number":
-        return <span className="tabular-nums font-mono text-right w-full block">{fmtSo(Number(val))}</span>;
+        return <span className="tabular-nums font-mono text-right w-full block pr-1">{fmtSo(Number(val))}</span>;
 
       case "currency":
-        return <span className="tabular-nums font-mono text-right w-full block">{fmtVND(Number(val))}</span>;
+        return <span className="tabular-nums font-mono text-right w-full block pr-1">{fmtVND(Number(val))}</span>;
 
       case "percent":
         const p = Number(val);
         return (
-          <div className="flex items-center gap-2 w-full">
-            <span className="w-8 tabular-nums text-[11px] font-semibold">{p}%</span>
-            <Progress value={p} className="h-1.5 flex-1" />
+          <div className="flex items-center gap-2 w-full pr-1">
+            <span className="w-8 tabular-nums text-[10px] font-mono text-right">{p}%</span>
+            <Progress value={p} className="h-1 flex-1" />
           </div>
         );
 
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-[12px] tabular-nums font-mono text-right w-full block">{fmtNgay(val)}</span>
+            <span className="text-[11px] tabular-nums font-mono text-right w-full block pr-1 opacity-80">{fmtNgay(val)}</span>
           </AppTooltip>
         );
 
