@@ -247,6 +247,6 @@ function NhanVienAdminPage() {
         open={!!softwareSheet}
         onOpenChange={(o) => !o && setSoftwareSheet(null)}
       />
-    </div>
+    </PageFrame>
   );
 }
