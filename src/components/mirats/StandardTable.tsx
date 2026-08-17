@@ -353,8 +353,8 @@ export function StandardTable<T>({
   };
 
   const renderToolbar = (
-    toolbar: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode),
-    ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }
+    toolbar: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode),
+    ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }
   ) => {
     if (typeof toolbar === "function") {
       return toolbar(ctx);
