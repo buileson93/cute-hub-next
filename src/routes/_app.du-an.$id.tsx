@@ -214,7 +214,7 @@ function DuAnDetailPage() {
               value={activeTab} 
               onValueChange={(v) => nav({ search: { view: v, q: currentSearch.q } as any, replace: true })}
             >
-              <TabsList className="bg-slate-100 p-1 border border-slate-200">
+              <TabsList className="bg-slate-100 p-1 border border-slate-200" data-density="comfortable">
                 <TabsTrigger value="kanban" className="data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 h-7 text-xs font-medium">
                   <KanbanSquare className="h-3.5 w-3.5 mr-1.5" />Kanban
                 </TabsTrigger>
