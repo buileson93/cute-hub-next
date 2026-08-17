@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, Loader2, RefreshCw, CheckCircle2, XCircle, Search, AlertTriangle, FileDown } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
@@ -234,7 +234,13 @@ function HoanThanhDialog({ task, onClose }: { task: PmCongViecRow | null; onClos
   const mut = useHoanThanhPm();
   const [ket_qua, setKq] = useState("");
   const [ghi_chu, setGhiChu] = useState("");
-  const [thuc_hien_at, setNgay] = useState(() => getTodayDateString());
+  useEffect(() => {
+    if (task) { setKq(""); setGhiChu(""); }
+  }, [task]);
+  const [thuc_hien_at, setNgay] = useState(getTodayDateString());
+  useEffect(() => {
+    if (task) setNgay(getTodayDateString());
+  }, [task]);
   if (!task) return null;
   return (
     <Dialog open={!!task} onOpenChange={(o) => { if (!o) onClose(); }}>
@@ -278,6 +284,9 @@ function HoanThanhDialog({ task, onClose }: { task: PmCongViecRow | null; onClos
 function BoQuaDialog({ task, onClose }: { task: PmCongViecRow | null; onClose: () => void }) {
   const mut = useBoQuaPm();
   const [ly_do, setLyDo] = useState("");
+  useEffect(() => {
+    if (task) setLyDo("");
+  }, [task]);
   if (!task) return null;
   return (
     <Dialog open={!!task} onOpenChange={(o) => { if (!o) onClose(); }}>
