@@ -235,16 +235,16 @@ export function CommandPalette() {
               <CommandItem
                 value={`intent-${intent.kind}`}
                 onSelect={() => runIntent(intent)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all"
               >
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground/60 group-data-[selected=true]:text-foreground transition-colors">
-                  <ArrowRight className="h-4 w-4" />
+                <div className="flex h-4 w-4 shrink-0 items-center justify-center text-muted-foreground/60 group-data-[selected=true]:text-foreground transition-colors">
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <div className="text-[14px] font-semibold text-foreground truncate">
+                  <div className="text-[13px] font-semibold text-foreground truncate">
                     {describeIntent(intent)}
                   </div>
-                  <div className="text-[12px] text-muted-foreground/70 truncate italic">
+                  <div className="text-[11px] text-muted-foreground/70 truncate italic">
                     AI Intent: {intent.kind}
                   </div>
                 </div>
@@ -270,12 +270,12 @@ export function CommandPalette() {
                   key={`${r.entity}-${r.id}`}
                   value={`${r.entity}-${r.id}-${r.title}`}
                   onSelect={() => handleSelect(hit)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
                 >
-                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
                   <div className="flex flex-col min-w-0">
-                    <div className="text-[14px] font-semibold text-foreground truncate">{r.title}</div>
-                    {r.subtitle && <div className="text-[12px] text-muted-foreground/70 truncate">{r.subtitle}</div>}
+                    <div className="text-[13px] font-semibold text-foreground truncate">{r.title}</div>
+                    {r.subtitle && <div className="text-[11px] text-muted-foreground/70 truncate">{r.subtitle}</div>}
                   </div>
                 </CommandItem>
               );
@@ -295,10 +295,10 @@ export function CommandPalette() {
                   key={`ext-${r.loai}-${r.id}`}
                   value={`ext-${r.loai}-${r.id}-${r.ten}`}
                   onSelect={() => handleSelect(hit)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
                 >
-                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground/60" />
-                  <div className="text-[14px] font-semibold text-foreground truncate">{r.ten}</div>
+                  <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+                  <div className="text-[13px] font-semibold text-foreground truncate">{r.ten}</div>
                 </CommandItem>
               );
             })}
@@ -312,12 +312,12 @@ export function CommandPalette() {
                 key={`recent-${hit.to}`}
                 value={`recent-${hit.to}`}
                 onSelect={() => handleSelect(hit)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
               >
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground/40">
-                  <Search className="h-4 w-4" />
+                <div className="flex h-4 w-4 shrink-0 items-center justify-center text-muted-foreground/40">
+                  <Search className="h-3.5 w-3.5" />
                 </div>
-                <div className="text-[14px] font-semibold text-foreground truncate">{hit.title}</div>
+                <div className="text-[13px] font-semibold text-foreground truncate">{hit.title}</div>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -330,12 +330,12 @@ export function CommandPalette() {
                 key={item.to}
                 value={`${group.header}-${item.label}`}
                 onSelect={() => handleSelect({ entity: "nav", id: item.to, title: item.label, to: item.to })}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
               >
-                <item.icon className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+                <item.icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
                 <div className="flex flex-col min-w-0">
-                  <div className="text-[14px] font-semibold text-foreground truncate">{item.label}</div>
-                  {item.desc && <div className="text-[12px] text-muted-foreground/70 truncate">{item.desc}</div>}
+                  <div className="text-[13px] font-semibold text-foreground truncate">{item.label}</div>
+                  {item.desc && <div className="text-[11px] text-muted-foreground/70 truncate">{item.desc}</div>}
                 </div>
               </CommandItem>
             ))}
@@ -352,10 +352,10 @@ export function CommandPalette() {
                 window.location.href = "/auth";
               });
             }}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-destructive hover:bg-destructive/10"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-destructive hover:bg-destructive/10"
           >
-            <LogOut className="h-4 w-4 shrink-0" />
-            <div className="text-[14px] font-semibold">Đăng xuất</div>
+            <LogOut className="h-3.5 w-3.5 shrink-0" />
+            <div className="text-[13px] font-semibold">Đăng xuất</div>
           </CommandItem>
         </CommandGroup>
       </CommandList>

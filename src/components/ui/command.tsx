@@ -41,16 +41,16 @@ const CommandDialog = ({
   return (
     <Dialog {...props}>
       <DialogContent
-        className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-2xl"
+        className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-xl"
       >
         <Command
           filter={filter}
           shouldFilter={shouldFilter}
           value={value}
           onValueChange={onValueChange}
-          className="rounded-3xl border border-border/50 bg-popover shadow-2xl [&_[cmdk-group-heading]]:px-5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:text-muted-foreground/50 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:h-14 [&_[cmdk-item]]:mx-2 [&_[cmdk-item]]:rounded-2xl [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-3.5 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 [&_[cmdk-item][data-selected=true]]:bg-muted/60 [&_[cmdk-item][data-selected=true]]:text-foreground"
+          className="rounded-2xl border border-border/50 bg-popover shadow-2xl [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/50 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1.5 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:h-11 [&_[cmdk-item]]:mx-1.5 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-muted/60 [&_[cmdk-item][data-selected=true]]:text-foreground"
         >
-          <div className="flex flex-col max-h-[min(70dvh,520px)]">
+          <div className="flex flex-col max-h-[min(65dvh,480px)]">
             {children}
           </div>
         </Command>
@@ -69,7 +69,7 @@ const CommandInput = React.forwardRef<
       <CommandPrimitive.Input
         ref={ref}
         className={cn(
-          "flex h-14 w-full bg-transparent py-4 text-[16px] font-medium placeholder:text-muted-foreground/40 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-11 w-full bg-transparent py-3 text-[14px] font-medium placeholder:text-muted-foreground/40 disabled:cursor-not-allowed disabled:opacity-50",
           "!focus:ring-0 !focus:ring-offset-0 !focus-visible:ring-0 !focus-visible:outline-none !outline-none !border-none",
           className,
         )}
