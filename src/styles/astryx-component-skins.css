@@ -2,7 +2,14 @@
 /* MIRATS 2.0 — Astryx Static Component Skins (Phase 6A) */
 
 @layer components {
+  /* Status Semantic Tokens */
+  .astryx-status-normal { border-color: var(--color-border); }
+  .astryx-status-attention { border-color: color-mix(in oklab, var(--color-blue-500) 20%, transparent); background-color: color-mix(in oklab, var(--color-blue-500) 5%, transparent); }
+  .astryx-status-warning { border-color: color-mix(in oklab, var(--color-amber-500) 20%, transparent); background-color: color-mix(in oklab, var(--color-amber-500) 5%, transparent); }
+  .astryx-status-danger { border-color: color-mix(in oklab, var(--color-red-500) 20%, transparent); background-color: color-mix(in oklab, var(--color-red-500) 5%, transparent); }
+
   /* Surface & Card */
+
   .astryx-surface {
     background-color: var(--color-card);
     border: 1px solid var(--color-border);

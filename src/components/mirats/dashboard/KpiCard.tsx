@@ -34,11 +34,12 @@ export function KpiCard({
   onClick,
 }: KpiCardProps) {
   
+  // Status colors mapped to semantic tokens or standardized opacity-based classes
   const statusColors = {
-    normal: "border-border",
-    attention: "border-blue-500/20 bg-blue-500/5",
-    warning: "border-amber-500/20 bg-amber-500/5",
-    danger: "border-red-500/20 bg-red-500/5",
+    normal: "astryx-status-normal",
+    attention: "astryx-status-attention",
+    warning: "astryx-status-warning",
+    danger: "astryx-status-danger",
   };
 
   const textColors = {
