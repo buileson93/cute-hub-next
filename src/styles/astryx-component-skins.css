@@ -235,5 +235,65 @@
     border-radius: var(--radius-container);
     overflow: hidden;
   }
+
+  /* Table (Stone Skin) */
+  .astryx-table-container {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    overflow: hidden;
+  }
+
+  .astryx-table-header {
+    background-color: var(--color-muted);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .astryx-table-header-cell {
+    font-family: var(--font-family-body);
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted-foreground);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .astryx-table-row {
+    border-bottom: 1px solid color-mix(in oklab, var(--color-border) 40%, transparent);
+    transition: background-color 120ms var(--ease-standard);
+  }
+
+  .astryx-table-row:hover {
+    background-color: color-mix(in oklab, var(--color-primary) 4%, transparent);
+  }
+
+  .astryx-table-row[data-state="selected"] {
+    background-color: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  }
+
+  .astryx-table-cell {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.25rem;
+    color: var(--color-foreground);
+    vertical-align: middle;
+  }
+
+  .astryx-table-cell-numeric {
+    font-family: var(--font-family-code);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .astryx-table-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: var(--color-card);
+    box-shadow: 0 1px 0 var(--color-border);
+  }
 }
 
