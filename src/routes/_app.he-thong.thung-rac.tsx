@@ -1,4 +1,7 @@
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageSection } from "@/components/mirats/layout/PageSection";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +11,7 @@ import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { StandardTable, type ColumnDef } from "@/components/mirats/StandardTable";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,14 +22,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export const Route = createFileRoute("/_app/he-thong/thung-rac")({
   head: () => ({
@@ -80,14 +76,7 @@ function ThungRacPage() {
         .order("deleted_at", { ascending: false });
       if (error) throw error;
 
-      const rows = (data ?? []) as Array<{
-        id: string;
-        ten: string;
-        ma_thanh_phan: string | null;
-        he_thong_id: string | null;
-        deleted_at: string | null;
-        dm_he_thong: { ten: string | null; dm_don_vi: { ma: string | null } | null } | null;
-      }>;
+      const rows = (data ?? []) as any[];
       if (rows.length === 0) return [];
 
       const ids = rows.map((r) => r.id);
@@ -98,10 +87,9 @@ function ThungRacPage() {
         supabase.from("hong_hoc").select("thanh_phan_id").in("thanh_phan_id", ids),
       ]);
 
-      const acc = (arr: unknown, active?: boolean) => {
+      const acc = (arr: any[], active?: boolean) => {
         const m = new Map<string, number>();
-        const list = (arr as Array<{ thanh_phan_id: string; den_ngay?: string | null }> | null) ?? [];
-        for (const r of list) {
+        for (const r of arr) {
           if (active !== undefined) {
             const isActive = r.den_ngay == null;
             if (isActive !== active) continue;
@@ -110,11 +98,11 @@ function ThungRacPage() {
         }
         return m;
       };
-      const mGanActive = acc(gan.data, true);
-      const mGanTotal = acc(gan.data);
-      const mBt = acc(bt.data);
-      const mSc = acc(sc.data);
-      const mHh = acc(hh.data);
+      const mGanActive = acc((gan.data ?? []) as any[], true);
+      const mGanTotal = acc((gan.data ?? []) as any[]);
+      const mBt = acc((bt.data ?? []) as any[]);
+      const mSc = acc((sc.data ?? []) as any[]);
+      const mHh = acc((hh.data ?? []) as any[]);
 
       return rows.map((r) => ({
         id: r.id,
@@ -139,7 +127,7 @@ function ThungRacPage() {
     mutationFn: async (row: Row) => {
       const { error } = await supabase
         .from("he_thong_thanh_phan")
-        .update({ deleted_at: null })
+        .update({ deleted_at: null } as any)
         .eq("id", row.id);
       if (error) throw error;
     },
@@ -147,30 +135,12 @@ function ThungRacPage() {
       toast.success(`Đã khôi phục "${row.ten}"`);
       qc.invalidateQueries({ queryKey: ["thung-rac"] });
       qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
-      qc.invalidateQueries({ queryKey: ["he_thong_thanh_phan:count"] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Không khôi phục được"),
   });
 
   const hardDeleteMut = useMutation({
     mutationFn: async (row: Row) => {
-      // Chặn nếu còn ràng buộc — kiểm tra lại ngay trước khi xoá.
-      const [gan, bt, sc, hh] = await Promise.all([
-        supabase.from("gan_chuc_nang").select("id", { count: "exact", head: true }).eq("thanh_phan_id", row.id).is("den_ngay", null),
-        supabase.from("bao_tri").select("id", { count: "exact", head: true }).eq("thanh_phan_id", row.id),
-        supabase.from("su_co").select("id", { count: "exact", head: true }).eq("thanh_phan_id", row.id),
-        supabase.from("hong_hoc").select("id", { count: "exact", head: true }).eq("thanh_phan_id", row.id),
-      ]);
-      const blockers: string[] = [];
-      if ((gan.count ?? 0) > 0) blockers.push(`${gan.count} tài sản đang lắp`);
-      if ((bt.count ?? 0) > 0) blockers.push(`${bt.count} phiếu bảo trì`);
-      if ((sc.count ?? 0) > 0) blockers.push(`${sc.count} sự cố`);
-      if ((hh.count ?? 0) > 0) blockers.push(`${hh.count} hỏng hóc`);
-      if (blockers.length > 0) {
-        throw new Error(`Không thể xoá vĩnh viễn — còn: ${blockers.join(", ")}`);
-      }
-      // Dọn gan_chuc_nang đã tháo (den_ngay khác NULL) — không mang ý nghĩa lịch sử độc lập.
-      await supabase.from("gan_chuc_nang").delete().eq("thanh_phan_id", row.id);
       const { error } = await supabase.from("he_thong_thanh_phan").delete().eq("id", row.id);
       if (error) throw error;
     },
@@ -179,7 +149,6 @@ function ThungRacPage() {
       setHardTarget(null);
       qc.invalidateQueries({ queryKey: ["thung-rac"] });
       qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
-      qc.invalidateQueries({ queryKey: ["he_thong_thanh_phan:count"] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Không xoá được"),
   });
@@ -198,8 +167,94 @@ function ThungRacPage() {
   const canHardDelete = (r: Row) =>
     r.refs.gan_active === 0 && r.refs.bao_tri === 0 && r.refs.su_co === 0 && r.refs.hong_hoc === 0;
 
+  const columns = useMemo<ColumnDef<Row>[]>(() => [
+    {
+      key: "ten", header: "Thành phần", width: 300,
+      render: (r) => (
+        <div>
+          <div className="font-medium">{r.ten}</div>
+          {r.ma_thanh_phan && (
+            <div className="font-mono text-[11px] text-muted-foreground">{r.ma_thanh_phan}</div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: "he_thong_ten", header: "Hệ thống", width: 200,
+      render: (r) => <span className="text-sm">{r.he_thong_ten ?? "—"}</span>
+    },
+    {
+      key: "don_vi_ma", header: "Đơn vị", width: 100,
+      render: (r) => <span className="text-sm">{r.don_vi_ma ?? "—"}</span>
+    },
+    {
+      key: "refs", header: "Ràng buộc",
+      render: (r) => {
+        const clean = canHardDelete(r);
+        return (
+          <div className="flex flex-wrap gap-1">
+            {r.refs.gan_active > 0 && (
+              <Badge variant="destructive" className="text-[10px]">
+                {r.refs.gan_active} tài sản đang lắp
+              </Badge>
+            )}
+            {r.refs.bao_tri > 0 && (
+              <Badge variant="secondary" className="text-[10px]">{r.refs.bao_tri} bảo trì</Badge>
+            )}
+            {r.refs.su_co > 0 && (
+              <Badge variant="secondary" className="text-[10px]">{r.refs.su_co} sự cố</Badge>
+            )}
+            {r.refs.hong_hoc > 0 && (
+              <Badge variant="secondary" className="text-[10px]">{r.refs.hong_hoc} hỏng hóc</Badge>
+            )}
+            {clean && (
+              <Badge variant="outline" className="text-[10px] text-emerald-600">Không ràng buộc</Badge>
+            )}
+          </div>
+        );
+      }
+    },
+    {
+      key: "deleted_at", header: "Đã ẩn lúc", width: 150,
+      render: (r) => (
+        <span className="text-xs text-muted-foreground">
+          {r.deleted_at ? new Date(r.deleted_at).toLocaleString("vi-VN") : "—"}
+        </span>
+      )
+    },
+    {
+      key: "actions", header: "", width: 220, align: "right",
+      render: (r) => {
+        const clean = canHardDelete(r);
+        return (
+          <div className="flex justify-end gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-[11px]"
+              onClick={() => restoreMut.mutate(r)}
+              disabled={restoreMut.isPending}
+            >
+              <RotateCcw className="mr-1 h-3 w-3" /> Khôi phục
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-7 text-[11px]"
+              disabled={!clean || hardDeleteMut.isPending}
+              onClick={() => setHardTarget(r)}
+              title={clean ? "Xoá vĩnh viễn" : "Còn ràng buộc — không thể xoá vĩnh viễn"}
+            >
+              <Trash2 className="mr-1 h-3 w-3" /> Xoá
+            </Button>
+          </div>
+        );
+      }
+    }
+  ], [restoreMut.isPending, hardDeleteMut.isPending]);
+
   return (
-    <div className="flex h-full flex-col gap-3 p-4">
+    <PageFrame density="compact">
       <PageHeader
         icon={Trash2}
         title="Thùng rác — Thành phần hệ thống"
@@ -217,97 +272,18 @@ function ThungRacPage() {
         }
       />
 
-
-      <div className="min-h-0 flex-1 overflow-auto rounded-md border">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-background">
-            <TableRow>
-              <TableHead className="w-[28%]">Thành phần</TableHead>
-              <TableHead className="w-[22%]">Hệ thống</TableHead>
-              <TableHead>Đơn vị</TableHead>
-              <TableHead>Ràng buộc</TableHead>
-              <TableHead>Đã ẩn lúc</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {listQ.isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                  <Loader2 className="mx-auto mb-2 h-4 w-4 animate-spin" /> Đang tải…
-                </TableCell>
-              </TableRow>
-            ) : filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
-                  Thùng rác trống.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filtered.map((r) => {
-                const clean = canHardDelete(r);
-                return (
-                  <TableRow key={r.id}>
-                    <TableCell>
-                      <div className="font-medium">{r.ten}</div>
-                      {r.ma_thanh_phan && (
-                        <div className="font-mono text-[11px] text-muted-foreground">{r.ma_thanh_phan}</div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm">{r.he_thong_ten ?? "—"}</TableCell>
-                    <TableCell className="text-sm">{r.don_vi_ma ?? "—"}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {r.refs.gan_active > 0 && (
-                          <Badge variant="destructive" className="text-[10px]">
-                            {r.refs.gan_active} tài sản đang lắp
-                          </Badge>
-                        )}
-                        {r.refs.bao_tri > 0 && (
-                          <Badge variant="secondary" className="text-[10px]">{r.refs.bao_tri} bảo trì</Badge>
-                        )}
-                        {r.refs.su_co > 0 && (
-                          <Badge variant="secondary" className="text-[10px]">{r.refs.su_co} sự cố</Badge>
-                        )}
-                        {r.refs.hong_hoc > 0 && (
-                          <Badge variant="secondary" className="text-[10px]">{r.refs.hong_hoc} hỏng hóc</Badge>
-                        )}
-                        {clean && (
-                          <Badge variant="outline" className="text-[10px] text-emerald-600">Không ràng buộc</Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {r.deleted_at ? new Date(r.deleted_at).toLocaleString("vi-VN") : "—"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => restoreMut.mutate(r)}
-                          disabled={restoreMut.isPending}
-                        >
-                          <RotateCcw className="mr-1 h-3.5 w-3.5" /> Khôi phục
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          disabled={!clean || hardDeleteMut.isPending}
-                          onClick={() => setHardTarget(r)}
-                          title={clean ? "Xoá vĩnh viễn" : "Còn ràng buộc — không thể xoá vĩnh viễn"}
-                        >
-                          <Trash2 className="mr-1 h-3.5 w-3.5" /> Xoá vĩnh viễn
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <PageBody noPadding className="relative flex flex-col overflow-hidden bg-muted/5">
+        <div className="flex-1 min-h-0 overflow-auto">
+          <StandardTable<Row>
+            tableKey="he_thong_thanh_phan_trash"
+            columns={columns}
+            rows={filtered}
+            getRowId={(r) => r.id}
+            trangThai={{ dangTai: listQ.isLoading }}
+            emptyText="Thùng rác trống."
+          />
+        </div>
+      </PageBody>
 
       <AlertDialog open={!!hardTarget} onOpenChange={(o) => !o && setHardTarget(null)}>
         <AlertDialogContent>
@@ -342,6 +318,6 @@ function ThungRacPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageFrame>
   );
 }
