@@ -135,7 +135,7 @@ function DuAnListPage() {
             {filtered.map((d) => {
               const tt = TRANG_THAI[d.trang_thai] ?? TRANG_THAI.moi;
               return (
-                <Link key={d.id} to="/du-an/$id" params={{ id: d.id }} className="block">
+                <Link key={d.id} to="/du-an/$id" params={{ id: d.id }} search={{ view: "kanban", q: "" } as any} className="block">
                   <Card className="hover:shadow-md hover:border-indigo-300 transition h-full">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">

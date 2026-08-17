@@ -156,7 +156,8 @@ export function useGlobalRealtime(enabled: boolean) {
     const CORE_TABLES = [
       "su_co", "bao_tri", "hong_hoc", "van_de", "ban_giao", 
       "thiet_bi", "he_thong_thanh_phan", "gan_chuc_nang", 
-      "access_request", "user_roles", "messages", "notifications"
+      "access_request", "user_roles", "messages", "notifications",
+      "du_an", "du_an_moc", "du_an_cong_viec"
     ];
 
     let ch: ReturnType<typeof freshChannel> | null = null;
