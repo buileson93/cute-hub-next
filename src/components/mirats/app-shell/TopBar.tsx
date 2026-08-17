@@ -31,7 +31,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         {renderMobileMenu}
         
         <div className="relative w-full max-w-sm" data-tour="search">
-          <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2 h-4 w-4 text-[#0074e2]" />
           <Input
             type="search"
             placeholder="Tìm tài sản, sự cố..."
