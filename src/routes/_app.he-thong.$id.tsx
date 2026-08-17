@@ -740,17 +740,20 @@ function HeThongInner({
           )}
           </Card>
 
-          {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
-          <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} onOpenHistory={(tpId) => setOpenTpId(tpId)} />
-            </div>
-          </ContentGrid>
-        </PageSection>
-      </PageBody>
-
-      {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
-      <PageSection className="px-4 pb-8">
-        <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} onOpenHistory={(tpId) => setOpenTpId(tpId)} />
-      </PageSection>
+          {/* Thành phần hệ thống */}
+          <div id="thanh-phan-card">
+            <ThanhPhanCard 
+              heThongId={id} 
+              open={tpOpen} 
+              onToggle={() => setTpOpen((v) => !v)} 
+              compact={compact} 
+              onOpenHistory={(tpId) => setOpenTpId(tpId)} 
+            />
+          </div>
+        </div>
+      </ContentGrid>
+    </PageSection>
+  </PageBody>
 
       {/* Sử dụng ThanhPhanChiTietDialog từ component thay vì inline Sheet cũ */}
       <ThanhPhanChiTietWrapper 
