@@ -17,10 +17,9 @@ export function RecentPinnedRailButton() {
             <button
               type="button"
               aria-label="Ghim và trang gần đây"
-              className="flex w-[54px] flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[9.5px] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
             >
-              <Bookmark className="h-5 w-5" strokeWidth={1.8} />
-              <span className="w-full truncate text-center leading-tight">Ghim</span>
+              <Bookmark className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </button>
           </PopoverTrigger>
         </TooltipTrigger>
