@@ -103,6 +103,7 @@ function HeThongDetail() {
 function HeThongInner({
   id, tenHt, maBravo, gpSo, gpHan, devices, donViMa, donViTen,
 }: { id: string; tenHt: string; maBravo: string; gpSo: string; gpHan: string; devices: DbDevice[]; donViMa: string; donViTen: string }) {
+
   const { ops } = useOperationsData();
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
