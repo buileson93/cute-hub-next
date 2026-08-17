@@ -24,13 +24,13 @@ import {
 export const Route = createFileRoute("/_app/phan-mem-ban-quyen")({
   head: () => ({
     meta: [
-      { title: "Bản quyền phần mềm — MIRATS 2.0" },
+      { title: "Bản quyền phần mềm — MIRATS" },
       {
         name: "description",
         content:
           "Quản lý bản quyền phần mềm: máy tính đang cài những gì, bản quyền đã gán và chưa gán thiết bị.",
       },
-      { property: "og:title", content: "Bản quyền phần mềm — MIRATS 2.0" },
+      { property: "og:title", content: "Bản quyền phần mềm — MIRATS" },
       { property: "og:description", content: "Theo dõi seats, hạn bản quyền và cấp phát phần mềm cho tài sản CNTT." },
     ],
   }),

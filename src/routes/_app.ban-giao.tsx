@@ -30,9 +30,9 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_app/ban-giao")({
   head: () => ({
     meta: [
-      { title: "Bàn giao & Cấp phát — MIRATS 2.0" },
+      { title: "Bàn giao & Cấp phát — MIRATS" },
       { name: "description", content: "M8 — Số hóa lịch sử bàn giao/cấp phát tài sản giữa đơn vị và cá nhân, theo dõi ai đang giữ gì." },
-      { property: "og:title", content: "Bàn giao & Cấp phát — MIRATS 2.0" },
+      { property: "og:title", content: "Bàn giao & Cấp phát — MIRATS" },
       { property: "og:description", content: "Theo dõi cấp phát, thu hồi, luân chuyển và mượn tạm tài sản." },
     ],
   }),

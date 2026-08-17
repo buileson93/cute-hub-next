@@ -26,7 +26,7 @@ import {
 export const Route = createFileRoute("/_app/he-thong/thung-rac")({
   head: () => ({
     meta: [
-      { title: "Thùng rác — Thành phần hệ thống — MIRATS 2.0" },
+      { title: "Thùng rác — Thành phần hệ thống — MIRATS" },
       {
         name: "description",
         content:

@@ -267,7 +267,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         <SheetContent side="left" className="w-[86vw] p-0 focus:outline-none">
                           <SheetHeader className="border-b h-14 px-6 flex flex-row items-center gap-2">
                              <SidebarLogoRail />
-                             <SheetTitle className="text-sm font-bold">MIRATS 2.0</SheetTitle>
+                             <SheetTitle className="text-sm font-bold">MIRATS</SheetTitle>
                           </SheetHeader>
                           <div className="overflow-y-auto h-[calc(100dvh-3.5rem)]">
                              <Sidebar 

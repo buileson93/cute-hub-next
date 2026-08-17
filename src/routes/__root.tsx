@@ -81,23 +81,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MIRATS 2.0 — VATM Middle Region CMMS" },
+      { title: "MIRATS — VATM Middle Region CMMS" },
       {
         name: "description",
         content:
-          "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung — MIRATS 2.0. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu.",
+          "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu.",
       },
       { name: "author", content: "VATM Middle Region" },
-      { property: "og:title", content: "MIRATS 2.0 — VATM Middle Region CMMS" },
+      { property: "og:title", content: "MIRATS — VATM Middle Region CMMS" },
       {
         property: "og:description",
         content:
-          "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung — MIRATS 2.0. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu.",
+          "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "MIRATS 2.0 — VATM Middle Region CMMS" },
-      { name: "twitter:description", content: "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung — MIRATS 2.0. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu." },
+      { name: "twitter:title", content: "MIRATS — VATM Middle Region CMMS" },
+      { name: "twitter:description", content: "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8cfa19cc-e31a-45f0-aae3-9f880fc5b3b3/id-preview-d301bd18--56d952f4-c039-4fe2-859c-da5794db3823.lovable.app-1783491132295.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8cfa19cc-e31a-45f0-aae3-9f880fc5b3b3/id-preview-d301bd18--56d952f4-c039-4fe2-859c-da5794db3823.lovable.app-1783491132295.png" },
     ],
@@ -177,7 +177,7 @@ function RootComponent() {
     // Task 38 — cài đặt bộ thu lỗi runtime tập trung.
     void import("@/lib/observability/capture").then((m) => {
       m.installGlobalErrorHandlers();
-      m.setTag("app", "mirats-2.0");
+      m.setTag("app", "mirats");
       if (import.meta.env.MODE) m.setTag("env", String(import.meta.env.MODE));
     });
     return () => cleanup?.();

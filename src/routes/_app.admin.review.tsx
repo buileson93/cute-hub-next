@@ -24,7 +24,7 @@ import { ENTITIES } from "@/lib/mirats/import-config";
 export const Route = createFileRoute("/_app/admin/review")({
   head: () => ({
     meta: [
-      { title: "Trung tâm rà soát dữ liệu — MIRATS 2.0" },
+      { title: "Trung tâm rà soát dữ liệu — MIRATS" },
       { name: "description", content: "Rà soát chất lượng dữ liệu nhập: trùng lặp, xung đột tham chiếu, thiếu dữ liệu và danh mục gần trùng." },
     ],
   }),

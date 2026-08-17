@@ -37,9 +37,9 @@ import { StockMovementLog } from "@/components/mirats/vat-tu/StockMovementLog";
 export const Route = createFileRoute("/_app/vat-tu")({
   head: () => ({
     meta: [
-      { title: "Vật tư & Kho — MIRATS 2.0" },
+      { title: "Vật tư & Kho — MIRATS" },
       { name: "description", content: "Sổ cái kho vật tư: nhập, xuất, chuyển kho, kiểm kê. Tồn kho tính từ giao dịch, truy nguyên được, cảnh báo dưới định mức." },
-      { property: "og:title", content: "Vật tư & Kho — MIRATS 2.0" },
+      { property: "og:title", content: "Vật tư & Kho — MIRATS" },
       { property: "og:description", content: "Quản lý tồn kho vật tư dự phòng và tiêu hao theo sổ cái bất biến." },
     ],
   }),

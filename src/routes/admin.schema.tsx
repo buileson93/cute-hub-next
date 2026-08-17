@@ -38,7 +38,7 @@ import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 export const Route = createFileRoute("/admin/schema")({
   head: () => ({
     meta: [
-      { title: "Sơ đồ CSDL — MIRATS 2.0" },
+      { title: "Sơ đồ CSDL — MIRATS" },
       { name: "description", content: "Xem cây quan hệ cơ sở dữ liệu và thêm/sửa cột cho bảng nghiệp vụ." },
       { name: "robots", content: "noindex, nofollow" },
     ],

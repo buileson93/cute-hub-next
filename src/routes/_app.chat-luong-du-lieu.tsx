@@ -26,7 +26,7 @@ export const Route = createFileRoute('/_app/chat-luong-du-lieu')({
     }
   },
   head: () => ({
-    title: 'Chất lượng dữ liệu | MIRATS 2.0',
+    title: 'Chất lượng dữ liệu | MIRATS',
     meta: [
       { name: 'description', content: 'Dashboard theo dõi độ hoàn thiện và chất lượng dữ liệu hệ thống' }
     ]

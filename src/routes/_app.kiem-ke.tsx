@@ -37,13 +37,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_app/kiem-ke")({
   head: () => ({
     meta: [
-      { title: "Kiểm kê tài sản — MIRATS 2.0" },
+      { title: "Kiểm kê tài sản — MIRATS" },
       {
         name: "description",
         content:
           "Danh sách tài sản đến hạn kiểm kê, ghi nhận tình trạng, ảnh hiện trường và vị trí GPS.",
       },
-      { property: "og:title", content: "Kiểm kê tài sản — MIRATS 2.0" },
+      { property: "og:title", content: "Kiểm kê tài sản — MIRATS" },
       { property: "og:description", content: "Kiểm kê tài sản đến hạn ngoài hiện trường." },
     ],
   }),

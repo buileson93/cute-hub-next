@@ -23,7 +23,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 export const Route = createFileRoute("/_app/admin/bao-tri-chinh-sach")({
   head: () => ({
     meta: [
-      { title: "Chính sách bảo dưỡng theo model — MIRATS 2.0" },
+      { title: "Chính sách bảo dưỡng theo model — MIRATS" },
       { name: "description", content: "Khai chu kỳ bảo dưỡng theo chủng loại (model): theo lịch hoặc theo giờ vận hành." },
     ],
   }),

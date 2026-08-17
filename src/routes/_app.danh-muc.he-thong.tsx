@@ -30,7 +30,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_app/danh-muc/he-thong")({
   head: () => ({
     meta: [
-      { title: "Hệ thống — Danh mục MIRATS 2.0" },
+      { title: "Hệ thống — Danh mục MIRATS" },
       { name: "description", content: "Danh mục hệ thống kỹ thuật đọc trực tiếp từ cơ sở dữ liệu." },
     ],
   }),

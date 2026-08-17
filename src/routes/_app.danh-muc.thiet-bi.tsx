@@ -106,9 +106,9 @@ export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
   },
   head: () => ({
     meta: [
-      { title: "Danh mục tài sản — MIRATS 2.0" },
+      { title: "Danh mục tài sản — MIRATS" },
       { name: "description", content: "Danh mục toàn bộ tài sản: cả tài sản trong hệ thống lẫn tài sản độc lập (vật tư dự phòng, công cụ dụng cụ)." },
-      { property: "og:title", content: "Danh mục tài sản — MIRATS 2.0" },
+      { property: "og:title", content: "Danh mục tài sản — MIRATS" },
       { property: "og:description", content: "Danh mục tài sản." },
 
     ],

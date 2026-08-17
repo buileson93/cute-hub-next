@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/pending")({
   head: () => ({
     meta: [
-      { title: "Chờ duyệt — MIRATS 2.0" },
+      { title: "Chờ duyệt — MIRATS" },
       { name: "description", content: "Tài khoản đang chờ quản trị viên duyệt." },
       { name: "robots", content: "noindex, nofollow" },
     ],
@@ -40,7 +40,7 @@ function PendingPage() {
             <Satellite className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-lg font-semibold tracking-tight">MIRATS 2.0</div>
+            <div className="text-lg font-semibold tracking-tight">MIRATS</div>
             <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">TÀI KHOẢN CHỜ DUYỆT</div>
           </div>
         </div>

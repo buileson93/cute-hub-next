@@ -53,7 +53,7 @@ import { supabase } from "@/integrations/backend/client";
 export const Route = createFileRoute("/_app/phan-mem-ban-quyen/$ma")({
   head: ({ params }) => ({
     meta: [
-      { title: `Bản quyền ${params.ma} — MIRATS 2.0` },
+      { title: `Bản quyền ${params.ma} — MIRATS` },
       { name: "description", content: `Chi tiết bản quyền phần mềm ${params.ma}` },
     ],
   }),

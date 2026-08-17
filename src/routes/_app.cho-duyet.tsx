@@ -29,7 +29,7 @@ import {
 export const Route = createFileRoute("/_app/cho-duyet")({
   head: () => ({
     meta: [
-      { title: "Chờ duyệt — Change Request — MIRATS 2.0" },
+      { title: "Chờ duyệt — Change Request — MIRATS" },
       {
         name: "description",
         content:

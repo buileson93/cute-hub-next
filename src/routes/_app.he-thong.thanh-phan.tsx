@@ -15,7 +15,7 @@ import { AppTooltip } from "@/components/mirats/AppTooltip";
 export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
   head: () => ({
     meta: [
-      { title: "Thành phần & Tài sản — MIRATS 2.0" },
+      { title: "Thành phần & Tài sản — MIRATS" },
       {
         name: "description",
         content: "Bảng quản lý chi tiết thành phần và tài sản hệ thống kỹ thuật.",

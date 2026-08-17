@@ -27,7 +27,7 @@ import {
 export const Route = createFileRoute("/admin/supabase-ngoai")({
   head: () => ({
     meta: [
-      { title: "Kết nối Supabase ngoài — MIRATS 2.0" },
+      { title: "Kết nối Supabase ngoài — MIRATS" },
       { name: "description", content: "Đồng bộ lược đồ, chạy thử, di chuyển dữ liệu theo lô có tiến trình và khôi phục khi lỗi cho Supabase bên ngoài." },
       { name: "robots", content: "noindex, nofollow" },
     ],

@@ -18,7 +18,7 @@ import { detectHoldingConflict, type DangLapRow } from "@/lib/mirats/ban-giao-va
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_app/ban-giao/moi")({
-  head: () => ({ meta: [{ title: "Bàn giao mới — MIRATS 2.0" }] }),
+  head: () => ({ meta: [{ title: "Bàn giao mới — MIRATS" }] }),
   component: BanGiaoMoiPage,
 });
 

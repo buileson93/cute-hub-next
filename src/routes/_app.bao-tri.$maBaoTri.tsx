@@ -22,7 +22,7 @@ import { VongDoiPanel } from "@/components/mirats/VongDoiPanel";
 export const Route = createFileRoute("/_app/bao-tri/$maBaoTri")({
   head: () => ({
     meta: [
-      { title: "Phiếu bảo dưỡng — MIRATS 2.0" },
+      { title: "Phiếu bảo dưỡng — MIRATS" },
       { name: "robots", content: "noindex" },
     ],
   }),

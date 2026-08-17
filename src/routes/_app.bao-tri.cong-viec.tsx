@@ -32,9 +32,9 @@ import { isOpen as isOpenStatus, phaseOf, normalizeLegacy } from "@/lib/mirats/t
 export const Route = createFileRoute("/_app/bao-tri/cong-viec")({
   head: () => ({
     meta: [
-      { title: "Phiếu công việc & KPI bảo dưỡng — MIRATS 2.0" },
+      { title: "Phiếu công việc & KPI bảo dưỡng — MIRATS" },
       { name: "description", content: "Sinh phiếu công việc bảo dưỡng định kỳ từ chính sách PM, theo dõi tiến độ và KPI đúng hạn theo đơn vị." },
-      { property: "og:title", content: "Phiếu công việc & KPI bảo dưỡng — MIRATS 2.0" },
+      { property: "og:title", content: "Phiếu công việc & KPI bảo dưỡng — MIRATS" },
       { property: "og:description", content: "Chính sách bảo dưỡng → phiếu công việc → KPI." },
     ],
   }),

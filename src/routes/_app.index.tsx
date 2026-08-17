@@ -65,7 +65,7 @@ function Dashboard() {
   };
 
   if (scope.loading) {
-    return <div className="h-screen w-full flex items-center justify-center animate-pulse text-muted-foreground">Đang tải MIRATS 2.0...</div>;
+    return <div className="h-screen w-full flex items-center justify-center animate-pulse text-muted-foreground">Đang tải MIRATS...</div>;
   }
 
   return (
@@ -75,7 +75,7 @@ function Dashboard() {
           <h1 className="astryx-heading-1">
             {`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? ""}`.trim()}
           </h1>
-          <p className="astryx-text-muted">MIRATS 2.0 — Hệ thống quản lý tài sản kỹ thuật.</p>
+          <p className="astryx-text-muted">MIRATS — Hệ thống quản lý tài sản kỹ thuật.</p>
         </div>
         
         <div className="flex items-center gap-2">

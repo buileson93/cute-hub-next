@@ -1,6 +1,6 @@
 // ============================================================================
 // SchemaDialog — dialog "khai thêm / sửa nhanh" chuẩn hoá bằng schema.
-// GĐ3-06 + MIRATS 2.0 Wizard support:
+// GĐ3-06 + MIRATS Wizard support:
 //   - Hỗ trợ Wizard nhiều bước nếu fields có `wizardStep`.
 //   - a11y hardening: focus-trap, aria-describedby, aria-invalid.
 //   - loadOptions lỗi → hiện thông báo dưới field.

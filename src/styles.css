@@ -6,7 +6,7 @@
 @import "@astryxdesign/core/astryx.css" layer(astryx-core);
 @import "@astryxdesign/theme-stone/theme.css" layer(astryx-theme);
 
-/* MIRATS 2.0 — Astryx Static Component Skins */
+/* MIRATS — Astryx Static Component Skins */
 @import "./styles/astryx-component-skins.css" layer(astryx-skins);
 
 /* MIRATS Brand Foundation — Astryx Overrides */
@@ -56,7 +56,7 @@
 
 
 /*
- * MIRATS 2.0 — VATM Middle Region ATC.
+ * MIRATS — VATM Middle Region ATC.
  * Editorial aviation shell: off-white paper, brand blue #1D52E0 as the
  * single accent, hairline slate borders, Space Grotesk display, IBM Plex
  * Mono for every numeric readout.

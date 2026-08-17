@@ -31,9 +31,9 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   }),
   head: () => ({
     meta: [
-      { title: "Sổ lý lịch — MIRATS 2.0" },
+      { title: "Sổ lý lịch — MIRATS" },
       { name: "description", content: "Sổ lý lịch theo cây phân cấp đơn vị → phân loại → hệ thống → thành phần hệ thống." },
-      { property: "og:title", content: "Sổ lý lịch — MIRATS 2.0" },
+      { property: "og:title", content: "Sổ lý lịch — MIRATS" },
       { property: "og:description", content: "M2 — Sổ lý lịch." },
     ],
   }),
@@ -308,7 +308,7 @@ function ThietBiPage() {
     <PageBody className="bg-background/30">
       <PageHeader
         title="Sổ lý lịch"
-        supporting="MIRATS 2.0"
+        supporting="MIRATS"
         subtitle="Đơn vị → Phân loại → Hệ thống → Thành phần"
         actions={
           <div className="flex items-center gap-1.5">

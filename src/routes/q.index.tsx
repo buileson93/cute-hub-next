@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export const Route = createFileRoute("/q/")({
   head: () => ({
     meta: [
-      { title: "Quét QR thiết bị — MIRATS 2.0" },
+      { title: "Quét QR thiết bị — MIRATS" },
       { name: "description", content: "Quét mã QR trực tiếp trong app để mở nhanh lý lịch thiết bị, báo sự cố, tra bảo trì." },
       { name: "robots", content: "noindex" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },

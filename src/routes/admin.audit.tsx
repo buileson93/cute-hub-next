@@ -25,7 +25,7 @@ import { StandardTable, type ColumnDef } from "@/components/mirats/StandardTable
 export const Route = createFileRoute("/admin/audit")({
   head: () => ({
     meta: [
-      { title: "Nhật ký hệ thống — MIRATS 2.0" },
+      { title: "Nhật ký hệ thống — MIRATS" },
       { name: "description", content: "Nhật ký hoạt động và bảo mật cho quản trị viên MIRATS." },
       { name: "robots", content: "noindex, nofollow" },
     ],

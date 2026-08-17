@@ -49,7 +49,7 @@ import { NetworkOverview } from "@/components/mirats/NetworkOverview";
 export const Route = createFileRoute("/_app/he-thong/lien-ket")({
   head: () => ({
     meta: [
-      { title: "Liên kết & Đấu nối — MIRATS 2.0" },
+      { title: "Liên kết & Đấu nối — MIRATS" },
       {
         name: "description",
         content: "Bản đồ đấu nối kỹ thuật, luồng tín hiệu và phân tích tác động giữa các hệ thống.",

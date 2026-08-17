@@ -22,7 +22,7 @@ import { supabase } from "@/integrations/backend/client";
 export const Route = createFileRoute("/admin/audit/lap-thao")({
   head: () => ({
     meta: [
-      { title: "Nhật ký lắp / tháo tài sản — MIRATS 2.0" },
+      { title: "Nhật ký lắp / tháo tài sản — MIRATS" },
       { name: "description", content: "Nhật ký thao tác lắp / tháo / thay thế tài sản vào vị trí chức năng." },
       { name: "robots", content: "noindex, nofollow" },
     ],

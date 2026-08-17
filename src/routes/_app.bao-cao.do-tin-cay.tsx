@@ -49,9 +49,9 @@ export const Route = createFileRoute("/_app/bao-cao/do-tin-cay")({
   },
   head: () => ({
     meta: [
-      { title: "Độ tin cậy hệ thống — MIRATS 2.0" },
+      { title: "Độ tin cậy hệ thống — MIRATS" },
       { name: "description", content: "MTBF / MTTR theo hệ thống trong khoảng thời gian tuỳ chọn. Xuất CSV để tổng hợp báo cáo." },
-      { property: "og:title", content: "Độ tin cậy hệ thống — MIRATS 2.0" },
+      { property: "og:title", content: "Độ tin cậy hệ thống — MIRATS" },
       { property: "og:description", content: "MTBF / MTTR theo hệ thống trong khoảng thời gian tuỳ chọn." },
     ],
   }),

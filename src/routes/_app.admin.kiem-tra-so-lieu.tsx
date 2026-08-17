@@ -11,7 +11,7 @@ import { ClipboardCheck } from "lucide-react";
 export const Route = createFileRoute("/_app/admin/kiem-tra-so-lieu")({
   head: () => ({
     meta: [
-      { title: "Kiểm tra số liệu — Nhóm hệ thống & Vị trí — MIRATS 2.0" },
+      { title: "Kiểm tra số liệu — Nhóm hệ thống & Vị trí — MIRATS" },
       {
         name: "description",
         content:

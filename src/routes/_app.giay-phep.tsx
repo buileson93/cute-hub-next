@@ -27,9 +27,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_app/giay-phep")({
   head: () => ({
     meta: [
-      { title: "Giấy phép & Tuân thủ — MIRATS 2.0" },
+      { title: "Giấy phép & Tuân thủ — MIRATS" },
       { name: "description", content: "M7 — Quản lý giấy phép khai thác/kỹ thuật tài sản, cảnh báo hết hạn và theo dõi tuân thủ." },
-      { property: "og:title", content: "Giấy phép & Tuân thủ — MIRATS 2.0" },
+      { property: "og:title", content: "Giấy phép & Tuân thủ — MIRATS" },
       { property: "og:description", content: "Cảnh báo hết hạn 30/60/90 ngày, phân bổ theo đơn vị và nơi cấp." },
     ],
   }),

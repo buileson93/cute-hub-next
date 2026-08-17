@@ -18,12 +18,12 @@ import { useState } from "react";
 export const Route = createFileRoute("/_app/thong-bao")({
   head: () => ({
     meta: [
-      { title: "Thông báo — MIRATS 2.0" },
+      { title: "Thông báo — MIRATS" },
       {
         name: "description",
         content: "Hộp thư thông báo hệ thống: cảnh báo hết hạn, sự cố, tin nhắn.",
       },
-      { property: "og:title", content: "Thông báo — MIRATS 2.0" },
+      { property: "og:title", content: "Thông báo — MIRATS" },
       {
         property: "og:description",
         content: "Danh sách thông báo đã đọc và chưa đọc của tài khoản.",

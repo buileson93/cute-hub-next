@@ -46,9 +46,9 @@ import { WeeklyReportImportDialog } from "@/components/mirats/WeeklyReportImport
 export const Route = createFileRoute("/_app/su-co/")({
   head: () => ({
     meta: [
-      { title: "Sự cố kỹ thuật — MIRATS 2.0" },
+      { title: "Sự cố kỹ thuật — MIRATS" },
       { name: "description", content: "Nhật ký sự cố theo hệ thống — đánh giá chất lượng hệ thống, thành phần hay hư hỏng, xuất báo cáo ban đầu / tuần / tháng." },
-      { property: "og:title", content: "Sự cố kỹ thuật — MIRATS 2.0" },
+      { property: "og:title", content: "Sự cố kỹ thuật — MIRATS" },
       { property: "og:description", content: "Theo dõi sự cố theo hệ thống và xuất báo cáo khi cần." },
     ],
   }),
