@@ -84,9 +84,9 @@ export function AiChatButton() {
         title="MIRATS AI & Tin nhắn"
         className={cn(
           "fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full lg:bottom-6 lg:right-6",
-          "bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground",
-          "shadow-lg shadow-primary/25 ring-1 ring-primary/20 backdrop-blur",
-          "hover:shadow-xl hover:shadow-primary/20 transition-mirats-base",
+          "bg-[#0074e2] text-white",
+          "shadow-lg shadow-[#0074e2]/25 ring-1 ring-[#0074e2]/20 backdrop-blur",
+          "hover:shadow-xl hover:shadow-[#0074e2]/20 transition-mirats-base",
         )}
       >
         <Sparkles className="h-5 w-5" strokeWidth={2} />
@@ -178,14 +178,14 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0074e2] text-white">
             {tab === "ai" ? <Sparkles className="h-4 w-4" strokeWidth={2.2} /> : <MessagesSquare className="h-4 w-4" strokeWidth={2.2} />}
           </div>
           <div className="leading-tight">
             <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
               {tab === "ai" ? "MIRATS AI" : "Tin nhắn"}
               {tab === "ai" && (
-                <Badge variant="outline" className="rounded-full border-primary/30 bg-primary/10 px-1.5 py-0 text-[9px] font-bold uppercase text-primary">
+                <Badge variant="outline" className="rounded-full border-[#0074e2]/30 bg-[#0074e2]/10 px-1.5 py-0 text-[9px] font-bold uppercase text-[#0074e2]">
                   {betaLabel}
                 </Badge>
               )}
@@ -221,7 +221,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("ai")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "ai" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
+            tab === "ai" ? "bg-[#0074e2] text-white" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <Sparkles className="h-3.5 w-3.5" /> Hỏi AI
@@ -231,7 +231,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("messages")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "messages" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
+            tab === "messages" ? "bg-[#0074e2] text-white" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <MessagesSquare className="h-3.5 w-3.5" /> Tin nhắn
@@ -374,7 +374,7 @@ function ChatArea({
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <Sparkles className="h-8 w-8 text-primary/60" />
+            <Sparkles className="h-8 w-8 text-[#0074e2]/60" />
             <div className="text-sm font-medium text-foreground">Bạn muốn hỏi gì về MIRATS?</div>
             <div className="text-[11px] text-muted-foreground">Trợ lý chỉ đọc dữ liệu bạn có quyền truy cập</div>
             <div className="mt-2 grid w-full max-w-[320px] gap-1.5">
@@ -409,7 +409,7 @@ function ChatArea({
       </div>
 
       <div className="border-t border-border p-3">
-        <div className="flex items-end gap-2 rounded-2xl border border-border bg-card px-3 py-2 focus-within:ring-2 focus-within:ring-primary/30">
+        <div className="flex items-end gap-2 rounded-2xl border border-border bg-card px-3 py-2 focus-within:ring-2 focus-within:ring-[#0074e2]/30">
           <textarea
             ref={inputRef}
             value={input}
@@ -423,7 +423,7 @@ function ChatArea({
           />
           <Button
             size="icon"
-            className="h-8 w-8 shrink-0 rounded-full"
+            className="h-8 w-8 shrink-0 rounded-full bg-[#0074e2] text-white hover:bg-[#0074e2]/90"
             onClick={submit}
             disabled={busy || !input.trim()} aria-label="Đang tải">
             {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
@@ -461,7 +461,7 @@ function MessageBubble({
         className={cn(
           "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
           isUser
-            ? "bg-primary text-primary-foreground"
+            ? "bg-[#0074e2] text-white"
             : "bg-secondary text-foreground",
         )}
       >
