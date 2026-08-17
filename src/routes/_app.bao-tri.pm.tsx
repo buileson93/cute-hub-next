@@ -176,7 +176,7 @@ function PmPage() {
                               )}
                             </TableCell>
                             <TableCell className="text-xs">
-                              <Badge variant="outline">{r.doi_tuong_type === "thiet_bi" ? "Tài sản" : "Hệ thống"}</Badge>
+                              <Badge variant="outline" size="sm">{r.doi_tuong_type === "thiet_bi" ? "Tài sản" : "Hệ thống"}</Badge>
                               <div className="font-mono text-[10px] text-muted-foreground mt-1">{r.doi_tuong_id.slice(0, 8)}…</div>
                             </TableCell>
                             <TableCell className="text-xs">
