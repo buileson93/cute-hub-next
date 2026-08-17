@@ -169,10 +169,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-              <aside className={cn(
-                "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10",
-                UI_DENSITY.RAIL_W
-              )}>
+            <aside className={cn(
+              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50",
+              UI_DENSITY.RAIL_W
+            )}>
               <SidebarLogoRail />
               <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1 data-[density=compact]:gap-1 comfortable:gap-2">
                 {railWorkspaces.map((ws) => (
@@ -226,7 +226,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden astryx-sidebar",
+                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden border-r border-[#0074e2]/10 bg-background",
                 (isCollapsed && !isHovered) ? "w-0 border-r-0" : UI_DENSITY.SIDEBAR_W
               )}
             >
@@ -249,7 +249,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className={cn(
-              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 astryx-topbar",
+              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/80 backdrop-blur-md",
               UI_DENSITY.APP_HEADER_H
             )}>
 
