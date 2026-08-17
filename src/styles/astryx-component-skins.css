@@ -39,7 +39,7 @@
   .astryx-heading-1 {
     font-family: var(--font-family-heading);
     font-weight: 700;
-    font-size: 1.875rem; /* 30px */
+    font-size: 1.75rem; /* 28px from DF3 page */
     letter-spacing: -0.025em;
     color: var(--color-foreground);
     line-height: 1.2;
@@ -113,7 +113,7 @@
     cursor: pointer;
     user-select: none;
     border: 1px solid var(--color-border);
-    background-color: var(--color-background);
+    background-color: var(--color-background-muted);
   }
 
   .astryx-control:active {
