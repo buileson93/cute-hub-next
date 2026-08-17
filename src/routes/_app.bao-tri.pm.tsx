@@ -184,7 +184,7 @@ function PmPage() {
                               {r.estimated && <div className="text-[10px] text-amber-600 flex items-center gap-1 mt-1"><AlertTriangle className="h-3 w-3" />ước lượng</div>}
                             </TableCell>
                             <TableCell>{r.han}</TableCell>
-                            <TableCell><Badge className={st.color} variant="outline">{st.label}</Badge></TableCell>
+                            <TableCell><Badge variant={st.variant} size="sm">{st.label}</Badge></TableCell>
                             <TableCell className="text-xs">{r.don_vi?.ten_don_vi ?? "—"}</TableCell>
                             <TableCell className="text-xs">{r.phu_trach?.ho_ten ?? "—"}</TableCell>
                             <TableCell className="text-right space-x-1">
