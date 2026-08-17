@@ -170,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             {/* Rail (Desktop) */}
             <aside className={cn(
-              "h-full shrink-0 flex-col items-center border-r border-border bg-sidebar py-3 flex transition-[width]",
+              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] astryx-rail",
               UI_DENSITY.RAIL_W
             )}>
               <SidebarLogoRail />
@@ -182,10 +182,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(ws)}
                         onPointerEnter={() => setHoveredWsId(ws.id)}
                         className={cn(
-                          "group relative flex items-center justify-center rounded-lg transition-mirats-fast",
+                          "group relative flex items-center justify-center transition-mirats-fast astryx-rail-item",
                           "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          ws.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          ws.id === activeWs.id ? "astryx-rail-item-active" : ""
                         )}
+                        data-active={ws.id === activeWs.id}
                       >
                         <ws.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
                         <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
@@ -231,7 +232,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "h-full shrink-0 flex-col border-r border-border bg-sidebar/40 flex transition-[width] duration-300 ease-in-out overflow-hidden",
+                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden astryx-sidebar",
                 (isCollapsed && !isHovered) ? "w-0 border-r-0" : UI_DENSITY.SIDEBAR_W
               )}
             >
@@ -254,7 +255,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className={cn(
-              "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md",
+              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 astryx-topbar",
               UI_DENSITY.APP_HEADER_H
             )}>
 
@@ -286,7 +287,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   />
                </div>
                <div className="flex items-center gap-3">
-                  <UserMenu />
+                  <div className="astryx-user-menu-wrapper"><UserMenu /></div>
                </div>
             </header>
             <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 [@container]">{children}</main>

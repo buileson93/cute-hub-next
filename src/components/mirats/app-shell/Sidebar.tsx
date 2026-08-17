@@ -37,7 +37,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>
             {!collapsed && (
-              <div className="mb-2 px-2.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60">
+              <div className="mb-2 px-2.5 astryx-nav-group-label">
                 {group.nhan}
               </div>
             )}
@@ -52,11 +52,11 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     to={item.route}
                     onClick={onNavigate}
                     className={cn(
-                      "group relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 font-medium transition-mirats-fast",
+                      "group relative flex items-center gap-2.5 px-2.5 py-1.5 transition-mirats-fast astryx-nav-item",
                       "h-8 data-[density=comfortable]:h-9 data-[density=comfortable]:rounded-lg data-[density=comfortable]:gap-2.5",
                       UI_DENSITY.TEXT_BODY,
                       active 
-                        ? "bg-primary/8 text-primary" 
+                        ? "bg-primary/8 text-primary astryx-nav-item-active" 
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       collapsed && "justify-center px-0 py-2.5 h-10"
                     )}
