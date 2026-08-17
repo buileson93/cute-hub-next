@@ -8,6 +8,7 @@ import { useSession } from "@/hooks/use-session";
 import { useNavBadges } from "@/hooks/use-nav-badges";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { Badge } from "@/components/ui/badge";
 
 
 export function Sidebar({ onNavigate, collapsed, activeWsId }: { 
@@ -73,12 +74,14 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     </div>
                     {!collapsed && <span className="truncate">{item.nhan}</span>}
                     {!collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
-                      <div 
-                        className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0074e2]/10 px-1 text-[10px] font-bold text-[#0074e2] data-[density=compact]:h-4 data-[density=compact]:min-w-4"
+                      <Badge
+                        variant="info"
+                        size="sm"
+                        className="ml-auto h-4 px-1 min-w-4 justify-center border-none bg-[#0074e2]/15 text-[#0074e2] font-bold"
                         aria-label={`${badges[item.badgeKey]} việc cần xử lý`}
                       >
                         {badges[item.badgeKey] > 99 ? "99+" : badges[item.badgeKey]}
-                      </div>
+                      </Badge>
                     )}
                   </Link>
                 );
