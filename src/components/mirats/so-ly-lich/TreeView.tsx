@@ -68,9 +68,9 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             <span className={cn("truncate text-sm", node.kind === 'ht' ? "font-bold" : "font-medium")}>
               {node.label}
             </span>
-            <Badge variant="secondary" className="px-1 py-0 text-[10px] tabular-nums">
+            <span className="astryx-badge astryx-badge-primary astryx-number">
               {node.count}
-            </Badge>
+            </span>
           </div>
           {node.hist && (node.hist.bt > 0 || node.hist.sc > 0) && (
             <div className="flex gap-2 text-[10px]">
