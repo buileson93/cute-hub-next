@@ -355,7 +355,7 @@ function DuAnDetailPage() {
           qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
         }}
       />
-    </>
+    </div>
   );
 }
 
