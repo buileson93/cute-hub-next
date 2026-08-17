@@ -47,6 +47,7 @@ import {
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileNav } from "./MobileNav";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 
 
@@ -255,7 +256,25 @@ export function AppShell({ children }: { children: ReactNode }) {
 
                <div className="flex flex-1 items-center gap-4">
                   <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
-                  <div className="hidden md:block"><TourButton /></div>
+                  <div className="hidden md:flex items-center gap-4">
+                    <TourButton />
+                    <div className="h-4 w-[1px] bg-border/40 mx-1" />
+                    <Breadcrumb>
+                      <BreadcrumbList>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink asChild>
+                            <Link to="/">Hệ thống</Link>
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                          <BreadcrumbPage>
+                            {(hoveredWsId ? visibleWorkspaces.find(w => w.id === hoveredWsId) : activeWs)?.label}
+                          </BreadcrumbPage>
+                        </BreadcrumbItem>
+                      </BreadcrumbList>
+                    </Breadcrumb>
+                  </div>
                   <TopBar 
                     renderMobileMenu={
                       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
