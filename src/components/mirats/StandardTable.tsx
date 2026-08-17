@@ -105,6 +105,7 @@ export type StdColumn<T> = ColumnDef<T>;
 
 
 export interface StandardTableProps<T> {
+  className?: string;
   rows: T[];
   columns: ColumnDef<T>[];
   getRowId?: (r: T) => string;
@@ -150,6 +151,7 @@ export interface StandardTableProps<T> {
 
 
 export function StandardTable<T>({
+  className,
   rows = [],
   columns = [],
   getRowId,
@@ -191,12 +193,12 @@ export function StandardTable<T>({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (!parentRef.current || typeof ResizeObserver === "undefined") return;
+    if (typeof window === "undefined" || !parentRef.current || !window.ResizeObserver) return;
     
     let frameId: number;
-    const observer = new ResizeObserver((entries) => {
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(() => {
+    const observer = new window.ResizeObserver((entries) => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
         for (const entry of entries) {
           setContainerWidth(entry.contentRect.width);
         }
@@ -206,7 +208,7 @@ export function StandardTable<T>({
     observer.observe(parentRef.current);
     return () => {
       observer.disconnect();
-      cancelAnimationFrame(frameId);
+      window.cancelAnimationFrame(frameId);
     };
   }, []);
 
@@ -1186,7 +1188,7 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass)}>
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass, className)}>
           <Table className={cn(
             "border-separate border-spacing-0 caption-bottom",
             density === "compact" && "text-[12px]",
@@ -1477,6 +1479,8 @@ export function StandardTable<T>({
                                   scope={colIdx === 0 ? "row" : undefined}
                                 className={cn(
                                   c.cellClassName,
+                                  "astryx-table-cell",
+                                  (c.type === "number" || c.type === "currency" || c.type === "percent") && "astryx-table-cell-numeric",
                                   density === "compact" ? "px-1 py-0.5" : density === "comfortable" ? "px-1.5 py-0.5" : "px-3 py-1.5",
                                   c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
                                   selectable && c.sticky && "left-10",

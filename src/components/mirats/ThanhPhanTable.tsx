@@ -458,6 +458,7 @@ export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-
       {!isLoading && !error && viewMode === "component" && (
         <>
         <StandardTable<ThanhPhanRow>
+          className="astryx-table"
           tableKey={tableKey}
           rows={filtered}
           trangThai={{ dangTai: isLoading, loi: error }}
