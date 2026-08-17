@@ -7,3 +7,4 @@ export const Route = createFileRoute('/_app/so-do/')({
 function RouteComponent() {
   return <div>Hello "/_app/so-do/"!</div>
 }
+}
