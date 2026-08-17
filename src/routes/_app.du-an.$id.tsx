@@ -4,7 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   ArrowLeft, Plus, Loader2, Calendar as CalendarIcon, GanttChart, KanbanSquare,
   ListTree, Users, User as UserIcon, CheckCircle2, Clock, AlertTriangle, Mails,
-  Pencil, Trash2, Save,
+  Pencil, Trash2, Save, FileText, Search as SearchIcon, TrendingUp, Info, ShieldAlert
 } from "lucide-react";
 import "@/vendor/frappe-gantt.css";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -29,6 +29,11 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { LeanUXCanvas } from "@/components/mirats/projects/discovery/LeanUXCanvas";
+import { HillChart } from "@/components/mirats/projects/delivery/HillChart";
+import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
+import { PitchEditor } from "@/components/mirats/projects/delivery/PitchEditor";
+import { OperationsLane } from "@/components/mirats/projects/operations/OperationsLane";
 
 export const Route = createFileRoute("/_app/du-an/$id")({
   head: ({ params }) => ({
@@ -197,10 +202,14 @@ function DuAnDetailPage() {
         </div>
 
         <Tabs defaultValue="kanban">
-          <TabsList>
+          <TabsList className="bg-slate-100 p-1">
             <TabsTrigger value="kanban"><KanbanSquare className="h-4 w-4 mr-1.5" />Kanban</TabsTrigger>
             <TabsTrigger value="gantt"><GanttChart className="h-4 w-4 mr-1.5" />Gantt</TabsTrigger>
+            <TabsTrigger value="discovery"><SearchIcon className="h-4 w-4 mr-1.5" />Discovery</TabsTrigger>
+            <TabsTrigger value="delivery"><TrendingUp className="h-4 w-4 mr-1.5" />Delivery</TabsTrigger>
+            <TabsTrigger value="operations"><AlertTriangle className="h-4 w-4 mr-1.5" />Operations</TabsTrigger>
             <TabsTrigger value="list"><ListTree className="h-4 w-4 mr-1.5" />Danh sách</TabsTrigger>
+            <TabsTrigger value="hoso"><FileText className="h-4 w-4 mr-1.5" />Hồ sơ</TabsTrigger>
             <TabsTrigger value="cong-van"><Mails className="h-4 w-4 mr-1.5" />Công văn</TabsTrigger>
           </TabsList>
 
@@ -217,6 +226,53 @@ function DuAnDetailPage() {
 
           <TabsContent value="gantt" className="mt-3">
             <GanttView mocs={mocs ?? []} tasks={congViecs ?? []} projectStart={duAn.ngay_bat_dau} />
+          </TabsContent>
+
+          <TabsContent value="discovery" className="mt-3">
+            <LeanUXCanvas project_id={id} />
+          </TabsContent>
+
+          <TabsContent value="delivery" className="mt-3 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-3">
+                <HillChart 
+                  markers={[
+                    { id: "1", name: "Backend API", position: 35, status: "climbing" },
+                    { id: "2", name: "UI Components", position: 65, status: "executing" },
+                    { id: "3", name: "Dossier Integration", position: 10, status: "climbing" }
+                  ]} 
+                />
+              </div>
+              <div className="space-y-4">
+                <Card className="border-slate-200 shadow-none bg-slate-50/50">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs uppercase text-slate-500 font-bold">Current Cycle</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
+                    <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
+                    <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
+                  </CardContent>
+                </Card>
+                <Button className="w-full justify-start text-xs font-semibold" variant="outline">
+                  <Plus className="h-3.5 w-3.5 mr-2" /> New Pitch
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="operations" className="mt-3">
+            <OperationsLane 
+              wipLimit={2}
+              incidents={[
+                { id: "inc-01", title: "API Gateway 502 Errors in Production", severity: "P0", sla_status: "breach", owner: "Hung Nguyen", interruption_load: 85 },
+                { id: "inc-02", title: "Storage quota reached for project dossiers", severity: "P1", sla_status: "warning", owner: "Minh Tran", interruption_load: 30 }
+              ]} 
+            />
+          </TabsContent>
+
+          <TabsContent value="hoso" className="mt-3">
+            <DossierRegister dossier_id="default" />
           </TabsContent>
 
           <TabsContent value="list" className="mt-3">
