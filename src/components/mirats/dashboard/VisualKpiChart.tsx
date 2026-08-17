@@ -112,7 +112,7 @@ export function VisualKpiChart({
                   isAnimationActive={true}
                   animationDuration={1000}
                   dot={false}
-                  activeDot={{ r: 4, fill: Array.isArray(color) ? color[0] : color, stroke: '#fff', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#fff', stroke: Array.isArray(color) ? color[0] : color, strokeWidth: 2 }}
                 />
               </AreaChart>
             ) : type === 'bar' ? (
