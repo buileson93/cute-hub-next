@@ -119,6 +119,8 @@ export function VisualKpiChart({
               </AreaChart>
             ) : type === 'bar' ? (
               <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                <XAxis dataKey="thangHT" hide />
+                <YAxis hide domain={[0, 'auto']} />
                 <Tooltip 
                   cursor={{ fill: 'rgba(0, 116, 226, 0.04)' }}
                   contentStyle={{ 
