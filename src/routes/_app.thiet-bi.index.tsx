@@ -420,7 +420,7 @@ function ThietBiPage() {
                 ? "Thử thay đổi từ khoá hoặc xoá các bộ lọc để tìm kiếm rộng hơn."
                 : "Hệ thống chưa có dữ liệu tài sản nào được đăng ký."
             }
-            onRetry={() => window.location.reload()}
+            onRetry={() => { if (typeof window !== 'undefined') window.location.reload(); }}
             emptyAction={
               isFiltering ? (
                 <Button

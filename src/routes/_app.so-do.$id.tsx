@@ -741,7 +741,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       snapshot();
       setNodes(autoLayoutNodes(rf.getNodes() as ElementNodeType[], edges, dir));
       toast.success("Đã tự động bố trí sơ đồ");
-      window.setTimeout(() => rf.fitView({ padding: 0.2, duration: 400 }), 80);
+      if (typeof window !== 'undefined') window.setTimeout(() => rf.fitView({ padding: 0.2, duration: 400 }), 80);
     },
     [nodes, edges, snapshot, setNodes, rf],
   );
@@ -773,7 +773,8 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     staleTime: 60_000,
   });
 
-  const previewApi = useMemo<PreviewApi>(() => {
+  const previewApi = useMemo<PreviewApi | null>(() => {
+    if (typeof window === 'undefined') return null;
     const deviceMap = new Map(scope.thietBi.map((t) => [t.ma_thiet_bi, t]));
     const systemMap = new Map(scope.heThong.map((h) => [h.ma, h]));
     const diagBySystem = new Map<string, DiagramLite[]>();
