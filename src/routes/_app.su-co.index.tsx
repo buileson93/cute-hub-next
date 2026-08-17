@@ -265,7 +265,7 @@ function SuCoPage() {
     }
     return Array.from(m.values())
       .map((r) => {
-        const worst = Array.from(r.devs.entries()).sort((a: any, b: any) => b[1] - a[1])[0];
+        const worst = Array.from(r.devs.entries()).sort((a: [string, number], b: [string, number]) => b[1] - a[1])[0];
         return { ...r, worst: worst ? { ten: worst[0], count: worst[1] } : null };
       })
       .sort((a, b) => b.count - a.count || b.downtime - a.downtime);
