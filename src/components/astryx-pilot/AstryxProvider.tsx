@@ -1,4 +1,8 @@
 import { Theme } from "@astryxdesign/core";
+if (typeof window === 'undefined') {
+  (globalThis as any).requestAnimationFrame = (callback: any) => setTimeout(callback, 0);
+  (globalThis as any).cancelAnimationFrame = (id: any) => clearTimeout(id);
+}
 import { stoneTheme } from "@astryxdesign/theme-stone/built";
 import { ReactNode, useState, useEffect, Suspense, lazy } from "react";
 
