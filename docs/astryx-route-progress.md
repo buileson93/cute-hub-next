@@ -15,8 +15,8 @@
 
 ## Batch 2: Maintenance & Operations (U13.2)
 - [x] `/bao-tri/index` -> **Table Archetype**
-- [ ] `/su-co/index` -> **Table Archetype**
-- [ ] `/hong-hoc/index` -> **Table Archetype**
+- [x] `/su-co/index` -> **Table Archetype**
+- [x] `/hong-hoc/index` -> **Table Archetype**
 
 ## Batch 3: Admin & Reporting (U13.3)
 - [ ] `/admin/audit/lap-thao` -> **Table Archetype**
