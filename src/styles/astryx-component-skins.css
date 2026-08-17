@@ -311,8 +311,8 @@
 
   /* AppShell & Navigation (Stone Skin) */
   .astryx-rail {
-    background-color: var(--color-sidebar);
-    border-right: 1px solid var(--color-border);
+    background-color: var(--sidebar);
+    border-right: 1px solid var(--sidebar-border);
     transition: width var(--duration-medium) var(--ease-standard);
   }
 
@@ -323,31 +323,31 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-element);
-    color: var(--color-muted-foreground);
+    color: var(--muted-foreground);
     transition: all var(--duration-fast) var(--ease-standard);
   }
 
   .astryx-rail-item:hover {
-    background-color: var(--color-muted);
-    color: var(--color-foreground);
+    background-color: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
   }
 
   .astryx-rail-item[data-active="true"] {
-    background-color: var(--color-accent);
-    color: var(--color-primary);
+    background-color: var(--sidebar-accent);
+    color: var(--primary);
   }
 
   .astryx-sidebar {
-    background-color: color-mix(in oklab, var(--color-sidebar) 40%, transparent);
-    border-right: 1px solid var(--color-border);
-    backdrop-filter: blur(12px);
+    background-color: var(--sidebar);
+    border-right: 1px solid var(--sidebar-border);
   }
 
   .astryx-topbar {
-    background-color: color-mix(in oklab, var(--color-background) 80%, transparent);
-    border-bottom: 1px solid var(--color-border);
+    background-color: color-mix(in oklab, var(--background) 80%, transparent);
+    border-bottom: 1px solid var(--border);
     backdrop-filter: blur(8px);
   }
+
 
   .astryx-nav-item {
     font-family: var(--font-family-body);
