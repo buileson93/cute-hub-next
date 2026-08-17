@@ -1,9 +1,3 @@
----
-name: Astryx UX Parity Contract
-description: Standards for maintaining MIRATS UX during Astryx Redesign
-type: feature
----
-
 # MIRATS ASTRYX TEMPLATES — UX PARITY CONTRACT
 
 ## 1. UX Immutability

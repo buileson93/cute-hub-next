@@ -1,9 +1,3 @@
----
-name: Astryx Redesign Baseline
-description: Audit of current project state for Astryx Redesign (U0)
-type: feature
----
-
 # MIRATS ASTRYX TEMPLATES — U0: READ-ONLY BASELINE
 
 ## 1. Package Inventory
