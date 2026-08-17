@@ -350,7 +350,8 @@ function SuCoPage() {
   }
 
   return (
-    <PageFrame density="compact">
+    <>
+      <PageFrame density="compact">
       <PageHeader
         icon={AlertTriangle}
         title="Sự cố kỹ thuật"
@@ -451,7 +452,7 @@ function SuCoPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageFrame>
+    </>
   );
 }
 
