@@ -877,9 +877,9 @@ export function CommandPalette() {
                     key={`recent-${h.entity}-${h.id}`}
                     value={`recent-${h.entity}-${h.id}-${h.title}`}
                     onSelect={() => go(h.to)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-0.5">
@@ -903,16 +903,16 @@ export function CommandPalette() {
                 <CommandItem
                   value={`ai-ask ${q}`}
                   onSelect={() => askAi(q)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-data-[selected=true]:bg-primary/20 transition-colors">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#0074e2]/10 text-[#0074e2] group-data-[selected=true]:bg-[#0074e2]/20 transition-colors">
                     <SparklesIcon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1 space-y-0.5">
                     <div className="truncate text-[13px] font-bold text-foreground">Hỏi MIRATS AI</div>
                     <div className="truncate text-[11px] text-muted-foreground/80">“{q.trim()}”</div>
                   </div>
-                  <span className="ml-auto shrink-0 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+                  <span className="ml-auto shrink-0 rounded-md border border-[#0074e2]/20 bg-[#0074e2]/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#0074e2]">
                     AI
                   </span>
                 </CommandItem>
@@ -937,11 +937,11 @@ export function CommandPalette() {
                       saveRecent(h);
                       go(h.to);
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                   >
                     <div className={cn(
                       "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                      h.entity === "he_thong" ? "bg-primary/5 text-primary group-data-[selected=true]:bg-primary/20" : "bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary"
+                      h.entity === "he_thong" ? "bg-[#0074e2]/5 text-[#0074e2] group-data-[selected=true]:bg-[#0074e2]/20" : "bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2]"
                     )}>
                       <Icon className="h-4 w-4" />
                     </div>
