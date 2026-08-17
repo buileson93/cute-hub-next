@@ -17,22 +17,17 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // requestAnimationFrame shim for SSR safety if needed by internals
-    if (typeof window !== 'undefined' && !window.requestAnimationFrame) {
-      (window as any).requestAnimationFrame = (callback: any) => setTimeout(callback, 0);
-    }
     setHydrated(true);
   }, []);
 
-  // During SSR, we render a plain container or just the children if safe.
-  // Astryx interactive components use useEntryAnimation which fails at module level or during render.
-  if (!hydrated) {
-    return <div className="astryx-ssr-container">{children}</div>;
-  }
-
+  // During SSR, we render the theme container with static CSS variables but without
+  // interactive components that might leak browser globals.
+  // The stoneTheme is an object containing CSS variables, safe for SSR.
   return (
     <Theme theme={stoneTheme}>
-      {children}
+      <div className={!hydrated ? "astryx-ssr-mode" : "astryx-client-mode"}>
+        {children}
+      </div>
     </Theme>
   );
 }
