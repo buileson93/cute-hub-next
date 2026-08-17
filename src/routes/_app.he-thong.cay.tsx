@@ -272,6 +272,16 @@ function HeThongCayPage() {
      if (sysId && sysId !== NONE_HT) nav({ to: "/he-thong/$id", params: { id: sysId } });
   }, [nav]);
 
+  const onIncident = useCallback((ma: string) => {
+    const sysId = parseHtSysMa(ma).sysName;
+    if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
+  }, [nav]);
+
+  const onMaint = useCallback((ma: string) => {
+    const sysId = parseHtSysMa(ma).sysName;
+    if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
+  }, [nav]);
+
   const searchItems = useMemo(() => {
     const list: SearchItem[] = [];
     for (const pl of viewTree) {
