@@ -31,14 +31,14 @@ export const Route = createFileRoute("/admin/users")({
   component: AdminUsersPage,
 });
 
-const ROLES: { value: AppRole; label: string; tone: string }[] = [
-  { value: "admin",          label: "Admin",             tone: "bg-rose-100 text-rose-700 border-rose-200" },
-  { value: "phong_kt",       label: "Phòng KT",          tone: "bg-indigo-100 text-indigo-700 border-indigo-200" },
-  { value: "phu_trach_dv",   label: "PT đơn vị",         tone: "bg-amber-100 text-amber-700 border-amber-200" },
-  { value: "ktv",            label: "KTV",               tone: "bg-sky-100 text-sky-700 border-sky-200" },
-  { value: "quan_ly_du_an",  label: "QL dự án",          tone: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  { value: "to_truong",      label: "Tổ trưởng",         tone: "bg-teal-100 text-teal-700 border-teal-200" },
-  { value: "readonly",       label: "Read-only",         tone: "bg-slate-100 text-slate-600 border-slate-200" },
+const ROLES: { value: AppRole; label: string; tone: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" | "info" }[] = [
+  { value: "admin",          label: "Admin",             tone: "destructive" },
+  { value: "phong_kt",       label: "Phòng KT",          tone: "info" },
+  { value: "phu_trach_dv",   label: "PT đơn vị",         tone: "warning" },
+  { value: "ktv",            label: "KTV",               tone: "success" },
+  { value: "quan_ly_du_an",  label: "QL dự án",          tone: "info" },
+  { value: "to_truong",      label: "Tổ trưởng",         tone: "info" },
+  { value: "readonly",       label: "Read-only",         tone: "secondary" },
 ];
 const DON_VI = [
   { code: "CRA", ten: "Cam Ranh" }, { code: "CLA", ten: "Chu Lai" },
@@ -181,7 +181,7 @@ function AdminUsers() {
                     {u.roles.length === 0 ? <span className="text-[11px] text-muted-foreground">—</span> :
                       u.roles.map((r) => {
                         const meta = ROLES.find((x) => x.value === r);
-                        return <span key={r} className={cn("rounded-md border px-1.5 py-0.5 text-[10.5px] font-medium", meta?.tone ?? "bg-muted")}>{meta?.label ?? r}</span>;
+                        return <Badge key={r} variant={meta?.tone ?? "outline"} size="sm">{meta?.label ?? r}</Badge>;
                       })}
                   </div>
                 ),
@@ -190,10 +190,10 @@ function AdminUsers() {
                 key: "trang_thai", label: "Trạng thái", filter: "cat",
                 value: (u) => u.active ? "Hoạt động" : (u.banned_until ? "Đã khoá" : "Chờ duyệt"),
                 cell: (u) => u.active
-                  ? <Badge className="bg-emerald-100 text-emerald-700 text-[10.5px]" variant="secondary">Hoạt động</Badge>
+                  ? <Badge variant="success" size="sm">Hoạt động</Badge>
                   : u.banned_until
-                    ? <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-[10.5px]" variant="outline">Đã khoá</Badge>
-                    : <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-[10.5px]" variant="outline">Chờ duyệt</Badge>,
+                    ? <Badge variant="error" size="sm">Đã khoá</Badge>
+                    : <Badge variant="warning" size="sm">Chờ duyệt</Badge>,
               },
               {
                 key: "actions", label: "Thao tác", align: "right",
@@ -327,7 +327,7 @@ function UserForm({
                     checked={roles.includes(r.value)}
                     onCheckedChange={(c) => setRoles((prev) => c ? [...prev, r.value] : prev.filter((x) => x !== r.value))}
                   />
-                  <span className={cn("rounded px-1.5 py-0.5 text-[10.5px] font-medium border", r.tone)}>{r.label}</span>
+                  <Badge variant={r.tone} size="sm">{r.label}</Badge>
                 </label>
               ))}
             </div>
