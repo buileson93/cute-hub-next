@@ -261,7 +261,7 @@ function DuAnDetailPage() {
             </TabsContent>
 
             <TabsContent value="gantt" className="mt-3">
-              <GanttView mocs={mocs ?? []} tasks={congViecs ?? []} projectStart={duAn.ngay_bat_dau} />
+              <GanttView mocs={mocs ?? []} tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []} projectStart={duAn.ngay_bat_dau} />
             </TabsContent>
 
             <TabsContent value="discovery" className="mt-3">
