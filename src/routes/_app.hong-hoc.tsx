@@ -1,4 +1,6 @@
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useMemo, useState } from "react";
@@ -167,19 +169,21 @@ function HongHocPage() {
 
 
   return (
-    <div className="space-y-4">
+    <PageFrame density="compact">
       <PageHeader
         icon={Replace}
         title="Hỏng hóc & Thay thế"
         help="Lập phiếu hỏng hóc–thay thế, truy vết tài sản cũ sang mới và xuất kho vật tư kèm theo."
         actions={
           canManage ? (
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="h-8">
               <Link to="/hong-hoc/moi"><Plus className="mr-1 h-4 w-4" /> Tạo phiếu</Link>
             </Button>
           ) : null
         }
       />
+
+      <PageBody className="space-y-4">
 
 
 
@@ -248,7 +252,8 @@ function HongHocPage() {
 
 
       <EditDialog row={editing} onClose={() => setEditing(null)} onDone={() => { setEditing(null); qc.invalidateQueries({ queryKey: ["operations_data"] }); }} />
-    </div>
+      </PageBody>
+    </PageFrame>
   );
 }
 

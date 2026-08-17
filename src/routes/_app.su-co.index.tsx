@@ -350,7 +350,8 @@ function SuCoPage() {
   }
 
   return (
-    <PageFrame density="comfortable">
+    <>
+      <PageFrame density="compact">
       <PageHeader
         icon={AlertTriangle}
         title="Sự cố kỹ thuật"
@@ -358,10 +359,10 @@ function SuCoPage() {
         actions={
           <div className="flex gap-1 items-center">
             <WeeklyReportImportDialog />
-            <Button asChild size="icon" variant="outline">
+            <Button asChild size="icon" variant="outline" className="h-8 w-8">
               <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="icon">
+            <Button asChild size="icon" className="h-8 w-8">
               <Link to="/su-co/moi"><FilePlus2 className="h-4 w-4" /></Link>
             </Button>
           </div>
@@ -429,6 +430,7 @@ function SuCoPage() {
           </PageSection>
         </div>
       </PageBody>
+    </PageFrame>
 
       <Dialog open={!!closing} onOpenChange={(o) => !o && setClosing(null)}>
         <DialogContent>
@@ -450,7 +452,7 @@ function SuCoPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageFrame>
+    </>
   );
 }
 

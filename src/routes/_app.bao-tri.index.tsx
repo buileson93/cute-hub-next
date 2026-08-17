@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useMemo, useState } from "react";
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useScope } from "@/lib/mirats/scope";
-import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { StandardTable, type ColumnDef } from "@/components/mirats/StandardTable";
 import type { BaoTri } from "@/lib/mirats/types";
 
 export const Route = createFileRoute("/_app/bao-tri/")({
@@ -69,25 +70,25 @@ function BaoTriPage() {
     return s;
   }, [filtered]);
 
-  const columns: StdColumn<BaoTri>[] = useMemo(() => [
+  const columns: ColumnDef<BaoTri>[] = useMemo(() => [
     {
-      key: "ma_bao_tri", label: "Mã BT", filter: "text", sortable: true,
+      key: "ma_bao_tri", header: "Mã BT", filter: "text", sortable: true,
       value: (b) => b.ma_bao_tri,
-      cell: (b) => (
+      render: (b) => (
         <Link to="/bao-tri/$maBaoTri" params={{ maBaoTri: b.ma_bao_tri }} className="font-mono text-xs text-primary hover:underline">
           {b.ma_bao_tri}
         </Link>
       ),
     },
     {
-      key: "ngay_bat_dau", label: "Ngày bắt đầu", sortable: true, hideBelow: "xl",
+      key: "ngay_bat_dau", header: "Ngày bắt đầu", sortable: true, hideBelow: "xl",
       value: (b) => b.ngay_bat_dau,
-      cell: (b) => <span className="whitespace-nowrap text-xs text-muted-foreground">{b.ngay_bat_dau}</span>,
+      render: (b) => <span className="whitespace-nowrap text-xs text-muted-foreground">{b.ngay_bat_dau}</span>,
     },
     {
-      key: "thiet_bi", label: "Tài sản", filter: "text",
+      key: "thiet_bi", header: "Tài sản", filter: "text",
       value: (b) => thietBiMap.get(b.thiet_bi)?.ten ?? b.thiet_bi,
-      cell: (b) => {
+      render: (b) => {
         const tb = thietBiMap.get(b.thiet_bi);
         const dvo = donViMap.get(b.don_vi);
         return tb ? (
@@ -99,29 +100,30 @@ function BaoTriPage() {
       },
     },
     {
-      key: "he_thong", label: "Hệ thống", filter: "cat", hideBelow: "md",
+      key: "he_thong", header: "Hệ thống", filter: "cat", hideBelow: "md",
       value: (b) => heThongMap.get(b.he_thong)?.ten ?? "—",
-      cell: (b) => <span className="text-sm">{heThongMap.get(b.he_thong)?.ten ?? "—"}</span>,
+      render: (b) => <span className="text-sm">{heThongMap.get(b.he_thong)?.ten ?? "—"}</span>,
     },
     {
-      key: "loai_bao_tri", label: "Loại", filter: "cat", hideBelow: "lg",
+      key: "loai_bao_tri", header: "Loại", filter: "cat", hideBelow: "lg",
       value: (b) => b.loai_bao_tri,
-      cell: (b) => <StatusBadge domain="bao_tri" code={b.loai_bao_tri} label={b.loai_bao_tri} />,
+      render: (b) => <StatusBadge domain="bao_tri" code={b.loai_bao_tri} label={b.loai_bao_tri} />,
     },
     {
-      key: "don_vi_thuc_hien", label: "Đơn vị TH", filter: "cat", hideBelow: "md",
+      key: "don_vi_thuc_hien", header: "Đơn vị TH", filter: "cat", hideBelow: "md",
       value: (b) => b.don_vi_thuc_hien,
-      cell: (b) => <span className="text-sm">{b.don_vi_thuc_hien}</span>,
+      render: (b) => <span className="text-sm">{b.don_vi_thuc_hien}</span>,
     },
     {
-      key: "trang_thai", label: "Trạng thái", filter: "cat", hideBelow: "sm",
+      key: "trang_thai", header: "Trạng thái", filter: "cat", hideBelow: "sm",
       value: (b) => b.trang_thai,
-      cell: (b) => <StatusBadge domain="bao_tri" code={b.trang_thai} />,
+      render: (b) => <StatusBadge domain="bao_tri" code={b.trang_thai} />,
     },
   ], [thietBiMap, heThongMap, donViMap]);
 
   return (
-    <PageBody>
+    <PageFrame density="compact">
+      <PageBody>
       <PageHeader
         icon={Wrench}
         title="Bảo dưỡng"
@@ -207,7 +209,7 @@ function BaoTriPage() {
         </TabsContent>
       </Tabs>
     </PageBody>
-
+  </PageFrame>
   );
 }
 

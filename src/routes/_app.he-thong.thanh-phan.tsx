@@ -2,22 +2,23 @@ import { createFileRoute, useRouter, Link, useNavigate } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Puzzle, List, ListTree, GitFork, Activity, ClipboardList, Pencil, Check } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { PageHeader } from "@/components/mirats/PageHeader";
+import { AlertTriangle, RefreshCw, Pencil, Check, GitFork, Activity, ClipboardList, ListTree, LayoutGrid } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCan } from "@/hooks/use-permissions";
 import { useUserPref } from "@/hooks/use-user-pref";
-
-
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageSection } from "@/components/mirats/layout/PageSection";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
   head: () => ({
     meta: [
-      { title: "Hệ thống — Thành phần & tài sản — MIRATS 2.0" },
+      { title: "Thành phần & Tài sản — MIRATS 2.0" },
       {
         name: "description",
-        content:
-          "Bảng hệ thống mức thành phần: nhóm — hệ thống — thành phần — tài sản đang lắp (kế thừa serial, model, chủng loại, NSX, NCC) — vị trí — trạng thái.",
+        content: "Bảng quản lý chi tiết thành phần và tài sản hệ thống kỹ thuật.",
       },
     ],
   }),
@@ -30,37 +31,70 @@ function ThanhPhanListPage() {
   const canManage = useCan("he-thong", "manage") || useCan("admin", "manage");
   const [editMode, setEditMode] = useUserPref<boolean>("he-thong:edit-mode", false);
 
-  return (
-    <div className="flex h-full flex-col">
-      <Tabs value="table" onValueChange={(v) => v !== "table" && nav({ to: "/he-thong/cay", search: { view: v } as any })} className="flex-1 flex flex-col min-h-0">
-        <div className="px-3 py-1 border-b flex items-center justify-between bg-background z-10 shrink-0">
-          <div className="flex items-center gap-2">
-            <TabsList>
-              <TabsTrigger value="table" className="h-7 gap-1.5 px-2 text-xs"><List className="h-3.5 w-3.5"/>Bảng</TabsTrigger>
-              <TabsTrigger value="tree" className="h-7 gap-1.5 px-2 text-xs"><ListTree className="h-3.5 w-3.5"/>Cây</TabsTrigger>
-              <TabsTrigger value="mindmap" className="h-7 gap-1.5 px-2 text-xs"><GitFork className="h-3.5 w-3.5"/>Sơ đồ</TabsTrigger>
-              <TabsTrigger value="health" className="h-7 gap-1.5 px-2 text-xs"><Activity className="h-3.5 w-3.5"/>Sức khỏe</TabsTrigger>
-              <TabsTrigger value="history" className="h-7 gap-1.5 px-2 text-xs"><ClipboardList className="h-3.5 w-3.5"/>Nhật ký</TabsTrigger>
-            </TabsList>
-          </div>
+  const handleDisplayChange = (v: string) => {
+    if (v === "table") return;
+    nav({ to: "/he-thong/cay", search: { view: v } as any });
+  };
 
-          {canManage && (
-            <Button
-              variant={editMode ? "default" : "outline"}
-              size="sm"
-              className="gap-2"
-              onClick={() => setEditMode(!editMode)}
-            >
-              {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-              {editMode ? "Đang sửa" : "Chỉnh sửa"}
-            </Button>
-          )}
-        </div>
-        <TabsContent value="table" className="flex-1 min-h-0 m-0 outline-none">
-          <ThanhPhanTable externalEditMode={editMode} />
-        </TabsContent>
-      </Tabs>
-    </div>
+  return (
+    <PageFrame density="compact">
+      <PageHeader
+        icon={GitFork}
+        title="Thành phần & Tài sản"
+        subtitle="Quản lý chi tiết danh mục kỹ thuật"
+        breadcrumbs={[
+          { label: "Hệ thống", to: "/he-thong/cay" },
+          { label: "Thành phần & Tài sản" }
+        ]}
+        actions={
+          <div className="flex items-center gap-2">
+            {canManage && (
+              <AppTooltip noiDung={editMode ? "Hoàn tất" : "Chỉnh sửa nhanh"}>
+                <Button
+                  variant={editMode ? "default" : "outline"}
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setEditMode(!editMode)}
+                >
+                  {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                </Button>
+              </AppTooltip>
+            )}
+          </div>
+        }
+      />
+
+      <PageSection className="px-4 py-2 border-b bg-background/30 backdrop-blur-sm z-10 shrink-0">
+        <Tabs value="table" onValueChange={handleDisplayChange}>
+          <TabsList className="h-8 bg-muted/50 p-0.5">
+            <TabsTrigger value="table" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+              <LayoutGrid className="h-3 w-3" />
+              <span>DANH SÁCH</span>
+            </TabsTrigger>
+            <TabsTrigger value="tree" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+              <ListTree className="h-3.5 w-3.5" />
+              <span>CÂY PHÂN CẤP</span>
+            </TabsTrigger>
+            <TabsTrigger value="mindmap" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+              <GitFork className="h-3.5 w-3.5" />
+              <span>SƠ ĐỒ TỔNG THỂ</span>
+            </TabsTrigger>
+            <TabsTrigger value="health" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+              <Activity className="h-3.5 w-3.5" />
+              <span>SỨC KHỎE</span>
+            </TabsTrigger>
+            <TabsTrigger value="history" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+              <ClipboardList className="h-3.5 w-3.5" />
+              <span>NHẬT KÝ</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </PageSection>
+
+      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden">
+        <ThanhPhanTable externalEditMode={editMode} />
+      </PageBody>
+    </PageFrame>
   );
 }
 
