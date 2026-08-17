@@ -120,8 +120,8 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: ColumnDef<T>[];
@@ -797,7 +797,7 @@ export function StandardTable<T>({
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-1 px-0">
           <div className="flex items-center gap-1">
-            {toolbarLeft && renderToolbar(toolbarLeft, { visibleRows: fullDisplay, visibleColumns: shownCols })}
+            {toolbarLeft && renderToolbar(toolbarLeft, { filteredRows: fullDisplay, visibleColumns: shownCols })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
                 selectedRows,
@@ -1016,7 +1016,7 @@ export function StandardTable<T>({
                 </div>
               </>
             )}
-            {toolbarRight && renderToolbar(toolbarRight, { visibleRows: fullDisplay, visibleColumns: shownCols })}
+            {toolbarRight && renderToolbar(toolbarRight, { filteredRows: fullDisplay, visibleColumns: shownCols })}
           </div>
         </div>
       )}

@@ -963,7 +963,7 @@ function DanhMucThietBiPage() {
                 </div>
               </div>
             }
-            toolbarRight={({ visibleRows, visibleColumns }) => (
+            toolbarRight={({ filteredRows, visibleColumns }) => (
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline" size="sm" className="h-8 gap-1.5"
@@ -974,8 +974,8 @@ function DanhMucThietBiPage() {
                 </Button>
                 <Button
                   variant="outline" size="sm" className="h-8 gap-1.5"
-                  disabled={exporting || visibleRows.length === 0}
-                  onClick={() => exportRows(visibleRows, visibleColumns)}
+                  disabled={exporting || filteredRows.length === 0}
+                  onClick={() => exportRows(filteredRows, visibleColumns)}
                   title="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
                 >
                   {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
