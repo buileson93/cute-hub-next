@@ -1,7 +1,7 @@
 // Astryx Design System Provider
 
 
-import { Theme } from "@astryxdesign/core";
+import { Theme } from "@astryxdesign/core/theme";
 import { df3Theme } from "@/lib/astryx-theme/df3-theme";
 
 
