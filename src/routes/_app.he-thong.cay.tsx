@@ -474,14 +474,23 @@ function HeThongCayPage() {
         </DataState>
       </PageBody>
 
-      <NodeEditorSheet
-        kind={target?.kind || "tb"}
-        ma={target?.ma || ""}
-        open={!!target}
-        onOpenChange={(o) => !o && setTarget(null)}
+      <NodeEditorSheet 
+        target={target}
+        onClose={() => setTarget(null)}
+        plLabel={plMind}
+        nhLabel={nhMind}
+        htLabel={htMind}
+        tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
+        canManage={canManage}
+        donViList={taxonomy?.donViList || []}
       />
 
-      <CayThayDoiPanel />
+      <CayThayDoiPanel 
+        open={reorgOpen}
+        onClose={() => setReorgOpen(false)}
+        isAdmin={roles.includes("admin")}
+        htNameMap={taxonomy?.htNameMap}
+      />
 
       {search.moveHt && (
          <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
