@@ -34,6 +34,7 @@ import {
   workspaces,
   routeTitles,
   resolveActiveWorkspace,
+  resolveRouteMeta,
   firstItemOf,
 } from "@/lib/mirats/nav-contract";
 import { type UiDensityMode, UI_DENSITY } from "@/lib/mirats/ui/ui-density";
@@ -47,6 +48,7 @@ import {
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileNav } from "./MobileNav";
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 
 
@@ -146,6 +148,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         : firstItemOf(ws, hasRole);
     navigate({ to: target as never });
   }
+
+  const routeMeta = useMemo(() => resolveRouteMeta(pathname), [pathname]);
 
   return (
     <ProductTourProvider steps={TOUR_STEPS}>
@@ -255,7 +259,32 @@ export function AppShell({ children }: { children: ReactNode }) {
 
                <div className="flex flex-1 items-center gap-4">
                   <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
-                  <div className="hidden md:block"><TourButton /></div>
+                  <div className="hidden md:flex items-center gap-4">
+                    <TourButton />
+                    <div className="h-4 w-[1px] bg-border/40 mx-1" />
+                    <Breadcrumb>
+                      <BreadcrumbList>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink asChild>
+                            <button 
+                              onClick={() => gotoWorkspace(activeWs)}
+                              className="cursor-pointer"
+                            >
+                              {activeWs.label}
+                            </button>
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        {routeMeta.crumb !== activeWs.label && routeMeta.crumb !== "MIRATS" && (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <BreadcrumbPage>{routeMeta.crumb}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                          </>
+                        )}
+                      </BreadcrumbList>
+                    </Breadcrumb>
+                  </div>
                   <TopBar 
                     renderMobileMenu={
                       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
