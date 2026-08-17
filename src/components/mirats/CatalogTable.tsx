@@ -439,6 +439,7 @@ export function CatalogTable({
       {!error && !(supportsParent && view === "tree") && (
 
         <StandardTable<Row>
+          className="astryx-table"
           tableKey={`catalog:${table}`}
           trangThai={{ dangTai: isLoading }}
           rows={filtered}
