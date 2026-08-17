@@ -58,7 +58,7 @@ function CongViecPage() {
   const list = useMemo(() => rows ?? [], [rows]);
 
   const stats = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getTodayDateString();
     return {
       total: list.length,
       done: list.filter((c) => phaseOf("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) === "closed").length,
@@ -144,7 +144,7 @@ function CongViecPage() {
   async function onBatDau(id: string) {
     setBusy(id);
     try {
-      await capNhat.mutateAsync({ id, trang_thai: "DANG_LAM", ngay_bat_dau: new Date().toISOString().slice(0, 10) });
+      await capNhat.mutateAsync({ id, trang_thai: "DANG_LAM", ngay_bat_dau: getTodayDateString() });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Lỗi cập nhật");
     } finally {
