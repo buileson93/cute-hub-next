@@ -98,7 +98,7 @@ function NameBadge({ name, id }: { name: string; id: string }) {
   const { backgroundColor, color } = hashPastel(id);
   return (
     <Badge
-      variant="outline"
+      variant="outline" size="sm"
       className="font-medium border-transparent transition-colors hover:brightness-95"
       style={{ backgroundColor, color }}
     >
