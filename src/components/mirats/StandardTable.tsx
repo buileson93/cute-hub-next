@@ -1029,7 +1029,7 @@ export function StandardTable<T>({
             if (!val) return null;
             const col = columns.find(c => c.key === key);
             return (
-              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+              <Badge key={key} variant="secondary" size="sm" className="gap-1 px-2 py-0.5 h-6 font-medium bg-secondary/50">
                 <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{val}</span>
                 <button 
@@ -1048,7 +1048,7 @@ export function StandardTable<T>({
             if (!sel || sel.size === 0) return null;
             const col = columns.find(c => c.key === key);
             return (
-              <Badge key={key} variant="secondary" className="gap-1 px-2 py-0.5 h-6">
+              <Badge key={key} variant="secondary" size="sm" className="gap-1 px-2 py-0.5 h-6 font-medium bg-secondary/50">
                 <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
                 <button 
@@ -1641,7 +1641,7 @@ function ColFilter({
                     className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
                   >
                     <span className="truncate mr-2">{v.value}</span>
-                    <Badge variant="outline" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
+                    <Badge variant="outline" size="sm" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
                       {v.count}
                     </Badge>
                   </DropdownMenuCheckboxItem>
