@@ -13,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { AccessDenied } from "@/components/mirats/AccessDenied";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageSection } from "@/components/mirats/layout/PageSection";
+import { StartPanel } from "@/components/mirats/layout/PageLayouts";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { FullDumpButton } from "@/components/mirats/FullDumpButton";
@@ -87,153 +91,175 @@ function Content() {
   }
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
+    <PageFrame density="comfortable">
       <PageHeader
         title="Lưu trữ tệp"
         subtitle="Bật/tắt kho lưu trữ: chỉ Lovable Cloud, chỉ Cloudflare R2, hoặc ghi song song cả hai."
+        breadcrumbs={[
+          { label: "Quản trị", to: "/admin/forms" },
+          { label: "Lưu trữ" }
+        ]}
+        icon={HardDrive}
       />
 
-      {isLoading ? (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải cấu hình…
-        </div>
-      ) : (
-        <>
-          {usesR2 && health.data && !health.data.ok && (
-            <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
-              <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-              <div className="space-y-1">
-                <p className="font-medium text-destructive">Cloudflare R2 đang lỗi — tệp mới có thể không ghi được.</p>
-                <p className="text-xs text-muted-foreground">{health.data.message}</p>
-                <p className="text-xs text-muted-foreground">
-                  Chuyển sang <strong>Chỉ dùng Lovable Cloud</strong> bên dưới để hệ thống tiếp tục hoạt động bình thường.
-                </p>
-                <Button size="sm" variant="outline" className="mt-1" onClick={() => setMode("cloud")}>
-                  Chọn “Chỉ dùng Lovable Cloud”
-                </Button>
-              </div>
-            </div>
-          )}
-          {usesR2 && health.data?.ok && (
-            <p className="text-xs text-emerald-600">{health.data.message}</p>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Chế độ lưu trữ</CardTitle>
-              <CardDescription>
-                Chọn kho lưu trữ đang bật. Chế độ “chỉ một kho” sẽ ghi và đọc hoàn toàn ở kho đó.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup value={mode} onValueChange={(v) => setMode(v as StorageMode)} className="grid gap-3 md:grid-cols-3">
-                <BackendOption
-                  value="cloud" checked={mode === "cloud"}
-                  icon={<Cloud className="h-5 w-5" />}
-                  title={MODE_LABEL.cloud}
-                  desc="Supabase Storage tích hợp sẵn, không cần cấu hình thêm. An toàn nhất khi R2 lỗi."
-                  active={currentMode === "cloud"}
-                />
-                <BackendOption
-                  value="r2" checked={mode === "r2"}
-                  icon={<HardDrive className="h-5 w-5" />}
-                  title={MODE_LABEL.r2}
-                  desc="Kho object riêng, presigned URL, chi phí thấp cho tệp lớn/nhiều."
-                  active={currentMode === "r2"}
-                />
-                <BackendOption
-                  value="dual" checked={mode === "dual"}
-                  icon={<HardDrive className="h-5 w-5" />}
-                  title={MODE_LABEL.dual}
-                  desc="Mỗi tệp mới ghi sang cả hai kho — dùng khi đang chuyển đổi."
-                  active={currentMode === "dual"}
-                />
-              </RadioGroup>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Tự động dự phòng khi kho đang chọn lỗi</CardTitle>
-              <CardDescription>
-                Nếu kho đang bật báo lỗi, hệ thống ghi tạm tệp sang kho còn lại và hiện cảnh báo, thay vì để tệp không
-                được ghi vào đâu cả. Nếu cả hai kho đều lỗi, người dùng nhận thông báo rõ ràng để chuyển chế độ.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between gap-4">
-              <div className="space-y-1">
-                <Label htmlFor="autoFallback" className="text-sm font-medium">Bật dự phòng tự động</Label>
-                <p className="text-xs text-muted-foreground">
-                  Khi tắt: kho đang chọn lỗi thì thao tác tải lên sẽ báo lỗi ngay, không ghi sang kho khác.
-                </p>
-              </div>
-              <Switch id="autoFallback" checked={autoFallback} onCheckedChange={setAutoFallback} />
-            </CardContent>
-          </Card>
-
-          <div className="flex items-center gap-2">
-            <Button onClick={onSave} disabled={!dirty || save.isPending} className="gap-1.5">
-              {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Lưu cấu hình
+      <div className="flex flex-1 overflow-hidden">
+        <StartPanel className="p-4 space-y-2">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2 mb-2">Danh mục</div>
+          <Button variant="ghost" size="sm" className="w-full justify-start gap-2 bg-accent/50">
+            <PlugZap className="h-4 w-4" /> Cấu hình chung
+          </Button>
+          <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+            <Cloud className="h-4 w-4" /> Lovable Cloud
+          </Button>
+          <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+            <RefreshCw className="h-4 w-4" /> Cloudflare R2
+          </Button>
+          <div className="pt-4 mt-4 border-t">
+            <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+              <History className="h-4 w-4" /> Nhật ký sức khỏe
             </Button>
-            {dirty && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <span>Sẽ đổi:</span>
-                {currentMode !== mode && (
-                  <Badge variant="outline" className="gap-1">
-                    {currentMode ? MODE_LABEL[currentMode] : "—"} <ArrowRight className="h-3 w-3" /> {MODE_LABEL[mode]}
-                  </Badge>
-                )}
-                {data?.autoFallback !== autoFallback && (
-                  <Badge variant="outline">Dự phòng: {autoFallback ? "Bật" : "Tắt"}</Badge>
-                )}
+            <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
+              <ShieldAlert className="h-4 w-4" /> Bảo mật & Audit
+            </Button>
+          </div>
+        </StartPanel>
+
+        <PageBody className="max-w-4xl">
+          <PageSection>
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> Đang tải cấu hình…
               </div>
+            ) : (
+              <>
+                {usesR2 && health.data && !health.data.ok && (
+                  <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
+                    <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                    <div className="space-y-1">
+                      <p className="font-medium text-destructive">Cloudflare R2 đang lỗi — tệp mới có thể không ghi được.</p>
+                      <p className="text-xs text-muted-foreground">{health.data.message}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Chuyển sang <strong>Chỉ dùng Lovable Cloud</strong> bên dưới để hệ thống tiếp tục hoạt động bình thường.
+                      </p>
+                      <Button size="sm" variant="outline" className="mt-1" onClick={() => setMode("cloud")}>
+                        Chọn “Chỉ dùng Lovable Cloud”
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                {usesR2 && health.data?.ok && (
+                  <p className="text-xs text-emerald-600">{health.data.message}</p>
+                )}
+
+                <Card className="astryx-surface">
+                  <CardHeader>
+                    <CardTitle className="astryx-heading-3">Chế độ lưu trữ</CardTitle>
+                    <CardDescription className="astryx-text-muted">
+                      Chọn kho lưu trữ đang bật. Chế độ “chỉ một kho” sẽ ghi và đọc hoàn toàn ở kho đó.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <RadioGroup value={mode} onValueChange={(v) => setMode(v as StorageMode)} className="grid gap-3 md:grid-cols-3">
+                      <BackendOption
+                        value="cloud" checked={mode === "cloud"}
+                        icon={<Cloud className="h-5 w-5" />}
+                        title={MODE_LABEL.cloud}
+                        desc="Supabase Storage tích hợp sẵn, không cần cấu hình thêm."
+                        active={currentMode === "cloud"}
+                      />
+                      <BackendOption
+                        value="r2" checked={mode === "r2"}
+                        icon={<HardDrive className="h-5 w-5" />}
+                        title={MODE_LABEL.r2}
+                        desc="Kho object riêng, presigned URL, chi phí thấp."
+                        active={currentMode === "r2"}
+                      />
+                      <BackendOption
+                        value="dual" checked={mode === "dual"}
+                        icon={<RefreshCw className="h-5 w-5" />}
+                        title={MODE_LABEL.dual}
+                        desc="Mỗi tệp mới ghi sang cả hai kho — dùng khi chuyển đổi."
+                        active={currentMode === "dual"}
+                      />
+                    </RadioGroup>
+                  </CardContent>
+                </Card>
+
+                <Card className="astryx-surface">
+                  <CardHeader>
+                    <CardTitle className="astryx-heading-3">Dự phòng tự động</CardTitle>
+                    <CardDescription className="astryx-text-muted">
+                      Nếu kho đang bật báo lỗi, hệ thống ghi tạm tệp sang kho còn lại và hiện cảnh báo.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <Label htmlFor="autoFallback" className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground">Bật dự phòng</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Khi tắt: kho đang chọn lỗi thì thao tác tải lên sẽ báo lỗi ngay.
+                      </p>
+                    </div>
+                    <Switch id="autoFallback" checked={autoFallback} onCheckedChange={setAutoFallback} />
+                  </CardContent>
+                </Card>
+
+                <div className="flex items-center gap-2">
+                  <Button onClick={onSave} disabled={!dirty || save.isPending} className="gap-1.5 h-8">
+                    {save.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                    Lưu cấu hình
+                  </Button>
+                  {dirty && (
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono">
+                      <span>SẼ ĐỔI:</span>
+                      {currentMode !== mode && (
+                        <Badge variant="outline" className="gap-1 text-[9px] py-0">
+                          {currentMode ? MODE_LABEL[currentMode] : "—"} → {MODE_LABEL[mode]}
+                        </Badge>
+                      )}
+                      {data?.autoFallback !== autoFallback && (
+                        <Badge variant="outline" className="text-[9px] py-0">DỰ PHÒNG: {autoFallback ? "BẬT" : "TẮT"}</Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <R2ParamsCard />
+                <HealthHistoryCard />
+
+                <Card className="astryx-surface border-amber-200/50 bg-amber-50/10">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <ShieldAlert className="h-4 w-4 text-amber-500" />
+                      <CardTitle className="text-sm text-amber-800">Lưu ý vận hành</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="text-[11px] text-amber-700/80 leading-relaxed">
+                    <p>Cấu hình này chỉ ảnh hưởng các luồng upload đã tích hợp <code>dualUpload()</code>. Các luồng cũ vẫn ghi trực tiếp về Supabase Storage.</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="astryx-surface">
+                  <CardHeader>
+                    <CardTitle className="astryx-heading-3">Sao lưu & Phục hồi</CardTitle>
+                    <CardDescription className="astryx-text-muted">Quản trị toàn bộ dữ liệu CSDL và tệp đính kèm.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-3">
+                      <div className="font-medium text-sm">Xuất dữ liệu (Dump)</div>
+                      <FullDumpButton />
+                    </div>
+                    <div className="pt-4 border-t space-y-3">
+                      <div className="font-medium text-sm">Nạp lại dữ liệu (Restore)</div>
+                      <DumpZipRestore />
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
             )}
-          </div>
-
-
-          <R2ParamsCard />
-
-          <HealthHistoryCard />
-
-          <div className="flex items-start gap-2 rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
-            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-            <div className="space-y-1">
-              <p>Cấu hình này chỉ ảnh hưởng các luồng upload đã tích hợp <code>dualUpload()</code>. Các luồng cũ vẫn ghi trực tiếp về Supabase Storage — sẽ chuyển dần theo lộ trình.</p>
-              <p>Trong giai đoạn thử nghiệm, khuyến nghị: <strong>primary = Lovable Cloud</strong> + <strong>dual-write = Bật</strong>. Khi đủ tin cậy, chuyển primary sang R2 và có thể tắt dual-write để tiết kiệm.</p>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Dump toàn bộ dữ liệu</CardTitle>
-              <CardDescription>
-                Tải 100% dữ liệu về máy — dạng gói <b>.zip có ngày giờ</b> hoặc ghi ra một thư mục: toàn bộ bảng CSDL,
-                lược đồ, danh sách tài khoản và (tuỳ chọn) mọi tệp đính kèm/hình ảnh ở cả Lovable Cloud Storage lẫn
-                Cloudflare R2. Chỉ tài khoản Admin thực hiện được.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FullDumpButton />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Phục hồi CSDL từ gói .zip</CardTitle>
-              <CardDescription>
-                Nạp lại dữ liệu từ chính gói <b>.zip</b> đã dump/sao lưu. Hệ thống nạp lần lượt từng bảng theo lô nhỏ,
-                có xem trước số bảng/số dòng và cảnh báo trước khi ghi đè.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DumpZipRestore />
-            </CardContent>
-          </Card>
-
-        </>
-      )}
-    </div>
+          </PageSection>
+        </PageBody>
+      </div>
+    </PageFrame>
   );
 }
 
