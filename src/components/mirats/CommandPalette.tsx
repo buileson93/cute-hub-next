@@ -838,9 +838,9 @@ export function CommandPalette() {
               <CommandItem
                 value={`intent-${intent.kind}`}
                 onSelect={() => runIntent(intent)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-data-[selected=true]:bg-primary/20 transition-colors">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#0074e2]/10 text-[#0074e2] group-data-[selected=true]:bg-[#0074e2]/20 transition-colors">
                   <ArrowRight className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-0.5">
