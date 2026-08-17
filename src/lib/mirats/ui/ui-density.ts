@@ -42,9 +42,10 @@ export const UI_DENSITY = {
   ICON_SM: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
   ICON_MD: "h-3.5 w-3.5 data-[density=comfortable]:h-4.5 data-[density=comfortable]:w-4.5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
-  // --- Typography ---
-  TEXT_BODY: "text-[11px] data-[density=comfortable]:text-[14px] data-[density=spacious]:text-[14px]",
-  TEXT_LABEL: "text-[10px] data-[density=comfortable]:text-[13px]",
+  // --- Typography (Plex Mono for numbers/code) ---
+  TEXT_BODY: "text-[12px] data-[density=comfortable]:text-[14px] data-[density=spacious]:text-[15px] leading-relaxed",
+  TEXT_LABEL: "text-[11px] data-[density=comfortable]:text-[13px] font-medium uppercase tracking-wider",
+  TEXT_MONO: "font-mono tabular-nums tracking-tight",
   CHART_H: "h-[200px] data-[density=comfortable]:h-[220px] data-[density=spacious]:h-[260px]",
 } as const;
 

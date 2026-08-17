@@ -1,24 +1,27 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageSection } from "@/components/mirats/layout/PageSection";
-import { StartPanel, EndPanel, ContentGrid, PageFooter } from "@/components/mirats/layout/PageLayouts";
+import { ContentGrid } from "@/components/mirats/layout/PageLayouts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatusDot } from "@/components/mirats/ui/StatusDot";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Settings, 
   Plus, 
-  LayoutDashboard, 
-  Table as TableIcon, 
-  FileText, 
+  Activity,
   Package,
-  Activity
+  AlertTriangle,
+  CheckCircle2,
+  Info
 } from "lucide-react";
 import { ClientOnly } from "@/components/ClientOnly";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 export const Route = createFileRoute("/admin/ui-kit")({
   component: UIKitLab,
@@ -29,8 +32,8 @@ function UIKitLab() {
     <ClientOnly>
       <PageFrame density="compact">
         <PageHeader
-          title="Design Lab & Page Anatomy"
-          subtitle="MIRATS Astryx Templates Prototype"
+          title="Core Visual Families"
+          subtitle="MIRATS Phase U4: Standards for Typography, Actions & Status"
           breadcrumbs={[
             { label: "MIRATS", to: "/" },
             { label: "Admin", to: "/admin" },
@@ -39,118 +42,180 @@ function UIKitLab() {
           icon={Settings}
           actions={
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="h-7 rounded-md">
-                Preview Mobile
+              <Button variant="outline" size="sm">
+                Cancel
               </Button>
-              <Button size="sm" className="h-7 rounded-md bg-[#0074e2] text-white">
-                <Plus className="mr-1 h-3 w-3" /> New Archetype
+              <Button size="sm">
+                <Plus className="mr-1" /> New Component
               </Button>
-            </div>
-          }
-          metadata={
-            <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="bg-blue-500/10 text-blue-600 border-blue-200">
-                Phase: U3
-              </Badge>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Activity className="h-3 w-3" />
-                <span>SSR Stable</span>
-              </div>
             </div>
           }
         />
 
-        <Tabs defaultValue="anatomy" className="flex-1 flex flex-col">
+        <Tabs defaultValue="typography" className="flex-1 flex flex-col">
           <div className="bg-background border-b px-2 pt-1">
             <TabsList className="bg-transparent h-8 p-0 gap-4">
-              <TabsTrigger 
-                value="anatomy" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider"
-              >
-                Page Anatomy
+              <TabsTrigger value="typography" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
+                Typography
               </TabsTrigger>
-              <TabsTrigger 
-                value="grid" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider"
-              >
-                Layout Grid
+              <TabsTrigger value="actions" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
+                Actions
+              </TabsTrigger>
+              <TabsTrigger value="cards" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
+                Cards
+              </TabsTrigger>
+              <TabsTrigger value="status" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
+                Status & Feedback
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="anatomy" className="flex-1 m-0 p-0 overflow-auto">
-            <PageBody className="bg-muted/10">
-              <PageSection>
-                <div className="flex flex-col lg:flex-row gap-4 h-[600px]">
-                  <StartPanel className="p-3 gap-2">
-                    <div className="text-[10px] font-bold uppercase text-muted-foreground px-2">Navigation</div>
-                    {[
-                      { icon: LayoutDashboard, label: "Dashboard" },
-                      { icon: TableIcon, label: "Asset List" },
-                      { icon: FileText, label: "Reports" },
-                      { icon: Package, label: "Inventory" },
-                    ].map((item, i) => (
-                      <Button key={i} variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs font-medium">
-                        <item.icon className="h-3.5 w-3.5" />
-                        {item.label}
-                      </Button>
-                    ))}
-                  </StartPanel>
-
-                  <div className="flex-1 flex flex-col gap-4 overflow-auto py-2">
-                    <Card className="rounded-xl border-none shadow-sm overflow-hidden">
-                      <CardHeader className="bg-muted/20 border-b py-3 px-4">
-                        <CardTitle className="text-sm font-bold uppercase tracking-tight">Main Content Area</CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-4 space-y-4">
-                        <ContentGrid>
-                          {Array.from({ length: 6 }).map((_, i) => (
-                            <Card key={i} className="rounded-xl border shadow-none hover:border-[#0074e2]/50 transition-colors">
-                              <CardContent className="p-4 flex flex-col gap-2">
-                                <div className="flex justify-between items-start">
-                                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <Package className="h-4 w-4 text-primary" />
-                                  </div>
-                                  <Badge variant="outline" className="text-[10px]">Active</Badge>
-                                </div>
-                                <div className="text-sm font-bold">Asset-00{i+1}</div>
-                                <div className="text-xs text-muted-foreground line-clamp-2">
-                                  Technical description of the asset with high density text.
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </ContentGrid>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <EndPanel className="p-3">
-                    <div className="text-[10px] font-bold uppercase text-muted-foreground px-2 mb-2">Activities</div>
-                    <div className="space-y-3">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <div key={i} className="flex gap-3 px-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
-                          <div className="space-y-0.5">
-                            <div className="text-[11px] font-medium leading-tight">User updated status</div>
-                            <div className="text-[10px] text-muted-foreground">2 hours ago</div>
-                          </div>
-                        </div>
-                      ))}
+          <TabsContent value="typography" className="flex-1 m-0 overflow-auto">
+            <PageBody>
+              <PageSection className="max-w-4xl">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Typography System</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                      <div className={UI_DENSITY.TEXT_LABEL}>Body Text (12px+)</div>
+                      <p className={UI_DENSITY.TEXT_BODY}>
+                        Hệ thống MIRATS 2.0 sử dụng Figtree làm font chữ chính cho phần nội dung. 
+                        Mọi văn bản phần thân trang phải đạt kích thước tối thiểu 12px để đảm bảo khả năng đọc.
+                      </p>
                     </div>
-                  </EndPanel>
-                </div>
-              </PageSection>
 
-              <PageFooter className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" className="h-8 rounded-lg text-xs">Reset All</Button>
-                <Button size="sm" className="h-8 rounded-lg bg-[#0074e2] text-white text-xs px-6">Save Changes</Button>
-              </PageFooter>
+                    <div className="space-y-2">
+                      <div className={UI_DENSITY.TEXT_LABEL}>Tabular Numbers (Plex Mono)</div>
+                      <div className="flex gap-8 items-end">
+                        <div className="flex flex-col gap-1">
+                          <div className={cn(UI_DENSITY.TEXT_MONO, "text-3xl font-bold text-[#0074e2]")}>99.85%</div>
+                          <div className="text-[10px] text-muted-foreground uppercase">Availability</div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <div className={cn(UI_DENSITY.TEXT_MONO, "text-2xl font-semibold")}>1,486</div>
+                          <div className="text-[10px] text-muted-foreground uppercase">Total Assets</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className={UI_DENSITY.TEXT_LABEL}>Status Labels</div>
+                      <div className="flex flex-wrap gap-4">
+                        <span className="text-green-600 font-bold uppercase tracking-widest text-[10px]">Hoạt động</span>
+                        <span className="text-red-600 font-bold uppercase tracking-widest text-[10px]">Hỏng hóc</span>
+                        <span className="text-yellow-600 font-bold uppercase tracking-widest text-[10px]">Bảo trì</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </PageSection>
             </PageBody>
           </TabsContent>
 
-          <TabsContent value="grid" className="p-4">
-            <div className="text-sm text-muted-foreground">Grid configuration tools coming in U4...</div>
+          <TabsContent value="actions" className="flex-1 m-0 overflow-auto">
+            <PageBody>
+              <PageSection>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Button Families</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="space-y-3">
+                        <div className={UI_DENSITY.TEXT_LABEL}>Primary & Secondary</div>
+                        <div className="flex gap-3 items-center">
+                          <Button>Primary Action</Button>
+                          <Button variant="outline">Secondary</Button>
+                          <Button variant="ghost">Ghost</Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className={UI_DENSITY.TEXT_LABEL}>Loading State (Stable Width)</div>
+                        <div className="flex gap-3 items-center">
+                          <Button loading>Save Changes</Button>
+                          <Button variant="outline" loading>Refreshing</Button>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className={UI_DENSITY.TEXT_LABEL}>Icon Action (Tooltips)</div>
+                        <div className="flex gap-3 items-center">
+                          <Button size="icon" variant="ghost" tooltip="Add New Asset"><Plus /></Button>
+                          <Button size="icon" variant="ghost" tooltip="View Settings"><Settings /></Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </PageSection>
+            </PageBody>
+          </TabsContent>
+
+          <TabsContent value="cards" className="flex-1 m-0 overflow-auto">
+            <PageBody>
+              <PageSection>
+                <ContentGrid>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Passive Card</CardTitle>
+                    </CardHeader>
+                    <CardContent>No hover effect. Used for simple data display.</CardContent>
+                  </Card>
+                  
+                  <Card variant="clickable">
+                    <CardHeader>
+                      <CardTitle>Clickable Card</CardTitle>
+                    </CardHeader>
+                    <CardContent>Has hover lift and active scale effect.</CardContent>
+                  </Card>
+
+                  <Card variant="selectable" selected>
+                    <CardHeader>
+                      <CardTitle>Selected Card</CardTitle>
+                    </CardHeader>
+                    <CardContent>Uses primary border to represent selection.</CardContent>
+                  </Card>
+                </ContentGrid>
+              </PageSection>
+            </PageBody>
+          </TabsContent>
+
+          <TabsContent value="status" className="flex-1 m-0 overflow-auto">
+            <PageBody>
+              <PageSection>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Badges & Status Dots</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-8">
+                      <div className="space-y-4">
+                        <div className={UI_DENSITY.TEXT_LABEL}>Semantic Badges</div>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="success" icon={<CheckCircle2 className="h-3 w-3" />}>Hoạt động</Badge>
+                          <Badge variant="error" icon={<AlertTriangle className="h-3 w-3" />}>Hỏng hóc</Badge>
+                          <Badge variant="warning" icon={<AlertTriangle className="h-3 w-3" />}>Bảo trì</Badge>
+                          <Badge variant="info" icon={<Info className="h-3 w-3" />}>Thông tin</Badge>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className={UI_DENSITY.TEXT_LABEL}>Status Dots (Dashboard)</div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <StatusDot variant="success" label="Hệ thống ổn định" />
+                          <StatusDot variant="error" label="Cảnh báo mức cao" />
+                          <StatusDot variant="warning" label="Đang kiểm tra" />
+                          <StatusDot variant="default" label="Không xác định" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </PageSection>
+            </PageBody>
           </TabsContent>
         </Tabs>
       </PageFrame>
