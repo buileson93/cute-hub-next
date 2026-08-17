@@ -830,22 +830,13 @@ export function CommandPalette() {
       <CommandList className="max-h-[420px]">
         {showLoading && (
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-sm text-muted-foreground animate-in fade-in zoom-in duration-300">
-            <Loader2 className="h-8 w-8 animate-spin text-[#0074e2]" />
-            <span className="font-medium">Đang tìm kiếm dữ liệu...</span>
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground/40" />
           </div>
         )}
 
         {hasQuery && !loading && rows.length === 0 && rowsMoRong.length === 0 && (
-          <CommandEmpty className="py-12 text-center animate-in fade-in zoom-in duration-300">
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/50 text-muted-foreground">
-                <Search className="h-6 w-6" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm font-bold text-foreground">Không tìm thấy kết quả</p>
-                <p className="text-[12px] text-muted-foreground">Thử tìm kiếm với từ khóa khác hoặc dùng MIRATS AI.</p>
-              </div>
-            </div>
+          <CommandEmpty className="py-12 text-center text-[15px] font-medium text-muted-foreground animate-in fade-in zoom-in duration-300">
+            No results found.
           </CommandEmpty>
         )}
 
