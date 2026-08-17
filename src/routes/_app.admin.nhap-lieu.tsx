@@ -30,6 +30,8 @@ import { InfoHint } from "@/components/mirats/InfoHint";
 
 import { AllInOneExportPanel } from "@/components/mirats/AllInOneExportPanel";
 import { AllInOneChecklist } from "@/components/mirats/AllInOneChecklist";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { exportAllInOneXlsx } from "@/lib/mirats/allinone-template";
 
 

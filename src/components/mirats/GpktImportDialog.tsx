@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -313,11 +315,10 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
                 {dupGpSo.he_thong_ten ? <> — hệ thống <b>{dupGpSo.he_thong_ten}</b></> : null}
                 {dupGpSo.gp_han ? <> (hết hạn {dupGpSo.gp_han})</> : null}.
               </div>
-              <label className="mt-2 flex items-center gap-2">
-                <input
-                  type="checkbox"
+              <label className="mt-2 flex items-center gap-2 cursor-pointer">
+                <Switch
                   checked={overwriteId === dupGpSo.id}
-                  onChange={(e) => setOverwriteId(e.target.checked ? dupGpSo.id : null)}
+                  onCheckedChange={(checked) => setOverwriteId(checked ? dupGpSo.id : null)}
                 />
                 <span>Ghi đè bản ghi trùng số GP</span>
               </label>
