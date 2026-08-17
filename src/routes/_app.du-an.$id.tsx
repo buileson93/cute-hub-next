@@ -261,76 +261,76 @@ function DuAnDetailPage() {
               />
             </TabsContent>
 
-          <TabsContent value="gantt" className="mt-3">
-            <GanttView mocs={mocs ?? []} tasks={congViecs ?? []} projectStart={duAn.ngay_bat_dau} />
-          </TabsContent>
+            <TabsContent value="gantt" className="mt-3">
+              <GanttView mocs={mocs ?? []} tasks={congViecs ?? []} projectStart={duAn.ngay_bat_dau} />
+            </TabsContent>
 
-          <TabsContent value="discovery" className="mt-3">
-            <LeanUXCanvas project_id={id} />
-          </TabsContent>
+            <TabsContent value="discovery" className="mt-3">
+              <LeanUXCanvas project_id={id} />
+            </TabsContent>
 
-          <TabsContent value="delivery" className="mt-3 space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-3">
-                <HillChart 
-                  markers={[
-                    { id: "1", name: "Backend API", position: 35, status: "climbing" },
-                    { id: "2", name: "UI Components", position: 65, status: "executing" },
-                    { id: "3", name: "Dossier Integration", position: 10, status: "climbing" }
-                  ]} 
-                />
+            <TabsContent value="delivery" className="mt-3 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3">
+                  <HillChart 
+                    markers={[
+                      { id: "1", name: "Backend API", position: 35, status: "climbing" },
+                      { id: "2", name: "UI Components", position: 65, status: "executing" },
+                      { id: "3", name: "Dossier Integration", position: 10, status: "climbing" }
+                    ]} 
+                  />
+                </div>
+                <div className="space-y-4">
+                  <Card className="border-slate-200 shadow-none bg-slate-50/50">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xs uppercase text-slate-500 font-bold">Current Cycle</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
+                      <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
+                      <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
+                    </CardContent>
+                  </Card>
+                  <Button className="w-full justify-start text-xs font-semibold" variant="outline">
+                    <Plus className="h-3.5 w-3.5 mr-2" /> New Pitch
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-4">
-                <Card className="border-slate-200 shadow-none bg-slate-50/50">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xs uppercase text-slate-500 font-bold">Current Cycle</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
-                    <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
-                    <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
-                  </CardContent>
-                </Card>
-                <Button className="w-full justify-start text-xs font-semibold" variant="outline">
-                  <Plus className="h-3.5 w-3.5 mr-2" /> New Pitch
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="operations" className="mt-3">
-            <OperationsLane 
-              wipLimit={2}
-              incidents={[
-                { id: "inc-01", title: "API Gateway 502 Errors in Production", severity: "P0", sla_status: "breach", owner: "Hung Nguyen", interruption_load: 85 },
-                { id: "inc-02", title: "Storage quota reached for project dossiers", severity: "P1", sla_status: "warning", owner: "Minh Tran", interruption_load: 30 }
-              ]} 
-            />
-          </TabsContent>
+            <TabsContent value="operations" className="mt-3">
+              <OperationsLane 
+                wipLimit={2}
+                incidents={[
+                  { id: "inc-01", title: "API Gateway 502 Errors in Production", severity: "P0", sla_status: "breach", owner: "Hung Nguyen", interruption_load: 85 },
+                  { id: "inc-02", title: "Storage quota reached for project dossiers", severity: "P1", sla_status: "warning", owner: "Minh Tran", interruption_load: 30 }
+                ]} 
+              />
+            </TabsContent>
 
-          <TabsContent value="hoso" className="mt-3">
-            <DossierRegister dossier_id="default" />
-          </TabsContent>
+            <TabsContent value="hoso" className="mt-3">
+              <DossierRegister dossier_id="default" />
+            </TabsContent>
 
-          <TabsContent value="list" className="mt-3">
-            <ListView
-              mocs={mocs ?? []}
-              tasks={congViecs ?? []}
-              nameOf={nameOf}
-              onEdit={(t) => { setEditingCV(t); setDefaultMocId(t.moc_id); setOpenCV(true); }}
-              canAdd={canAddTask}
-              onAddIn={(mocId) => { setDefaultMocId(mocId); setEditingCV(null); setOpenCV(true); }}
-              isManager={isManager}
-              onDeleteMoc={async (m) => {
-                const { error } = await supabase.from("du_an_moc").delete().eq("id", m.id);
-                if (error) toast.error(error.message);
-                else { toast.success("Đã xoá mốc"); qc.invalidateQueries({ queryKey: ["du-an-moc", id] }); qc.invalidateQueries({ queryKey: ["du-an-cv", id] }); }
-              }}
-            />
-          </TabsContent>
+            <TabsContent value="list" className="mt-3">
+              <ListView
+                mocs={mocs ?? []}
+                tasks={congViecs ?? []}
+                nameOf={nameOf}
+                onEdit={(t) => { setEditingCV(t); setDefaultMocId(t.moc_id); setOpenCV(true); }}
+                canAdd={canAddTask}
+                onAddIn={(mocId) => { setDefaultMocId(mocId); setEditingCV(null); setOpenCV(true); }}
+                isManager={isManager}
+                onDeleteMoc={async (m) => {
+                  const { error } = await supabase.from("du_an_moc").delete().eq("id", m.id);
+                  if (error) toast.error(error.message);
+                  else { toast.success("Đã xoá mốc"); qc.invalidateQueries({ queryKey: ["du-an-moc", id] }); qc.invalidateQueries({ queryKey: ["du-an-cv", id] }); }
+                }}
+              />
+            </TabsContent>
 
-          <TabsContent value="cong-van" className="mt-3">
-            <CongVanPanel duAnId={id} canEdit={isManager} />
+            <TabsContent value="cong-van" className="mt-3">
+              <CongVanPanel duAnId={id} canEdit={isManager} />
             </TabsContent>
           </Tabs>
         </div>
