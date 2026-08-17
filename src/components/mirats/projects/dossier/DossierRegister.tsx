@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { Blockquote } from "@/components/ui/blockquote";
 
 interface DocumentRecord {
   id: string;
@@ -143,6 +144,14 @@ export function DossierRegister({ dossier_id }: { dossier_id: string }) {
           </TableBody>
         </Table>
       </div>
+      <Blockquote className="mt-4 border-slate-200 bg-slate-50/50 text-slate-600">
+        <div className="flex gap-2">
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+          <div className="text-[11px] leading-relaxed italic">
+            <strong>Lưu ý:</strong> Sổ đăng ký văn bản/hồ sơ này phục vụ việc đối soát thực tế. Đảm bảo các bản quét (digital) khớp với bản lưu kho (paper) để duy trì tính nhất quán của Dossier dự án.
+          </div>
+        </div>
+      </Blockquote>
     </div>
   );
 }

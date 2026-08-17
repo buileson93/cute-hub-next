@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Save, Loader2, AlertTriangle, XCircle, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Blockquote } from "@/components/ui/blockquote";
 
 export function PitchEditor({ project_id, initialData, onSave }: { project_id: string; initialData?: any; onSave?: (data: any) => void }) {
   const [data, setData] = useState(initialData || {
@@ -130,14 +131,14 @@ export function PitchEditor({ project_id, initialData, onSave }: { project_id: s
             </CardContent>
           </Card>
 
-          <div className="p-4 rounded-xl border border-indigo-100 bg-indigo-50/50 text-indigo-700">
+          <Blockquote className="mt-6 border-indigo-200 bg-indigo-50/50 text-indigo-700">
             <div className="flex gap-2">
               <Info className="h-4 w-4 mt-0.5 shrink-0" />
               <div className="text-[11px] leading-relaxed">
                 <strong>Ghi chú:</strong> Shaping là để định hướng team, không phải PRD chi tiết. Hãy để lại không gian cho team tự chủ giải quyết vấn đề trong cycle.
               </div>
             </div>
-          </div>
+          </Blockquote>
         </div>
       </div>
     </div>
