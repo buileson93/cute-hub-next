@@ -1,6 +1,15 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { 
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger 
+} from "@/components/ui/dialog";
+import { 
+  Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger 
+} from "@/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
@@ -74,6 +83,9 @@ function UIKitLab() {
               </TabsTrigger>
               <TabsTrigger value="status" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
                 Status & Feedback
+              </TabsTrigger>
+              <TabsTrigger value="overlays" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
+                Overlays
               </TabsTrigger>
             </TabsList>
           </div>
@@ -244,6 +256,98 @@ function UIKitLab() {
                       <CardTitle>Selected Card</CardTitle>
                     </CardHeader>
                     <CardContent>Uses primary border to represent selection.</CardContent>
+                  </Card>
+                </ContentGrid>
+              </PageSection>
+            </PageBody>
+          </TabsContent>
+
+          <TabsContent value="overlays" className="flex-1 m-0 overflow-auto">
+            <PageBody>
+              <PageSection>
+                <ContentGrid>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Tooltips & Popovers</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-4">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline">Hover for Tooltip</Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Đây là thông tin bổ trợ</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline">Click for Popover</Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                          <div className="grid gap-4">
+                            <div className="space-y-2">
+                              <h4 className="font-medium leading-none">Cấu hình nhanh</h4>
+                              <p className="text-sm text-muted-foreground">Điều chỉnh thông số vận hành của hệ thống.</p>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Dialogs & Sheets</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-4">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">Open Dialog</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Xác nhận tác vụ</DialogTitle>
+                            <DialogDescription>
+                              Bạn có chắc chắn muốn thực hiện thay đổi này không? Hành động này sẽ được lưu vào nhật ký hệ thống.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="py-4 text-sm">
+                            Nội dung chi tiết của hội thoại...
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline">Hủy</Button>
+                            <Button>Xác nhận</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button variant="outline">Open Sheet</Button>
+                        </SheetTrigger>
+                        <SheetContent>
+                          <SheetHeader>
+                            <SheetTitle>Chi tiết tài sản</SheetTitle>
+                            <SheetDescription>
+                              Thông tin kỹ thuật và lịch sử bảo trì.
+                            </SheetDescription>
+                          </SheetHeader>
+                          <div className="py-6 space-y-4">
+                            <div className="h-32 rounded-xl bg-muted animate-pulse" />
+                            <div className="space-y-2">
+                              <div className="h-4 w-3/4 rounded bg-muted" />
+                              <div className="h-4 w-1/2 rounded bg-muted" />
+                            </div>
+                          </div>
+                          <SheetFooter>
+                            <Button className="w-full">Đóng</Button>
+                          </SheetFooter>
+                        </SheetContent>
+                      </Sheet>
+                    </CardContent>
                   </Card>
                 </ContentGrid>
               </PageSection>

@@ -305,7 +305,7 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
       ) : (
         <>
           <div className="p-6 pb-0">
-            <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-border/30 bg-gradient-to-br from-[#0074e2]/10 via-background to-background shadow-lg">
+            <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border/30 bg-gradient-to-br from-[#0074e2]/10 via-background to-background shadow-lg">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="flex h-24 w-24 items-center justify-center rounded-[32px] border border-border/50 bg-background/95 text-[#0074e2] shadow-2xl backdrop-blur-xl transition-transform hover:scale-105 duration-500">
                   <Icon className="h-12 w-12 stroke-[1.2]" />
