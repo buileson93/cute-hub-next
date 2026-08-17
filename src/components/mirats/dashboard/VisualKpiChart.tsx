@@ -106,7 +106,7 @@ export function VisualKpiChart({
                   type="monotone" 
                   dataKey="value" 
                   stroke={Array.isArray(color) ? color[0] : color} 
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fillOpacity={1} 
                   fill={`url(#gradient-${title.replace(/\s+/g, '-')})`}
                   isAnimationActive={true}
