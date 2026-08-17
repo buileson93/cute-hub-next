@@ -31,12 +31,14 @@ export function EmptyState({
       aria-live={live}
       aria-describedby={description ? descId : undefined}
       className={cn(
-        "flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 px-4 text-center",
+        "flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-muted/30 py-16 px-6 text-center bg-muted/5",
         className,
       )}
     >
-      <Icon className="h-12 w-12 text-muted-foreground opacity-60" aria-hidden />
-      <div className="text-sm font-medium text-foreground">{title}</div>
+      <div className="p-4 rounded-full bg-muted/20 ring-1 ring-border/20">
+        <Icon className="h-8 w-8 text-muted-foreground/40" aria-hidden />
+      </div>
+      <div className="text-[15px] font-bold text-foreground/80">{title}</div>
       {description && (
         <div id={descId} className="text-xs text-muted-foreground max-w-md">
           {description}

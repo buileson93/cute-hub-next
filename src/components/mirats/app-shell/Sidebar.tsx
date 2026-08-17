@@ -54,10 +54,10 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     onClick={onNavigate}
                     className={cn(
                       "group relative flex items-center gap-2.5 px-2.5 py-1.5 transition-mirats-fast astryx-nav-item",
-                      "h-8 data-[density=comfortable]:h-9 data-[density=comfortable]:rounded-lg data-[density=comfortable]:gap-2.5",
+                      "h-8 data-[density=comfortable]:h-10 rounded-xl data-[density=comfortable]:rounded-2xl data-[density=comfortable]:gap-3",
                       UI_DENSITY.TEXT_BODY,
                       active 
-                        ? "bg-[#0074e2]/8 text-[#0074e2] astryx-nav-item-active" 
+                        ? "bg-[#0074e2]/10 text-[#0074e2] astryx-nav-item-active ring-1 ring-[#0074e2]/20 shadow-sm" 
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       collapsed && "justify-center px-0 py-2.5 h-10"
                     )}

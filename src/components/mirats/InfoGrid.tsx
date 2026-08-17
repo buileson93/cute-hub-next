@@ -26,8 +26,8 @@ export function InfoGrid({ fields, cot = 2, className }: InfoGridProps) {
   return (
     <dl
       className={cn(
-        "grid gap-x-4 gap-y-1.5 text-[13px]",
-        cot === 2 ? "grid-cols-[auto_1fr]" : "grid-cols-1",
+        "grid gap-x-6 gap-y-2 text-[13px]",
+        cot === 2 ? "grid-cols-[max-content_1fr]" : "grid-cols-1",
         className,
       )}
     >
@@ -45,8 +45,8 @@ function InfoRow({ field }: { field: InfoGridProps["fields"][number] }) {
       <dt
         data-highlight={hl ? "true" : undefined}
         className={cn(
-          "truncate text-muted-foreground",
-          hl && "font-semibold text-foreground",
+          "truncate text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-relaxed",
+          hl && "text-foreground/80",
         )}
       >
         {field.nhan}
@@ -56,8 +56,8 @@ function InfoRow({ field }: { field: InfoGridProps["fields"][number] }) {
         className={cn(
           "flex min-w-0 items-center gap-2",
           hl
-            ? "rounded-md bg-accent/40 px-1.5 py-0.5 font-semibold text-foreground"
-            : "text-foreground/90",
+            ? "rounded-lg bg-accent/30 px-2 py-0.5 font-bold text-foreground ring-1 ring-border/50"
+            : "text-foreground font-medium",
         )}
       >
         <div className="truncate flex-1">{field.giaTri}</div>

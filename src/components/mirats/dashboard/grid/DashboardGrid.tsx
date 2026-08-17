@@ -115,7 +115,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
       .sort((a, b) => String(a.thang).localeCompare(String(b.thang)))
       .map((r) => ({
         ...r,
-        thangHT: new Date(String(r.thang)).toLocaleDateString("vi-VN", { month: "2-digit", year: "2-digit" }),
+        thangHT: new Date(String(r.thang)).toLocaleDateString("vi-VN", { month: "short" }),
         value: Object.values(r).filter(v => typeof v === 'number').reduce((a, b) => a + (b as number), 0)
       }));
   }, [trendQ.data]);
@@ -218,18 +218,21 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "su-co-trend":
         return (
-          <Card className="shadow-sm">
-            <CardHeader className="py-3 border-b bg-muted/5">
-              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+          <Card className="astryx-card h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.chart" size="tiny" className="text-primary" /> Xu hướng sự cố (12 tháng)
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 h-[300px]">
+            <CardContent className="flex-1 p-4 h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={trendData}>
-                  <XAxis dataKey="thangHT" fontSize={11} axisLine={false} tickLine={false} />
-                  <YAxis fontSize={11} axisLine={false} tickLine={false} allowDecimals={false} />
-                  <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '8px' }} />
+                  <XAxis dataKey="thangHT" fontSize={10} axisLine={false} tickLine={false} />
+                  <YAxis fontSize={10} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(0,0,0,0.05)' }} 
+                    contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '10px' }} 
+                  />
                   {mucDoKeys.map((k) => (
                     <Bar
                       key={k}
@@ -281,7 +284,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                     margin={{ left: -20, right: 20 }}
                   >
                     <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" fontSize={10} width={80} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="name" type="category" fontSize={11} width={80} axisLine={false} tickLine={false} />
                     <Tooltip cursor={{ fill: 'rgba(0,0,0,0.05)' }} contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '10px' }} />
                     <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={12} />
                   </BarChart>
@@ -336,13 +339,13 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "asset-status-pie":
         return (
-          <Card className="shadow-sm">
-            <CardHeader className="py-3 border-b bg-muted/5">
-              <CardTitle className="text-sm font-bold uppercase tracking-wide flex items-center gap-2">
+          <Card className="astryx-card h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.activity" size="tiny" className="text-primary" /> Trạng thái tài sản
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-[300px] pt-6">
+            <CardContent className="h-[300px] p-4">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={(statusQ.data as any[]) ?? []} dataKey="so_luong" nameKey="ten" innerRadius={60} outerRadius={85} paddingAngle={4}>
@@ -350,7 +353,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                       <Cell key={i} fill={STATUS_COLORS[i % STATUS_COLORS.length]} stroke="white" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '8px' }} />
+                  <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '10px' }} />
                   <Legend verticalAlign="bottom" align="center" layout="horizontal" wrapperStyle={{ fontSize: 10, paddingTop: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>

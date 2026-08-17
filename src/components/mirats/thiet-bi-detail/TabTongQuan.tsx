@@ -31,12 +31,12 @@ export default function TabTongQuan({
     }
   });
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div className="grid gap-6 lg:grid-cols-3">
       {/* Cột trái: Định danh & Hình ảnh */}
       <div className="space-y-4 lg:col-span-1">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Thông tin tài sản</CardTitle></CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <Card className="astryx-card">
+          <CardHeader className="p-4 pb-0"><CardTitle className="astryx-text-label">Thông tin tài sản</CardTitle></CardHeader>
+          <CardContent className="p-4 space-y-4">
             {refInfo?.modelImg && (
               <div className="flex items-center justify-center overflow-hidden rounded-md border bg-muted/40 p-2">
                 <img src={refInfo.modelImg} alt={refInfo.model || "Model"} className="max-h-40 w-auto object-contain" loading="lazy" />
@@ -91,9 +91,9 @@ export default function TabTongQuan({
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle className="text-base">Mã QR</CardTitle></CardHeader>
-          <CardContent className="flex flex-col items-center gap-2">
+        <Card className="astryx-card">
+          <CardHeader className="p-4 pb-0"><CardTitle className="astryx-text-label">Mã QR</CardTitle></CardHeader>
+          <CardContent className="flex flex-col items-center gap-3 p-4">
             <div className="rounded-md border bg-white p-3">
               <QRCodeSVG value={`MIRATS:${ma}`} size={120} />
             </div>
@@ -104,9 +104,9 @@ export default function TabTongQuan({
 
       {/* Cột phải: Vòng đời & Lý lịch rút gọn */}
       <div className="space-y-4 lg:col-span-2">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Vòng đời & Khai thác</CardTitle></CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
+        <Card className="astryx-card">
+          <CardHeader className="p-4 pb-0"><CardTitle className="astryx-text-label">Vòng đời & Khai thác</CardTitle></CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2 p-4">
             <div className="space-y-3 text-sm">
               <InfoRow icon={Calendar} label="Ngày mua" value={tb.ngay_mua || "—"} field="ngay_mua" canEdit={canEdit} editor={editor} ma={ma} currentValue={tb.ngay_mua} />
               <InfoRow icon={Calendar} label="Năm khai thác" value={tb._namKhaiThac ? String(tb._namKhaiThac) : (tb.ngay_dua_vao_su_dung || "—")} field="nam_dua_vao_khai_thac" canEdit={canEdit} editor={editor} ma={ma} currentValue={tb._namKhaiThac || tb.ngay_dua_vao_su_dung} />
@@ -163,10 +163,12 @@ function InfoRow({
   };
 
   return (
-    <div className="flex items-start gap-3 group relative">
-      <Icon className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
+    <div className="flex items-start gap-4 group relative">
+      <div className="mt-1 p-1.5 rounded-lg bg-muted/50 text-muted-foreground shrink-0 ring-1 ring-border/50">
+        <Icon className="h-3.5 w-3.5" />
+      </div>
       <div className="min-w-0 flex-1">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-2">
+        <div className="text-[11px] uppercase tracking-wider text-muted-foreground/60 font-bold flex items-center gap-2 leading-none mb-1">
           {label}
           {canEdit && field && !isEditing && (
             <button 
@@ -177,7 +179,7 @@ function InfoRow({
             </button>
           )}
         </div>
-        <div className="break-words font-medium">
+        <div className="break-words font-bold text-[13px] text-foreground/90">
           {isEditing ? (
             <div className="flex items-center gap-2 mt-1">
               <Input 
@@ -188,7 +190,7 @@ function InfoRow({
                   if (e.key === "Enter") handleCommit();
                   if (e.key === "Escape") setIsEditing(false);
                 }}
-                className="h-7 text-xs py-1"
+                className="h-8 text-xs py-1 rounded-lg"
               />
               <button onClick={handleCommit} className="text-[10px] text-primary hover:underline">Lưu</button>
               <button onClick={() => setIsEditing(false)} className="text-[10px] text-muted-foreground hover:underline">Huỷ</button>

@@ -1,52 +1,26 @@
-# MIRATS ASTRYX Design Contract
+# MIRATS 2.0 — Astryx DF3 Design Contract
 
-## 1. Spacing & Grid
-- **Hierarchy**: Base-4 system (4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px).
-- **Page Margin**: 24px (mobile), 32px (desktop).
-- **Section Gap**: 48px.
-- **Component Gap**: 16px.
+## Core Principles
+1. **Concentric Radii**: Containers use `rounded-2xl` (12px) to `rounded-4xl`. Elements (Buttons, Inputs, Inner Cards) use `rounded-xl` (10px).
+2. **Typography**: Headings use **Figtree** (Bold, uppercase for section headers). Body uses Figtree. Numerics use **IBM Plex Mono** (Tabular, Bold).
+3. **Density**: Scalable density via `data-density`. Compact (default) uses 13px body text and 11px labels.
+4. **Vibrant Accents**: Primary brand blue `#0074e2` is used for actions and active states.
 
-## 2. Controls & Sizing
-- **Heights**: 
-  - Small: 28px (Density Compact)
-  - Medium: 32px (Default)
-  - Large: 40px (Hero/Auth)
-- **Touch Target**: Min 44px for icon-only buttons on mobile.
-- **Icon Sizing**: 16px (in 32px button), 20px (in 40px button).
+## Spacing Tokens (ui-density.ts)
+- `CARD_RADIUS`: 12px (Compact) / 16px (Comfortable)
+- `CONTROL_RADIUS`: 10px / 12px
+- `CARD_PADDING`: 12px / 20px / 32px
+- `TABLE_ROW_H`: 28px / 32px / 44px
+- `CONTROL_H`: 28px / 32px / 36px
 
-## 3. Shapes & Radius
-- **Container**: 12px (rounded-3xl).
-- **Element**: 10px (rounded-2xl).
-- **Nested (Concentricity)**: Inner radius = Outer radius - Padding.
-- **Button**: 8px or Full (capsule).
+## Typography Tokens
+- `KPI_VALUE`: 18px-26px, font-bold, tabular-nums.
+- `TABLE_HEADER`: 11px, font-bold, uppercase, tracking-wider.
+- `TABLE_CELL`: 13px, font-medium.
+- `INFO_LABEL`: 11px, font-bold, uppercase, text-muted-foreground/60.
+- `INFO_VALUE`: 13px, font-bold.
 
-## 4. Typography (Figtree)
-- **Display**: 32px / 40px (Bold)
-- **Heading 1**: 24px / 32px (Bold)
-- **Heading 2**: 20px / 28px (Semibold)
-- **Body**: 14px / 20px (Regular)
-- **Small/Support**: 12px / 16px (Medium)
-- **Code/Numeric**: IBM Plex Mono (Standardized for all data values).
-
-## 5. Elevation & Z-Order
-- **Base**: 0
-- **Surface (Card)**: 1 (Subtle border + faint shadow)
-- **Overlay (Popover)**: 10
-- **Dialog/Modal**: 50
-- **Toast/Notification**: 100
-
-## 6. Color & States
-- **Primary Accent**: #0074e2 (MIRATS Blue).
-- **Success**: #198100.
-- **Warning**: #ffce2f.
-- **Error**: #e33f4a.
-- **States**: 
-  - Hover: Background +10% lightness or subtle overlay.
-  - Focus: 2px ring-offset-2.
-  - Active: Scale 0.98 or darker background.
-  - Disabled: Opacity 0.5 + grayscale filter.
-
-## 7. Motion
-- **Duration**: Fast (150ms), Standard (250ms), Slow (450ms).
-- **Easing**: cubic-bezier(0.4, 0, 0.2, 1).
-- **Reduced-Motion**: Disable all non-transform animations.
+## Visual Archetypes
+- **astryx-card**: Clean border-b header, subtle ring-1, high-radius.
+- **astryx-nav**: Pill-shaped active state with subtle shadow and ring.
+- **EdgeTabs**: Clean tabs within cards or at page edges.

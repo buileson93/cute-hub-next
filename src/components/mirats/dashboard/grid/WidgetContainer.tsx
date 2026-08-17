@@ -38,7 +38,7 @@ export function WidgetContainer({
     <div className={cn(
       "group relative transition-all duration-300",
       colSpanMap[config.w] || "col-span-full",
-      isEditing && "ring-2 ring-primary/20 ring-offset-2 rounded-xl"
+      isEditing && "ring-2 ring-primary/20 ring-offset-2 rounded-2xl"
     )}>
       {isEditing && (
         <div className="absolute -top-2 -right-2 z-20 flex gap-1">

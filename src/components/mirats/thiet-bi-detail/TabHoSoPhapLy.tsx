@@ -18,13 +18,13 @@ export default function TabHoSoPhapLy({
     <div className="space-y-6">
       {/* Giấy phép khai thác */}
       <section>
-        <h3 className="mb-3 text-sm font-semibold flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-primary" /> 
+        <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2 px-1">
+          <ShieldCheck className="h-3.5 w-3.5 text-primary" /> 
           Giấy phép & Chứng chỉ
         </h3>
         <div className="grid gap-4 md:grid-cols-2">
           {hasGp ? (
-            <div className="flex items-center justify-between rounded-md border p-4 text-sm bg-card shadow-sm">
+            <div className="flex items-center justify-between rounded-2xl border p-4 text-[13px] bg-card shadow-sm ring-1 ring-border/50">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <ShieldCheck className="h-4 w-4 text-emerald-600" />
@@ -40,7 +40,7 @@ export default function TabHoSoPhapLy({
               </Badge>
             </div>
           ) : (
-            <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground bg-muted/20">
+            <div className="rounded-2xl border border-dashed p-8 text-center text-[13px] text-muted-foreground bg-muted/20">
               Hệ thống chưa có giấy phép khai thác được ghi nhận.
             </div>
           )}
@@ -52,8 +52,8 @@ export default function TabHoSoPhapLy({
 
       {/* Tệp đính kèm */}
       <section>
-        <h3 className="mb-3 text-sm font-semibold flex items-center gap-2">
-          <Paperclip className="h-4 w-4 text-primary" />
+        <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2 px-1">
+          <Paperclip className="h-3.5 w-3.5 text-primary" />
           Hồ sơ tài liệu đính kèm
         </h3>
         <ThietBiTepDinhKem maThietBi={ma} initialDocId={initialDocId} />

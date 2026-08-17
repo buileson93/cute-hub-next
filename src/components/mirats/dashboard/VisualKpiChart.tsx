@@ -60,19 +60,19 @@ export function VisualKpiChart({
               </AppTooltip>
             )}
           </CardTitle>
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-black astryx-number tracking-tighter">
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-3xl font-bold astryx-number tracking-tight">
               {value}
             </span>
 
-            {unit && <span className="astryx-text-label opacity-70">{unit}</span>}
+            {unit && <span className="text-[11px] font-bold uppercase tracking-wider opacity-60">{unit}</span>}
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="p-0 mt-2">
-        <div style={{ height }} className="w-full relative">
-          <div className={cn("absolute inset-0 bg-gradient-to-b opacity-50", bgGradients[status])} />
+        <div style={{ height }} className="w-full relative bg-muted/5">
+          <div className={cn("absolute inset-0 bg-gradient-to-b opacity-30", bgGradients[status])} />
           <ResponsiveContainer width="100%" height="100%">
             {type === 'area' ? (
               <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
