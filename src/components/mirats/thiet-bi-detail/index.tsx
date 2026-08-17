@@ -80,7 +80,7 @@ export function ThietBiDetail({
                 <Share2 className="h-4 w-4" />
               </Button>
             </AppTooltip>
-            <Badge variant="outline" className="font-mono">
+            <Badge variant="outline" className="font-mono text-[10px] tracking-tight py-0 px-2 rounded-lg bg-muted/30">
               {asset.ma_thiet_bi}
             </Badge>
             {asset.trang_thai && (
@@ -90,7 +90,7 @@ export function ThietBiDetail({
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-5 lg:w-[600px] bg-muted/30 p-1 rounded-2xl">
             <TabsTrigger value="tong-quan">Tổng quan</TabsTrigger>
             <TabsTrigger value="van-hanh">Vận hành</TabsTrigger>
             <TabsTrigger value="cau-hinh">Cấu hình</TabsTrigger>
