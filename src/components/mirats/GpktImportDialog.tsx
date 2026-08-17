@@ -2,6 +2,7 @@
 // GpktImportDialog — Nhập giấy phép khai thác từ PDF, dùng AI bóc tách các
 // trường, cảnh báo trùng lặp, gán vào hệ thống và lưu bản ghi kèm file PDF.
 // ============================================================================
+import { FileInput } from "@/components/ui/file-input";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Upload, FileText, AlertTriangle, CheckCircle2, Sparkles } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

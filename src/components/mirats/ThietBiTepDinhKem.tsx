@@ -1,3 +1,4 @@
+import { FileInput } from "@/components/ui/file-input";
 import { useMemo, useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, Trash2, FileText, ImageIcon, Loader2, Download, ExternalLink, Eye } from "lucide-react";
