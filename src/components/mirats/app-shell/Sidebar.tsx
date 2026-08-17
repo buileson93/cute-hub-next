@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import * as LucideIcons from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navGroups, isActive } from "@/lib/mirats/nav/nav-config";
