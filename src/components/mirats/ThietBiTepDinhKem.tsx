@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -157,16 +158,18 @@ function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boole
   const url = useSignedUrl(row.bucket, row.file_path);
   return (
     <Card className="overflow-hidden">
-      <div className="relative aspect-square bg-muted">
-        {url ? (
-          <a href={url} target="_blank" rel="noreferrer">
-            <img src={url} alt={row.file_name} className="h-full w-full object-cover" />
-          </a>
-        ) : (
-          <div className="flex h-full items-center justify-center"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
-        )}
+      <div className="relative bg-muted overflow-hidden">
+        <AspectRatio ratio={1 / 1}>
+          {url ? (
+            <a href={url} target="_blank" rel="noreferrer">
+              <img src={url} alt={row.file_name} className="h-full w-full object-cover transition-transform hover:scale-105" />
+            </a>
+          ) : (
+            <div className="flex h-full items-center justify-center"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+          )}
+        </AspectRatio>
         {canManage && (
-          <Button size="icon" variant="destructive" className="absolute right-1 top-1 h-7 w-7 opacity-90"
+          <Button size="icon" variant="destructive" className="absolute right-1 top-1 h-7 w-7 opacity-90 z-10"
             onClick={onDelete} aria-label="Xoá">
             <Trash2 className="h-3.5 w-3.5" />
           </Button>

@@ -9,6 +9,7 @@
 // - A11y: hover + focus trigger đều mở, delay hợp lý, không che nội dung.
 // ============================================================================
 import * as React from "react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   HoverCard, HoverCardContent, HoverCardTrigger,
 } from "@/components/ui/hover-card";
@@ -25,12 +26,14 @@ import { Package } from "lucide-react";
 function ModelThumbSmall({ url, ten }: { url?: string | null; ten: string }) {
   if (!url) return null;
   return (
-    <div className="shrink-0">
-      <img
-        src={url}
-        alt={ten}
-        className="h-12 w-12 rounded border bg-white object-contain p-0.5 shadow-sm"
-      />
+    <div className="w-12 shrink-0">
+      <AspectRatio ratio={1 / 1}>
+        <img
+          src={url}
+          alt={ten}
+          className="h-full w-full rounded border bg-white object-contain p-0.5 shadow-sm"
+        />
+      </AspectRatio>
     </div>
   );
 }

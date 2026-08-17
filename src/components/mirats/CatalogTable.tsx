@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -524,9 +525,19 @@ export function CatalogTable({
               key: "logo", label: "Logo", minW: "min-w-[56px]", align: "center" as const,
               cell: (r: Row) => {
                 const url = r.logo ? logoUrlMap?.get(r.logo) : undefined;
-                return url
-                  ? <img src={url} alt={r.ten} className="mx-auto h-8 w-8 rounded object-contain" loading="lazy" />
-                  : <span className="mx-auto flex h-8 w-8 items-center justify-center rounded bg-muted"><Factory className="h-4 w-4 text-muted-foreground/40" /></span>;
+                return (
+                  <div className="mx-auto h-8 w-8 overflow-hidden rounded border bg-white shadow-sm">
+                    <AspectRatio ratio={1 / 1}>
+                      {url ? (
+                        <img src={url} alt={r.ten} className="h-full w-full object-contain p-0.5" loading="lazy" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-muted/20">
+                          <Factory className="h-4 w-4 text-muted-foreground/20" />
+                        </div>
+                      )}
+                    </AspectRatio>
+                  </div>
+                );
               },
             }] : []),
             { key: "ma", label: "Mã", minW: "min-w-[100px]", filter: "text", value: (r) => r.ma ?? "",
@@ -1191,10 +1202,16 @@ function CatalogDialog({
             <div className="space-y-1.5">
               <Label>Logo</Label>
               <div className="flex items-center gap-3">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                  {logoPreview
-                    ? <img src={logoPreview} alt="Logo" className="h-full w-full object-contain" />
-                    : <Factory className="h-6 w-6 text-muted-foreground/40" />}
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border bg-muted">
+                  <AspectRatio ratio={1 / 1}>
+                    {logoPreview ? (
+                      <img src={logoPreview} alt="Logo" className="h-full w-full object-contain p-1" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Factory className="h-6 w-6 text-muted-foreground/40" />
+                      </div>
+                    )}
+                  </AspectRatio>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <input
