@@ -30,6 +30,8 @@ import { InfoHint } from "@/components/mirats/InfoHint";
 
 import { AllInOneExportPanel } from "@/components/mirats/AllInOneExportPanel";
 import { AllInOneChecklist } from "@/components/mirats/AllInOneChecklist";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { exportAllInOneXlsx } from "@/lib/mirats/allinone-template";
 
 
@@ -1043,12 +1045,10 @@ function NhapLieuPage() {
                         const locked = f.key === ent.keyHeader;
                         return (
                           <label key={f.key} className="flex items-center gap-2 text-xs">
-                            <input
-                              type="checkbox"
-                              className="h-3.5 w-3.5 accent-primary"
+                            <Checkbox
                               checked={picked.has(f.key) || locked}
                               disabled={locked}
-                              onChange={() => togglePick(f.key)}
+                              onCheckedChange={() => togglePick(f.key)}
                             />
                             <span className={locked ? "font-medium" : ""}>
                               {f.label}

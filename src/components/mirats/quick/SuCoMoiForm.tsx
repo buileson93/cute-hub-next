@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/backend/client";
@@ -395,16 +396,12 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                   </div>
 
                   <div className="pt-4 space-y-4">
-                    <div className="flex items-center space-x-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-md border border-amber-100 dark:border-amber-900/30">
-                      <Checkbox id="closing-intent" checked={closingIntent} onCheckedChange={(v: boolean) => setClosingIntent(!!v)} />
-                      <div className="grid gap-1.5 leading-none">
-                        <Label htmlFor="closing-intent" className="text-sm font-bold text-amber-900 dark:text-amber-200 cursor-pointer">
-                          Đóng sự cố ngay
-                        </Label>
-                        <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                          Xác nhận sự cố đã được khắc phục dứt điểm.
-                        </p>
+                    <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-3">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="closing-intent" className="text-sm font-semibold text-primary">Chốt đóng sự cố ngay</Label>
+                        <p className="text-xs text-muted-foreground">Tự động điền thời gian kết thúc và chuyển trạng thái hoàn thành.</p>
                       </div>
+                      <Switch id="closing-intent" checked={closingIntent} onCheckedChange={(v: boolean) => setClosingIntent(!!v)} />
                     </div>
 
                     {closingIntent && (

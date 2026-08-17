@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
@@ -95,10 +97,13 @@ export function ThietBiLifecycleActions({ ma, trangThai }: { ma: string; trangTh
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" className="h-4 w-4 accent-primary" checked={thanhLy} onChange={(e) => setThanhLy(e.target.checked)} />
-                Đây là <b>thanh lý / loại biên</b> (không chỉ ngừng tạm thời)
-              </label>
+              <div className="flex items-center gap-2 rounded-md border bg-muted/20 px-3 py-2">
+                <div className="flex-1 space-y-0.5">
+                  <Label htmlFor="thanh-ly-check" className="text-sm font-medium cursor-pointer">Thanh lý / loại biên</Label>
+                  <p className="text-xs text-muted-foreground">Tài sản sẽ không còn trong danh mục sẵn dùng.</p>
+                </div>
+                <Switch id="thanh-ly-check" checked={thanhLy} onCheckedChange={setThanhLy} />
+              </div>
               <div className="space-y-1">
                 <Label htmlFor="ly-do-ngung">Lý do</Label>
                 <Textarea id="ly-do-ngung" value={lyDo} onChange={(e) => setLyDo(e.target.value)} placeholder="Ví dụ: hết niên hạn, hư hỏng không sửa được…" rows={2} />

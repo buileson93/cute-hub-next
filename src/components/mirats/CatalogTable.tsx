@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
@@ -1150,7 +1151,7 @@ function CatalogDialog({
                 </ul>
                 {!value && (
                   <label className="mt-2 flex cursor-pointer items-center gap-1.5 text-amber-900 dark:text-amber-100">
-                    <input type="checkbox" checked={dupAck} onChange={(e) => setDupAck(e.target.checked)} className="h-3.5 w-3.5" />
+                    <Checkbox checked={dupAck} onCheckedChange={(checked) => setDupAck(!!checked)} />
                     <span>Vẫn tạo mới (đã kiểm tra, không phải bản trùng)</span>
                   </label>
                 )}
@@ -1375,11 +1376,9 @@ function MergePickDialog({
                 ids.has(r.id) ? "border-primary bg-primary/5" : "hover:bg-muted/40",
               )}
             >
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={ids.has(r.id)}
-                onChange={() => toggle(r.id)}
-                className="accent-primary"
+                onCheckedChange={() => toggle(r.id)}
               />
               <span className="truncate font-medium">{r.ten}</span>
               {r.ma && <CodeBadge code={r.ma} />}
