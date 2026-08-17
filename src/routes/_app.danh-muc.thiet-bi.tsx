@@ -1153,13 +1153,13 @@ function DanhMucThietBiPage() {
 
             {deleteKind === "retire" && (
               <>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox" className="h-4 w-4 accent-primary"
-                    checked={deleteThanhLy} onChange={(e) => setDeleteThanhLy(e.target.checked)}
-                  />
-                  Đây là <b>thanh lý / loại biên</b> (không phải ngừng tạm thời)
-                </label>
+                <div className="flex items-center gap-2 rounded-md border bg-muted/20 px-3 py-2">
+                  <div className="flex-1 space-y-0.5">
+                    <Label htmlFor="thanh-ly-delete" className="text-xs font-medium cursor-pointer">Thanh lý / loại biên</Label>
+                    <p className="text-[10px] text-muted-foreground">Tài sản sẽ bị xóa khỏi danh sách đang dùng.</p>
+                  </div>
+                  <Switch id="thanh-ly-delete" checked={deleteThanhLy} onCheckedChange={setDeleteThanhLy} />
+                </div>
                 <div className="space-y-1">
                   <Label htmlFor="ly-do-xoa">Lý do</Label>
                   <Textarea

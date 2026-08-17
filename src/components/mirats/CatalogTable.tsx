@@ -1376,11 +1376,9 @@ function MergePickDialog({
                 ids.has(r.id) ? "border-primary bg-primary/5" : "hover:bg-muted/40",
               )}
             >
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={ids.has(r.id)}
-                onChange={() => toggle(r.id)}
-                className="accent-primary"
+                onCheckedChange={() => toggle(r.id)}
               />
               <span className="truncate font-medium">{r.ten}</span>
               {r.ma && <CodeBadge code={r.ma} />}

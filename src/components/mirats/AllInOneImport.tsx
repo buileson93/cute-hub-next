@@ -333,15 +333,11 @@ export function AllInOneImport() {
                         {pendingConfirms.length > 12 && <li>… và {pendingConfirms.length - 12} mục khác</li>}
                       </ul>
                       <label className="mt-1 flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-100/60 px-2 py-1.5 dark:bg-amber-500/10">
-                        <input
-                          type="checkbox"
-                          className="h-3.5 w-3.5 accent-amber-600"
+                        <Switch
                           checked={allowCreateBase}
                           disabled={busy}
-                          onChange={(e) => {
-                            const v = e.target.checked;
+                          onCheckedChange={(v) => {
                             setAllowCreateBase(v);
-                            // Xem trước lại ngay để badge "Danh mục sẽ tạo" cập nhật.
                             void checkAll(v);
                           }}
                         />
