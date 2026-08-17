@@ -11,17 +11,18 @@ interface Props {
 export function AutoFilledBadge({ onUndo, label = "auto" }: Props) {
   return (
     <Badge
-      variant="outline"
-      className="ml-1 h-4 gap-1 border-primary/40 bg-primary/10 px-1.5 text-[10px] font-medium text-primary"
+      variant="info"
+      size="sm"
+      className="ml-1 h-4 gap-1 px-1.5 font-medium"
       data-testid="auto-badge"
     >
-      <Sparkles className="h-2.5 w-2.5" />
+      <Sparkles className="h-2.5 w-2.5 opacity-80" />
       {label}
       <button
         type="button"
         onClick={onUndo}
         aria-label="Hoàn tác gợi ý"
-        className="ml-1 inline-flex items-center rounded hover:text-primary/70"
+        className="ml-1 inline-flex items-center rounded hover:opacity-70 transition-opacity"
       >
         <Undo2 className="h-2.5 w-2.5" />
       </button>
