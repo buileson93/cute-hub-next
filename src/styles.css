@@ -26,8 +26,8 @@
 
     
     /* Spacing & Radius */
-    --radius-container: 1rem;
-    --radius-element: 0.5rem;
+    --radius-container: 0.75rem;
+    --radius-element: 0.625rem;
     
     /* Motion */
     --duration-fast: 120ms;
@@ -102,8 +102,8 @@
 }
 
 :root {
-  --radius: 1rem; /* 16px */
-  --radius-control: 0.5rem; /* 8px */
+  --radius: 0.75rem; /* 12px from DF3 */
+  --radius-control: 0.625rem; /* 10px from DF3 */
   --border-contrast: 0.08;
 
   /* Astryx Semantic Palette - Light Mode (OKLCH) */
