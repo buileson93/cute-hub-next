@@ -335,10 +335,14 @@ function UploadDialog({
       <DialogContent>
         <DialogHeader><DialogTitle>{label}</DialogTitle></DialogHeader>
         <div className="space-y-3">
-          <div>
-            <Label>Chọn tệp ({loai === "hinh_anh" ? "JPG/PNG/WebP" : "PDF"}, tối đa {MAX_MB}MB)</Label>
-            <Input type="file" accept={accept} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-          </div>
+          <FileInput
+            label="Chọn tệp"
+            description={`${loai === "hinh_anh" ? "JPG/PNG/WebP" : "PDF"}, tối đa ${MAX_MB}MB`}
+            accept={accept}
+            maxSizeMb={MAX_MB}
+            value={file ? [file] : []}
+            onFilesChange={(fs) => setFile(fs[0] ?? null)}
+          />
           <div>
             <Label>Mô tả (tùy chọn)</Label>
             <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}

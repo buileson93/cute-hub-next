@@ -119,18 +119,15 @@ export function AssetImportDialog({
 
         <div className="space-y-4 py-4 flex-1 overflow-hidden flex flex-col">
           {!file ? (
-            <div className="border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer relative">
-              <input
-                type="file"
-                accept=".xlsx, .xls, .csv"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={handleFileChange}
-              />
-              <FileSpreadsheet className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm font-medium">Click hoặc kéo thả file Excel vào đây</p>
-              <p className="text-xs text-muted-foreground mt-1">Hỗ trợ .xlsx, .xls, .csv</p>
-              <Button variant="link" className="mt-4 text-xs">Tải file mẫu</Button>
-            </div>
+            <FileInput
+              accept=".xlsx,.xls,.csv"
+              maxSizeMb={20}
+              description="Hỗ trợ .xlsx, .xls, .csv — tối đa 20MB"
+              onFilesChange={(fs) => {
+                const f = fs[0]
+                if (f) handleFileChange({ target: { files: [f] } } as unknown as React.ChangeEvent<HTMLInputElement>)
+              }}
+            />
           ) : (
             <div className="flex-1 overflow-hidden flex flex-col space-y-3">
               <div className="flex items-center justify-between bg-primary/5 p-3 rounded-lg border border-primary/10">

@@ -260,32 +260,20 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
         </DialogHeader>
 
         {/* Upload */}
-        <div className="rounded-md border border-dashed p-4 flex items-center gap-3">
-          <FileText className="h-6 w-6 text-muted-foreground" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">
-              {file ? file.name : "Chưa chọn tệp PDF"}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Chấp nhận .pdf (tối đa 20MB). Ưu tiên bản scan rõ chữ hoặc PDF gốc.
-            </div>
-          </div>
-          <Input
-            id="gpkt-file-input"
-            type="file"
+        <div className="rounded-md border border-dashed p-4 flex flex-col gap-3">
+          <FileInput
+            label="Tệp giấy phép (PDF)"
+            description="Chấp nhận .pdf (tối đa 20MB). Ưu tiên bản scan rõ chữ hoặc PDF gốc."
             accept="application/pdf,.pdf"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0] ?? null;
-              if (!f) return;
-              if (f.size > 20 * 1024 * 1024) { toast.error("Tệp vượt quá 20MB"); return; }
+            maxSizeMb={20}
+            value={file ? [file] : []}
+            onFilesChange={(fs) => {
+              const f = fs[0] ?? null;
               setFile(f);
-              parseM.mutate(f);
+              if (f) parseM.mutate(f);
             }}
           />
-          <Button variant="outline" onClick={() => document.getElementById("gpkt-file-input")?.click()}>
-            <Upload className="mr-1.5 h-4 w-4" /> Chọn PDF
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
           <Button
             disabled={!file || parseM.isPending}
             onClick={() => file && parseM.mutate(file)}
