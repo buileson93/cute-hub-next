@@ -957,7 +957,7 @@ export function CommandPalette() {
                     </div>
                     {h.entity === "thiet_bi" && h.sysName && (
                       <span
-                        className="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary"
+                        className="ml-auto flex shrink-0 items-center gap-1 rounded-md border border-[#0074e2]/20 bg-[#0074e2]/5 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#0074e2]"
                         title={`Hệ thống: ${h.sysName}`}
                       >
                         <Network className="h-3 w-3" />
@@ -990,9 +990,9 @@ export function CommandPalette() {
                   key={`tkc-${r.loai}-${r.id}`}
                   value={`tkc-${r.loai}-${r.id}-${r.tieuDe}`}
                   onSelect={() => go(r.route)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
                     <Search className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1 space-y-0.5">
@@ -1024,9 +1024,9 @@ export function CommandPalette() {
                   key={it.to}
                   value={`nav-${it.to}-${it.label}`}
                   onSelect={() => go(it.to)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
                     <Icon className="h-4 w-4" />
                   </div>
                   <span className="text-[13px] font-bold text-foreground">{it.label}</span>
@@ -1039,20 +1039,20 @@ export function CommandPalette() {
 
         <CommandSeparator />
         <CommandGroup heading="Hành động">
-          <CommandItem value="action-theme" onSelect={() => runAction("theme")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+          <CommandItem value="action-theme" onSelect={() => runAction("theme")} className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
               <Sparkles className="h-4 w-4" />
             </div>
             <span className="text-[13px] font-bold text-foreground">Đổi chế độ sáng / tối</span>
           </CommandItem>
-          <CommandItem value="action-reload" onSelect={() => runAction("reload")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors">
+          <CommandItem value="action-reload" onSelect={() => runAction("reload")} className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors">
               <CommandIcon className="h-4 w-4" />
             </div>
             <span className="text-[13px] font-bold text-foreground">Tải lại ứng dụng</span>
           </CommandItem>
-          <CommandItem value="action-signout" onSelect={() => runAction("signout")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-primary/10 group-data-[selected=true]:text-primary transition-colors text-red-500">
+          <CommandItem value="action-signout" onSelect={() => runAction("signout")} className="flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-element)] transition-all">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground group-data-[selected=true]:bg-[#0074e2]/10 group-data-[selected=true]:text-[#0074e2] transition-colors text-red-500">
               <LogOut className="h-4 w-4" />
             </div>
             <span className="text-[13px] font-bold text-foreground">Đăng xuất</span>
