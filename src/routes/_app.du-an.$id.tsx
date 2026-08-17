@@ -202,7 +202,7 @@ function DuAnDetailPage() {
         </div>
 
         <Tabs defaultValue="kanban">
-          <TabsList className="bg-slate-100 p-1">
+          <TabsList className="bg-slate-200/50 p-1">
             <TabsTrigger value="kanban"><KanbanSquare className="h-4 w-4 mr-1.5" />Kanban</TabsTrigger>
             <TabsTrigger value="gantt"><GanttChart className="h-4 w-4 mr-1.5" />Gantt</TabsTrigger>
             <TabsTrigger value="discovery"><SearchIcon className="h-4 w-4 mr-1.5" />Discovery</TabsTrigger>
