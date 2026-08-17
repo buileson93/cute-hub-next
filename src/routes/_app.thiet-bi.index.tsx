@@ -323,7 +323,7 @@ function ThietBiPage() {
               </Button>
             </AppTooltip>
             {retiredCount > 0 && (
-              <AppTooltip noiDung={showRetired ? "Ẩn tài sản nghỉ KT" : \`Hiện \${retiredCount} tài sản nghỉ KT\`}>
+              <AppTooltip noiDung={showRetired ? "Ẩn tài sản nghỉ KT" : `Hiện ${retiredCount} tài sản nghỉ KT`}>
                 <Button
                   variant={showRetired ? "secondary" : "outline"}
                   size="sm"
@@ -353,7 +353,7 @@ function ThietBiPage() {
                         <button
                           key={s.id}
                           type="button"
-                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/\$id", params: { id: s.id } }); }}
+                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/$id", params: { id: s.id } }); }}
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <BookOpen className="h-4 w-4 shrink-0 text-primary" />
@@ -370,7 +370,7 @@ function ThietBiPage() {
                         <button
                           key={d.id}
                           type="button"
-                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/\$maThietBi", params: { maThietBi: d.ma_thiet_bi }, search: { tab: "tong-quan", doc: undefined, q: undefined } }); }}
+                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi }, search: { tab: "tong-quan", doc: undefined, q: undefined } }); }}
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
