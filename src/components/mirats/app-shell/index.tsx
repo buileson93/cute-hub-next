@@ -188,7 +188,7 @@ export function UserMenu() {
   }
 
   return (
-    <Button asChild size="sm" variant="outline" className="rounded-full">
+    <Button asChild size="sm" className="rounded-full bg-[#0074e2] text-white hover:bg-[#0074e2]/90 border-none shadow-sm shadow-[#0074e2]/20">
       <Link to="/auth">
         <LogIn className="mr-2 h-3.5 w-3.5" />
         Đăng nhập
