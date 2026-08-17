@@ -103,9 +103,8 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
     <CommandDialog 
       open={open} 
       onOpenChange={onOpenChange}
-      className="max-w-3xl overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none"
     >
-      <div className="flex flex-col bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="flex flex-col bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 sm:max-w-3xl">
         {/* Header Section */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 bg-muted/20">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
