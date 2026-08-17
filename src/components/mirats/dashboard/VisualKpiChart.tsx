@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
-import { ResponsiveContainer, AreaChart, Area, Tooltip, BarChart, Bar, LineChart, Line, Cell } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, Tooltip, BarChart, Bar, LineChart, Line, Cell, XAxis, YAxis } from "recharts";
 
 interface VisualKpiChartProps {
   title: string;
