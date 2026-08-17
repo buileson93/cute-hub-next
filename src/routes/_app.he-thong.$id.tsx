@@ -555,18 +555,20 @@ function HeThongInner({
               <SummaryStat label="Bàn giao" value={kindCounts.bg} tone="text-sky-700" />
             </div>
             )}
-            <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-                <TabsTrigger value="tl" className="astryx-control"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
-                <TabsTrigger value="bt" className="astryx-control"><Wrench className="mr-1 h-3.5 w-3.5" />Bảo dưỡng ({baoTri.length})</TabsTrigger>
-                <TabsTrigger value="sc" className="astryx-control"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
-                <TabsTrigger value="hh" className="astryx-control"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
-                <TabsTrigger value="bg" className="astryx-control"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
-                <TabsTrigger value="ll"><HistoryIcon className="mr-1 h-3.5 w-3.5" />Sổ lý lịch gộp</TabsTrigger>
-                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết</TabsTrigger>
-                <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư ({tuongThich?.length || 0})</TabsTrigger>
-                {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký sửa</TabsTrigger>}
-              </TabsList>
+            <Tabs value={tab} onValueChange={setTab} className="w-full">
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b">
+                <TabsList className="h-10 w-full justify-start rounded-none bg-transparent p-0 overflow-x-auto overflow-y-hidden no-scrollbar">
+                  <TabsTrigger value="tl" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><Clock className="mr-2 h-3.5 w-3.5" />Dòng thời gian</TabsTrigger>
+                  <TabsTrigger value="bt" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><Wrench className="mr-2 h-3.5 w-3.5" />Bảo dưỡng</TabsTrigger>
+                  <TabsTrigger value="sc" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><AlertTriangle className="mr-2 h-3.5 w-3.5" />Sự cố</TabsTrigger>
+                  <TabsTrigger value="hh" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><RefreshCw className="mr-2 h-3.5 w-3.5" />Hỏng hóc</TabsTrigger>
+                  <TabsTrigger value="bg" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><ArrowLeftRight className="mr-2 h-3.5 w-3.5" />Bàn giao</TabsTrigger>
+                  <TabsTrigger value="ll" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><HistoryIcon className="mr-2 h-3.5 w-3.5" />Lý lịch gộp</TabsTrigger>
+                  <TabsTrigger value="lk" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><Link2 className="mr-2 h-3.5 w-3.5" />Liên kết</TabsTrigger>
+                  <TabsTrigger value="vt" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><ShieldCheck className="mr-2 h-3.5 w-3.5" />Vật tư</TabsTrigger>
+                  {canManage && <TabsTrigger value="cd" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><FileText className="mr-2 h-3.5 w-3.5" />Audit</TabsTrigger>}
+                </TabsList>
+              </div>
 
               <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
               <TabsContent value="tl">
@@ -807,20 +809,24 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOp
   }, [list, dangLap, tpQuery]);
   return (
     <Card id="thanh-phan-card" className={open ? "min-h-[220px]" : ""}>
-      <CardHeader>
+      <CardHeader className="py-3 px-4">
         <CardTitle className="text-base flex items-center justify-between gap-2">
-          <span>Thành phần hệ thống ({list.length})</span>
-          <div className="flex items-center gap-1">
-            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+          <div className="flex items-center gap-2">
+            <Puzzle className="h-4 w-4 text-primary" />
+            <span>Thành phần hệ thống</span>
+            <Badge variant="secondary" className="font-mono text-[10px]">{list.length}</Badge>
+          </div>
+          <div className="flex items-center gap-1 no-print">
+            <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider">
               <Link to="/he-thong/thanh-phan" search={{ he_thong: heThongId } as never}>
-                <Puzzle className="mr-1 h-3 w-3" /> Xem dạng bảng
+                Dạng bảng
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
-              <Link to="/he-thong/cay">Quản lý cây</Link>
+            <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider">
+              <Link to="/he-thong/cay">Cây hệ thống</Link>
             </Button>
             {onToggle && (
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onToggle} aria-label={open ? "Thu gọn thành phần" : "Mở rộng thành phần"} title={open ? "Thu gọn" : "Mở rộng"}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onToggle} aria-label={open ? "Thu gọn" : "Mở rộng"}>
                 {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
             )}
@@ -857,29 +863,31 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOp
               <HoverCardTrigger asChild>
                 <button
                   type="button"
-                  onClick={() => setOpenTpId(tp.id)}
-                  className="flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm hover:bg-primary/5"
+                  onClick={() => onOpenHistory(tp.id)}
+                  className="flex w-full items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-left text-sm hover:bg-primary/5 hover:border-primary/30 transition-all group"
                 >
-              <Puzzle className="h-4 w-4 shrink-0 text-emerald-600" />
-                  <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
-                  {tp.loai_thiet_bi_yeu_cau && (
-                    <span className="hidden truncate text-xs text-muted-foreground sm:inline">
-                      {tp.loai_thiet_bi_yeu_cau}
-                    </span>
-                  )}
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 group-hover:bg-emerald-500/20">
+                    <Puzzle className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-medium">{tp.ten}</div>
+                    {tp.loai_thiet_bi_yeu_cau && (
+                      <div className="truncate text-[10px] text-muted-foreground uppercase tracking-tight">
+                        {tp.loai_thiet_bi_yeu_cau}
+                      </div>
+                    )}
+                  </div>
                   {dev ? (
-                    <>
-                      <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
-                      {dev.ten_thiet_bi && (
-                        <span className="hidden max-w-[200px] truncate text-xs text-muted-foreground md:inline">
-                          {dev.ten_thiet_bi}
-                        </span>
-                      )}
-                    </>
+                    <div className="text-right">
+                      <Badge variant="secondary" className="font-mono text-[10px] bg-background">{dev.ma_thiet_bi}</Badge>
+                      <div className="hidden text-[10px] text-muted-foreground md:block truncate max-w-[120px]">
+                        {dev.ten_thiet_bi}
+                      </div>
+                    </div>
                   ) : (
-                    <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
+                    <Badge variant="outline" className="text-[10px] text-muted-foreground border-dashed">Chờ lắp</Badge>
                   )}
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
                 </button>
               </HoverCardTrigger>
               <HoverCardContent side="right" align="start" className="w-80 text-sm">
