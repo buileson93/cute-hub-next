@@ -14,8 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { SavingIndicator } from "@/components/mirats/SavingIndicator";
 import { OfflineBanner } from "@/components/mirats/OfflineBanner";
-import React from "react";
-
 import { AstryxProvider } from "@/components/astryx-pilot/AstryxProvider";
 
 function NotFoundComponent() {

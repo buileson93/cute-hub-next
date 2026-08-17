@@ -18,19 +18,15 @@ function AdminLayout() {
   const blocked = ready && !canAccessRoute(location.pathname, roles);
 
   useEffect(() => {
-    if (loading) return;
-
-    if (!session) {
-      toast.error("Vui lòng đăng nhập để truy cập trang quản trị");
-      nav({ to: "/auth", search: { redirect: location.pathname } as any });
+    if (!loading && !session) {
+      nav({ to: "/auth", replace: true });
       return;
     }
-
     if (blocked) {
-      toast.error("Bạn không có quyền truy cập trang này");
-      nav({ to: "/" });
+      toast.error("Bạn không có quyền truy cập trang quản trị");
+      nav({ to: "/", replace: true });
     }
-  }, [loading, session, blocked, nav, location.pathname]);
+  }, [loading, session, blocked, nav]);
 
   if (loading || !session || !profile) {
     return (
@@ -43,13 +39,11 @@ function AdminLayout() {
 
   if (blocked) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <ShieldAlert className="h-10 w-10 text-destructive" />
-          <h1 className="text-xl font-bold">Không có quyền truy cập</h1>
-          <p className="text-sm text-muted-foreground">
-            Tài khoản {profile.email} không được cấp quyền quản trị.
-          </p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-background p-6 text-center">
+        <ShieldAlert className="h-10 w-10 text-destructive" />
+        <div className="text-lg font-semibold">Không có quyền truy cập</div>
+        <div className="max-w-md text-sm text-muted-foreground">
+          Khu vực quản trị yêu cầu vai trò Admin. Đang chuyển bạn về Trang chủ…
         </div>
       </div>
     );
