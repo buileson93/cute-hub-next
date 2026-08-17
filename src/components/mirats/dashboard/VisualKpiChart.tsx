@@ -155,6 +155,8 @@ export function VisualKpiChart({
               </BarChart>
             ) : (
                 <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                    <XAxis dataKey="thangHT" hide />
+                    <YAxis hide domain={['auto', 'auto']} />
                     <Tooltip 
                         contentStyle={{ 
                             backgroundColor: 'rgba(255, 255, 255, 0.95)', 
