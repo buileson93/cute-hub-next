@@ -38,7 +38,7 @@ export function InfoGrid({ fields, cot = 2, className }: InfoGridProps) {
   );
 }
 
-function InfoRow({ field }: { field: RenderedField }) {
+function InfoRow({ field }: { field: InfoGridProps["fields"][number] }) {
   const hl = !!field.highlight;
   return (
     <>
@@ -60,7 +60,7 @@ function InfoRow({ field }: { field: RenderedField }) {
             : "text-foreground/90",
         )}
       >
-        <span className="truncate">{field.giaTri}</span>
+        <div className="truncate flex-1">{field.giaTri}</div>
         {typeof field.soNgay === "number" && (
           <ExpiringBadge soNgay={field.soNgay} compact />
         )}
