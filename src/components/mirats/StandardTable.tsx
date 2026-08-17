@@ -120,8 +120,8 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { visibleRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: ColumnDef<T>[];
@@ -702,10 +702,10 @@ export function StandardTable<T>({
         );
 
       case "number":
-        return <span className="tabular-nums">{fmtSo(Number(val))}</span>;
+        return <span className="tabular-nums font-mono text-right w-full block">{fmtSo(Number(val))}</span>;
 
       case "currency":
-        return <span className="tabular-nums">{fmtVND(Number(val))}</span>;
+        return <span className="tabular-nums font-mono text-right w-full block">{fmtVND(Number(val))}</span>;
 
       case "percent":
         const p = Number(val);
@@ -719,7 +719,7 @@ export function StandardTable<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-[12px] tabular-nums">{fmtNgay(val)}</span>
+            <span className="text-[12px] tabular-nums font-mono text-right w-full block">{fmtNgay(val)}</span>
           </AppTooltip>
         );
 
