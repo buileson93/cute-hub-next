@@ -61,9 +61,9 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
   }, [group.status, prevStatus]);
 
   const statusColors = {
-    critical: "bg-red-500 hover:bg-red-600 shadow-[0_0_8px_rgba(239,68,68,0.4)]",
-    warning: "bg-amber-500 hover:bg-amber-600 shadow-[0_0_8px_rgba(245,158,11,0.4)]",
-    normal: "bg-emerald-500 hover:bg-emerald-600 shadow-[0_0_4px_rgba(16,185,129,0.2)]",
+    critical: "bg-red-500 hover:bg-red-600 shadow-sm",
+    warning: "bg-amber-500 hover:bg-amber-600 shadow-sm",
+    normal: "bg-emerald-500 hover:bg-emerald-600 shadow-sm",
     inactive: "bg-slate-400 hover:bg-slate-500",
   };
 
@@ -73,7 +73,7 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
         <Link 
           to="/he-thong/cay" 
           className={cn(
-            "w-7 h-7 rounded transition-all duration-300 flex items-center justify-center text-[10px] font-bold text-white cursor-pointer select-none",
+            "w-7 h-7 rounded-lg transition-all duration-300 flex items-center justify-center text-[10px] font-bold text-white cursor-pointer select-none",
             statusColors[group.status],
             isFlashing && "animate-in fade-in zoom-in duration-500 ring-2 ring-white/50",
             "motion-reduce:animate-none"

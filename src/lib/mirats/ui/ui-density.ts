@@ -18,11 +18,11 @@ export const UI_DENSITY = {
   CONT_SM: 480,
 
   // --- Cards ---
-  CARD_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl data-[density=spacious]:rounded-3xl",
-  CONTROL_RADIUS: "rounded-lg data-[density=comfortable]:rounded-xl",
+  CARD_RADIUS: "rounded-2xl data-[density=comfortable]:rounded-3xl data-[density=spacious]:rounded-4xl",
+  CONTROL_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl",
   BADGE_RADIUS: "rounded-full",
-  CARD_PADDING: "p-2 data-[density=comfortable]:p-4 data-[density=spacious]:p-6",
-  CARD_HEADER: "px-2 pt-2 pb-1 data-[density=comfortable]:px-4 data-[density=comfortable]:pt-4 data-[density=comfortable]:pb-2",
+  CARD_PADDING: "p-3 data-[density=comfortable]:p-5 data-[density=spacious]:p-8",
+  CARD_HEADER: "px-3 pt-3 pb-1 data-[density=comfortable]:px-5 data-[density=comfortable]:pt-5 data-[density=comfortable]:pb-3",
 
   // --- KPI ---
   KPI_LABEL_FS: "text-[11px] data-[density=comfortable]:text-[13px] text-muted-foreground",
