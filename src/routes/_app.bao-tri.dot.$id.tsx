@@ -529,11 +529,14 @@ function AddHeThongDialog({ open, onOpenChange, dotId, donViId, existingHeThongI
           {available.length === 0 && <div className="p-4 text-center text-sm text-muted-foreground">Không có hệ thống khả dụng.</div>}
           {available.map((h) => (
             <label key={h.id} className="flex cursor-pointer items-start gap-2 rounded p-2 hover:bg-muted">
-              <input type="checkbox" className="mt-1" checked={sel.has(h.id)} onChange={(e) => {
-                const s = new Set(sel);
-                if (e.target.checked) s.add(h.id); else s.delete(h.id);
-                setSel(s);
-              }} />
+              <Checkbox
+                checked={sel.has(h.id)}
+                onCheckedChange={(checked) => {
+                  const s = new Set(sel);
+                  if (checked) s.add(h.id); else s.delete(h.id);
+                  setSel(s);
+                }}
+              />
               <div className="flex-1">
                 <div className="text-sm font-medium">{h.ten}</div>
                 <div className="text-xs text-muted-foreground">{h.ma}</div>
