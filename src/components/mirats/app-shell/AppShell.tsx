@@ -287,7 +287,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   />
                </div>
                <div className="flex items-center gap-3">
-                  <UserMenu />
+                  <div className="astryx-user-menu-wrapper"><UserMenu /></div>
                </div>
             </header>
             <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 [@container]">{children}</main>
