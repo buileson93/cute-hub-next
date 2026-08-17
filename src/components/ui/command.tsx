@@ -28,8 +28,6 @@ type CommandDialogProps = DialogProps & {
   shouldFilter?: boolean;
   value?: string;
   onValueChange?: (value: string) => void;
-  /** Optional preview pane rendered to the right of the command list (Lovable-style). */
-  preview?: React.ReactNode;
 };
 
 const CommandDialog = ({
