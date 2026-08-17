@@ -32,19 +32,20 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {renderMobileMenu}
         
-        <div className="relative w-full max-w-sm" data-tour="search">
+        <div className="relative w-full max-w-sm group" data-tour="search">
           <Input
             type="search"
-            placeholder="Tìm tài sản, sự cố..."
-            className="h-8 w-full cursor-pointer rounded-full bg-muted/40 pl-10 pr-4 text-[13px] focus-visible:ring-1 focus-visible:ring-[#0074e2] border-transparent hover:border-border transition-mirats-fast astryx-input"
+            placeholder="Tìm tài sản, hệ thống, biên bản..."
+            className="h-9 w-full cursor-pointer rounded-xl bg-muted/40 pl-10 pr-4 text-[13px] focus-visible:ring-1 focus-visible:ring-primary border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm"
             readOnly
             onClick={handleOpenSearch}
             onFocus={handleOpenSearch}
-            aria-label="Mở bảng lệnh tìm kiếm"
+            aria-label="Mở tìm kiếm PowerSearch"
           />
-          <Search className="absolute left-3.5 top-2 h-4 w-4 text-[#0074e2] pointer-events-none z-10" />
-          <div className="absolute right-3 top-1.5 hidden items-center gap-1 rounded border bg-background px-1.5 font-mono text-[9px] font-medium opacity-100 sm:flex">
-            <span className="text-[10px]">{isMac ? "⌘" : "Ctrl"}</span>K
+          <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-primary pointer-events-none z-10 group-hover:scale-110 transition-transform" />
+          <div className="absolute right-3 top-2 hidden items-center gap-1.5 rounded-md border border-border/40 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-muted-foreground/60 sm:flex">
+            <CommandIcon className="h-2.5 w-2.5" />
+            <span>K</span>
           </div>
         </div>
       </div>
