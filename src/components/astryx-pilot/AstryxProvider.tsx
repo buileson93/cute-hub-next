@@ -1,10 +1,16 @@
 import { Theme } from "@astryxdesign/core";
 import { stoneTheme } from "@astryxdesign/theme-stone/built";
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, Suspense, lazy } from "react";
 
 interface AstryxProviderProps {
   children: ReactNode;
 }
+
+// We lazy-load the actual Theme component content because @astryxdesign/core 
+// might call requestAnimationFrame at module level or during construction.
+const AstryxThemeWrapper = ({ children, theme }: { children: ReactNode, theme: any }) => {
+  return <Theme theme={theme}>{children}</Theme>;
+};
 
 /**
  * AstryxProvider
@@ -17,17 +23,21 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // Only set hydrated to true on the client
     setHydrated(true);
   }, []);
 
-  // During SSR, we render the theme container with static CSS variables but without
-  // interactive components that might leak browser globals.
-  // The stoneTheme is an object containing CSS variables, safe for SSR.
+  // During SSR, we render a plain div to avoid importing/executing @astryxdesign/core components
+  // that leak browser globals like requestAnimationFrame.
+  if (!hydrated) {
+    return <div className="astryx-ssr-placeholder">{children}</div>;
+  }
+
   return (
-    <Theme theme={stoneTheme}>
-      <div className={!hydrated ? "astryx-ssr-mode" : "astryx-client-mode"}>
+    <AstryxThemeWrapper theme={stoneTheme}>
+      <div className="astryx-client-mode">
         {children}
       </div>
-    </Theme>
+    </AstryxThemeWrapper>
   );
 }
