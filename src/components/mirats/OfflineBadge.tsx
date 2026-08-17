@@ -16,8 +16,8 @@ export function OfflineBadge({ className }: { className?: string }) {
 
   if (!s.online) {
     return (
-      <Badge variant="outline" className={cn("gap-1 border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400", className)}>
-        <WifiOff className="h-3 w-3" />
+      <Badge variant="warning" className={cn("gap-1", className)}>
+        <WifiOff className="h-3 w-3 opacity-80" />
         Offline{pendingLike > 0 && ` • ${pendingLike} chờ`}
       </Badge>
     );
@@ -42,8 +42,8 @@ export function OfflineBadge({ className }: { className?: string }) {
   }
 
   return (
-    <Badge variant="outline" className={cn("gap-1 border-emerald-500/40 text-emerald-600 dark:text-emerald-400", className)}>
-      <Wifi className="h-3 w-3" />
+    <Badge variant="success" className={cn("gap-1", className)}>
+      <Wifi className="h-3 w-3 opacity-80" />
       Online
     </Badge>
   );

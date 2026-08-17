@@ -1,5 +1,6 @@
 import { Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * Nhãn "mã định danh" dùng chung — hiển thị mã tài sản / mã thành phần một cách
@@ -20,15 +21,17 @@ export function CodeBadge({
   const c = (code ?? "").trim();
   if (!c) return null;
   return (
-    <span
+    <Badge
+      variant="info"
+      size="sm"
       title={title ?? `Mã: ${c}`}
       className={cn(
-        "inline-flex shrink-0 items-center gap-0.5 rounded border border-primary/25 bg-primary/10 px-1 py-0 font-mono text-[9px] font-bold leading-4 text-primary align-middle",
+        "font-mono text-[10px] gap-0.5 border-primary/20 bg-primary/5",
         className,
       )}
     >
-      {showIcon && <Hash className="h-2.5 w-2.5 shrink-0 opacity-70" />}
+      {showIcon && <Hash className="h-2.5 w-2.5 shrink-0 opacity-60" />}
       {c}
-    </span>
+    </Badge>
   );
 }

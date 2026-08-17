@@ -4,23 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-bold tracking-tight transition-mirats-fast focus:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-1",
+  "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-bold tracking-tight transition-mirats-fast focus:outline-none focus:ring-1 focus:ring-ring focus:ring-offset-1 select-none whitespace-nowrap",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground shadow-sm hover:bg-primary/80",
+        default: "border-transparent bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80",
-        outline: "text-foreground",
-        success: "bg-green-500/10 text-green-700 border-green-200",
-        warning: "bg-yellow-500/10 text-yellow-700 border-yellow-200",
-        error: "bg-red-500/10 text-red-700 border-red-200",
-        info: "bg-blue-500/10 text-blue-700 border-blue-200",
+        outline: "text-foreground border-border bg-background hover:bg-accent hover:text-accent-foreground",
+        success: "bg-success/10 text-success border-success/20 dark:bg-success/20",
+        warning: "bg-warning/10 text-warning border-warning/20 dark:bg-warning/20",
+        error: "bg-destructive/10 text-destructive border-destructive/20 dark:bg-destructive/20",
+        info: "bg-info/10 text-info border-info/20 dark:bg-info/20",
+        ghost: "border-transparent bg-transparent hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         default: "px-2 py-0.5 text-[11px]",
-        sm: "px-1.5 py-0 text-[10px] font-semibold",
-        lg: "px-3 py-1 text-[12px]",
+        sm: "px-1.5 py-0 text-[10px] font-semibold leading-4",
+        lg: "px-3 py-1 text-[12px] h-6",
+        pill: "px-2.5 py-0.5 rounded-full",
       }
     },
     defaultVariants: {

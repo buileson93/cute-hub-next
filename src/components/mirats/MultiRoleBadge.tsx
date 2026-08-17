@@ -47,8 +47,7 @@ export function MultiRoleBadge({
             </>
           )}
           <span
-            className="ml-0.5 rounded px-1 text-[10px] font-semibold"
-            style={{ backgroundColor: col.border, color: "white" }}
+            className="ml-0.5 rounded px-1 text-[10px] font-bold bg-primary/20 text-primary"
           >
             ×{info.count}
           </span>

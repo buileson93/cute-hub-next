@@ -420,7 +420,7 @@ function AdminAuditPage() {
       render: (e) => {
         const m = SEVERITY_META[e.severity];
         return (
-          <Badge className={cn("gap-1.5 font-medium", m.bg, m.text, m.border)} variant="outline">
+          <Badge className={cn("gap-1.5 font-medium", m.bg, m.text, m.border)} variant="outline" size="sm">
             <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} />
             {m.label}
           </Badge>

@@ -93,6 +93,20 @@ function slug(name: string): string {
 /** Bucket lưu logo nhà sản xuất (ảnh đã nén). */
 const LOGO_BUCKET = "nha-san-xuat-logo";
 
+/** Hiển thị tên dưới dạng badge (dùng cho chủng loại). */
+function NameBadge({ name, id }: { name: string; id: string }) {
+  const { backgroundColor, color } = hashPastel(id);
+  return (
+    <Badge
+      variant="outline" size="sm"
+      className="font-medium border-transparent transition-colors hover:brightness-95"
+      style={{ backgroundColor, color }}
+    >
+      {name}
+    </Badge>
+  );
+}
+
 /** Sinh màu pastel ổn định từ chuỗi (dùng cho badge tên danh mục). */
 function hashPastel(s: string): { backgroundColor: string; color: string } {
   let h = 0;
@@ -547,7 +561,7 @@ export function CatalogTable({
               cell: (r) => supportsMau
                 ? <MauChip ten={r.ten} mau={r.mau} />
                 : nameBadge
-                  ? <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" style={hashPastel(r.id || r.ten)}>{r.ten}</span>
+                  ? <NameBadge name={r.ten} id={r.id || r.ten} />
                   : <span className="font-medium">{r.ten}</span> },
             { key: "mo_ta", label: "Mô tả", minW: "min-w-[200px]", filter: "text", value: (r) => r.mo_ta ?? "",
               cell: (r) => <span className="block max-w-md truncate text-muted-foreground" title={r.mo_ta ?? ""}>{r.mo_ta ?? "—"}</span> },

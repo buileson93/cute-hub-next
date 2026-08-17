@@ -14,6 +14,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { InfoGrid } from "@/components/mirats/InfoGrid";
 import { ActionBar } from "@/components/mirats/ActionBar";
@@ -95,9 +96,9 @@ export function DetailDrawer({
         <SheetHeader className="space-y-1 border-b px-6 py-4 text-left">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <Badge variant="outline" size="sm" className="mb-1 uppercase tracking-wider bg-primary/5 text-primary border-primary/20">
                 {view.ten}
-              </div>
+              </Badge>
               <SheetTitle className="truncate text-base font-semibold">
                 {tieuDe}
               </SheetTitle>

@@ -139,7 +139,7 @@ export function ListToolbar({
             const shown =
               def?.options.find((o) => o.value === val)?.label ?? val;
             return (
-              <Badge key={k} variant="secondary" className="gap-1">
+              <Badge key={k} variant="secondary" size="sm" className="gap-1 font-medium bg-secondary/50">
                 {label}: {shown}
                 <button
                   type="button"

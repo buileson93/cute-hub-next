@@ -32,13 +32,13 @@ export interface PmCongViecRow {
   phu_trach?: { ho_ten: string } | null;
 }
 
-export const PM_STATUS_META: Record<PmTrangThai, { label: string; color: string }> = {
-  sap_den_han:    { label: "Sắp đến hạn",  color: "bg-sky-500/10 text-sky-700 border-sky-200" },
-  den_han:        { label: "Đến hạn",       color: "bg-amber-500/10 text-amber-700 border-amber-200" },
-  qua_han:        { label: "Quá hạn",       color: "bg-red-500/10 text-red-700 border-red-200" },
-  dang_thuc_hien: { label: "Đang thực hiện",color: "bg-indigo-500/10 text-indigo-700 border-indigo-200" },
-  hoan_thanh:     { label: "Hoàn thành",    color: "bg-emerald-500/10 text-emerald-700 border-emerald-200" },
-  bo_qua:         { label: "Bỏ qua",        color: "bg-muted text-muted-foreground border-border" },
+export const PM_STATUS_META: Record<PmTrangThai, { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" | "info" }> = {
+  sap_den_han:    { label: "Sắp đến hạn",  variant: "info" },
+  den_han:        { label: "Đến hạn",       variant: "warning" },
+  qua_han:        { label: "Quá hạn",       variant: "error" },
+  dang_thuc_hien: { label: "Đang thực hiện",variant: "info" },
+  hoan_thanh:     { label: "Hoàn thành",    variant: "success" },
+  bo_qua:         { label: "Bỏ qua",        variant: "secondary" },
 };
 
 const KEY = ["pm_cong_viec"] as const;
