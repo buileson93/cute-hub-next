@@ -93,6 +93,20 @@ function slug(name: string): string {
 /** Bucket lưu logo nhà sản xuất (ảnh đã nén). */
 const LOGO_BUCKET = "nha-san-xuat-logo";
 
+/** Hiển thị tên dưới dạng badge (dùng cho chủng loại). */
+function NameBadge({ name, id }: { name: string; id: string }) {
+  const { backgroundColor, color } = hashPastel(id);
+  return (
+    <Badge
+      variant="outline"
+      className="font-medium border-transparent transition-colors hover:brightness-95"
+      style={{ backgroundColor, color }}
+    >
+      {name}
+    </Badge>
+  );
+}
+
 /** Sinh màu pastel ổn định từ chuỗi (dùng cho badge tên danh mục). */
 function hashPastel(s: string): { backgroundColor: string; color: string } {
   let h = 0;
