@@ -65,6 +65,13 @@
   if (typeof g.document === "undefined") g.document = makeInert();
   if (typeof g.window === "undefined") g.window = makeInert();
   if (typeof g.navigator === "undefined") g.navigator = makeInert();
+  if (typeof g.requestAnimationFrame === "undefined") {
+    g.requestAnimationFrame = (callback: any) => setTimeout(callback, 0);
+  }
+  if (typeof g.cancelAnimationFrame === "undefined") {
+    g.cancelAnimationFrame = (id: any) => clearTimeout(id);
+  }
+
 
   // Defining `window` above makes isomorphic libs (e.g. the Supabase browser
   // client) take their browser path, which reads bare `localStorage`. Provide a
