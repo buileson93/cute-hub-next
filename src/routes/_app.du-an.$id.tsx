@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_app/du-an/$id")({
   }),
   head: ({ params }) => ({
     meta: [
-      { title: `Dự án ${params.id.slice(0, 8)} — MIRATS 2.0` },
+      { title: `Dự án ${params.id.slice(0, 8)} — MIRATS` },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

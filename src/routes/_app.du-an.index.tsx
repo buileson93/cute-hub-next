@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_app/du-an/")({
   head: () => ({
     meta: [
-      { title: "Dự án & Tiến độ — MIRATS 2.0" },
+      { title: "Dự án & Tiến độ — MIRATS" },
       { name: "description", content: "Quản lý dự án theo mốc công việc, phân công tổ trưởng và theo dõi tiến độ Gantt/Kanban." },
       { name: "robots", content: "noindex, nofollow" },
     ],

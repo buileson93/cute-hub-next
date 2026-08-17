@@ -49,12 +49,12 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
   }),
   head: () => ({
     meta: [
-      { title: "Cấu trúc & Sơ đồ — MIRATS 2.0" },
+      { title: "Cấu trúc & Sơ đồ — MIRATS" },
       {
         name: "description",
         content: "Phân lớp hệ thống tài sản: Phân loại → Nhóm hệ thống → Hệ thống → Tài sản → Thành phần.",
       },
-      { property: "og:title", content: "Cấu trúc & Sơ đồ — MIRATS 2.0" },
+      { property: "og:title", content: "Cấu trúc & Sơ đồ — MIRATS" },
       { property: "og:description", content: "Sơ đồ hệ thống kỹ thuật và cây phân cấp tài sản." },
     ],
   }),
