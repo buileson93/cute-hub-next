@@ -144,7 +144,6 @@ export function DossierRegister({ dossier_id }: { dossier_id: string }) {
           </TableBody>
         </Table>
       </div>
-      </div>
       <Blockquote className="mt-4 border-slate-200 bg-slate-50/50 text-slate-600">
         <div className="flex gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
@@ -153,5 +152,6 @@ export function DossierRegister({ dossier_id }: { dossier_id: string }) {
           </div>
         </div>
       </Blockquote>
+    </div>
   );
 }
