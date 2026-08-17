@@ -283,7 +283,7 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
               )}
               <div className="text-base font-bold leading-tight tracking-tight text-foreground">{brand.title}</div>
               {brand.status && (
-                <span className="inline-block rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                <span className="inline-block rounded-md bg-[#0074e2]/10 px-2 py-0.5 text-[11px] font-semibold text-[#0074e2]">
                   {brand.status}
                 </span>
               )}
@@ -305,9 +305,9 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
       ) : (
         <>
           <div className="p-5 pb-0">
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-primary/10 via-background to-background shadow-inner">
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-[#0074e2]/5 via-background to-background shadow-inner">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-border bg-background/90 text-primary shadow-xl backdrop-blur-md transition-transform hover:scale-105 duration-300">
+                <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-border bg-background/90 text-[#0074e2] shadow-xl backdrop-blur-md transition-transform hover:scale-105 duration-300">
                   <Icon className="h-10 w-10 stroke-[1.5]" />
                 </div>
               </div>
