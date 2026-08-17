@@ -50,6 +50,12 @@ import { SuCoMoiForm } from "@/components/mirats/quick/SuCoMoiForm";
 import { BaoTriMoiForm } from "@/components/mirats/quick/BaoTriMoiForm";
 import { HongHocMoiForm } from "@/components/mirats/quick/HongHocMoiForm";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageSection } from "@/components/mirats/PageSection";
+import { ContentGrid } from "@/components/mirats/layout/PageLayouts";
+import { InfoGrid } from "@/components/mirats/InfoGrid";
 
 export const Route = createFileRoute("/_app/he-thong/$id")({
   head: ({ params }) => ({
