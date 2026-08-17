@@ -453,11 +453,11 @@ export function CatalogTable({
                 size="sm"
                 variant="outline"
                 className="h-8 w-8 p-0"
-                disabled={ctx.visibleRows.length === 0}
+                disabled={ctx.filteredRows.length === 0}
                 onClick={() => {
                 const cols = ctx.visibleColumns.filter((c) => c.key !== "logo");
                 const headers = cols.map((c) => (c.label ?? c.key) as string);
-                const rows = ctx.visibleRows.map((r) => {
+                const rows = ctx.filteredRows.map((r) => {
                   const rec: Record<string, string> = {};
                   cols.forEach((c, i) => {
                     const v = c.value ? c.value(r) : "";

@@ -40,41 +40,33 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   component: ThietBiPage,
 });
 
-
-
-/** Tổng hợp số lần bảo dưỡng / sự cố / hỏng hóc theo mã tài sản. */
 interface Hist { bt: number; sc: number; hh: number }
 const EMPTY_HIST: Hist = { bt: 0, sc: 0, hh: 0 };
-
-/* ------------------------------ Cây phân cấp ------------------------------ */
 
 interface TreeNode {
   key: string;
   label: string;
   sub: TreeNode[];
-  devices: DbDevice[]; // đếm số tài sản đang lắp tại thành phần (chỉ dùng ở kind === "tp")
+  devices: DbDevice[];
   count: number;
   hist: Hist;
   kind: "dv" | "pl" | "ht" | "tp";
-  sysId?: string;   // id hệ thống (kind === "ht")
-  tpId?: string;    // id thành phần (kind === "tp"); undefined = nhánh "(Chưa gắn thành phần)"
+  sysId?: string;
+  tpId?: string;
 }
 
 function ThietBiPage() {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const { scopeAll, donViCode } = useScope();
   const { data: taxo, isLoading, error } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
   const { ops } = useOperationsData();
 
-  /** Tên hệ thống đã đồng bộ với cây "Hệ Thống" (ưu tiên tên đã đổi). */
   const htName = useMemo(
     () => (id: string | undefined, fallback: string) => (id && nameOv?.get(id)) || fallback,
     [nameOv],
   );
 
-  /** Tên tài sản đã đồng bộ với cây "Hệ Thống" (ưu tiên tên đã đổi). */
   const tbName = useMemo(
     () => (d: DbDevice) => devNameOv?.get(d.ma_thiet_bi) || d.ten,
     [devNameOv],
@@ -99,7 +91,6 @@ function ThietBiPage() {
     return scopeAll ? all : all.filter((d) => !donViCode || d.don_vi === donViCode);
   }, [taxo, scopeAll, donViCode]);
 
-  // Lịch sử từng tài sản (link với các bảng bao_tri / su_co / hong_hoc).
   const histMap = useMemo(() => {
     const m = new Map<string, Hist>();
     const bump = (ma: string, k: keyof Hist) => {
@@ -122,7 +113,6 @@ function ThietBiPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = devices;
-    // Mặc định ẩn tài sản đã "nghỉ khai thác" (vẫn xem được qua bộ lọc).
     if (!showRetired) list = list.filter((t) => !isRetiredStatus(t.trang_thai));
     if (onlyAllocated) list = list.filter((t) => t._capPhatTrangThai === "da_cap_phat");
     if (!q) return list;
@@ -137,15 +127,11 @@ function ThietBiPage() {
     );
   }, [devices, query, htName, tbName, onlyAllocated, showRetired]);
 
-
-  // Gợi ý tương tác cho thanh tìm kiếm: hệ thống (→ sổ hệ thống) + tài sản (→ sổ tài sản).
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
-    // Đếm số tài sản theo hệ thống (trong phạm vi hiện tại).
     const sysCount = new Map<string, number>();
     for (const d of devices) if (d._htId) sysCount.set(d._htId, (sysCount.get(d._htId) ?? 0) + 1);
-    // Hệ thống khớp theo tên.
     const seen = new Set<string>();
     const sysHits: { id: string; ten: string; count: number }[] = [];
     for (const d of devices) {
@@ -161,11 +147,8 @@ function ThietBiPage() {
   }, [query, devices, filtered, htName]);
 
   const openDropdown = focused && !!suggestions && (suggestions.sysHits.length > 0 || suggestions.devHits.length > 0);
-
-  // Vị trí chức năng (thành phần) theo hệ thống, kèm tài sản đang lắp tại vị trí.
   const { data: viTriByHt } = useAllViTriChucNang();
 
-  // Dựng cây: Đơn vị → Phân loại → Hệ thống → Thành phần → Tài sản.
   const tree = useMemo<TreeNode[]>(() => {
     if (!taxo) return [];
     const dvRoots = new Map<string, TreeNode>();
@@ -307,9 +290,8 @@ function ThietBiPage() {
 
   const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
   const isFiltering = query.trim() !== "" || onlyAllocated || showRetired;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-
-  // Lấy danh sách thành phần hiển thị nhanh trên mobile
   const mobileTps = useMemo(() => {
     const list: TreeNode[] = [];
     const walk = (nodes: TreeNode[]) => {
@@ -323,155 +305,151 @@ function ThietBiPage() {
   }, [tree]);
 
   return (
-    <PageBody className="flex flex-col gap-4">
-      <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="astryx-heading-1">Sổ lý lịch</h1>
-          <p className="astryx-text-muted">Đơn vị → Phân loại → Hệ thống → Thành phần</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          <AppTooltip noiDung={onlyAllocated ? "Bỏ lọc cấp phát" : "Chỉ hiện tài sản đang cấp phát"}>
-            <Button
-              variant={onlyAllocated ? "default" : "outline"}
-              size="sm"
-              onClick={() => setOnlyAllocated((v) => !v)}
-              className="astryx-control h-8 w-8 p-0"
-            >
-              <PackageCheck className="h-4 w-4" />
-            </Button>
-          </AppTooltip>
-          {retiredCount > 0 && (
-            <AppTooltip noiDung={showRetired ? "Ẩn tài sản nghỉ KT" : `Hiện ${retiredCount} tài sản nghỉ KT`}>
+    <PageBody className="bg-background/30">
+      <PageHeader
+        title="Sổ lý lịch"
+        supporting="MIRATS 2.0"
+        subtitle="Đơn vị → Phân loại → Hệ thống → Thành phần"
+        actions={
+          <div className="flex items-center gap-1.5">
+            <AppTooltip noiDung={onlyAllocated ? "Bỏ lọc cấp phát" : "Chỉ hiện tài sản đang cấp phát"}>
               <Button
-                variant={showRetired ? "secondary" : "outline"}
+                variant={onlyAllocated ? "default" : "outline"}
                 size="sm"
-                onClick={() => setShowRetired((v) => !v)}
+                onClick={() => setOnlyAllocated((v) => !v)}
                 className="astryx-control h-8 w-8 p-0"
               >
-                <Archive className="h-4 w-4" />
+                <PackageCheck className="h-4 w-4" />
               </Button>
             </AppTooltip>
-          )}
-          <div className="astryx-surface relative w-full sm:w-64">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => { if (blurTimer.current) clearTimeout(blurTimer.current); setFocused(true); }}
-              onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
-              placeholder="Tìm mã, tên tài sản hoặc hệ thống..."
-              className="h-8 border-none bg-transparent pl-8 text-xs focus-visible:ring-0"
-            />
-            {openDropdown && suggestions && (
-              <div className="astryx-surface absolute right-0 top-full z-50 mt-2 max-h-96 w-[min(30rem,90vw)] overflow-hidden shadow-2xl">
-                {suggestions.sysHits.length > 0 && (
-                  <div className="py-2">
-                    <div className="astryx-text-label px-3 py-1">Hệ thống</div>
-                    {suggestions.sysHits.map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/$id", params: { id: s.id } }); }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
-                      >
-                        <BookOpen className="h-4 w-4 shrink-0 text-primary" />
-                        <span className="min-w-0 flex-1 truncate font-medium">{s.ten}</span>
-                        <span className="astryx-badge astryx-badge-primary astryx-number">{s.count} TB</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {suggestions.devHits.length > 0 && (
-                  <div className="border-t border-border py-2">
-                    <div className="astryx-text-label px-3 py-1">Tài sản</div>
-                    {suggestions.devHits.map((d) => (
-                      <button
-                        key={d.id}
-                        type="button"
-                        onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi }, search: { tab: "tong-quan", doc: undefined, q: undefined } }); }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
-                      >
-                        <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="truncate font-medium">{tbName(d)}</span>
-                            <span className="astryx-number text-[10px] opacity-60">{d.ma_thiet_bi}</span>
-                          </div>
-                          <div className="astryx-text-muted text-[10px]">{htName(d._htId, d._htTen)}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-2">
-        <div className="p-0">
-          <DataState
-            state={state}
-            loadingType="table"
-            title={isFiltering ? "Không tìm thấy tài sản" : "Không có dữ liệu tài sản"}
-            description={
-              isFiltering
-                ? "Thử thay đổi từ khoá hoặc xoá các bộ lọc để tìm kiếm rộng hơn."
-                : "Hệ thống chưa có dữ liệu tài sản nào được đăng ký."
-            }
-            onRetry={() => { if (typeof window !== 'undefined') window.location.reload(); }}
-            emptyAction={
-              isFiltering ? (
+            {retiredCount > 0 && (
+              <AppTooltip noiDung={showRetired ? "Ẩn tài sản nghỉ KT" : `Hiện ${retiredCount} tài sản nghỉ KT`}>
                 <Button
-                  variant="outline"
+                  variant={showRetired ? "secondary" : "outline"}
                   size="sm"
-                  onClick={() => {
-                    setQuery("");
-                    setOnlyAllocated(false);
-                    setShowRetired(false);
-                  }}
+                  onClick={() => setShowRetired((v) => !v)}
+                  className="astryx-control h-8 w-8 p-0"
                 >
-                  Xoá tất cả bộ lọc
+                  <Archive className="h-4 w-4" />
                 </Button>
-              ) : undefined
-            }
-          >
-            {isMobile ? (
-              <div className="grid grid-cols-1 gap-4">
-                {mobileTps.map(n => (
-                  <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
-                    <CardContent className="p-4 space-y-2">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-sm">{n.label}</h3>
-                        <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
-                      </div>
-                      <div className="flex gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Wrench className="w-3 h-3" /> {n.hist.bt} bảo dưỡng
-                        </div>
-                        <div className="flex items-center gap-1 text-amber-500">
-                          <AlertTriangle className="w-3 h-3" /> {n.hist.sc} sự cố
-                        </div>
-                      </div>
-                      <div className="pt-2 border-t mt-2 flex justify-between items-center">
-                        <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
-                        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
-                           <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-                <div className="text-center py-6 bg-muted/30 rounded-lg border border-dashed">
-                  <p className="text-xs text-muted-foreground italic">Sử dụng thanh tìm kiếm để tra cứu nhanh Tài sản hoặc Hệ thống trên điện thoại</p>
-                </div>
-              </div>
-            ) : (
-              <TreeView tree={tree} total={filtered.length} histMap={histMap} />
+              </AppTooltip>
             )}
-          </DataState>
-        </div>
+            <div className="astryx-surface relative w-48 sm:w-64">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 z-10 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => { if (blurTimer.current) clearTimeout(blurTimer.current); setFocused(true); }}
+                onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
+                placeholder="Tìm mã, tên tài sản..."
+                className="h-8 border-none bg-transparent pl-8 text-xs focus-visible:ring-0"
+              />
+              {openDropdown && suggestions && (
+                <div className="astryx-surface absolute right-0 top-full z-50 mt-2 max-h-96 w-[min(30rem,90vw)] overflow-hidden shadow-2xl">
+                  {suggestions.sysHits.length > 0 && (
+                    <div className="py-2">
+                      <div className="astryx-text-label px-3 py-1">Hệ thống</div>
+                      {suggestions.sysHits.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/$id", params: { id: s.id } }); }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
+                        >
+                          <BookOpen className="h-4 w-4 shrink-0 text-primary" />
+                          <span className="min-w-0 flex-1 truncate font-medium">{s.ten}</span>
+                          <span className="astryx-badge astryx-badge-primary astryx-number">{s.count} TB</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {suggestions.devHits.length > 0 && (
+                    <div className="border-t border-border py-2">
+                      <div className="astryx-text-label px-3 py-1">Tài sản</div>
+                      {suggestions.devHits.map((d) => (
+                        <button
+                          key={d.id}
+                          type="button"
+                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi }, search: { tab: "tong-quan", doc: undefined, q: undefined } }); }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
+                        >
+                          <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="truncate font-medium">{tbName(d)}</span>
+                              <span className="astryx-number text-[10px] opacity-60">{d.ma_thiet_bi}</span>
+                            </div>
+                            <div className="astryx-text-muted text-[10px]">{htName(d._htId, d._htTen)}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        }
+      />
+
+      <div className="flex-1 overflow-hidden">
+        <DataState
+          state={state}
+          loadingType="table"
+          title={isFiltering ? "Không tìm thấy tài sản" : "Không có dữ liệu tài sản"}
+          description={
+            isFiltering
+              ? "Thử thay đổi từ khoá hoặc xoá các bộ lọc để tìm kiếm rộng hơn."
+              : "Hệ thống chưa có dữ liệu tài sản nào được đăng ký."
+          }
+          onRetry={() => { if (typeof window !== 'undefined') window.location.reload(); }}
+          emptyAction={
+            isFiltering ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setQuery("");
+                  setOnlyAllocated(false);
+                  setShowRetired(false);
+                }}
+              >
+                Xoá tất cả bộ lọc
+              </Button>
+            ) : undefined
+          }
+        >
+          {isMobile ? (
+            <div className="grid grid-cols-1 gap-4 p-4">
+              {mobileTps.map(n => (
+                <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-sm">{n.label}</h3>
+                      <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
+                    </div>
+                    <div className="flex gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Wrench className="w-3 h-3" /> {n.hist.bt} bảo dưỡng
+                      </div>
+                      <div className="flex items-center gap-1 text-amber-500">
+                        <AlertTriangle className="w-3 h-3" /> {n.hist.sc} sự cố
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t mt-2 flex justify-between items-center">
+                      <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
+                         <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <TreeView tree={tree} total={filtered.length} histMap={histMap} />
+          )}
+        </DataState>
       </div>
     </PageBody>
   );
