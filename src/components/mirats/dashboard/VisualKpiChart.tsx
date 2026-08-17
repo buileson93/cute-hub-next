@@ -175,7 +175,7 @@ export function VisualKpiChart({
                         type="monotone" 
                         dataKey="value" 
                         stroke={Array.isArray(color) ? color[0] : color} 
-                        strokeWidth={2}
+                        strokeWidth={2.5}
                         dot={false}
                         activeDot={{ r: 5, fill: '#fff', stroke: Array.isArray(color) ? color[0] : color, strokeWidth: 2 }}
                         isAnimationActive={true}
