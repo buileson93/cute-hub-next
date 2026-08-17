@@ -947,11 +947,11 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm" className="astryx-control">
           <Link to="/so-do"><ArrowLeft className="mr-1 h-4 w-4" /> Danh sách</Link>
         </Button>
         <div className="mr-auto flex min-w-0 flex-wrap items-center gap-2">
-          <h1 className="truncate text-lg font-semibold">{row.ten}</h1>
+          <h1 className="astryx-heading-2 truncate">{row.ten}</h1>
           {row.he_thong_ten && (
             <Link to="/he-thong/cay">
               <Badge variant="secondary" className="gap-1 font-normal hover:bg-secondary/70">
@@ -965,10 +965,10 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
           </InfoHint>
         </div>
 
-        <Button variant="outline" size="icon" className="h-9 w-9" onClick={undo} disabled={!canUndo} title="Hoàn tác (Ctrl+Z)" aria-label="Undo2">
+        <Button variant="outline" size="icon" className="astryx-control h-9 w-9" onClick={undo} disabled={!canUndo} title="Hoàn tác (Ctrl+Z)" aria-label="Undo2">
           <Undo2 className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="icon" className="h-9 w-9" onClick={redo} disabled={!canRedo} title="Làm lại (Ctrl+Shift+Z)" aria-label="Redo2">
+        <Button variant="outline" size="icon" className="astryx-control h-9 w-9" onClick={redo} disabled={!canRedo} title="Làm lại (Ctrl+Shift+Z)" aria-label="Redo2">
           <Redo2 className="h-4 w-4" />
         </Button>
         <Separator orientation="vertical" className="mx-1 hidden h-6 sm:block" />
@@ -1030,7 +1030,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
             <Background gap={16} />
             <Controls />
             <MiniMap pannable zoomable className="!bg-card" />
-            <Panel position="bottom-center">
+            <Panel position="bottom-center" className="astryx-surface mb-4">
               <FigJamToolbar
                 edgeKind={edgeKind}
                 onEdgeKind={applyEdgeKind}
