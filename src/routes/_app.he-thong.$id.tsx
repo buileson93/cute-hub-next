@@ -360,80 +360,35 @@ function HeThongInner({
   ).map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="space-y-6 print:space-y-3">
+    <PageFrame density={compact ? "compact" : "comfortable"}>
       <style>{`@media print{
         .no-print,[data-slot="tabs-list"]{display:none !important;}
         .sticky{position:static !important;}
         [role="tabpanel"]{display:block !important;}
         body{background:white !important;}
       }`}</style>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 no-print">
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm" className="astryx-control h-8 gap-1 pr-3">
-            <Link to="/he-thong/cay" search={{ view: "tree" }}>
-              <ChevronLeft className="h-4 w-4" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Cây hệ thống</span>
-            </Link>
-          </Button>
-          <div className="h-4 w-px bg-border mx-1" />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="astryx-heading-3 truncate">{tenHt}</h1>
-              <Badge variant="outline" className="astryx-badge font-mono text-[9px] uppercase tracking-tighter opacity-60">
-                {bookNo}
-              </Badge>
-            </div>
-            <p className="astryx-text-muted text-[10px] mt-0.5">Mở năm {openYear} · {donViMa}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => { if (typeof window !== 'undefined') window.print(); }} className="astryx-control h-8 gap-2 border-primary/20 hover:bg-primary/5">
-            <Printer className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">In / PDF</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setCompact(!compact)} 
-            className={cn("astryx-control h-8 gap-2", compact && "bg-accent text-accent-foreground")}
-            aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
-          >
-            {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
-            <span className="text-[10px] font-bold uppercase tracking-wider">{compact ? "Đầy đủ" : "Gọn"}</span>
-          </Button>
-        </div>
-      </div>
-
-
-      {/* Header + HP bar (sticky) */}
-      <Card className="astryx-surface sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-card/85">
-        <CardContent className="space-y-4 p-5">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
-                <Network className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="astryx-text-label mb-1">Health Score</div>
-
-                <h1 className="astryx-heading-2 truncate">{tenHt}</h1>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  {maBravo && <span>Mã Bravo: <span className="font-mono text-foreground/80">{maBravo}</span></span>}
-                  {donVi ? (
-                    <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="inline-flex items-center gap-1 hover:text-primary hover:underline">
-                      <Building2 className="h-3 w-3" /> {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
-                    </Link>
-                  ) : (
-                    <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 text-amber-600 hover:underline">
-                      <Building2 className="h-3 w-3" /> Chưa phân công đơn vị
-                    </Link>
-                  )}
-                  <span>· {timeline.length} sự kiện</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex shrink-0 flex-col items-end gap-2">
+      
+      <PageHeader
+        title={tenHt}
+        subtitle={bookNo}
+        breadcrumbs={[
+          { label: "Hệ thống", to: "/he-thong/cay" },
+          { label: tenHt }
+        ]}
+        icon={Network}
+        metadata={
+          <>
+            {donVi ? (
+              <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="inline-flex items-center gap-1 hover:text-primary hover:underline">
+                <Building2 className="h-3 w-3" /> {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
+              </Link>
+            ) : (
+              <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 text-amber-600 hover:underline">
+                <Building2 className="h-3 w-3" /> Chưa phân công đơn vị
+              </Link>
+            )}
+            <span className="text-muted-foreground">· {timeline.length} sự kiện</span>
+            <div className="flex items-center gap-2 ml-2">
               {hasGp ? (
                 <GpktBadge heThongId={id} gpSo={gpSo} gpHan={gpHan} />
               ) : (
@@ -446,76 +401,96 @@ function HeThongInner({
                 onConfigure={() => setThrOpen(true)}
               />
             </div>
+          </>
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => { if (typeof window !== 'undefined') window.print(); }} className="h-8 gap-2 border-primary/20 hover:bg-primary/5">
+              <Printer className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">In / PDF</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setCompact(!compact)} 
+              className={cn("h-8 gap-2", compact && "bg-accent text-accent-foreground")}
+              aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
+            >
+              {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
+              <span className="text-[10px] font-bold uppercase tracking-wider">{compact ? "Đầy đủ" : "Gọn"}</span>
+            </Button>
+            {canManage && <QuickActionsBar heThongId={id} />}
           </div>
-        </CardContent>
-      </Card>
+        }
+      />
 
-      {/* Thanh hành động nhanh — mở nhanh biểu mẫu tạo mới đã pre-fill hệ thống */}
-      {canManage && (
-        <QuickActionsBar heThongId={id} />
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-1">
-          <Card className="lg:sticky lg:top-24">
-            <CardHeader className="pb-3">
-              <CardTitle className="astryx-heading-3">Định danh &amp; chỉ số vận hành</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
-              <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
-              <div className="flex items-start gap-2 text-sm">
-                <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-muted-foreground">Đơn vị quản lý</div>
-                  {donVi ? (
-                    <Link
-                      to="/danh-muc/don-vi"
-                      search={{ q: donVi } as never}
-                      className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
-                    >
-                      {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </Link>
-                  ) : (
-                    <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 font-medium text-amber-600 hover:underline">
-                      Chưa phân công đơn vị
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </Link>
-                  )}
+      <PageBody>
+        <PageSection>
+          <ContentGrid minChildWidth={compact ? "300px" : "400px"}>
+            <Card className="astryx-surface lg:sticky lg:top-24 h-fit">
+              <CardHeader className="pb-3">
+                <CardTitle className="astryx-heading-3">Định danh & chỉ số vận hành</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <InfoGrid 
+                  cot={1}
+                  fields={[
+                    { nhan: "Hệ thống", giaTri: tenHt, highlight: true },
+                    { nhan: "Mã BraVO", giaTri: maBravo || "—" },
+                    { 
+                      nhan: "Đơn vị quản lý", 
+                      giaTri: (
+                        <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="hover:text-primary hover:underline inline-flex items-center gap-1">
+                          {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
+                          <ExternalLink className="h-3 w-3 opacity-60" />
+                        </Link>
+                      )
+                    },
+                    { nhan: "GPKT", giaTri: hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có" }
+                  ]} 
+                />
+                
+                <div className="pt-2">
+                  <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
                 </div>
-              </div>
-              <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
-              <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
-              <div className="border-t pt-3">
-                <FunctionLinksMenu heThongId={id} hasGp={hasGp} gpSo={gpSo} />
-              </div>
-              <div className="border-t pt-3">
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
-                  <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
-                  <MicroStat label="Ngày không sự cố" value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-600" : "text-emerald-600"} />
-                  <MicroStat label="Nhịp sự cố TB (MTBF)" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
-                  <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} />
+                
+                <div className="pt-2 border-t">
+                  <FunctionLinksMenu heThongId={id} hasGp={hasGp} gpSo={gpSo} />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="space-y-4 lg:col-span-2">
-          <MiniCharts
-            suCoByMonth={suCoByMonth}
-            statusGroups={statusGroups}
-            trend6={trend6}
-            onPickStatus={() => {
-              if (typeof document !== "undefined") {
-                if (typeof document !== 'undefined') document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-            }}
-            months={chartMonths}
-            onChangeMonths={setChartMonths}
-          />
+                <div className="pt-3 border-t">
+                  <div className="grid grid-cols-2 gap-2">
+                    <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
+                    <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
+                    <MicroStat 
+                      label="Ngày không sự cố" 
+                      value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} 
+                      tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-600 font-mono" : "text-emerald-600 font-mono"} 
+                    />
+                    <MicroStat 
+                      label="MTBF (TB)" 
+                      value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} 
+                      tone="font-mono"
+                    />
+                    <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} tone="font-mono" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4 lg:col-span-2">
+              <MiniCharts
+                suCoByMonth={suCoByMonth}
+                statusGroups={statusGroups}
+                trend6={trend6}
+                onPickStatus={() => {
+                  if (typeof document !== "undefined") {
+                    document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                months={chartMonths}
+                onChangeMonths={setChartMonths}
+              />
 
           {/* Nhật ký khai thác — cuộn nội bộ để không phá layout khi dữ liệu dài */}
           <Card className={nkOpen ? "flex min-h-[420px] flex-col" : ""}>
