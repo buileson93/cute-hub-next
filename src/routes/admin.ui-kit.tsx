@@ -50,20 +50,21 @@ function UIKitLab() {
             <Button variant="secondary" label="Secondary" />
             <Button variant="destructive" label="Destructive" />
             <Button variant="ghost" label="Ghost" />
-            <IconButton icon={<Icon icon="search" />} label="Search" />
-            <IconButton icon={<Icon icon="add" />} variant="primary" label="Add" />
-            <IconButton icon={<Icon icon="edit" />} variant="secondary" label="Edit" />
-            <IconButton icon={<Icon icon="delete" />} variant="destructive" label="Delete" />
+            <IconButton icon={<Icon icon="search" />} label="Tìm kiếm" />
+            <IconButton icon={<Icon icon="success" />} variant="primary" label="Thêm" />
+            <IconButton icon={<Icon icon="wrench" />} variant="secondary" label="Sửa" />
+            <IconButton icon={<Icon icon="error" />} variant="destructive" label="Xóa" />
           </HStack>
           <HStack gap={4} align="center" wrap="wrap">
             <Icon icon="search" size="sm" />
-            <Icon icon="filter" size="sm" />
-            <Icon icon="more" size="sm" />
-            <Icon icon="chevron-right" size="sm" />
+            <Icon icon="funnel" size="sm" />
+            <Icon icon="moreHorizontal" size="sm" />
+            <Icon icon="chevronRight" size="sm" />
             <Icon icon="close" size="sm" />
-            <Icon icon="check" size="sm" color="success" />
+            <Icon icon="success" size="sm" color="success" />
             <Icon icon="warning" size="sm" color="warning" />
           </HStack>
+
         </VStack>
 
         {/* Status & Badges */}
@@ -78,17 +79,18 @@ function UIKitLab() {
           </HStack>
           <HStack gap={6} align="center">
             <HStack gap={2} align="center">
-              <StatusDot variant="success" />
-              <Text size="sm">Hoạt động</Text>
+              <StatusDot variant="success" label="Hoạt động" />
+              <Text>Hoạt động</Text>
             </HStack>
             <HStack gap={2} align="center">
-              <StatusDot variant="warning" />
-              <Text size="sm">Bảo trì</Text>
+              <StatusDot variant="warning" label="Bảo trì" />
+              <Text>Bảo trì</Text>
             </HStack>
             <HStack gap={2} align="center">
-              <StatusDot variant="error" />
-              <Text size="sm">Sự cố</Text>
+              <StatusDot variant="error" label="Sự cố" />
+              <Text>Sự cố</Text>
             </HStack>
+
           </HStack>
         </VStack>
 
