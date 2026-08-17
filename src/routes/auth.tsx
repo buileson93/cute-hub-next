@@ -192,7 +192,7 @@ function AuthPage() {
             <div className="relative mb-6 grid grid-cols-2 rounded-xl bg-muted/60 p-1">
               <motion.div
                 aria-hidden
-                className="absolute inset-y-1 w-1/2 rounded-lg bg-background shadow-sm ring-1 ring-border"
+                className="absolute inset-y-1 w-1/2 rounded-lg bg-[#0074e2]/10 shadow-sm ring-1 ring-[#0074e2]/20"
                 animate={{ x: mode === "signin" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
@@ -202,7 +202,7 @@ function AuthPage() {
                   type="button"
                   onClick={() => setMode(m)}
                   className={`relative z-10 rounded-lg py-2.5 text-sm font-semibold transition-colors ${
-                    mode === m ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    mode === m ? "text-[#0074e2]" : "text-muted-foreground hover:text-[#0074e2]"
                   }`}
                 >
                   {m === "signin" ? "Đăng nhập" : "Đăng ký"}
