@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
+import { VoiceQuickLog } from "@/components/mirats/VoiceQuickLog";
+import { Button } from "@/components/ui/button";
+import { Share2 } from "lucide-react";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 import TabTongQuan from "./TabTongQuan";
-import TabVanHanh from "./TabVanHanh";
-import TabCauHinh from "./TabCauHinh";
-import TabHoSoPhapLy from "./TabHoSoPhapLy";
-import TabNangCao from "./TabNangCao";
 import { TelemetryPanel, AllocationPanel, LifecyclePanel } from "./Panels";
 
 interface ThietBiDetailProps {
@@ -70,6 +70,12 @@ export function ThietBiDetail({
             icon="entity.system"
           />
           <div className="flex items-center gap-2">
+            <VoiceQuickLog maThietBi={asset.ma_thiet_bi} />
+            <AppTooltip noiDung="Chia sẻ tài sản">
+              <Button variant="outline" size="icon" className="h-8 w-8">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </AppTooltip>
             <Badge variant="outline" className="font-mono">
               {asset.ma_thiet_bi}
             </Badge>
