@@ -43,17 +43,17 @@ export function TzClock() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-secondary lg:flex"
+          className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
           aria-label="Chọn múi giờ"
         >
-          <Clock className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={2} />
+          <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
             {mounted ? formatDT(now, "datetime-sec") : "--:--:--"}
           </span>
           <span
             className={cn(
               "rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold",
-              tz === "UTC" ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary",
+              tz === "UTC" ? "bg-secondary text-muted-foreground" : "bg-[#0074e2]/10 text-[#0074e2]",
             )}
           >
             {TZ_LABEL[tz]}
@@ -80,7 +80,7 @@ export function TzClock() {
                   }).format(now)}
                 </div>
               </div>
-              {tz === m && <Check className="h-3.5 w-3.5 text-primary" />}
+              {tz === m && <Check className="h-3.5 w-3.5 text-[#0074e2]" />}
             </div>
           </DropdownMenuItem>
         ))}
