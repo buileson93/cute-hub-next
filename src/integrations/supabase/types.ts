@@ -10230,6 +10230,8 @@ export type Database = {
         | "ticket_binh_luan"
         | "tin_nhan_moi"
         | "he_thong"
+        | "cv_moi"
+        | "cv_cap_nhat"
       thiet_bi_tep_loai: "hinh_anh" | "tai_lieu"
       ticket_loai:
         | "cap_tai_khoan"
@@ -10484,6 +10486,8 @@ export const Constants = {
         "ticket_binh_luan",
         "tin_nhan_moi",
         "he_thong",
+        "cv_moi",
+        "cv_cap_nhat",
       ],
       thiet_bi_tep_loai: ["hinh_anh", "tai_lieu"],
       ticket_loai: [
