@@ -17,6 +17,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -243,7 +244,7 @@ function MatrixTab() {
                   const allowed = matrix.get(`${role}|${m.key}|${a}`) ?? false;
                   return (
                     <TableCell key={a} className="text-center">
-                      <Checkbox
+                      <Switch
                         checked={allowed}
                         disabled={role === "admin"}
                         onCheckedChange={(v) => mut.mutate({ module: m.key, action: a, allowed: !!v })}

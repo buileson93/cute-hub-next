@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { runBulkImport } from "@/lib/mirats/import-export.functions";
 import { createImportBatch } from "@/lib/mirats/import-staging.functions";
 import { sha256Hex, layersToStagedItems } from "@/lib/mirats/import-staging";
@@ -302,15 +304,16 @@ export function AllInOneImport() {
                 )}
               </div>
 
-              <label className="flex items-center gap-2 rounded-md border bg-muted/20 px-3 py-2 text-xs">
-                <input type="checkbox" className="h-3.5 w-3.5 accent-primary"
+              <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/20 px-3 py-2">
+                <div className="space-y-0.5">
+                  <p className="text-xs font-medium">Ghi đè dòng xung đột</p>
+                  <p className="text-[11px] text-muted-foreground">Mặc định TẮT: bỏ qua dòng đã bị người khác sửa trong CSDL để tránh mất thay đổi mới.</p>
+                </div>
+                <Switch
                   checked={allowOverwrite}
-                  onChange={(e) => setAllowOverwrite(e.target.checked)}
+                  onChange={(e: any) => setAllowOverwrite(e.target.checked)}
                   disabled={busy} />
-                <span>
-                  <b>Ghi đè dòng xung đột</b> — mặc định TẮT: dòng nào đã bị người khác sửa trong CSDL sau khi bạn tải mẫu sẽ được <b>bỏ qua</b> để không mất thay đổi mới. Bật nếu bạn chắc chắn muốn ghi đè.
-                </span>
-              </label>
+              </div>
 
               {phase !== "committed" && pendingConfirms.length > 0 && (
                 <div className="rounded-md border border-amber-400 bg-amber-50 p-3 text-xs dark:border-amber-500/40 dark:bg-amber-500/10">
