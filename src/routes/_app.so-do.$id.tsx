@@ -81,6 +81,9 @@ function SoDoEditorPage() {
 }
 
 function SoDoEditorContent() {
+}
+
+function SoDoEditorContent() {
 
 const BUCKET = "so-do-tep";
 const LIB_BUCKET = "so-do-thu-vien";
@@ -613,7 +616,7 @@ const edgeTypes: EdgeTypes = { styled: StyledEdge, wave: WaveEdge };
 
 
 
-function SoDoEditorPage() {
+function SoDoEditorContent() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
   const isMobile = useIsMobile();
