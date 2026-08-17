@@ -13,14 +13,15 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
-    <Card className="border-none shadow-md bg-card/50 backdrop-blur-sm h-full flex flex-col">
+    <Card className="astryx-card h-full flex flex-col">
       <CardHeader className="p-4 pb-0">
-        <CardTitle className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+        <CardTitle className="astryx-text-label flex items-center gap-2">
           {icon && <Icon name={icon as any} size="tiny" className="text-primary" />}
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 p-4 flex flex-col items-center justify-center relative">
+
         <div className="w-full h-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

@@ -57,40 +57,41 @@ export function KpiCard({
 
   return (
     <Card 
-      className={cn("shadow-sm border overflow-hidden transition-all hover:shadow-md", statusColors[status], onClick && "cursor-pointer")}
+      className={cn("astryx-card", onClick && "cursor-pointer")}
       onClick={onClick}
     >
       <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
+        <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="astryx-text-label">
               {label}
             </span>
             {tooltip && (
               <AppTooltip noiDung={tooltip}>
                 <div className="cursor-help">
-                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/50" />
+                  <Icon name="entity.info" size="tiny" className="text-muted-foreground/30" />
                 </div>
               </AppTooltip>
             )}
           </div>
           {icon && (
-            <div className={cn("p-1.5 rounded-lg", iconBg[status])}>
+            <div className={cn("p-1.5 rounded-lg opacity-80", iconBg[status])}>
               <Icon name={icon as any} size="small" />
             </div>
           )}
         </div>
 
         <div className="flex items-baseline gap-1">
-          <div className={cn("text-2xl font-black tabular-nums tracking-tight", isLoading ? "animate-pulse text-muted" : textColors[status])}>
+          <div className={cn("text-2xl font-black astryx-number tracking-tight", isLoading ? "animate-pulse text-muted" : textColors[status])}>
             {isLoading ? "..." : value}
           </div>
           {unit && !isLoading && (
-            <div className="text-[12px] font-bold text-muted-foreground uppercase">
+            <div className="astryx-text-label opacity-70">
               {unit}
             </div>
           )}
         </div>
+
 
         {trend && !isLoading && (
           <div className={cn(
