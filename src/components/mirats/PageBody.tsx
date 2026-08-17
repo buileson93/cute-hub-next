@@ -9,17 +9,21 @@ interface Props {
   className?: string;
   /** Nếu true, bỏ padding mặc định (dùng cho các trang dashboard full-width) */
   noPadding?: boolean;
+  /** Density variant for padding/gap scaling */
+  density?: "compact" | "comfortable" | "spacious";
 }
 
 /**
  * Wrapper chuẩn cho thân trang, đảm bảo padding và khoảng cách nhất quán.
  * Thường dùng ngay sau <PageHeader />.
+ * Anatomy: Content container that respects global density tokens.
  */
-export function PageBody({ children, className, noPadding }: Props) {
+export function PageBody({ children, className, noPadding, density }: Props) {
   return (
     <div 
+      data-density={density}
       className={cn(
-        "flex w-full flex-col flex-1 overflow-auto",
+        "flex w-full flex-col flex-1 overflow-auto bg-background/50",
         !noPadding && UI_DENSITY.PAGE_PADDING,
         UI_DENSITY.SECTION_GAP,
         className
@@ -29,3 +33,4 @@ export function PageBody({ children, className, noPadding }: Props) {
     </div>
   );
 }
+
