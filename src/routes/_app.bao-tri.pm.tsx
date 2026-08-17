@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, Loader2, RefreshCw, CheckCircle2, XCircle, Search, AlertTriangle, FileDown } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { getTodayDateString } from "@/lib/mirats/calendar-date";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ function PmPage() {
   const [q, setQ] = useState("");
   const sinh = useSinhPmCongViec();
   const activeTab = TABS.find((t) => t.value === tab)!;
+  const { data: allRows } = usePmCongViec();
   const { data: rows, isLoading } = usePmCongViec(
     activeTab.states.length ? { trang_thai: activeTab.states } : undefined,
   );
@@ -63,14 +65,14 @@ function PmPage() {
   }, [rows, q]);
 
   const stats = useMemo(() => {
-    const arr = rows ?? [];
+    const arr = allRows ?? [];
     return {
       total: arr.length,
       due: arr.filter((r) => r.trang_thai === "den_han" || r.trang_thai === "sap_den_han").length,
       overdue: arr.filter((r) => r.trang_thai === "qua_han").length,
       done: arr.filter((r) => r.trang_thai === "hoan_thanh").length,
     };
-  }, [rows]);
+  }, [allRows]);
 
   return (
     <div className="flex flex-col gap-2 p-2 md:p-3">
@@ -232,7 +234,13 @@ function HoanThanhDialog({ task, onClose }: { task: PmCongViecRow | null; onClos
   const mut = useHoanThanhPm();
   const [ket_qua, setKq] = useState("");
   const [ghi_chu, setGhiChu] = useState("");
-  const [thuc_hien_at, setNgay] = useState(() => new Date().toISOString().slice(0, 10));
+  useEffect(() => {
+    if (task) { setKq(""); setGhiChu(""); }
+  }, [task]);
+  const [thuc_hien_at, setNgay] = useState(getTodayDateString());
+  useEffect(() => {
+    if (task) setNgay(getTodayDateString());
+  }, [task]);
   if (!task) return null;
   return (
     <Dialog open={!!task} onOpenChange={(o) => { if (!o) onClose(); }}>
@@ -276,6 +284,9 @@ function HoanThanhDialog({ task, onClose }: { task: PmCongViecRow | null; onClos
 function BoQuaDialog({ task, onClose }: { task: PmCongViecRow | null; onClose: () => void }) {
   const mut = useBoQuaPm();
   const [ly_do, setLyDo] = useState("");
+  useEffect(() => {
+    if (task) setLyDo("");
+  }, [task]);
   if (!task) return null;
   return (
     <Dialog open={!!task} onOpenChange={(o) => { if (!o) onClose(); }}>
