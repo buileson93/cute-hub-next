@@ -45,8 +45,8 @@ const CommandDialog = ({
     <Dialog {...props}>
       <DialogContent
         className={cn(
-          "overflow-hidden p-0 gap-0",
-          preview && "sm:max-w-4xl",
+          "overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-3xl",
+          preview && "sm:max-w-5xl",
         )}
       >
         <Command
@@ -54,17 +54,19 @@ const CommandDialog = ({
           shouldFilter={shouldFilter}
           value={value}
           onValueChange={onValueChange}
-          className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:mx-2 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-4.5 [&_[cmdk-item]_svg]:w-4.5 [&_[cmdk-item][data-selected=true]]:bg-[#0074e2]/10 [&_[cmdk-item][data-selected=true]]:text-[#0074e2] [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-[#0074e2]/70"
+          className="rounded-3xl border border-border/50 bg-popover shadow-2xl [&_[cmdk-group-heading]]:px-5 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:text-muted-foreground/50 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:h-14 [&_[cmdk-item]]:mx-2 [&_[cmdk-item]]:rounded-2xl [&_[cmdk-item]]:px-4 [&_[cmdk-item]]:py-3.5 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 [&_[cmdk-item][data-selected=true]]:bg-muted/60 [&_[cmdk-item][data-selected=true]]:text-foreground"
         >
           {preview ? (
-            <div className="flex h-[min(80vh,720px)]">
-              <div className="flex min-w-0 flex-1 flex-col border-r border-border/50">{children}</div>
-              <div className="hidden w-[380px] shrink-0 bg-muted/5 md:block">
+            <div className="flex h-[min(75vh,640px)]">
+              <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+              <div className="hidden w-[340px] shrink-0 border-l border-border/40 bg-muted/5 md:block">
                 {preview}
               </div>
             </div>
           ) : (
-            children
+            <div className="flex flex-col max-h-[min(70vh,560px)]">
+              {children}
+            </div>
           )}
         </Command>
       </DialogContent>
