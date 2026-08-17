@@ -303,10 +303,10 @@ function NewSubmission() {
         <Link to="/forms"><ArrowLeft className="mr-2 h-4 w-4" />Quay lại</Link>
       </Button>
 
-      <div className="mb-6">
-        <div className="astryx-number text-xs text-muted-foreground">{t.code}</div>
+      <div className="mb-8">
+        <div className="astryx-number text-xs text-muted-foreground mb-1">{t.code}</div>
         <h1 className="astryx-heading-1">{t.ten}</h1>
-        {t.mo_ta && <p className="astryx-text-muted mt-1">{t.mo_ta}</p>}
+        {t.mo_ta && <p className="astryx-text-muted mt-2 max-w-2xl">{t.mo_ta}</p>}
       </div>
 
       <Card className="astryx-card mb-4">

@@ -122,5 +122,78 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.05em;
   }
+
+  /* Form Primitives */
+  .astryx-input {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    padding: 0.5rem 0.75rem;
+    transition: border-color var(--duration-fast) var(--ease-standard), 
+                box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  .astryx-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+  }
+
+  .astryx-input:disabled {
+    background-color: var(--color-muted);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .astryx-input::placeholder {
+    color: var(--color-muted-foreground);
+  }
+
+  .astryx-checkbox {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background);
+    transition: all var(--duration-fast) var(--ease-standard);
+    cursor: pointer;
+  }
+
+  .astryx-checkbox[data-state="checked"] {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .astryx-switch {
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background-color: var(--color-muted);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .astryx-switch[data-state="checked"] {
+    background-color: var(--color-primary);
+  }
+
+  .astryx-switch-thumb {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background-color: white;
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .astryx-switch[data-state="checked"] .astryx-switch-thumb {
+    transform: translateX(1rem);
+  }
 }
 
