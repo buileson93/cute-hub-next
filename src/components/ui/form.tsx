@@ -76,7 +76,7 @@ const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 
     return (
       <FormItemContext.Provider value={{ id }}>
-        <div ref={ref} className={cn("space-y-2", className)} {...props} />
+        <div ref={ref} className={cn("grid gap-1.5", className)} {...props} />
       </FormItemContext.Provider>
     );
   },
@@ -92,7 +92,11 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && "text-destructive", className)}
+      className={cn(
+        "text-[11px] font-bold uppercase tracking-wider text-muted-foreground",
+        error && "text-destructive",
+        className
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -128,7 +132,7 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn("text-[0.8rem] text-muted-foreground", className)}
+      className={cn("text-[11px] text-muted-foreground leading-tight", className)}
       {...props}
     />
   );
@@ -150,7 +154,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-[0.8rem] font-medium text-destructive", className)}
+      className={cn("text-[11px] font-medium text-destructive min-h-[14px] animate-in fade-in-50 slide-in-from-top-1", className)}
       {...props}
     >
       {body}
