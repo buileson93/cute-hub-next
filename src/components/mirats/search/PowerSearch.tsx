@@ -112,7 +112,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
           </div>
           <div className="flex-1">
             <CommandInput
-              placeholder="Tìm kiếm thông minh: tài sản, hệ thống, biên bản..."
+              placeholder="Tìm kiếm thông minh: tài sản, hệ thống, tài liệu..."
               value={q}
               onValueChange={setQ}
               className="h-10 text-[15px] font-medium"
