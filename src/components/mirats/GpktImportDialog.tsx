@@ -290,6 +290,7 @@ export function GpktImportDialog({ open, onOpenChange }: Props) {
             {reparseAiM.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
             Bóc tách bằng AI
           </Button>
+          </div>
         </div>
 
         {/* Cảnh báo trùng */}
