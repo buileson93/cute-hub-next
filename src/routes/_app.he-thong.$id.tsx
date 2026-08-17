@@ -359,38 +359,47 @@ function HeThongInner({
         [role="tabpanel"]{display:block !important;}
         body{background:white !important;}
       }`}</style>
-      <div className="flex items-center gap-3 no-print">
-        <Button asChild variant="ghost" size="sm" className="h-8 gap-1 pr-3">
-          <Link to="/he-thong/cay" search={{ view: "tree" }}>
-            <ChevronLeft className="h-4 w-4" />
-            <span className="text-xs">Cây hệ thống</span>
-          </Link>
-        </Button>
-        <div className="text-xs text-muted-foreground truncate">
-          <ChevronRight className="inline h-3 w-3 mx-1 opacity-60" />
-          <span className="text-foreground/80">{tenHt}</span>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 no-print">
+        <div className="flex items-center gap-3">
+          <Button asChild variant="ghost" size="sm" className="astryx-control h-8 gap-1 pr-3">
+            <Link to="/he-thong/cay" search={{ view: "tree" }}>
+              <ChevronLeft className="h-4 w-4" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">Cây hệ thống</span>
+            </Link>
+          </Button>
+          <div className="h-4 w-px bg-border mx-1" />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="astryx-heading-3 truncate">{tenHt}</h1>
+              <Badge variant="outline" className="astryx-badge font-mono text-[9px] uppercase tracking-tighter opacity-60">
+                {bookNo}
+              </Badge>
+            </div>
+            <p className="astryx-text-muted text-[10px] mt-0.5">Mở năm {openYear} · {donViMa}</p>
+          </div>
         </div>
-        <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-          Mã sổ <span className="font-mono text-foreground/80">{bookNo}</span> · Mở {openYear}
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 gap-1"
-            onClick={() => setCompact((v) => !v)}
+
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => { if (typeof window !== 'undefined') window.print(); }} className="astryx-control h-8 gap-2 border-primary/20 hover:bg-primary/5">
+            <Printer className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">In / PDF</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setCompact(!compact)} 
+            className={cn("astryx-control h-8 gap-2", compact && "bg-accent text-accent-foreground")}
             aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
-            title={compact ? "Xem đầy đủ" : "Xem gọn"}
           >
             {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
-            {compact ? "Đầy đủ" : "Gọn"}
-          </Button>
-          <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => { if (typeof window !== 'undefined') window.print(); }}>
-            <Printer className="h-3.5 w-3.5" /> In / PDF
+            <span className="text-[10px] font-bold uppercase tracking-wider">{compact ? "Đầy đủ" : "Gọn"}</span>
           </Button>
         </div>
       </div>
 
+
       {/* Header + HP bar (sticky) */}
-      <Card className="sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-card/85">
+      <Card className="astryx-surface sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-card/85">
         <CardContent className="space-y-4 p-5">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
