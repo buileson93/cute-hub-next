@@ -822,13 +822,11 @@ export function CommandPalette() {
       onValueChange={setActiveValue}
       preview={<CommandPreview data={previewDataEnriched} modelImgUrl={modelImgUrl} modelImgLoading={modelImgLoading} />}
     >
-      <div className="pt-2 px-1">
-        <CommandInput
-          placeholder="Nhập lệnh, tìm tài sản, hệ thống, biểu mẫu…"
-          value={q}
-          onValueChange={setQ}
-        />
-      </div>
+      <CommandInput
+        placeholder="Search..."
+        value={q}
+        onValueChange={setQ}
+      />
       <CommandList className="max-h-[420px]">
         {showLoading && (
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-sm text-muted-foreground animate-in fade-in zoom-in duration-300">
