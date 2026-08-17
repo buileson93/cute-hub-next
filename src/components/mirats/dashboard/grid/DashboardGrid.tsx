@@ -281,10 +281,18 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                       .sort((a, b) => (b.value as number) - (a.value as number))
                       .slice(0, 5)
                     }
-                    margin={{ left: -20, right: 20 }}
+                    margin={{ left: 10, right: 20 }}
                   >
                     <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" fontSize={11} width={80} axisLine={false} tickLine={false} />
+                    <YAxis 
+                      dataKey="name" 
+                      type="category" 
+                      fontSize={10} 
+                      width={120} 
+                      axisLine={false} 
+                      tickLine={false}
+                      tick={{ fill: 'currentColor' }}
+                    />
                     <Tooltip cursor={{ fill: 'rgba(0,0,0,0.05)' }} contentStyle={{ backgroundColor: 'hsl(var(--popover))', borderColor: 'hsl(var(--border))', fontSize: '11px', borderRadius: '10px' }} />
                     <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={12} />
                   </BarChart>
