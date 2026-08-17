@@ -50,6 +50,12 @@ import { SuCoMoiForm } from "@/components/mirats/quick/SuCoMoiForm";
 import { BaoTriMoiForm } from "@/components/mirats/quick/BaoTriMoiForm";
 import { HongHocMoiForm } from "@/components/mirats/quick/HongHocMoiForm";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
+import { PageSection } from "@/components/mirats/layout/PageSection";
+import { ContentGrid } from "@/components/mirats/layout/PageLayouts";
+import { InfoGrid } from "@/components/mirats/InfoGrid";
 
 export const Route = createFileRoute("/_app/he-thong/$id")({
   head: ({ params }) => ({
@@ -354,80 +360,35 @@ function HeThongInner({
   ).map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="space-y-6 print:space-y-3">
+    <PageFrame density={compact ? "compact" : "comfortable"}>
       <style>{`@media print{
         .no-print,[data-slot="tabs-list"]{display:none !important;}
         .sticky{position:static !important;}
         [role="tabpanel"]{display:block !important;}
         body{background:white !important;}
       }`}</style>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 no-print">
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm" className="astryx-control h-8 gap-1 pr-3">
-            <Link to="/he-thong/cay" search={{ view: "tree" }}>
-              <ChevronLeft className="h-4 w-4" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Cây hệ thống</span>
-            </Link>
-          </Button>
-          <div className="h-4 w-px bg-border mx-1" />
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="astryx-heading-3 truncate">{tenHt}</h1>
-              <Badge variant="outline" className="astryx-badge font-mono text-[9px] uppercase tracking-tighter opacity-60">
-                {bookNo}
-              </Badge>
-            </div>
-            <p className="astryx-text-muted text-[10px] mt-0.5">Mở năm {openYear} · {donViMa}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => { if (typeof window !== 'undefined') window.print(); }} className="astryx-control h-8 gap-2 border-primary/20 hover:bg-primary/5">
-            <Printer className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">In / PDF</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setCompact(!compact)} 
-            className={cn("astryx-control h-8 gap-2", compact && "bg-accent text-accent-foreground")}
-            aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
-          >
-            {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
-            <span className="text-[10px] font-bold uppercase tracking-wider">{compact ? "Đầy đủ" : "Gọn"}</span>
-          </Button>
-        </div>
-      </div>
-
-
-      {/* Header + HP bar (sticky) */}
-      <Card className="astryx-surface sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-card/85">
-        <CardContent className="space-y-4 p-5">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
-                <Network className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="astryx-text-label mb-1">Health Score</div>
-
-                <h1 className="astryx-heading-2 truncate">{tenHt}</h1>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  {maBravo && <span>Mã Bravo: <span className="font-mono text-foreground/80">{maBravo}</span></span>}
-                  {donVi ? (
-                    <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="inline-flex items-center gap-1 hover:text-primary hover:underline">
-                      <Building2 className="h-3 w-3" /> {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
-                    </Link>
-                  ) : (
-                    <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 text-amber-600 hover:underline">
-                      <Building2 className="h-3 w-3" /> Chưa phân công đơn vị
-                    </Link>
-                  )}
-                  <span>· {timeline.length} sự kiện</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex shrink-0 flex-col items-end gap-2">
+      
+      <PageHeader
+        title={tenHt}
+        subtitle={bookNo}
+        breadcrumbs={[
+          { label: "Hệ thống", to: "/he-thong/cay" },
+          { label: tenHt }
+        ]}
+        icon={Network}
+        metadata={
+          <>
+            {donVi ? (
+              <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="inline-flex items-center gap-1 hover:text-primary hover:underline">
+                <Building2 className="h-3 w-3" /> {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
+              </Link>
+            ) : (
+              <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 text-amber-600 hover:underline">
+                <Building2 className="h-3 w-3" /> Chưa phân công đơn vị
+              </Link>
+            )}
+            <span className="text-muted-foreground">· {timeline.length} sự kiện</span>
+            <div className="flex items-center gap-2 ml-2">
               {hasGp ? (
                 <GpktBadge heThongId={id} gpSo={gpSo} gpHan={gpHan} />
               ) : (
@@ -440,76 +401,97 @@ function HeThongInner({
                 onConfigure={() => setThrOpen(true)}
               />
             </div>
+          </>
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => { if (typeof window !== 'undefined') window.print(); }} className="h-8 gap-2 border-primary/20 hover:bg-primary/5">
+              <Printer className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">In / PDF</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setCompact(!compact)} 
+              className={cn("h-8 gap-2", compact && "bg-accent text-accent-foreground")}
+              aria-label={compact ? "Chuyển sang xem đầy đủ" : "Chuyển sang xem gọn"}
+            >
+              {compact ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
+              <span className="text-[10px] font-bold uppercase tracking-wider">{compact ? "Đầy đủ" : "Gọn"}</span>
+            </Button>
+            {canManage && <QuickActionsBar heThongId={id} />}
           </div>
-        </CardContent>
-      </Card>
+        }
+      />
 
-      {/* Thanh hành động nhanh — mở nhanh biểu mẫu tạo mới đã pre-fill hệ thống */}
-      {canManage && (
-        <QuickActionsBar heThongId={id} />
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-1">
-          <Card className="lg:sticky lg:top-24">
-            <CardHeader className="pb-3">
-              <CardTitle className="astryx-heading-3">Định danh &amp; chỉ số vận hành</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <InfoRow icon={Network} label="Hệ thống" value={tenHt} />
-              <InfoRow icon={FileText} label="Mã tài sản Bravo" value={maBravo || "—"} />
-              <div className="flex items-start gap-2 text-sm">
-                <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs text-muted-foreground">Đơn vị quản lý</div>
-                  {donVi ? (
-                    <Link
-                      to="/danh-muc/don-vi"
-                      search={{ q: donVi } as never}
-                      className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
-                    >
-                      {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </Link>
-                  ) : (
-                    <Link to="/danh-muc/don-vi" className="inline-flex items-center gap-1 font-medium text-amber-600 hover:underline">
-                      Chưa phân công đơn vị
-                      <ExternalLink className="h-3 w-3 opacity-60" />
-                    </Link>
-                  )}
+      <PageBody>
+        <PageSection>
+          <ContentGrid minChildWidth={compact ? "300px" : "400px"}>
+            <Card className="astryx-surface lg:sticky lg:top-24 h-fit">
+              <CardHeader className="pb-3">
+                <CardTitle className="astryx-heading-3">Định danh & chỉ số vận hành</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <InfoGrid 
+                  cot={1}
+                  fields={[
+                    { nhan: "Hệ thống", giaTri: tenHt, highlight: true },
+                    { nhan: "Mã BraVO", giaTri: maBravo || "—", highlight: false },
+                    { 
+                      nhan: "Đơn vị quản lý", 
+                      highlight: false,
+                      giaTri: (
+                        <Link to="/danh-muc/don-vi" search={{ q: donVi } as never} className="hover:text-primary hover:underline inline-flex items-center gap-1">
+                          {donVi}{donViTenR ? ` — ${donViTenR}` : ""}
+                          <ExternalLink className="h-3 w-3 opacity-60" />
+                        </Link>
+                      )
+                    },
+                    { nhan: "GPKT", giaTri: hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có", highlight: false }
+                  ]} 
+                />
+                
+                <div className="pt-2">
+                  <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
                 </div>
-              </div>
-              <InfoRow icon={ShieldCheck} label="Giấy phép khai thác" value={hasGp ? `${gpSo}${gpHan ? " · Hạn " + gpHan : ""}` : "Chưa có"} />
-              <GpktSidebarItem heThongId={id} hasGp={hasGp} gpSo={gpSo} />
-              <div className="border-t pt-3">
-                <FunctionLinksMenu heThongId={id} hasGp={hasGp} gpSo={gpSo} />
-              </div>
-              <div className="border-t pt-3">
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
-                  <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
-                  <MicroStat label="Ngày không sự cố" value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-600" : "text-emerald-600"} />
-                  <MicroStat label="Nhịp sự cố TB (MTBF)" value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} />
-                  <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} />
+                
+                <div className="pt-2 border-t">
+                  <FunctionLinksMenu heThongId={id} hasGp={hasGp} gpSo={gpSo} />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="space-y-4 lg:col-span-2">
-          <MiniCharts
-            suCoByMonth={suCoByMonth}
-            statusGroups={statusGroups}
-            trend6={trend6}
-            onPickStatus={() => {
-              if (typeof document !== "undefined") {
-                if (typeof document !== 'undefined') document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-            }}
-            months={chartMonths}
-            onChangeMonths={setChartMonths}
-          />
+                <div className="pt-3 border-t">
+                  <div className="grid grid-cols-2 gap-2">
+                    <MicroStat label="Ngày mở sổ" value={fmtVN(firstEventTs)} />
+                    <MicroStat label="Ghi nhận gần nhất" value={fmtVN(lastEventTs)} />
+                    <MicroStat 
+                      label="Ngày không sự cố" 
+                      value={daysSinceIncident == null ? "—" : `${daysSinceIncident} ngày`} 
+                      tone={daysSinceIncident != null && daysSinceIncident < 7 ? "text-red-600 font-mono" : "text-emerald-600 font-mono"} 
+                    />
+                    <MicroStat 
+                      label="MTBF (TB)" 
+                      value={mtbfDays == null ? "—" : `${mtbfDays} ngày`} 
+                      tone="font-mono"
+                    />
+                    <MicroStat label="Tài sản đã thay" value={String(replacedDevices.size)} tone="font-mono" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4 lg:col-span-2">
+              <MiniCharts
+                suCoByMonth={suCoByMonth}
+                statusGroups={statusGroups}
+                trend6={trend6}
+                onPickStatus={() => {
+                  if (typeof document !== "undefined") {
+                    document.getElementById("thanh-phan-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                months={chartMonths}
+                onChangeMonths={setChartMonths}
+              />
 
           {/* Nhật ký khai thác — cuộn nội bộ để không phá layout khi dữ liệu dài */}
           <Card className={nkOpen ? "flex min-h-[420px] flex-col" : ""}>
@@ -573,18 +555,20 @@ function HeThongInner({
               <SummaryStat label="Bàn giao" value={kindCounts.bg} tone="text-sky-700" />
             </div>
             )}
-            <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="sticky top-0 z-10 flex h-auto flex-wrap gap-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-                <TabsTrigger value="tl" className="astryx-control"><Clock className="mr-1 h-3.5 w-3.5" />Dòng thời gian ({timeline.length})</TabsTrigger>
-                <TabsTrigger value="bt" className="astryx-control"><Wrench className="mr-1 h-3.5 w-3.5" />Bảo dưỡng ({baoTri.length})</TabsTrigger>
-                <TabsTrigger value="sc" className="astryx-control"><AlertTriangle className="mr-1 h-3.5 w-3.5" />Sự cố kỹ thuật ({suCo.length})</TabsTrigger>
-                <TabsTrigger value="hh" className="astryx-control"><RefreshCw className="mr-1 h-3.5 w-3.5" />Hỏng hóc ({hongHoc.length})</TabsTrigger>
-                <TabsTrigger value="bg" className="astryx-control"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Bàn giao ({banGiao.length})</TabsTrigger>
-                <TabsTrigger value="ll"><HistoryIcon className="mr-1 h-3.5 w-3.5" />Sổ lý lịch gộp</TabsTrigger>
-                <TabsTrigger value="lk"><Link2 className="mr-1 h-3.5 w-3.5" />Liên kết</TabsTrigger>
-                <TabsTrigger value="vt"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Vật tư ({tuongThich?.length || 0})</TabsTrigger>
-                {canManage && <TabsTrigger value="cd"><FileText className="mr-1 h-3.5 w-3.5" />Nhật ký sửa</TabsTrigger>}
-              </TabsList>
+            <Tabs value={tab} onValueChange={setTab} className="w-full">
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b">
+                <TabsList className="h-10 w-full justify-start rounded-none bg-transparent p-0 overflow-x-auto overflow-y-hidden no-scrollbar">
+                  <TabsTrigger value="tl" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><Clock className="mr-2 h-3.5 w-3.5" />Dòng thời gian</TabsTrigger>
+                  <TabsTrigger value="bt" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><Wrench className="mr-2 h-3.5 w-3.5" />Bảo dưỡng</TabsTrigger>
+                  <TabsTrigger value="sc" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><AlertTriangle className="mr-2 h-3.5 w-3.5" />Sự cố</TabsTrigger>
+                  <TabsTrigger value="hh" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><RefreshCw className="mr-2 h-3.5 w-3.5" />Hỏng hóc</TabsTrigger>
+                  <TabsTrigger value="bg" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><ArrowLeftRight className="mr-2 h-3.5 w-3.5" />Bàn giao</TabsTrigger>
+                  <TabsTrigger value="ll" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><HistoryIcon className="mr-2 h-3.5 w-3.5" />Lý lịch gộp</TabsTrigger>
+                  <TabsTrigger value="lk" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><Link2 className="mr-2 h-3.5 w-3.5" />Liên kết</TabsTrigger>
+                  <TabsTrigger value="vt" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><ShieldCheck className="mr-2 h-3.5 w-3.5" />Vật tư</TabsTrigger>
+                  {canManage && <TabsTrigger value="cd" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"><FileText className="mr-2 h-3.5 w-3.5" />Audit</TabsTrigger>}
+                </TabsList>
+              </div>
 
               <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
               <TabsContent value="tl">
@@ -758,8 +742,15 @@ function HeThongInner({
 
           {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
           <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} onOpenHistory={(tpId) => setOpenTpId(tpId)} />
-        </div>
-      </div>
+            </div>
+          </ContentGrid>
+        </PageSection>
+      </PageBody>
+
+      {/* Thành phần hệ thống — có thể thu gọn để tập trung vào nhật ký */}
+      <PageSection className="px-4 pb-8">
+        <ThanhPhanCard heThongId={id} open={tpOpen} onToggle={() => setTpOpen((v) => !v)} compact={compact} onOpenHistory={(tpId) => setOpenTpId(tpId)} />
+      </PageSection>
 
       {/* Sử dụng ThanhPhanChiTietDialog từ component thay vì inline Sheet cũ */}
       <ThanhPhanChiTietWrapper 
@@ -790,7 +781,7 @@ function HeThongInner({
         }
         }}
       />
-    </div>
+    </PageFrame>
   );
 }
 
@@ -818,20 +809,24 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOp
   }, [list, dangLap, tpQuery]);
   return (
     <Card id="thanh-phan-card" className={open ? "min-h-[220px]" : ""}>
-      <CardHeader>
+      <CardHeader className="py-3 px-4">
         <CardTitle className="text-base flex items-center justify-between gap-2">
-          <span>Thành phần hệ thống ({list.length})</span>
-          <div className="flex items-center gap-1">
-            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
+          <div className="flex items-center gap-2">
+            <Puzzle className="h-4 w-4 text-primary" />
+            <span>Thành phần hệ thống</span>
+            <Badge variant="secondary" className="font-mono text-[10px]">{list.length}</Badge>
+          </div>
+          <div className="flex items-center gap-1 no-print">
+            <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider">
               <Link to="/he-thong/thanh-phan" search={{ he_thong: heThongId } as never}>
-                <Puzzle className="mr-1 h-3 w-3" /> Xem dạng bảng
+                Dạng bảng
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
-              <Link to="/he-thong/cay">Quản lý cây</Link>
+            <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider">
+              <Link to="/he-thong/cay">Cây hệ thống</Link>
             </Button>
             {onToggle && (
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onToggle} aria-label={open ? "Thu gọn thành phần" : "Mở rộng thành phần"} title={open ? "Thu gọn" : "Mở rộng"}>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onToggle} aria-label={open ? "Thu gọn" : "Mở rộng"}>
                 {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
             )}
@@ -868,29 +863,31 @@ function ThanhPhanCard({ heThongId, open = true, onToggle, compact = false, onOp
               <HoverCardTrigger asChild>
                 <button
                   type="button"
-                  onClick={() => setOpenTpId(tp.id)}
-                  className="flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm hover:bg-primary/5"
+                  onClick={() => onOpenHistory?.(tp.id)}
+                  className="flex w-full items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-left text-sm hover:bg-primary/5 hover:border-primary/30 transition-all group"
                 >
-              <Puzzle className="h-4 w-4 shrink-0 text-emerald-600" />
-                  <span className="min-w-0 flex-1 truncate">{tp.ten}</span>
-                  {tp.loai_thiet_bi_yeu_cau && (
-                    <span className="hidden truncate text-xs text-muted-foreground sm:inline">
-                      {tp.loai_thiet_bi_yeu_cau}
-                    </span>
-                  )}
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 group-hover:bg-emerald-500/20">
+                    <Puzzle className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-medium">{tp.ten}</div>
+                    {tp.loai_thiet_bi_yeu_cau && (
+                      <div className="truncate text-[10px] text-muted-foreground uppercase tracking-tight">
+                        {tp.loai_thiet_bi_yeu_cau}
+                      </div>
+                    )}
+                  </div>
                   {dev ? (
-                    <>
-                      <Badge variant="secondary" className="font-mono text-[10px]">{dev.ma_thiet_bi}</Badge>
-                      {dev.ten_thiet_bi && (
-                        <span className="hidden max-w-[200px] truncate text-xs text-muted-foreground md:inline">
-                          {dev.ten_thiet_bi}
-                        </span>
-                      )}
-                    </>
+                    <div className="text-right">
+                      <Badge variant="secondary" className="font-mono text-[10px] bg-background">{dev.ma_thiet_bi}</Badge>
+                      <div className="hidden text-[10px] text-muted-foreground md:block truncate max-w-[120px]">
+                        {dev.ten_thiet_bi}
+                      </div>
+                    </div>
                   ) : (
-                    <Badge variant="outline" className="text-[10px] text-muted-foreground">trống</Badge>
+                    <Badge variant="outline" className="text-[10px] text-muted-foreground border-dashed">Chờ lắp</Badge>
                   )}
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
                 </button>
               </HoverCardTrigger>
               <HoverCardContent side="right" align="start" className="w-80 text-sm">
