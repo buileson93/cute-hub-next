@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Plus, Search, FolderKanban, Calendar, User as UserIcon, Loader2 } from "lucide-react";
@@ -55,6 +55,7 @@ type DuAn = {
 
 function DuAnListPage() {
   const qc = useQueryClient();
+  const nav = useNavigate();
   const { session, hasRole } = useSession();
   const [q, setQ] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
@@ -135,7 +136,11 @@ function DuAnListPage() {
             {filtered.map((d) => {
               const tt = TRANG_THAI[d.trang_thai] ?? TRANG_THAI.moi;
               return (
-                <Link key={d.id} to="/du-an/$id" params={{ id: d.id }} search={{ view: "kanban", q: "" } as any} className="block">
+                <div 
+                  key={d.id} 
+                  onClick={() => nav({ to: "/du-an/$id", params: { id: d.id }, search: { view: "kanban", q: "" } as any })} 
+                  className="block cursor-pointer"
+                >
                   <Card className="hover:shadow-md hover:border-indigo-300 transition h-full">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">
@@ -161,7 +166,7 @@ function DuAnListPage() {
                       </div>
                     </CardContent>
                   </Card>
-                </Link>
+                </div>
               );
             })}
           </div>
