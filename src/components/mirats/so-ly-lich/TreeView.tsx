@@ -49,7 +49,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
       <div key={node.key} className="space-y-1">
         <div 
           className={cn(
-            "group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50",
+            "astryx-control group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50",
             level > 0 && "ml-4"
           )}
         >
