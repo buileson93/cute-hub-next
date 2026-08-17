@@ -53,7 +53,7 @@ import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDial
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { PageSection } from "@/components/mirats/PageSection";
+import { PageSection } from "@/components/mirats/layout/PageSection";
 import { ContentGrid } from "@/components/mirats/layout/PageLayouts";
 import { InfoGrid } from "@/components/mirats/InfoGrid";
 
