@@ -18,19 +18,19 @@ export const UI_DENSITY = {
   CONT_SM: 480,
 
   // --- Cards ---
-  CARD_RADIUS: "rounded-lg data-[density=comfortable]:rounded-xl data-[density=spacious]:rounded-2xl",
-  CONTROL_RADIUS: "rounded-md data-[density=comfortable]:rounded-lg",
+  CARD_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl data-[density=spacious]:rounded-3xl",
+  CONTROL_RADIUS: "rounded-lg data-[density=comfortable]:rounded-xl",
   BADGE_RADIUS: "rounded-full",
   CARD_PADDING: "p-2 data-[density=comfortable]:p-4 data-[density=spacious]:p-6",
   CARD_HEADER: "px-2 pt-2 pb-1 data-[density=comfortable]:px-4 data-[density=comfortable]:pt-4 data-[density=comfortable]:pb-2",
 
   // --- KPI ---
-  KPI_LABEL_FS: "text-[12px] data-[density=comfortable]:text-[14px] text-muted-foreground",
-  KPI_VALUE_FS: "text-[20px] data-[density=comfortable]:text-[24px] data-[density=spacious]:text-[26px] font-semibold",
+  KPI_LABEL_FS: "text-[11px] data-[density=comfortable]:text-[13px] text-muted-foreground",
+  KPI_VALUE_FS: "text-[18px] data-[density=comfortable]:text-[22px] data-[density=spacious]:text-[26px] font-bold tabular-nums",
 
   // --- Tables ---
   TABLE_ROW_H: "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-11",
-  TABLE_HEADER_FS: "text-[10px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider font-bold",
+  TABLE_HEADER_FS: "text-[11px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider font-bold",
   TABLE_CELL_PX: "px-1.5 data-[density=comfortable]:px-3.5 data-[density=spacious]:px-4",
   TABLE_CELL_PY: "py-0.5 data-[density=comfortable]:py-1.5 data-[density=spacious]:py-2",
   TABLE_MAX_H: "max-h-[calc(100vh-8rem)] data-[density=comfortable]:max-h-[calc(100vh-10rem)]",
@@ -38,7 +38,7 @@ export const UI_DENSITY = {
   // --- Controls & Icons ---
   CONTROL_H: "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
   CONTROL_PX: "px-2 data-[density=comfortable]:px-3 data-[density=spacious]:px-4",
-  CONTROL_FS: "text-[10px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
+  CONTROL_FS: "text-[11px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
   ICON_SM: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
   ICON_MD: "h-3.5 w-3.5 data-[density=comfortable]:h-4.5 data-[density=comfortable]:w-4.5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 

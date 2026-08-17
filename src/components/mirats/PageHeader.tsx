@@ -52,7 +52,7 @@ export function PageHeader({
     >
       {/* 1. Breadcrumbs / Supporting */}
       {(breadcrumbs || supporting) && (
-        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
           {breadcrumbs ? (
             <div className="flex items-center gap-1">
               {breadcrumbs.map((crumb, idx) => (
@@ -86,7 +86,7 @@ export function PageHeader({
               data-testid="page-header-title"
               className={cn(
                 "truncate font-bold leading-tight tracking-tight text-foreground",
-                "text-sm data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
+                "text-[13px] data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
               )}
             >
               {title}
