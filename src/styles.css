@@ -12,7 +12,7 @@
 /* MIRATS Brand Foundation — Astryx Overrides */
 @layer astryx-brand {
 
-  [data-astryx-theme="stone"] {
+  [data-astryx-theme="df3"] {
     /* Colors */
     --color-accent: light-dark(#1C51E0, #4C82FF);
     --color-icon-accent: var(--color-accent);

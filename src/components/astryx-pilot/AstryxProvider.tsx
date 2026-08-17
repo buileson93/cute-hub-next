@@ -5,7 +5,8 @@ if (typeof window === 'undefined') {
 }
 
 import { Theme } from "@astryxdesign/core";
-import { stoneTheme } from "@astryxdesign/theme-stone/built";
+import { df3Theme } from "@/lib/astryx-theme/df3-theme";
+
 
 import { ReactNode, useState, useEffect, Suspense, lazy } from "react";
 
@@ -42,7 +43,7 @@ export function AstryxProvider({ children }: AstryxProviderProps) {
 
 
   return (
-    <AstryxThemeWrapper theme={stoneTheme}>
+    <AstryxThemeWrapper theme={df3Theme}>
       <div className="astryx-client-mode">
         {children}
       </div>
