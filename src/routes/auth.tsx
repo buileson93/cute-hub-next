@@ -232,7 +232,7 @@ function AuthPage() {
                     } />
                   <Button
                     type="submit"
-                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0"
+                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0 !bg-[#0074e2] !text-white"
                     disabled={busy}
                   >
                     {loading
@@ -259,7 +259,7 @@ function AuthPage() {
                     value={password} onChange={setPassword} disabled={busy} placeholder="Tối thiểu 8 ký tự" />
                   <Button
                     type="submit"
-                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0"
+                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0 !bg-[#0074e2] !text-white"
                     disabled={busy}
                   >
                     {loading
