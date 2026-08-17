@@ -256,9 +256,10 @@
   }
 
   .astryx-table-header {
-    background-color: var(--color-muted);
-    border-bottom: 1px solid var(--color-border);
+    background-color: var(--muted);
+    border-bottom: 1px solid var(--border);
   }
+
 
   .astryx-table-header-cell {
     font-family: var(--font-family-body);
