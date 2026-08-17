@@ -1,43 +1,40 @@
-# [MIRATS ASTRYX TEMPLATES — U7: DASHBOARD PILOT]
+# [MIRATS ASTRYX TEMPLATES — U8: TABLE/LIST ARCHETYPE]
 
-Restoration and standardization of the primary dashboard (`/`) using Astryx DF3 design language and MIRATS 2.0 functional requirements.
+Restoration and standardization of the MIRATS data grid ecosystem using Astryx DF3 design language.
 
 ## Objectives
-1.  **Anatomy Migration**: Refactor `src/routes/_app.index.tsx` to use `PageFrame`, `PageHeader`, and `PageBody`.
-2.  **Visual Hierarchy**: Standardize KPI Grid and Chart widgets with Astryx DF3 skins.
-3.  **UX Stability**: Preserve personalized layouts, real-time heartbeats, and data fetching while improving visual density.
+1.  **Page Anatomy Migration**: Align table-heavy routes with `PageFrame` -> `PageHeader` -> `PageBody` structure.
+2.  **StandardTable Refactor**: Update the core `StandardTable.tsx` to use Astryx DF3 skins while preserving all functional UX behaviors (virtualization, sticky headers, bulk actions).
+3.  **Pilot Rollout**: Migrate the Device Catalog (`/thiet-bi`) as the baseline, followed by `ThanhPhanTable` and `CatalogTable`.
 
 ## Proposed Changes
 
-### 1. Dashboard Route (`src/routes/_app.index.tsx`)
-- Wrap content in `PageFrame`.
-- Replace custom header div with `PageHeader`:
-    - Title: "Dashboard MIRATS" (or dynamic welcome).
-    - Subtitle: "Hệ thống quản lý tài sản kỹ thuật".
-    - Actions: Move "Cá nhân hóa" and Widget controls to `actions` slot.
-- Use `PageBody` and `PageSection` for grouping Heartbeat and Grid.
+### 1. Primitive Table (`src/components/ui/table.tsx`)
+- Standardize `TableHead` and `TableCell` with Astryx DF3 tokens.
+- Ensure `TableHeader` uses `z-10` and solid background for stable sticky behavior.
 
-### 2. KPI Cards (`src/components/mirats/dashboard/KpiCard.tsx`)
-- Enforce "Passive Card" style for non-clickable widgets (remove hover transform).
-- Align typography with `astryx-number` (Plex Mono) for values.
-- Standardize icon backgrounds and semantic colors.
+### 2. StandardTable Core (`src/components/mirats/StandardTable.tsx`)
+- **Typography**: Apply `font-mono tabular-nums` to columns of type `number`, `currency`, and `percent`.
+- **Density**: Align row heights and cell padding with `UI_DENSITY` tokens.
+- **States**: Refine `EmptyState` and `TableSkeleton` integration.
+- **Toolbar**: Consolidate filter chips and count labels into a compact Astryx-styled row.
 
-### 3. Visual Charts (`src/components/mirats/dashboard/VisualKpiChart.tsx`)
-- Standardize `AreaChart` and `BarChart` tooltips to match Astryx DF3 (popover-bg, 11px).
-- Refine legend positioning and font sizes.
-- Ensure `ResponsiveContainer` handles container shifts during personalizing.
+### 3. Device Catalog Pilot (`src/routes/_app.thiet-bi.index.tsx`)
+- Refactor top-level structure to use `PageHeader`.
+- Standardize the search suggestions dropdown with Astryx `popover` styles.
+- Migrate the tree/table toggle and filters to a clean toolbar archetype.
 
-### 4. Layout & Grid (`src/components/mirats/dashboard/grid/`)
-- **DashboardGrid**: Adjust gap and responsiveness for Astryx 1280/768 breakpoints.
-- **WidgetContainer**: Update border radii and edit-mode rings to match U6 standards (12px/10px).
+### 4. Downstream Components
+- **ThanhPhanTable**: Port changes from `StandardTable`.
+- **CatalogTable**: Ensure dynamic rename actions and status badges follow the new design contract.
 
 ## Technical Details
-- **SSR Safety**: Maintain existing `prefetchQuery` in loader; keep charts behind `ClientOnly` or hydration checks where needed.
-- **Worker Runtime**: Avoid Node.js-specific globals; ensure Recharts animations are stable in SSR/Hydration sequence.
-- **Design Tokens**: Use `astryx-heading-1`, `astryx-surface`, and `astryx-control` for all new elements.
+- **Parity**: Columns, query logic, and mutation handlers remain untouched.
+- **SSR**: Ensure no hydration mismatches in table headers or pagination.
+- **Responsive**: Verify "Priority-based" column hiding works correctly on mobile/tablet widths.
 
 ## Success Criteria
-- [ ] Dashboard anatomy matches `PageFrame` pattern.
-- [ ] Light/Dark mode contrast follows Astryx DF3.
-- [ ] Personalized widget layout persists after refresh.
-- [ ] No layout shift (CLS) on initial load for non-chart elements.
+- [ ] Table headers remain sticky and opaque during scroll.
+- [ ] Numeric data is right-aligned and monospaced.
+- [ ] Filter/Search state is preserved in URL.
+- [ ] Light/Dark mode transitions are seamless.
