@@ -80,7 +80,8 @@ function SoDoEditorPage() {
   return <SoDoEditorContent />;
 }
 
-function SoDoEditorContent() {
+// Dữ liệu và cấu hình cho Editor
+
 
 const BUCKET = "so-do-tep";
 const LIB_BUCKET = "so-do-thu-vien";
