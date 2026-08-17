@@ -6,6 +6,8 @@ import { PageBody } from "@/components/mirats/PageBody";
 
 import { AlertTriangle as AlertTriangleIcon2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, FilePlus2, FileDown, AlertTriangle, Clock, Activity, Network, ChevronDown,
