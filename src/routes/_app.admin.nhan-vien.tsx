@@ -190,11 +190,15 @@ function NhanVienAdminPage() {
   if (!isAdmin) return <div className="p-8 text-center text-muted-foreground">Bạn không có quyền quản trị viên.</div>;
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame density="comfortable">
       <PageHeader
         icon={Users}
         title="Quản lý Nhân viên"
         subtitle={`${nhanVien.length} nhân viên trong hệ thống`}
+        breadcrumbs={[
+          { label: "Quản trị", to: "/admin/forms" },
+          { label: "Nhân viên" }
+        ]}
         actions={
           <Button onClick={() => setEditing("new")} className="gap-2">
             <Plus className="h-4 w-4" /> Thêm nhân viên
@@ -202,26 +206,30 @@ function NhanVienAdminPage() {
         }
       />
 
-      <div className="flex items-center gap-2">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Tìm nhanh theo tên, mã..."
-            className="pl-9"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
-        </div>
-      </div>
+      <PageBody>
+        <PageSection>
+          <div className="flex items-center gap-2">
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Tìm nhanh theo tên, mã..."
+                className="pl-9"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
+            </div>
+          </div>
 
-      <StandardTable
-        tableKey="admin_nhan_vien"
-        columns={columns}
-        rows={nhanVien}
-        getRowId={(r) => r.id}
-        requireFilterToShow={false}
-        trangThai={{ dangTai: isLoading }}
-      />
+          <StandardTable
+            tableKey="admin_nhan_vien"
+            columns={columns}
+            rows={nhanVien}
+            getRowId={(r) => r.id}
+            requireFilterToShow={false}
+            trangThai={{ dangTai: isLoading }}
+          />
+        </PageSection>
+      </PageBody>
 
       <SchemaDialog
         open={!!editing}
