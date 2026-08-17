@@ -153,22 +153,23 @@ export function VisualKpiChart({
                 <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                     <Tooltip 
                         contentStyle={{ 
-                            backgroundColor: 'hsl(var(--popover))', 
-                            borderColor: 'hsl(var(--border))',
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                            backdropFilter: 'blur(8px)',
+                            borderColor: 'hsl(var(--primary) / 0.1)',
                             fontSize: '12px',
-                            borderRadius: '8px',
-                            padding: '8px 12px',
-                            boxShadow: 'var(--shadow-lg)',
-                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '12px',
+                            padding: '10px 14px',
+                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                            border: '1px solid rgba(0, 116, 226, 0.1)',
                         }} 
                         itemStyle={{ 
-                            color: 'hsl(var(--popover-foreground))',
+                            color: '#0074e2',
                             padding: '2px 0',
-                            fontWeight: '600'
+                            fontWeight: '700'
                         }}
-                        cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
-                        formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, '']}
-                        labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: 'hsl(var(--muted-foreground))' }}
+                        cursor={{ stroke: '#0074e2', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+                        formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, title]}
+                        labelStyle={{ fontWeight: '800', marginBottom: '6px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '10px' }}
                     />
                     <Line 
                         type="monotone" 
