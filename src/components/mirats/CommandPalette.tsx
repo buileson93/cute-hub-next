@@ -13,12 +13,13 @@ import {
   CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem,
   CommandList, CommandSeparator,
 } from "@/components/ui/command";
+import { supabase } from "@/integrations/backend/client";
 import { useSession, type AppRole } from "@/hooks/use-session";
 import { getAiPublicConfig } from "@/lib/ai/config.functions";
 import {
   useGlobalSearch, normalize,
 } from "@/lib/mirats/global-search";
-import { useTimKiemToanCuc, nhanLoai } from "@/lib/mirats/search/tim-kiem";
+import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
 import { useDbTaxonomy, useSystemNameOverrides, type DbDevice, type DbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
@@ -89,6 +90,23 @@ type Hit = {
   count?: number;
 };
 
+// Simple local storage wrapper since 'storage' from '@/lib/storage' is for files
+const RECENT_HITS_KEY = "mirats-recent-hits";
+const getRecentHits = (): Hit[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_HITS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+};
+const saveRecentHit = (hit: Hit) => {
+  if (typeof window === "undefined") return;
+  const stored = getRecentHits();
+  const next = [hit, ...stored.filter((h) => h.to !== hit.to)].slice(0, 10);
+  localStorage.setItem(RECENT_HITS_KEY, JSON.stringify(next));
+};
+
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -105,29 +123,6 @@ export function CommandPalette() {
   const { data: taxo } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
 
-  const deviceById = useMemo(() => {
-    const m = new Map<string, DbDevice>();
-    for (const d of taxo?.devices ?? []) if (d.id) m.set(d.id, d);
-    return m;
-  }, [taxo]);
-
-  const systemById = useMemo(() => {
-    const m = new Map<string, DbTaxonomy["htList"][number]>();
-    for (const h of taxo?.htList ?? []) m.set(h.id, h);
-    return m;
-  }, [taxo]);
-
-  const deviceCountBySys = useMemo(() => {
-    const m = new Map<string, number>();
-    for (const d of taxo?.devices ?? []) if (d._htId) m.set(d._htId, (m.get(d._htId) ?? 0) + 1);
-    return m;
-  }, [taxo]);
-
-  const htLabel = useCallback(
-    (id: string, fallback: string) => nameOv?.get(id) || fallback,
-    [nameOv],
-  );
-
   const publicCfgFn = useServerFn(getAiPublicConfig);
   const { data: aiCfg } = useQuery({
     queryKey: ["ai-public-config"],
@@ -143,7 +138,6 @@ export function CommandPalette() {
     staleTime: 60_000,
     retry: 1,
   });
-  const aiEnabled = !!aiCfg?.enabled;
 
   const [recentHits, setRecentHits] = useState<Hit[]>([]);
 
@@ -168,38 +162,22 @@ export function CommandPalette() {
 
   useEffect(() => {
     if (open) {
-      const stored = storage.get<Hit[]>("mirats-recent-hits", []);
-      setRecentHits(stored.slice(0, 5));
+      setRecentHits(getRecentHits().slice(0, 5));
     }
   }, [open]);
-
-  const saveRecent = useCallback((hit: Hit) => {
-    const stored = storage.get<Hit[]>("mirats-recent-hits", []);
-    const next = [hit, ...stored.filter((h) => h.to !== hit.to)].slice(0, 10);
-    storage.set("mirats-recent-hits", next);
-  }, []);
 
   const handleSelect = useCallback(
     (hit: Hit) => {
       setOpen(false);
-      saveRecent(hit);
+      saveRecentHit(hit);
       navigate({ to: hit.to as any });
     },
-    [navigate, saveRecent],
+    [navigate],
   );
 
   const runIntent = useCallback((intent: Intent) => {
     setOpen(false);
     switch (intent.kind) {
-      case "logout":
-        supabase.auth.signOut().then(() => {
-          window.location.href = "/auth";
-        });
-        break;
-      case "create-incident":
-        navigate({ to: "/su-co", search: { open: true, ...intent.payload } as never });
-        toast.info(describeIntent(intent));
-        break;
       case "close-incident":
         navigate({ to: "/su-co", search: { q: intent.id } as never });
         toast.info(describeIntent(intent), { description: "Chọn sự cố để đóng." });
@@ -210,6 +188,9 @@ export function CommandPalette() {
         break;
       case "jump-to":
         break;
+      // Handle non-TS defined intents or legacy intents if any
+      default:
+        toast.info(describeIntent(intent));
     }
   }, [navigate]);
 
@@ -245,7 +226,7 @@ export function CommandPalette() {
           const intent = matchIntent(q);
           if (intent.kind === "jump-to" || intent.confidence < 0.7) return null;
           return (
-            <CommandGroup heading="Hành động">
+            <CommandGroup heading="Hành động AI">
               <CommandItem
                 value={`intent-${intent.kind}`}
                 onSelect={() => runIntent(intent)}
@@ -370,30 +351,31 @@ export function CommandPalette() {
           >
             <LogOut className="h-4 w-4 shrink-0" />
             <div className="text-[14px] font-semibold">Đăng xuất</div>
-          </CommandItem>
-        </CommandGroup>
-      </CommandList>
+          </kbd>
+        </CommandItem>
+      </CommandGroup>
+    </CommandList>
 
-      <div className="mt-auto hidden sm:flex items-center justify-end gap-4 border-t border-border/50 px-5 py-2.5 bg-muted/20">
-        <div className="flex items-center gap-1.5">
-          <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
-            ↑↓
-          </kbd>
-          <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Navigate</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
-            <CornerDownLeft className="h-3 w-3" />
-          </kbd>
-          <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Select</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
-            Esc
-          </kbd>
-          <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Close</span>
-        </div>
+    <div className="mt-auto hidden sm:flex items-center justify-end gap-4 border-t border-border/50 px-5 py-2.5 bg-muted/20">
+      <div className="flex items-center gap-1.5">
+        <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
+          ↑↓
+        </kbd>
+        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Navigate</span>
       </div>
+      <div className="flex items-center gap-1.5">
+        <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
+          <CornerDownLeft className="h-3 w-3" />
+        </kbd>
+        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Select</span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <kbd className="flex h-5 min-w-[20px] items-center justify-center rounded border border-border/60 bg-background px-1 font-sans text-[10px] font-bold text-muted-foreground/70 shadow-sm">
+          Esc
+        </kbd>
+        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">Close</span>
+      </div>
+    </div>
     </CommandDialog>
   );
 }
