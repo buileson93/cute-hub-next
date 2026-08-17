@@ -71,7 +71,7 @@ export function VisualKpiChart({
       </CardHeader>
 
       <CardContent className="p-0 mt-2">
-        <div style={{ height }} className="w-full relative bg-muted/5">
+        <div style={{ height }} className="w-full relative group bg-muted/5">
           <div className={cn("absolute inset-0 bg-gradient-to-b opacity-30", bgGradients[status])} />
           <ResponsiveContainer width="100%" height="100%">
             {type === 'area' ? (
