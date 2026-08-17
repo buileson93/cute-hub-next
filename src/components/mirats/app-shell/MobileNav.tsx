@@ -46,16 +46,16 @@ export function MobileNav({ activeWsId, wsLastRoute }: MobileNavProps) {
             className={cn(
               "relative flex flex-1 flex-col items-center justify-center gap-1 rounded-lg py-1 text-[10px] font-medium transition-colors",
               isActive
-                ? "text-primary"
-                : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                ? "text-[#0074e2]"
+                : "text-muted-foreground hover:bg-[#0074e2]/5 hover:text-foreground"
             )}
           >
-            <ws.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
+            <ws.icon className={cn("h-5 w-5", isActive ? "text-[#0074e2]" : "text-muted-foreground")} />
             <span className="truncate text-center leading-none">{ws.short}</span>
             {isActive && (
               <motion.div
                 layoutId="active-nav-indicator"
-                className="absolute -top-1 h-0.5 w-8 rounded-full bg-primary"
+                className="absolute -top-1 h-0.5 w-8 rounded-full bg-[#0074e2]"
               />
             )}
           </button>
