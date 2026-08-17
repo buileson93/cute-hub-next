@@ -26,7 +26,7 @@ import { buildLabelUrl } from "@/lib/mirats/nhan-qr";
 export const Route = createFileRoute("/_app/nhan")({
   head: () => ({
     meta: [
-      { title: "In nhãn QR tài sản — MIRATS 2.0" },
+      { title: "In nhãn QR tài sản — MIRATS" },
       { name: "description", content: "Lọc tài sản theo đơn vị/hệ thống/trạng thái và in lưới nhãn QR theo khổ giấy chuẩn." },
     ],
   }),

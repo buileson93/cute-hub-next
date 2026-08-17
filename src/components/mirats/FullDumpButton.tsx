@@ -195,7 +195,7 @@ export function FullDumpButton() {
       await put(
         "README.txt",
         [
-          "MIRATS 2.0 — Bản dump toàn bộ",
+          "MIRATS — Bản dump toàn bộ",
           `Tạo lúc: ${new Date().toISOString()}`,
           "",
           "manifest.json      — kiểm kê bảng/tệp",

@@ -4,7 +4,7 @@ import { BaoTriMoiForm } from "@/components/mirats/quick/BaoTriMoiForm";
 export const Route = createFileRoute("/_app/bao-tri/moi")({
   head: () => ({
     meta: [
-      { title: "Tạo phiếu bảo dưỡng — MIRATS 2.0" },
+      { title: "Tạo phiếu bảo dưỡng — MIRATS" },
       { name: "description", content: "Lập phiếu bảo dưỡng theo mẫu của từng hệ thống, ghi vào sổ lý lịch tài sản và hệ thống." },
     ],
   }),

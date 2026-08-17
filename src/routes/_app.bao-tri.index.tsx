@@ -21,9 +21,9 @@ import type { BaoTri } from "@/lib/mirats/types";
 export const Route = createFileRoute("/_app/bao-tri/")({
   head: () => ({
     meta: [
-      { title: "Bảo dưỡng — MIRATS 2.0" },
+      { title: "Bảo dưỡng — MIRATS" },
       { name: "description", content: "M4 — Phiếu bảo dưỡng, lịch PM định kỳ và bảng kiểm bảo dưỡng hạng mục." },
-      { property: "og:title", content: "Bảo dưỡng — MIRATS 2.0" },
+      { property: "og:title", content: "Bảo dưỡng — MIRATS" },
       { property: "og:description", content: "Số hoá phiếu bảo dưỡng và quản lý kế hoạch bảo dưỡng định kỳ." },
     ],
   }),

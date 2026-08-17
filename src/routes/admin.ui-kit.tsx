@@ -101,7 +101,7 @@ function UIKitLab() {
                     <div className="space-y-2">
                       <div className={UI_DENSITY.TEXT_LABEL}>Body Text (12px+)</div>
                       <p className={UI_DENSITY.TEXT_BODY}>
-                        Hệ thống MIRATS 2.0 sử dụng Figtree làm font chữ chính cho phần nội dung. 
+                        Hệ thống MIRATS sử dụng Figtree làm font chữ chính cho phần nội dung. 
                         Mọi văn bản phần thân trang phải đạt kích thước tối thiểu 12px để đảm bảo khả năng đọc.
                       </p>
                     </div>

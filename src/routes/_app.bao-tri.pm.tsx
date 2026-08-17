@@ -24,9 +24,9 @@ import { EmptyState } from "@/components/mirats/EmptyState";
 export const Route = createFileRoute("/_app/bao-tri/pm")({
   head: () => ({
     meta: [
-      { title: "Bảo dưỡng định kỳ (PM) — MIRATS 2.0" },
+      { title: "Bảo dưỡng định kỳ (PM) — MIRATS" },
       { name: "description", content: "Hàng đợi công việc bảo dưỡng định kỳ đến hạn theo chính sách PM: sắp đến hạn, đến hạn, quá hạn và hoàn thành." },
-      { property: "og:title", content: "Bảo dưỡng định kỳ (PM) — MIRATS 2.0" },
+      { property: "og:title", content: "Bảo dưỡng định kỳ (PM) — MIRATS" },
       { property: "og:description", content: "Sinh và theo dõi công việc PM tự động theo chu kỳ chính sách." },
     ],
   }),

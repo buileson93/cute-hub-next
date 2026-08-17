@@ -17,7 +17,7 @@ import { type Stats, type AuditRow } from "@/components/mirats/phan-quyen/types"
 export const Route = createFileRoute("/_app/phan-quyen")({
   head: () => ({
     meta: [
-      { title: "Phân quyền & Bảo mật — MIRATS 2.0" },
+      { title: "Phân quyền & Bảo mật — MIRATS" },
       { name: "description", content: "Vai trò, RBAC theo collection, phân bố tài khoản theo đơn vị và nhật ký kiểm toán — số liệu thật." },
     ],
   }),

@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/admin/users")({
   head: () => ({
     meta: [
-      { title: "Quản lý tài khoản — MIRATS 2.0" },
+      { title: "Quản lý tài khoản — MIRATS" },
       { name: "description", content: "Tạo, khoá, gán vai trò và đơn vị cho tài khoản người dùng MIRATS." },
       { name: "robots", content: "noindex, nofollow" },
     ],

@@ -33,9 +33,9 @@ import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable
 export const Route = createFileRoute("/_app/hong-hoc")({
   head: () => ({
     meta: [
-      { title: "Hỏng hóc & Thay thế — MIRATS 2.0" },
+      { title: "Hỏng hóc & Thay thế — MIRATS" },
       { name: "description", content: "M6 — Phiếu hỏng hóc–thay thế, truy vết tài sản cũ → mới, xuất kho vật tư sửa chữa." },
-      { property: "og:title", content: "Hỏng hóc & Thay thế — MIRATS 2.0" },
+      { property: "og:title", content: "Hỏng hóc & Thay thế — MIRATS" },
       { property: "og:description", content: "Số hoá phiếu hỏng hóc và liên kết chuỗi truy vết linh kiện." },
     ],
   }),

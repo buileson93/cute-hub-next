@@ -32,8 +32,8 @@ import { EdgeTabs } from "@/components/mirats/EdgeTabs";
 export const Route = createFileRoute("/_app/su-co/$maSuCo")({
   head: () => ({
     meta: [
-      { title: "Sự cố — MIRATS 2.0" },
-      { name: "description", content: "Phiếu sự cố MIRATS 2.0" },
+      { title: "Sự cố — MIRATS" },
+      { name: "description", content: "Phiếu sự cố MIRATS" },
       { name: "robots", content: "noindex" },
     ],
   }),

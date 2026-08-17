@@ -32,9 +32,9 @@ import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 export const Route = createFileRoute("/_app/tuoi-tho")({
   head: () => ({
     meta: [
-      { title: "Tuổi thọ & Vòng đời — MIRATS 2.0" },
+      { title: "Tuổi thọ & Vòng đời — MIRATS" },
       { name: "description", content: "M9 — Đánh giá health score, xếp loại A/B/C/D và dự báo thay thế tài sản." },
-      { property: "og:title", content: "Tuổi thọ & Vòng đời — MIRATS 2.0" },
+      { property: "og:title", content: "Tuổi thọ & Vòng đời — MIRATS" },
       { property: "og:description", content: "Health score, xu hướng suy giảm và ngân sách thay thế theo năm." },
     ],
   }),

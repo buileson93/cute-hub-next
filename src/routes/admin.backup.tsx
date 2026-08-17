@@ -29,7 +29,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/admin/backup")({
   head: () => ({
     meta: [
-      { title: "Sao lưu & Khôi phục — MIRATS 2.0" },
+      { title: "Sao lưu & Khôi phục — MIRATS" },
       { name: "description", content: "Sao lưu toàn bộ cơ sở dữ liệu, đồng bộ lên đám mây và khôi phục dữ liệu an toàn." },
       { name: "robots", content: "noindex, nofollow" },
     ],

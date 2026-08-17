@@ -24,7 +24,7 @@ import { StatusBadge } from "@/components/mirats/StatusBadge";
 export const Route = createFileRoute("/_app/hong-hoc/$maHongHoc")({
   head: () => ({
     meta: [
-      { title: "Phiếu hỏng hóc — MIRATS 2.0" },
+      { title: "Phiếu hỏng hóc — MIRATS" },
       { name: "robots", content: "noindex" },
     ],
   }),

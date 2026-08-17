@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 export const Route = createFileRoute("/_app/danh-muc/don-vi")({
   head: () => ({
     meta: [
-      { title: "Đơn vị — Danh mục nền tảng MIRATS 2.0" },
+      { title: "Đơn vị — Danh mục nền tảng MIRATS" },
       { name: "description", content: "Danh mục đơn vị quản lý đọc trực tiếp từ cơ sở dữ liệu." },
     ],
   }),

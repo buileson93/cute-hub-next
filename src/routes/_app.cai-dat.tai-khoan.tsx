@@ -18,7 +18,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_app/cai-dat/tai-khoan")({
   head: () => ({
     meta: [
-      { title: "Tài khoản của tôi — MIRATS 2.0" },
+      { title: "Tài khoản của tôi — MIRATS" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

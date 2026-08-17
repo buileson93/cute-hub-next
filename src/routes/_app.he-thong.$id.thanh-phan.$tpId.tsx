@@ -32,7 +32,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 export const Route = createFileRoute("/_app/he-thong/$id/thanh-phan/$tpId")({
   head: ({ params }) => ({
     meta: [
-      { title: `Sổ lý lịch thành phần — MIRATS 2.0` },
+      { title: `Sổ lý lịch thành phần — MIRATS` },
       {
         name: "description",
         content: `Sổ lý lịch chi tiết thành phần ${params.tpId} thuộc hệ thống ${params.id}: tài sản đang gắn, chỉ số MTBF/MTTR, nhật ký sự kiện.`,

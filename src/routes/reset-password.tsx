@@ -14,8 +14,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Đặt lại mật khẩu — MIRATS 2.0" },
-      { name: "description", content: "Đặt mật khẩu mới cho tài khoản MIRATS 2.0." },
+      { title: "Đặt lại mật khẩu — MIRATS" },
+      { name: "description", content: "Đặt mật khẩu mới cho tài khoản MIRATS." },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -90,7 +90,7 @@ function ResetPasswordPage() {
             <Satellite className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-lg font-semibold tracking-tight">MIRATS 2.0</div>
+            <div className="text-lg font-semibold tracking-tight">MIRATS</div>
             <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Đặt lại mật khẩu</div>
           </div>
         </div>

@@ -36,7 +36,7 @@ import { exportAllInOneXlsx } from "@/lib/mirats/allinone-template";
 export const Route = createFileRoute("/_app/admin/nhap-lieu")({
   head: () => ({
     meta: [
-      { title: "Nhập/Xuất hàng loạt — MIRATS 2.0" },
+      { title: "Nhập/Xuất hàng loạt — MIRATS" },
       { name: "description", content: "Nhập và xuất dữ liệu tài sản, hệ thống, danh mục, giấy phép hàng loạt bằng CSV." },
     ],
   }),

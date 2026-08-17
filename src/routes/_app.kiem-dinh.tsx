@@ -23,7 +23,7 @@ import { DEFAULT_NGAY_SAP_HET_HAN } from "@/lib/mirats/han-canh-bao";
 export const Route = createFileRoute("/_app/kiem-dinh")({
   head: () => ({
     meta: [
-      { title: "Kiểm định & Hiệu chuẩn — MIRATS 2.0" },
+      { title: "Kiểm định & Hiệu chuẩn — MIRATS" },
       {
         name: "description",
         content:

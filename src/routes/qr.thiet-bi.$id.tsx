@@ -12,7 +12,7 @@ import { Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/qr/thiet-bi/$id")({
   head: () => ({
     meta: [
-      { title: "Quét QR (legacy) — MIRATS 2.0" },
+      { title: "Quét QR (legacy) — MIRATS" },
       { name: "robots", content: "noindex" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
     ],

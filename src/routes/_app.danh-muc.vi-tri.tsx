@@ -8,7 +8,7 @@ import { ViTriMediaViewer } from "@/components/mirats/ViTriMediaViewer";
 export const Route = createFileRoute("/_app/danh-muc/vi-tri")({
   head: () => ({
     meta: [
-      { title: "Vị trí — Danh mục MIRATS 2.0" },
+      { title: "Vị trí — Danh mục MIRATS" },
       { name: "description", content: "Danh mục vị trí địa lý theo phân cấp (Đài, phòng…) đọc trực tiếp từ cơ sở dữ liệu." },
     ],
   }),

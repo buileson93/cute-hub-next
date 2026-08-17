@@ -4,7 +4,7 @@ import { SuCoMoiForm } from "@/components/mirats/quick/SuCoMoiForm";
 export const Route = createFileRoute("/_app/su-co/moi")({
   head: () => ({
     meta: [
-      { title: "Báo cáo ban đầu sự cố — MIRATS 2.0" },
+      { title: "Báo cáo ban đầu sự cố — MIRATS" },
       { name: "description", content: "Lập biên bản báo cáo ban đầu về sự cố kỹ thuật, ghi vào sổ lý lịch tài sản và hệ thống, xuất Word theo mẫu." },
     ],
   }),

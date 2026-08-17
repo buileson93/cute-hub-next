@@ -60,7 +60,7 @@ import { InfoGrid } from "@/components/mirats/InfoGrid";
 export const Route = createFileRoute("/_app/he-thong/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Sổ lý lịch hệ thống — MIRATS 2.0` },
+      { title: `Sổ lý lịch hệ thống — MIRATS` },
       { name: "description", content: `Sổ lý lịch hệ thống ${params.id}: tổng hợp bảo dưỡng, sự cố, hỏng hóc & thay thế của toàn bộ tài sản con.` },
     ],
   }),

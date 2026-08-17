@@ -44,7 +44,7 @@ interface DataStateProps {
 
 /**
  * Component dùng chung để quản lý các trạng thái dữ liệu (Loading, Empty, Error).
- * Task T29 - MIRATS 2.0.
+ * Task T29 - MIRATS.
  */
 export function DataState({
   state,
