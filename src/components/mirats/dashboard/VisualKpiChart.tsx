@@ -61,9 +61,10 @@ export function VisualKpiChart({
             )}
           </CardTitle>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black astryx-number tracking-tighter">
+            <span className="text-3xl font-black astryx-number tracking-tighter">
               {value}
             </span>
+
             {unit && <span className="astryx-text-label opacity-70">{unit}</span>}
           </div>
         </div>

@@ -82,9 +82,10 @@ export function KpiCard({
         </div>
 
         <div className="flex items-baseline gap-1">
-          <div className={cn("text-2xl font-black astryx-number tracking-tight", isLoading ? "animate-pulse text-muted" : textColors[status])}>
+          <div className={cn("text-2xl font-black astryx-number tracking-tighter", isLoading ? "animate-pulse text-muted" : textColors[status])}>
             {isLoading ? "..." : value}
           </div>
+
           {unit && !isLoading && (
             <div className="astryx-text-label opacity-70">
               {unit}
