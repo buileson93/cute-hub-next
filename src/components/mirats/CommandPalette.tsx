@@ -151,8 +151,19 @@ export function CommandPalette() {
         setOpen((open) => !open);
       }
     };
+    
+    const handleOpen = () => setOpen(true);
+    const handleToggle = () => setOpen((prev) => !prev);
+
     document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    window.addEventListener("mirats:open-command-palette", handleOpen);
+    window.addEventListener("mirats:toggle-command-palette", handleToggle);
+    
+    return () => {
+      document.removeEventListener("keydown", down);
+      window.removeEventListener("mirats:open-command-palette", handleOpen);
+      window.removeEventListener("mirats:toggle-command-palette", handleToggle);
+    };
   }, []);
 
   useEffect(() => {
