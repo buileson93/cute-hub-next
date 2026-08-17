@@ -41,7 +41,7 @@ const CommandDialog = ({
   return (
     <Dialog {...props}>
       <DialogContent
-        className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-xl"
+        className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-3xl"
       >
         <Command
           filter={filter}
