@@ -61,6 +61,9 @@ function UIKitLab() {
               <TabsTrigger value="actions" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
                 Actions
               </TabsTrigger>
+              <TabsTrigger value="forms" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
+                Forms & Inputs
+              </TabsTrigger>
               <TabsTrigger value="cards" className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#0074e2] data-[state=active]:bg-transparent h-8 text-[11px] uppercase font-bold tracking-wider">
                 Cards
               </TabsTrigger>
@@ -150,6 +153,65 @@ function UIKitLab() {
                     </CardContent>
                   </Card>
                 </div>
+              </PageSection>
+            </PageBody>
+          </TabsContent>
+
+          <TabsContent value="forms" className="flex-1 m-0 overflow-auto">
+            <PageBody>
+              <PageSection className="max-w-4xl">
+                <ContentGrid>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Standard Inputs</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-4">
+                         <div className="space-y-1.5">
+                            <label className={UI_DENSITY.TEXT_LABEL}>Text Input</label>
+                            <Input placeholder="Enter text..." />
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI_DENSITY.TEXT_LABEL}>With Prefix/Unit</label>
+                            <Input prefix={<Activity className="h-3 w-3" />} unit="kWh" placeholder="0.00" type="number" />
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI_DENSITY.TEXT_LABEL}>Select Menu</label>
+                            <Select defaultValue="opt1">
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select option" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="opt1">Option One</SelectItem>
+                                <SelectItem value="opt2">Option Two</SelectItem>
+                              </SelectContent>
+                            </Select>
+                         </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Choices & Feedback</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label htmlFor="terms" className={UI_DENSITY.TEXT_BODY}>Accept terms</label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch id="notify" />
+                        <label htmlFor="notify" className={UI_DENSITY.TEXT_BODY}>Enable notifications</label>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI_DENSITY.TEXT_LABEL + " text-destructive"}>Error State</label>
+                        <Input aria-invalid="true" placeholder="Invalid input..." />
+                        <p className="text-[11px] text-destructive font-medium">This field is required.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </ContentGrid>
               </PageSection>
             </PageBody>
           </TabsContent>
