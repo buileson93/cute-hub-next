@@ -45,7 +45,7 @@ const CommandDialog = ({
     <Dialog {...props}>
       <DialogContent
         className={cn(
-          "overflow-hidden p-0",
+          "overflow-hidden p-0 gap-0",
           preview && "sm:max-w-4xl",
         )}
       >
@@ -54,12 +54,12 @@ const CommandDialog = ({
           shouldFilter={shouldFilter}
           value={value}
           onValueChange={onValueChange}
-          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:mx-1 [&_[cmdk-item]]:rounded-[var(--radius-element)] [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-[#0074e2]/10 [&_[cmdk-item][data-selected=true]]:text-[#0074e2] [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-[#0074e2]/70"
+          className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:mx-2 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-4.5 [&_[cmdk-item]_svg]:w-4.5 [&_[cmdk-item][data-selected=true]]:bg-[#0074e2]/10 [&_[cmdk-item][data-selected=true]]:text-[#0074e2] [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-[#0074e2]/70"
         >
           {preview ? (
-            <div className="flex">
-              <div className="flex min-w-0 flex-1 flex-col">{children}</div>
-              <div className="hidden w-[344px] shrink-0 border-l border-border bg-muted/20 md:block">
+            <div className="flex h-[min(80vh,720px)]">
+              <div className="flex min-w-0 flex-1 flex-col border-r border-border/50">{children}</div>
+              <div className="hidden w-[380px] shrink-0 bg-muted/5 md:block">
                 {preview}
               </div>
             </div>
@@ -76,13 +76,13 @@ const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div className="flex items-center px-4 py-2" cmdk-input-wrapper="">
-    <div className="flex w-full items-center gap-3 rounded-2xl bg-muted/40 px-3 transition-all focus-within:bg-muted/60 focus-within:ring-1 focus-within:ring-[#0074e2]/20">
-      <Search className="h-4 w-4 shrink-0 opacity-40" />
+  <div className="flex items-center px-4 py-4" cmdk-input-wrapper="">
+    <div className="flex w-full items-center gap-3 rounded-2xl bg-muted/30 px-4 transition-all focus-within:bg-muted/50 focus-within:ring-2 focus-within:ring-[#0074e2]/20">
+      <Search className="h-5 w-5 shrink-0 text-[#0074e2]" />
       <CommandPrimitive.Input
         ref={ref}
         className={cn(
-          "flex h-10 w-full bg-transparent py-3 text-[14px] font-medium placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-12 w-full bg-transparent py-4 text-[15px] font-medium placeholder:text-muted-foreground/50 disabled:cursor-not-allowed disabled:opacity-50",
           "!focus:ring-0 !focus:ring-offset-0 !focus-visible:ring-0 !focus-visible:outline-none !outline-none !border-none",
           className,
         )}

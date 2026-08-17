@@ -251,39 +251,39 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
   useEffect(() => { preloadPreviewImages(); }, []);
 
   return (
-    <div className="flex h-full flex-col bg-background/50">
+    <div className="flex h-full flex-col bg-background/30">
       {hasData ? (
-        <div className="flex-1 overflow-y-auto px-5 pt-5 pb-4 space-y-5">
-          <div className="flex items-start gap-4">
+        <div className="flex-1 overflow-y-auto px-6 pt-8 pb-6 space-y-8">
+          <div className="flex items-start gap-5">
             {isImgLoading ? (
-              <Skeleton className="h-16 w-16 shrink-0 rounded-xl" />
+              <Skeleton className="h-20 w-20 shrink-0 rounded-2xl" />
             ) : modelImgUrl && !imgError ? (
               <img
                 key={modelImgUrl}
                 src={modelImgUrl}
                 alt=""
                 onError={() => setImgError(true)}
-                className="h-16 w-16 shrink-0 rounded-xl border border-border/50 object-cover shadow-sm animate-in fade-in duration-300"
+                className="h-20 w-20 shrink-0 rounded-2xl border border-border/40 object-cover shadow-md animate-in fade-in duration-500"
               />
             ) : (
-              <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-muted/50">
+              <span className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/40 bg-muted/30">
                 <PreviewImage
                   src={previewImageForCat(brand.cat)}
-                  className="absolute inset-0 h-full w-full object-cover opacity-60"
+                  className="absolute inset-0 h-full w-full object-cover opacity-40"
                   skeletonClassName="absolute inset-0 h-full w-full"
                 />
-                <Icon className="relative h-6 w-6 text-foreground/70" />
+                <Icon className="relative h-8 w-8 text-[#0074e2]/80" />
               </span>
             )}
-            <div className="min-w-0 space-y-1">
+            <div className="min-w-0 space-y-2">
               {brand.tag && (
-                <span className="inline-block rounded-md bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                <span className="inline-block rounded-lg bg-[#0074e2]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0074e2]">
                   {brand.tag}
                 </span>
               )}
-              <div className="text-base font-bold leading-tight tracking-tight text-foreground">{brand.title}</div>
+              <div className="text-xl font-bold leading-tight tracking-tight text-foreground">{brand.title}</div>
               {brand.status && (
-                <span className="inline-block rounded-md bg-[#0074e2]/10 px-2 py-0.5 text-[11px] font-semibold text-[#0074e2]">
+                <span className="inline-block rounded-md bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600">
                   {brand.status}
                 </span>
               )}
@@ -304,31 +304,31 @@ function CommandPreview({ data, modelImgUrl, modelImgLoading }: { data: PreviewD
         </div>
       ) : (
         <>
-          <div className="p-5 pb-0">
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-[#0074e2]/5 via-background to-background shadow-inner">
+          <div className="p-6 pb-0">
+            <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-border/30 bg-gradient-to-br from-[#0074e2]/10 via-background to-background shadow-lg">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-border bg-background/90 text-[#0074e2] shadow-xl backdrop-blur-md transition-transform hover:scale-105 duration-300">
-                  <Icon className="h-10 w-10 stroke-[1.5]" />
+                <div className="flex h-24 w-24 items-center justify-center rounded-[32px] border border-border/50 bg-background/95 text-[#0074e2] shadow-2xl backdrop-blur-xl transition-transform hover:scale-105 duration-500">
+                  <Icon className="h-12 w-12 stroke-[1.2]" />
                 </div>
               </div>
-              <div className="absolute bottom-3 left-3">
+              <div className="absolute bottom-4 left-4">
                 {brand.tag && (
-                  <span className="rounded-lg border border-border/50 bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground backdrop-blur-md">
+                  <span className="rounded-xl border border-border/30 bg-background/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#0074e2] backdrop-blur-md shadow-sm">
                     {brand.tag}
                   </span>
                 )}
               </div>
             </div>
           </div>
-
-          <div className="flex-1 overflow-hidden px-6 pt-5">
-            <div className="text-lg font-bold tracking-tight text-foreground">{brand.title}</div>
-            <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-5">
+ 
+          <div className="flex-1 overflow-hidden px-8 pt-8">
+            <div className="text-2xl font-bold tracking-tight text-foreground">{brand.title}</div>
+            <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6">
               <MetaCell label="Nhóm" value={brand.tag ?? "—"} />
               <MetaCell label="Phân loại" value={CAT_LABEL[brand.cat]} />
             </div>
             {brand.desc && (
-              <p className="mt-6 text-[12px] leading-relaxed text-muted-foreground/90">{brand.desc}</p>
+              <p className="mt-8 text-[13px] leading-relaxed text-muted-foreground/80 font-medium">{brand.desc}</p>
             )}
           </div>
         </>
