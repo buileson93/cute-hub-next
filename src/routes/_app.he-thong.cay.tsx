@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { toast } from "sonner";
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useSession } from "@/hooks/use-session";
-import { Check, Pencil } from "lucide-react";
+import { Check, Pencil, GitFork, Plus, GitBranch, LayoutGrid, Share2, Activity, History, Settings2, Search } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { cn } from "@/lib/utils";
@@ -40,8 +40,6 @@ import type {
   EditKind, OverrideMap, SearchItem 
 } from "@/components/mirats/he-thong-cay/types";
 
-
-
 export const Route = createFileRoute("/_app/he-thong/cay")({
   validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string; moveHt?: string; moveTb?: string } => ({
     editTb: typeof search.editTb === "string" ? search.editTb : undefined,
@@ -51,11 +49,13 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
   }),
   head: () => ({
     meta: [
-      { title: "Hệ Thống — Tài sản MIRATS" },
+      { title: "Cấu trúc & Sơ đồ — MIRATS 2.0" },
       {
         name: "description",
-        content: "Phân lớp hệ thống tài sản: Phân loại (Nhóm 1/2/3) → Nhóm hệ thống → Hệ thống → Tài sản → Thành phần.",
+        content: "Phân lớp hệ thống tài sản: Phân loại → Nhóm hệ thống → Hệ thống → Tài sản → Thành phần.",
       },
+      { property: "og:title", content: "Cấu trúc & Sơ đồ — MIRATS 2.0" },
+      { property: "og:description", content: "Sơ đồ hệ thống kỹ thuật và cây phân cấp tài sản." },
     ],
   }),
   component: HeThongCayPageWrapper,
@@ -111,8 +111,6 @@ function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
     const parsed = parseHtSysMa(ma);
     const sysName = parsed.sysName;
     if (!sysName || sysName === NONE_HT) return "Hệ thống khác";
-    
-    // Tìm theo ID (UUID) trước, sau đó tìm theo Mã (Code)
     return overrides?.get(okey("ht", ma))?.ten || 
            taxonomy?.htNameMap.get(sysName) || 
            taxonomy?.htMaMap.get(sysName) || 
@@ -128,6 +126,7 @@ function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
   const canManage = useCan("he-thong", "manage") || useCan("admin", "manage");
+  const qc = useQueryClient();
 
   const {
     display, setDisplay,
@@ -137,10 +136,10 @@ function HeThongCayPage() {
     badgeFilter, setBadgeFilter,
     groupMode,
     setViewTree,
-    reorgOpen, setReorgOpen
+    reorgOpen, setReorgOpen,
+    expandedNodes, toggleNode
   } = useCayContext();
 
-  
   const { renameEntity } = useCayMutations();
   
   useEffect(() => {
@@ -170,8 +169,7 @@ function HeThongCayPage() {
   };
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
-  const [showHistory, setShowHistory] = useState(false);
-  const { roles, user, profile } = useSession();
+  const { roles, profile } = useSession();
 
   const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
   const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
@@ -185,16 +183,10 @@ function HeThongCayPage() {
   const { data: tpCount = 0 } = useQuery({
     queryKey: ["he_thong_thanh_phan_count"],
     queryFn: async () => {
-      // Dùng service_role để đếm tổng số bản ghi bỏ qua RLS vì đây chỉ là số liệu tổng quát hiển thị badge
-      // Tuy nhiên, do Lovable Cloud khuyến nghị RLS, ta dùng .select('*', { count: 'exact', head: true }) 
-      // và đảm bảo chính sách SELECT cho phép.
       const { count, error } = await supabase
         .from("he_thong_thanh_phan")
         .select("*", { count: "exact", head: true });
-      if (error) {
-        console.error("Error fetching tpCount:", error);
-        return 0;
-      }
+      if (error) return 0;
       return count || 0;
     }
   });
@@ -228,7 +220,7 @@ function HeThongCayPage() {
         from += pageSize;
       }
       
-      const mapped = allData.map((d: any) => ({
+      return allData.map((d: any) => ({
         ...d,
         _pl: d.phan_loai_id,
         _nhKey: d.nhom_he_thong_id,
@@ -239,21 +231,10 @@ function HeThongCayPage() {
         _loaiTbTen: d._loaiTbTen?.ten,
         _loaiTbOrder: d._loaiTbOrder?.thu_tu
       }));
-
-      // DEBUG: Log first 3 items and counts by PL
-      console.log("Device Data Mapping Sample:", mapped.slice(0, 3));
-      const plCounts = mapped.reduce((acc: any, d: any) => {
-        const pl = d._pl || "NONE";
-        acc[pl] = (acc[pl] || 0) + 1;
-        return acc;
-      }, {});
-      console.log("Device counts per phan_loai_id:", plCounts);
-
-      return mapped;
     }
   });
 
-  const { tree, total } = useMemo(() => {
+  const { tree } = useMemo(() => {
     const plList = taxonomy?.plList || [];
     const htList = taxonomy?.htList || [];
     const nhomList = taxonomy?.nhomList || [];
@@ -282,21 +263,6 @@ function HeThongCayPage() {
   const state = isLoading ? "loading" : viewTree.length === 0 ? "empty" : "success";
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
 
-  // Debug logs to identify why counts might be zero
-  useEffect(() => {
-    if (isLoading) return;
-    
-    console.log("Tree Debug Info:", {
-      plCount: viewTree.length,
-      totalDevices: devices.length,
-      tpCount,
-      viewTreeSample: viewTree.map(pl => ({ id: pl.id, ten: pl.ten, count: pl.count })),
-      loadingStates: { loadingOverrides, loadingTaxo, loadingDevices },
-      userRoles: roles,
-      userProfile: profile
-    });
-  }, [viewTree, devices, tpCount, isLoading, loadingOverrides, loadingTaxo, loadingDevices, roles, profile]);
-
   const onOpenEditor = useCallback((kind: EditKind, ma: string) => setTarget({ kind, ma }), []);
   const onRecord = useCallback((kind: "tb" | "tp", ma: string, ten?: string) => {
      if (kind === "tb") nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma }, search: { tab: "tong-quan", doc: undefined, q: undefined } });
@@ -306,41 +272,41 @@ function HeThongCayPage() {
      if (sysId && sysId !== NONE_HT) nav({ to: "/he-thong/$id", params: { id: sysId } });
   }, [nav]);
 
+  const searchItems = useMemo(() => {
+    const list: SearchItem[] = [];
+    for (const pl of viewTree) {
+      list.push({ kind: "pl", ma: pl.id, label: pl.ten, plId: pl.id, count: pl.count });
+      for (const lv of pl.fields) {
+        for (const nh of lv.groups) {
+          list.push({ kind: "nh", ma: nh.ma, label: nh.ten, plId: pl.id, lvId: lv.id, count: nh.count });
+          for (const ht of nh.systems) {
+            list.push({ kind: "ht", ma: ht.ma, label: ht.ten, plId: pl.id, lvId: lv.id, nhMa: nh.ma, count: ht.count });
+            for (const d of ht.devices) {
+              list.push({ kind: "tb", ma: d.tb.ma_thiet_bi, label: d.tb.ten || d.tb.ma_thiet_bi, code: d.tb.ma_thiet_bi, plId: pl.id, lvId: lv.id, nhMa: nh.ma, htMa: ht.ma, sysName: ht.ten });
+            }
+          }
+        }
+      }
+    }
+    return list;
+  }, [viewTree]);
+
   return (
-    <div className="flex flex-col h-full overflow-hidden min-h-0 flex-1">
-      <div className="px-4 py-1.5 border-b flex items-center justify-between bg-background z-10 shrink-0">
-         <div className="flex items-center gap-3">
-            <Tabs value={display} onValueChange={handleDisplayChange}>
-              <TabsList className={UI_DENSITY.CONTROL_H}>
-                <TabsTrigger value="table" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.list" size="tiny" />Bảng</TabsTrigger>
-                <TabsTrigger value="tree" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.tree" size="tiny" />Cây</TabsTrigger>
-                <TabsTrigger value="mindmap" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.fork" size="tiny" />Sơ đồ</TabsTrigger>
-                <TabsTrigger value="health" className="h-full gap-2 px-2 text-[12px]"><Icon name="entity.activity" size="tiny" />Sức khỏe</TabsTrigger>
-                <TabsTrigger value="history" className="h-full gap-2 px-2 text-[12px]" onClick={() => setShowHistory(true)}><Icon name="entity.checklist" size="tiny" />Nhật ký</TabsTrigger>
-              </TabsList>
-            </Tabs>
-         </div>
-         <div className="flex items-center gap-2">
+    <PageFrame density="compact">
+      <PageHeader
+        icon={GitFork}
+        title="Cấu trúc & Sơ đồ"
+        subtitle={taxonomy ? `${taxonomy.plList.length} Phân loại · ${taxonomy.htList.length} Hệ thống` : "Đang tải cấu trúc…"}
+        breadcrumbs={[
+          { label: "Hệ thống", to: "/he-thong/cay" },
+          { label: "Cấu trúc & Sơ đồ" }
+        ]}
+        description="Quản lý phân cấp kỹ thuật và sơ đồ tổng thể hệ thống tài sản."
+        actions={
+          <div className="flex items-center gap-2">
             <NodeSearch 
-              containerClassName="h-7"
-              items={useMemo(() => {
-                const list: SearchItem[] = [];
-                for (const pl of viewTree) {
-                  list.push({ kind: "pl", ma: pl.id, label: pl.ten, plId: pl.id, count: pl.count });
-                  for (const lv of pl.fields) {
-                    for (const nh of lv.groups) {
-                      list.push({ kind: "nh", ma: nh.ma, label: nh.ten, plId: pl.id, lvId: lv.id, count: nh.count });
-                      for (const ht of nh.systems) {
-                        list.push({ kind: "ht", ma: ht.ma, label: ht.ten, plId: pl.id, lvId: lv.id, nhMa: nh.ma, count: ht.count });
-                        for (const d of ht.devices) {
-                          list.push({ kind: "tb", ma: d.tb.ma_thiet_bi, label: d.tb.ten || d.tb.ma_thiet_bi, code: d.tb.ma_thiet_bi, plId: pl.id, lvId: lv.id, nhMa: nh.ma, htMa: ht.ma, sysName: ht.ten });
-                        }
-                      }
-                    }
-                  }
-                }
-                return list;
-              }, [viewTree])} 
+              containerClassName="h-8"
+              items={searchItems} 
               onPick={(it) => {
                 setSearchQuery(it.label);
                 if (it.kind === "ht" || it.kind === "tb" || it.kind === "nh" || it.kind === "pl") {
@@ -355,17 +321,63 @@ function HeThongCayPage() {
                 <Button 
                   size="icon" 
                   variant={editMode ? "default" : "outline"} 
+                  className="h-8 w-8"
                   onClick={() => setEditMode(!editMode)} 
                 >
                   {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                  <span className="sr-only">{editMode ? "Đang sửa" : "Chỉnh sửa"}</span>
                 </Button>
               </AppTooltip>
             )}
-         </div>
-      </div>
+            <AppTooltip noiDung="Cấu hình sơ đồ">
+              <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setReorgOpen(true)}>
+                <Settings2 className="h-4 w-4" />
+              </Button>
+            </AppTooltip>
+          </div>
+        }
+      />
 
-      <PageBody noPadding className={cn("flex-1 min-h-0 relative flex flex-col bg-muted/10 overflow-hidden")}>
+      <PageSection className="px-4 py-2 border-b bg-background/30 backdrop-blur-sm z-10 shrink-0">
+        <div className="flex items-center justify-between">
+          <Tabs value={display} onValueChange={handleDisplayChange}>
+            <TabsList className="h-8 bg-muted/50 p-0.5">
+              <TabsTrigger value="table" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+                <LayoutGrid className="h-3 w-3" />
+                <span>DANH SÁCH</span>
+              </TabsTrigger>
+              <TabsTrigger value="tree" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+                <GitBranch className="h-3 w-3" />
+                <span>CÂY PHÂN CẤP</span>
+              </TabsTrigger>
+              <TabsTrigger value="mindmap" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+                <Share2 className="h-3 w-3" />
+                <span>SƠ ĐỒ TỔNG THỂ</span>
+              </TabsTrigger>
+              <TabsTrigger value="health" className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight">
+                <Activity className="h-3 w-3" />
+                <span>SỨC KHỎE</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <div className="flex items-center gap-4 text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+              <span>Phân loại</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+              <span>Nhóm</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              <span>Hệ thống</span>
+            </div>
+          </div>
+        </div>
+      </PageSection>
+
+      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden">
         <DataState
           state={state}
           loadingType="drawer"
@@ -373,127 +385,107 @@ function HeThongCayPage() {
           description={isFiltering ? "Thử xoá từ khoá tìm kiếm hoặc bộ lọc để xem đầy đủ cây hệ thống." : "Hệ thống chưa có dữ liệu cây phân cấp nào."}
           onRetry={() => { refetchOverrides(); refetchDevices(); }}
           emptyAction={isFiltering ? (<Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>Xoá tìm kiếm</Button>) : undefined}
-          className="flex-1 min-h-0 w-full flex flex-col"
+          className="flex-1 w-full"
         >
-          <Tabs value={display} className="flex-1 flex flex-col min-h-0">
-            <TabsContent value="tree" className="flex-1 overflow-y-auto p-4 custom-scrollbar h-full mt-0 focus-visible:outline-none">
-              <TreeView 
-                tree={viewTree as any}
-                plLabel={plMind}
-                lvLabel={() => ""}
-                nhLabel={nhMind}
-                htMind={htMind}
-                tbLabel={tbMind}
-                canManage={canManage && editMode}
-                onOpenEditor={onOpenEditor}
-                onHistory={onHistory}
-                onIncident={(ma) => {
-                  const sysId = parseHtSysMa(ma).sysName;
-                  if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
-                }}
-                onMaint={(ma) => {
-                  const sysId = parseHtSysMa(ma).sysName;
-                  if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
-                }}
-                onRecord={onRecord}
-                onRename={(kind, ma, ten) => {
-                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
-                }}
-                onMoveSystem={(req) => {
-                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
-                }}
-                onMoveGroup={(req) => {
-                  toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
-                }}
-                onMoveDevice={(req) => {
-                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
-                }}
-                posByHt={posByHt || new Map()}
-              />
-            </TabsContent>
-            <TabsContent value="mindmap" className="flex-1 w-full min-h-[600px] relative mt-0 focus-visible:outline-none">
-              <CayMindMap 
-                tree={viewTree as any}
-                posByHt={posByHt || new Map()}
-                scopeText="Toàn hệ thống"
-                canManage={canManage && editMode}
-                onRename={(kind, ma, ten) => {
-                  renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
-                }}
-                onOpenEditor={onOpenEditor}
-                onHistory={onHistory}
-                onIncident={(ma) => {
-                  const sysId = parseHtSysMa(ma).sysName;
-                  if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
-                }}
-                onMaint={(ma) => {
-                  const sysId = parseHtSysMa(ma).sysName;
-                  if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
-                }}
-                onRecord={onRecord}
-                onMoveSystem={(req) => {
-                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
-                }}
-                onMoveGroup={(req) => {
-                  toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
-                }}
-                onMoveDevice={(req) => {
-                  nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
-                }}
-                plMind={plMind}
-                nhMind={nhMind}
-                htMind={htMind}
-                tbMind={tbMind}
-                devices={devices}
-              />
-            </TabsContent>
-            <TabsContent value="health" className="flex-1 mt-0 focus-visible:outline-none">
-              <div className="p-8 text-center text-muted-foreground">Chế độ Sức khỏe đang được phát triển...</div>
-            </TabsContent>
-          </Tabs>
-        </DataState>
+          <div className="flex-1 min-h-0 relative">
+            {display === "tree" && (
+              <div className="h-full overflow-y-auto p-4 custom-scrollbar">
+                <TreeView 
+                  tree={viewTree as any}
+                  plLabel={plMind}
+                  lvLabel={() => ""}
+                  nhLabel={nhMind}
+                  htMind={htMind}
+                  tbLabel={tbMind}
+                  canManage={canManage && editMode}
+                  onOpenEditor={onOpenEditor}
+                  onHistory={onHistory}
+                  onIncident={(ma) => {
+                    const sysId = parseHtSysMa(ma).sysName;
+                    if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
+                  }}
+                  onMaint={(ma) => {
+                    const sysId = parseHtSysMa(ma).sysName;
+                    if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
+                  }}
+                  onRecord={onRecord}
+                  onRename={(kind, ma, ten) => {
+                    renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
+                  }}
+                  onMoveSystem={(req) => {
+                    nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
+                  }}
+                  onMoveGroup={(req) => {
+                    toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
+                  }}
+                  onMoveDevice={(req) => {
+                    nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
+                  }}
+                  posByHt={posByHt || new Map()}
+                />
+              </div>
+            )}
+            
+            {display === "mindmap" && (
+              <div className="h-full w-full relative">
+                <CayMindMap 
+                  tree={viewTree as any}
+                  posByHt={posByHt || new Map()}
+                  scopeText={taxonomy?.plList.find(p => p.id === badgeFilter.status.values().next().value)?.ten || "TẤT CẢ"}
+                  canManage={canManage && editMode}
+                  onRename={(kind, ma, ten) => renameEntity.mutate({ kind, id: ma, ten, userRoles: roles })}
+                  onOpenEditor={onOpenEditor}
+                  onHistory={onHistory}
+                  onIncident={onIncident}
+                  onMaint={onMaint}
+                  onRecord={onRecord}
+                  onMoveSystem={(req) => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) })}
+                  onMoveGroup={(req) => toast.info(`Di chuyển nhóm ${req.label} sang ${req.toLabel}`)}
+                  onMoveDevice={(req) => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) })}
+                  plMind={plMind}
+                  nhMind={nhMind}
+                  htMind={htMind}
+                  tbMind={tbMind}
+                  devices={devices as any}
+                />
+              </div>
+            )}
 
-        {display === "history" && showHistory && (
-          <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm p-8 flex flex-col items-center justify-center text-muted-foreground">
-             <Button variant="ghost" className="absolute top-4 right-4" onClick={() => setShowHistory(false)}>Đóng</Button>
-             <Icon name="entity.checklist" size="large" className="mb-4 opacity-20" />
-             <h3 className="text-lg font-medium">Nhật ký tác động hệ thống</h3>
-             <p className="max-w-md text-center text-sm mt-2">Xem lịch sử thay đổi cấu trúc và điều động thiết bị toàn hệ thống.</p>
+            {display === "health" && (
+              <div className="p-8 text-center text-muted-foreground italic flex flex-col items-center justify-center h-full gap-4">
+                <Activity className="h-12 w-12 opacity-20" />
+                <div>
+                  <h3 className="text-lg font-medium text-foreground">Sức khỏe hệ thống</h3>
+                  <p className="text-sm mt-1">Tính năng đang được Astryx Skinning...</p>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </DataState>
       </PageBody>
 
-      <NodeEditorSheet 
-        target={target}
-        onClose={() => setTarget(null)}
-        plLabel={plMind}
-        nhLabel={nhMind}
-        htLabel={htMind}
-        tbMap={new Map(devices.map(d => [d.ma_thiet_bi, d]))}
-        canManage={canManage}
-        donViList={taxonomy?.donViList || []}
+      <NodeEditorSheet
+        kind={target?.kind || "tb"}
+        ma={target?.ma || ""}
+        open={!!target}
+        onOpenChange={(o) => !o && setTarget(null)}
       />
 
-      <CayThayDoiPanel 
-        open={reorgOpen}
-        onClose={() => setReorgOpen(false)}
-        isAdmin={roles.includes("admin")}
-        htNameMap={taxonomy?.htNameMap}
-      />
+      <CayThayDoiPanel />
 
-
-      
       {search.moveHt && (
-         <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center">
-            <div className="bg-background p-6 rounded-lg max-w-md w-full">
-               <h3 className="text-lg font-bold mb-4">Di chuyển Hệ thống</h3>
-               <p className="text-sm mb-6">Chọn nhóm hệ thống mới để chuyển <strong>{taxonomy?.htNameMap.get(parseHtSysMa(search.moveHt).sysName) || search.moveHt}</strong> vào.</p>
+         <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+            <div className="bg-background p-6 rounded-2xl shadow-2xl max-w-md w-full border">
+               <h3 className="text-lg font-bold mb-2">Di chuyển Hệ thống</h3>
+               <p className="text-sm text-muted-foreground mb-6">
+                 Chọn nhóm hệ thống mới để chuyển <strong>{taxonomy?.htNameMap.get(parseHtSysMa(search.moveHt).sysName) || search.moveHt}</strong> vào.
+               </p>
                <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>Hủy</Button>
                </div>
             </div>
          </div>
       )}
-    </div>
+    </PageFrame>
   );
 }
