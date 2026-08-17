@@ -1,8 +1,5 @@
-// MIRATS SSR SHIM: Cloudflare Workers do not have requestAnimationFrame
-if (typeof window === 'undefined') {
-  (globalThis as any).requestAnimationFrame = (callback: any) => setTimeout(callback, 0);
-  (globalThis as any).cancelAnimationFrame = (id: any) => clearTimeout(id);
-}
+// Astryx Design System Provider
+
 
 import { Theme } from "@astryxdesign/core";
 import { df3Theme } from "@/lib/astryx-theme/df3-theme";
