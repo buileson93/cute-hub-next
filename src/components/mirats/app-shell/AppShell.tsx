@@ -195,7 +195,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         {ws.id === activeWs.id && (
                           <motion.div 
                             layoutId="active-ws"
-                            className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
+                            className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-[#0074e2]"
                           />
                         )}
                       </button>
@@ -214,7 +214,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         className={cn(
                           "flex items-center justify-center rounded-lg transition-mirats-fast",
                           "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          adminWs.id === activeWs.id ? "bg-[#0074e2]/10 text-[#0074e2]" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                       >
                         <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
