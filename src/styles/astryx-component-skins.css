@@ -1,0 +1,98 @@
+
+/* MIRATS 2.0 — Astryx Static Component Skins (Phase 6A) */
+
+@layer components {
+  /* Surface & Card */
+  .astryx-surface {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    transition: box-shadow var(--duration-medium) var(--ease-standard), 
+                border-color var(--duration-medium) var(--ease-standard);
+  }
+
+  .astryx-card {
+    @extend .astryx-surface;
+    box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
+  }
+  
+  .astryx-card:hover {
+    border-color: color-mix(in oklab, var(--color-border) 80%, var(--color-primary));
+    box-shadow: 0 4px 6px -1px oklch(0 0 0 / 0.05), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+  }
+
+  /* Typography & Headings */
+  .astryx-heading-1 {
+    font-family: var(--font-family-heading);
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    letter-spacing: -0.025em;
+    color: var(--color-foreground);
+    line-height: 1.2;
+  }
+
+  .astryx-heading-2 {
+    font-family: var(--font-family-heading);
+    font-weight: 600;
+    font-size: 1.5rem; /* 24px */
+    letter-spacing: -0.02em;
+    color: var(--color-foreground);
+  }
+
+  .astryx-text-body {
+    font-family: var(--font-family-body);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-foreground);
+  }
+
+  .astryx-text-muted {
+    @extend .astryx-text-body;
+    color: var(--color-muted-foreground);
+  }
+
+  /* Badges & Status */
+  .astryx-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    background-color: var(--color-secondary);
+    color: var(--color-secondary-foreground);
+    border: 1px solid transparent;
+  }
+
+  .astryx-badge-primary {
+    background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+  }
+
+  /* Interaction Sinks (Button-like logic) */
+  .astryx-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-element);
+    font-weight: 500;
+    transition: all var(--duration-fast) var(--ease-standard);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .astryx-control:active {
+    transform: scale(0.98);
+  }
+
+  .astryx-control:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 1px;
+  }
+  
+  /* Numeric Readouts (Plex Mono) */
+  .astryx-number {
+    font-family: var(--font-family-code);
+    font-variant-numeric: tabular-nums;
+  }
+}
