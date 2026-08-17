@@ -60,12 +60,11 @@ export function VisualKpiChart({
               </AppTooltip>
             )}
           </CardTitle>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-3xl font-bold astryx-number tracking-tight">
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-3xl font-black astryx-number tracking-tighter text-primary">
               {value}
             </span>
-
-            {unit && <span className="text-[11px] font-bold uppercase tracking-wider opacity-60">{unit}</span>}
+            {unit && <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60">{unit}</span>}
           </div>
         </div>
       </CardHeader>
