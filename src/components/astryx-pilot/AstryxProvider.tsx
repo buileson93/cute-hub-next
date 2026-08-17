@@ -1,9 +1,10 @@
-import { Theme } from "@astryxdesign/core";
 // MIRATS SSR SHIM: Cloudflare Workers do not have requestAnimationFrame
 if (typeof window === 'undefined') {
   (globalThis as any).requestAnimationFrame = (callback: any) => setTimeout(callback, 0);
   (globalThis as any).cancelAnimationFrame = (id: any) => clearTimeout(id);
 }
+
+import { Theme } from "@astryxdesign/core";
 import { stoneTheme } from "@astryxdesign/theme-stone/built";
 
 import { ReactNode, useState, useEffect, Suspense, lazy } from "react";
