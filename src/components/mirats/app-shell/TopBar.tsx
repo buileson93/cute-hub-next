@@ -11,7 +11,7 @@ import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
 
-const CommandPalette = lazy(() => import("../CommandPalette").then(m => ({ default: m.CommandPalette })));
+const PowerSearch = lazy(() => import("../search/PowerSearch").then(m => ({ default: m.PowerSearch })));
 
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
@@ -22,8 +22,10 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   }, []);
 
   const handleOpenSearch = () => {
-    window.dispatchEvent(new CustomEvent("mirats:open-command-palette"));
+    setOpen(true);
   };
+
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex h-full items-center justify-between gap-4 w-full">
@@ -64,7 +66,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
       </div>
 
       <Suspense fallback={null}>
-        <CommandPalette />
+        <PowerSearch open={open} onOpenChange={setOpen} />
       </Suspense>
     </div>
   );
