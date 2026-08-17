@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Save, Loader2, History } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
+import { Blockquote } from "@/components/ui/blockquote";
+import { Info } from "lucide-react";
 
 interface CanvasData {
   id?: string;
@@ -53,7 +55,12 @@ export function LeanUXCanvas({ project_id, initialData }: { project_id: string; 
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">Lean UX Canvas</h2>
-          <p className="text-sm text-slate-500">Discovery đúng vấn đề bằng Lean UX Canvas và hypothesis/experiment.</p>
+          <Blockquote className="mt-2 text-indigo-700 bg-indigo-50/50 border-indigo-200">
+            <div className="flex items-center gap-2 text-[11px] italic">
+              <Info className="h-3.5 w-3.5 shrink-0" />
+              <span>Discovery đúng vấn đề bằng Lean UX Canvas và hypothesis/experiment.</span>
+            </div>
+          </Blockquote>
         </div>
         <Button onClick={handleSave} disabled={saving} size="sm">
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
