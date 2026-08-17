@@ -170,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             {/* Rail (Desktop) */}
             <aside className={cn(
-              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] astryx-rail",
+              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50",
               UI_DENSITY.RAIL_W
             )}>
               <SidebarLogoRail />
@@ -182,9 +182,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(ws)}
                         onPointerEnter={() => setHoveredWsId(ws.id)}
                         className={cn(
-                          "group relative flex items-center justify-center transition-mirats-fast astryx-rail-item",
-                          "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          ws.id === activeWs.id ? "astryx-rail-item-active" : ""
+                          "group relative flex items-center justify-center transition-mirats-fast rounded-full",
+                          "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
+                          ws.id === activeWs.id ? "bg-[#0074e2] text-white shadow-md shadow-[#0074e2]/20" : "text-muted-foreground hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
                         )}
                         data-active={ws.id === activeWs.id}
                       >
@@ -192,12 +192,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                         <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
                           {ws.short}
                         </span>
-                        {ws.id === activeWs.id && (
-                          <motion.div 
-                            layoutId="active-ws"
-                            className="absolute -right-[1px] top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-l-full bg-primary"
-                          />
-                        )}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="right">{ws.label}</TooltipContent>
@@ -212,9 +206,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         onClick={() => gotoWorkspace(adminWs)}
                         onPointerEnter={() => setHoveredWsId(adminWs.id)}
                         className={cn(
-                          "flex items-center justify-center rounded-lg transition-mirats-fast",
-                          "w-11 h-11 data-[density=comfortable]:w-12 data-[density=comfortable]:h-12 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          adminWs.id === activeWs.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          "flex items-center justify-center rounded-full transition-mirats-fast",
+                          "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
+                          adminWs.id === activeWs.id ? "bg-[#0074e2] text-white shadow-md shadow-[#0074e2]/20" : "text-muted-foreground hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
                         )}
                       >
                         <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
@@ -232,7 +226,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden astryx-sidebar",
+                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden border-r border-[#0074e2]/10 bg-background",
                 (isCollapsed && !isHovered) ? "w-0 border-r-0" : UI_DENSITY.SIDEBAR_W
               )}
             >
@@ -255,7 +249,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col">
             <header className={cn(
-              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 astryx-topbar",
+              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/80 backdrop-blur-md",
               UI_DENSITY.APP_HEADER_H
             )}>
 

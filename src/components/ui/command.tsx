@@ -54,7 +54,7 @@ const CommandDialog = ({
           shouldFilter={shouldFilter}
           value={value}
           onValueChange={onValueChange}
-          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:mx-1 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-primary/10 [&_[cmdk-item][data-selected=true]]:text-foreground [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-muted-foreground/80"
+          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/60 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]]:border-none [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:mx-1 [&_[cmdk-item]]:rounded-[var(--radius-element)] [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-[#0074e2]/10 [&_[cmdk-item][data-selected=true]]:text-[#0074e2] [&_[cmdk-item][data-selected=true]_.text-muted-foreground]:text-[#0074e2]/70"
         >
           {preview ? (
             <div className="flex">
@@ -77,7 +77,7 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="flex items-center px-4 py-2" cmdk-input-wrapper="">
-    <div className="flex w-full items-center gap-3 rounded-2xl bg-muted/30 px-3 transition-all focus-within:bg-muted/50 !focus-within:ring-0 !focus-within:outline-none">
+    <div className="flex w-full items-center gap-3 rounded-2xl bg-muted/40 px-3 transition-all focus-within:bg-muted/60 focus-within:ring-1 focus-within:ring-[#0074e2]/20">
       <Search className="h-4 w-4 shrink-0 opacity-40" />
       <CommandPrimitive.Input
         ref={ref}

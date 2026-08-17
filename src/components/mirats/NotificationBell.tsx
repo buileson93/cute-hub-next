@@ -28,14 +28,14 @@ export function NotificationBell() {
           whileHover={reduce ? undefined : { scale: 1.06 }}
           whileTap={reduce ? undefined : { scale: 0.92 }}
           transition={{ type: "spring", stiffness: 500, damping: 25 }}
-          className="relative flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
           aria-label={unread > 0 ? `Thông báo, ${unread} chưa đọc` : "Thông báo"}
         >
           <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden />
           {unread > 0 && (
             <span
               aria-hidden
-              className="absolute right-1.5 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background"
+              className="absolute right-1 top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-[#0074e2] px-1 text-[9px] font-bold text-primary-foreground ring-2 ring-background"
             >
               {unread > 9 ? "9+" : unread}
             </span>
@@ -73,14 +73,14 @@ export function NotificationBell() {
                 <li
                   key={n.id}
                   className={cn(
-                    "group flex gap-3 px-4 py-3 transition-colors hover:bg-secondary/60",
-                    !n.read_at && "bg-primary/5",
+                    "group flex gap-3 px-4 py-3 transition-colors hover:bg-[#0074e2]/5",
+                    !n.read_at && "bg-[#0074e2]/[0.02]",
                   )}
                 >
                   <div
                     className={cn(
                       "mt-1.5 h-2 w-2 shrink-0 rounded-full",
-                      n.read_at ? "bg-muted-foreground/30" : "bg-primary",
+                      n.read_at ? "bg-muted-foreground/30" : "bg-[#0074e2]",
                     )}
                   />
                   <div className="min-w-0 flex-1">
@@ -88,7 +88,7 @@ export function NotificationBell() {
                       <Link
                         to={n.link as never}
                         onClick={() => !n.read_at && markRead(n.id)}
-                        className="block text-sm font-medium text-foreground hover:text-primary"
+                        className="block text-sm font-medium text-foreground hover:text-[#0074e2]"
                       >
                         {n.tieu_de}
                       </Link>

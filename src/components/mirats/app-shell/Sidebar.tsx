@@ -56,24 +56,24 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                       "h-8 data-[density=comfortable]:h-9 data-[density=comfortable]:rounded-lg data-[density=comfortable]:gap-2.5",
                       UI_DENSITY.TEXT_BODY,
                       active 
-                        ? "bg-primary/8 text-primary astryx-nav-item-active" 
+                        ? "bg-[#0074e2]/8 text-[#0074e2] astryx-nav-item-active" 
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       collapsed && "justify-center px-0 py-2.5 h-10"
                     )}
                   >
                     {active && !collapsed && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-primary" />
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-[#0074e2]" />
                     )}
                     <div className="relative">
-                      <Icon className={cn("h-4 w-4 shrink-0 data-[density=compact]:h-4 data-[density=compact]:w-4", active ? "text-primary" : "text-muted-foreground")} />
+                      <Icon className={cn("h-4 w-4 shrink-0 data-[density=compact]:h-4 data-[density=compact]:w-4", active ? "text-[#0074e2]" : "text-muted-foreground")} />
                       {collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
-                        <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border-2 border-sidebar bg-primary" />
+                        <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border-2 border-sidebar bg-[#0074e2]" />
                       )}
                     </div>
                     {!collapsed && <span className="truncate">{item.nhan}</span>}
                     {!collapsed && item.badgeKey && badges[item.badgeKey] > 0 && (
                       <div 
-                        className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1 text-[10px] font-bold text-primary data-[density=compact]:h-4 data-[density=compact]:min-w-4"
+                        className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0074e2]/10 px-1 text-[10px] font-bold text-[#0074e2] data-[density=compact]:h-4 data-[density=compact]:min-w-4"
                         aria-label={`${badges[item.badgeKey]} việc cần xử lý`}
                       >
                         {badges[item.badgeKey] > 99 ? "99+" : badges[item.badgeKey]}

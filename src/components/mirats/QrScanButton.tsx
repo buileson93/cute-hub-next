@@ -14,15 +14,14 @@ export function QrScanButton() {
   return (
     <>
       <AppTooltip noiDung="Quét QR thiết bị">
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
           aria-label="Quét QR"
           onClick={() => setOpen(true)}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
         >
           <ScanLine className="h-4 w-4" />
-        </Button>
+        </button>
       </AppTooltip>
 
       <Dialog open={open} onOpenChange={setOpen}>

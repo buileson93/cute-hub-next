@@ -29,7 +29,7 @@ export function CommandPaletteButton({ className }: { className?: string }) {
           }
           aria-label="Mở bảng lệnh"
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+            "flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[#0074e2]/10 hover:text-[#0074e2]",
             className,
           )}
         >
