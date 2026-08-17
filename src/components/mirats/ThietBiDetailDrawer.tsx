@@ -9,6 +9,7 @@ import {
   HardDrive, Package, PackagePlus, PackageMinus, PackageOpen,
   ExternalLink, History, Pencil, ShieldCheck,
 } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 
 import {
@@ -255,15 +256,17 @@ export function ThietBiDetailDrawer({
               <section className="space-y-2">
                 <LayerSectionHeader layer="tb" />
                 <div className="grid gap-4 sm:grid-cols-[132px_1fr]">
-                  <div className="flex items-center justify-center rounded-lg border bg-muted/20 p-2">
-                    {imgUrl ? (
-                      <img src={imgUrl} alt={device._modelTen} className="max-h-32 w-auto rounded object-contain" />
-                    ) : (
-                      <div className="flex h-28 w-full flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground">
-                        <Package className="h-6 w-6 opacity-40" />
-                        Chưa có hình ảnh
-                      </div>
-                    )}
+                  <div className="rounded-lg border bg-muted/20 p-2 overflow-hidden">
+                    <AspectRatio ratio={4 / 3}>
+                      {imgUrl ? (
+                        <img src={imgUrl} alt={device._modelTen} className="h-full w-full rounded object-contain" />
+                      ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground">
+                          <Package className="h-6 w-6 opacity-40" />
+                          Chưa có hình ảnh
+                        </div>
+                      )}
+                    </AspectRatio>
                   </div>
                   <div className="space-y-1.5">
                     <SummaryRow label="Model">{device._modelTen || "—"}</SummaryRow>
