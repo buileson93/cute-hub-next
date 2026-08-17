@@ -325,11 +325,12 @@ function NewSubmission() {
       </Card>
 
       {t.thiet_bi_mode !== "none" && (
-        <Card className="mb-4">
-          <CardHeader><CardTitle className="text-base">
+        <Card className="astryx-card mb-4">
+          <CardHeader><CardTitle className="astryx-heading-3">
             Tài sản liên quan ({t.thiet_bi_mode === "single" ? "chọn 1" : "chọn nhiều"})
           </CardTitle></CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="astryx-text-body space-y-2">
+
             <Input placeholder="Tìm mã hoặc tên tài sản…" value={tbSearch} onChange={(e) => setTbSearch(e.target.value)} />
             <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
               {(thietBiList ?? []).map((tb) => {
@@ -340,7 +341,7 @@ function NewSubmission() {
                       if (t.thiet_bi_mode === "single") setSelectedTb([tb.id]);
                       else setSelectedTb(on ? selectedTb.filter((x) => x !== tb.id) : [...selectedTb, tb.id]);
                     }}
-                    className={`flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition ${on ? "bg-primary/10 text-primary" : "hover:bg-secondary"}`}>
+                    className={`flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition ${on ? "bg-primary/10 text-primary" : "hover:bg-accent"}`}>
                     <span><span className="font-mono text-xs">{tb.ma_thiet_bi}</span> — {tb.ten_thiet_bi}</span>
                     {on && <Badge variant="outline" className="text-[10px]">Đã chọn</Badge>}
                   </button>
@@ -353,11 +354,12 @@ function NewSubmission() {
         </Card>
       )}
 
-      <Card className="mb-4">
+      <Card className="astryx-card mb-4">
         <CardHeader>
-          <CardTitle className="text-base">Hệ thống liên kết</CardTitle>
+          <CardTitle className="astryx-heading-3">Hệ thống liên kết</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="astryx-text-body space-y-2">
+
           <p className="text-xs text-muted-foreground">
             Biên bản sẽ được lưu vào Sổ lý lịch của hệ thống này để phục vụ đánh giá về sau.
             {derivedHt && !heThongTouched && (
