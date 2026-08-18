@@ -761,17 +761,3 @@ export function CayMindMap({
     </div>
   );
 }
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => rf?.zoomTo(1)}>
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">Phóng đại 100%</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </Panel>
-      </ReactFlow>
-    </div>
-  );
-}
