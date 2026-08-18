@@ -81,9 +81,9 @@ export function MultiSignatureFlow({
                 <Badge variant="outline" className="font-mono text-[10px]">#{i + 1}</Badge>
                 <span className="text-sm font-medium">{s.label}</span>
                 {signed ? (
-                  <Badge className="bg-emerald-600 text-white"><Check className="mr-1 h-3 w-3" />Đã ký</Badge>
+                  <Badge className="bg-primary text-primary-foreground"><Check className="mr-1 h-3 w-3" />Đã ký</Badge>
                 ) : isNext ? (
-                  <Badge variant="secondary"><Clock className="mr-1 h-3 w-3" />Chờ ký</Badge>
+                  <Badge variant="outline" className="bg-muted text-muted-foreground"><Clock className="mr-1 h-3 w-3" />Chờ ký</Badge>
                 ) : (
                   <Badge variant="outline" className="text-muted-foreground">Chưa tới lượt</Badge>
                 )}

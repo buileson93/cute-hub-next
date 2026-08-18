@@ -85,23 +85,23 @@ export function VisualKpiChart({
                 </defs>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                    backdropFilter: 'blur(8px)',
-                    borderColor: 'hsl(var(--primary) / 0.1)',
-                    fontSize: '12px',
+                    backgroundColor: 'var(--card)', 
+                    backdropFilter: 'blur(12px)',
+                    borderColor: 'var(--primary-opacity-20)',
+                    fontSize: '11px',
                     borderRadius: '12px',
-                    padding: '10px 14px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                    border: '1px solid rgba(0, 116, 226, 0.1)',
+                    padding: '8px 12px',
+                    boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.2)',
+                    border: '1px solid var(--primary-opacity-10)',
                   }}
                   itemStyle={{ 
-                    color: '#0074e2',
+                    color: 'var(--primary)',
                     padding: '2px 0',
-                    fontWeight: '700'
+                    fontWeight: '800'
                   }}
-                  cursor={{ stroke: '#0074e2', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+                  cursor={{ stroke: 'var(--primary)', strokeWidth: 1.5, strokeDasharray: '4 4' }}
                   formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, title]}
-                  labelStyle={{ fontWeight: '800', marginBottom: '6px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '10px' }}
+                  labelStyle={{ fontWeight: '800', marginBottom: '6px', color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '9px' }}
                 />
                 <Area 
                   type="monotone" 
@@ -121,24 +121,24 @@ export function VisualKpiChart({
                 <XAxis dataKey="thangHT" hide />
                 <YAxis hide domain={[0, 'auto']} />
                 <Tooltip 
-                  cursor={{ fill: 'rgba(0, 116, 226, 0.04)' }}
+                  cursor={{ fill: 'var(--primary-opacity-5)' }}
                   contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                    backdropFilter: 'blur(8px)',
-                    borderColor: 'hsl(var(--primary) / 0.1)',
-                    fontSize: '12px',
+                    backgroundColor: 'var(--card)', 
+                    backdropFilter: 'blur(12px)',
+                    borderColor: 'var(--primary-opacity-20)',
+                    fontSize: '11px',
                     borderRadius: '12px',
-                    padding: '10px 14px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                    border: '1px solid rgba(0, 116, 226, 0.1)',
+                    padding: '8px 12px',
+                    boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.2)',
+                    border: '1px solid var(--primary-opacity-10)',
                   }}
                   itemStyle={{ 
-                    color: '#0074e2',
+                    color: 'var(--primary)',
                     padding: '2px 0',
-                    fontWeight: '700'
+                    fontWeight: '800'
                   }}
                   formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, title]}
-                  labelStyle={{ fontWeight: '800', marginBottom: '6px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '10px' }}
+                  labelStyle={{ fontWeight: '800', marginBottom: '6px', color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '9px' }}
                 />
                 <Bar 
                   dataKey="value" 
@@ -158,23 +158,23 @@ export function VisualKpiChart({
                     <YAxis hide domain={['auto', 'auto']} />
                     <Tooltip 
                         contentStyle={{ 
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                            backdropFilter: 'blur(8px)',
-                            borderColor: 'hsl(var(--primary) / 0.1)',
-                            fontSize: '12px',
+                            backgroundColor: 'var(--card)', 
+                            backdropFilter: 'blur(12px)',
+                            borderColor: 'var(--primary-opacity-20)',
+                            fontSize: '11px',
                             borderRadius: '12px',
-                            padding: '10px 14px',
-                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                            border: '1px solid rgba(0, 116, 226, 0.1)',
+                            padding: '8px 12px',
+                            boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.2)',
+                            border: '1px solid var(--primary-opacity-10)',
                         }} 
                         itemStyle={{ 
-                            color: '#0074e2',
+                            color: 'var(--primary)',
                             padding: '2px 0',
-                            fontWeight: '700'
+                            fontWeight: '800'
                         }}
-                        cursor={{ stroke: '#0074e2', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+                        cursor={{ stroke: 'var(--primary)', strokeWidth: 1.5, strokeDasharray: '4 4' }}
                         formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ''}`, title]}
-                        labelStyle={{ fontWeight: '800', marginBottom: '6px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '10px' }}
+                        labelStyle={{ fontWeight: '800', marginBottom: '6px', color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '9px' }}
                     />
                     <Line 
                         type="monotone" 

@@ -73,7 +73,7 @@ export function AllocationPanel({ thietBiId, donViTenMap = {} }: { thietBiId: st
               <TableRow key={i}>
                 <TableCell className="text-xs font-mono">{new Date(h.thoi_diem).toLocaleString("vi-VN")}</TableCell>
                 <TableCell>
-                  <Badge variant={h.hanh_dong === "cap_phat" ? "default" : "secondary"}>
+                  <Badge variant={h.hanh_dong === "cap_phat" ? "default" : "secondary"} className={h.hanh_dong === "cap_phat" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}>
                     {h.hanh_dong === "cap_phat" ? "Cấp phát" : "Thu hồi"}
                   </Badge>
                 </TableCell>
@@ -116,7 +116,7 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
               <TableRow key={i}>
                 <TableCell className="text-xs font-mono">{new Date(l.thoi_diem).toLocaleString("vi-VN")}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{statusMap?.get(l.den_trang_thai_id || "") || l.den_trang_thai_id || "—"}</Badge>
+                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">{statusMap?.get(l.den_trang_thai_id || "") || l.den_trang_thai_id || "—"}</Badge>
                 </TableCell>
                 <TableCell className="text-sm italic">{l.ly_do || "—"}</TableCell>
               </TableRow>

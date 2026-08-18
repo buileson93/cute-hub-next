@@ -125,7 +125,7 @@ export function QRScanner({ onDetect, className }: Props) {
             ) : (
               <>
                 <QrCode className="h-10 w-10 opacity-70" />
-                <Button onClick={start} size="lg" className="gap-2">
+                <Button onClick={start} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
                   <Camera className="h-4 w-4" /> Bật camera quét
                 </Button>
               </>
@@ -144,11 +144,11 @@ export function QRScanner({ onDetect, className }: Props) {
           placeholder="Nhập mã thiết bị hoặc dán link…"
           aria-label="Nhập mã thiết bị"
         />
-        <Button type="submit" variant="secondary">Mở</Button>
+        <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">Mở</Button>
       </form>
       {status === "scanning" && (
         <div className="mt-2 flex justify-end">
-          <Button type="button" size="sm" variant="ghost" onClick={() => { cleanup(); setStatus("idle"); }}>
+          <Button type="button" size="sm" variant="ghost" className="h-8 text-primary hover:text-primary/90 hover:bg-primary/5" onClick={() => { cleanup(); setStatus("idle"); }}>
             Tắt camera
           </Button>
         </div>

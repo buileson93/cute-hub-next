@@ -182,11 +182,11 @@ function DuAnDetailPage() {
             </div>
             
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-none capitalize px-2.5 py-0.5">
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-none capitalize px-2.5 py-0.5">
                 {duAn.trang_thai.replace("_", " ")}
               </Badge>
               {isManager && (
-                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
                   <Pencil className="h-4 w-4 mr-2" /> Thiết lập
                 </Button>
               )}

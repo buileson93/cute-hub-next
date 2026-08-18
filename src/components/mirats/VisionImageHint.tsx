@@ -103,12 +103,12 @@ export function VisionImageHint({ onApplyDescription, onApplyCategory, onApplyKe
             <span className="text-xs text-muted-foreground">({images.length}/{MAX})</span>
           </div>
           <div className="flex gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={pick}
+            <Button type="button" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm" onClick={pick}
               disabled={uploading || images.length >= MAX}>
               {uploading ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Upload className="mr-1 h-3 w-3" />}
               Tải ảnh
             </Button>
-            <Button type="button" size="sm" onClick={runAnalyze}
+            <Button type="button" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm" onClick={runAnalyze}
               disabled={analyzing || images.length === 0}>
               {analyzing ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Sparkles className="mr-1 h-3 w-3" />}
               Phân tích ảnh
@@ -150,7 +150,7 @@ export function VisionImageHint({ onApplyDescription, onApplyCategory, onApplyKe
             )}
             {hint.suggested_category && (
               <div className="mb-2 flex items-center justify-between gap-2">
-                <span className="text-sm">Phân loại nghi ngờ: <Badge variant="secondary">{hint.suggested_category}</Badge></span>
+                <span className="text-sm">Phân loại nghi ngờ: <Badge variant="secondary" className="bg-primary/10 text-primary">{hint.suggested_category}</Badge></span>
                 <Button type="button" size="sm" variant="ghost"
                   onClick={() => { onApplyCategory?.(hint.suggested_category as "A"|"B"|"C"|"D"|"E"); toast.success("Đã áp dụng phân loại"); }}>
                   Áp dụng

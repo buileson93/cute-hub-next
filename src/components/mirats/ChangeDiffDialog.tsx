@@ -12,8 +12,8 @@ function DiffCell({ value, tone }: { value: unknown; tone: "before" | "after" })
   const empty = value === null || value === undefined || value === "";
   const base =
     tone === "before"
-      ? "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200"
-      : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200";
+      ? "border-destructive/20 bg-destructive/10 text-destructive"
+      : "border-primary/20 bg-primary/10 text-primary";
   return (
     <div className={`min-h-[2rem] whitespace-pre-wrap break-words rounded-md border px-2.5 py-1.5 text-xs ${base} ${empty ? "italic opacity-70" : ""}`}>
       {formatVal(value)}
@@ -57,11 +57,11 @@ export function ChangeDiffDialog({
             <div className="mb-2 grid grid-cols-[minmax(120px,1fr)_1fr_auto_1fr] items-center gap-2 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               <span>Trường</span>
               <span className="flex items-center gap-1">
-                <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">Trước</Badge>
+                <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive">Trước</Badge>
               </span>
               <span aria-hidden />
               <span className="flex items-center gap-1">
-                <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">Sau</Badge>
+                <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">Sau</Badge>
               </span>
             </div>
             <div className="space-y-1.5">

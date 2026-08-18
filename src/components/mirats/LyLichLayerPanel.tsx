@@ -25,12 +25,12 @@ import {
 import { useLicensesData } from "@/lib/mirats/db-licenses";
 import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 
-const META: Record<string, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string }> = {
-  lap:       { icon: PackagePlus,   name: "Lắp tài sản",   dot: "bg-emerald-500" },
-  thao:      { icon: PackageMinus,  name: "Tháo tài sản",  dot: "bg-slate-500" },
-  hong_hoc:  { icon: RefreshCw,     name: "Hỏng / thay thế", dot: "bg-orange-500" },
-  bao_tri:   { icon: Wrench,        name: "Bảo dưỡng",      dot: "bg-sky-500" },
-  su_co:     { icon: AlertTriangle, name: "Sự cố",          dot: "bg-red-500" },
+const META: Record<string, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string; chip: string }> = {
+  lap:       { icon: PackagePlus,   name: "Lắp tài sản",   dot: "bg-success",     chip: "bg-success/10 text-success border-success/20" },
+  thao:      { icon: PackageMinus,  name: "Tháo tài sản",  dot: "bg-muted",       chip: "bg-muted text-muted-foreground border-border" },
+  hong_hoc:  { icon: RefreshCw,     name: "Hỏng / thay thế", dot: "bg-warning",     chip: "bg-warning/10 text-warning border-warning/20" },
+  bao_tri:   { icon: Wrench,        name: "Bảo dưỡng",      dot: "bg-primary",     chip: "bg-primary/10 text-primary border-primary/20" },
+  su_co:     { icon: AlertTriangle, name: "Sự cố",          dot: "bg-destructive", chip: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
 /** Yyyy-mm-dd cho <input type="date"> từ một timestamptz. */
@@ -67,7 +67,7 @@ function SuaNgayLapButton({ ganId, thoiDiem }: { ganId: string; thoiDiem: string
   return (
     <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) setValue(toDateInput(thoiDiem)); }}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-6 w-6" title="Sửa ngày lắp" aria-label="Sửa">
+        <Button variant="ghost" size="icon" className="h-6 w-6 text-primary hover:text-primary/90 hover:bg-primary/5" title="Sửa ngày lắp" aria-label="Sửa">
           <Pencil className="h-3.5 w-3.5" />
         </Button>
       </PopoverTrigger>
@@ -87,7 +87,7 @@ function SuaNgayLapButton({ ganId, thoiDiem }: { ganId: string; thoiDiem: string
         />
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Hủy</Button>
-          <Button size="sm" onClick={luu} disabled={suaNgayLap.isPending}>
+          <Button size="sm" onClick={luu} disabled={suaNgayLap.isPending} className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
             {suaNgayLap.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
             Lưu
           </Button>
@@ -106,20 +106,20 @@ function Timeline({
   return (
     <ol className="relative ml-2 border-l border-border pl-6">
       {data.map((it, i) => {
-        const m = META[it.loai_su_kien] ?? { icon: Clock, name: it.loai_su_kien, dot: "bg-muted-foreground" };
+        const m = META[it.loai_su_kien] ?? { icon: Clock, name: it.loai_su_kien, dot: "bg-muted", chip: "bg-muted text-muted-foreground border-border" };
         const Icon = m.icon;
         const editableLap = canEdit && it.loai_su_kien === "lap" && it.nguon === "gan_chuc_nang";
         return (
           <li key={`${it.nguon}-${it.nguon_id}-${i}`} className="relative mb-5 last:mb-0">
             <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-white" />
+              <Icon className="h-3.5 w-3.5 text-primary-foreground" />
             </span>
             <div className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
                   {it.thoi_diem ? new Date(it.thoi_diem).toLocaleDateString("vi-VN") : "Chưa rõ ngày"}
                 </span>
-                <Badge variant="outline">{m.name}</Badge>
+                <Badge variant="outline" className={m.chip}>{m.name}</Badge>
                 {it.ma_thiet_bi && (
                   <Badge variant="secondary" className="gap-1 font-mono text-[10px]">
                     <Cpu className="h-3 w-3" />{it.ma_thiet_bi}
