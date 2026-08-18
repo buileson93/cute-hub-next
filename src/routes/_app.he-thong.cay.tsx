@@ -155,6 +155,7 @@ function HeThongCayPage() {
       nav({ to: "/he-thong/thanh-phan" });
     } else {
       setDisplay(v as any);
+      // Use replace to avoid polluting history with view toggles
       nav({ 
         to: "/he-thong/cay", 
         search: (prev: any) => ({ ...prev, view: v }),
@@ -413,7 +414,7 @@ function HeThongCayPage() {
           emptyAction={isFiltering ? (<Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>Xoá tìm kiếm</Button>) : undefined}
           className="flex-1 w-full"
         >
-          <div className="flex-1 min-h-[600px] relative">
+          <div className="flex-1 min-h-[700px] relative">
             {display === "tree" && (
               <div className="h-full overflow-y-auto p-4 custom-scrollbar">
                 <TreeView 
