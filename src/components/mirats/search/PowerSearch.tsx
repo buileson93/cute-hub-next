@@ -199,7 +199,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         await transition({
           bang: "su_co",
           id: sc.id,
-          den: "dong",
+          den: "hoan_thanh",
           ghi_chu: "Đóng nhanh từ Command Palette",
         });
         
