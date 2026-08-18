@@ -84,8 +84,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
 
-
-
   const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
 
@@ -109,7 +107,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
           entity,
           id: r.id,
           title: r.tieuDe,
-          subtitle: r.motaNgan,
+          subtitle: r.motaNgan || "",
           to: r.route || `/${entity.replace('_', '-')}/${r.id}`
         } as SearchRow);
       }
@@ -277,11 +275,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                       onOpenChange(false);
                       toast.info(describeIntent(intent));
                     }}
-
-
-
-
-
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -344,7 +337,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                   {group.items.filter(item => !item.roles || (roles && item.roles.some((r: any) => roles.includes(r)))).map((item) => (
                     <CommandItem
                       key={item.to}
-                      onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, to: item.to })}
+                      onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
                       className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
                     >
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground/60 group-hover:bg-primary/10 group-hover:text-primary">
