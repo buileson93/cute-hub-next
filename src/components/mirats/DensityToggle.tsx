@@ -44,7 +44,8 @@ export function DensityToggle() {
       <Button
         size="sm"
         variant="ghost"
-        className="h-8 w-8 p-0"
+        className="h-8 w-8 p-0 astryx-control"
+        data-active={d !== "comfortable"}
         onClick={() => setD(nextDensity(d))}
         aria-label="Thay đổi mật độ hiển thị"
       >
