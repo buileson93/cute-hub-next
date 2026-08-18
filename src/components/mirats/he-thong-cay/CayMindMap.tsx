@@ -518,7 +518,9 @@ export function CayMindMap({
             };
             plRaw.children.push(nhRaw);
             if (expanded.has(nhId)) {
-              for (const ht of nh.systems) pushSystem(nhRaw, ht, `ht:${pl.id}:${nh.ma}:${ht.ma}`, false);
+              for (const ht of nh.systems) {
+                pushSystem(nhRaw, ht, `ht:${pl.id}:${nh.ma}:${ht.ma}`, unitMode);
+              }
             }
           }
         }
