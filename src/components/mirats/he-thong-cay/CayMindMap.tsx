@@ -304,9 +304,15 @@ export function CayMindMap({
 }) {
   const { searchQuery, focus, toggleNode, expandedNodes } = useCayContext();
 
-  const rf = useReactFlow();
-  // We use a safety check for rf because it might be null during early mount 
-  // even with Provider if there's a race condition or logic error
+  let rf: any = null;
+  try {
+    // Safety check: useReactFlow must be used inside ReactFlowProvider
+    // In HeThongCayPageWrapper we already wrap with ReactFlowProvider, 
+    // but we add a try-catch for robustness.
+    rf = useReactFlow();
+  } catch (e) {
+    console.warn("CayMindMap: useReactFlow called outside provider or during early mount");
+  }
   
   const initialExpanded = useMemo(() => {
     const set = new Set(["root", "root-stopped"]);
@@ -420,6 +426,9 @@ export function CayMindMap({
   }, [tree, plMind, nhMind]);
 
   const { nodes, edges } = useMemo(() => {
+    // Safety guard: if tree is not yet loaded, return empty to prevent building invalid diagram
+    if (!tree || tree.length === 0) return { nodes: [], edges: [] };
+
     const expanded = expandedNodes; // Use context state
     const COL_GAP = 96;
     const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
@@ -435,38 +444,39 @@ export function CayMindMap({
     };
 
     const pushSystem = (parent: Raw, ht: HtGroup, htId: string, unitMode: boolean) => {
-      const htSysId = parseHtSysMa(ht.ma).sysName;
-      const htPosCount = (isRealSystemId(htSysId) ? posByHt?.get(htSysId) : undefined)?.length ?? 0;
-      const htRaw: Raw = {
-        id: htId, kind: "ht",
-        data: {
-          kind: "ht", ma: ht.ma, label: htMind(ht.ma),
-          count: ht.devices.length, collapsible: ht.devices.length > 0 || htPosCount > 0, expanded: expanded.has(htId),
-          canManage: canManage && ht.ma !== HT_KHAC,
-          toggle: () => toggle(htId), onRename: (t) => onRename("ht", ht.ma, t), onOpenEditor: () => onOpenEditor("ht", ht.ma),
-          onHistory: () => onHistory(ht.ma),
-          onIncident: () => onIncident(ht.ma),
-          onMaint: () => onMaint(ht.ma),
-          onMove: unitMode ? undefined : (toNhomId, toLvId, toNhKey, toNhTen) => {
-             const sysId = parseHtSysMa(ht.ma).sysName;
-             if (!isRealSystemId(sysId)) return;
-             onMoveSystem({ heThongId: sysId, tenHeThong: htMind(ht.ma), toNhomId, toLvId, toNhKey, toNhTen });
-          }
-        },
-        children: [],
-      };
-      parent.children.push(htRaw);
-      if (!expanded.has(htId)) return;
-
-      for (const d of ht.devices) {
-        const tbId = `tb:${d.tb.ma_thiet_bi}`;
-        const hasKids = d.children.length > 0;
-        const tbRaw: Raw = {
-          id: tbId, kind: "tb",
+      try {
+        const htSysId = parseHtSysMa(ht.ma).sysName;
+        const htPosCount = (isRealSystemId(htSysId) ? posByHt?.get(htSysId) : undefined)?.length ?? 0;
+        const htRaw: Raw = {
+          id: htId, kind: "ht",
           data: {
-            kind: "tb", ma: d.tb.ma_thiet_bi, label: tbMind(d.tb), code: d.tb.ma_thiet_bi,
-            count: hasKids ? d.children.length : undefined,
-            collapsible: hasKids, expanded: expanded.has(tbId), canManage,
+            kind: "ht", ma: ht.ma, label: htMind(ht.ma),
+            count: ht.devices.length, collapsible: ht.devices.length > 0 || htPosCount > 0, expanded: expanded.has(htId),
+            canManage: canManage && ht.ma !== HT_KHAC,
+            toggle: () => toggle(htId), onRename: (t) => onRename("ht", ht.ma, t), onOpenEditor: () => onOpenEditor("ht", ht.ma),
+            onHistory: () => onHistory(ht.ma),
+            onIncident: () => onIncident(ht.ma),
+            onMaint: () => onMaint(ht.ma),
+            onMove: unitMode ? undefined : (toNhomId, toLvId, toNhKey, toNhTen) => {
+               const sysId = parseHtSysMa(ht.ma).sysName;
+               if (!isRealSystemId(sysId)) return;
+               onMoveSystem({ heThongId: sysId, tenHeThong: htMind(ht.ma), toNhomId, toLvId, toNhKey, toNhTen });
+            }
+          },
+          children: [],
+        };
+        parent.children.push(htRaw);
+        if (!expanded.has(htId)) return;
+
+        for (const d of ht.devices) {
+          const tbId = `tb:${d.tb.ma_thiet_bi}`;
+          const hasKids = d.children.length > 0;
+          const tbRaw: Raw = {
+            id: tbId, kind: "tb",
+            data: {
+              kind: "tb", ma: d.tb.ma_thiet_bi, label: tbMind(d.tb), code: d.tb.ma_thiet_bi,
+              count: hasKids ? d.children.length : undefined,
+              collapsible: hasKids, expanded: expanded.has(tbId), canManage,
             toggle: () => toggle(tbId), onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t), onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),
             onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, tbMind(d.tb)),
           },

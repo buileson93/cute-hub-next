@@ -45,15 +45,29 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
+  const isDev = import.meta.env.DEV;
+
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
+      <div className="max-w-2xl text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          Đã xảy ra lỗi khi tải trang
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Đã có lỗi không mong muốn xảy ra. Bạn có thể thử tải lại trang hoặc quay về trang chủ.
         </p>
+        
+        {isDev && (
+          <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 rounded-lg text-left overflow-auto max-h-[300px] border border-red-200 dark:border-red-900">
+            <p className="text-xs font-mono text-red-600 dark:text-red-400 font-bold mb-1">
+              [DEBUG ERROR]: {error.message}
+            </p>
+            <pre className="text-[10px] font-mono text-muted-foreground whitespace-pre-wrap">
+              {error.stack}
+            </pre>
+          </div>
+        )}
+
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -62,14 +76,21 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Thử lại
           </button>
-          <a
-            href="/"
+          <button
+            onClick={() => {
+              try {
+                localStorage.clear();
+                window.location.href = "/";
+              } catch (e) {
+                window.location.href = "/";
+              }
+            }}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
-          </a>
+            Xoá cache & Về trang chủ
+          </button>
         </div>
       </div>
     </div>

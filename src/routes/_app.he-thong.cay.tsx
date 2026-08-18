@@ -58,6 +58,7 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
       { property: "og:description", content: "Sơ đồ hệ thống kỹ thuật và cây phân cấp tài sản." },
     ],
   }),
+  errorComponent: ErrorComponent,
   component: HeThongCayPageWrapper,
 });
 
@@ -237,6 +238,12 @@ function HeThongCayPage() {
       const plList = taxonomy?.plList || [];
       const htList = taxonomy?.htList || [];
       const nhomList = taxonomy?.nhomList || [];
+      
+      // Safety check for empty data
+      if (plList.length === 0 && devices.length === 0) {
+        return { tree: EMPTY_ROWS, total: 0 };
+      }
+
       const realSystems = htList.map(h => {
         const nhom = nhomList.find(n => n.id === h.nhomId);
         return {
@@ -246,6 +253,7 @@ function HeThongCayPage() {
           plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC"
         };
       });
+
       const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
       const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
       const colNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.mau;
@@ -265,7 +273,8 @@ function HeThongCayPage() {
         realSystems
       );
     } catch (err) {
-      console.error("Error building tree:", err);
+      console.error("Critical error building tree in CayPage:", err);
+      // Return empty instead of crashing the page
       return { tree: EMPTY_ROWS, total: 0 };
     }
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
