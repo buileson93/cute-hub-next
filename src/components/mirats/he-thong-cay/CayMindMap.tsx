@@ -627,6 +627,10 @@ export function CayMindMap({
     });
 
     return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
+    } catch (err) {
+      console.error("Critical error building MindMap nodes:", err);
+      return { nodes: [], edges: [], finiteNodes: true };
+    }
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
