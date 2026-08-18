@@ -183,8 +183,8 @@ export function PhotoUpload({
                   <span className="truncate flex-1">{r.name}</span>
                   <span className="tabular-nums">{labelOf(r.status)}{savings}</span>
                 </div>
-                <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-muted">
-                  <div className={`h-full ${colorOf(r.status)} transition-all`} style={{ width: `${pct}%` }} />
+                <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-muted border border-border/10">
+                  <div className={`h-full ${colorOf(r.status)} transition-all shadow-[0_0_8px_rgba(0,0,0,0.1)]`} style={{ width: `${pct}%` }} />
                 </div>
               </div>
             );
@@ -215,7 +215,7 @@ export function PhotoUpload({
                 {!disabled && (
                   <button
                     type="button" onClick={() => remove(a)}
-                    className="absolute right-1 top-1 hidden rounded-full bg-destructive p-0.5 text-destructive-foreground group-hover:block"
+                    className="absolute right-1 top-1 hidden rounded-full bg-destructive text-destructive-foreground p-1 shadow-sm hover:bg-destructive/90 group-hover:flex items-center justify-center transition-all"
                     aria-label="Xoá"
                   >
                     <X className="h-3 w-3" />
