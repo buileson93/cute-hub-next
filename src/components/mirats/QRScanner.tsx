@@ -115,7 +115,7 @@ export function QRScanner({ onDetect, className }: Props) {
       <div className="relative aspect-square w-full overflow-hidden rounded-xl border bg-black/90">
         <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
         {status !== "scanning" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 text-white/90">
             {status === "starting" ? (
               <><Loader2 className="h-8 w-8 animate-spin" /><span>Đang mở camera…</span></>
             ) : status === "denied" ? (

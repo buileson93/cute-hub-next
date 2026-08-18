@@ -148,7 +148,7 @@ function Content() {
                   </div>
                 )}
                 {usesR2 && health.data?.ok && (
-                  <p className="text-xs text-emerald-600">{health.data.message}</p>
+                  <p className="text-xs text-success font-medium">{health.data.message}</p>
                 )}
 
                 <Card className="astryx-surface">
@@ -449,8 +449,8 @@ function R2ParamsCard() {
                 Kiểm tra kết nối
               </Button>
               {testResult && (
-                <span className={`text-xs ${testResult.ok ? "text-emerald-600" : "text-destructive"}`}>
-                  {testResult.message}
+                <span className={`text-xs font-medium ${testResult.ok ? "text-success" : "text-destructive"}`}>
+                  [{testResult.ok ? "OK" : "LỖI"}] {testResult.message}
                 </span>
               )}
             </div>
@@ -459,7 +459,7 @@ function R2ParamsCard() {
               <ul className="space-y-1 rounded-md border bg-muted/30 p-3 text-xs">
                 {testResult.steps.map((st) => (
                   <li key={st.ten} className="flex items-start gap-2">
-                    {st.ok ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                    {st.ok ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
                            : <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />}
                     <span><strong>{st.ten}:</strong> {st.message}</span>
                   </li>

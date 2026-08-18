@@ -84,7 +84,7 @@ export function AiChatButton() {
         title="MIRATS AI & Tin nhắn"
         className={cn(
           "fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full lg:bottom-6 lg:right-6",
-          "bg-[#0074e2] text-white",
+          "bg-primary text-primary-foreground",
           "shadow-lg shadow-[#0074e2]/25 ring-1 ring-[#0074e2]/20 backdrop-blur",
           "hover:shadow-xl hover:shadow-[#0074e2]/20 transition-mirats-base",
         )}
@@ -178,7 +178,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0074e2] text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             {tab === "ai" ? <Sparkles className="h-4 w-4" strokeWidth={2.2} /> : <MessagesSquare className="h-4 w-4" strokeWidth={2.2} />}
           </div>
           <div className="leading-tight">

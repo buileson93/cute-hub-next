@@ -20,13 +20,13 @@ export function AllocationPanel({ thietBiId, donViTenMap }: { thietBiId: string;
             
             return (
               <li key={row.id} className="relative">
-                <span className={`absolute -left-[35px] flex h-7 w-7 items-center justify-center rounded-full ring-4 ring-background ${isCapPhat ? "bg-indigo-500" : "bg-slate-400"}`}>
-                  {isCapPhat ? <PackageCheck className="h-4 w-4 text-white" /> : <ArrowLeftRight className="h-4 w-4 text-white" />}
+                <span className={`absolute -left-[35px] flex h-7 w-7 items-center justify-center rounded-full ring-4 ring-background shadow-sm ${isCapPhat ? "bg-primary" : "bg-muted"}`}>
+                  {isCapPhat ? <PackageCheck className="h-4 w-4 text-primary-foreground" /> : <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />}
                 </span>
                 <div className="rounded-lg border p-4 bg-card shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
-                      <Badge variant={isCapPhat ? "default" : "secondary"} className={isCapPhat ? "bg-indigo-600" : ""}>
+                      <Badge variant={isCapPhat ? "default" : "secondary"} className={isCapPhat ? "bg-primary text-primary-foreground" : ""}>
                         {isCapPhat ? "Cấp phát" : "Thu hồi"}
                       </Badge>
                       <span className="text-xs text-muted-foreground font-mono">

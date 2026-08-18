@@ -2,6 +2,7 @@ import { useMemo, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getHeartBeatData, HeartBeatGroup } from "@/lib/mirats/dashboard-realtime.functions";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 import { 
   Tooltip,
   TooltipContent,
@@ -102,8 +103,8 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
               ))}
             </div>
           ) : (
-            <div className="text-[11px] text-success font-black uppercase tracking-wider">
-              OK
+            <div className="text-[11px] text-success font-black uppercase tracking-wider flex items-center gap-1">
+              <Check className="h-3 w-3" /> OK
             </div>
           )}
         </div>

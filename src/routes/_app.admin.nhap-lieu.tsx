@@ -495,16 +495,16 @@ function NhapLieuPage() {
                     type="button"
                     onClick={() => goStep(s.n)}
                     className={`flex w-full items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors ${
-                      active ? "border-primary bg-primary/5" : done ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-muted/20 hover:bg-muted/40"
+                      active ? "border-primary bg-primary/5 shadow-[0_0_10px_rgba(0,116,226,0.1)]" : done ? "border-success/40 bg-success/5" : "border-border bg-muted/20 hover:bg-muted/40"
                     }`}
                   >
-                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                      active ? "bg-primary text-primary-foreground" : done ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold shadow-sm ${
+                      active ? "bg-primary text-primary-foreground" : done ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
                     }`}>
                       {done ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                     </div>
                     <div className="min-w-0">
-                      <div className={`truncate text-sm font-medium ${active ? "text-foreground" : done ? "text-emerald-700 dark:text-emerald-400" : "text-muted-foreground"}`}>
+                      <div className={`truncate text-sm font-medium ${active ? "text-foreground" : done ? "text-success" : "text-muted-foreground"}`}>
                         {s.n}. {s.label}
                       </div>
                       <div className="hidden truncate text-[11px] text-muted-foreground sm:block">{s.desc}</div>
@@ -584,9 +584,10 @@ function NhapLieuPage() {
                 </label>
 
                 {parsed && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/20 px-3 py-2">
-                    <p className="text-xs text-muted-foreground">
-                      Đọc được <b className="text-foreground">{parsed.rows.length}</b> dòng · <b className="text-foreground">{parsed.headers.length}</b> cột
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-success/30 bg-success/5 px-3 py-2">
+                    <p className="text-xs text-success font-medium">
+                      <CheckCircle2 className="mr-1.5 inline-block h-3.5 w-3.5" />
+                      Đọc được <b>{parsed.rows.length}</b> dòng · <b>{parsed.headers.length}</b> cột
                     </p>
                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={clearFile}>
                       <X className="mr-1 h-3.5 w-3.5" /> Xóa file
@@ -621,13 +622,13 @@ function NhapLieuPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {missingKey ? (
-                    <div className="flex items-start gap-2 rounded-md border border-sky-500/40 bg-sky-500/5 p-2 text-xs text-sky-700 dark:text-sky-400">
+                    <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-2 text-xs text-primary font-medium">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                       <span>Chưa ánh xạ cột khoá <b>{keyLabel}</b> — mã sẽ tự sinh (tất cả là tạo mới).</span>
                       <InfoHint>Nếu file có sẵn mã và bạn muốn cập nhật bản ghi cũ thì hãy ánh xạ cột khoá.</InfoHint>
                     </div>
                   ) : missingCreateFields.length > 0 ? (
-                    <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/5 p-2 text-xs text-amber-700 dark:text-amber-400">
+                    <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-2 text-xs text-warning font-medium">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                       <span>Thiếu trường bắt buộc: <b>{missingCreateFields.join(", ")}</b>.</span>
                       <InfoHint>Dòng có sẵn mã sẽ được cập nhật (cột thiếu giữ nguyên); dòng mã mới sẽ báo lỗi khi ghi.</InfoHint>
@@ -818,7 +819,7 @@ function NhapLieuPage() {
                     Kiểm tra dữ liệu
                   </Button>
                   <Button size="sm" onClick={() => run(true)} disabled={busy || !canCommit}
-                    className="bg-emerald-600 hover:bg-emerald-700">
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
                     <CheckCircle2 className="mr-1.5 h-4 w-4" /> Ghi vào CSDL
                   </Button>
                   {!result && <p className="self-center text-xs text-muted-foreground">Hãy kiểm tra dữ liệu trước khi ghi.</p>}
@@ -829,16 +830,16 @@ function NhapLieuPage() {
                     <div className="flex flex-wrap gap-2">
                       {result.committed ? (
                         <>
-                          <Badge className="bg-emerald-600">Tạo mới: {result.summary.created ?? 0}</Badge>
-                          <Badge className="bg-sky-600">Cập nhật: {result.summary.updated ?? 0}</Badge>
+                          <Badge className="bg-success text-success-foreground">Tạo mới: {result.summary.created ?? 0}</Badge>
+                          <Badge className="bg-primary text-primary-foreground">Cập nhật: {result.summary.updated ?? 0}</Badge>
                           {(result.summary.writeErrors ?? 0) > 0 && (
                             <Badge variant="destructive">Lỗi ghi: {result.summary.writeErrors}</Badge>
                           )}
                         </>
                       ) : (
                         <>
-                          <Badge className="bg-emerald-600"><Plus className="mr-1 h-3 w-3" />Tạo mới: {result.summary.create}</Badge>
-                          <Badge className="bg-sky-600"><RefreshCw className="mr-1 h-3 w-3" />Cập nhật: {result.summary.update}</Badge>
+                          <Badge className="bg-success text-success-foreground"><Plus className="mr-1 h-3 w-3" />Tạo mới: {result.summary.create}</Badge>
+                          <Badge className="bg-primary text-primary-foreground"><RefreshCw className="mr-1 h-3 w-3" />Cập nhật: {result.summary.update}</Badge>
                           <Badge variant="destructive"><AlertTriangle className="mr-1 h-3 w-3" />Lỗi: {result.summary.error}</Badge>
                           {result.summary.refCreate > 0 && <Badge variant="outline">Danh mục sẽ tạo: {result.summary.refCreate}</Badge>}
                           {previewWarnings > 0 && <Badge className="bg-amber-500"><AlertTriangle className="mr-1 h-3 w-3" />Cảnh báo: {previewWarnings}</Badge>}
@@ -862,8 +863,8 @@ function NhapLieuPage() {
                               <TableRow key={p.index} className={p.action === "error" ? "bg-destructive/5" : ""}>
                                 <TableCell className="text-xs tabular-nums">{p.index + 1}</TableCell>
                                 <TableCell>
-                                  {p.action === "create" && <Badge className="bg-emerald-600">Tạo mới</Badge>}
-                                  {p.action === "update" && <Badge className="bg-sky-600">Cập nhật</Badge>}
+                                  {p.action === "create" && <Badge className="bg-success text-success-foreground">Tạo mới</Badge>}
+                                  {p.action === "update" && <Badge className="bg-primary text-primary-foreground">Cập nhật</Badge>}
                                   {p.action === "error" && <Badge variant="destructive">Lỗi</Badge>}
                                 </TableCell>
                                 <TableCell className="font-mono text-xs">{p.key || "—"}</TableCell>
@@ -884,7 +885,7 @@ function NhapLieuPage() {
                     )}
 
                     {result.committed && (
-                      <div className="flex items-center gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-400">
+                      <div className="flex items-center gap-2 rounded-md border border-success/40 bg-success/5 p-3 text-sm text-success font-medium">
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
                         <span>Đã ghi xong. Bạn có thể tải file khác để nhập tiếp.</span>
                       </div>

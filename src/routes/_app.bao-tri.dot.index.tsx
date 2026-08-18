@@ -31,7 +31,7 @@ const trangThaiLabel: Record<string, { label: string; color: string }> = {
   nhap: { label: "Nháp", color: "bg-slate-100 text-slate-700" },
   mo: { label: "Đã mở", color: "bg-sky-100 text-sky-700" },
   dang_thuc_hien: { label: "Đang thực hiện", color: "bg-amber-100 text-amber-700" },
-  dong: { label: "Đã đóng", color: "bg-emerald-100 text-emerald-700" },
+  dong: { label: "Đã đóng", color: "bg-success/10 text-success border-success/20" },
   huy: { label: "Đã huỷ", color: "bg-rose-100 text-rose-700" },
 };
 

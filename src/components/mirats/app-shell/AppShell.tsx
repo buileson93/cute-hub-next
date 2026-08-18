@@ -184,7 +184,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         className={cn(
                           "group relative flex items-center justify-center transition-mirats-fast rounded-full",
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col active:scale-95",
-                          ws.id === activeWs.id ? "bg-[#0074e2] text-white shadow-lg shadow-[#0074e2]/30" : "text-muted-foreground hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
+                          ws.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
                         )}
                         data-active={ws.id === activeWs.id}
                       >
@@ -208,7 +208,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                         className={cn(
                           "flex items-center justify-center rounded-full transition-mirats-fast",
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          adminWs.id === activeWs.id ? "bg-[#0074e2] text-white shadow-lg shadow-[#0074e2]/30 active:scale-95" : "text-muted-foreground hover:bg-[#0074e2]/10 hover:text-[#0074e2] active:scale-95"
+                          adminWs.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 active:scale-95" : "text-muted-foreground hover:bg-primary/10 hover:text-primary active:scale-95 transition-colors"
                         )}
                       >
                         <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />

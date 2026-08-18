@@ -31,17 +31,17 @@ export const Route = createFileRoute("/_app/bao-tri/dot/$id")({
 });
 
 const trangThaiHM: Record<string, { label: string; color: string }> = {
-  chua_bat_dau: { label: "Chưa bắt đầu", color: "bg-slate-100 text-slate-700" },
-  dang_lam: { label: "Đang làm", color: "bg-amber-100 text-amber-700" },
-  hoan_thanh: { label: "Hoàn thành", color: "bg-emerald-100 text-emerald-700" },
-  khong_thuc_hien: { label: "Không thực hiện", color: "bg-rose-100 text-rose-700" },
+  chua_bat_dau: { label: "Chưa bắt đầu", color: "bg-muted text-muted-foreground" },
+  dang_lam: { label: "Đang làm", color: "bg-warning/10 text-warning border-warning/20" },
+  hoan_thanh: { label: "Hoàn thành", color: "bg-success/10 text-success border-success/20" },
+  khong_thuc_hien: { label: "Không thực hiện", color: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
 const duyetTT: Record<string, { label: string; color: string }> = {
-  chua_gui: { label: "Chưa gửi", color: "bg-slate-100 text-slate-700" },
-  cho_duyet: { label: "Chờ duyệt", color: "bg-amber-100 text-amber-700" },
-  da_duyet: { label: "Đã duyệt (khoá)", color: "bg-emerald-100 text-emerald-700" },
-  tu_choi: { label: "Bị trả lại", color: "bg-rose-100 text-rose-700" },
+  chua_gui: { label: "Chưa gửi", color: "bg-muted text-muted-foreground" },
+  cho_duyet: { label: "Chờ duyệt", color: "bg-warning/10 text-warning border-warning/20" },
+  da_duyet: { label: "Đã duyệt", color: "bg-success/10 text-success border-success/20" },
+  tu_choi: { label: "Bị trả lại", color: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
 function deadlineTone(han: string | null | undefined, done: boolean) {
@@ -49,9 +49,9 @@ function deadlineTone(han: string | null | undefined, done: boolean) {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const d = new Date(han); d.setHours(0, 0, 0, 0);
   const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
-  if (done) return { color: "text-emerald-600", label: han };
-  if (diff < 0) return { color: "text-rose-600 font-semibold", label: `${han} (quá ${-diff}d)` };
-  if (diff <= 3) return { color: "text-amber-600 font-semibold", label: `${han} (còn ${diff}d)` };
+  if (done) return { color: "text-success", label: han };
+  if (diff < 0) return { color: "text-destructive font-semibold", label: `${han} (quá ${-diff}d)` };
+  if (diff <= 3) return { color: "text-warning font-semibold", label: `${han} (còn ${diff}d)` };
   return { color: "text-foreground", label: han };
 }
 
@@ -329,8 +329,8 @@ function DotDetailPage() {
                             </div>
                             <div className="text-xs text-muted-foreground">{h.dm_he_thong?.ma}</div>
                           </td>
-                          <td className="px-3 py-2"><Badge className={tt.color} variant="secondary">{tt.label}</Badge></td>
-                          <td className="px-3 py-2"><Badge className={dt.color} variant="secondary">{dt.label}</Badge></td>
+                          <td className="px-3 py-2"><Badge className={tt.color} variant="outline">{tt.label}</Badge></td>
+                          <td className="px-3 py-2"><Badge className={dt.color} variant="outline">{dt.label}</Badge></td>
                           <td className="px-3 py-2">
                             {h.ket_qua === "dat" && <span className="inline-flex items-center gap-1 text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" />Đạt</span>}
                             {h.ket_qua === "khong_dat" && <span className="inline-flex items-center gap-1 text-rose-600"><XCircle className="h-3.5 w-3.5" />Không đạt</span>}

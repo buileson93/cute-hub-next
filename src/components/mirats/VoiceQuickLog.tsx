@@ -78,8 +78,8 @@ export function VoiceQuickLog({ maThietBi }: Props) {
             onPointerLeave={() => listening && stopVoice()}
             className={`w-full h-16 rounded-lg flex items-center justify-center gap-2 text-base font-medium transition-all select-none touch-none ${
               listening
-                ? "bg-destructive text-destructive-foreground animate-pulse scale-[0.98]"
-                : "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "bg-destructive text-destructive-foreground animate-pulse scale-[0.98] shadow-lg shadow-destructive/20"
+                : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/20"
             }`}
             aria-label="Nhấn giữ để ghi âm sự cố"
           >
