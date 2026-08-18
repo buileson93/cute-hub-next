@@ -534,7 +534,7 @@ export function CayMindMap({
     };
     if (stoppedPl && expanded.has("root-stopped")) {
        for (const ht of stoppedPl.fields[0].groups[0].systems) {
-         pushSystem(stoppedPlRaw, ht, `ht:stopped:${ht.ma}`, false);
+         pushSystem(stoppedPlRaw, ht, `ht:stopped:${ht.ma}`, true);
        }
     }
 
