@@ -66,7 +66,7 @@ const CV_TRANG_THAI: Record<string, { label: string; tone: string; column: strin
   chua_bat_dau: { label: "Chưa bắt đầu", tone: "bg-slate-100 text-slate-700 border-slate-200", column: "Chưa bắt đầu" },
   dang_lam:     { label: "Đang làm",     tone: "bg-sky-100 text-sky-700 border-sky-200",       column: "Đang làm" },
   cho_duyet:    { label: "Chờ duyệt",    tone: "bg-amber-100 text-amber-700 border-amber-200", column: "Chờ duyệt" },
-  hoan_thanh:   { label: "Hoàn thành",   tone: "bg-emerald-100 text-emerald-700 border-emerald-200", column: "Hoàn thành" },
+  hoan_thanh:   { label: "Hoàn thành",   tone: "bg-success/10 text-success border-success/20", column: "Hoàn thành" },
   qua_han:      { label: "Quá hạn",      tone: "bg-rose-100 text-rose-700 border-rose-200",    column: "Quá hạn" },
 };
 const CV_STATUSES = ["chua_bat_dau", "dang_lam", "cho_duyet", "hoan_thanh", "qua_han"] as const;

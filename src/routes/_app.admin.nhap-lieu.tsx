@@ -504,7 +504,7 @@ function NhapLieuPage() {
                       {done ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                     </div>
                     <div className="min-w-0">
-                      <div className={`truncate text-sm font-medium ${active ? "text-foreground" : done ? "text-emerald-700 dark:text-emerald-400" : "text-muted-foreground"}`}>
+                      <div className={`truncate text-sm font-medium ${active ? "text-foreground" : done ? "text-success" : "text-muted-foreground"}`}>
                         {s.n}. {s.label}
                       </div>
                       <div className="hidden truncate text-[11px] text-muted-foreground sm:block">{s.desc}</div>
