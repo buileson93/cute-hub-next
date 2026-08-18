@@ -112,11 +112,11 @@ function KiemTraLayoutPage() {
                     {res == null ? (
                       <Badge variant="outline">Đang kiểm tra…</Badge>
                     ) : ok ? (
-                      <Badge className="gap-1 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400">
+                      <Badge className="gap-1 border-success/30 bg-success/10 text-success hover:bg-success/20">
                         <CheckCircle2 className="h-3 w-3" /> OK
                       </Badge>
                     ) : (
-                      <Badge className="gap-1 bg-red-500/15 text-red-700 hover:bg-red-500/20 dark:text-red-400">
+                      <Badge variant="outline" className="gap-1 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20">
                         <AlertTriangle className="h-3 w-3" />
                         {res.overflowY && res.overflowX ? "Tràn 2 chiều" : res.overflowY ? "Tràn dọc" : "Tràn ngang"}
                       </Badge>
