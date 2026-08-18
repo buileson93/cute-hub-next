@@ -15,7 +15,9 @@ export type Intent =
   | { kind: "close-incident"; id: string; confidence: number }
   | { kind: "create-pm"; target: string; confidence: number }
   | { kind: "logout"; confidence: number }
+  | { kind: "navigate"; to: string; label: string; confidence: number }
   | { kind: "jump-to"; query: string; confidence: number };
+
 
 
 const ASSET_RE = "(TB[_-]?\\d+|[A-Z]{2,}\\d{2,})";
