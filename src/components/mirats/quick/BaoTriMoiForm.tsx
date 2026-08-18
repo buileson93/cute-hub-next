@@ -130,8 +130,9 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
           data: values, 
           submitted_at: new Date().toISOString(), 
           template_code: templates?.find(t => t.id === templateId)?.code ?? "", 
-          template_version: 1, 
-          template_snapshot: {} 
+          template_version: templates?.find(t => t.id === templateId)?.version || 1, 
+          template_snapshot: templates?.find(t => t.id === templateId) || {} 
+
         },
 
         ma_base: maBase, 

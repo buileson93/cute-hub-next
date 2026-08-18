@@ -193,6 +193,7 @@ export function CommandPalette() {
         toast.info(describeIntent(intent));
         break;
       case "jump-to":
+        navigate({ to: "/he-thong/cay", search: { q: intent.query } as never });
         break;
       default:
         toast.info(describeIntent(intent));
