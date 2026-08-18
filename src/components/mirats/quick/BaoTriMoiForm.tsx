@@ -62,7 +62,7 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
   const [ngayBatDau, setNgayBatDau] = useState(new Date().toISOString().slice(0, 10));
   const [ngayHoanThanh, setNgayHoanThanh] = useState(new Date().toISOString().slice(0, 10));
   const [nguoiThucHien, setNguoiThucHien] = useState("");
-  const [ketQua, setKetQua] = useState("");
+  const [ketQua, setKetQua] = useState("Tốt");
   const [values, setValues] = useState<Record<string, string>>({});
   const [chkValues, setChkValues] = useState<Record<string, ItemInput>>({});
   const [step, setStep] = useState(1);
@@ -112,12 +112,21 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
     if (!heThongId) return "Vui lòng chọn hệ thống";
     if (!templateId) return "Vui lòng chọn mẫu phiếu";
     if (selected.length === 0) return "Chọn ít nhất một tài sản";
+    
+    // Kiểm tra trường động bắt buộc
+    if (!isChecklist && fields) {
+      for (const f of fields) {
+        if (f.required && !values[f.key]?.trim()) return `Vui lòng nhập ${f.label}`;
+      }
+    }
+
     if (isChecklist) {
       const chkErr = findChecklistError(sections ?? [], chkValues);
       if (chkErr) return chkErr;
     }
     return null;
   }
+
 
   const save = useMutation({
     mutationFn: async () => {
@@ -148,8 +157,11 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
         devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null })),
         item_results: isChecklist ? buildItemResults("__placeholder__", sections ?? [], chkValues) as any : []
       });
+      const err = validateBeforeSave();
+      if (err) throw new Error(err);
       const r = await ghiBaoDuongFull(payload);
       return r.bao_tri_ids.length;
+
     },
     onSuccess: () => { 
       toast.success("Đã lưu phiếu bảo dưỡng"); 
@@ -315,8 +327,13 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
         <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
         <div className="flex gap-2">
-           {step === 3 && <Button variant="secondary" onClick={() => setPreviewOpen(true)}>Xem trước</Button>}
+           {step === 3 && <Button variant="secondary" onClick={() => {
+             const err = validateBeforeSave();
+             if (err) { toast.error(err); return; }
+             setPreviewOpen(true);
+           }}>Xem trước</Button>}
            {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}</Button>}
+
         </div>
       </div>
       <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
