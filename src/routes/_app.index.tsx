@@ -107,11 +107,11 @@ function Dashboard() {
             variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "astryx-control h-8 px-4 transition-all gap-2",
-              !isEditing && "border-primary/20 hover:bg-primary/5"
+              "astryx-control h-8 px-4 transition-all gap-2 shadow-none",
+              isEditing ? "bg-primary text-primary-foreground border-primary" : "border-primary/20 hover:bg-primary/5"
             )}
           >
-            <Icon name={isEditing ? "status.success" : "action.settings"} size="tiny" className={cn(!isEditing && "text-primary")} />
+            <Icon name={isEditing ? "status.success" : "action.settings"} size="tiny" className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />
             <span className="text-[10px] font-bold uppercase tracking-wider">
               {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
             </span>
