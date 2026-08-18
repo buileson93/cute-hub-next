@@ -79,7 +79,7 @@ const RECENT_KEY = "mirats-powersearch-recent";
 export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const [q, setQ] = useState("");
   const [activeTab, setActiveTab] = useState<TabValue>("all");
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [focusedRow, setFocusedRow] = useState<SearchRow | null>(null);
   const navigate = useNavigate();
   const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -152,9 +152,12 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   };
 
   const handleSelect = (row: SearchRow) => {
-    saveRecent(row);
-    onOpenChange(false);
-    navigate({ to: row.to as any });
+    if (row.entity === "nav" || row.to) {
+      saveRecent(row);
+      onOpenChange(false);
+      navigate({ to: row.to as any });
+      return;
+    }
   };
 
   const intent = useMemo(() => matchIntent(q), [q]);
@@ -180,7 +183,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   }, [open, onOpenChange]);
 
   useEffect(() => {
-    setSelectedIndex(0);
+    setFocusedRow(null);
   }, [q, activeTab]);
 
   return (
@@ -310,13 +313,14 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {/* Search Hits */}
               {filteredRows.length > 0 && (
                 <CommandGroup heading={q ? `Kết quả (${filteredRows.length})` : "Gợi ý cho bạn"}>
-                  {filteredRows.map((row, idx) => {
+                  {filteredRows.map((row) => {
                     const meta = ENTITY_META[row.entity] || { icon: Package, label: "Khác" };
                     const Icon = meta.icon;
                     return (
                       <CommandItem
                         key={`${row.entity}-${row.id}`}
                         onSelect={() => handleSelect(row)}
+                        onMouseEnter={() => setFocusedRow(row)}
                         className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
                       >
                         <div className={cn(
@@ -354,6 +358,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                     <CommandItem
                       key={item.to}
                       onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
+                      onMouseEnter={() => setFocusedRow({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
                       className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
                     >
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground/60 group-hover:bg-primary/10 group-hover:text-primary">
@@ -420,8 +425,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                 <div className="h-[2px] w-8 bg-primary/40 rounded-full" />
               </div>
               
-              {/* Contextual Stats or Help */}
-              {!q ? (
+              {!focusedRow ? (
                 <div className="flex flex-col gap-6 py-2">
                   <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-background border border-border/40 shadow-sm transition-all hover:shadow-md">
                     <div className="flex items-center gap-2 text-primary">
@@ -456,40 +460,61 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                   <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-background border border-border/50 shadow-md relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
                     <div className="h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                      <LayoutDashboard className="h-8 w-8 text-primary" />
+                      {(() => {
+                        const meta = ENTITY_META[focusedRow.entity];
+                        const Icon = meta?.icon || Package;
+                        return <Icon className="h-8 w-8 text-primary" />;
+                      })()}
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">Đang xử lý ý định</span>
-                    <span className="text-sm font-bold text-foreground mt-2 text-center break-all px-2">"{q}"</span>
+                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
+                      {ENTITY_META[focusedRow.entity]?.label || "Thông tin"}
+                    </span>
+                    <span className="text-sm font-bold text-foreground mt-2 text-center break-all px-2 leading-tight">
+                      {focusedRow.title}
+                    </span>
                   </div>
                   
                   <div className="flex flex-col gap-2.5">
-                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] font-medium text-muted-foreground/60">Trạng thái AI</span>
-                        <span className="text-[12px] font-bold text-primary flex items-center gap-1.5">
-                          <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                          Sẵn sàng
-                        </span>
+                    {focusedRow.subtitle && (
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                        <div className="h-8 w-8 shrink-0 rounded-lg bg-muted/30 flex items-center justify-center">
+                          <FileText className="h-4 w-4 text-muted-foreground/60" />
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-medium text-muted-foreground/60">Chi tiết</span>
+                          <span className="text-[12px] leading-tight text-foreground/80">{focusedRow.subtitle}</span>
+                        </div>
                       </div>
-                      <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center">
-                        <Sparkles className="h-4 w-4 text-primary/60" />
+                    )}
+
+                    {focusedRow.sysName && (
+                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-medium text-muted-foreground/60">Hệ thống</span>
+                          <span className="text-[12px] font-bold text-primary flex items-center gap-1.5">
+                            <Network className="h-3.5 w-3.5" />
+                            {focusedRow.sysName}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] font-medium text-muted-foreground/60">Độ tin cậy</span>
-                        <span className="text-[12px] font-bold text-emerald-500">Tối ưu</span>
+                    {focusedRow.count !== undefined && (
+                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-medium text-muted-foreground/60">Quy mô</span>
+                          <span className="text-[12px] font-bold text-emerald-500 flex items-center gap-1.5">
+                            <Package className="h-3.5 w-3.5" />
+                            {focusedRow.count} tài sản
+                          </span>
+                        </div>
                       </div>
-                      <div className="h-8 w-8 rounded-lg bg-emerald-500/5 flex items-center justify-center">
-                        <ShieldCheck className="h-4 w-4 text-emerald-500/60" />
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
                     <p className="text-[11px] leading-relaxed text-primary/70 font-medium">
-                      MIRATS AI đã phân tích từ khóa và gợi ý các hành động phù hợp nhất ở cột bên trái.
+                      Nhấn Enter để mở {ENTITY_META[focusedRow.entity]?.label.toLowerCase() || "chi tiết"} này.
                     </p>
                   </div>
                 </div>
