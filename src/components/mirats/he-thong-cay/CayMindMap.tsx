@@ -32,15 +32,15 @@ import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils
 import { toast } from "sonner";
 
 const KIND_STYLE: Record<string, string> = {
-  root: "border-primary/60 bg-primary/10 text-foreground",
-  pl: "border-rose-500/30 bg-card/70",
-  lv: "border-primary/30 bg-card/70",
-  nh: "border-violet-500/30 bg-card/70",
-  ht: "border-blue-500/30 bg-card/70",
-  tb: "border-border bg-card/70",
-  tp: "border-emerald-500/30 bg-card/70",
-  vtg: "border-sky-500/30 bg-card/70",
-  vt: "border-sky-500/25 bg-card/70",
+  root: "border-primary/80 bg-primary/20 text-foreground",
+  pl: "border-rose-500/40 bg-rose-500/5",
+  lv: "border-primary/40 bg-primary/5",
+  nh: "border-violet-500/40 bg-violet-500/5",
+  ht: "border-blue-500/40 bg-blue-500/5",
+  tb: "border-slate-400 bg-slate-50/50",
+  tp: "border-emerald-500/40 bg-emerald-500/5",
+  vtg: "border-sky-500/40 bg-sky-500/5",
+  vt: "border-sky-500/35 bg-sky-500/5",
 };
 
 const KIND_DOT: Record<string, string> = {
