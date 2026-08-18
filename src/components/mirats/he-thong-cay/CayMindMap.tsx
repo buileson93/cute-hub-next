@@ -394,7 +394,12 @@ export function CayMindMap({
 
   const { finiteNodes } = useMemo(() => {
     if (rfNodes.length === 0) return { finiteNodes: false };
-    const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
+    const fn = rfNodes.every(n => {
+      const x = n.position?.x;
+      const y = n.position?.y;
+      return typeof x === 'number' && !isNaN(x) && isFinite(x) &&
+             typeof y === 'number' && !isNaN(y) && isFinite(y);
+    });
     return { finiteNodes: fn };
   }, [rfNodes]);
 
@@ -403,12 +408,13 @@ export function CayMindMap({
   useEffect(() => {
     if (rfNodes.length > 0 && finiteNodes && rf) {
       const now = Date.now();
-      if (now - lastFitViewRef.current < 2000) return; // Throttling fitView
+      // Only fit view once on initial load or major change
+      if (lastFitViewRef.current !== 0) return; 
       lastFitViewRef.current = now;
 
       const timer = setTimeout(() => {
-        rf.fitView({ duration: 600, padding: 0.1 });
-      }, 500);
+        rf.fitView({ duration: 800, padding: 0.15 });
+      }, 600);
       return () => clearTimeout(timer);
     }
   }, [rfNodes.length, rf, finiteNodes]);
@@ -612,23 +618,26 @@ export function CayMindMap({
 
     const layerNodes: any[] = layerLabels
       .map((label, i) => ({ label, i }))
-      .filter(({ i }) => Number.isFinite(COL[i]))
+      .filter(({ i }) => typeof COL[i] === 'number' && !isNaN(COL[i]) && isFinite(COL[i]))
       .map(({ label, i }) => ({
-        id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -80 },
+        id: `layer:${i}`, type: "layer", position: { x: Math.round(COL[i]), y: -80 },
         data: { label }, selectable: false, draggable: false, focusable: false,
       }));
 
-    const finiteNodes = nodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
+    const allNodes = [...layerNodes, ...nodes].map(n => ({
+      ...n,
+      position: {
+        x: Math.round(n.position.x),
+        y: Math.round(n.position.y)
+      }
+    }));
 
-    console.debug("[CayMindMap] buildNodes", {
-      deviceCount: devices.length,
-      treeCount: tree.length,
-      nodeCount: nodes.length,
-      finiteNodes,
-      errorNodes: finiteNodes ? [] : nodes.filter(n => !Number.isFinite(n.position?.x) || !Number.isFinite(n.position?.y)).map(n => n.id)
-    });
+    const isFinitePos = allNodes.every(n => 
+      typeof n.position.x === 'number' && !isNaN(n.position.x) &&
+      typeof n.position.y === 'number' && !isNaN(n.position.y)
+    );
 
-    return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
+    return { nodes: allNodes, edges, finiteNodes: isFinitePos };
     } catch (err) {
       console.error("Critical error building MindMap nodes:", err);
       return { nodes: [], edges: [], finiteNodes: true };
@@ -636,9 +645,14 @@ export function CayMindMap({
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
+  const [isLayouting, setIsLayouting] = useState(true);
+
   useEffect(() => { 
     if (nodes.length > 0) {
       setRfNodes(nodes); 
+      // Mark layouting as finished after nodes are set
+      const timer = setTimeout(() => setIsLayouting(false), 300);
+      return () => clearTimeout(timer);
     }
   }, [nodes, setRfNodes]);
 
@@ -664,16 +678,25 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full min-h-[500px] overflow-hidden bg-muted/5" style={{ minHeight: 'inherit' }}>
+    <div className="absolute inset-0 w-full h-full bg-muted/5 flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 180px)' }}>
+      {isLayouting && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity duration-300">
+          <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">Đang tính toán sơ đồ...</p>
+          <p className="text-[10px] text-muted-foreground/60 mt-1 uppercase tracking-widest">{nodes.length} nodes</p>
+        </div>
+      )}
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
         edges={edges as any} 
         onNodesChange={onNodesChange} 
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
         minZoom={0.05}
         maxZoom={1.5}
+        zoomOnDoubleClick={false}
+        selectNodesOnDrag={false}
         onNodeDragStart={(_e, node) => {
           const desc = collectDescendants(String(node.id));
           const posMap = new Map<string, { x: number; y: number }>();
@@ -725,48 +748,23 @@ export function CayMindMap({
           return reset();
         }}
       >
-        <Controls showInteractive={false} />
-        <MiniMap pannable zoomable className="!hidden sm:!block" />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-
-        {rfNodes.filter(n => n.type === 'mind').length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-            <div className="flex flex-col items-center gap-4 p-8 bg-card/80 backdrop-blur border rounded-xl shadow-2xl pointer-events-auto">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                <Search className="w-8 h-8 text-muted-foreground opacity-20" />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-bold">Chưa có dữ liệu sơ đồ</h3>
-                <p className="text-sm text-muted-foreground max-w-[240px]">Không tìm thấy hệ thống nào khớp với bộ lọc hiện tại.</p>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => window.location.reload()} className="gap-2">
-                <Loader2 className="w-4 h-4" /> Tải lại trang
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <Panel position="top-right" className="flex flex-col gap-2">
-          <div className="flex flex-col gap-1 rounded-lg border bg-background/95 p-1 shadow-sm backdrop-blur">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={recenter}>
-                    <GitFork className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">Căn giữa sơ đồ</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => rf?.zoomTo(1)}>
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">Phóng đại 100%</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--border)" />
+        <Controls showInteractive={false} className="bg-background/90 border shadow-md rounded-lg overflow-hidden" />
+        <MiniMap 
+          nodeColor={(n) => {
+            if (n.type === 'layer') return 'transparent';
+            const kind = (n.data as any)?.kind;
+            return KIND_DOT[kind] || '#ccc';
+          }}
+          className="border shadow-lg rounded-xl overflow-hidden !bg-background/80"
+          style={{ height: 120, width: 160 }}
+          maskColor="rgba(0,0,0,0.1)"
+        />
+        <Panel position="top-right" className="flex items-center gap-2">
+           <Button variant="outline" size="sm" className="h-8 gap-2 bg-background/90 backdrop-blur shadow-sm" onClick={recenter}>
+             <Search className="h-3.5 w-3.5" />
+             <span className="text-[10px] font-bold uppercase tracking-wider">Khớp khung hình</span>
+           </Button>
         </Panel>
       </ReactFlow>
     </div>
