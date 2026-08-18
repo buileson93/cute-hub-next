@@ -124,8 +124,14 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       const chkErr = findChecklistError(sections ?? [], chkValues);
       if (chkErr) return chkErr;
     }
+    
+    // Bổ sung validation các trường bắt buộc khác
+    if (!donViThucHien.trim()) return "Vui lòng nhập đơn vị thực hiện";
+    if (!nguoiThucHien.trim()) return "Vui lòng nhập người thực hiện";
+    
     return null;
   }
+
 
 
   const save = useMutation({
