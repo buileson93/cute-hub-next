@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Plus, Trash2, FileText, Loader2, Save, FileDown,
   Wand2, Bot, Sparkles, CheckCircle2, Layers, MapPin, Lock,
-  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle, Info
+  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle, Info,
+  Settings, AlertCircle, Phone, Star, LayoutDashboard, History, Search,
+  Zap, Stethoscope
 } from "lucide-react";
+
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
 import { rpcErrorToast } from "@/lib/mirats/rpc-error";
@@ -19,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { exportBaoCaoBanDauToWord } from "@/lib/incident-report-word.functions";
@@ -63,6 +67,8 @@ export interface SuCoMoiFormProps {
 }
 
 export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, defaultVoice, embedded, onDone }: SuCoMoiFormProps) {
+  const navigate = useNavigate();
+
   const { profile } = useSession();
   const qc = useQueryClient();
   const { data: taxo } = useDbTaxonomy();
@@ -99,12 +105,13 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   const [closingIntent, setClosingIntent] = useState(false);
 
   const kipAmbient = useAmbientApply<KipRow[]>({
-    suggested: usePrefillKipTruc(profile?.ho_ten || "").data ?? null,
+    suggested: (usePrefillKipTruc(profile?.ho_ten || "").data as KipRow[]) ?? null,
     isEmpty: (v) => !v || v.length === 0 || v.every((r) => !r.ho_ten.trim()),
     currentValue: kip,
     apply: (v) => setKip(v),
     clear: () => setKip([{ ho_ten: "", chuc_vu: "", nang_dinh: "" }]),
   });
+
 
   const selected = useMemo(() => Array.from(new Set(mounted.map(m => m.device.id))).map(id => mounted.find(m => m.device.id === id)!.device), [mounted]);
 
@@ -112,6 +119,8 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
     thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb,
     heThongId, selectedTpCount: selectedTpIds.size, mountedAssetsCount: selected.length
   }), [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, selected]);
+
+
 
   const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
     if (!heThongDichVu) return null;
@@ -211,8 +220,9 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       ma_nhom_bc: maNhom, ngay_phat_hien: ngayPhatHien, nguoi_bao_cao: profile?.ho_ten || profile?.email || "", muc_do: MUC_BY_PL[phanLoai] ?? "Thấp", anh_huong_dhb: anhHuongDhb, hien_tuong: hienTuong, nguyen_nhan: nguyenNhan || null, bien_phap_xu_ly: bienPhapXuLy || null,
       bao_cao_ban_dau: { kinh_gui: kinhGui, he_thong_dich_vu: heThongDichVu, tom_tat: tomTat, thoi_gian_bat_dau: fmtDateTime(thoiGianBatDau), thoi_gian_ket_thuc: thoiGianKetThuc ? fmtDateTime(thoiGianKetThuc) : "", dia_diem: "", kip_truc: kip, thanh_phan_list: tpList.filter(t => selectedTpIds.has(t.id)), tinh_trang_he_thong: tinhTrangHT, da_dong: closing, tinh_hinh_hien_tai: tinhHinh, ket_qua_khac_phuc: ketQua, phan_loai: phanLoai, nguyen_nhan: nguyenNhan, bien_phap_xu_ly: bienPhapXuLy, thiet_bi_list: selected.map(d => d.ma_thiet_bi), nguon: aiFilled ? "AI" : "Người dùng" },
       van_de_id: vanDeId || null, trang_thai: closing ? "hoan_thanh" : "bao_cao",
-      devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null, he_thong_id: d._htId ?? null, he_thong_ten: d._htTen ?? null }))
+      devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null, he_thong_id: (d as any)._htId ?? null, he_thong_ten: (d as any)._htTen ?? null }))
   });
+
 
   const save = useMutation({
     mutationFn: async () => {
@@ -224,7 +234,28 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       }
       return maNhom;
     },
-    onSuccess: (maNhom) => { toast.success("Đã lưu sự cố"); setPreviewOpen(false); qc.invalidateQueries({ queryKey: ["operations_data"] }); if (onDone) onDone(); },
+    onSuccess: (maNhom) => { 
+      toast.success("Đã lưu sự cố"); 
+      setPreviewOpen(false); 
+      qc.invalidateQueries({ queryKey: ["operations_data"] }); 
+      
+      // Mở file word sau khi lưu thành công
+      if (maNhom) {
+        exportFn({ data: { ma_nhom_bc: maNhom } }).then(res => {
+          if (res?.base64) {
+            const link = document.createElement("a");
+            link.href = `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${res.base64}`;
+            link.download = res.fileName || `BaoCaoSuCo_${maNhom}.docx`;
+            link.click();
+          }
+        }).catch(err => console.error("Export word failed:", err));
+
+      }
+
+
+      if (onDone) onDone(); 
+    },
+
     onError: (e: Error) => toast.error(rpcErrorToast(e).title)
   });
 
@@ -322,7 +353,36 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                   onApplyKeywords={(keywords: string[]) => setTomTat(prev => prev ? prev + "\n" + keywords.join(", ") : keywords.join(", "))}
                 />
               </CollapsibleSection>
+
+              {anomalies.length > 0 && (
+                <Card className="border-amber-200 bg-amber-50/50">
+                  <CardContent className="pt-4 space-y-2">
+                    <div className="flex items-center gap-2 text-amber-600 mb-1">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span className="text-xs font-bold uppercase tracking-wider">Cảnh báo bất thường ({anomalies.length})</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {anomalies.map((a, i) => (
+                        <li key={i} className="flex gap-2 text-[12px] leading-relaxed">
+                          <span className={cn(
+                            "mt-1.5 h-1 w-1 shrink-0 rounded-full",
+                            a.severity === "error" ? "bg-red-500" : "bg-amber-500"
+                          )} />
+                          <div className="flex flex-col">
+                            <span className={cn("font-medium", a.severity === "error" ? "text-red-700" : "text-amber-800")}>
+                              {a.message}
+                            </span>
+                            {a.hint && <span className="text-muted-foreground/80">{a.hint}</span>}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
             </div>
+
           )}
           {step === 2 && (
             <Card>
@@ -433,8 +493,25 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
         <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
           <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
           <div className="flex gap-2">
-             <Button variant="secondary" onClick={() => setPreviewOpen(true)}><FileDown className="h-4 w-4 mr-1" /> Xem trước</Button>
-             {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
+             <Button variant="secondary" onClick={() => {
+               const err = validateBeforeSave(closingIntent);
+               if (err) { toast.error(err); return; }
+               setPreviewOpen(true);
+             }}><FileDown className="h-4 w-4 mr-1" /> Xem trước</Button>
+             {step < 3 ? <Button onClick={() => {
+               // Step 1 validation
+               if (step === 1) {
+                 if (!hienTuong.trim()) { toast.error("Vui lòng nhập hiện tượng"); return; }
+                 if (!heThongId) { toast.error("Vui lòng chọn hệ thống"); return; }
+                 if (!heThongDichVu) { toast.error("Vui lòng chọn tài sản"); return; }
+               }
+               nextStep();
+             }}>Tiếp tục</Button> : <Button onClick={() => {
+               const err = validateBeforeSave(closingIntent);
+               if (err) { toast.error(err); return; }
+               save.mutate();
+             }} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
+
           </div>
         </div>
         <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />

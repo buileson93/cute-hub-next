@@ -14,7 +14,9 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "@/hooks/use-session";
+import { supabase } from "@/integrations/supabase/client";
 import { useGlobalSearch, Highlight, type SearchRow, ENTITY_META, TIER } from "@/lib/mirats/global-search";
+
 import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
 import { toast } from "sonner";
 import { matchIntent, describeIntent, type Intent } from "@/lib/mirats/command-intent";
@@ -35,6 +37,8 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const navigate = useNavigate();
   const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
+
+
 
   const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
@@ -191,9 +195,27 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                 <CommandGroup heading="Gợi ý thông minh">
                   <CommandItem
                     onSelect={() => {
+                      if (intent.kind === "logout") {
+                        supabase.auth.signOut().then(() => {
+                          onOpenChange(false);
+                          navigate({ to: "/auth" });
+                        });
+                        return;
+                      }
+                      if (intent.kind === "navigate") {
+                        onOpenChange(false);
+                        navigate({ to: intent.to as any });
+                        toast.success(`Đã chuyển tới ${intent.label}`);
+                        return;
+                      }
                       onOpenChange(false);
                       toast.info(describeIntent(intent));
                     }}
+
+
+
+
+
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">

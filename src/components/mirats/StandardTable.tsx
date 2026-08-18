@@ -7,7 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
+import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
@@ -148,6 +150,15 @@ export interface StandardTableProps<T> {
     pageRows: T[];
     clear: () => void;
   }) => React.ReactNode;
+  bulkActionsActions?: {
+    label: string;
+    onClick: (selectedRows: T[]) => void;
+    icon?: any;
+    variant?: "default" | "outline" | "destructive";
+  }[];
+
+
+
 
   pagination?: any;
   clientPagination?: any;
@@ -168,7 +179,7 @@ export interface StandardTableProps<T> {
 
 
 
-export function StandardTable<T>({
+export function StandardTableInner<T>({
   className,
   rows = [],
   columns = [],
@@ -190,6 +201,9 @@ export function StandardTable<T>({
   toolbarRight,
   toolbarLeft,
   bulkActions,
+  bulkActionsActions,
+
+
   tableKey,
   countUnit = "bản ghi",
   requireFilterToShow,
@@ -399,6 +413,12 @@ export function StandardTable<T>({
     return toolbar;
   };
 
+  const selectedRows = useMemo(() => {
+    if (!selected) return [];
+    return rows.filter(r => selected.has(getRowIdInternal(r)));
+  }, [rows, selected, getRowIdInternal]);
+
+
   const colText = useCallback((col: ColumnDef<T>, row: T): string => {
     const v = col.value ? col.value(row) : "";
     return v == null ? "" : String(v);
@@ -500,7 +520,7 @@ export function StandardTable<T>({
     return fullDisplay.slice(start, start + pageSize);
   }, [fullDisplay, clientPagination]);
 
-  const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
+  
 
   const toggleCat = (key: string, val: string) => {
     setCatFilters(prev => {
@@ -653,6 +673,8 @@ export function StandardTable<T>({
         </div>
       );
     }
+
+
 
     if (trangThai.dangTai) {
       return (
@@ -842,16 +864,20 @@ export function StandardTable<T>({
               selectedRows,
               clear: clearSelection
             })}
-            {selectable && selectedRows.length > 0 && bulkActions && (
-              bulkActions({
+            {selectable && (selectedRows?.length ?? 0) > 0 && (bulkActions || bulkActionsActions) && (
+              bulkActions ? (bulkActions as any)({
                 selectedRows,
                 visibleColumns: shownCols,
                 allColumns: exportCols,
                 filteredRows: fullDisplay,
                 pageRows: display,
                 clear: clearSelection
-              })
+              }) : null
             )}
+
+
+
+
           </div>
           <div className="flex items-center gap-1">
             {tableKey && (
@@ -1710,3 +1736,54 @@ function ColFilter({
     </DropdownMenu>
   );
 }
+
+
+export function StandardTable<T>(props: StandardTableProps<T>) {
+  const [internalSelected, setInternalSelected] = useState<Set<string>>(new Set());
+  const allKeys = useMemo(() => props.columns.map(c => c.key), [props.columns]);
+  
+  // Adapter cho selection state
+  const selected = props.selected ?? props.selection ?? internalSelected;
+  const setSelected = props.setSelected ?? props.setSelection ?? setInternalSelected;
+
+  const getRowIdInternal = useCallback((row: T) => {
+    if (props.getRowId) return props.getRowId(row);
+    const r = row as any;
+    return String(r.id || r.uuid || r.ma || r.ma_thiet_bi || '');
+  }, [props.getRowId]);
+
+  const selectedRows = useMemo(() => {
+    if (!selected || selected.size === 0) return [];
+    return props.rows.filter(r => selected.has(getRowIdInternal(r)));
+  }, [props.rows, selected, getRowIdInternal]);
+
+  const clearSelection = () => {
+    setSelected(new Set());
+  };
+
+  return (
+    <div className="flex flex-col h-full relative">
+      <StandardTableInner 
+        {...props} 
+        selected={selected} 
+        setSelected={setSelected} 
+      />
+      
+      {(props.selectable || props.selected || props.selection) && selectedRows.length > 0 && props.bulkActionsActions && (
+        <BulkActionBar 
+          selectedCount={selectedRows.length} 
+          onClear={clearSelection}
+          actions={props.bulkActionsActions.map(a => ({ 
+            label: a.label,
+            icon: a.icon as any,
+            variant: a.variant as any,
+            onClick: () => a.onClick(selectedRows) 
+          }))}
+        />
+      )}
+    </div>
+  );
+}
+
+
+
