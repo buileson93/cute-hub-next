@@ -670,16 +670,10 @@ export function StandardTableInner<T>({
               Thử lại
             </Button>
           )}
-      {bulkActionsActions && (
-        <BulkActionBar 
-          selectedCount={selected.size} 
-          onClear={() => setSelected(new Set())}
-          actions={bulkActionsActions.map(a => ({ ...a, onClick: () => a.onClick(selectedRows) }))}
-        />
-      )}
-    </div>
-  );
-}
+        </div>
+      );
+    }
+
 
 
     if (trangThai.dangTai) {
