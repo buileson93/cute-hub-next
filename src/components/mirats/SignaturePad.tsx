@@ -168,10 +168,10 @@ export const SignaturePad = forwardRef<SignaturePadHandle, Props>(function Signa
         )}
       </div>
       <div className="flex items-center justify-end gap-1 border-t bg-muted/30 px-2 py-1">
-        <Button type="button" variant="ghost" size="sm" onClick={undo} disabled={disabled || empty}>
+        <Button type="button" variant="ghost" size="sm" className="h-7 text-primary hover:text-primary/90 hover:bg-primary/5" onClick={undo} disabled={disabled || empty}>
           <Undo2 className="mr-1 h-3.5 w-3.5" /> Hoàn tác
         </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={clear} disabled={disabled || empty}>
+        <Button type="button" variant="ghost" size="sm" className="h-7 text-primary hover:text-primary/90 hover:bg-primary/5" onClick={clear} disabled={disabled || empty}>
           <Eraser className="mr-1 h-3.5 w-3.5" /> Xoá
         </Button>
       </div>
