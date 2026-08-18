@@ -329,7 +329,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="h-12 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-[#0074e2]/40 focus-visible:border-[#0074e2]/50 focus-visible:outline-none"
+        className="h-12 !rounded-xl transition-all focus-within:!ring-2 focus-within:!ring-[#0074e2]/40 focus-within:!border-[#0074e2]/50 focus-within:!outline-none"
       />
     </div>
   );

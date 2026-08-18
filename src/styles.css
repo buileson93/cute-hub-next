@@ -285,7 +285,8 @@
 }
 
 /* GĐ1-05: Global focus-visible — ring hiển thị nhất quán cho a11y */
-:where(a, button, [role="button"], [role="link"], [role="menuitem"], [role="tab"], [role="option"], input, select, textarea, summary, [tabindex]):focus-visible {
+:where(a, button, [role="button"], [role="link"], [role="menuitem"], [role="tab"], [role="option"], select, textarea, summary, [tabindex]):focus-visible,
+:where(input:not(.astryx-input-wrapper input)):focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 1px;
 }
