@@ -430,8 +430,9 @@ function HeThongCayPage() {
               <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
                 <Button 
                   size="icon" 
-                  variant={editMode ? "default" : "outline"} 
-                  className="h-8 w-8"
+                  variant="outline"
+                  data-active={editMode}
+                  className="h-8 w-8 astryx-control"
                   onClick={() => setEditMode(!editMode)} 
                 >
                   {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
