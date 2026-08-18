@@ -105,6 +105,53 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
     },
   });
 
+  const heatmapQ = useQuery({
+    queryKey: ["dashboard_su_co_heatmap", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_su_co_heatmap" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const topHtQ = useQuery({
+    queryKey: ["dashboard_top_he_thong_su_co", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_top_he_thong_su_co" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null,
+         p_limit: 5
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const topTbQ = useQuery({
+    queryKey: ["dashboard_top_thiet_bi_hong_lap", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_top_thiet_bi_hong_lap" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null,
+         p_limit: 5
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const expiryQ = useQuery({
+    queryKey: ["dashboard_expiry_timeline", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_expiry_timeline" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null,
+         p_days: 180
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const trendData = React.useMemo(() => {
     const rows = (trendQ.data as any[]) ?? [];
     const byMonth = new Map<string, Record<string, number | string>>();
@@ -129,6 +176,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
     ((trendQ.data as any[]) ?? []).forEach((r) => s.add(MUC_DO_LABEL[r.muc_do] ?? r.muc_do));
     return Array.from(s);
   }, [trendQ.data]);
+
 
   const renderWidget = (widget: DashboardWidgetConfig) => {
     switch (widget.type) {
