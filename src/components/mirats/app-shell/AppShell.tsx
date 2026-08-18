@@ -181,12 +181,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <button
                         onClick={() => gotoWorkspace(ws)}
                         onPointerEnter={() => setHoveredWsId(ws.id)}
-                        data-active={ws.id === activeWs.id}
                         className={cn(
-                          "group relative flex items-center justify-center transition-mirats-fast rounded-full astryx-control",
+                          "group relative flex items-center justify-center transition-mirats-fast rounded-full",
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col active:scale-95",
                           ws.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
                         )}
+                        data-active={ws.id === activeWs.id}
                       >
                         <ws.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
                         <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
@@ -205,9 +205,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                       <button
                         onClick={() => gotoWorkspace(adminWs)}
                         onPointerEnter={() => setHoveredWsId(adminWs.id)}
-                        data-active={adminWs.id === activeWs.id}
                         className={cn(
-                          "flex items-center justify-center rounded-full transition-mirats-fast astryx-control",
+                          "flex items-center justify-center rounded-full transition-mirats-fast",
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
                           adminWs.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 active:scale-95" : "text-muted-foreground hover:bg-primary/10 hover:text-primary active:scale-95 transition-colors"
                         )}

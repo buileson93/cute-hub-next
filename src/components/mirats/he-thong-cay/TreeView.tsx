@@ -90,7 +90,7 @@ export function TreeView({
         <div className={cn("group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50", level > 0 && "ml-4")}>
           <div className="flex w-6 items-center justify-center shrink-0">
             {hasKids ? (
-              <button onClick={() => toggle(tbId)} data-active={isExpanded} className="rounded p-0.5 hover:bg-muted astryx-control">
+              <button onClick={() => toggle(tbId)} className="rounded p-0.5 hover:bg-muted">
                 {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </button>
             ) : (
@@ -157,7 +157,7 @@ export function TreeView({
     return (
       <div key={ht.ma} className="space-y-1">
         <div className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50">
-          <button onClick={() => toggle(htId)} data-active={isExpanded} className="rounded p-0.5 hover:bg-muted shrink-0 astryx-control">
+          <button onClick={() => toggle(htId)} className="rounded p-0.5 hover:bg-muted shrink-0">
             {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           </button>
           <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
@@ -197,7 +197,7 @@ export function TreeView({
     return (
       <div key={nh.ma} className="space-y-1">
         <div className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50">
-          <button onClick={() => toggle(nhId)} data-active={isExpanded} className="rounded p-0.5 hover:bg-muted shrink-0 astryx-control">
+          <button onClick={() => toggle(nhId)} className="rounded p-0.5 hover:bg-muted shrink-0">
             {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
           </button>
           <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
@@ -223,7 +223,7 @@ export function TreeView({
         return (
           <div key={pl.id} className={cn("rounded-lg border bg-card p-2 shadow-sm", isStopped && "border-dashed opacity-80")}>
             <div className="flex items-center gap-2">
-              <button onClick={() => toggle(plId)} data-active={isExpanded} className="rounded p-1 hover:bg-muted shrink-0 astryx-control">
+              <button onClick={() => toggle(plId)} className="rounded p-1 hover:bg-muted shrink-0">
                 {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </button>
               <Boxes className={cn("h-4 w-4 shrink-0", isStopped ? "text-muted-foreground" : "text-rose-500")} />

@@ -54,7 +54,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                     to={item.route}
                     onClick={onNavigate}
                     className={cn(
-                      "group relative flex items-center gap-2.5 px-2.5 py-1.5 transition-mirats-fast astryx-nav-item astryx-control",
+                      "group relative flex items-center gap-2.5 px-2.5 py-1.5 transition-mirats-fast astryx-nav-item",
                       "h-8 data-[density=comfortable]:h-10 rounded-xl data-[density=comfortable]:rounded-2xl data-[density=comfortable]:gap-3",
                       UI_DENSITY.TEXT_BODY,
                       active 
@@ -62,7 +62,6 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       collapsed && "justify-center px-0 py-2.5 h-10"
                     )}
-                    data-active={active}
                   >
                     {active && !collapsed && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-[#0074e2]" />

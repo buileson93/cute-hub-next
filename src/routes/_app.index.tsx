@@ -104,9 +104,8 @@ function Dashboard() {
           )}
           <Button 
             size="sm" 
-            variant="outline"
+            variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
-            data-active={isEditing}
             className={cn(
               "astryx-control h-8 px-4 transition-all gap-2",
               !isEditing && "border-primary/20 hover:bg-primary/5"

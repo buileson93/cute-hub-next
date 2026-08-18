@@ -202,8 +202,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {hasChildren ? (
                     <Button
                       size="sm" variant="ghost"
-                      data-active={!isCollapsed}
-                      className="h-6 w-6 shrink-0 p-0 astryx-control"
+                      className="h-6 w-6 shrink-0 p-0"
                       onClick={() => toggleCollapse(v.id)}
                       title={isCollapsed ? "Mở nhánh" : "Thu nhánh"}
                     >
@@ -332,27 +331,25 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                       )}
                       <span className="flex items-center">
                         <Button size="sm" variant="ghost" title="Lên trên"
-                          className="astryx-control"
                           disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === 0}
                           onClick={() => onMove(v, -1)}>
                           <ArrowUp className="h-3.5 w-3.5" />
                         </Button>
                         <Button size="sm" variant="ghost" title="Xuống dưới"
-                          className="astryx-control"
                           disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === viTri.length - 1}
                           onClick={() => onMove(v, 1)}>
                           <ArrowDown className="h-3.5 w-3.5" />
                         </Button>
                       </span>
-                      <Button size="sm" variant="ghost" className="astryx-control" onClick={() => openEdit(v)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(v)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
                       {!ngung && !tb && (
-                        <Button size="sm" variant="ghost" className="text-muted-foreground astryx-control" title="Ngừng thành phần" onClick={() => onNgung(v)} disabled={ngungMut.isPending}>
+                        <Button size="sm" variant="ghost" className="text-muted-foreground" title="Ngừng thành phần" onClick={() => onNgung(v)} disabled={ngungMut.isPending}>
                           <PowerOff className="h-3.5 w-3.5" />
                         </Button>
                       )}
                       <Button
                         size="sm" variant="ghost"
-                        className="text-destructive opacity-100 astryx-control"
+                        className="text-destructive opacity-100"
                         title={
                           busy || inflightAll
                             ? "Đang có thao tác lắp/tháo/cập nhật — vui lòng đợi hoàn tất"
@@ -371,8 +368,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   <div className="w-full border-t pt-2">
                     <Button
                       size="sm" variant="ghost"
-                      className="h-7 px-2 text-xs text-muted-foreground astryx-control"
-                      data-active={openLichSu === v.id}
+                      className="h-7 px-2 text-xs text-muted-foreground"
                       onClick={() => setOpenLichSu((cur) => (cur === v.id ? null : v.id))}
                     >
                       <History className="mr-1 h-3.5 w-3.5" /> Lý lịch thành phần
