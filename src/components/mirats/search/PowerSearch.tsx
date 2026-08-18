@@ -204,7 +204,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         });
         
         onOpenChange(false);
-        toast.success(`Đã đóng sự cố ${id}`);
+        toast.success(`Đã xử lý sự cố ${id}`);
         return;
       }
 
