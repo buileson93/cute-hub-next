@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Network, Package, ShieldCheck, FileText, 
   Search, Loader2, ArrowRight, History, Star,
   X, Command, Filter, ExternalLink, Building2, MapPin, 
   HeartPulse, Lock, UserCog, FilePlus2, Database, Sparkles, 
-  Ticket, MessageSquare, FolderKanban, LogOut
+  Ticket, MessageSquare, FolderKanban, LogOut, CheckCircle2
 } from "lucide-react";
 import {
   CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem,
@@ -16,12 +16,14 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "@/hooks/use-session";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useGlobalSearch, Highlight, type SearchRow, ENTITY_META, TIER } from "@/lib/mirats/global-search";
 
 import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
 import { toast } from "sonner";
 import { matchIntent, describeIntent, type Intent } from "@/lib/mirats/command-intent";
+import { useSuCoTransition } from "@/lib/mirats/su-co-workflow-client";
+import { ghiBaoDuongFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 
 type TabValue = "all" | "device" | "system" | "document" | "action";
 
@@ -79,10 +81,12 @@ const RECENT_KEY = "mirats-powersearch-recent";
 export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const [q, setQ] = useState("");
   const [activeTab, setActiveTab] = useState<TabValue>("all");
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [focusedRow, setFocusedRow] = useState<SearchRow | null>(null);
   const navigate = useNavigate();
   const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
+  const qc = useQueryClient();
+  const { mutateAsync: transition } = useSuCoTransition();
 
   const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
@@ -152,12 +156,93 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   };
 
   const handleSelect = (row: SearchRow) => {
-    saveRecent(row);
-    onOpenChange(false);
-    navigate({ to: row.to as any });
+    if (row.entity === ("nav" as any) || row.to) {
+      saveRecent(row);
+      onOpenChange(false);
+      navigate({ to: row.to as any });
+      return;
+    }
   };
 
   const intent = useMemo(() => matchIntent(q), [q]);
+
+  const handleExecuteIntent = async (intent: Intent) => {
+    try {
+      if (intent.kind === "logout") {
+        await supabase.auth.signOut();
+        onOpenChange(false);
+        navigate({ to: "/auth" });
+        return;
+      }
+
+      if (intent.kind === "navigate") {
+        onOpenChange(false);
+        navigate({ to: intent.to as any });
+        toast.success(`Đã chuyển tới ${intent.label}`);
+        return;
+      }
+
+      if (intent.kind === "close-incident") {
+        const id = intent.id;
+        // Search for the actual UUID of the incident if ID is a code
+        const { data: sc } = await supabase
+          .from("su_co")
+          .select("id")
+          .or(`ma_nhom_bc.eq.${id},id.eq.${id}`)
+          .maybeSingle();
+
+        if (!sc) {
+          toast.error("Không tìm thấy sự cố " + id);
+          return;
+        }
+
+        await transition({
+          bang: "su_co",
+          id: sc.id,
+          den: "hoan_thanh",
+          ghi_chu: "Đóng nhanh từ Command Palette",
+        });
+        
+        onOpenChange(false);
+        toast.success(`Đã xử lý sự cố ${id}`);
+        return;
+      }
+
+      if (intent.kind === "create-pm") {
+        // Find system/device ID from target name
+        const { data: ht } = await supabase
+          .from("dm_he_thong")
+          .select("id, ten")
+          .ilike("ten", `%${intent.target}%`)
+          .limit(1)
+          .maybeSingle();
+
+        if (!ht) {
+          toast.error(`Không tìm thấy hệ thống "${intent.target}"`);
+          return;
+        }
+
+        // Navigate to maintenance form with pre-filled target
+        onOpenChange(false);
+        navigate({ 
+          to: "/forms", 
+          search: { 
+            type: "bao-tri",
+            target: ht.id,
+            targetName: ht.ten
+          } as any 
+        });
+        return;
+      }
+
+      // Default fallback or unhandled intents
+      onOpenChange(false);
+      toast.info(describeIntent(intent));
+    } catch (err: any) {
+      console.error("Intent execution error:", err);
+      toast.error(err.message || "Lỗi khi thực hiện hành động");
+    }
+  };
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -180,7 +265,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   }, [open, onOpenChange]);
 
   useEffect(() => {
-    setSelectedIndex(0);
+    setFocusedRow(null);
   }, [q, activeTab]);
 
   return (
@@ -274,24 +359,15 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {hasQuery && intent.kind !== "jump-to" && intent.confidence > 0.6 && (
                 <CommandGroup heading="Gợi ý thông minh">
                   <CommandItem
-                    onSelect={() => {
-                      if (intent.kind === "logout") {
-                        supabase.auth.signOut().then(() => {
-                          onOpenChange(false);
-                          navigate({ to: "/auth" });
-                        });
-                        return;
-                      }
-                      if (intent.kind === "navigate") {
-                        onOpenChange(false);
-                        navigate({ to: intent.to as any });
-                        toast.success(`Đã chuyển tới ${intent.label}`);
-                        return;
-                      }
-                      onOpenChange(false);
-                      toast.info(describeIntent(intent));
-                    }}
-                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
+                    onSelect={() => handleExecuteIntent(intent)}
+                    onMouseEnter={() => setFocusedRow({
+                      entity: "nav" as any,
+                      id: "intent",
+                      title: describeIntent(intent),
+                      subtitle: "Trợ lý MIRATS AI",
+                      to: ""
+                    })}
+                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group cursor-pointer"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Star className="h-4 w-4" />
@@ -310,13 +386,14 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {/* Search Hits */}
               {filteredRows.length > 0 && (
                 <CommandGroup heading={q ? `Kết quả (${filteredRows.length})` : "Gợi ý cho bạn"}>
-                  {filteredRows.map((row, idx) => {
+                  {filteredRows.map((row) => {
                     const meta = ENTITY_META[row.entity] || { icon: Package, label: "Khác" };
                     const Icon = meta.icon;
                     return (
                       <CommandItem
                         key={`${row.entity}-${row.id}`}
                         onSelect={() => handleSelect(row)}
+                        onMouseEnter={() => setFocusedRow(row)}
                         className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
                       >
                         <div className={cn(
@@ -354,6 +431,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                     <CommandItem
                       key={item.to}
                       onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
+                      onMouseEnter={() => setFocusedRow({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
                       className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
                     >
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground/60 group-hover:bg-primary/10 group-hover:text-primary">
@@ -375,12 +453,14 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {(!q || activeTab === "action") && (
                 <CommandGroup heading="Tài khoản">
                   <CommandItem
-                    onSelect={() => {
-                      supabase.auth.signOut().then(() => {
-                        onOpenChange(false);
-                        navigate({ to: "/auth" });
-                      });
-                    }}
+                    onSelect={() => handleExecuteIntent({ kind: "logout", confidence: 1 })}
+                    onMouseEnter={() => setFocusedRow({
+                      entity: "nav" as any,
+                      id: "logout",
+                      title: "Đăng xuất",
+                      subtitle: "Thoát khỏi phiên làm việc hiện tại",
+                      to: ""
+                    })}
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl text-destructive hover:bg-destructive/10 cursor-pointer"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
@@ -420,8 +500,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                 <div className="h-[2px] w-8 bg-primary/40 rounded-full" />
               </div>
               
-              {/* Contextual Stats or Help */}
-              {!q ? (
+              {!focusedRow ? (
                 <div className="flex flex-col gap-6 py-2">
                   <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-background border border-border/40 shadow-sm transition-all hover:shadow-md">
                     <div className="flex items-center gap-2 text-primary">
@@ -456,40 +535,61 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                   <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-background border border-border/50 shadow-md relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
                     <div className="h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                      <LayoutDashboard className="h-8 w-8 text-primary" />
+                      {(() => {
+                        const meta = ENTITY_META[focusedRow.entity];
+                        const Icon = meta?.icon || Package;
+                        return <Icon className="h-8 w-8 text-primary" />;
+                      })()}
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">Đang xử lý ý định</span>
-                    <span className="text-sm font-bold text-foreground mt-2 text-center break-all px-2">"{q}"</span>
+                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
+                      {ENTITY_META[focusedRow.entity]?.label || "Thông tin"}
+                    </span>
+                    <span className="text-sm font-bold text-foreground mt-2 text-center break-all px-2 leading-tight">
+                      {focusedRow.title}
+                    </span>
                   </div>
                   
                   <div className="flex flex-col gap-2.5">
-                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] font-medium text-muted-foreground/60">Trạng thái AI</span>
-                        <span className="text-[12px] font-bold text-primary flex items-center gap-1.5">
-                          <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                          Sẵn sàng
-                        </span>
+                    {focusedRow.subtitle && (
+                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                        <div className="h-8 w-8 shrink-0 rounded-lg bg-muted/30 flex items-center justify-center">
+                          <FileText className="h-4 w-4 text-muted-foreground/60" />
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-medium text-muted-foreground/60">Chi tiết</span>
+                          <span className="text-[12px] leading-tight text-foreground/80">{focusedRow.subtitle}</span>
+                        </div>
                       </div>
-                      <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center">
-                        <Sparkles className="h-4 w-4 text-primary/60" />
+                    )}
+
+                    {focusedRow.sysName && (
+                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-medium text-muted-foreground/60">Hệ thống</span>
+                          <span className="text-[12px] font-bold text-primary flex items-center gap-1.5">
+                            <Network className="h-3.5 w-3.5" />
+                            {focusedRow.sysName}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] font-medium text-muted-foreground/60">Độ tin cậy</span>
-                        <span className="text-[12px] font-bold text-emerald-500">Tối ưu</span>
+                    {focusedRow.count !== undefined && (
+                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] font-medium text-muted-foreground/60">Quy mô</span>
+                          <span className="text-[12px] font-bold text-emerald-500 flex items-center gap-1.5">
+                            <Package className="h-3.5 w-3.5" />
+                            {focusedRow.count} tài sản
+                          </span>
+                        </div>
                       </div>
-                      <div className="h-8 w-8 rounded-lg bg-emerald-500/5 flex items-center justify-center">
-                        <ShieldCheck className="h-4 w-4 text-emerald-500/60" />
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
                     <p className="text-[11px] leading-relaxed text-primary/70 font-medium">
-                      MIRATS AI đã phân tích từ khóa và gợi ý các hành động phù hợp nhất ở cột bên trái.
+                      Nhấn Enter để mở {ENTITY_META[focusedRow.entity]?.label.toLowerCase() || "chi tiết"} này.
                     </p>
                   </div>
                 </div>
