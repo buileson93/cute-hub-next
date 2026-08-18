@@ -69,7 +69,7 @@ export function SignatureSlotsView({ slots, compact }: { slots: SignatureSlot[];
               {signed ? (
                 <Badge className="bg-primary text-primary-foreground"><Check className="mr-1 h-3 w-3" />Đã ký</Badge>
               ) : (
-                <Badge variant="outline" className="bg-muted text-muted-foreground"><Clock className="mr-1 h-3 w-3" />Chờ ký</Badge>
+                <Badge variant="outline" className="bg-muted text-muted-foreground border-border shadow-none"><Clock className="mr-1 h-3 w-3" />Chờ ký</Badge>
               )}
             </div>
             {signed && <SignatureImg src={s.data_url as SigLike} alt={`chữ ký ${s.label}`} />}

@@ -21,7 +21,7 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
 
             return (
               <li key={row.id} className="relative">
-                <span className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background bg-primary">
+                <span className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background bg-primary shadow-sm">
                   <Activity className="h-3.5 w-3.5 text-primary-foreground" />
                 </span>
                 <div className="rounded-md border p-3 text-sm bg-muted/20">
@@ -34,7 +34,7 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
                   <div className="flex items-center gap-2 font-medium">
                     <span className="text-muted-foreground">{tuTen}</span>
                     <ArrowIcon />
-                    <span className="text-indigo-600">{denTen}</span>
+                    <span className="text-primary font-semibold">{denTen}</span>
                   </div>
                   {row.ly_do && (
                     <div className="mt-1 text-xs text-muted-foreground italic flex items-start gap-1">
