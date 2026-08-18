@@ -9,7 +9,7 @@ export default function TabVanHanh({
 }: DeviceDetailTabProps) {
   return (
     <Tabs defaultValue="timeline" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto gap-1 bg-muted/50 p-1">
+      <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto gap-1 bg-primary/5 p-1 border-primary/10 border">
         <TabsTrigger value="timeline" className="text-xs py-1.5">
           <Clock className="mr-1 h-3 w-3" /> Timeline ({timeline.length})
         </TabsTrigger>

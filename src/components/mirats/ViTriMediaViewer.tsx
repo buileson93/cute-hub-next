@@ -540,7 +540,7 @@ export function ViTriMediaViewer({
                     <Box className="h-10 w-10 opacity-60" />
                     <p>Định dạng LiDAR "{extOf(active.ten_tep)}" cần phần mềm chuyên dụng để mở.</p>
                     <p className="text-xs text-white/60">Để xem trực tiếp trên web, hãy xuất mô hình sang <b>GLB</b> hoặc <b>USDZ</b> (Polycam hỗ trợ sẵn).</p>
-                    <Button size="sm" variant="secondary" asChild>
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" asChild>
                       <a href={active.url} download={active.ten_tep}><Download className="mr-1.5 h-4 w-4" />Tải tệp về máy</a>
                     </Button>
                   </div>
