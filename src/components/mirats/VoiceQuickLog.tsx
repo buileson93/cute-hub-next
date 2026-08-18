@@ -105,6 +105,7 @@ export function VoiceQuickLog({ maThietBi }: Props) {
         <Button
           type="button"
           size="sm"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
           onClick={() => handoff(text)}
           disabled={text.trim().length < 5}
         >

@@ -148,7 +148,7 @@ export function QRScanner({ onDetect, className }: Props) {
       </form>
       {status === "scanning" && (
         <div className="mt-2 flex justify-end">
-          <Button type="button" size="sm" variant="ghost" onClick={() => { cleanup(); setStatus("idle"); }}>
+          <Button type="button" size="sm" variant="ghost" className="h-8 text-primary hover:text-primary/90 hover:bg-primary/5" onClick={() => { cleanup(); setStatus("idle"); }}>
             Tắt camera
           </Button>
         </div>
