@@ -72,10 +72,11 @@ function Timeline({ items }: { items: any[] }) {
       {items.map((it, i) => {
         const Icon = it.kind === 'bt' ? Wrench : it.kind === 'sc' ? AlertTriangle : it.kind === 'hh' ? History : ArrowLeftRight;
         const color = it.kind === 'bt' ? 'bg-primary' : it.kind === 'sc' ? 'bg-destructive' : it.kind === 'hh' ? 'bg-warning' : 'bg-info';
+        const iconColor = it.kind === 'hh' || it.kind === 'sc' ? 'text-foreground' : 'text-primary-foreground';
         return (
           <li key={i} className="relative mb-5 last:mb-0">
-            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${color}`}>
-              <Icon className="h-3.5 w-3.5 text-white" />
+            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background shadow-sm ${color}`}>
+              <Icon className={`h-3.5 w-3.5 ${iconColor}`} />
             </span>
             <div className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
