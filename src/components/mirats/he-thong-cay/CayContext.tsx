@@ -69,12 +69,14 @@ export function CayProvider({ children }: { children: ReactNode }) {
         next.add("root");
         next.add("root-stopped");
         
+        // Mặc định bung đến level Nhóm hệ thống (nh) cho người dùng dễ nhìn
+        // Nhưng không bung sâu đến level Hệ thống (ht) hoặc Thiết bị (tb)
         viewTree.forEach(pl => {
           next.add(`pl:${pl.id}`);
           pl.fields.forEach(lv => {
             if (lv.id && lv.id !== "all") next.add(`lv:${pl.id}:${lv.id}`);
-            // Expand first few groups by default to show some data
-            lv.groups.slice(0, 3).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
+            // Expand first few groups by default
+            lv.groups.slice(0, 5).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
           });
         });
         return next;

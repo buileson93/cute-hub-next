@@ -65,22 +65,28 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
         <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
           <AlertTriangle className="h-6 w-6 text-red-600" />
         </div>
-        <h3 className="text-lg font-bold text-red-600 mb-2">Đã xảy ra lỗi ở trang Cây Hệ thống</h3>
-        <p className="text-sm text-muted-foreground mb-6 max-w-md text-center leading-relaxed">
-          Dữ liệu sơ đồ có thể đang bị lỗi hoặc không tương thích với cấu trúc hiện tại. Mindmap cũng chưa hoạt động, đang tìm nguyên nhân và khắc phục.
-        </p>
-        <div className="flex gap-3">
-          <Button onClick={() => { router.invalidate(); reset(); }} variant="default" className="min-w-[120px]">
+        <h3 className="text-lg font-bold text-red-600 mb-2 leading-tight text-center">
+          Đã xảy ra lỗi ở trang Cây Hệ thống
+        </h3>
+        <div className="text-sm text-muted-foreground mb-6 max-w-md text-center leading-relaxed">
+          <p>Dữ liệu sơ đồ có thể đang bị lỗi hoặc không tương thích với cấu trúc hiện tại.</p>
+          <p className="mt-1">Mindmap cũng chưa hoạt động, đang tìm nguyên nhân và khắc phục.</p>
+        </div>
+        <div className="flex flex-col gap-3 w-full max-w-[240px]">
+          <Button onClick={() => { router.invalidate(); reset(); }} variant="default" className="w-full">
             Thử lại
           </Button>
-          <Button onClick={() => window.location.href = "/"} variant="outline" className="min-w-[120px]">
+          <Button onClick={() => window.location.href = "/"} variant="outline" className="w-full">
             Về trang chủ
           </Button>
         </div>
         {import.meta.env.DEV && error && (
-          <pre className="mt-8 p-4 bg-muted rounded text-[10px] max-w-full overflow-auto text-red-500 border w-full">
-            {error.message}
-          </pre>
+          <div className="mt-8 w-full">
+            <p className="text-[10px] text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Chi tiết lỗi (Dev):</p>
+            <pre className="p-4 bg-muted rounded text-[10px] max-w-full overflow-auto text-red-500 border whitespace-pre-wrap break-all">
+              {error.message}
+            </pre>
+          </div>
         )}
       </div>
     );
