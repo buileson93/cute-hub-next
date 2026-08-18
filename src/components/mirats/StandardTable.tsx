@@ -153,9 +153,10 @@ export interface StandardTableProps<T> {
   bulkActionsActions?: {
     label: string;
     onClick: (selectedRows: T[]) => void;
-    icon?: React.ElementType;
+    icon?: any;
     variant?: "default" | "outline" | "destructive";
   }[];
+
 
 
 
@@ -879,6 +880,7 @@ export function StandardTableInner<T>({
                 clear: clearSelection
               }) : null
             )}
+
 
           </div>
           <div className="flex items-center gap-1">
@@ -1742,12 +1744,14 @@ function ColFilter({
 
 export function StandardTable<T>(props: StandardTableProps<T>) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [columnPrefs, setColumnPrefs] = useColumnPrefs(props.tableKey);
+  const allKeys = useMemo(() => props.columns.map(c => c.key), [props.columns]);
+  const colPrefs = useColumnPrefs(props.tableKey || "default", allKeys);
 
   const getRowIdInternal = useCallback((row: T) => {
     if (props.getRowId) return props.getRowId(row);
     return (row as any).id || (row as any).uuid || (row as any).ma;
   }, [props.getRowId]);
+
 
   const selectedRows = useMemo(() => {
     const s = props.selected ?? selected;
@@ -1775,6 +1779,7 @@ export function StandardTable<T>(props: StandardTableProps<T>) {
           }))}
         />
       )}
+
     </div>
   );
 }
