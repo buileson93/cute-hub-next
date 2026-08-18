@@ -67,6 +67,8 @@ export interface SuCoMoiFormProps {
 }
 
 export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, defaultVoice, embedded, onDone }: SuCoMoiFormProps) {
+  const navigate = useNavigate();
+
   const { profile } = useSession();
   const qc = useQueryClient();
   const { data: taxo } = useDbTaxonomy();
