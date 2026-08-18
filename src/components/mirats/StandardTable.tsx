@@ -1364,8 +1364,6 @@ export function StandardTableInner<T>({
                         height: "100%"
                       }}
                     >
-
-                    >
                       <div className={cn("flex items-center gap-1 h-full w-full", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                         {reorder && (
                           <div
