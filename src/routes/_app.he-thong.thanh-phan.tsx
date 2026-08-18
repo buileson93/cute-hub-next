@@ -28,9 +28,7 @@ export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
 
 function ThanhPhanListPage() {
   const nav = useNavigate();
-  const canManageHt = useCan("he-thong", "manage");
-  const canManageAdmin = useCan("admin", "manage");
-  const canManage = canManageHt || canManageAdmin;
+  const canManage = useCan(["he-thong", "admin"], "manage");
   const [editMode, setEditMode] = useUserPref<boolean>("he-thong:edit-mode", false);
 
   const handleDisplayChange = (v: string) => {
