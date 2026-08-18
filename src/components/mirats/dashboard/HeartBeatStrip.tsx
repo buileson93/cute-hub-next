@@ -95,14 +95,14 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
                 <div key={i} className="text-[11px] flex items-start gap-1">
                   <span className={cn(
                     "w-1.5 h-1.5 rounded-full mt-1 shrink-0",
-                    group.status === 'critical' ? 'bg-red-500' : 'bg-amber-500'
+                    group.status === 'critical' ? 'bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.3)]' : 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.3)]'
                   )} />
                   <span>{r}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">
+            <div className="text-[11px] text-success font-black uppercase tracking-wider">
               OK
             </div>
           )}
