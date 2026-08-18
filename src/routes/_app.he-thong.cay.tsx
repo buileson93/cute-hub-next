@@ -201,9 +201,11 @@ function HeThongCayPage() {
   };
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
-  const { roles, isAdmin } = useSession();
+  const { roles } = useSession();
+  const isAdmin = roles.includes("admin");
 
   const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
+
   const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
   const plMind = usePlMind(overrides, taxonomy);
   const nhMind = useNhMind(overrides, taxonomy);
