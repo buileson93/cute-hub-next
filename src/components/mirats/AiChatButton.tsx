@@ -374,7 +374,7 @@ function ChatArea({
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <Sparkles className="h-8 w-8 text-[#0074e2]/60" />
+            <Sparkles className="h-8 w-8 text-primary/60" />
             <div className="text-sm font-medium text-foreground">Bạn muốn hỏi gì về MIRATS?</div>
             <div className="text-[11px] text-muted-foreground">Trợ lý chỉ đọc dữ liệu bạn có quyền truy cập</div>
             <div className="mt-2 grid w-full max-w-[320px] gap-1.5">
@@ -409,7 +409,7 @@ function ChatArea({
       </div>
 
       <div className="border-t border-border p-3">
-        <div className="flex items-end gap-2 rounded-2xl border border-border bg-card px-3 py-2 focus-within:ring-2 focus-within:ring-[#0074e2]/30">
+        <div className="flex items-end gap-2 rounded-2xl border border-border bg-card px-3 py-2 focus-within:ring-2 focus-within:ring-primary/30">
           <textarea
             ref={inputRef}
             value={input}
@@ -423,7 +423,7 @@ function ChatArea({
           />
           <Button
             size="icon"
-            className="h-8 w-8 shrink-0 rounded-full bg-[#0074e2] text-white hover:bg-[#0074e2]/90"
+            className="h-8 w-8 shrink-0 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
             onClick={submit}
             disabled={busy || !input.trim()} aria-label="Đang tải">
             {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
@@ -461,8 +461,8 @@ function MessageBubble({
         className={cn(
           "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
           isUser
-            ? "bg-[#0074e2] text-white"
-            : "bg-secondary text-foreground",
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-foreground",
         )}
       >
         {toolParts.map((p, i) => {
@@ -480,7 +480,7 @@ function MessageBubble({
             return (
               <div
                 key={i}
-                className="mb-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 p-2.5 text-foreground"
+                className="mb-1.5 rounded-lg border border-warning/40 bg-warning/10 p-2.5 text-foreground"
               >
                 <div className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold">
                   <Wrench className="h-3.5 w-3.5" /> Xác nhận ghi dữ liệu: {label}
@@ -499,7 +499,7 @@ function MessageBubble({
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="h-7 px-3 text-[12px]"
+                    className="h-7 px-3 text-[12px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
                     onClick={() => onApprove({ id: approvalId as string, approved: true })}
                   >
                     Đồng ý ghi
