@@ -1732,12 +1732,42 @@ function ColFilter({
                 </div>
               )}
             </div>
+            </div>
           </div>
-      {selectable && selectedRows.length > 0 && bulkActionsActions && (
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function StandardTable<T>(props: StandardTableProps<T>) {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [columnPrefs, setColumnPrefs] = useColumnPrefs(props.tableKey);
+
+  const getRowIdInternal = useCallback((row: T) => {
+    if (props.getRowId) return props.getRowId(row);
+    return (row as any).id || (row as any).uuid || (row as any).ma;
+  }, [props.getRowId]);
+
+  const selectedRows = useMemo(() => {
+    const s = props.selected ?? selected;
+    if (!s || s.size === 0) return [];
+    return props.rows.filter(r => s.has(getRowIdInternal(r)));
+  }, [props.rows, props.selected, selected, getRowIdInternal]);
+
+  const clearSelection = () => {
+    if (props.setSelected) props.setSelected(new Set());
+    else setSelected(new Set());
+  };
+
+  return (
+    <div className="flex flex-col h-full relative">
+      <StandardTableInner {...props} selected={props.selected ?? selected} setSelected={props.setSelected ?? setSelected} />
+      {props.selectable && selectedRows.length > 0 && props.bulkActionsActions && (
         <BulkActionBar 
-          selectedCount={selected?.size ?? 0} 
+          selectedCount={selectedRows.length} 
           onClear={clearSelection}
-          actions={bulkActionsActions.map(a => ({ 
+          actions={props.bulkActionsActions.map(a => ({ 
             label: a.label,
             icon: a.icon,
             variant: a.variant,
@@ -1748,4 +1778,5 @@ function ColFilter({
     </div>
   );
 }
+
 
