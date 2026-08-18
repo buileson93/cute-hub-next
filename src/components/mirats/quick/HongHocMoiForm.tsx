@@ -83,13 +83,20 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   function prevStep() { if (step > 1) setStep(s => s - 1); }
 
   const validate = () => {
+    if (step === 1) {
+      if (!heThongId) { toast.error("Vui lòng chọn hệ thống"); return false; }
+    }
     if (step === 2) {
       if (!boPhan) { toast.error("Vui lòng nhập bộ phận hỏng"); return false; }
       if (!thietBiHongId) { toast.error("Vui lòng chọn tài sản hỏng"); return false; }
       if (phuongAn === "thay_the" && !thietBiThayTheId) { toast.error("Vui lòng chọn tài sản thay thế"); return false; }
     }
+    if (step === 3) {
+      if (!moTa.trim()) { toast.error("Vui lòng nhập mô tả hỏng hóc"); return false; }
+    }
     return true;
   };
+
 
   const save = useMutation({
     mutationFn: async () => {
