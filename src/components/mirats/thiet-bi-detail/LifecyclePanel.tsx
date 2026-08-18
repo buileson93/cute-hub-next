@@ -21,15 +21,15 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
 
             return (
               <li key={row.id} className="relative">
-                <span className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background bg-amber-500">
-                  <Activity className="h-3.5 w-3.5 text-white" />
+                <span className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background bg-primary">
+                  <Activity className="h-3.5 w-3.5 text-primary-foreground" />
                 </span>
                 <div className="rounded-md border p-3 text-sm bg-muted/20">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-mono text-muted-foreground">
                       {new Date(row.thoi_diem).toLocaleString("vi-VN")}
                     </span>
-                    <Badge variant="outline" className="text-[10px] px-1.5 h-4 bg-amber-50 border-amber-200 text-amber-700">Vòng đời</Badge>
+                    <Badge variant="outline" className="text-[10px] px-1.5 h-4 bg-primary/10 border-primary/20 text-primary">Vòng đời</Badge>
                   </div>
                   <div className="flex items-center gap-2 font-medium">
                     <span className="text-muted-foreground">{tuTen}</span>

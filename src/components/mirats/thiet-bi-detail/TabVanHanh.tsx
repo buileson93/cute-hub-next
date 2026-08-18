@@ -71,7 +71,7 @@ function Timeline({ items }: { items: any[] }) {
     <ol className="relative ml-2 border-l border-border pl-6">
       {items.map((it, i) => {
         const Icon = it.kind === 'bt' ? Wrench : it.kind === 'sc' ? AlertTriangle : it.kind === 'hh' ? History : ArrowLeftRight;
-        const color = it.kind === 'bt' ? 'bg-emerald-500' : it.kind === 'sc' ? 'bg-red-500' : it.kind === 'hh' ? 'bg-orange-500' : 'bg-sky-500';
+        const color = it.kind === 'bt' ? 'bg-primary' : it.kind === 'sc' ? 'bg-destructive' : it.kind === 'hh' ? 'bg-warning' : 'bg-info';
         return (
           <li key={i} className="relative mb-5 last:mb-0">
             <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${color}`}>
