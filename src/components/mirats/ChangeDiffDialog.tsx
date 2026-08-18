@@ -12,8 +12,8 @@ function DiffCell({ value, tone }: { value: unknown; tone: "before" | "after" })
   const empty = value === null || value === undefined || value === "";
   const base =
     tone === "before"
-      ? "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200"
-      : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200";
+      ? "border-destructive/20 bg-destructive/10 text-destructive"
+      : "border-primary/20 bg-primary/10 text-primary";
   return (
     <div className={`min-h-[2rem] whitespace-pre-wrap break-words rounded-md border px-2.5 py-1.5 text-xs ${base} ${empty ? "italic opacity-70" : ""}`}>
       {formatVal(value)}
