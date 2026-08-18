@@ -360,7 +360,7 @@ function HeThongCayPage() {
   }, [viewTree]);
 
   return (
-    <PageFrame density="compact">
+    <PageFrame density="compact" className="flex flex-col overflow-hidden h-screen">
       <PageHeader
         icon={GitFork}
         title="Cấu trúc & Sơ đồ"
@@ -455,9 +455,9 @@ function HeThongCayPage() {
           emptyAction={isFiltering ? (<Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>Xoá tìm kiếm</Button>) : undefined}
           className="flex-1 w-full"
         >
-          <div className="flex-1 min-h-[500px] h-full relative overflow-hidden">
+          <div className="flex-1 min-h-0 relative">
             {display === "tree" && (
-              <div className="h-full overflow-y-auto p-4 custom-scrollbar">
+              <div className="absolute inset-0 overflow-y-auto p-4 custom-scrollbar">
                 <TreeView 
                   tree={viewTree as any}
                   plLabel={plMind}
@@ -495,7 +495,7 @@ function HeThongCayPage() {
             )}
             
             {display === "mindmap" && (
-              <div className="h-full w-full relative">
+              <div className="absolute inset-0 flex flex-col min-h-0">
                 <CayMindMap 
                   tree={viewTree as any}
                   posByHt={posByHt || new Map()}
