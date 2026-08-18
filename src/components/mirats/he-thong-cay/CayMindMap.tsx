@@ -338,7 +338,6 @@ export function CayMindMap({
 
   const toggle = useCallback((id: string) => {
     toggleNode(id);
-    setActiveId(id === "root" ? null : id);
   }, [toggleNode]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -389,16 +388,22 @@ export function CayMindMap({
   }, [rf]);
 
   const { finiteNodes } = useMemo(() => {
+    if (rfNodes.length === 0) return { finiteNodes: false };
     const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
     return { finiteNodes: fn };
   }, [rfNodes]);
 
+  const lastFitViewRef = useRef<number>(0);
+
   useEffect(() => {
     if (rfNodes.length > 0 && finiteNodes && rf) {
-      // Delay slightly to ensure layout is applied
+      const now = Date.now();
+      if (now - lastFitViewRef.current < 2000) return; // Throttling fitView
+      lastFitViewRef.current = now;
+
       const timer = setTimeout(() => {
         rf.fitView({ duration: 600, padding: 0.1 });
-      }, 350);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [rfNodes.length, rf, finiteNodes]);
