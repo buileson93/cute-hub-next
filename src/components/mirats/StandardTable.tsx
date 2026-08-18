@@ -1739,31 +1739,37 @@ function ColFilter({
 
 
 export function StandardTable<T>(props: StandardTableProps<T>) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [internalSelected, setInternalSelected] = useState<Set<string>>(new Set());
   const allKeys = useMemo(() => props.columns.map(c => c.key), [props.columns]);
-  const colPrefs = useColumnPrefs(props.tableKey || "default", allKeys) as any;
+  
+  // Adapter cho selection state
+  const selected = props.selected ?? props.selection ?? internalSelected;
+  const setSelected = props.setSelected ?? props.setSelection ?? setInternalSelected;
 
   const getRowIdInternal = useCallback((row: T) => {
     if (props.getRowId) return props.getRowId(row);
-    return (row as any).id || (row as any).uuid || (row as any).ma;
+    const r = row as any;
+    return String(r.id || r.uuid || r.ma || r.ma_thiet_bi || '');
   }, [props.getRowId]);
 
-
   const selectedRows = useMemo(() => {
-    const s = props.selected ?? selected;
-    if (!s || s.size === 0) return [];
-    return props.rows.filter(r => s.has(getRowIdInternal(r)));
-  }, [props.rows, props.selected, selected, getRowIdInternal]);
+    if (!selected || selected.size === 0) return [];
+    return props.rows.filter(r => selected.has(getRowIdInternal(r)));
+  }, [props.rows, selected, getRowIdInternal]);
 
   const clearSelection = () => {
-    if (props.setSelected) props.setSelected(new Set());
-    else setSelected(new Set());
+    setSelected(new Set());
   };
 
   return (
     <div className="flex flex-col h-full relative">
-      <StandardTableInner {...props} selected={props.selected ?? selected} setSelected={props.setSelected ?? setSelected} />
-      {props.selectable && selectedRows.length > 0 && props.bulkActionsActions && (
+      <StandardTableInner 
+        {...props} 
+        selected={selected} 
+        setSelected={setSelected} 
+      />
+      
+      {(props.selectable || props.selected || props.selection) && selectedRows.length > 0 && props.bulkActionsActions && (
         <BulkActionBar 
           selectedCount={selectedRows.length} 
           onClear={clearSelection}
@@ -1774,11 +1780,10 @@ export function StandardTable<T>(props: StandardTableProps<T>) {
             onClick: () => a.onClick(selectedRows) 
           }))}
         />
-
       )}
-
     </div>
   );
 }
+
 
 
