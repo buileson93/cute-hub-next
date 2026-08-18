@@ -865,7 +865,7 @@ export function StandardTableInner<T>({
               clear: clearSelection
             })}
             {selectable && (selectedRows?.length ?? 0) > 0 && (bulkActions || bulkActionsActions) && (
-              bulkActions ? bulkActions({
+              bulkActions ? (bulkActions as any)({
                 selectedRows,
                 visibleColumns: shownCols,
                 allColumns: exportCols,
@@ -874,6 +874,7 @@ export function StandardTableInner<T>({
                 clear: clearSelection
               }) : null
             )}
+
 
 
 
@@ -1768,11 +1769,12 @@ export function StandardTable<T>(props: StandardTableProps<T>) {
           onClear={clearSelection}
           actions={props.bulkActionsActions.map(a => ({ 
             label: a.label,
-            icon: a.icon,
-            variant: a.variant,
+            icon: a.icon as any,
+            variant: a.variant as any,
             onClick: () => a.onClick(selectedRows) 
           }))}
         />
+
       )}
 
     </div>
