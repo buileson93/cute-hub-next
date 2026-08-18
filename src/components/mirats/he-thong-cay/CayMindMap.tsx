@@ -609,7 +609,7 @@ export function CayMindMap({
       ? ["Toàn hệ thống", "Đơn vị", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"]
       : ["Toàn hệ thống", "Phân loại", "Nhóm hệ thống", "Hệ thống", "Thành phần hệ thống", "Thành phần tài sản"];
 
-    const layerNodes: ReactFlowNode[] = layerLabels
+    const layerNodes: any[] = layerLabels
       .map((label, i) => ({ label, i }))
       .filter(({ i }) => Number.isFinite(COL[i]))
       .map(({ label, i }) => ({
@@ -663,7 +663,7 @@ export function CayMindMap({
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
-        edges={edges} 
+        edges={edges as any} 
         onNodesChange={onNodesChange} 
         fitView
         fitViewOptions={{ padding: 0.2 }}
