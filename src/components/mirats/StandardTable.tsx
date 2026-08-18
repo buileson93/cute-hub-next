@@ -178,7 +178,7 @@ export interface StandardTableProps<T> {
 
 
 
-export function StandardTable<T>({
+export function StandardTableInner<T>({
   className,
   rows = [],
   columns = [],
@@ -1732,13 +1732,13 @@ function ColFilter({
                 </div>
               )}
             </div>
-            </div>
           </div>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
+
 
 export function StandardTable<T>(props: StandardTableProps<T>) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
