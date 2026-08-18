@@ -346,20 +346,32 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
               </CollapsibleSection>
 
               {anomalies.length > 0 && (
-                <div className="rounded-xl border border-yellow-200 bg-yellow-50/50 p-4 space-y-2 animate-in fade-in slide-in-from-top-2">
-                  <div className="flex items-center gap-2 text-sm font-bold text-yellow-800">
-                    <AlertTriangle className="h-4 w-4" /> Bất thường phát hiện ({anomalies.length})
-                  </div>
-                  <div className="space-y-1">
-                    {anomalies.map((a, i) => (
-                      <div key={i} className="text-[12px] text-yellow-700 flex flex-col">
-                        <span className="font-semibold">• {a.message}</span>
-                        {a.hint && <span className="text-[11px] opacity-80 pl-3 italic">{a.hint}</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <Card className="border-amber-200 bg-amber-50/50">
+                  <CardContent className="pt-4 space-y-2">
+                    <div className="flex items-center gap-2 text-amber-600 mb-1">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span className="text-xs font-bold uppercase tracking-wider">Cảnh báo bất thường ({anomalies.length})</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {anomalies.map((a, i) => (
+                        <li key={i} className="flex gap-2 text-[12px] leading-relaxed">
+                          <span className={cn(
+                            "mt-1.5 h-1 w-1 shrink-0 rounded-full",
+                            a.severity === "error" ? "bg-red-500" : "bg-amber-500"
+                          )} />
+                          <div className="flex flex-col">
+                            <span className={cn("font-medium", a.severity === "error" ? "text-red-700" : "text-amber-800")}>
+                              {a.message}
+                            </span>
+                            {a.hint && <span className="text-muted-foreground/80">{a.hint}</span>}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
               )}
+
             </div>
 
           )}
