@@ -18,11 +18,6 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    test: {
-      globals: true,
-      environment: "jsdom",
-      setupFiles: "./src/test/setup.ts",
-    },
     plugins: [mcpPlugin()],
     resolve: {
       alias: [
