@@ -184,7 +184,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
 
       if (intent.kind === "close-incident") {
         const id = intent.id;
-        // Search for the actual UUID of the incident if ID is a code
         const { data: sc } = await supabase
           .from("su_co")
           .select("id")
@@ -209,7 +208,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
       }
 
       if (intent.kind === "create-pm") {
-        // Find system/device ID from target name
         const { data: ht } = await supabase
           .from("dm_he_thong")
           .select("id, ten")
@@ -222,7 +220,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
           return;
         }
 
-        // Navigate to maintenance form with pre-filled target
         onOpenChange(false);
         navigate({ 
           to: "/forms", 
@@ -235,7 +232,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         return;
       }
 
-      // Default fallback or unhandled intents
       onOpenChange(false);
       toast.info(describeIntent(intent));
     } catch (err: any) {
@@ -297,36 +293,15 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         <div className="px-4 py-2 border-b border-border/30 bg-background/50">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
             <TabsList className="h-8 bg-transparent p-0 gap-1">
-              <TabsTrigger 
-                value="all" 
-                className="h-7 px-3 rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-all text-[12px]"
-              >
-                Tất cả
-              </TabsTrigger>
-              <TabsTrigger 
-                value="device" 
-                className="h-7 px-3 rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-all text-[12px]"
-              >
-                Tài sản
-              </TabsTrigger>
-              <TabsTrigger 
-                value="system" 
-                className="h-7 px-3 rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-all text-[12px]"
-              >
-                Hệ thống
-              </TabsTrigger>
-              <TabsTrigger 
-                value="document" 
-                className="h-7 px-3 rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-all text-[12px]"
-              >
-                Tài liệu
-              </TabsTrigger>
-              <TabsTrigger 
-                value="action" 
-                className="h-7 px-3 rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-all text-[12px]"
-              >
-                Hành động
-              </TabsTrigger>
+              {["all", "device", "system", "document", "action"].map((tab) => (
+                <TabsTrigger 
+                  key={tab}
+                  value={tab} 
+                  className="h-7 px-3 rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none hover:bg-muted/50 transition-all text-[12px]"
+                >
+                  {tab === "all" ? "Tất cả" : tab === "device" ? "Tài sản" : tab === "system" ? "Hệ thống" : tab === "document" ? "Tài liệu" : "Hành động"}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
         </div>
@@ -371,6 +346,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                     <CommandItem
                       key={`${row.entity}-${row.id}`}
                       onSelect={() => handleSelect(row)}
+                      onMouseEnter={() => setFocusedRow(row)}
                       className="flex items-center gap-2.5 px-3 py-2 mx-1.5 rounded-lg transition-all cursor-pointer"
                     >
                       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted/50 text-muted-foreground/70">
@@ -383,213 +359,61 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                     </CommandItem>
                   );
                 })}
-                          <span className="text-[13px] font-semibold text-foreground truncate">
-                            <Highlight text={row.title} query={activeTerm} />
-                          </span>
-                          {row.subtitle && (
-                            <span className="text-[11px] text-muted-foreground/70 truncate">
-                              <Highlight text={row.subtitle} query={activeTerm} />
-                            </span>
-                          )}
-                        </div>
-                        {row.sysName && (
-                          <div className="ml-auto flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/5 border border-primary/10">
-                            <Network className="h-3 w-3 text-primary/70" />
-                            <span className="text-[10px] font-medium text-primary/70">{row.sysName}</span>
-                          </div>
-                        )}
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              )}
+              </CommandGroup>
+            )}
 
-              {/* Navigation Commands when no query or in action tab */}
-              {(!q || activeTab === "action") && NAV_COMMANDS.map((group) => (
-                <CommandGroup key={group.header} heading={group.header}>
-                  {group.items.filter(item => !item.roles || (roles && item.roles.some((r: any) => roles.includes(r)))).map((item) => (
-                    <CommandItem
-                      key={item.to}
-                      onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
-                      onMouseEnter={() => setFocusedRow({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
-                      className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
-                    >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground/60 group-hover:bg-primary/10 group-hover:text-primary">
-                        <item.icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-[13px] font-semibold text-foreground truncate">{item.label}</span>
-                        {item.desc && <span className="text-[11px] text-muted-foreground/70 truncate">{item.desc}</span>}
-                      </div>
-                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowRight className="h-4 w-4 text-primary" />
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              ))}
-
-              {/* Logout Action */}
-              {(!q || activeTab === "action") && (
-                <CommandGroup heading="Tài khoản">
+            {/* Navigation Commands when no query or in action tab */}
+            {(!q || activeTab === "action") && NAV_COMMANDS.map((group) => (
+              <CommandGroup key={group.header} heading={group.header}>
+                {group.items.filter(item => !item.roles || (roles && item.roles.some((r: any) => roles.includes(r)))).map((item) => (
                   <CommandItem
-                    onSelect={() => handleExecuteIntent({ kind: "logout", confidence: 1 })}
-                    onMouseEnter={() => setFocusedRow({
-                      entity: "nav" as any,
-                      id: "logout",
-                      title: "Đăng xuất",
-                      subtitle: "Thoát khỏi phiên làm việc hiện tại",
-                      to: ""
-                    })}
-                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl text-destructive hover:bg-destructive/10 cursor-pointer"
+                    key={item.to}
+                    onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
+                    className="flex items-center gap-2.5 px-3 py-2 mx-1.5 rounded-lg hover:bg-muted/50 transition-all cursor-pointer"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
-                      <LogOut className="h-4 w-4" />
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted/50 text-muted-foreground/60">
+                      <item.icon className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-[13px] font-semibold">Đăng xuất</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[13px] font-medium text-foreground truncate">{item.label}</span>
+                      {item.desc && <span className="text-[11px] text-muted-foreground/60 truncate">{item.desc}</span>}
+                    </div>
                   </CommandItem>
-                </CommandGroup>
-              )}
+                ))}
+              </CommandGroup>
+            ))}
 
-              {/* Recent History when no query */}
-              {!q && recentItems.length > 0 && (
-                <CommandGroup heading="Tìm kiếm gần đây">
-                  {recentItems.map((row) => (
-                    <CommandItem
-                      key={`recent-${row.id}`}
-                      onSelect={() => handleSelect(row)}
-                      className="flex items-center gap-3 px-3 py-2 mx-2 rounded-xl group"
-                    >
-                      <History className="h-4 w-4 text-muted-foreground/40" />
-                      <span className="text-[13px] font-medium text-foreground/80">{row.title}</span>
-                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40" />
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </CommandList>
-          </div>
+            {/* Logout Action */}
+            {(!q || activeTab === "action") && (
+              <CommandGroup heading="Tài khoản">
+                <CommandItem
+                  onSelect={() => handleExecuteIntent({ kind: "logout", confidence: 1 })}
+                  className="flex items-center gap-2.5 px-3 py-2 mx-1.5 rounded-lg text-destructive hover:bg-destructive/10 cursor-pointer"
+                >
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-destructive/10">
+                    <LogOut className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="text-[13px] font-medium">Đăng xuất</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
 
-          {/* Right Column: Preview/Context */}
-          <div className="hidden md:flex w-80 flex-col bg-muted/5 p-5 border-l border-border/30">
-            <div className="flex-1 flex flex-col gap-5">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-[0.15em]">Phân tích thông minh</span>
-                <div className="h-[2px] w-8 bg-primary/40 rounded-full" />
-              </div>
-              
-              {!focusedRow ? (
-                <div className="flex flex-col gap-6 py-2">
-                  <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-background border border-border/40 shadow-sm transition-all hover:shadow-md">
-                    <div className="flex items-center gap-2 text-primary">
-                      <Sparkles className="h-4 w-4" />
-                      <span className="text-[13px] font-bold">Trợ lý MIRATS</span>
-                    </div>
-                    <p className="text-[12px] leading-relaxed text-muted-foreground/80">
-                      Hãy thử gõ <b>"bảo trì"</b>, <b>"sự cố"</b> hoặc mã thiết bị để bắt đầu phân tích.
-                    </p>
-                  </div>
-                  
-                  <div className="flex flex-col gap-3">
-                    <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest px-1">Lối tắt nhanh</span>
-                    <div className="grid grid-cols-1 gap-2">
-                      <div className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/20 border border-transparent hover:border-border/40 hover:bg-muted/30 transition-all cursor-default">
-                        <div className="h-7 w-7 rounded-lg bg-background flex items-center justify-center shadow-sm text-muted-foreground">
-                          <Filter className="h-3.5 w-3.5" />
-                        </div>
-                        <span className="text-[11px] font-medium text-muted-foreground/80">Tab để lọc loại</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/20 border border-transparent hover:border-border/40 hover:bg-muted/30 transition-all cursor-default">
-                        <div className="h-7 w-7 rounded-lg bg-background flex items-center justify-center shadow-sm text-muted-foreground">
-                          <Command className="h-3.5 w-3.5" />
-                        </div>
-                        <span className="text-[11px] font-medium text-muted-foreground/80">Mũi tên để duyệt</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-5 py-2 animate-in fade-in duration-300">
-                  <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-background border border-border/50 shadow-md relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
-                    <div className="h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                      {(() => {
-                        const meta = ENTITY_META[focusedRow.entity];
-                        const Icon = meta?.icon || Package;
-                        return <Icon className="h-8 w-8 text-primary" />;
-                      })()}
-                    </div>
-                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
-                      {ENTITY_META[focusedRow.entity]?.label || "Thông tin"}
-                    </span>
-                    <span className="text-sm font-bold text-foreground mt-2 text-center break-all px-2 leading-tight">
-                      {focusedRow.title}
-                    </span>
-                  </div>
-                  
-                  <div className="flex flex-col gap-2.5">
-                    {focusedRow.subtitle && (
-                      <div className="flex items-start gap-3 p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                        <div className="h-8 w-8 shrink-0 rounded-lg bg-muted/30 flex items-center justify-center">
-                          <FileText className="h-4 w-4 text-muted-foreground/60" />
-                        </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[10px] font-medium text-muted-foreground/60">Chi tiết</span>
-                          <span className="text-[12px] leading-tight text-foreground/80">{focusedRow.subtitle}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {focusedRow.sysName && (
-                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[10px] font-medium text-muted-foreground/60">Hệ thống</span>
-                          <span className="text-[12px] font-bold text-primary flex items-center gap-1.5">
-                            <Network className="h-3.5 w-3.5" />
-                            {focusedRow.sysName}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {focusedRow.count !== undefined && (
-                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[10px] font-medium text-muted-foreground/60">Quy mô</span>
-                          <span className="text-[12px] font-bold text-emerald-500 flex items-center gap-1.5">
-                            <Package className="h-3.5 w-3.5" />
-                            {focusedRow.count} tài sản
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                    <p className="text-[11px] leading-relaxed text-primary/70 font-medium">
-                      Nhấn Enter để mở {ENTITY_META[focusedRow.entity]?.label.toLowerCase() || "chi tiết"} này.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Bottom Keyboard shortcuts */}
-            <div className="mt-auto pt-5 border-t border-border/40">
-              <div className="flex items-center justify-center gap-4">
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 bg-muted/20 px-2 py-1 rounded-md">
-                  <kbd className="min-w-[20px] text-center">↵</kbd>
-                  <span>MỞ</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 bg-muted/20 px-2 py-1 rounded-md">
-                  <kbd className="min-w-[20px] text-center">ESC</kbd>
-                  <span>ĐÓNG</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            {/* Recent History when no query */}
+            {!q && recentItems.length > 0 && activeTab === "all" && (
+              <CommandGroup heading="Tìm kiếm gần đây">
+                {recentItems.map((row) => (
+                  <CommandItem
+                    key={`recent-${row.id}`}
+                    onSelect={() => handleSelect(row)}
+                    className="flex items-center gap-2.5 px-3 py-2 mx-1.5 rounded-lg"
+                  >
+                    <History className="h-3.5 w-3.5 text-muted-foreground/40" />
+                    <span className="text-[13px] font-medium text-foreground/80">{row.title}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandList>
         </div>
       </div>
     </CommandDialog>
