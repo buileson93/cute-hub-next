@@ -664,7 +664,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ minHeight: 'inherit' }}>
+    <div className="absolute inset-0 w-full h-full min-h-[500px] overflow-hidden bg-muted/5" style={{ minHeight: 'inherit' }}>
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
