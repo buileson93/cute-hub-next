@@ -413,7 +413,7 @@ function HeThongCayPage() {
           emptyAction={isFiltering ? (<Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>Xoá tìm kiếm</Button>) : undefined}
           className="flex-1 w-full"
         >
-          <div className="flex-1 min-h-[500px] relative">
+          <div className="flex-1 min-h-[600px] relative">
             {display === "tree" && (
               <div className="h-full overflow-y-auto p-4 custom-scrollbar">
                 <TreeView 

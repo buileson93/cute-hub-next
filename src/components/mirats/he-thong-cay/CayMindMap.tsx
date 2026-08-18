@@ -313,11 +313,9 @@ export function CayMindMap({
     for (const pl of tree) {
       set.add(`pl:${pl.id}`);
       for (const lv of pl.fields) {
-        // Expand levels if they have IDs
-        if (lv.id) set.add(`lv:${pl.id}:${lv.id}`);
+        if (lv.id && lv.id !== "all") set.add(`lv:${pl.id}:${lv.id}`);
         for (const nh of lv.groups) {
           set.add(`nh:${pl.id}:${nh.ma}`);
-          // Deep expand systems for first few groups to show data immediately
           for (const ht of nh.systems.slice(0, 3)) {
             set.add(`ht:${pl.id}:${nh.ma}:${ht.ma}`);
           }
@@ -326,6 +324,15 @@ export function CayMindMap({
     }
     return set;
   }, [tree]);
+
+  // Seed context with initial expanded if it's currently just root
+  useEffect(() => {
+    if (expandedNodes.size <= 2 && initialExpanded.size > 2) {
+      initialExpanded.forEach(id => {
+        if (!expandedNodes.has(id)) toggleNode(id);
+      });
+    }
+  }, [initialExpanded, expandedNodes, toggleNode]);
 
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
 
@@ -606,7 +613,11 @@ export function CayMindMap({
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
-  useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
+  useEffect(() => { 
+    if (nodes.length > 0) {
+      setRfNodes(nodes); 
+    }
+  }, [nodes, setRfNodes]);
 
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
 
