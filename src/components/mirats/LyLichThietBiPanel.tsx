@@ -9,14 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { useLyLichThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 
 const META: Record<string, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string }> = {
-  lap:        { icon: PackagePlus,   name: "Lắp vị trí",     dot: "bg-emerald-500" },
-  roi_vi_tri: { icon: PackageMinus,  name: "Rời vị trí",     dot: "bg-slate-500" },
-  hong_hoc:   { icon: RefreshCw,     name: "Hỏng / thay thế", dot: "bg-orange-500" },
-  bao_tri:    { icon: Wrench,        name: "Bảo dưỡng",      dot: "bg-sky-500" },
-  su_co:      { icon: AlertTriangle, name: "Sự cố",          dot: "bg-red-500" },
-  ban_giao:   { icon: ArrowLeftRight,name: "Bàn giao",       dot: "bg-violet-500" },
-  vong_doi:   { icon: Activity,      name: "Vòng đời",       dot: "bg-amber-500" },
-  kiem_ke:    { icon: ClipboardCheck,name: "Kiểm kê",        dot: "bg-teal-500" },
+  lap:        { icon: PackagePlus,   name: "Lắp vị trí",     dot: "bg-success" },
+  roi_vi_tri: { icon: PackageMinus,  name: "Rời vị trí",     dot: "bg-muted-foreground" },
+  hong_hoc:   { icon: RefreshCw,     name: "Hỏng / thay thế", dot: "bg-warning" },
+  bao_tri:    { icon: Wrench,        name: "Bảo dưỡng",      dot: "bg-primary" },
+  su_co:      { icon: AlertTriangle, name: "Sự cố",          dot: "bg-destructive" },
+  ban_giao:   { icon: ArrowLeftRight,name: "Bàn giao",       dot: "bg-info" },
+  vong_doi:   { icon: Activity,      name: "Vòng đời",       dot: "bg-primary" },
+  kiem_ke:    { icon: ClipboardCheck,name: "Kiểm kê",        dot: "bg-success" },
 };
 
 export function LyLichThietBiPanel({ thietBiId }: { thietBiId: string | null }) {
@@ -33,7 +33,7 @@ export function LyLichThietBiPanel({ thietBiId }: { thietBiId: string | null }) 
         return (
           <li key={`${it.nguon}-${it.nguon_id}-${i}`} className="relative mb-5 last:mb-0">
             <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-white" />
+              <Icon className="h-3.5 w-3.5 text-primary-foreground" />
             </span>
             <div className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
