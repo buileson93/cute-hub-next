@@ -313,11 +313,9 @@ export function CayMindMap({
     for (const pl of tree) {
       set.add(`pl:${pl.id}`);
       for (const lv of pl.fields) {
-        // Expand levels if they have IDs
-        if (lv.id) set.add(`lv:${pl.id}:${lv.id}`);
+        if (lv.id && lv.id !== "all") set.add(`lv:${pl.id}:${lv.id}`);
         for (const nh of lv.groups) {
           set.add(`nh:${pl.id}:${nh.ma}`);
-          // Deep expand systems for first few groups to show data immediately
           for (const ht of nh.systems.slice(0, 3)) {
             set.add(`ht:${pl.id}:${nh.ma}:${ht.ma}`);
           }
@@ -327,11 +325,19 @@ export function CayMindMap({
     return set;
   }, [tree]);
 
+  // Seed context with initial expanded if it's currently just root
+  useEffect(() => {
+    if (expandedNodes.size <= 2 && initialExpanded.size > 2) {
+      initialExpanded.forEach(id => {
+        if (!expandedNodes.has(id)) toggleNode(id);
+      });
+    }
+  }, [initialExpanded, expandedNodes, toggleNode]);
+
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
 
   const toggle = useCallback((id: string) => {
     toggleNode(id);
-    setActiveId(id === "root" ? null : id);
   }, [toggleNode]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -382,16 +388,22 @@ export function CayMindMap({
   }, [rf]);
 
   const { finiteNodes } = useMemo(() => {
+    if (rfNodes.length === 0) return { finiteNodes: false };
     const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
     return { finiteNodes: fn };
   }, [rfNodes]);
 
+  const lastFitViewRef = useRef<number>(0);
+
   useEffect(() => {
     if (rfNodes.length > 0 && finiteNodes && rf) {
-      // Delay slightly to ensure layout is applied
+      const now = Date.now();
+      if (now - lastFitViewRef.current < 2000) return; // Throttling fitView
+      lastFitViewRef.current = now;
+
       const timer = setTimeout(() => {
         rf.fitView({ duration: 600, padding: 0.1 });
-      }, 350);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [rfNodes.length, rf, finiteNodes]);
@@ -606,7 +618,11 @@ export function CayMindMap({
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
-  useEffect(() => { setRfNodes(nodes); }, [nodes, setRfNodes]);
+  useEffect(() => { 
+    if (nodes.length > 0) {
+      setRfNodes(nodes); 
+    }
+  }, [nodes, setRfNodes]);
 
   const dragRef = useRef<{ startX: number; startY: number; desc: Map<string, { x: number; y: number }> } | null>(null);
 
@@ -630,7 +646,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full">
+    <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ minHeight: 'inherit' }}>
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
@@ -696,7 +712,7 @@ export function CayMindMap({
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
 
         {rfNodes.filter(n => n.type === 'mind').length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
             <div className="flex flex-col items-center gap-4 p-8 bg-card/80 backdrop-blur border rounded-xl shadow-2xl pointer-events-auto">
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
                 <Search className="w-8 h-8 text-muted-foreground opacity-20" />
