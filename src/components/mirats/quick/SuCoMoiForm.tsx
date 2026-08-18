@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Plus, Trash2, FileText, Loader2, Save, FileDown,
   Wand2, Bot, Sparkles, CheckCircle2, Layers, MapPin, Lock,
-  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle, Info
+  ArrowRight, ArrowLeft, Mic, MicOff, AlertTriangle, Info,
+  Settings, AlertCircle, Phone, Star, LayoutDashboard, History, Search,
+  Zap, Stethoscope
 } from "lucide-react";
+
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { toast } from "sonner";
 import { rpcErrorToast } from "@/lib/mirats/rpc-error";
