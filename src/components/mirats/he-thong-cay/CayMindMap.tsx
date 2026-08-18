@@ -302,9 +302,11 @@ export function CayMindMap({
   tbMind: (t: any) => string;
   devices: any[];
 }) {
-  const { searchQuery, focus } = useCayContext();
+  const { searchQuery, focus, toggleNode, expandedNodes } = useCayContext();
 
-  const { fitView, zoomTo, getIntersectingNodes } = useReactFlow();
+  const rf = useReactFlow();
+  // We use a safety check for rf because it might be null during early mount 
+  // even with Provider if there's a race condition or logic error
   
   const initialExpanded = useMemo(() => {
     const set = new Set(["root", "root-stopped"]);
@@ -325,7 +327,6 @@ export function CayMindMap({
     return set;
   }, [tree]);
 
-  const { expandedNodes, toggleNode } = useCayContext();
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState<ReactFlowNode>([]);
 
   const toggle = useCallback((id: string) => {
@@ -370,15 +371,15 @@ export function CayMindMap({
     // Zoom to node after expansion settles
     setTimeout(() => {
       const node = rfNodes.find(n => n.id === targetId);
-      if (node && node.position) {
-        fitView({ nodes: [node], duration: 800, padding: 0.5 });
+      if (node && node.position && rf) {
+        rf.fitView({ nodes: [node], duration: 800, padding: 0.5 });
       }
     }, 300);
-  }, [focus, rfNodes, fitView]);
+  }, [focus, rfNodes, rf, toggleNode]);
   
   const recenter = useCallback(() => {
-    fitView({ duration: 400, padding: 0.2 });
-  }, [fitView]);
+    if (rf) rf.fitView({ duration: 400, padding: 0.2 });
+  }, [rf]);
 
   const { finiteNodes } = useMemo(() => {
     const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
@@ -386,14 +387,14 @@ export function CayMindMap({
   }, [rfNodes]);
 
   useEffect(() => {
-    if (rfNodes.length > 0 && finiteNodes) {
+    if (rfNodes.length > 0 && finiteNodes && rf) {
       // Delay slightly to ensure layout is applied
       const timer = setTimeout(() => {
-        fitView({ duration: 600, padding: 0.1 });
+        rf.fitView({ duration: 600, padding: 0.1 });
       }, 350);
       return () => clearTimeout(timer);
     }
-  }, [rfNodes.length, fitView, finiteNodes]);
+  }, [rfNodes.length, rf, finiteNodes]);
 
   // Using toggle from context now
 

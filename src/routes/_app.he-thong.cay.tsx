@@ -63,11 +63,11 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
 
 function HeThongCayPageWrapper() {
   return (
-    <CayProvider>
-       <ReactFlowProvider>
-          <HeThongCayPage />
-       </ReactFlowProvider>
-    </CayProvider>
+    <ReactFlowProvider>
+      <CayProvider>
+        <HeThongCayPage />
+      </CayProvider>
+    </ReactFlowProvider>
   );
 }
 
