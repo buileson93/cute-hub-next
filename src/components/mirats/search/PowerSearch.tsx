@@ -152,7 +152,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   };
 
   const handleSelect = (row: SearchRow) => {
-    if (row.entity === "nav" || row.to) {
+    if (row.entity === ("nav" as any) || row.to) {
       saveRecent(row);
       onOpenChange(false);
       navigate({ to: row.to as any });
