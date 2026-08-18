@@ -818,7 +818,7 @@ function NhapLieuPage() {
                     Kiểm tra dữ liệu
                   </Button>
                   <Button size="sm" onClick={() => run(true)} disabled={busy || !canCommit}
-                    className="bg-emerald-600 hover:bg-emerald-700">
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
                     <CheckCircle2 className="mr-1.5 h-4 w-4" /> Ghi vào CSDL
                   </Button>
                   {!result && <p className="self-center text-xs text-muted-foreground">Hãy kiểm tra dữ liệu trước khi ghi.</p>}
@@ -829,16 +829,16 @@ function NhapLieuPage() {
                     <div className="flex flex-wrap gap-2">
                       {result.committed ? (
                         <>
-                          <Badge className="bg-emerald-600">Tạo mới: {result.summary.created ?? 0}</Badge>
-                          <Badge className="bg-sky-600">Cập nhật: {result.summary.updated ?? 0}</Badge>
+                          <Badge className="bg-success text-success-foreground">Tạo mới: {result.summary.created ?? 0}</Badge>
+                          <Badge className="bg-primary text-primary-foreground">Cập nhật: {result.summary.updated ?? 0}</Badge>
                           {(result.summary.writeErrors ?? 0) > 0 && (
                             <Badge variant="destructive">Lỗi ghi: {result.summary.writeErrors}</Badge>
                           )}
                         </>
                       ) : (
                         <>
-                          <Badge className="bg-emerald-600"><Plus className="mr-1 h-3 w-3" />Tạo mới: {result.summary.create}</Badge>
-                          <Badge className="bg-sky-600"><RefreshCw className="mr-1 h-3 w-3" />Cập nhật: {result.summary.update}</Badge>
+                          <Badge className="bg-success text-success-foreground"><Plus className="mr-1 h-3 w-3" />Tạo mới: {result.summary.create}</Badge>
+                          <Badge className="bg-primary text-primary-foreground"><RefreshCw className="mr-1 h-3 w-3" />Cập nhật: {result.summary.update}</Badge>
                           <Badge variant="destructive"><AlertTriangle className="mr-1 h-3 w-3" />Lỗi: {result.summary.error}</Badge>
                           {result.summary.refCreate > 0 && <Badge variant="outline">Danh mục sẽ tạo: {result.summary.refCreate}</Badge>}
                           {previewWarnings > 0 && <Badge className="bg-amber-500"><AlertTriangle className="mr-1 h-3 w-3" />Cảnh báo: {previewWarnings}</Badge>}
@@ -863,7 +863,7 @@ function NhapLieuPage() {
                                 <TableCell className="text-xs tabular-nums">{p.index + 1}</TableCell>
                                 <TableCell>
                                   {p.action === "create" && <Badge className="bg-success text-success-foreground">Tạo mới</Badge>}
-                                  {p.action === "update" && <Badge className="bg-sky-600">Cập nhật</Badge>}
+                                  {p.action === "update" && <Badge className="bg-primary text-primary-foreground">Cập nhật</Badge>}
                                   {p.action === "error" && <Badge variant="destructive">Lỗi</Badge>}
                                 </TableCell>
                                 <TableCell className="font-mono text-xs">{p.key || "—"}</TableCell>
