@@ -69,14 +69,14 @@ export function CayProvider({ children }: { children: ReactNode }) {
     }
   }, [viewTree]);
 
-  const toggleNode = (id: string) => {
+  const toggleNode = React.useCallback((id: string) => {
     setExpandedNodes((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
-  };
+  }, []);
 
   return (
     <CayContext.Provider
