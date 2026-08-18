@@ -1265,9 +1265,9 @@ export function StandardTableInner<T>({
           )}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background", maxHeightClass, className)}>
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll", maxHeightClass, className)}>
           <Table className={cn(
-            "border-separate border-spacing-0 caption-bottom",
+            "border-separate border-spacing-0 caption-bottom min-w-full",
             density === "compact" && "text-[12px]",
             density === "comfortable" && "text-[13px]",
             density === "spacious" && "text-[14px]",
@@ -1361,12 +1361,8 @@ export function StandardTableInner<T>({
                         sortActive && "bg-primary/5"
                       )}
                       style={{ 
-                        // Cấu trúc colgroup đã lo phần width/minWidth cho layout table-fixed
-                        // Tuy nhiên sticky header vẫn cần width để tính toán offset nếu có nhiều cột sticky
-                        width: "100%", 
                         height: "100%"
                       }}
-
                     >
                       <div className={cn("flex items-center gap-1 h-full w-full", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
                         {reorder && (
