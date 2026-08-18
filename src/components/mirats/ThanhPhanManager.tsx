@@ -95,7 +95,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   const [xoaReason, setXoaReason] = useState("");
   const { data: perms } = useMyPermissions();
   const isAdmin = !!perms?.roles?.includes("admin");
-  const canForceDelete = useCan("he_thong", "force_delete") || isAdmin;
+  const canForceDelete = useCan("he_thong", "force_delete");
   const { data: histCount } = useDemLichSuThanhPhan(xoaTarget?.id ?? null);
   const { data: xoaPreview } = useXemTruocXoaThanhPhan(xoaTarget?.id ?? null);
   const hasHistory = !!histCount && (histCount.gan + histCount.suCo + histCount.baoTri + histCount.hongHoc) > 0;
