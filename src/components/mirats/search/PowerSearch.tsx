@@ -208,6 +208,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
 
 
 
+
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
