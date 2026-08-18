@@ -134,6 +134,8 @@ export function buildTree(
   htDonVi: (htId: string) => string | null = () => null,
   realSystems: Array<{ ma: string; ten: string; nhMa: string; nhTen: string; plId: string }> = [],
 ): { tree: PlGroup[]; total: number } {
+  if (!devices || !Array.isArray(devices)) return { tree: [], total: 0 };
+  
   // acc: plId -> nhMa -> htId -> devices
   const acc = new Map<string, Map<string, Map<string, DevNode[]>>>();
   

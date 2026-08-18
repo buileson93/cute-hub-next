@@ -32,15 +32,15 @@ import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils
 import { toast } from "sonner";
 
 const KIND_STYLE: Record<string, string> = {
-  root: "border-primary/60 bg-primary/10 text-foreground",
-  pl: "border-rose-500/30 bg-card/70",
-  lv: "border-primary/30 bg-card/70",
-  nh: "border-violet-500/30 bg-card/70",
-  ht: "border-blue-500/30 bg-card/70",
-  tb: "border-border bg-card/70",
-  tp: "border-emerald-500/30 bg-card/70",
-  vtg: "border-sky-500/30 bg-card/70",
-  vt: "border-sky-500/25 bg-card/70",
+  root: "border-primary/80 bg-primary/20 text-foreground",
+  pl: "border-rose-500/40 bg-rose-500/5",
+  lv: "border-primary/40 bg-primary/5",
+  nh: "border-violet-500/40 bg-violet-500/5",
+  ht: "border-blue-500/40 bg-blue-500/5",
+  tb: "border-slate-400 bg-slate-50/50",
+  tp: "border-emerald-500/40 bg-emerald-500/5",
+  vtg: "border-sky-500/40 bg-sky-500/5",
+  vt: "border-sky-500/35 bg-sky-500/5",
 };
 
 const KIND_DOT: Record<string, string> = {
@@ -191,7 +191,7 @@ function MindNode({ data }: { data: MindData }) {
         KIND_STYLE[data.kind],
         data.tone,
         data.dim && "opacity-20 saturate-0",
-        data.active && "z-10 border-primary ring-1 ring-primary/60",
+        data.active ? "z-10 border-primary ring-1 ring-primary/80 bg-primary/5" : "bg-card/70",
         data.hit && "z-10 border-amber-500 ring-1 ring-amber-500 animate-pulse",
       )}
     >
@@ -304,14 +304,13 @@ export function CayMindMap({
 }) {
   const { searchQuery, focus, toggleNode, expandedNodes } = useCayContext();
 
+  const rfRef = useRef<any>(null);
   let rf: any = null;
   try {
-    // Safety check: useReactFlow must be used inside ReactFlowProvider
-    // In HeThongCayPageWrapper we already wrap with ReactFlowProvider, 
-    // but we add a try-catch for robustness.
     rf = useReactFlow();
+    rfRef.current = rf;
   } catch (e) {
-    console.warn("CayMindMap: useReactFlow called outside provider or during early mount");
+    // Silently fail if not in provider yet
   }
   
   const initialExpanded = useMemo(() => {
@@ -426,13 +425,13 @@ export function CayMindMap({
   }, [tree, plMind, nhMind]);
 
   const { nodes, edges } = useMemo(() => {
-    // Safety guard: if tree is not yet loaded, return empty to prevent building invalid diagram
-    if (!tree || tree.length === 0) return { nodes: [], edges: [] };
+    try {
+      if (!tree || tree.length === 0) return { nodes: [], edges: [] };
 
-    const expanded = expandedNodes; // Use context state
-    const COL_GAP = 96;
-    const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
-    const ROW_GAP = 16;
+      const expanded = expandedNodes; // Use context state
+      const COL_GAP = 96;
+      const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
+      const ROW_GAP = 16;
 
     const stoppedPl = tree.find((pl) => pl.ten === DUNG_KHAI_THAC_TEN);
     const normalTree = tree.filter((pl) => pl.ten !== DUNG_KHAI_THAC_TEN);
@@ -519,7 +518,9 @@ export function CayMindMap({
             };
             plRaw.children.push(nhRaw);
             if (expanded.has(nhId)) {
-              for (const ht of nh.systems) pushSystem(nhRaw, ht, `ht:${pl.id}:${nh.ma}:${ht.ma}`, false);
+              for (const ht of nh.systems) {
+                pushSystem(nhRaw, ht, `ht:${pl.id}:${nh.ma}:${ht.ma}`, unitMode);
+              }
             }
           }
         }
@@ -533,7 +534,7 @@ export function CayMindMap({
     };
     if (stoppedPl && expanded.has("root-stopped")) {
        for (const ht of stoppedPl.fields[0].groups[0].systems) {
-         pushSystem(stoppedPlRaw, ht, `ht:stopped:${ht.ma}`, false);
+         pushSystem(stoppedPlRaw, ht, `ht:stopped:${ht.ma}`, true);
        }
     }
 
@@ -628,6 +629,10 @@ export function CayMindMap({
     });
 
     return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
+    } catch (err) {
+      console.error("Critical error building MindMap nodes:", err);
+      return { nodes: [], edges: [], finiteNodes: true };
+    }
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
@@ -659,7 +664,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ minHeight: 'inherit' }}>
+    <div className="absolute inset-0 w-full h-full min-h-[500px] overflow-hidden bg-muted/5" style={{ minHeight: 'inherit' }}>
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 

@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useSession } from "@/hooks/use-session";
-import { Check, Pencil, GitFork, Plus, GitBranch, LayoutGrid, Share2, Activity, History, Settings2, Search } from "lucide-react";
+import { Check, Pencil, GitFork, Plus, GitBranch, LayoutGrid, Share2, Activity, History, Settings2, Search, AlertTriangle } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { cn } from "@/lib/utils";
@@ -58,20 +58,27 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
       { property: "og:description", content: "Sơ đồ hệ thống kỹ thuật và cây phân cấp tài sản." },
     ],
   }),
-  errorComponent: ({ error, reset }) => {
+  errorComponent: ({ error, reset }: { error: Error; reset: () => void }) => {
     const router = useRouter();
     return (
       <div className="flex flex-col items-center justify-center p-8 bg-card border rounded-xl shadow-sm min-h-[400px]">
-        <h3 className="text-lg font-bold text-red-600 mb-2">Đã xảy ra lỗi ở trang Cây Hệ thống</h3>
-        <p className="text-sm text-muted-foreground mb-6 max-w-md text-center">
-          Dữ liệu sơ đồ có thể đang bị lỗi hoặc không tương thích với cấu trúc hiện tại.
-        </p>
-        <div className="flex gap-2">
-          <Button onClick={() => { router.invalidate(); reset(); }} variant="default">Thử lại</Button>
-          <Button onClick={() => window.location.href = "/"} variant="outline">Về trang chủ</Button>
+        <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
+          <AlertTriangle className="h-6 w-6 text-red-600" />
         </div>
-        {import.meta.env.DEV && (
-          <pre className="mt-8 p-4 bg-muted rounded text-[10px] max-w-full overflow-auto text-red-500">
+        <h3 className="text-lg font-bold text-red-600 mb-2">Đã xảy ra lỗi ở trang Cây Hệ thống</h3>
+        <p className="text-sm text-muted-foreground mb-6 max-w-md text-center leading-relaxed">
+          Dữ liệu sơ đồ có thể đang bị lỗi hoặc không tương thích với cấu trúc hiện tại. Mindmap cũng chưa hoạt động, đang tìm nguyên nhân và khắc phục.
+        </p>
+        <div className="flex gap-3">
+          <Button onClick={() => { router.invalidate(); reset(); }} variant="default" className="min-w-[120px]">
+            Thử lại
+          </Button>
+          <Button onClick={() => window.location.href = "/"} variant="outline" className="min-w-[120px]">
+            Về trang chủ
+          </Button>
+        </div>
+        {import.meta.env.DEV && error && (
+          <pre className="mt-8 p-4 bg-muted rounded text-[10px] max-w-full overflow-auto text-red-500 border w-full">
             {error.message}
           </pre>
         )}
