@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { calculateOptimalWidths } from './table-geometry';
+import { calculateOptimalWidths } from '../table-geometry';
 
 test('calculateOptimalWidths should handle legacy minW and new minWidth', () => {
   const columns = [
