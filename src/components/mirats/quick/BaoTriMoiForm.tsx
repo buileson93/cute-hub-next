@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { normalize } from "@/lib/mirats/global-search";
