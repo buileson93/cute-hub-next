@@ -739,39 +739,28 @@ export function CayMindMap({
           return reset();
         }}
       >
-        <Controls showInteractive={false} />
-        <MiniMap pannable zoomable className="!hidden sm:!block" />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-
-        {rfNodes.filter(n => n.type === 'mind').length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-            <div className="flex flex-col items-center gap-4 p-8 bg-card/80 backdrop-blur border rounded-xl shadow-2xl pointer-events-auto">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                <Search className="w-8 h-8 text-muted-foreground opacity-20" />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-bold">Chưa có dữ liệu sơ đồ</h3>
-                <p className="text-sm text-muted-foreground max-w-[240px]">Không tìm thấy hệ thống nào khớp với bộ lọc hiện tại.</p>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => window.location.reload()} className="gap-2">
-                <Loader2 className="w-4 h-4" /> Tải lại trang
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <Panel position="top-right" className="flex flex-col gap-2">
-          <div className="flex flex-col gap-1 rounded-lg border bg-background/95 p-1 shadow-sm backdrop-blur">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={recenter}>
-                    <GitFork className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">Căn giữa sơ đồ</TooltipContent>
-              </Tooltip>
-              <Tooltip>
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--border)" />
+        <Controls showInteractive={false} className="bg-background/90 border shadow-md rounded-lg overflow-hidden" />
+        <MiniMap 
+          nodeColor={(n) => {
+            if (n.type === 'layer') return 'transparent';
+            const kind = (n.data as any)?.kind;
+            return KIND_DOT[kind] || '#ccc';
+          }}
+          className="border shadow-lg rounded-xl overflow-hidden !bg-background/80"
+          style={{ height: 120, width: 160 }}
+          maskColor="rgba(0,0,0,0.1)"
+        />
+        <Panel position="top-right" className="flex items-center gap-2">
+           <Button variant="outline" size="sm" className="h-8 gap-2 bg-background/90 backdrop-blur shadow-sm" onClick={recenter}>
+             <Search className="h-3.5 w-3.5" />
+             <span className="text-[10px] font-bold uppercase tracking-wider">Khớp khung hình</span>
+           </Button>
+        </Panel>
+      </ReactFlow>
+    </div>
+  );
+}
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => rf?.zoomTo(1)}>
                     <Eye className="h-4 w-4" />
