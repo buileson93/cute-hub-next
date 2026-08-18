@@ -153,9 +153,10 @@ export interface StandardTableProps<T> {
   bulkActionsActions?: {
     label: string;
     onClick: (selectedRows: T[]) => void;
-    icon?: React.ReactNode;
+    icon?: React.ElementType;
     variant?: "default" | "outline" | "destructive";
   }[];
+
 
 
   pagination?: any;
@@ -198,8 +199,9 @@ export function StandardTable<T>({
   rowClassName,
   toolbarRight,
   toolbarLeft,
+  bulkActions,
   bulkActionsActions,
-  bulkActionsActions,
+
 
   tableKey,
   countUnit = "bản ghi",
@@ -867,16 +869,17 @@ export function StandardTable<T>({
               selectedRows,
               clear: clearSelection
             })}
-            {selectable && selectedRows.length > 0 && bulkActions && (
-              bulkActions({
+            {selectable && selectedRows.length > 0 && (bulkActions || bulkActionsActions) && (
+              bulkActions ? bulkActions({
                 selectedRows,
                 visibleColumns: shownCols,
                 allColumns: exportCols,
                 filteredRows: fullDisplay,
                 pageRows: display,
                 clear: clearSelection
-              })
+              }) : null
             )}
+
           </div>
           <div className="flex items-center gap-1">
             {tableKey && (
@@ -1730,8 +1733,19 @@ function ColFilter({
               )}
             </div>
           </div>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      {selectable && selectedRows.length > 0 && bulkActionsActions && (
+        <BulkActionBar 
+          selectedCount={selected?.size ?? 0} 
+          onClear={clearSelection}
+          actions={bulkActionsActions.map(a => ({ 
+            label: a.label,
+            icon: a.icon,
+            variant: a.variant,
+            onClick: () => a.onClick(selectedRows) 
+          }))}
+        />
+      )}
+    </div>
   );
 }
+
