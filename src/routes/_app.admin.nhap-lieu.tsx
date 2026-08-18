@@ -495,11 +495,11 @@ function NhapLieuPage() {
                     type="button"
                     onClick={() => goStep(s.n)}
                     className={`flex w-full items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors ${
-                      active ? "border-primary bg-primary/5" : done ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-muted/20 hover:bg-muted/40"
+                      active ? "border-primary bg-primary/5 shadow-[0_0_10px_rgba(0,116,226,0.1)]" : done ? "border-success/40 bg-success/5" : "border-border bg-muted/20 hover:bg-muted/40"
                     }`}
                   >
-                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                      active ? "bg-primary text-primary-foreground" : done ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold shadow-sm ${
+                      active ? "bg-primary text-primary-foreground" : done ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
                     }`}>
                       {done ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                     </div>
