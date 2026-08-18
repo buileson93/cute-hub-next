@@ -7,9 +7,9 @@ import { useChangeLog, formatVal, type ChangeAction, type ChangeEvent } from "@/
 import { ChangeDiffDialog } from "./ChangeDiffDialog";
 
 const actionMeta: Record<ChangeAction, { name: string; icon: React.ComponentType<{ className?: string }>; dot: string; chip: string }> = {
-  update: { name: "Chỉnh sửa dữ liệu", icon: PencilLine, dot: "bg-violet-500", chip: "bg-violet-50 text-violet-700" },
-  insert: { name: "Tạo mới", icon: PlusCircle, dot: "bg-emerald-500", chip: "bg-emerald-50 text-emerald-700" },
-  delete: { name: "Xoá", icon: Trash2, dot: "bg-red-500", chip: "bg-red-50 text-red-700" },
+  update: { name: "Chỉnh sửa dữ liệu", icon: PencilLine, dot: "bg-primary", chip: "bg-primary/10 text-primary border-primary/20" },
+  insert: { name: "Tạo mới", icon: PlusCircle, dot: "bg-success", chip: "bg-success/10 text-success border-success/20" },
+  delete: { name: "Xoá", icon: Trash2, dot: "bg-destructive", chip: "bg-destructive/10 text-destructive border-destructive/20" },
 };
 
 export function ChangeLogPanel({ entity, entityId }: { entity: string; entityId: string | null | undefined }) {
@@ -38,7 +38,7 @@ export function ChangeLogPanel({ entity, entityId }: { entity: string; entityId:
         return (
           <li key={ev.id} className="relative mb-5 last:mb-0">
             <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-white" />
+              <Icon className="h-3.5 w-3.5 text-primary-foreground" />
             </span>
             <div className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
