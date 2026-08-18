@@ -16,7 +16,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "@/hooks/use-session";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/backend/client";
 import { useGlobalSearch, Highlight, type SearchRow, ENTITY_META, TIER } from "@/lib/mirats/global-search";
 
 import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
