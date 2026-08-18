@@ -584,9 +584,10 @@ function NhapLieuPage() {
                 </label>
 
                 {parsed && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/20 px-3 py-2">
-                    <p className="text-xs text-muted-foreground">
-                      Đọc được <b className="text-foreground">{parsed.rows.length}</b> dòng · <b className="text-foreground">{parsed.headers.length}</b> cột
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-success/30 bg-success/5 px-3 py-2">
+                    <p className="text-xs text-success font-medium">
+                      <CheckCircle2 className="mr-1.5 inline-block h-3.5 w-3.5" />
+                      Đọc được <b>{parsed.rows.length}</b> dòng · <b>{parsed.headers.length}</b> cột
                     </p>
                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={clearFile}>
                       <X className="mr-1 h-3.5 w-3.5" /> Xóa file
@@ -621,13 +622,13 @@ function NhapLieuPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {missingKey ? (
-                    <div className="flex items-start gap-2 rounded-md border border-sky-500/40 bg-sky-500/5 p-2 text-xs text-sky-700 dark:text-sky-400">
+                    <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-2 text-xs text-primary font-medium">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                       <span>Chưa ánh xạ cột khoá <b>{keyLabel}</b> — mã sẽ tự sinh (tất cả là tạo mới).</span>
                       <InfoHint>Nếu file có sẵn mã và bạn muốn cập nhật bản ghi cũ thì hãy ánh xạ cột khoá.</InfoHint>
                     </div>
                   ) : missingCreateFields.length > 0 ? (
-                    <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/5 p-2 text-xs text-amber-700 dark:text-amber-400">
+                    <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-2 text-xs text-warning font-medium">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                       <span>Thiếu trường bắt buộc: <b>{missingCreateFields.join(", ")}</b>.</span>
                       <InfoHint>Dòng có sẵn mã sẽ được cập nhật (cột thiếu giữ nguyên); dòng mã mới sẽ báo lỗi khi ghi.</InfoHint>
@@ -884,7 +885,7 @@ function NhapLieuPage() {
                     )}
 
                     {result.committed && (
-                      <div className="flex items-center gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/5 p-3 text-sm text-emerald-700 dark:text-emerald-400">
+                      <div className="flex items-center gap-2 rounded-md border border-success/40 bg-success/5 p-3 text-sm text-success font-medium">
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
                         <span>Đã ghi xong. Bạn có thể tải file khác để nhập tiếp.</span>
                       </div>
