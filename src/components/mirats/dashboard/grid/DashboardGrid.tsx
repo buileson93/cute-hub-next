@@ -21,12 +21,16 @@ import { formatKpiValue } from "@/lib/mirats/reliability";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
+  ScatterChart, Scatter, ZAxis
 } from "recharts";
 import { supabase } from "@/integrations/backend/client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { format, addDays } from "date-fns";
+import { vi } from "date-fns/locale";
+
 
 const MUC_DO_LABEL: Record<string, string> = {
   nghiem_trong: "Nghiêm trọng", cao: "Cao", trung_binh: "Trung bình", thap: "Thấp", khac: "Khác",
@@ -101,6 +105,53 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
     },
   });
 
+  const heatmapQ = useQuery({
+    queryKey: ["dashboard_su_co_heatmap", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_su_co_heatmap" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const topHtQ = useQuery({
+    queryKey: ["dashboard_top_he_thong_su_co", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_top_he_thong_su_co" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null,
+         p_limit: 5
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const topTbQ = useQuery({
+    queryKey: ["dashboard_top_thiet_bi_hong_lap", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_top_thiet_bi_hong_lap" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null,
+         p_limit: 5
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const expiryQ = useQuery({
+    queryKey: ["dashboard_expiry_timeline", scope.donViCode],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("dashboard_expiry_timeline" as any, {
+         p_don_vi_ids: scope.donViCode ? [scope.donViCode] : null,
+         p_days: 180
+      } as any);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const trendData = React.useMemo(() => {
     const rows = (trendQ.data as any[]) ?? [];
     const byMonth = new Map<string, Record<string, number | string>>();
@@ -126,60 +177,67 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
     return Array.from(s);
   }, [trendQ.data]);
 
+
   const renderWidget = (widget: DashboardWidgetConfig) => {
     switch (widget.type) {
       case "reliability-kpi":
         return (
           <VisualKpiChart
             title="Độ sẵn sàng vận hành"
-            value={`${formatKpiValue(reliability)}`}
+            value={reliability.insufficient ? "—" : `${formatKpiValue(reliability)}`}
             icon="entity.security"
-            data={trendData}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="area"
             color={["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#d1fae5"]}
-            status={Number(reliability.value) >= 95 ? 'normal' : 'warning'}
+            status={reliability.insufficient ? 'normal' : Number(reliability.value) >= 95 ? 'normal' : 'warning'}
             tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
+            onClick={() => navigate({ to: "/su-co" })}
           />
         );
       case "mttr-kpi":
         return (
           <VisualKpiChart
             title="Thời gian khắc phục (MTTR)"
-            value={`${formatKpiValue(mttrKpi)}`}
+            value={mttrKpi.insufficient ? "—" : `${formatKpiValue(mttrKpi)}`}
             icon="status.power"
-            data={trendData.map(d => ({ ...d, value: Math.random() * 60 + 20 }))}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="bar"
             color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
-            status="attention"
+            status={mttrKpi.insufficient ? 'normal' : (mttrKpi.value || 0) > 240 ? 'attention' : 'normal'}
             tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+            onClick={() => navigate({ to: "/su-co" })}
           />
         );
       case "mtbf-kpi":
         return (
           <VisualKpiChart
             title="Khoảng cách sự cố (MTBF)"
-            value={`${formatKpiValue(mtbfKpi)}`}
+            value={mtbfKpi.insufficient ? "—" : `${formatKpiValue(mtbfKpi)}`}
             icon="entity.securityAlert"
-            data={trendData.map(d => ({ ...d, value: Math.random() * 5 + 10 }))}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="line"
             color="#f59e0b"
-            status="warning"
+            status={mtbfKpi.insufficient ? 'normal' : (mtbfKpi.value || 0) < 15 ? 'warning' : 'normal'}
             tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
+            onClick={() => navigate({ to: "/su-co" })}
           />
         );
       case "pm-kpi":
         return (
           <VisualKpiChart
             title="Hoàn thành bảo trì (PM)"
-            value={pmKpi.isLoading ? "..." : `${formatKpiValue(pmKpi.result)}`}
+            value={pmKpi.isLoading ? "..." : (pmKpi.result.insufficient ? "—" : `${formatKpiValue(pmKpi.result)}`)}
             icon="status.success"
-            data={trendData.map(d => ({ ...d, value: Math.random() * 20 + 80 }))}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="bar"
             color={["#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"]}
-            status="normal"
+            status={pmKpi.result.insufficient ? 'normal' : (pmKpi.result.value || 0) < 90 ? 'attention' : 'normal'}
             tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
+            onClick={() => navigate({ to: "/bao-tri/pm" })}
           />
         );
+
+
       case "emergency-kpi":
         return (
           <KpiCard

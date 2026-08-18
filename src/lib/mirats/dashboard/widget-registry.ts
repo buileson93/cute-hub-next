@@ -13,7 +13,11 @@ export type WidgetType =
   | "emergency-kpi"
   | "pm-due-kpi"
   | "pm-overdue-kpi"
-  | "asset-type-bar";
+  | "asset-type-bar"
+  | "su-co-heatmap"
+  | "top-he-thong-su-co"
+  | "top-thiet-bi-hong-lap"
+  | "expiry-timeline";
 
 export interface DashboardWidgetConfig {
   id: string;
@@ -37,7 +41,12 @@ export const AVAILABLE_WIDGETS: Record<WidgetType, { title: string; defaultWidth
   "pm-due-kpi": { title: "Đến hạn PM", defaultWidth: 4, icon: "status.maintenance" },
   "pm-overdue-kpi": { title: "PM Quá hạn", defaultWidth: 4, icon: "status.danger" },
   "asset-type-bar": { title: "Phân loại hệ thống", defaultWidth: 6, icon: "entity.system" },
+  "su-co-heatmap": { title: "Bản đồ nhiệt sự cố", defaultWidth: 12, icon: "entity.chart" },
+  "top-he-thong-su-co": { title: "Top hệ thống nhiều sự cố", defaultWidth: 6, icon: "entity.system" },
+  "top-thiet-bi-hong-lap": { title: "Top thiết bị hỏng lặp", defaultWidth: 6, icon: "entity.asset" },
+  "expiry-timeline": { title: "Lộ trình hết hạn", defaultWidth: 12, icon: "entity.history" },
 };
+
 
 export const DEFAULT_HOME_LAYOUT: DashboardWidgetConfig[] = [
   { id: "w1", type: "reliability-kpi", w: 6, title: "Độ sẵn sàng" },
