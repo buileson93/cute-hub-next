@@ -25,12 +25,12 @@ import {
 import { useLicensesData } from "@/lib/mirats/db-licenses";
 import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 
-const META: Record<string, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string; chip: string }> = {
-  lap:       { icon: PackagePlus,   name: "Lắp tài sản",   dot: "bg-success",     chip: "bg-success/10 text-success border-success/20" },
-  thao:      { icon: PackageMinus,  name: "Tháo tài sản",  dot: "bg-muted",       chip: "bg-muted text-muted-foreground border-border" },
-  hong_hoc:  { icon: RefreshCw,     name: "Hỏng / thay thế", dot: "bg-warning",     chip: "bg-warning/10 text-warning border-warning/20" },
-  bao_tri:   { icon: Wrench,        name: "Bảo dưỡng",      dot: "bg-primary",     chip: "bg-primary/10 text-primary border-primary/20" },
-  su_co:     { icon: AlertTriangle, name: "Sự cố",          dot: "bg-destructive", chip: "bg-destructive/10 text-destructive border-destructive/20" },
+const META: Record<string, { icon: React.ComponentType<{ className?: string }>; name: string; dot: string; chip: string; iconColor?: string }> = {
+  lap:       { icon: PackagePlus,   name: "Lắp tài sản",   dot: "bg-success",     chip: "bg-success/10 text-success border-success/20", iconColor: "text-success-foreground" },
+  thao:      { icon: PackageMinus,  name: "Tháo tài sản",  dot: "bg-muted",       chip: "bg-muted text-muted-foreground border-border", iconColor: "text-muted-foreground" },
+  hong_hoc:  { icon: RefreshCw,     name: "Hỏng / thay thế", dot: "bg-warning",     chip: "bg-warning/10 text-warning border-warning/20", iconColor: "text-warning-foreground" },
+  bao_tri:   { icon: Wrench,        name: "Bảo dưỡng",      dot: "bg-primary",     chip: "bg-primary/10 text-primary border-primary/20", iconColor: "text-primary-foreground" },
+  su_co:     { icon: AlertTriangle, name: "Sự cố",          dot: "bg-destructive", chip: "bg-destructive/10 text-destructive border-destructive/20", iconColor: "text-destructive-foreground" },
 };
 
 /** Yyyy-mm-dd cho <input type="date"> từ một timestamptz. */
@@ -111,8 +111,8 @@ function Timeline({
         const editableLap = canEdit && it.loai_su_kien === "lap" && it.nguon === "gan_chuc_nang";
         return (
           <li key={`${it.nguon}-${it.nguon_id}-${i}`} className="relative mb-5 last:mb-0">
-            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-primary-foreground" />
+            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background shadow-sm ${m.dot}`}>
+              <Icon className={`h-3.5 w-3.5 ${m.iconColor || 'text-primary-foreground'}`} />
             </span>
             <div className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">

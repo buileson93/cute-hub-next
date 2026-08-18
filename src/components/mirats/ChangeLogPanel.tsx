@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useChangeLog, formatVal, type ChangeAction, type ChangeEvent } from "@/lib/mirats/change-log";
 import { ChangeDiffDialog } from "./ChangeDiffDialog";
 
-const actionMeta: Record<ChangeAction, { name: string; icon: React.ComponentType<{ className?: string }>; dot: string; chip: string }> = {
-  update: { name: "Chỉnh sửa dữ liệu", icon: PencilLine, dot: "bg-primary", chip: "bg-primary/10 text-primary border-primary/20" },
-  insert: { name: "Tạo mới", icon: PlusCircle, dot: "bg-success", chip: "bg-success/10 text-success border-success/20" },
-  delete: { name: "Xoá", icon: Trash2, dot: "bg-destructive", chip: "bg-destructive/10 text-destructive border-destructive/20" },
+const actionMeta: Record<ChangeAction, { name: string; icon: React.ComponentType<{ className?: string }>; dot: string; chip: string; iconColor: string }> = {
+  update: { name: "Chỉnh sửa dữ liệu", icon: PencilLine, dot: "bg-primary", chip: "bg-primary/10 text-primary border-primary/20", iconColor: "text-primary-foreground" },
+  insert: { name: "Tạo mới", icon: PlusCircle, dot: "bg-success", chip: "bg-success/10 text-success border-success/20", iconColor: "text-success-foreground" },
+  delete: { name: "Xoá", icon: Trash2, dot: "bg-destructive", chip: "bg-destructive/10 text-destructive border-destructive/20", iconColor: "text-destructive-foreground" },
 };
 
 export function ChangeLogPanel({ entity, entityId }: { entity: string; entityId: string | null | undefined }) {
@@ -37,8 +37,8 @@ export function ChangeLogPanel({ entity, entityId }: { entity: string; entityId:
         const Icon = m.icon;
         return (
           <li key={ev.id} className="relative mb-5 last:mb-0">
-            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background ${m.dot}`}>
-              <Icon className="h-3.5 w-3.5 text-primary-foreground" />
+            <span className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background shadow-sm ${m.dot}`}>
+              <Icon className={`h-3.5 w-3.5 ${m.iconColor}`} />
             </span>
             <div className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
