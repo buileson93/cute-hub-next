@@ -196,15 +196,22 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                   <CommandItem
                     onSelect={() => {
                       if (intent.kind === "logout") {
-                         supabase.auth.signOut().then(() => {
-                           onOpenChange(false);
-                           navigate({ to: "/auth" });
-                         });
-                         return;
+                        supabase.auth.signOut().then(() => {
+                          onOpenChange(false);
+                          navigate({ to: "/auth" });
+                        });
+                        return;
+                      }
+                      if (intent.kind === "navigate") {
+                        onOpenChange(false);
+                        navigate({ to: intent.to as any });
+                        toast.success(`Đã chuyển tới ${intent.label}`);
+                        return;
                       }
                       onOpenChange(false);
                       toast.info(describeIntent(intent));
                     }}
+
 
 
 
