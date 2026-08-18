@@ -28,6 +28,19 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    const handleToggle = () => setOpen((prev) => !prev);
+
+    window.addEventListener("mirats:open-command-palette", handleOpen);
+    window.addEventListener("mirats:toggle-command-palette", handleToggle);
+    
+    return () => {
+      window.removeEventListener("mirats:open-command-palette", handleOpen);
+      window.removeEventListener("mirats:toggle-command-palette", handleToggle);
+    };
+  }, []);
+
   return (
     <div className="flex h-full items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-2 flex-1 min-w-0">

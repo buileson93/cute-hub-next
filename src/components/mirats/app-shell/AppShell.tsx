@@ -7,7 +7,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AiChatButton } from "@/components/mirats/AiChatButton";
 import { useRouteTracker } from "@/hooks/use-route-tracker";
-import { CommandPalette } from "@/components/mirats/CommandPalette";
+
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useUserPref } from "@/hooks/use-user-pref";
@@ -290,7 +290,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <MobileNav activeWsId={activeWs.id} wsLastRoute={wsLastRoute} />
           <AiChatButton />
 
-          <CommandPalette />
+          
         </div>
       </TooltipProvider>
     </ProductTourProvider>

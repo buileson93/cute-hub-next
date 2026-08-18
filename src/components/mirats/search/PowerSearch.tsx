@@ -5,7 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard, Network, Package, ShieldCheck, FileText, 
   Search, Loader2, ArrowRight, History, Star,
-  X, Command, Filter, ExternalLink
+  X, Command, Filter, ExternalLink, Building2, MapPin, 
+  HeartPulse, Lock, UserCog, FilePlus2, Database, Sparkles, 
+  Ticket, MessageSquare, FolderKanban, LogOut
 } from "lucide-react";
 import {
   CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem,
@@ -28,6 +30,50 @@ interface PowerSearchProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const MANAGER: any[] = ["admin", "phong_kt"];
+const ADMIN: any[] = ["admin"];
+
+const NAV_COMMANDS: { header: string; items: any[] }[] = [
+  {
+    header: "Vận hành",
+    items: [
+      { to: "/", label: "Overview", icon: LayoutDashboard, desc: "Bảng tổng quan tình trạng tài sản, cảnh báo và chỉ số vận hành." },
+      { to: "/he-thong/cay", label: "Hệ Thống", icon: Network, desc: "Sơ đồ cây & danh sách toàn bộ hệ thống, tài sản theo phân cấp." },
+    ],
+  },
+  {
+    header: "Biểu mẫu & Trao đổi",
+    items: [
+      { to: "/forms", label: "Biên bản", icon: FileText, desc: "Tạo, ký và tra cứu biên bản bảo dưỡng, sự cố." },
+      { to: "/admin/forms", label: "Mẫu biên bản", icon: FilePlus2, roles: MANAGER, desc: "Thiết kế và quản lý mẫu biểu bảo dưỡng theo hệ thống." },
+      { to: "/du-an", label: "Dự án & Tiến độ", icon: FolderKanban, desc: "Theo dõi dự án, công việc và tiến độ triển khai." },
+      { to: "/tickets", label: "Yêu cầu hỗ trợ", icon: Ticket, desc: "Tiếp nhận và xử lý yêu cầu hỗ trợ kỹ thuật." },
+      { to: "/messages", label: "Tin nhắn", icon: MessageSquare, desc: "Trao đổi nội bộ theo thời gian thực." },
+    ],
+  },
+  {
+    header: "Tài sản & Danh mục",
+    items: [
+      { to: "/vat-tu", label: "Vật tư & Kho", icon: Package, desc: "Quản lý tồn kho, xuất nhập và vật tư dự phòng." },
+      { to: "/tuoi-tho", label: "Tuổi thọ & Vòng đời", icon: HeartPulse, desc: "Theo dõi tuổi thọ, chu kỳ thay thế tài sản." },
+      { to: "/giay-phep", label: "Giấy phép", icon: ShieldCheck, desc: "Quản lý giấy phép khai thác và hạn hiệu lực." },
+      { to: "/danh-muc/don-vi", label: "Đơn vị", icon: Building2, roles: MANAGER, desc: "Danh mục đơn vị quản lý." },
+      { to: "/danh-muc/vi-tri", label: "Vị trí", icon: MapPin, roles: MANAGER, desc: "Danh mục vị trí lắp đặt tài sản." },
+    ],
+  },
+  {
+    header: "Quản trị",
+    items: [
+      { to: "/phan-quyen", label: "Phân quyền & Bảo mật", icon: Lock, roles: MANAGER, desc: "Cấu hình vai trò, quyền truy cập và bảo mật." },
+      { to: "/admin/permissions", label: "Phân quyền RBAC & phạm vi", icon: ShieldCheck, roles: ADMIN, desc: "Gán role, phạm vi tổ chức/đơn vị, ma trận quyền, view-as, yêu cầu quyền." },
+      { to: "/admin/users", label: "Quản lý tài khoản", icon: UserCog, roles: ADMIN, desc: "Tạo, phân quyền và quản lý người dùng." },
+      { to: "/admin/audit", label: "Nhật ký hệ thống", icon: Lock, roles: ADMIN, desc: "Nhật ký thay đổi dữ liệu và khả năng hoàn tác." },
+      { to: "/admin/schema", label: "Sơ đồ CSDL", icon: Database, roles: ADMIN, desc: "Sơ đồ quan hệ cơ sở dữ liệu tương tác." },
+      { to: "/admin/ai", label: "Cấu hình AI", icon: Sparkles, roles: ADMIN, desc: "Bật/tắt và cấu hình trợ lý MIRATS AI." },
+    ],
+  },
+];
+
 const RECENT_KEY = "mirats-powersearch-recent";
 
 export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
@@ -37,8 +83,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const navigate = useNavigate();
   const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
-
-
 
   const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
@@ -63,7 +107,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
           entity,
           id: r.id,
           title: r.tieuDe,
-          subtitle: r.motaNgan,
+          subtitle: r.motaNgan || "",
           to: r.route || `/${entity.replace('_', '-')}/${r.id}`
         } as SearchRow);
       }
@@ -98,6 +142,26 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   };
 
   const intent = useMemo(() => matchIntent(q), [q]);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+        if (
+          (e.target instanceof HTMLElement && e.target.isContentEditable) ||
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement ||
+          e.target instanceof HTMLSelectElement
+        ) {
+          return;
+        }
+        e.preventDefault();
+        onOpenChange(!open);
+      }
+    };
+    
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, [open, onOpenChange]);
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -211,11 +275,6 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                       onOpenChange(false);
                       toast.info(describeIntent(intent));
                     }}
-
-
-
-
-
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -269,6 +328,50 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
                       </CommandItem>
                     );
                   })}
+                </CommandGroup>
+              )}
+
+              {/* Navigation Commands when no query or in action tab */}
+              {(!q || activeTab === "action") && NAV_COMMANDS.map((group) => (
+                <CommandGroup key={group.header} heading={group.header}>
+                  {group.items.filter(item => !item.roles || (roles && item.roles.some((r: any) => roles.includes(r)))).map((item) => (
+                    <CommandItem
+                      key={item.to}
+                      onSelect={() => handleSelect({ entity: "nav" as any, id: item.to, title: item.label, subtitle: item.desc || "", to: item.to })}
+                      className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 text-muted-foreground/60 group-hover:bg-primary/10 group-hover:text-primary">
+                        <item.icon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[13px] font-semibold text-foreground truncate">{item.label}</span>
+                        {item.desc && <span className="text-[11px] text-muted-foreground/70 truncate">{item.desc}</span>}
+                      </div>
+                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowRight className="h-4 w-4 text-primary" />
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ))}
+
+              {/* Logout Action */}
+              {(!q || activeTab === "action") && (
+                <CommandGroup heading="Tài khoản">
+                  <CommandItem
+                    onSelect={() => {
+                      supabase.auth.signOut().then(() => {
+                        onOpenChange(false);
+                        navigate({ to: "/auth" });
+                      });
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl text-destructive hover:bg-destructive/10 cursor-pointer"
+                  >
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+                      <LogOut className="h-4 w-4" />
+                    </div>
+                    <span className="text-[13px] font-semibold">Đăng xuất</span>
+                  </CommandItem>
                 </CommandGroup>
               )}
 
