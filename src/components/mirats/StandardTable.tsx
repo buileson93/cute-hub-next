@@ -158,7 +158,7 @@ export function StandardTable<T>({
   selectable,
   selected,
   setSelected,
-  maxHeightClass = "max-h-[600px]",
+  maxHeightClass = "max-h-[calc(100vh-280px)]",
   emptyText = "Không có dữ liệu",
   emptyContent,
   errorContent,

@@ -15,8 +15,8 @@ export function TelemetryPanel({ thietBiId }: { thietBiId: string }) {
         <Activity className="h-4 w-4" />
         <span>Thông số kỹ thuật & Đo đạc</span>
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto no-scrollbar">
+        <Table className="min-w-[500px]">
           <TableHeader>
             <TableRow>
               <TableHead>Thời điểm</TableHead>
@@ -54,8 +54,8 @@ export function AllocationPanel({ thietBiId, donViTenMap = {} }: { thietBiId: st
         <Move className="h-4 w-4" />
         <span>Lịch sử cấp phát & Điều chuyển</span>
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto no-scrollbar">
+        <Table className="min-w-[500px]">
           <TableHeader>
             <TableRow>
               <TableHead>Thời điểm</TableHead>
@@ -98,8 +98,8 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
         <RefreshCw className="h-4 w-4" />
         <span>Vòng đời & Trạng thái kỹ thuật</span>
       </div>
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto no-scrollbar">
+        <Table className="min-w-[400px]">
           <TableHeader>
             <TableRow>
               <TableHead>Thời điểm</TableHead>

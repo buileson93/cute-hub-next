@@ -36,7 +36,7 @@ export function MobileNav({ activeWsId, wsLastRoute }: MobileNavProps) {
   }
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 flex items-stretch gap-1 border-t border-border bg-background/95 px-2 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur-md md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch gap-1 border-t border-border bg-background/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur-md md:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
       {navWorkspaces.map((ws) => {
         const isActive = ws.id === activeWsId;
         return (
