@@ -310,7 +310,7 @@ export function CayMindMap({
     rf = useReactFlow();
     rfRef.current = rf;
   } catch (e) {
-    // console.warn("CayMindMap: useReactFlow called outside provider or during early mount");
+    // Silently fail if not in provider yet
   }
   
   const initialExpanded = useMemo(() => {
