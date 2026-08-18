@@ -117,7 +117,23 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
     if (activeTab === "device") return combined.filter(r => r.entity === "thiet_bi");
     if (activeTab === "system") return combined.filter(r => r.entity === "he_thong");
     if (activeTab === "document") return combined.filter(r => r.entity === "tai_lieu" || r.entity === "giay_phep");
-    if (activeTab === "action") return []; // Actions handled separately
+    if (activeTab === "action") {
+      const actions: SearchRow[] = [];
+      NAV_COMMANDS.forEach(group => {
+        group.items.forEach(item => {
+          if (!item.roles || (roles && item.roles.some((r: any) => roles.includes(r)))) {
+            actions.push({
+              entity: "nav" as any,
+              id: item.to,
+              title: item.label,
+              subtitle: item.desc || "",
+              to: item.to
+            } as SearchRow);
+          }
+        });
+      });
+      return actions;
+    }
     return combined;
   }, [rows, rowsToanCuc, activeTab]);
 
@@ -172,21 +188,21 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
       open={open} 
       onOpenChange={onOpenChange}
     >
-      <div className="flex flex-col bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden max-w-4xl mx-auto">
+      <div className="flex flex-col bg-background/98 backdrop-blur-2xl border border-border/40 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden max-w-5xl mx-auto ring-1 ring-white/10 dark:ring-white/5">
         {/* Header Section */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 bg-muted/20">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className="flex items-center gap-4 px-6 py-4 border-b border-border/40 bg-muted/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
             <Search className="h-5 w-5" />
           </div>
           <div className="flex-1">
             <CommandInput
-              placeholder="Tìm kiếm thông minh: tài sản, hệ thống, tài liệu..."
+              placeholder="Tìm kiếm tài sản, hệ thống, tài liệu hoặc gõ lệnh AI..."
               value={q}
               onValueChange={setQ}
-              className="h-10 text-[15px] font-medium"
+              className="h-12 text-[16px] font-semibold tracking-tight text-foreground/90 placeholder:text-muted-foreground/30"
             />
           </div>
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/40 border border-border/40 font-mono text-[10px] text-muted-foreground/70">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/40 border border-border/30 font-mono text-[10px] font-bold text-muted-foreground/60 shadow-sm">
             <Command className="h-3 w-3" />
             <span>K</span>
           </div>
@@ -397,67 +413,100 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
           </div>
 
           {/* Right Column: Preview/Context */}
-          <div className="hidden md:flex w-72 flex-col bg-muted/10 p-4">
-            <div className="flex-1 flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Phân tích nhanh</span>
-                <div className="h-px bg-border/40" />
+          <div className="hidden md:flex w-80 flex-col bg-muted/5 p-5 border-l border-border/30">
+            <div className="flex-1 flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-[0.15em]">Phân tích thông minh</span>
+                <div className="h-[2px] w-8 bg-primary/40 rounded-full" />
               </div>
               
               {/* Contextual Stats or Help */}
               {!q ? (
-                <div className="flex flex-col gap-6 py-4">
-                  <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-6 py-2">
+                  <div className="flex flex-col gap-2.5 p-4 rounded-2xl bg-background border border-border/40 shadow-sm transition-all hover:shadow-md">
                     <div className="flex items-center gap-2 text-primary">
-                      <Star className="h-4 w-4" />
-                      <span className="text-[13px] font-bold">Mẹo tìm kiếm</span>
+                      <Sparkles className="h-4 w-4" />
+                      <span className="text-[13px] font-bold">Trợ lý MIRATS</span>
                     </div>
                     <p className="text-[12px] leading-relaxed text-muted-foreground/80">
-                      Bạn có thể tìm theo <b>Mã thiết bị</b>, <b>Tên hệ thống</b> hoặc sử dụng lệnh AI như <i>"Tạo biên bản bảo trì"</i>.
+                      Hãy thử gõ <b>"bảo trì"</b>, <b>"sự cố"</b> hoặc mã thiết bị để bắt đầu phân tích.
                     </p>
                   </div>
                   
-                  <div className="flex flex-col gap-2 p-3 rounded-xl bg-primary/5 border border-primary/10">
-                    <div className="flex items-center gap-2 text-primary">
-                      <Filter className="h-4 w-4" />
-                      <span className="text-[12px] font-bold">Lọc kết quả</span>
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest px-1">Lối tắt nhanh</span>
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/20 border border-transparent hover:border-border/40 hover:bg-muted/30 transition-all cursor-default">
+                        <div className="h-7 w-7 rounded-lg bg-background flex items-center justify-center shadow-sm text-muted-foreground">
+                          <Filter className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-[11px] font-medium text-muted-foreground/80">Tab để lọc loại</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/20 border border-transparent hover:border-border/40 hover:bg-muted/30 transition-all cursor-default">
+                        <div className="h-7 w-7 rounded-lg bg-background flex items-center justify-center shadow-sm text-muted-foreground">
+                          <Command className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-[11px] font-medium text-muted-foreground/80">Mũi tên để duyệt</span>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-muted-foreground/70">
-                      Sử dụng các tab phía trên để thu hẹp phạm vi tìm kiếm của bạn.
-                    </p>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4 py-2">
-                  <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-background border border-border/50 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-                    <div className="h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-4">
+                <div className="flex flex-col gap-5 py-2 animate-in fade-in duration-300">
+                  <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-background border border-border/50 shadow-md relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+                    <div className="h-16 w-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
                       <LayoutDashboard className="h-8 w-8 text-primary" />
                     </div>
-                    <span className="text-[11px] font-bold text-muted-foreground/50 uppercase">Đang phân tích</span>
-                    <span className="text-sm font-bold text-foreground mt-1">"{q}"</span>
+                    <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">Đang xử lý ý định</span>
+                    <span className="text-sm font-bold text-foreground mt-2 text-center break-all px-2">"{q}"</span>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="p-3 rounded-xl bg-background border border-border/40 flex flex-col gap-1">
-                      <span className="text-[10px] font-medium text-muted-foreground">Phân loại</span>
-                      <span className="text-[12px] font-bold text-primary">Tự động</span>
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] font-medium text-muted-foreground/60">Trạng thái AI</span>
+                        <span className="text-[12px] font-bold text-primary flex items-center gap-1.5">
+                          <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                          Sẵn sàng
+                        </span>
+                      </div>
+                      <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center">
+                        <Sparkles className="h-4 w-4 text-primary/60" />
+                      </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-background border border-border/40 flex flex-col gap-1">
-                      <span className="text-[10px] font-medium text-muted-foreground">Độ khớp</span>
-                      <span className="text-[12px] font-bold text-emerald-500">Cao</span>
+                    
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-background border border-border/40 shadow-sm">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] font-medium text-muted-foreground/60">Độ tin cậy</span>
+                        <span className="text-[12px] font-bold text-emerald-500">Tối ưu</span>
+                      </div>
+                      <div className="h-8 w-8 rounded-lg bg-emerald-500/5 flex items-center justify-center">
+                        <ShieldCheck className="h-4 w-4 text-emerald-500/60" />
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                    <p className="text-[11px] leading-relaxed text-primary/70 font-medium">
+                      MIRATS AI đã phân tích từ khóa và gợi ý các hành động phù hợp nhất ở cột bên trái.
+                    </p>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Bottom Keyboard shortcuts */}
-            <div className="mt-auto flex flex-col gap-3 pt-4 border-t border-border/40">
-              <div className="flex items-center justify-center text-[10px] font-medium text-muted-foreground/50">
-                <span className="flex items-center gap-1.5">
-                  <kbd className="px-1.5 py-0.5 rounded border border-border bg-background">Enter</kbd>
-                  Mở
-                </span>
+            <div className="mt-auto pt-5 border-t border-border/40">
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 bg-muted/20 px-2 py-1 rounded-md">
+                  <kbd className="min-w-[20px] text-center">↵</kbd>
+                  <span>MỞ</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 bg-muted/20 px-2 py-1 rounded-md">
+                  <kbd className="min-w-[20px] text-center">ESC</kbd>
+                  <span>ĐÓNG</span>
+                </div>
               </div>
             </div>
           </div>
