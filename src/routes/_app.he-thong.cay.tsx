@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useSession } from "@/hooks/use-session";
-import { Check, Pencil, GitFork, Plus, GitBranch, LayoutGrid, Share2, Activity, History, Settings2, Search, AlertTriangle } from "lucide-react";
+import { Check, Pencil, GitFork, Plus, GitBranch, LayoutGrid, Share2, Activity, History, Settings2, Search, AlertTriangle, MoveRight, X, ChevronRight, HardDrive } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { cn } from "@/lib/utils";
@@ -33,12 +33,19 @@ import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
-import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, isRealSystemId } from "@/components/mirats/he-thong-cay/utils";
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
+import { ThietBiDetailDrawer } from "@/components/mirats/ThietBiDetailDrawer";
 import type { 
-  EditKind, OverrideMap, SearchItem 
+  EditKind, OverrideMap, SearchItem, MoveTarget 
 } from "@/components/mirats/he-thong-cay/types";
+
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/_app/he-thong/cay")({
   validateSearch: (search: Record<string, unknown>): { editTb?: string; view?: string; moveHt?: string; moveTb?: string } => ({
@@ -70,7 +77,6 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
         </h3>
         <div className="text-sm text-muted-foreground mb-6 max-w-md text-center leading-relaxed">
           <p>Dữ liệu sơ đồ có thể đang bị lỗi hoặc không tương thích với cấu trúc hiện tại.</p>
-          <p className="mt-1">Mindmap cũng chưa hoạt động, đang tìm nguyên nhân và khắc phục.</p>
         </div>
         <div className="flex flex-col gap-3 w-full max-w-[240px]">
           <Button onClick={() => { router.invalidate(); reset(); }} variant="default" className="w-full">
@@ -173,11 +179,9 @@ function HeThongCayPage() {
     expandedNodes, toggleNode
   } = useCayContext();
 
-  const { renameEntity } = useCayMutations();
+  const { renameEntity, moveSystem, moveDevice } = useCayMutations();
   
   useEffect(() => {
-    // Stability fix: Only update display if it's explicitly in URL
-    // Prevent infinite sync loops if search.view is volatile
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
@@ -188,7 +192,6 @@ function HeThongCayPage() {
       nav({ to: "/he-thong/thanh-phan" });
     } else {
       setDisplay(v as any);
-      // Use replace to avoid polluting history with view toggles
       nav({ 
         to: "/he-thong/cay", 
         search: (prev: any) => ({ ...prev, view: v }),
@@ -198,9 +201,11 @@ function HeThongCayPage() {
   };
 
   const [target, setTarget] = useState<{ kind: EditKind; ma: string } | null>(null);
-  const { roles, profile } = useSession();
+  const { roles } = useSession();
+  const isAdmin = roles.includes("admin");
 
   const { data: overrides, isLoading: loadingOverrides, refetch: refetchOverrides } = useOverrides();
+
   const { data: taxonomy, isLoading: loadingTaxo } = useDbTaxonomy();
   const plMind = usePlMind(overrides, taxonomy);
   const nhMind = useNhMind(overrides, taxonomy);
@@ -213,8 +218,8 @@ function HeThongCayPage() {
     queryKey: ["he_thong_thanh_phan_count"],
     queryFn: async () => {
       const { count, error } = await supabase
-        .from("he_thong_thanh_phan")
-        .select("*", { count: "exact", head: true });
+          .from("he_thong_thanh_phan")
+          .select("*", { count: "exact", head: true });
       if (error) return 0;
       return count || 0;
     }
@@ -271,7 +276,6 @@ function HeThongCayPage() {
       const htList = taxonomy?.htList || [];
       const nhomList = taxonomy?.nhomList || [];
       
-      // Safety check for empty data
       if (plList.length === 0 && devices.length === 0) {
         return { tree: EMPTY_ROWS, total: 0 };
       }
@@ -306,7 +310,6 @@ function HeThongCayPage() {
       );
     } catch (err) {
       console.error("Critical error building tree in CayPage:", err);
-      // Return empty instead of crashing the page
       return { tree: EMPTY_ROWS, total: 0 };
     }
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
@@ -358,6 +361,45 @@ function HeThongCayPage() {
     }
     return list;
   }, [viewTree]);
+
+  const moveTargets = useMemo<MoveTarget[]>(() => {
+    const out: MoveTarget[] = [];
+    if (!taxonomy) return out;
+    for (const pl of taxonomy.plList) {
+      const nhoms = taxonomy.nhomList.filter(n => n.phanLoaiId === pl.id);
+      for (const nh of nhoms) {
+        out.push({ 
+          plId: pl.id, 
+          plLabel: pl.ten, 
+          lvId: "", 
+          lvLabel: "", 
+          nhKey: nh.ma, 
+          nhLabel: nh.ten 
+        });
+      }
+    }
+    return out;
+  }, [taxonomy]);
+
+  const moveSystemTarget = useMemo(() => {
+    if (!search.moveHt || !taxonomy) return null;
+    const parsed = parseHtSysMa(search.moveHt);
+    const ht = taxonomy.htList.find(h => h.ma === parsed.sysName || h.id === parsed.sysName);
+    return ht;
+  }, [search.moveHt, taxonomy]);
+
+  const moveDeviceTarget = useMemo(() => {
+    if (!search.moveTb || !devices) return null;
+    return (devices as any[]).find(d => d.ma_thiet_bi === search.moveTb);
+  }, [search.moveTb, devices]);
+
+  const htNameMap = useMemo(() => {
+    const m = new Map<string, string>();
+    if (taxonomy) {
+      taxonomy.htList.forEach(h => m.set(h.id, h.ten));
+    }
+    return m;
+  }, [taxonomy]);
 
   return (
     <PageFrame density="compact" className="flex flex-col overflow-hidden h-screen">
@@ -441,91 +483,68 @@ function HeThongCayPage() {
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               <span>Hệ thống</span>
             </div>
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+              <span>Tài sản</span>
+            </div>
           </div>
         </div>
       </PageSection>
 
-      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden">
-        <DataState
-          state={state}
-          loadingType="drawer"
-          title={isFiltering ? "Không tìm thấy kết quả" : "Cây hệ thống trống"}
-          description={isFiltering ? "Thử xoá từ khoá tìm kiếm hoặc bộ lọc để xem đầy đủ cây hệ thống." : "Hệ thống chưa có dữ liệu cây phân cấp nào."}
-          onRetry={() => { refetchOverrides(); refetchDevices(); }}
-          emptyAction={isFiltering ? (<Button variant="outline" size="sm" onClick={() => { setSearchQuery(""); setBadgeFilter({ status: new Set(), imp: new Set() }); }}>Xoá tìm kiếm</Button>) : undefined}
-          className="flex-1 w-full"
-        >
-          <div className="flex-1 min-h-0 relative">
+      <PageBody density="compact" className="flex-1 min-h-[500px] h-full relative overflow-hidden p-0 bg-muted/5">
+        <DataState state={state} title="Không có dữ liệu phù hợp" description="Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm.">
+          <div className="absolute inset-0 flex flex-col">
+
             {display === "tree" && (
-              <div className="absolute inset-0 overflow-y-auto p-4 custom-scrollbar">
+              <ScrollArea className="flex-1 p-4">
                 <TreeView 
-                  tree={viewTree as any}
-                  plLabel={plMind}
-                  lvLabel={() => ""}
-                  nhLabel={nhMind}
-                  htMind={htMind}
-                  tbLabel={tbMind}
-                  canManage={canManage && editMode}
+                  tree={viewTree as any} 
+                  plLabel={plMind} 
+                  lvLabel={(id) => id} 
+                  nhLabel={nhMind} 
+                  htMind={htMind} 
+                  tbLabel={tbMind} 
+                  canManage={canManage}
                   onOpenEditor={onOpenEditor}
                   onHistory={onHistory}
-                  onIncident={(ma) => {
-                    const sysId = parseHtSysMa(ma).sysName;
-                    if (sysId && sysId !== NONE_HT) nav({ to: "/su-co", search: { heThongId: sysId } });
-                  }}
-                  onMaint={(ma) => {
-                    const sysId = parseHtSysMa(ma).sysName;
-                    if (sysId && sysId !== NONE_HT) nav({ to: "/bao-tri", search: { heThongId: sysId } });
-                  }}
+                  onIncident={onIncident}
+                  onMaint={onMaint}
                   onRecord={onRecord}
-                  onRename={(kind, ma, ten) => {
-                    renameEntity.mutate({ kind, id: ma, ten, userRoles: roles });
-                  }}
-                  onMoveSystem={(req) => {
-                    nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) });
-                  }}
-                  onMoveGroup={(req) => {
-                    toast.info(`Di chuyển nhóm ${req.label} (${req.count} HT) sang ${req.toLabel}`);
-                  }}
-                  onMoveDevice={(req) => {
-                    nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) });
-                  }}
+                  onRename={async (kind, ma, ten) => renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })}
+                  onMoveSystem={(req) => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) })}
+                  onMoveGroup={() => {}}
+                  onMoveDevice={(req) => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) })}
                   posByHt={posByHt || new Map()}
                 />
-              </div>
+              </ScrollArea>
             )}
-            
             {display === "mindmap" && (
-              <div className="absolute inset-0 flex flex-col min-h-0">
+              <div className="flex-1 relative">
                 <CayMindMap 
-                  tree={viewTree as any}
-                  posByHt={posByHt || new Map()}
-                  scopeText={taxonomy?.plList.find(p => p.id === badgeFilter.status.values().next().value)?.ten || "TẤT CẢ"}
-                  canManage={canManage && editMode}
-                  onRename={(kind, ma, ten) => renameEntity.mutate({ kind, id: ma, ten, userRoles: roles })}
+                  tree={viewTree as any} 
+                  posByHt={posByHt || new Map()} 
+                  scopeText="Cấu trúc CNS/ATM"
+                  canManage={canManage}
+                  onRename={async (kind, ma, ten) => renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })}
                   onOpenEditor={onOpenEditor}
                   onHistory={onHistory}
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
                   onMoveSystem={(req) => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: req.heThongId }) })}
-                  onMoveGroup={(req) => toast.info(`Di chuyển nhóm ${req.label} sang ${req.toLabel}`)}
+                  onMoveGroup={() => {}}
                   onMoveDevice={(req) => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }) })}
                   plMind={plMind}
                   nhMind={nhMind}
                   htMind={htMind}
                   tbMind={tbMind}
-                  devices={devices as any}
+                  devices={devices}
                 />
               </div>
             )}
-
             {display === "health" && (
-              <div className="p-8 text-center text-muted-foreground italic flex flex-col items-center justify-center h-full gap-4">
-                <Activity className="h-12 w-12 opacity-20" />
-                <div>
-                  <h3 className="text-lg font-medium text-foreground">Sức khỏe hệ thống</h3>
-                  <p className="text-sm mt-1">Tính năng đang được Astryx Skinning...</p>
-                </div>
+              <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm p-8 text-center italic">
+                Chế độ xem Sức khỏe hệ thống đang được phát triển...
               </div>
             )}
           </div>
@@ -533,8 +552,8 @@ function HeThongCayPage() {
       </PageBody>
 
       <NodeEditorSheet 
-        target={target}
-        onClose={() => setTarget(null)}
+        target={target} 
+        onClose={() => setTarget(null)} 
         plLabel={plMind}
         nhLabel={nhMind}
         htLabel={htMind}
@@ -543,40 +562,135 @@ function HeThongCayPage() {
         donViList={taxonomy?.donViList || []}
       />
 
-      <CayThayDoiPanel 
-        open={reorgOpen}
-        onClose={() => setReorgOpen(false)}
-        isAdmin={roles.includes("admin")}
-        htNameMap={taxonomy?.htNameMap}
+      <CayThayDoiPanel open={reorgOpen} onClose={() => setReorgOpen(false)} isAdmin={isAdmin} htNameMap={htNameMap} />
+
+      <ThietBiDetailDrawer
+        open={!!search.editTb}
+        onOpenChange={(open) => !open && nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, editTb: undefined }) })}
+        device={devices.find(d => d.ma_thiet_bi === search.editTb) || null}
+        canManage={canManage}
+        deviceName={(d) => d.ten || d.ma_thiet_bi}
+        systemLabel={(d) => htNameMap.get(d.he_thong || "") || d.he_thong || ""}
+        systemNameById={(id) => htNameMap.get(id || "") || id || ""}
+
+        onAssign={() => {}}
+        onRemove={() => {}}
       />
 
-      {search.moveHt && (
-         <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4">
-            <div className="bg-background p-6 rounded-2xl shadow-2xl max-w-md w-full border animate-in fade-in zoom-in duration-200">
-               <h3 className="text-lg font-bold mb-2">Di chuyển Hệ thống</h3>
-               <p className="text-sm text-muted-foreground mb-6">
-                 Chọn nhóm hệ thống mới để chuyển <strong>{taxonomy?.htNameMap.get(parseHtSysMa(search.moveHt).sysName) || search.moveHt}</strong> vào.
-               </p>
-               <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>Hủy</Button>
-               </div>
+      <Dialog open={!!search.moveHt} onOpenChange={(o) => !o && nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-2xl border-0 shadow-2xl">
+          <DialogHeader className="bg-primary/5 p-6 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                <MoveRight className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl">Di chuyển hệ thống</DialogTitle>
+                <DialogDescription className="text-muted-foreground mt-0.5">
+                  Thay đổi phân lớp cho hệ thống <span className="font-semibold text-foreground">{moveSystemTarget?.ten || search.moveHt}</span>
+                </DialogDescription>
+              </div>
             </div>
-         </div>
-      )}
+          </DialogHeader>
+          <div className="p-0">
+            <ScrollArea className="max-h-[60vh] p-6 pt-2">
+              <div className="space-y-4">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-2 px-1">
+                  Chọn đích đến (Nhóm hệ thống)
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {moveTargets.map((t, idx) => (
+                    <button
+                      key={idx}
+                      onClick={async () => {
+                        if (!moveSystemTarget) return;
+                        await moveSystem.mutateAsync({
+                          heThongId: moveSystemTarget.id,
+                          tenHeThong: moveSystemTarget.ten,
+                          toNhomId: (taxonomy?.nhomList.find(n => n.ma === t.nhKey)?.id) || "",
+                          toLvId: "",
+                          toNhKey: t.nhKey,
+                          toNhTen: t.nhLabel
+                        });
+                        nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) });
+                      }}
+                      className="group flex items-center justify-between p-3 rounded-xl border border-transparent bg-muted/30 hover:bg-primary/5 hover:border-primary/20 transition-all text-left"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{t.nhLabel}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{t.plLabel}</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
+          <DialogFooter className="bg-muted/30 p-4 px-6 border-t">
+            <Button variant="ghost" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>
+              Hủy bỏ
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {search.moveHt && (
-         <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-            <div className="bg-background p-6 rounded-2xl shadow-2xl max-w-md w-full border">
-               <h3 className="text-lg font-bold mb-2">Di chuyển Hệ thống</h3>
-               <p className="text-sm text-muted-foreground mb-6">
-                 Chọn nhóm hệ thống mới để chuyển <strong>{taxonomy?.htNameMap.get(parseHtSysMa(search.moveHt).sysName) || search.moveHt}</strong> vào.
-               </p>
-               <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveHt: undefined }) })}>Hủy</Button>
-               </div>
+      <Dialog open={!!search.moveTb} onOpenChange={(o) => !o && nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: undefined }) })}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-2xl border-0 shadow-2xl">
+          <DialogHeader className="bg-primary/5 p-6 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600">
+                <HardDrive className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl">Di chuyển tài sản</DialogTitle>
+                <DialogDescription className="text-muted-foreground mt-0.5">
+                  Gán tài sản <span className="font-semibold text-foreground">{moveDeviceTarget?.ten || search.moveTb}</span> vào hệ thống mới
+                </DialogDescription>
+              </div>
             </div>
-         </div>
-      )}
+          </DialogHeader>
+          <div className="p-0">
+            <ScrollArea className="max-h-[60vh] p-6 pt-2">
+              <div className="space-y-4">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-2 px-1">
+                  Chọn hệ thống đích
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {taxonomy?.htList.map((ht) => (
+                    <button
+                      key={ht.id}
+                      onClick={async () => {
+                        if (!moveDeviceTarget) return;
+                        await moveDevice.mutateAsync({
+                          maThietBi: moveDeviceTarget.ma_thiet_bi,
+                          tenThietBi: moveDeviceTarget.ten,
+                          toHtId: ht.id,
+                          toHtTen: ht.ten
+                        });
+                        nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: undefined }) });
+                      }}
+                      className="group flex items-center justify-between p-3 rounded-xl border border-transparent bg-muted/30 hover:bg-blue-500/5 hover:border-blue-500/20 transition-all text-left"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors">{ht.ten}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{taxonomy.nhomNameMap.get(ht.nhomId) || "—"}</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-blue-600 transition-colors" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
+          <DialogFooter className="bg-muted/30 p-4 px-6 border-t">
+            <Button variant="ghost" onClick={() => nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, moveTb: undefined }) })}>
+              Hủy bỏ
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </PageFrame>
   );
 }
