@@ -67,7 +67,9 @@ export function describeIntent(intent: Intent): string {
     case "close-incident": return `Đóng sự cố ${intent.id}`;
     case "create-pm": return `Tạo phiếu bảo trì cho ${intent.target}`;
     case "logout": return "Đăng xuất khỏi hệ thống";
+    case "navigate": return `Đi tới ${intent.label}`;
     case "jump-to": return `Tìm kiếm "${intent.query}"`;
-
+    default: return "Hành động AI không xác định";
   }
 }
+
