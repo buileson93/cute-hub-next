@@ -187,7 +187,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col active:scale-95",
                           ws.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
                         )}
-                        data-active={ws.id === activeWs.id}
                       >
                         <ws.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
                         <span className="w-full truncate text-center leading-tight text-[9.5px] font-medium hidden data-[density=comfortable]:block">
