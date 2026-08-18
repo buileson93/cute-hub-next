@@ -316,14 +316,19 @@ export function ViTriMediaViewer({
                 type="button"
                 onClick={() => setTab(id)}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-                  tab === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                  "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors border",
+                  tab === id 
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground border-transparent hover:bg-muted/50",
                 )}
               >
                 <Icon className="h-3.5 w-3.5" />
                 {label}
                 {id !== "thu-vien" && diemGps.length > 0 && (
-                  <span className="ml-0.5 rounded-full bg-emerald-500/20 px-1.5 text-[10px] text-emerald-600 dark:text-emerald-400">
+                  <span className={cn(
+                    "ml-0.5 rounded-full px-1.5 text-[10px]",
+                    tab === id ? "bg-white/20 text-white" : "bg-success/10 text-success"
+                  )}>
                     {diemGps.length}
                   </span>
                 )}
@@ -344,7 +349,7 @@ export function ViTriMediaViewer({
             <Badge variant="outline" className="gap-1"><ImageIcon className="h-3 w-3" />{counts.anh}</Badge>
             <Badge variant="outline" className="gap-1"><Globe className="h-3 w-3" />{counts.pano360}</Badge>
             <Badge variant="outline" className="gap-1"><Box className="h-3 w-3" />{counts.model3d}</Badge>
-            <Badge variant="outline" className="gap-1 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"><MapPin className="h-3 w-3" />{diemGps.length}</Badge>
+            <Badge variant="outline" className="gap-1 border-success/40 text-success bg-success/5"><MapPin className="h-3 w-3" />{diemGps.length}</Badge>
           </div>
         </div>
 
@@ -358,7 +363,7 @@ export function ViTriMediaViewer({
               <Button size="sm" variant="outline" onClick={() => modelRef.current?.click()} disabled={uploading}>
                 <Box className="mr-1.5 h-4 w-4" /> Mô hình 3D / LiDAR
               </Button>
-              <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
+              <span className="flex items-center gap-1 text-[11px] text-success font-medium">
                 <MapPin className="h-3.5 w-3.5" /> Bắt buộc quyền GPS · giờ máy chủ
               </span>
             </>
@@ -423,7 +428,7 @@ export function ViTriMediaViewer({
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-xs font-medium">{d.ten_tep}</div>
-                          <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
+                          <div className="flex items-center gap-1 text-[11px] text-success font-medium">
                             <MapPin className="h-3 w-3" />
                             {dinhDangToaDo(d.vi_do, d.kinh_do)}
                             {d.do_chinh_xac != null && <span className="text-muted-foreground"> · ±{Math.round(d.do_chinh_xac)}m</span>}
