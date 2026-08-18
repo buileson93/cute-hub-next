@@ -862,7 +862,7 @@ function NhapLieuPage() {
                               <TableRow key={p.index} className={p.action === "error" ? "bg-destructive/5" : ""}>
                                 <TableCell className="text-xs tabular-nums">{p.index + 1}</TableCell>
                                 <TableCell>
-                                  {p.action === "create" && <Badge className="bg-emerald-600">Tạo mới</Badge>}
+                                  {p.action === "create" && <Badge className="bg-success text-success-foreground">Tạo mới</Badge>}
                                   {p.action === "update" && <Badge className="bg-sky-600">Cập nhật</Badge>}
                                   {p.action === "error" && <Badge variant="destructive">Lỗi</Badge>}
                                 </TableCell>
