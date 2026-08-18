@@ -221,7 +221,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("ai")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "ai" ? "bg-[#0074e2] text-white" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
+            tab === "ai" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <Sparkles className="h-3.5 w-3.5" /> Hỏi AI
@@ -231,7 +231,7 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("messages")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "messages" ? "bg-[#0074e2] text-white" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
+            tab === "messages" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <MessagesSquare className="h-3.5 w-3.5" /> Tin nhắn
