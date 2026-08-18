@@ -212,12 +212,12 @@ function KiemTraSoLieuPage() {
             Nhóm hệ thống — Cây vs Bảng
           </CardTitle>
           {nhomDelta.length === 0 ? (
-            <Badge className="gap-1 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300">
+            <Badge className="gap-1 border-success/30 bg-success/10 text-success hover:bg-success/20">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Trùng khớp
             </Badge>
           ) : (
-            <Badge className="gap-1 bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300">
+            <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20">
               <AlertTriangle className="h-3.5 w-3.5" />
               {nhomDelta.length} nhóm chênh lệch
             </Badge>
@@ -239,12 +239,12 @@ function KiemTraSoLieuPage() {
             Vị trí lắp đặt — Tài sản vs Thành phần
           </CardTitle>
           {viTriDelta.length === 0 ? (
-            <Badge className="gap-1 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300">
+            <Badge className="gap-1 border-success/30 bg-success/10 text-success hover:bg-success/20">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Trùng khớp
             </Badge>
           ) : (
-            <Badge className="gap-1 bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300">
+            <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20">
               <AlertTriangle className="h-3.5 w-3.5" />
               {viTriDelta.length} vị trí chênh lệch
             </Badge>
@@ -274,10 +274,10 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-lg border p-4 ${
+      className={`rounded-lg border p-4 shadow-sm ${
         tone === "warn"
-          ? "border-amber-300/60 bg-amber-500/5"
-          : "border-emerald-300/60 bg-emerald-500/5"
+          ? "border-warning/40 bg-warning/5"
+          : "border-success/40 bg-success/5"
       }`}
     >
       <div className="text-xs text-muted-foreground">{label}</div>
@@ -322,9 +322,9 @@ function DeltaTable({
               <td className="px-4 py-2 text-right tabular-nums">{r.table}</td>
               <td className="px-4 py-2 text-right tabular-nums font-semibold">
                 {r.delta === 0 ? (
-                  <span className="text-emerald-600 dark:text-emerald-400">0</span>
+                  <span className="text-success">0</span>
                 ) : (
-                  <span className="text-amber-600 dark:text-amber-400">
+                  <span className="text-warning font-bold">
                     {r.delta > 0 ? `+${r.delta}` : r.delta}
                   </span>
                 )}

@@ -148,7 +148,7 @@ function Content() {
                   </div>
                 )}
                 {usesR2 && health.data?.ok && (
-                  <p className="text-xs text-emerald-600">{health.data.message}</p>
+                  <p className="text-xs text-success font-medium">{health.data.message}</p>
                 )}
 
                 <Card className="astryx-surface">
