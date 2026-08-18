@@ -14,7 +14,9 @@ export type Intent =
   | { kind: "unmount-asset"; asset: string; component?: string; confidence: number }
   | { kind: "close-incident"; id: string; confidence: number }
   | { kind: "create-pm"; target: string; confidence: number }
+  | { kind: "logout"; confidence: number }
   | { kind: "jump-to"; query: string; confidence: number };
+
 
 const ASSET_RE = "(TB[_-]?\\d+|[A-Z]{2,}\\d{2,})";
 const COMP_RE = "(TPHT[_-]?\\d+|[A-Z]{3,}[_-]?\\d+)";
@@ -44,7 +46,13 @@ export function matchIntent(input: string): Intent {
   const mPm = raw.match(/^(?:tạo|tao|create)\s+pm\s+(?:cho|for)\s+(.+)$/i);
   if (mPm) return { kind: "create-pm", target: mPm[1].trim(), confidence: 0.85 };
 
+  // logout
+  if (s.includes("đăng xuất") || s.includes("logout") || s === "exit" || s === "quit") {
+    return { kind: "logout", confidence: 1 };
+  }
+
   // jump-to fallback
+
   return { kind: "jump-to", query: raw, confidence: s.length > 0 ? 0.3 : 0 };
 }
 
@@ -56,6 +64,8 @@ export function describeIntent(intent: Intent): string {
       : `Tháo tài sản ${intent.asset}`;
     case "close-incident": return `Đóng sự cố ${intent.id}`;
     case "create-pm": return `Tạo phiếu bảo trì cho ${intent.target}`;
+    case "logout": return "Đăng xuất khỏi hệ thống";
     case "jump-to": return `Tìm kiếm "${intent.query}"`;
+
   }
 }

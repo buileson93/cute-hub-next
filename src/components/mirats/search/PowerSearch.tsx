@@ -33,8 +33,9 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const [activeTab, setActiveTab] = useState<TabValue>("all");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const navigate = useNavigate();
-  const { roles, logout } = useSession();
+  const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
+
 
 
   const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
@@ -70,7 +71,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
     if (activeTab === "device") return combined.filter(r => r.entity === "thiet_bi");
     if (activeTab === "system") return combined.filter(r => r.entity === "he_thong");
     if (activeTab === "document") return combined.filter(r => r.entity === "tai_lieu" || r.entity === "giay_phep");
-    if (activeTab === "action") return combined.filter(r => r.entity === "action");
+    if (activeTab === "action") return []; // Actions handled separately
     return combined;
   }, [rows, rowsToanCuc, activeTab]);
 
@@ -191,15 +192,19 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {hasQuery && intent.kind !== "jump-to" && intent.confidence > 0.6 && (
                 <CommandGroup heading="Gợi ý thông minh">
                   <CommandItem
-                    onSelect={async () => {
-                      if (intent.kind === "action" && intent.action === "logout") {
-                        await logout();
-                        onOpenChange(false);
-                        return;
+                    onSelect={() => {
+                      if (intent.kind === "logout") {
+                         supabase.auth.signOut().then(() => {
+                           onOpenChange(false);
+                           navigate({ to: "/auth" });
+                         });
+                         return;
                       }
                       onOpenChange(false);
                       toast.info(describeIntent(intent));
                     }}
+
+
 
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
                   >
