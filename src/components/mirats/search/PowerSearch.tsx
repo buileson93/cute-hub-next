@@ -275,7 +275,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
     >
       <div className="flex flex-col bg-background/98 backdrop-blur-2xl border border-border/40 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden w-full h-full ring-1 ring-white/10 dark:ring-white/5">
         {/* Header Section */}
-        <div className="flex items-center gap-4 px-6 py-4 border-b border-border/40 bg-muted/10">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border/40 bg-muted/10">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
             <Search className="h-5 w-5" />
           </div>
@@ -284,7 +284,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               placeholder="Tìm kiếm tài sản, hệ thống, tài liệu hoặc gõ lệnh AI..."
               value={q}
               onValueChange={setQ}
-              className="h-12 text-[16px] font-semibold tracking-tight text-foreground/90 placeholder:text-muted-foreground/30"
+              className="h-10 text-[14px] font-medium tracking-tight text-foreground/90 placeholder:text-muted-foreground/30"
             />
           </div>
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/40 border border-border/30 font-mono text-[10px] font-bold text-muted-foreground/60 shadow-sm">
@@ -332,77 +332,57 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex flex-col md:flex-row h-[min(80dvh,540px)]">
-          {/* Left Column: Search Results */}
-          <div className="flex-1 flex flex-col border-r border-border/30 min-w-0">
-            <CommandList className="flex-1">
-              {loading && q.length > 0 && (
-                <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground/60">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                  <span className="text-sm font-medium">Đang tìm kiếm dữ liệu...</span>
-                </div>
-              )}
+        <div className="flex flex-col h-[min(70dvh,480px)]">
+          {/* Search Results */}
+          <CommandList className="flex-1">
+            {loading && q.length > 0 && (
+              <div className="flex flex-col items-center justify-center py-12 gap-2 text-muted-foreground/60">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span className="text-xs font-medium">Đang tìm...</span>
+              </div>
+            )}
 
-              {!loading && q.length > 0 && filteredRows.length === 0 && (
-                <CommandEmpty className="py-20 text-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mb-2">
-                      <Search className="h-6 w-6 text-muted-foreground/40" />
-                    </div>
-                    <p className="text-sm font-semibold text-foreground">Không tìm thấy kết quả</p>
-                    <p className="text-xs text-muted-foreground">Thử tìm kiếm với từ khóa khác</p>
-                  </div>
-                </CommandEmpty>
-              )}
+            {!loading && q.length > 0 && filteredRows.length === 0 && (
+              <CommandEmpty className="py-12 text-center text-xs text-muted-foreground">
+                Không tìm thấy kết quả
+              </CommandEmpty>
+            )}
 
-              {/* AI Actions */}
-              {hasQuery && intent.kind !== "jump-to" && intent.confidence > 0.6 && (
-                <CommandGroup heading="Gợi ý thông minh">
-                  <CommandItem
-                    onSelect={() => handleExecuteIntent(intent)}
-                    onMouseEnter={() => setFocusedRow({
-                      entity: "nav" as any,
-                      id: "intent",
-                      title: describeIntent(intent),
-                      subtitle: "Trợ lý MIRATS AI",
-                      to: ""
-                    })}
-                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group cursor-pointer"
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Star className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[13px] font-bold text-foreground">{describeIntent(intent)}</span>
-                      <span className="text-[11px] text-muted-foreground/70 truncate italic">Xử lý bởi MIRATS AI</span>
-                    </div>
-                    <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowRight className="h-4 w-4 text-primary" />
-                    </div>
-                  </CommandItem>
-                </CommandGroup>
-              )}
+            {/* AI Actions */}
+            {hasQuery && intent.kind !== "jump-to" && intent.confidence > 0.6 && (
+              <CommandGroup heading="Gợi ý">
+                <CommandItem
+                  onSelect={() => handleExecuteIntent(intent)}
+                  className="flex items-center gap-2 px-3 py-2 mx-1.5 rounded-lg hover:bg-primary/5 cursor-pointer"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-[13px] font-medium text-foreground">{describeIntent(intent)}</span>
+                </CommandItem>
+              </CommandGroup>
+            )}
 
-              {/* Search Hits */}
-              {filteredRows.length > 0 && (
-                <CommandGroup heading={q ? `Kết quả (${filteredRows.length})` : "Gợi ý cho bạn"}>
-                  {filteredRows.map((row) => {
-                    const meta = ENTITY_META[row.entity] || { icon: Package, label: "Khác" };
-                    const Icon = meta.icon;
-                    return (
-                      <CommandItem
-                        key={`${row.entity}-${row.id}`}
-                        onSelect={() => handleSelect(row)}
-                        onMouseEnter={() => setFocusedRow(row)}
-                        className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl group transition-all cursor-pointer"
-                      >
-                        <div className={cn(
-                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                          "bg-muted/40 text-muted-foreground/60 group-hover:bg-primary/10 group-hover:text-primary"
-                        )}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="flex flex-col min-w-0">
+            {/* Search Hits */}
+            {filteredRows.length > 0 && (
+              <CommandGroup heading={q ? "Kết quả" : "Gần đây"}>
+                {filteredRows.map((row) => {
+                  const meta = ENTITY_META[row.entity] || { icon: Package };
+                  const Icon = meta.icon;
+                  return (
+                    <CommandItem
+                      key={`${row.entity}-${row.id}`}
+                      onSelect={() => handleSelect(row)}
+                      className="flex items-center gap-2.5 px-3 py-2 mx-1.5 rounded-lg transition-all cursor-pointer"
+                    >
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted/50 text-muted-foreground/70">
+                        <Icon className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[13px] font-medium text-foreground truncate">{row.title}</span>
+                        <span className="text-[11px] text-muted-foreground/60 truncate">{row.subtitle}</span>
+                      </div>
+                    </CommandItem>
+                  );
+                })}
                           <span className="text-[13px] font-semibold text-foreground truncate">
                             <Highlight text={row.title} query={activeTerm} />
                           </span>
