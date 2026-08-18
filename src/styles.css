@@ -164,6 +164,9 @@
   --chart-3: oklch(0.79 0.15 75);
   --chart-4: oklch(0.6 0.18 25);
   --chart-5: oklch(0.45 0.01 260);
+  --primary-opacity-5: color-mix(in srgb, var(--primary), transparent 95%);
+  --primary-opacity-10: color-mix(in srgb, var(--primary), transparent 90%);
+  --primary-opacity-20: color-mix(in srgb, var(--primary), transparent 80%);
 }
 
 .dark {
@@ -209,7 +212,10 @@
 @layer base {
   * {
     border-color: var(--color-border);
-  }
+  --primary-opacity-5: color-mix(in srgb, var(--primary), transparent 95%);
+  --primary-opacity-10: color-mix(in srgb, var(--primary), transparent 90%);
+  --primary-opacity-20: color-mix(in srgb, var(--primary), transparent 80%);
+}
 
   html {
     font-family: var(--font-sans);
