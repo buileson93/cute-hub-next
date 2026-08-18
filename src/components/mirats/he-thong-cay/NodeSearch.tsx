@@ -61,7 +61,7 @@ export function NodeSearch({ items, onPick, containerClassName }: { items: Searc
             return (
               <button
                 key={`${it.kind}:${it.ma}`}
-                className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted"
+                className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-muted astryx-control"
                 onClick={() => { onPick(it); setOpen(false); }}
               >
                 <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
