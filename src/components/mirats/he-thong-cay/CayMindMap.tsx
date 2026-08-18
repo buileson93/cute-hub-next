@@ -394,7 +394,12 @@ export function CayMindMap({
 
   const { finiteNodes } = useMemo(() => {
     if (rfNodes.length === 0) return { finiteNodes: false };
-    const fn = rfNodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
+    const fn = rfNodes.every(n => {
+      const x = n.position?.x;
+      const y = n.position?.y;
+      return typeof x === 'number' && !isNaN(x) && isFinite(x) &&
+             typeof y === 'number' && !isNaN(y) && isFinite(y);
+    });
     return { finiteNodes: fn };
   }, [rfNodes]);
 
@@ -403,12 +408,13 @@ export function CayMindMap({
   useEffect(() => {
     if (rfNodes.length > 0 && finiteNodes && rf) {
       const now = Date.now();
-      if (now - lastFitViewRef.current < 2000) return; // Throttling fitView
+      // Only fit view once on initial load or major change
+      if (lastFitViewRef.current !== 0) return; 
       lastFitViewRef.current = now;
 
       const timer = setTimeout(() => {
-        rf.fitView({ duration: 600, padding: 0.1 });
-      }, 500);
+        rf.fitView({ duration: 800, padding: 0.15 });
+      }, 600);
       return () => clearTimeout(timer);
     }
   }, [rfNodes.length, rf, finiteNodes]);
