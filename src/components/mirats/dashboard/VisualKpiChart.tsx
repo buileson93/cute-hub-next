@@ -16,6 +16,7 @@ interface VisualKpiChartProps {
   height?: number;
   status?: 'normal' | 'attention' | 'warning' | 'danger';
   tooltip?: string;
+  onClick?: () => void;
 }
 
 export function VisualKpiChart({
@@ -28,7 +29,8 @@ export function VisualKpiChart({
   icon,
   height = 140,
   status = 'normal',
-  tooltip
+  tooltip,
+  onClick
 }: VisualKpiChartProps) {
   
   const statusColors = {
@@ -46,7 +48,13 @@ export function VisualKpiChart({
   };
 
   return (
-    <Card className="astryx-card overflow-hidden">
+    <Card 
+      className={cn(
+        "astryx-card overflow-hidden transition-all duration-300",
+        onClick && "cursor-pointer hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]"
+      )}
+      onClick={onClick}
+    >
       <CardHeader className="p-4 pb-0 flex flex-row items-center justify-between space-y-0">
         <div className="space-y-1">
           <CardTitle className="astryx-text-label flex items-center gap-2">

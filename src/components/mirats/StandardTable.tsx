@@ -112,6 +112,10 @@ export interface StandardTableProps<T> {
   selectable?: boolean;
   selected?: Set<string>;
   setSelected?: (val: any) => void;
+  /** @deprecated use selected instead */
+  selection?: Set<string>;
+  /** @deprecated use setSelected instead */
+  setSelection?: (val: any) => void;
   maxHeightClass?: string;
   emptyText?: string;
   emptyContent?: React.ReactNode;
@@ -120,8 +124,22 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: { 
+    filteredRows: T[]; 
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
+    pageRows: T[];
+    selectedRows: T[];
+    clear: () => void;
+  }) => React.ReactNode);
+  toolbarLeft?: React.ReactNode | ((ctx: { 
+    filteredRows: T[]; 
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
+    pageRows: T[];
+    selectedRows: T[];
+    clear: () => void;
+  }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: ColumnDef<T>[];
@@ -156,8 +174,10 @@ export function StandardTable<T>({
   columns = [],
   getRowId,
   selectable,
-  selected,
-  setSelected,
+  selected: selectedProp,
+  setSelected: setSelectedProp,
+  selection,
+  setSelection,
   maxHeightClass = "max-h-[min(800px,calc(100vh-280px))]",
   emptyText = "Không có dữ liệu",
   emptyContent,
@@ -184,6 +204,9 @@ export function StandardTable<T>({
   expandable,
   renderExpansion,
 }: StandardTableProps<T>) {
+  // Adapter cho selection state
+  const selected = selectedProp ?? selection;
+  const setSelected = setSelectedProp ?? setSelection;
 
 
 
@@ -266,12 +289,16 @@ export function StandardTable<T>({
 
   // Sắp xếp cột theo thứ tự người dùng đã chọn
   const sortedColumns = useMemo(() => {
-    const withPriority = columns.map((c, idx) => {
+    // Adapter cho ColumnDef: map label -> header, cell -> render, minW -> minWidth
+    const normalized = columns.map(c => ({
+      ...c,
+      header: c.header ?? c.label,
+      render: c.render ?? c.cell,
+      minWidth: c.minWidth ?? (c.minW ? parseMinW(c.minW) : undefined)
+    }));
+
+    const withPriority = normalized.map((c, idx) => {
       if (c.priority) return c;
-      // Quy tắc suy diễn: 
-      // - 2 cột đầu (hoặc ma/ten): primary
-      // - 3 cột tiếp theo: secondary
-      // - còn lại: detail
       let priority: "primary" | "secondary" | "detail" = "detail";
       const isCore = ["ma", "ten", "ma_thiet_bi", "ten_thiet_bi"].includes(c.key.toLowerCase());
       if (isCore || idx < 2) priority = "primary";
@@ -287,25 +314,22 @@ export function StandardTable<T>({
 
   const shownCols = useMemo(() => {
     return sortedColumns.filter((c) => {
-      // Tầng 1: Người dùng ẩn cột cố tình -> Ẩn mọi nơi
       if (tableKey && (prefs.hidden as Set<string>).has(c.key)) return false;
-      
-      // Tầng 3: Ẩn cứng trong định nghĩa cột -> Ẩn mọi nơi
       if (c.hidden) return false;
 
-      // Priority-based hiding:
-      // Tablet ẩn detail, Mobile chuyển sang Card (handled in render)
+      // Priority-based hiding
       if (viewMode === "tablet" && c.priority === "detail") return false;
 
-      // Tầng 2: Ẩn theo bề rộng màn hình (hideBelow) -> Chỉ ẩn trên UI
       if (!c.hideBelow) return true;
       const threshold = typeof c.hideBelow === "number" 
         ? c.hideBelow 
         : (BP_PX as any)[c.hideBelow] || BP_PX.md;
+      
+      // Responsive hideBelow không làm mất cột sticky hoặc action
+      if (c.sticky || c.key === 'actions') return true;
+
       const isShown = containerWidth >= threshold;
       
-      // TRƯỜNG HỢP ĐẶC BIỆT: Nếu viewMode là tablet và cột là detail, 
-      // ta LUÔN ẩn nó đi để nhường chỗ cho nút mở rộng dòng.
       if (viewMode === "tablet" && c.priority === "detail") return false;
       
       return isShown;
@@ -336,7 +360,13 @@ export function StandardTable<T>({
       return true;
     });
   }, [sortedColumns, tableKey, prefs.hidden]);
-  const getRowIdInternal = (r: T): string => (getRowId ? getRowId(r) : (r as any).id);
+  const getRowIdInternal = useCallback((r: T): string => {
+    const id = getRowId ? getRowId(r) : (r as any).id;
+    if (!id && process.env.NODE_ENV === 'development') {
+      console.warn("StandardTable: Row missing unique ID. Keys might be unstable.", r);
+    }
+    return String(id || '');
+  }, [getRowId]);
 
   const toggleRow = (id: string) => {
     if (!setSelected) return;
@@ -353,8 +383,15 @@ export function StandardTable<T>({
   };
 
   const renderToolbar = (
-    toolbar: React.ReactNode | ((ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }) => React.ReactNode),
-    ctx: { filteredRows: T[]; visibleColumns: ColumnDef<T>[] }
+    toolbar: React.ReactNode | ((ctx: any) => React.ReactNode),
+    ctx: { 
+      filteredRows: T[]; 
+      visibleColumns: ColumnDef<T>[];
+      allColumns: ColumnDef<T>[];
+      pageRows: T[];
+      selectedRows: T[];
+      clear: () => void;
+    }
   ) => {
     if (typeof toolbar === "function") {
       return toolbar(ctx);
@@ -797,7 +834,14 @@ export function StandardTable<T>({
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-1 px-0">
           <div className="flex items-center gap-1">
-            {toolbarLeft && renderToolbar(toolbarLeft, { filteredRows: fullDisplay, visibleColumns: shownCols })}
+            {toolbarLeft && renderToolbar(toolbarLeft, { 
+              filteredRows: fullDisplay, 
+              visibleColumns: shownCols,
+              allColumns: exportCols,
+              pageRows: display,
+              selectedRows,
+              clear: clearSelection
+            })}
             {selectable && selectedRows.length > 0 && bulkActions && (
               bulkActions({
                 selectedRows,
@@ -1016,7 +1060,14 @@ export function StandardTable<T>({
                 </div>
               </>
             )}
-            {toolbarRight && renderToolbar(toolbarRight, { filteredRows: fullDisplay, visibleColumns: shownCols })}
+            {toolbarRight && renderToolbar(toolbarRight, { 
+              filteredRows: fullDisplay, 
+              visibleColumns: shownCols,
+              allColumns: exportCols,
+              pageRows: display,
+              selectedRows,
+              clear: clearSelection
+            })}
           </div>
         </div>
       )}
@@ -1222,10 +1273,11 @@ export function StandardTable<T>({
               })}
             </colgroup>
 
-            <TableHeader className="bg-muted/30 sticky top-0 z-20">
+            <TableHeader className="bg-muted/30 sticky top-0 z-20 shadow-sm shadow-border/50">
               <TableRow className={cn(
                 "hover:bg-transparent border-b border-border/60",
-                UI_DENSITY.TABLE_ROW_H
+                UI_DENSITY.TABLE_ROW_H,
+                "astryx-table-header"
               )}>
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
