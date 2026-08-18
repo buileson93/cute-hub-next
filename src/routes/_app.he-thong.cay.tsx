@@ -143,17 +143,12 @@ function HeThongCayPage() {
   const { renameEntity } = useCayMutations();
   
   useEffect(() => {
+    // Stability fix: Only update display if it's explicitly in URL
+    // Prevent infinite sync loops if search.view is volatile
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
-    else if (!search.view && display === "mindmap") {
-      nav({ 
-        to: "/he-thong/cay", 
-        search: (prev: any) => ({ ...prev, view: "mindmap" }),
-        replace: true 
-      });
-    }
-  }, [search.view, setDisplay, display, nav]);
+  }, [search.view, setDisplay, display]);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") {
