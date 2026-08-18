@@ -191,6 +191,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             color={["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#d1fae5"]}
             status={reliability.insufficient ? 'normal' : Number(reliability.value) >= 95 ? 'normal' : 'warning'}
             tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
+            onClick={() => navigate({ to: "/su-co" })}
           />
         );
       case "mttr-kpi":
@@ -204,6 +205,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
             status={mttrKpi.insufficient ? 'normal' : (mttrKpi.value || 0) > 240 ? 'attention' : 'normal'}
             tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
+            onClick={() => navigate({ to: "/su-co" })}
           />
         );
       case "mtbf-kpi":
@@ -217,6 +219,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             color="#f59e0b"
             status={mtbfKpi.insufficient ? 'normal' : (mtbfKpi.value || 0) < 15 ? 'warning' : 'normal'}
             tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
+            onClick={() => navigate({ to: "/su-co" })}
           />
         );
       case "pm-kpi":
@@ -230,8 +233,10 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             color={["#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"]}
             status={pmKpi.result.insufficient ? 'normal' : (pmKpi.result.value || 0) < 90 ? 'attention' : 'normal'}
             tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
+            onClick={() => navigate({ to: "/bao-tri/pm" })}
           />
         );
+
 
       case "emergency-kpi":
         return (
