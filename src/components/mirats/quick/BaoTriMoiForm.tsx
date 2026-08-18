@@ -151,7 +151,12 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       const r = await ghiBaoDuongFull(payload);
       return r.bao_tri_ids.length;
     },
-    onSuccess: () => { toast.success("Đã lưu phiếu bảo dưỡng"); if (onDone) onDone(); },
+    onSuccess: () => { 
+      toast.success("Đã lưu phiếu bảo dưỡng"); 
+      qc.invalidateQueries({ queryKey: ["operations_data"] });
+      if (onDone) onDone(); 
+    },
+
     onError: (e) => rpcErrorToast(e)
   });
 

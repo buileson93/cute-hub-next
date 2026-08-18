@@ -17,8 +17,9 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession, type AppRole } from "@/hooks/use-session";
 import { getAiPublicConfig } from "@/lib/ai/config.functions";
 import {
-  useGlobalSearch, normalize,
+  useGlobalSearch, normalize, ENTITY_META
 } from "@/lib/mirats/global-search";
+
 import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
 import { useDbTaxonomy, useSystemNameOverrides } from "@/lib/mirats/db-taxonomy";
 import { toast } from "sonner";
@@ -177,6 +178,8 @@ export function CommandPalette() {
       setOpen(false);
       saveRecentHit(hit);
       navigate({ to: hit.to as any });
+      toast.success(`Đang mở: ${hit.title}`, { duration: 1500 });
+
     },
     [navigate],
   );
@@ -265,6 +268,8 @@ export function CommandPalette() {
               const to = `/${r.entity.replace("_", "-")}/${r.id}`;
               const hit: Hit = { entity: r.entity, id: r.id, title: r.title, subtitle: r.subtitle, to };
               const Icon = r.entity === "thiet_bi" ? Package : r.entity === "dm_he_thong" ? Network : Search;
+              const meta = ENTITY_META[r.entity as keyof typeof ENTITY_META];
+
 
               return (
                 <CommandItem
@@ -277,7 +282,9 @@ export function CommandPalette() {
                   <div className="flex flex-col min-w-0">
                     <div className="text-[13px] font-semibold text-foreground truncate">{r.title}</div>
                     {r.subtitle && <div className="text-[11px] text-muted-foreground/70 truncate">{r.subtitle}</div>}
+                    {meta && <div className="text-[10px] text-primary/60 font-medium uppercase mt-0.5 tracking-tighter">{meta.label}</div>}
                   </div>
+
                 </CommandItem>
               );
             })}

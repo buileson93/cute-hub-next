@@ -99,12 +99,13 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
   const [closingIntent, setClosingIntent] = useState(false);
 
   const kipAmbient = useAmbientApply<KipRow[]>({
-    suggested: usePrefillKipTruc(profile?.ho_ten || "").data ?? null,
+    suggested: (usePrefillKipTruc(profile?.ho_ten || "").data as KipRow[]) ?? null,
     isEmpty: (v) => !v || v.length === 0 || v.every((r) => !r.ho_ten.trim()),
     currentValue: kip,
     apply: (v) => setKip(v),
     clear: () => setKip([{ ho_ten: "", chuc_vu: "", nang_dinh: "" }]),
   });
+
 
   const selected = useMemo(() => Array.from(new Set(mounted.map(m => m.device.id))).map(id => mounted.find(m => m.device.id === id)!.device), [mounted]);
 
@@ -224,7 +225,21 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       }
       return maNhom;
     },
-    onSuccess: (maNhom) => { toast.success("Đã lưu sự cố"); setPreviewOpen(false); qc.invalidateQueries({ queryKey: ["operations_data"] }); if (onDone) onDone(); },
+    onSuccess: (maNhom) => { 
+      toast.success("Đã lưu sự cố"); 
+      setPreviewOpen(false); 
+      qc.invalidateQueries({ queryKey: ["operations_data"] }); 
+      
+      // Mở file word sau khi lưu thành công
+      if (maNhom) {
+        exportFn({ data: { ma_nhom: maNhom } }).then(res => {
+          if (res?.url) window.open(res.url, "_blank");
+        }).catch(err => console.error("Export word failed:", err));
+      }
+
+      if (onDone) onDone(); 
+    },
+
     onError: (e: Error) => toast.error(rpcErrorToast(e).title)
   });
 
@@ -322,7 +337,24 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
                   onApplyKeywords={(keywords: string[]) => setTomTat(prev => prev ? prev + "\n" + keywords.join(", ") : keywords.join(", "))}
                 />
               </CollapsibleSection>
+
+              {anomalies.length > 0 && (
+                <div className="rounded-xl border border-yellow-200 bg-yellow-50/50 p-4 space-y-2 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex items-center gap-2 text-sm font-bold text-yellow-800">
+                    <AlertTriangle className="h-4 w-4" /> Bất thường phát hiện ({anomalies.length})
+                  </div>
+                  <div className="space-y-1">
+                    {anomalies.map((a, i) => (
+                      <div key={i} className="text-[12px] text-yellow-700 flex flex-col">
+                        <span className="font-semibold">• {a.message}</span>
+                        {a.hint && <span className="text-[11px] opacity-80 pl-3 italic">{a.hint}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
+
           )}
           {step === 2 && (
             <Card>
