@@ -50,8 +50,8 @@ function pctOf(s: UploadStatus): number {
 }
 
 function colorOf(s: UploadStatus): string {
-  if (s.phase === "error") return "bg-rose-500";
-  if (s.phase === "done" || s.phase === "dedup") return "bg-emerald-500";
+  if (s.phase === "error") return "bg-destructive";
+  if (s.phase === "done" || s.phase === "dedup") return "bg-success";
   return "bg-primary";
 }
 
@@ -160,7 +160,7 @@ export function PhotoUpload({
         onChange={(e) => onFiles(e.target.files)}
       />
       <Button
-        type="button" variant="outline" size="sm"
+        type="button" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm" size="sm"
         onClick={pick} disabled={disabled || busy || value.length >= maxFiles}
       >
         {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
@@ -177,9 +177,9 @@ export function PhotoUpload({
             return (
               <div key={r.key} className="text-[11px]">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
-                  {r.status.phase === "done" && <Check className="h-3 w-3 text-emerald-600" />}
-                  {r.status.phase === "dedup" && <CopyIcon className="h-3 w-3 text-emerald-600" />}
-                  {r.status.phase === "error" && <AlertCircle className="h-3 w-3 text-rose-600" />}
+                  {r.status.phase === "done" && <Check className="h-3 w-3 text-success" />}
+                  {r.status.phase === "dedup" && <CopyIcon className="h-3 w-3 text-success" />}
+                  {r.status.phase === "error" && <AlertCircle className="h-3 w-3 text-destructive" />}
                   <span className="truncate flex-1">{r.name}</span>
                   <span className="tabular-nums">{labelOf(r.status)}{savings}</span>
                 </div>
@@ -215,7 +215,7 @@ export function PhotoUpload({
                 {!disabled && (
                   <button
                     type="button" onClick={() => remove(a)}
-                    className="absolute right-1 top-1 hidden rounded-full bg-rose-600 p-0.5 text-white group-hover:block"
+                    className="absolute right-1 top-1 hidden rounded-full bg-destructive p-0.5 text-destructive-foreground group-hover:block"
                     aria-label="Xoá"
                   >
                     <X className="h-3 w-3" />
