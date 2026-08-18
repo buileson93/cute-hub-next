@@ -2,6 +2,7 @@ import { useMemo, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getHeartBeatData, HeartBeatGroup } from "@/lib/mirats/dashboard-realtime.functions";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 import { 
   Tooltip,
   TooltipContent,
