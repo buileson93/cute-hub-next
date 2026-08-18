@@ -7,7 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
+import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
@@ -196,7 +198,7 @@ export function StandardTable<T>({
   rowClassName,
   toolbarRight,
   toolbarLeft,
-  bulkActions,
+  bulkActionsActions,
   bulkActionsActions,
 
   tableKey,
@@ -665,9 +667,17 @@ export function StandardTable<T>({
               Thử lại
             </Button>
           )}
-        </div>
-      );
-    }
+      {bulkActionsActions && (
+        <BulkActionBar 
+          selectedCount={selected.size} 
+          onClear={() => setSelected(new Set())}
+          actions={bulkActionsActions.map(a => ({ ...a, onClick: () => a.onClick(selectedRows) }))}
+        />
+      )}
+    </div>
+  );
+}
+
 
     if (trangThai.dangTai) {
       return (

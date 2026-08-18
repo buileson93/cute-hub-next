@@ -82,8 +82,18 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
   function nextStep() { if (step < 3) setStep(s => s + 1); }
   function prevStep() { if (step > 1) setStep(s => s - 1); }
 
+  const validate = () => {
+    if (step === 2) {
+      if (!boPhan) { toast.error("Vui lòng nhập bộ phận hỏng"); return false; }
+      if (!thietBiHongId) { toast.error("Vui lòng chọn tài sản hỏng"); return false; }
+      if (phuongAn === "thay_the" && !thietBiThayTheId) { toast.error("Vui lòng chọn tài sản thay thế"); return false; }
+    }
+    return true;
+  };
+
   const save = useMutation({
     mutationFn: async () => {
+      if (!validate()) throw new Error("Validation failed");
       const maHH = `HH-${Date.now().toString(36).toUpperCase()}`;
       const payload = buildHongHocPayload({ 
         ma_hong_hoc: maHH, 
@@ -104,9 +114,11 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
     onSuccess: () => { 
       toast.success("Đã ghi nhận hỏng hóc"); 
       qc.invalidateQueries({ queryKey: ["operations_data"] });
+      qc.invalidateQueries({ queryKey: ["thiet_bi"] });
       if (onDone) onDone(); 
     }
   });
+
 
   if (!canManageHongHoc(roles)) return <AccessDenied backTo="/hong-hoc" backLabel="Về danh sách" />;
 
@@ -190,7 +202,7 @@ export function HongHocMoiForm({ defaultSuCo, defaultHeThongId, defaultThietBi, 
         <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
         <div className="flex gap-2">
            {step === 3 && <Button variant="secondary" onClick={() => setPreviewOpen(true)}>Xem trước</Button>}
-           {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}</Button>}
+           {step < 3 ? <Button onClick={() => { if (validate()) nextStep(); }}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}</Button>}
         </div>
       </div>
       <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
