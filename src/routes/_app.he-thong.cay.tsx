@@ -492,8 +492,9 @@ function HeThongCayPage() {
       </PageSection>
 
       <PageBody density="compact" className="flex-1 min-h-[500px] h-full relative overflow-hidden p-0 bg-muted/5">
-        <DataState state={state} emptyTitle="Không có dữ liệu phù hợp" emptyDesc="Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm.">
+        <DataState state={state} title="Không có dữ liệu phù hợp" description="Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm.">
           <div className="absolute inset-0 flex flex-col">
+
             {display === "tree" && (
               <ScrollArea className="flex-1 p-4">
                 <TreeView 
