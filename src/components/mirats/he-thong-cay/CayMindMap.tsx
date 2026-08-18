@@ -679,7 +679,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-muted/5 flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 180px)' }}>
+    <div className="absolute inset-0 w-full h-full bg-muted/5 flex flex-col overflow-hidden">
       {isLayouting && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity duration-300">
           <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
