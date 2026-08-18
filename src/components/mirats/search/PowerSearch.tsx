@@ -103,8 +103,9 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
     <CommandDialog 
       open={open} 
       onOpenChange={onOpenChange}
+      className="max-w-4xl"
     >
-      <div className="flex flex-col bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="flex flex-col bg-background/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header Section */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 bg-muted/20">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -163,7 +164,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex h-[min(65dvh,520px)]">
+        <div className="flex flex-col md:flex-row h-[min(80dvh,600px)]">
           {/* Left Column: Search Results */}
           <div className="flex-1 flex flex-col border-r border-border/30 min-w-0">
             <CommandList className="flex-1">
