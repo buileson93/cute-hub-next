@@ -23,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { exportBaoCaoBanDauToWord } from "@/lib/incident-report-word.functions";
