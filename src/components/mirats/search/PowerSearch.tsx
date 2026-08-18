@@ -188,7 +188,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
       open={open} 
       onOpenChange={onOpenChange}
     >
-      <div className="flex flex-col bg-background/98 backdrop-blur-2xl border border-border/40 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden max-w-5xl mx-auto ring-1 ring-white/10 dark:ring-white/5">
+      <div className="flex flex-col bg-background/98 backdrop-blur-2xl border border-border/40 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] overflow-hidden w-full h-full ring-1 ring-white/10 dark:ring-white/5">
         {/* Header Section */}
         <div className="flex items-center gap-4 px-6 py-4 border-b border-border/40 bg-muted/10">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
@@ -247,7 +247,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex flex-col md:flex-row h-[min(80dvh,600px)]">
+        <div className="flex flex-col md:flex-row h-[min(80dvh,540px)]">
           {/* Left Column: Search Results */}
           <div className="flex-1 flex flex-col border-r border-border/30 min-w-0">
             <CommandList className="flex-1">
