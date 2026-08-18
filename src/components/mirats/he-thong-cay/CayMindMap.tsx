@@ -641,7 +641,7 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full">
+    <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ minHeight: 'inherit' }}>
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
@@ -707,7 +707,7 @@ export function CayMindMap({
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
 
         {rfNodes.filter(n => n.type === 'mind').length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
             <div className="flex flex-col items-center gap-4 p-8 bg-card/80 backdrop-blur border rounded-xl shadow-2xl pointer-events-auto">
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
                 <Search className="w-8 h-8 text-muted-foreground opacity-20" />
