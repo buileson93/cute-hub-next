@@ -291,6 +291,21 @@
   border-radius: var(--radius-control);
 }
 
+/* Nút trạng thái Active/Toggle — Phục hồi màu xanh MIRATS */
+.astryx-control[aria-pressed="true"],
+.astryx-control[data-state="on"],
+.astryx-control[data-active="true"] {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.astryx-control[aria-pressed="true"] svg,
+.astryx-control[data-state="on"] svg,
+.astryx-control[data-active="true"] svg {
+  color: currentColor !important;
+}
+
 
 /* MIRATS-specific suppression: Never show outline on command palette input */
 [cmdk-input], [cmdk-input]:focus, [cmdk-input]:focus-visible {

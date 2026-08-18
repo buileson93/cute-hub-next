@@ -51,9 +51,10 @@ function ThanhPhanListPage() {
             {canManage && (
               <AppTooltip noiDung={editMode ? "Hoàn tất" : "Chỉnh sửa nhanh"}>
                 <Button
-                  variant={editMode ? "default" : "outline"}
+                  variant="outline"
                   size="icon"
-                  className="h-8 w-8"
+                  data-active={editMode}
+                  className="h-8 w-8 astryx-control"
                   onClick={() => setEditMode(!editMode)}
                 >
                   {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}

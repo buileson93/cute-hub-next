@@ -1063,7 +1063,8 @@ export function StandardTableInner<T>({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className={cn("h-7 w-7 ml-0.5 transition-colors", internalReorder && "text-primary bg-primary/10")}
+                        data-active={internalReorder}
+                        className={cn("h-7 w-7 ml-0.5 transition-colors astryx-control", internalReorder && "text-primary-foreground bg-primary")}
                         onClick={() => setInternalReorder(!internalReorder)}
                       >
                         <GripVertical className="h-4 w-4" />
