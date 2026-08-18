@@ -6,7 +6,7 @@ import type { StdColumn } from "@/components/mirats/StandardTable";
 function measureTextWidth(text: string, font: string = "13px Inter, system-ui, sans-serif"): number {
   if (typeof document === 'undefined') return 100;
   const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext ? canvas.getContext("2d") : null;
   if (!context) return 100;
   context.font = font;
   return context.measureText(text).width;

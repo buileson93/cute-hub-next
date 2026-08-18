@@ -11,24 +11,24 @@ describe("StatusBadge — phase → màu", () => {
     const unknown = phaseColor(null);
     const set = new Set([open, ip, closed, cancelled]);
     expect(set.size).toBe(4);
-    expect(open).toContain("sky");
-    expect(ip).toContain("amber");
-    expect(closed).toContain("emerald");
-    expect(cancelled).toContain("slate");
-    expect(unknown).toContain("slate");
+    expect(open).toContain("text-info");
+    expect(ip).toContain("text-warning");
+    expect(closed).toContain("text-success");
+    expect(cancelled).toContain("text-muted-foreground");
+    expect(unknown).toContain("muted");
   });
 });
 
 describe("ExpiringBadge — số ngày → màu", () => {
   it("30 đỏ · 60 cam · 90 vàng · khác xám · quá hạn đỏ đậm", () => {
-    expect(expiringColor(10)).toContain("red");
-    expect(expiringColor(30)).toContain("red");
-    expect(expiringColor(45)).toContain("orange");
-    expect(expiringColor(60)).toContain("orange");
-    expect(expiringColor(75)).toContain("amber");
-    expect(expiringColor(90)).toContain("amber");
-    expect(expiringColor(120)).toContain("slate");
-    expect(expiringColor(null)).toContain("slate");
-    expect(expiringColor(-3)).toContain("red-600");
+    expect(expiringColor(10)).toContain("error");
+    expect(expiringColor(30)).toContain("error");
+    expect(expiringColor(45)).toContain("warning");
+    expect(expiringColor(60)).toContain("warning");
+    expect(expiringColor(75)).toContain("warning");
+    expect(expiringColor(90)).toContain("warning");
+    expect(expiringColor(120)).toContain("muted");
+    expect(expiringColor(null)).toContain("muted");
+    expect(expiringColor(-3)).toContain("destructive");
   });
 });

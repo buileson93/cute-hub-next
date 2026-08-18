@@ -19,7 +19,7 @@
 // sơ đồ (màu, thứ tự, ghi chú) và bản nháp nhóm chưa promote.
 // ============================================================================
 
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 
 export type RenameKind =
   | "pl"

@@ -21,7 +21,7 @@ describe("InfoGrid — highlight khác biệt so với field thường", () => {
     // dd highlight có background nhấn
     const dd = Array.from(highlighted).find((el) => el.tagName === "DD") as HTMLElement;
     expect(dd.className).toMatch(/bg-accent/);
-    expect(dd.className).toMatch(/font-semibold/);
+    expect(dd.className).toMatch(/font-bold/);
   });
 
   it("field thường KHÔNG có data-highlight", () => {
