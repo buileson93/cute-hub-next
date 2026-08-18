@@ -233,9 +233,15 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
       // Mở file word sau khi lưu thành công
       if (maNhom) {
         exportFn({ data: { ma_nhom: maNhom } }).then(res => {
-          if (res?.url) window.open(res.url, "_blank");
+          if (res?.base64) {
+            const link = document.createElement("a");
+            link.href = `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${res.base64}`;
+            link.download = res.fileName || `BaoCaoSuCo_${maNhom}.docx`;
+            link.click();
+          }
         }).catch(err => console.error("Export word failed:", err));
       }
+
 
       if (onDone) onDone(); 
     },
