@@ -570,8 +570,9 @@ function HeThongCayPage() {
         device={devices.find(d => d.ma_thiet_bi === search.editTb) || null}
         canManage={canManage}
         deviceName={(d) => d.ten || d.ma_thiet_bi}
-        systemLabel={(d) => htNameMap.get(d.he_thong_id) || d.he_thong_id}
+        systemLabel={(d) => htNameMap.get(d.he_thong || "") || d.he_thong || ""}
         systemNameById={(id) => htNameMap.get(id || "") || id || ""}
+
         onAssign={() => {}}
         onRemove={() => {}}
       />
