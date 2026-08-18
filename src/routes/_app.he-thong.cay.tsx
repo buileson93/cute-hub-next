@@ -143,17 +143,12 @@ function HeThongCayPage() {
   const { renameEntity } = useCayMutations();
   
   useEffect(() => {
+    // Stability fix: Only update display if it's explicitly in URL
+    // Prevent infinite sync loops if search.view is volatile
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
-    else if (!search.view && display === "mindmap") {
-      nav({ 
-        to: "/he-thong/cay", 
-        search: (prev: any) => ({ ...prev, view: "mindmap" }),
-        replace: true 
-      });
-    }
-  }, [search.view, setDisplay, display, nav]);
+  }, [search.view, setDisplay, display]);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") {
@@ -235,22 +230,43 @@ function HeThongCayPage() {
   });
 
   const { tree } = useMemo(() => {
-    const plList = taxonomy?.plList || [];
-    const htList = taxonomy?.htList || [];
-    const nhomList = taxonomy?.nhomList || [];
-    const realSystems = htList.map(h => {
-      const nhom = nhomList.find(n => n.id === h.nhomId);
-      return {
-        ma: h.ma, ten: h.ten,
-        nhMa: nhom?.ma || h.nhomId || "KHAC",
-        nhTen: nhom?.ten || taxonomy?.nhomNameMap.get(h.nhomId || "KHAC") || "Khác",
-        plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC"
-      };
-    });
-    const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
-    const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
-    const colNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.mau;
-    return buildTree(devices as any, plList, htMind, nhMind, groupMode === "donvi", [], ordNh, ordHt, colNh, [], (htId) => htList.find(h => h.id === htId || h.ma === htId)?.donViId || null, realSystems);
+    if (!taxonomy || !devices) return { tree: EMPTY_ROWS, total: 0 };
+    
+    try {
+      const plList = taxonomy?.plList || [];
+      const htList = taxonomy?.htList || [];
+      const nhomList = taxonomy?.nhomList || [];
+      const realSystems = htList.map(h => {
+        const nhom = nhomList.find(n => n.id === h.nhomId);
+        return {
+          ma: h.ma, ten: h.ten,
+          nhMa: nhom?.ma || h.nhomId || "KHAC",
+          nhTen: nhom?.ten || taxonomy?.nhomNameMap.get(h.nhomId || "KHAC") || "Khác",
+          plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC"
+        };
+      });
+      const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
+      const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
+      const colNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.mau;
+      
+      return buildTree(
+        devices as any, 
+        plList, 
+        htMind, 
+        nhMind, 
+        groupMode === "donvi", 
+        [], 
+        ordNh, 
+        ordHt, 
+        colNh, 
+        [], 
+        (htId) => htList.find(h => h.id === htId || h.ma === htId)?.donViId || null, 
+        realSystems
+      );
+    } catch (err) {
+      console.error("Error building tree:", err);
+      return { tree: EMPTY_ROWS, total: 0 };
+    }
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
 
   const viewTree = useMemo(() => filterTreeByBadge(tree as any, badgeFilter), [tree, badgeFilter]);

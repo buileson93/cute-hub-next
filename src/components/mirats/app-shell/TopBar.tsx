@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState, Suspense, lazy } from "react";
 import { Search, Activity, Wifi, WifiOff, Loader2, Command as CommandIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
 import { CommandPaletteButton } from "../CommandPaletteButton";
@@ -33,20 +34,20 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         {renderMobileMenu}
         
         <div className="relative w-full max-w-sm group" data-tour="search">
-          <Input
-            type="search"
-            placeholder="Tìm tài sản, hệ thống, biên bản..."
-            className="h-9 w-full cursor-pointer rounded-xl bg-muted/40 pl-10 pr-4 text-[13px] focus-visible:ring-1 focus-visible:ring-primary border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm"
-            readOnly
+          <Button
+            variant="ghost"
+            className="h-9 w-full justify-start rounded-xl bg-muted/40 px-3 pl-10 text-[13px] font-normal text-muted-foreground border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm relative overflow-hidden active:scale-[0.98]"
             onClick={handleOpenSearch}
-            onFocus={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
-          />
-          <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-primary pointer-events-none z-10 group-hover:scale-110 transition-transform" />
-          <div className="absolute right-3 top-2 hidden items-center gap-1.5 rounded-md border border-border/40 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-muted-foreground/60 sm:flex">
-            <CommandIcon className="h-2.5 w-2.5" />
-            <span>K</span>
-          </div>
+          >
+            <span className="truncate">Tìm tài sản, hệ thống, biên bản...</span>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary z-10 group-hover:scale-110 transition-transform" />
+            
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden items-center gap-1.5 rounded-md border border-border/40 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-muted-foreground/60 sm:flex">
+              <CommandIcon className="h-2.5 w-2.5" />
+              <span>K</span>
+            </div>
+          </Button>
         </div>
       </div>
 
