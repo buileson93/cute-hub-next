@@ -864,7 +864,7 @@ export function StandardTableInner<T>({
               selectedRows,
               clear: clearSelection
             })}
-            {selectable && selectedRows.length > 0 && (bulkActions || bulkActionsActions) && (
+            {selectable && (selectedRows?.length ?? 0) > 0 && (bulkActions || bulkActionsActions) && (
               bulkActions ? bulkActions({
                 selectedRows,
                 visibleColumns: shownCols,
@@ -874,6 +874,7 @@ export function StandardTableInner<T>({
                 clear: clearSelection
               }) : null
             )}
+
 
 
           </div>
@@ -1739,7 +1740,7 @@ function ColFilter({
 export function StandardTable<T>(props: StandardTableProps<T>) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const allKeys = useMemo(() => props.columns.map(c => c.key), [props.columns]);
-  const colPrefs = useColumnPrefs(props.tableKey || "default", allKeys);
+  const colPrefs = useColumnPrefs(props.tableKey || "default", allKeys) as any;
 
   const getRowIdInternal = useCallback((row: T) => {
     if (props.getRowId) return props.getRowId(row);
