@@ -453,11 +453,7 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
 
             {/* Bottom Keyboard shortcuts */}
             <div className="mt-auto flex flex-col gap-3 pt-4 border-t border-border/40">
-              <div className="flex items-center justify-between text-[10px] font-medium text-muted-foreground/50">
-                <span className="flex items-center gap-1.5">
-                  <kbd className="px-1.5 py-0.5 rounded border border-border bg-background">↑↓</kbd>
-                  Điều hướng
-                </span>
+              <div className="flex items-center justify-center text-[10px] font-medium text-muted-foreground/50">
                 <span className="flex items-center gap-1.5">
                   <kbd className="px-1.5 py-0.5 rounded border border-border bg-background">Enter</kbd>
                   Mở
