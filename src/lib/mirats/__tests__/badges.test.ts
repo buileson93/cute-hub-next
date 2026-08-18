@@ -11,10 +11,10 @@ describe("StatusBadge — phase → màu", () => {
     const unknown = phaseColor(null);
     const set = new Set([open, ip, closed, cancelled]);
     expect(set.size).toBe(4);
-    expect(open).toContain("sky");
-    expect(ip).toContain("amber");
-    expect(closed).toContain("emerald");
-    expect(cancelled).toContain("slate");
+    expect(open).toContain("text-info");
+    expect(ip).toContain("text-warning");
+    expect(closed).toContain("text-success");
+    expect(cancelled).toContain("text-muted-foreground");
     expect(unknown).toContain("slate");
   });
 });
