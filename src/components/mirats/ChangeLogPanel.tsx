@@ -50,7 +50,7 @@ export function ChangeLogPanel({ entity, entityId }: { entity: string; entityId:
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 gap-1 px-2 text-xs"
+                    className="h-6 gap-1 px-2 text-xs text-primary hover:text-primary/90 hover:bg-primary/5"
                     onClick={() => setDiffEvent(ev)}
                   >
                     <Columns2 className="h-3.5 w-3.5" /> So sánh
