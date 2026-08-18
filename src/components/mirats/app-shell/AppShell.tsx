@@ -170,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             {/* Rail (Desktop) */}
             <aside className={cn(
-              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50",
+              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50 z-20",
               UI_DENSITY.RAIL_W
             )}>
               <SidebarLogoRail />
@@ -226,8 +226,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Sub-sidebar (Desktop) */}
             <aside 
               className={cn(
-                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden border-r border-[#0074e2]/10 bg-background",
-                (isCollapsed && !isHovered) ? "w-0 border-r-0" : UI_DENSITY.SIDEBAR_W
+                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden border-r border-[#0074e2]/10 bg-background z-10",
+                (isCollapsed && !isHovered) ? "w-0 border-r-0 pointer-events-none" : UI_DENSITY.SIDEBAR_W
               )}
             >
               <div className={cn(
