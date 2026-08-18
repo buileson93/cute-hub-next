@@ -484,8 +484,25 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
         <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
           <Button variant="ghost" onClick={prevStep} disabled={step === 1}>Quay lại</Button>
           <div className="flex gap-2">
-             <Button variant="secondary" onClick={() => setPreviewOpen(true)}><FileDown className="h-4 w-4 mr-1" /> Xem trước</Button>
-             {step < 3 ? <Button onClick={nextStep}>Tiếp tục</Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
+             <Button variant="secondary" onClick={() => {
+               const err = validateBeforeSave(closingIntent);
+               if (err) { toast.error(err); return; }
+               setPreviewOpen(true);
+             }}><FileDown className="h-4 w-4 mr-1" /> Xem trước</Button>
+             {step < 3 ? <Button onClick={() => {
+               // Step 1 validation
+               if (step === 1) {
+                 if (!hienTuong.trim()) { toast.error("Vui lòng nhập hiện tượng"); return; }
+                 if (!heThongId) { toast.error("Vui lòng chọn hệ thống"); return; }
+                 if (!heThongDichVu) { toast.error("Vui lòng chọn tài sản"); return; }
+               }
+               nextStep();
+             }}>Tiếp tục</Button> : <Button onClick={() => {
+               const err = validateBeforeSave(closingIntent);
+               if (err) { toast.error(err); return; }
+               save.mutate();
+             }} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi sự cố"}</Button>}
+
           </div>
         </div>
         <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
