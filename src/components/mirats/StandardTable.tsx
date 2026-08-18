@@ -515,7 +515,7 @@ export function StandardTable<T>({
     return fullDisplay.slice(start, start + pageSize);
   }, [fullDisplay, clientPagination]);
 
-  const selectedRows = rows.filter(r => selected?.has(getRowIdInternal(r)));
+  
 
   const toggleCat = (key: string, val: string) => {
     setCatFilters(prev => {
