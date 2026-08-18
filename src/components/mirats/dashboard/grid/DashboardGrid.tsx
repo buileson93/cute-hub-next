@@ -132,12 +132,12 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <VisualKpiChart
             title="Độ sẵn sàng vận hành"
-            value={`${formatKpiValue(reliability)}`}
+            value={reliability.insufficient ? "—" : `${formatKpiValue(reliability)}`}
             icon="entity.security"
-            data={trendData}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="area"
             color={["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#d1fae5"]}
-            status={Number(reliability.value) >= 95 ? 'normal' : 'warning'}
+            status={reliability.insufficient ? 'normal' : Number(reliability.value) >= 95 ? 'normal' : 'warning'}
             tooltip="Tỉ lệ thời gian tài sản sẵn sàng vận hành trong 30 ngày qua. Target: 99%"
           />
         );
@@ -145,12 +145,12 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <VisualKpiChart
             title="Thời gian khắc phục (MTTR)"
-            value={`${formatKpiValue(mttrKpi)}`}
+            value={mttrKpi.insufficient ? "—" : `${formatKpiValue(mttrKpi)}`}
             icon="status.power"
-            data={trendData.map(d => ({ ...d, value: Math.random() * 60 + 20 }))}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="bar"
             color={["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#dbeafe"]}
-            status="attention"
+            status={mttrKpi.insufficient ? 'normal' : (mttrKpi.value || 0) > 240 ? 'attention' : 'normal'}
             tooltip="Thời gian trung bình để khắc phục một sự cố (Mean Time To Repair)."
           />
         );
@@ -158,12 +158,12 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <VisualKpiChart
             title="Khoảng cách sự cố (MTBF)"
-            value={`${formatKpiValue(mtbfKpi)}`}
+            value={mtbfKpi.insufficient ? "—" : `${formatKpiValue(mtbfKpi)}`}
             icon="entity.securityAlert"
-            data={trendData.map(d => ({ ...d, value: Math.random() * 5 + 10 }))}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="line"
             color="#f59e0b"
-            status="warning"
+            status={mtbfKpi.insufficient ? 'normal' : (mtbfKpi.value || 0) < 15 ? 'warning' : 'normal'}
             tooltip="Khoảng cách trung bình giữa các lần phát hiện sự cố (Mean Time Between Failures)."
           />
         );
@@ -171,15 +171,16 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         return (
           <VisualKpiChart
             title="Hoàn thành bảo trì (PM)"
-            value={pmKpi.isLoading ? "..." : `${formatKpiValue(pmKpi.result)}`}
+            value={pmKpi.isLoading ? "..." : (pmKpi.result.insufficient ? "—" : `${formatKpiValue(pmKpi.result)}`)}
             icon="status.success"
-            data={trendData.map(d => ({ ...d, value: Math.random() * 20 + 80 }))}
+            data={trendData.map(d => ({ ...d, value: d.value }))}
             type="bar"
             color={["#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"]}
-            status="normal"
+            status={pmKpi.result.insufficient ? 'normal' : (pmKpi.result.value || 0) < 90 ? 'attention' : 'normal'}
             tooltip="Tỉ lệ hoàn thành bảo trì ngăn ngừa (PM) đúng hạn."
           />
         );
+
       case "emergency-kpi":
         return (
           <KpiCard
