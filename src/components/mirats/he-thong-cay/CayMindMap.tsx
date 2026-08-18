@@ -320,10 +320,10 @@ export function CayMindMap({
       for (const lv of pl.fields) {
         if (lv.id && lv.id !== "all") set.add(`lv:${pl.id}:${lv.id}`);
         for (const nh of lv.groups) {
+          // Mặc định bung đến level Nhóm hệ thống (nh)
           set.add(`nh:${pl.id}:${nh.ma}`);
-          for (const ht of nh.systems.slice(0, 3)) {
-            set.add(`ht:${pl.id}:${nh.ma}:${ht.ma}`);
-          }
+          // KHÔNG mặc định bung level Hệ thống (ht) để tránh rối sơ đồ khi refresh
+          // Người dùng sẽ chủ động click mở rộng hoặc search
         }
       }
     }
@@ -332,6 +332,7 @@ export function CayMindMap({
 
   // Seed context with initial expanded if it's currently just root
   useEffect(() => {
+    // Nếu chỉ có root hoặc root-stopped, mới tiến hành bung mặc định
     if (expandedNodes.size <= 2 && initialExpanded.size > 2) {
       initialExpanded.forEach(id => {
         if (!expandedNodes.has(id)) toggleNode(id);
