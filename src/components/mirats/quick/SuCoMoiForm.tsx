@@ -109,26 +109,11 @@ export function SuCoMoiForm({ defaultHeThongId, defaultThietBi, defaultFrom, def
 
   const selected = useMemo(() => Array.from(new Set(mounted.map(m => m.device.id))).map(id => mounted.find(m => m.device.id === id)!.device), [mounted]);
 
-  const validateBeforeSave = (isClosing: boolean): string | null => {
-    if (!hienTuong.trim()) return "Vui lòng nhập hiện tượng";
-    if (!heThongId) return "Vui lòng chọn hệ thống";
-    if (!heThongDichVu) return "Vui lòng chọn tài sản";
-    if (!thoiGianBatDau) return "Vui lòng chọn thời gian bắt đầu";
-    
-    if (isClosing) {
-      if (!thoiGianKetThuc) return "Vui lòng chọn thời gian kết thúc khi chốt đóng";
-      if (!tinhHinh.trim()) return "Vui lòng nhập tình hình hiện tại";
-      if (!nguyenNhan.trim()) return "Vui lòng nhập nguyên nhân";
-      if (!bienPhapXuLy.trim()) return "Vui lòng nhập biện pháp xử lý";
-      if (!ketQua.trim()) return "Vui lòng nhập kết quả";
-    }
-    return null;
-  };
-
   const anomalies = useMemo(() => detectSuCoAnomalies({
     thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb,
     heThongId, selectedTpCount: selectedTpIds.size, mountedAssetsCount: selected.length
   }), [thoiGianBatDau, thoiGianKetThuc, phanLoai, anhHuongDhb, heThongId, selectedTpIds, selected]);
+
 
 
   const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
