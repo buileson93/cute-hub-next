@@ -148,6 +148,13 @@ export interface StandardTableProps<T> {
     pageRows: T[];
     clear: () => void;
   }) => React.ReactNode;
+  bulkActionsActions?: {
+    label: string;
+    onClick: (selectedRows: T[]) => void;
+    icon?: React.ReactNode;
+    variant?: "default" | "outline" | "destructive";
+  }[];
+
 
   pagination?: any;
   clientPagination?: any;
@@ -190,6 +197,8 @@ export function StandardTable<T>({
   toolbarRight,
   toolbarLeft,
   bulkActions,
+  bulkActionsActions,
+
   tableKey,
   countUnit = "bản ghi",
   requireFilterToShow,
@@ -398,6 +407,12 @@ export function StandardTable<T>({
     }
     return toolbar;
   };
+
+  const selectedRows = useMemo(() => {
+    if (!selected) return [];
+    return rows.filter(r => selected.has(getRowIdInternal(r)));
+  }, [rows, selected, getRowIdInternal]);
+
 
   const colText = useCallback((col: ColumnDef<T>, row: T): string => {
     const v = col.value ? col.value(row) : "";
