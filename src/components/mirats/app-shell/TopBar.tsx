@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState, Suspense, lazy } from "react";
 import { Search, Activity, Wifi, WifiOff, Loader2, Command as CommandIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
 import { CommandPaletteButton } from "../CommandPaletteButton";
