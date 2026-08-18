@@ -636,9 +636,14 @@ export function CayMindMap({
   }, [tree, expandedNodes, scopeText, htMind, plMind, nhMind, tbMind, canManage, toggle, onRename, onOpenEditor, onHistory, onRecord, onMoveSystem, posByHt, devices]);
 
 
+  const [isLayouting, setIsLayouting] = useState(true);
+
   useEffect(() => { 
     if (nodes.length > 0) {
       setRfNodes(nodes); 
+      // Mark layouting as finished after nodes are set
+      const timer = setTimeout(() => setIsLayouting(false), 300);
+      return () => clearTimeout(timer);
     }
   }, [nodes, setRfNodes]);
 
@@ -664,16 +669,25 @@ export function CayMindMap({
 
 
   return (
-    <div className="absolute inset-0 w-full h-full min-h-[500px] overflow-hidden bg-muted/5" style={{ minHeight: 'inherit' }}>
+    <div className="absolute inset-0 w-full h-full bg-muted/5 flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 180px)' }}>
+      {isLayouting && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity duration-300">
+          <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">Đang tính toán sơ đồ...</p>
+          <p className="text-[10px] text-muted-foreground/60 mt-1 uppercase tracking-widest">{nodes.length} nodes</p>
+        </div>
+      )}
       <ReactFlow 
         nodeTypes={nodeTypes} 
         nodes={rfNodes} 
         edges={edges as any} 
         onNodesChange={onNodesChange} 
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
         minZoom={0.05}
         maxZoom={1.5}
+        zoomOnDoubleClick={false}
+        selectNodesOnDrag={false}
         onNodeDragStart={(_e, node) => {
           const desc = collectDescendants(String(node.id));
           const posMap = new Map<string, { x: number; y: number }>();

@@ -31,7 +31,20 @@ interface CayContextType {
 export const CayContext = createContext<CayContextType | undefined>(undefined);
 
 export function CayProvider({ children }: { children: ReactNode }) {
-  const [display, setDisplay] = useState<DisplayMode>("tree");
+  const [display, setDisplayState] = useState<DisplayMode>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("mirats_cay_display");
+      if (saved && ["tree", "table", "mindmap", "health"].includes(saved)) return saved as DisplayMode;
+    }
+    return "tree";
+  });
+
+  const setDisplay = React.useCallback((d: DisplayMode) => {
+    setDisplayState(d);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("mirats_cay_display", d);
+    }
+  }, []);
 
   const [editMode, setEditMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
