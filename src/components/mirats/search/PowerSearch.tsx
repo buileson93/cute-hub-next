@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Network, Package, ShieldCheck, FileText, 
   Search, Loader2, ArrowRight, History, Star,
   X, Command, Filter, ExternalLink, Building2, MapPin, 
   HeartPulse, Lock, UserCog, FilePlus2, Database, Sparkles, 
-  Ticket, MessageSquare, FolderKanban, LogOut
+  Ticket, MessageSquare, FolderKanban, LogOut, CheckCircle2
 } from "lucide-react";
 import {
   CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem,
@@ -22,6 +22,8 @@ import { useGlobalSearch, Highlight, type SearchRow, ENTITY_META, TIER } from "@
 import { useTimKiemToanCuc } from "@/lib/mirats/search/tim-kiem";
 import { toast } from "sonner";
 import { matchIntent, describeIntent, type Intent } from "@/lib/mirats/command-intent";
+import { useSuCoTransition } from "@/lib/mirats/su-co-workflow-client";
+import { ghiBaoDuongFull } from "@/lib/mirats/ghi-nghiep-vu-actions";
 
 type TabValue = "all" | "device" | "system" | "document" | "action";
 
@@ -83,6 +85,8 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   const navigate = useNavigate();
   const { roles } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
+  const qc = useQueryClient();
+  const { mutateAsync: transition } = useSuCoTransition();
 
   const { rows, loading, hasQuery, activeTerm } = useGlobalSearch(q);
   const { ket_qua: rowsToanCuc } = useTimKiemToanCuc(q, { gioiHan: 20 });
@@ -161,6 +165,84 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
   };
 
   const intent = useMemo(() => matchIntent(q), [q]);
+
+  const handleExecuteIntent = async (intent: Intent) => {
+    try {
+      if (intent.kind === "logout") {
+        await supabase.auth.signOut();
+        onOpenChange(false);
+        navigate({ to: "/auth" });
+        return;
+      }
+
+      if (intent.kind === "navigate") {
+        onOpenChange(false);
+        navigate({ to: intent.to as any });
+        toast.success(`Đã chuyển tới ${intent.label}`);
+        return;
+      }
+
+      if (intent.kind === "close-incident") {
+        const id = intent.id;
+        // Search for the actual UUID of the incident if ID is a code
+        const { data: sc } = await supabase
+          .from("su_co")
+          .select("id")
+          .or(`ma_nhom_bc.eq.${id},id.eq.${id}`)
+          .maybeSingle();
+
+        if (!sc) {
+          toast.error("Không tìm thấy sự cố " + id);
+          return;
+        }
+
+        await transition({
+          bang: "su_co",
+          id: sc.id,
+          den: "dong",
+          ghi_chu: "Đóng nhanh từ Command Palette",
+        });
+        
+        onOpenChange(false);
+        toast.success(`Đã đóng sự cố ${id}`);
+        return;
+      }
+
+      if (intent.kind === "create-pm") {
+        // Find system/device ID from target name
+        const { data: ht } = await supabase
+          .from("dm_he_thong")
+          .select("id, ten")
+          .ilike("ten", `%${intent.target}%`)
+          .limit(1)
+          .maybeSingle();
+
+        if (!ht) {
+          toast.error(`Không tìm thấy hệ thống "${intent.target}"`);
+          return;
+        }
+
+        // Navigate to maintenance form with pre-filled target
+        onOpenChange(false);
+        navigate({ 
+          to: "/forms", 
+          search: { 
+            type: "bao-tri",
+            target: ht.id,
+            targetName: ht.ten
+          } as any 
+        });
+        return;
+      }
+
+      // Default fallback or unhandled intents
+      onOpenChange(false);
+      toast.info(describeIntent(intent));
+    } catch (err: any) {
+      console.error("Intent execution error:", err);
+      toast.error(err.message || "Lỗi khi thực hiện hành động");
+    }
+  };
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -277,24 +359,15 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {hasQuery && intent.kind !== "jump-to" && intent.confidence > 0.6 && (
                 <CommandGroup heading="Gợi ý thông minh">
                   <CommandItem
-                    onSelect={() => {
-                      if (intent.kind === "logout") {
-                        supabase.auth.signOut().then(() => {
-                          onOpenChange(false);
-                          navigate({ to: "/auth" });
-                        });
-                        return;
-                      }
-                      if (intent.kind === "navigate") {
-                        onOpenChange(false);
-                        navigate({ to: intent.to as any });
-                        toast.success(`Đã chuyển tới ${intent.label}`);
-                        return;
-                      }
-                      onOpenChange(false);
-                      toast.info(describeIntent(intent));
-                    }}
-                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group"
+                    onSelect={() => handleExecuteIntent(intent)}
+                    onMouseEnter={() => setFocusedRow({
+                      entity: "nav" as any,
+                      id: "intent",
+                      title: describeIntent(intent),
+                      subtitle: "Trợ lý MIRATS AI",
+                      to: ""
+                    })}
+                    className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/5 group cursor-pointer"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Star className="h-4 w-4" />
@@ -380,12 +453,14 @@ export function PowerSearch({ open, onOpenChange }: PowerSearchProps) {
               {(!q || activeTab === "action") && (
                 <CommandGroup heading="Tài khoản">
                   <CommandItem
-                    onSelect={() => {
-                      supabase.auth.signOut().then(() => {
-                        onOpenChange(false);
-                        navigate({ to: "/auth" });
-                      });
-                    }}
+                    onSelect={() => handleExecuteIntent({ kind: "logout", confidence: 1 })}
+                    onMouseEnter={() => setFocusedRow({
+                      entity: "nav" as any,
+                      id: "logout",
+                      title: "Đăng xuất",
+                      subtitle: "Thoát khỏi phiên làm việc hiện tại",
+                      to: ""
+                    })}
                     className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl text-destructive hover:bg-destructive/10 cursor-pointer"
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
