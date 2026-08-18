@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { toast } from "sonner";
@@ -58,6 +58,26 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
       { property: "og:description", content: "Sơ đồ hệ thống kỹ thuật và cây phân cấp tài sản." },
     ],
   }),
+  errorComponent: ({ error, reset }) => {
+    const router = useRouter();
+    return (
+      <div className="flex flex-col items-center justify-center p-8 bg-card border rounded-xl shadow-sm min-h-[400px]">
+        <h3 className="text-lg font-bold text-red-600 mb-2">Đã xảy ra lỗi ở trang Cây Hệ thống</h3>
+        <p className="text-sm text-muted-foreground mb-6 max-w-md text-center">
+          Dữ liệu sơ đồ có thể đang bị lỗi hoặc không tương thích với cấu trúc hiện tại.
+        </p>
+        <div className="flex gap-2">
+          <Button onClick={() => { router.invalidate(); reset(); }} variant="default">Thử lại</Button>
+          <Button onClick={() => window.location.href = "/"} variant="outline">Về trang chủ</Button>
+        </div>
+        {import.meta.env.DEV && (
+          <pre className="mt-8 p-4 bg-muted rounded text-[10px] max-w-full overflow-auto text-red-500">
+            {error.message}
+          </pre>
+        )}
+      </div>
+    );
+  },
   component: HeThongCayPageWrapper,
 });
 
@@ -237,6 +257,12 @@ function HeThongCayPage() {
       const plList = taxonomy?.plList || [];
       const htList = taxonomy?.htList || [];
       const nhomList = taxonomy?.nhomList || [];
+      
+      // Safety check for empty data
+      if (plList.length === 0 && devices.length === 0) {
+        return { tree: EMPTY_ROWS, total: 0 };
+      }
+
       const realSystems = htList.map(h => {
         const nhom = nhomList.find(n => n.id === h.nhomId);
         return {
@@ -246,6 +272,7 @@ function HeThongCayPage() {
           plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC"
         };
       });
+
       const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
       const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
       const colNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.mau;
@@ -265,7 +292,8 @@ function HeThongCayPage() {
         realSystems
       );
     } catch (err) {
-      console.error("Error building tree:", err);
+      console.error("Critical error building tree in CayPage:", err);
+      // Return empty instead of crashing the page
       return { tree: EMPTY_ROWS, total: 0 };
     }
   }, [devices, taxonomy, htMind, nhMind, groupMode, overrides]);
