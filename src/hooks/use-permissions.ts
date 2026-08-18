@@ -18,9 +18,11 @@ export function useMyPermissions() {
   });
 }
 
-export function useCan(module: string, action: string): boolean {
+export function useCan(module: string | string[], action: string): boolean {
   const { data } = useMyPermissions();
   if (!data) return false;
   if (data.roles.includes("admin")) return true;
-  return data.permissions[module]?.includes(action) ?? false;
+  
+  const modules = Array.isArray(module) ? module : [module];
+  return modules.some(m => data.permissions[m]?.includes(action));
 }
