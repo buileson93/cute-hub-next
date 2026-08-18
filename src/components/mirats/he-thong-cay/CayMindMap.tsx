@@ -477,12 +477,15 @@ export function CayMindMap({
               kind: "tb", ma: d.tb.ma_thiet_bi, label: tbMind(d.tb), code: d.tb.ma_thiet_bi,
               count: hasKids ? d.children.length : undefined,
               collapsible: hasKids, expanded: expanded.has(tbId), canManage,
-            toggle: () => toggle(tbId), onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t), onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),
-            onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, tbMind(d.tb)),
-          },
-          children: [],
-        };
-        htRaw.children.push(tbRaw);
+              toggle: () => toggle(tbId), onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t), onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),
+              onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, tbMind(d.tb)),
+            },
+            children: [],
+          };
+          htRaw.children.push(tbRaw);
+        }
+      } catch (e) {
+        console.error("pushSystem error:", e);
       }
     };
 
