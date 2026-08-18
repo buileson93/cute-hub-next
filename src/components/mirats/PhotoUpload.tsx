@@ -183,8 +183,8 @@ export function PhotoUpload({
                   <span className="truncate flex-1">{r.name}</span>
                   <span className="tabular-nums">{labelOf(r.status)}{savings}</span>
                 </div>
-                <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-muted border border-border/10">
-                  <div className={`h-full ${colorOf(r.status)} transition-all shadow-[0_0_8px_rgba(0,0,0,0.1)]`} style={{ width: `${pct}%` }} />
+                <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-muted border border-border/5">
+                  <div className={`h-full ${colorOf(r.status)} transition-all shadow-sm`} style={{ width: `${pct}%` }} />
                 </div>
               </div>
             );
