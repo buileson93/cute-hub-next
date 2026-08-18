@@ -191,7 +191,7 @@ function MindNode({ data }: { data: MindData }) {
         KIND_STYLE[data.kind],
         data.tone,
         data.dim && "opacity-20 saturate-0",
-        data.active && "z-10 border-primary ring-1 ring-primary/60",
+        data.active ? "z-10 border-primary ring-1 ring-primary/80 bg-primary/5" : "bg-card/70",
         data.hit && "z-10 border-amber-500 ring-1 ring-amber-500 animate-pulse",
       )}
     >
@@ -304,14 +304,13 @@ export function CayMindMap({
 }) {
   const { searchQuery, focus, toggleNode, expandedNodes } = useCayContext();
 
+  const rfRef = useRef<any>(null);
   let rf: any = null;
   try {
-    // Safety check: useReactFlow must be used inside ReactFlowProvider
-    // In HeThongCayPageWrapper we already wrap with ReactFlowProvider, 
-    // but we add a try-catch for robustness.
     rf = useReactFlow();
+    rfRef.current = rf;
   } catch (e) {
-    console.warn("CayMindMap: useReactFlow called outside provider or during early mount");
+    // console.warn("CayMindMap: useReactFlow called outside provider or during early mount");
   }
   
   const initialExpanded = useMemo(() => {
@@ -426,13 +425,13 @@ export function CayMindMap({
   }, [tree, plMind, nhMind]);
 
   const { nodes, edges } = useMemo(() => {
-    // Safety guard: if tree is not yet loaded, return empty to prevent building invalid diagram
-    if (!tree || tree.length === 0) return { nodes: [], edges: [] };
+    try {
+      if (!tree || tree.length === 0) return { nodes: [], edges: [] };
 
-    const expanded = expandedNodes; // Use context state
-    const COL_GAP = 96;
-    const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
-    const ROW_GAP = 16;
+      const expanded = expandedNodes; // Use context state
+      const COL_GAP = 96;
+      const estHeight = (kind: MindKind) => KIND_H[kind] ?? 46;
+      const ROW_GAP = 16;
 
     const stoppedPl = tree.find((pl) => pl.ten === DUNG_KHAI_THAC_TEN);
     const normalTree = tree.filter((pl) => pl.ten !== DUNG_KHAI_THAC_TEN);
