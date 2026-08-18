@@ -360,7 +360,7 @@ function HeThongCayPage() {
   }, [viewTree]);
 
   return (
-    <PageFrame density="compact" className="flex flex-col overflow-hidden">
+    <PageFrame density="compact" className="flex flex-col overflow-hidden h-screen">
       <PageHeader
         icon={GitFork}
         title="Cấu trúc & Sơ đồ"
