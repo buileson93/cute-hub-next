@@ -618,23 +618,26 @@ export function CayMindMap({
 
     const layerNodes: any[] = layerLabels
       .map((label, i) => ({ label, i }))
-      .filter(({ i }) => Number.isFinite(COL[i]))
+      .filter(({ i }) => typeof COL[i] === 'number' && !isNaN(COL[i]) && isFinite(COL[i]))
       .map(({ label, i }) => ({
-        id: `layer:${i}`, type: "layer", position: { x: COL[i], y: -80 },
+        id: `layer:${i}`, type: "layer", position: { x: Math.round(COL[i]), y: -80 },
         data: { label }, selectable: false, draggable: false, focusable: false,
       }));
 
-    const finiteNodes = nodes.every(n => Number.isFinite(n.position?.x) && Number.isFinite(n.position?.y));
+    const allNodes = [...layerNodes, ...nodes].map(n => ({
+      ...n,
+      position: {
+        x: Math.round(n.position.x),
+        y: Math.round(n.position.y)
+      }
+    }));
 
-    console.debug("[CayMindMap] buildNodes", {
-      deviceCount: devices.length,
-      treeCount: tree.length,
-      nodeCount: nodes.length,
-      finiteNodes,
-      errorNodes: finiteNodes ? [] : nodes.filter(n => !Number.isFinite(n.position?.x) || !Number.isFinite(n.position?.y)).map(n => n.id)
-    });
+    const isFinitePos = allNodes.every(n => 
+      typeof n.position.x === 'number' && !isNaN(n.position.x) &&
+      typeof n.position.y === 'number' && !isNaN(n.position.y)
+    );
 
-    return { nodes: [...layerNodes, ...nodes], edges, finiteNodes };
+    return { nodes: allNodes, edges, finiteNodes: isFinitePos };
     } catch (err) {
       console.error("Critical error building MindMap nodes:", err);
       return { nodes: [], edges: [], finiteNodes: true };
