@@ -490,7 +490,7 @@ export function ViTriMediaViewer({
                       </button>
                       {it.vi_do != null && it.kinh_do != null && (
                         <span
-                          className="absolute bottom-8 left-1.5 flex items-center gap-1 rounded bg-emerald-600/90 px-1.5 py-0.5 text-[9px] font-medium text-white"
+                          className="absolute bottom-8 left-1.5 flex items-center gap-1 rounded bg-primary/90 px-1.5 py-0.5 text-[9px] font-medium text-primary-foreground"
                           title={dinhDangToaDo(it.vi_do, it.kinh_do) ?? ""}
                         >
                           <MapPin className="h-2.5 w-2.5" /> GPS
@@ -517,11 +517,11 @@ export function ViTriMediaViewer({
               <DialogTitle className="truncate text-sm">{active.ten_tep}</DialogTitle>
               <div className="flex items-center gap-1.5">
                 {(active.loai === "anh" || active.loai === "pano360") && (
-                  <Button size="sm" variant="outline" onClick={() => setView360((v) => !v)}>
+                  <Button size="sm" variant="outline" className="h-8 border-primary/20 text-primary hover:bg-primary/5 hover:text-primary/90" onClick={() => setView360((v) => !v)}>
                     {view360 ? <><ImageIcon className="mr-1.5 h-3.5 w-3.5" />Ảnh phẳng</> : <><Globe className="mr-1.5 h-3.5 w-3.5" />Xem 360°</>}
                   </Button>
                 )}
-                <Button size="sm" variant="outline" asChild>
+                <Button size="sm" variant="outline" className="h-8 border-primary/20 text-primary hover:bg-primary/5 hover:text-primary/90" asChild>
                   <a href={active.url} download={active.ten_tep} target="_blank" rel="noreferrer">
                     <Download className="mr-1.5 h-3.5 w-3.5" />Tải về
                   </a>
