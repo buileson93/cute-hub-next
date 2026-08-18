@@ -202,7 +202,8 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {hasChildren ? (
                     <Button
                       size="sm" variant="ghost"
-                      className="h-6 w-6 shrink-0 p-0"
+                      data-active={!isCollapsed}
+                      className="h-6 w-6 shrink-0 p-0 astryx-control"
                       onClick={() => toggleCollapse(v.id)}
                       title={isCollapsed ? "Mở nhánh" : "Thu nhánh"}
                     >
