@@ -378,7 +378,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full overflow-x-hidden">
       {layout.map(widget => (
         <WidgetContainer 
           key={widget.id} 
