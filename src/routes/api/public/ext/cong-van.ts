@@ -62,8 +62,9 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
             // Audit Log (Done inside verifyApiKey)
             return new Response(JSON.stringify({ error: 'Unauthorized: Invalid API key' }), { 
               status: 401,
-              headers: { 'Content-Type': 'application/json' }
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
+
           }
 
 
