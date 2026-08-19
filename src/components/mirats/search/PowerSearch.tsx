@@ -139,7 +139,7 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
                     <Badge variant="outline" className="text-[10px] shrink-0 border-blue-200 bg-blue-50 text-blue-700">Trang {res.page}</Badge>
                   </div>
                   <div className="text-xs text-muted-foreground line-clamp-2 italic w-full">
-                    {res.snippet}
+                    <SnippetHighlight text={res.snippet} />
                   </div>
                 </CommandItem>
               ))}
