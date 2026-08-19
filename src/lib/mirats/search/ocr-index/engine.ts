@@ -128,16 +128,13 @@ export class MiniSearchAdapter {
           // Skip if already highlighted
           if (word.includes('**')) return word;
           
-          const normalizedWord = boDauTiengViet(word.toLowerCase());
+          // Remove trailing punctuation for matching
+          const cleanWord = word.replace(/[.,!?:;]$/, '');
+          const punctuation = word.slice(cleanWord.length);
+          
+          const normalizedWord = boDauTiengViet(cleanWord.toLowerCase());
           if (normalizedWord.includes(normalizedTerm)) {
-            // Find where the term starts in the normalized word
-            const startIdx = normalizedWord.indexOf(normalizedTerm);
-            const termLen = normalizedTerm.length;
-            
-            // This is a simple wrap for the whole word if it contains the term
-            // Better would be wrapping just the substring, but mapping normalized 
-            // indices to original indices is complex for Vietnamese.
-            return `**${word}**`;
+            return `**${cleanWord}**${punctuation}`;
           }
           return word;
         }).join(' ');
