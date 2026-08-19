@@ -115,7 +115,7 @@ function OverviewReport() {
               "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none border-primary/20",
               isEditing 
                 ? "!bg-[#0074e2] !text-white !border-[#0074e2] hover:!bg-[#0060bc]" 
-                : "bg-white text-[#1d52e0] hover:bg-primary/5 hover:border-primary/40"
+                : "bg-white !text-[#0074e2] hover:bg-primary/5 hover:border-primary/40"
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />
