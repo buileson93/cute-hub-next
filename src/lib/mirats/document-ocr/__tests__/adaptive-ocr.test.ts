@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { AdaptiveOcrSelector } from "../adaptive-selector";
 import { deviceProfiler } from "../device-profiler";
+import { ocrConfig } from "../config";
 
 describe("AdaptiveOcrSelector", () => {
   let selector: AdaptiveOcrSelector;
