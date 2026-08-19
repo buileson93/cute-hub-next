@@ -40,7 +40,7 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const groupedEvents = React.useMemo(() => {
     const groups: Record<string, typeof filteredEvents> = {};
     filteredEvents.forEach(event => {
-      const date = format(new Date(event.occurred_at), "yyyy-MM-dd");
+      const date = format(new Date(event.occurred_at || new Date()), "yyyy-MM-dd");
       if (!groups[date]) groups[date] = [];
       groups[date].push(event);
     });
@@ -92,7 +92,7 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
                 {groupedEvents.map(([date, groupEvents]) => (
                   <div key={date} className="space-y-4 relative z-10">
                     <div className="flex items-center gap-3">
-                      <div className="w-[36px] flex justify-center">
+                      <div className="w-[36px] flex justify-center" key={date + "-marker"}>
                         <div className="h-2 w-2 rounded-full bg-border" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -167,7 +167,7 @@ function TimelineItem({
             {event.title}
           </h4>
           <span className="text-[10px] text-muted-foreground shrink-0 font-mono">
-            {format(new Date(event.occurred_at), "HH:mm")}
+            {format(new Date(event.occurred_at || new Date()), "HH:mm")}
           </span>
         </div>
         
@@ -230,7 +230,7 @@ function TimelineInspector({
             <h3 className="text-base font-bold leading-tight text-foreground">{event.title}</h3>
             <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
-              <span>{format(new Date(event.occurred_at), "HH:mm, dd/MM/yyyy")}</span>
+              <span>{format(new Date(event.occurred_at || new Date()), "HH:mm, dd/MM/yyyy")}</span>
             </div>
           </div>
         </div>
