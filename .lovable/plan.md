@@ -1,0 +1,55 @@
+---
+name: MIRATS Security Review & Hardening
+description: Unified security model and hardening plan for API keys, extensions, and upload pipelines.
+type: plan
+---
+
+## Goals
+Independent security review and implementation of hardening measures for API keys, correspondence upload API, and Browser Extension integration to ensure data integrity and prevent unauthorized access.
+
+## Proposed Changes
+
+### 1. Security Infrastructure & API Keys
+- **Hardened Verification**: Ensure `verifyApiKey` uses constant-time comparison (implemented, will verify against timing attacks).
+- **Audit Logging**: Implement `public.api_key_audit_log` table to track key lifecycle (create, rotate, revoke, use) without storing secrets.
+- **Project Scoping**: Hardly enforce `api_key_project_scopes` in `verifyApiKey` or the API endpoint to prevent cross-project access.
+- **Entropy & Rotation**: Ensure API secrets use CSPRNG (implemented) and add a rotation mechanism that allows a short grace period for the old secret.
+
+### 2. Correspondence Upload Pipeline Hardening
+- **Validation**: Strict validation of file metadata (Magic bytes, MIME, size limits <20MB).
+- **Idempotency**: HARD enforcement of `idempotency_key` to prevent replay attacks and race conditions.
+- **Path Sanitization**: Ensure filenames and storage paths are sanitized to prevent path traversal.
+- **Signed URLs**: Review TTL for signed URLs (should be <1 hour) and ensure they are only generated after verifying project access.
+
+### 3. Extension & CORS Security
+- **CORS Allowlist**: Configure CORS to only allow the specific MIRATS Extension ID (Manifest V3) and authorized domains.
+- **Minimal Permissions**: Review `manifest.json` for the extension to ensure minimal host permissions.
+- **RCE Prevention**: Enforce CSP that forbids remote script execution; all logic must be bundled.
+
+### 4. Database & RLS Audit
+- **Privacy Leak Prevention**: Ensure API responses return `404 Not Found` instead of `403 Forbidden` for unauthorized project IDs to prevent enumeration.
+- **Grant Review**: Verify all `GRANT` statements on `public` tables follow the authenticated-only rule.
+
+## Technical Details
+- **Token Format**: `mrt_ext_live_<keyId>_<secret>` (implemented).
+- **Hashing**: HMAC-SHA256 with server-side pepper (implemented).
+- **Rate Limiting**: Implementation of key-based rate limiting in the API route handler using a simple Redis-like cache or database counter.
+- **Audit Table Schema**:
+  ```sql
+  CREATE TABLE public.api_audit_log (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    key_id text, -- only prefix/public id
+    user_id uuid REFERENCES auth.users(id),
+    project_id uuid,
+    action text, -- 'upload', 'verify', 'revoke'
+    result text, -- 'success', 'denied', 'rate_limited'
+    ip_hash text,
+    created_at timestamptz DEFAULT now()
+  );
+  ```
+
+## Threat Model (Documentation Only)
+- **Stolen Key**: Mitigation via instant revoke, expiry, and IP hashing.
+- **Malicious Upload**: Mitigation via Magic bytes check, size limits, and filename sanitization.
+- **Project Enumeration**: Mitigation via generic 404s for missing permissions.
+- **Replay Attack**: Mitigation via `idempotency_key` and short-lived tokens/signatures.
