@@ -6,6 +6,8 @@
 @import "@astryxdesign/core/astryx.css" layer(astryx-core);
 @import "@astryxdesign/theme-stone/theme.css" layer(astryx-theme);
 
+@layer astryx-brand, astryx-skins;
+
 /* MIRATS — Astryx Static Component Skins */
 @import "./styles/astryx-component-skins.css" layer(astryx-skins);
 
@@ -109,6 +111,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
+@layer astryx-brand, astryx-skins;
 
 @layer astryx-brand {
   :root {

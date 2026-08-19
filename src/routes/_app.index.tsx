@@ -107,8 +107,7 @@ function Dashboard() {
             variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "astryx-control h-8 px-4 transition-all gap-2 shadow-none",
-              isEditing && "bg-primary text-primary-foreground hover:bg-primary/90"
+              "astryx-control h-8 px-4 transition-all gap-2 shadow-none"
             )}
           >
             <Icon 

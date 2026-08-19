@@ -112,8 +112,7 @@ function OverviewReport() {
             size="sm" 
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none",
-              isEditing && "bg-primary text-primary-foreground hover:bg-primary/90"
+              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none"
             )}
           >
             <Icon 
