@@ -931,7 +931,7 @@ export function StandardTableInner<T>({
                             <Button 
                               variant="outline" 
                               size="default" 
-                              className="h-auto w-auto p-1.5 ml-1"
+                              className="h-auto w-auto p-1.5 ml-1 border-primary/20 hover:bg-primary/5 hover:border-primary/40 shadow-none"
                               disabled={!prefs.ready}
                             >
                               <Icon name="table.settings" size="small" />
