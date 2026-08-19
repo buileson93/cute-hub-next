@@ -55,7 +55,7 @@ export class MiniSearchAdapter {
         return tokens.map(t => t.toLowerCase());
       },
       // Process term for matching
-      processTerm: (term) => boDauTiengViet(term).toLowerCase()
+      processTerm: (term) => chuanHoaTho(term)
     });
   }
 
