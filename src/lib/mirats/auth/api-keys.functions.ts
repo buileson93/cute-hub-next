@@ -156,6 +156,3 @@ export async function verifyApiKey(token: string): Promise<{
   return { isValid: false };
 }
 
-
-  return { isValid: false };
-}
