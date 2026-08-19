@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { initOcrDb, OcrSearchDoc, OcrPageDoc } from "./db";
 import { MiniSearchAdapter, IndexableDoc } from "./engine";
-import { boDauTiengViet } from "../chuan-hoa";
+import { boDauTiengViet, chuanHoaTho } from "../chuan-hoa";
 
 export class SearchSyncManager {
   private dbPromise = initOcrDb();
