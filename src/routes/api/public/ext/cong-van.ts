@@ -126,18 +126,22 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
               .single();
 
             if (task?.nguoi_xu_ly_chinh) {
-              // Create In-App Notification
+              // Create In-App Notification using the correct column names from the schema
               await supabaseAdmin
                 .from('notifications')
                 .insert({
                   user_id: task.nguoi_xu_ly_chinh,
-                  title: 'Công văn mới gắn vào công việc',
-                  content: `Công văn ${data.so_cong_van} đã được gắn vào công việc "${task.ten}".`,
-                  metadata: { cong_van_id: congVanId, project_id: data.project_id, task_id: data.assigned_task_id }
+                  tieu_de: 'Công văn mới gắn vào công việc',
+                  noi_dung: `Công văn ${data.so_cong_van} đã được gắn vào công việc "${task.ten}".`,
+                  loai: 'cv_moi',
+                  ref_id: congVanId,
+                  ref_type: 'du_an_cong_van',
+                  link: `/du-an/${data.project_id}?view=cong-van`
                 });
               
               // Note: Email sending logic would go here if an email provider was configured
             }
+
           }
 
           return new Response(JSON.stringify({ success: true, id: congVanId }), {
