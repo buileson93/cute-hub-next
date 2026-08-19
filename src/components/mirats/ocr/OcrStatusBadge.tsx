@@ -22,15 +22,19 @@ export interface OcrStatusBadgeProps {
   className?: string;
 }
 
-export function OcrStatusBadge({ status, processedPages, totalPages, className }: OcrStatusBadgeProps) {
+export function OcrStatusBadge({ status, processedPages, totalPages, artifact, className }: OcrStatusBadgeProps) {
   const progressText = totalPages ? ` (${processedPages}/${totalPages})` : "";
+  const isShared = !!artifact;
 
   switch (status) {
     case "completed":
       return (
-        <Badge variant="outline" className={`bg-green-50 text-green-700 border-green-200 gap-1 ${className}`}>
-          <CheckCircle2 className="h-3 w-3" /> Hoàn tất
-        </Badge>
+        <AppTooltip content={isShared ? `Kết quả OCR dùng lại từ hệ thống (ID: ${artifact.id.slice(0, 8)})` : "Kết quả OCR mới trên thiết bị này"}>
+          <Badge variant="outline" className={`bg-green-50 text-green-700 border-green-200 gap-1 ${className}`}>
+            {isShared ? <Database className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />} 
+            {isShared ? "OCR Sẵn có" : "Hoàn tất"}
+          </Badge>
+        </AppTooltip>
       );
     case "partial":
       return (
