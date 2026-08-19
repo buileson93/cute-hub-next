@@ -34,9 +34,10 @@ export function DossierRegister({ project_id }: { project_id: string }) {
     queryKey: ["dossier-docs", project_id],
     queryFn: async () => {
       const { data: dossiers } = await supabase.from("project_dossiers" as any).select("id").eq("project_id", project_id);
-      if (!dossiers?.length) return [];
+      const dossiersArr = (dossiers || []) as any[];
+      if (!dossiersArr.length) return [];
       
-      const dossierIds = dossiers.map((d: any) => d.id);
+      const dossierIds = dossiersArr.map(d => d.id);
       const { data, error } = await supabase
         .from("dossier_documents" as any)
         .select("*")
@@ -44,7 +45,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
         .order("created_at", { ascending: false });
       
       if (error) throw error;
-      return (data || []) as DocumentRecord[];
+      return (data as any || []) as DocumentRecord[];
     }
   });
 
