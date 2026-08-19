@@ -78,6 +78,7 @@ async function assertAccess(supabase: any, userId: string, key: string, action: 
 }
 
 
+
 async function logAccess(entry: { user_id: string|null; key: string; action: string; category?: string|null; expires_in?: number|null; ok?: boolean; reason?: string|null }) {
   try {
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
