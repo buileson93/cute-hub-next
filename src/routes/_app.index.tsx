@@ -108,7 +108,7 @@ function Dashboard() {
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
               "astryx-control h-8 px-4 transition-all gap-2 shadow-none",
-              !isEditing && "hover:bg-primary/5 hover:border-primary/40"
+              isEditing ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-primary/5 hover:border-primary/40"
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} size="tiny" className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />
