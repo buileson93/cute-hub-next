@@ -68,15 +68,38 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
 
           // Scope check: project_correspondence:write
           if (!scopes?.includes('project_correspondence:write')) {
+            const { supabaseAdmin: auditAdmin } = await import('@/integrations/backend/admin.server');
+            await auditAdmin.from("api_audit_log" as any).insert({
+              user_id,
+              action: 'permission_denied',
+              result: 'failure',
+              metadata: { scope_required: 'project_correspondence:write' }
+            } as any);
+
             return new Response(JSON.stringify({ error: 'Forbidden: Insufficient scopes' }), { 
               status: 403,
-              headers: { 'Content-Type': 'application/json' }
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
 
           const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
           const body = await request.json();
           const data = extCongVanSchema.parse(body);
+
+          // Hard Project Check & Privacy: Verify user has access to this project
+          // Return 404 instead of 403 if project doesn't exist or no access to prevent enumeration
+          const { data: projectAccess } = await supabaseAdmin
+            .from('du_an')
+            .select('id')
+            .eq('id', data.project_id)
+            .maybeSingle();
+          
+          if (!projectAccess) {
+            return new Response(JSON.stringify({ error: 'Project not found' }), { 
+              status: 404,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
 
           // Idempotency check
           if (data.idempotency_key) {
@@ -89,10 +112,11 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
             if (existing) {
               return new Response(JSON.stringify({ success: true, id: (existing as any).id, note: 'duplicate_prevented' }), {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
               });
             }
           }
+
 
           const { data: inserted, error } = await supabaseAdmin
             .from('du_an_cong_van' as any)
