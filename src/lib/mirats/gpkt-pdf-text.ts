@@ -26,23 +26,21 @@ function ensureWorker() {
 }
 
 export async function extractPdfText(file: File): Promise<string> {
-  ensureWorker();
-  const buf = await file.arrayBuffer();
-  const loadingTask = (pdfjsLib as unknown as {
-    getDocument: (src: { data: ArrayBuffer }) => { promise: Promise<{
-      numPages: number;
-      getPage: (n: number) => Promise<{
-        getTextContent: () => Promise<{ items: RawPdfItem[] }>;
-      }>;
-    }> };
-  }).getDocument({ data: buf });
-  const pdf = await loadingTask.promise;
+  const { PdfExtractor } = await import("./document-ocr/pdf-extractor");
+  const { normalizeWgs84 } = await import("./gpkt-pdf-parse");
+  
+  const extractor = new PdfExtractor();
+  const numPages = await extractor.load(file);
   const pages: string[] = [];
-  const maxPages = Math.min(pdf.numPages, 8);
+  
+  // GPKT logic usually limits to 8 pages unless it's the new pipeline
+  const maxPages = Math.min(numPages, 8);
+  
   for (let i = 1; i <= maxPages; i++) {
-    const page = await pdf.getPage(i);
-    const tc = await page.getTextContent();
-    pages.push(linesFromItems(tc.items));
+    const pageData = await extractor.getPage(i);
+    pages.push(pageData.text);
   }
+  
+  await extractor.close();
   return normalizeWgs84(pages.join("\n\n"));
 }
