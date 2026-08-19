@@ -1,12 +1,18 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { RawPdfItem, linesFromItems } from "../gpkt-pdf-parse";
 
-// eslint-disable-next-line import/no-unresolved
-import PdfWorker from "pdfjs-dist/build/pdf.worker.mjs?worker";
+// Lazy load worker only when needed
+let PdfWorker: any = null;
 
 let workerInitialized = false;
-function ensureWorker() {
+async function ensureWorker() {
   if (workerInitialized) return;
+  
+  if (!PdfWorker) {
+    const workerModule = await import("pdfjs-dist/build/pdf.worker.mjs?worker");
+    PdfWorker = workerModule.default;
+  }
+  
   (pdfjsLib as any).GlobalWorkerOptions.workerSrc = new PdfWorker();
   workerInitialized = true;
 }
@@ -22,7 +28,7 @@ export class PdfExtractor {
   private pdf: any = null;
 
   async load(file: Blob): Promise<number> {
-    ensureWorker();
+    await ensureWorker();
     const buf = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: buf });
     this.pdf = await loadingTask.promise;

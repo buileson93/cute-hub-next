@@ -165,20 +165,25 @@ export class OcrBatchProcessor {
     const response = await fetch(urlData.signedUrl, { signal: this.abortController?.signal });
     if (!response.ok) throw new Error("NETWORK_ERROR");
     const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
 
-    // 3. Run pipeline
-    await ocrPipeline.process(item.sourceType, item.sourceId, blob, {
-      qualityProfile: this.config.qualityProfile,
-      signal: this.abortController?.signal,
-      onProgress: (p: number) => {
-        // Optional progress handling
-      },
-      onPageCompleted: (page: number, res: OcrPageResult) => {
-        this.status.pagesInSession++;
-        this.status.currentPage = page;
-        this.notify();
-      }
-    });
+    try {
+      // 3. Run pipeline
+      await ocrPipeline.process(item.sourceType, item.sourceId, blob, {
+        qualityProfile: this.config.qualityProfile,
+        signal: this.abortController?.signal,
+        onProgress: (p: number) => {
+          // Optional progress handling
+        },
+        onPageCompleted: (page: number, res: OcrPageResult) => {
+          this.status.pagesInSession++;
+          this.status.currentPage = page;
+          this.notify();
+        }
+      });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   }
 
   private checkResourcePressure(): boolean {

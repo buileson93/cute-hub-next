@@ -26,14 +26,23 @@ export const ocrConfig = {
   },
 
   /**
+   * Current rollout stage (1-5)
+   */
+  get rolloutStage() {
+    const stage = parseInt(import.meta.env.VITE_OCR_ROLLOUT_STAGE || "1");
+    return stage;
+  },
+
+  /**
    * Default language for OCR
    */
   defaultLanguage: "vie+eng",
 
   /**
-   * Supported providers (placeholders for now)
+   * Supported providers
    */
   providers: [
+    { id: "pdf-text-layer", name: "PDF Text Layer", type: "client" },
     { id: "tesseract-wasm", name: "Tesseract WASM (Local)", type: "client" },
     { id: "google-cloud-vision", name: "Google Cloud Vision", type: "server" },
     { id: "azure-form-recognizer", name: "Azure AI Document Intelligence", type: "server" },
