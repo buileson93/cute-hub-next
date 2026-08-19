@@ -51,10 +51,9 @@ export class MiniSearchAdapter {
       },
       // Custom tokenizer to handle technical tokens better
       tokenize: (text) => {
-        const tokens = text.match(TECHNICAL_TOKEN) || [];
-        const words = text.split(/\s+/).filter(w => !tokens.includes(w));
-        const all = [...tokens, ...words];
-        return all.map(t => boDauTiengViet(t.toLowerCase()));
+        const tokens = (text.match(TECHNICAL_TOKEN) || []) as string[];
+        const words = text.split(/\s+/);
+        return [...tokens, ...words].map(t => boDauTiengViet(t.toLowerCase()));
       },
       // Process term for matching
       processTerm: (term) => boDauTiengViet(term.toLowerCase())
