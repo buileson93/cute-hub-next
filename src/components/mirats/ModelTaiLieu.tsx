@@ -76,13 +76,26 @@ export function ModelTaiLieu({ modelId }: { modelId: string }) {
     queryKey: ["model_tai_lieu", modelId],
     enabled: !!modelId,
     queryFn: async (): Promise<TaiLieuRow[]> => {
-      const { data, error } = await supabase
+      const { data: rows, error: rowsError } = await supabase
         .from("model_tai_lieu")
         .select("id, model_id, file_name, file_path, bucket, kich_thuoc, mime_type, loai_tai_lieu, mo_ta, created_at")
         .eq("model_id", modelId)
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as TaiLieuRow[];
+
+      if (rowsError) throw rowsError;
+      if (!rows) return [];
+
+      // Fetch OCR status separately
+      const { data: ocrData } = await supabase
+        .from("tai_lieu_ocr")
+        .select("source_id, status, processed_pages, page_count")
+        .eq("source_type", "model_tai_lieu")
+        .in("source_id", rows.map(r => r.id));
+
+      return rows.map(row => ({
+        ...row,
+        tai_lieu_ocr: ocrData?.find(o => o.source_id === row.id) || null
+      })) as TaiLieuRow[];
     },
   });
 
