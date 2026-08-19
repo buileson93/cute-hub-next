@@ -36,14 +36,17 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           }
 
           const token = authHeader.replace('Bearer ', '');
-          const { isValid, user_id, scopes } = await verifyApiKey(token);
+          const ip = request.headers.get('x-forwarded-for') || request.headers.get('cf-connecting-ip');
+          const { isValid, user_id, scopes } = await verifyApiKey(token, ip || undefined);
 
           if (!isValid) {
+            // Audit Log (Done inside verifyApiKey)
             return new Response(JSON.stringify({ error: 'Unauthorized: Invalid API key' }), { 
               status: 401,
               headers: { 'Content-Type': 'application/json' }
             });
           }
+
 
           // Scope check: project_correspondence:write
           if (!scopes?.includes('project_correspondence:write')) {
