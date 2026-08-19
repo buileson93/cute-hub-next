@@ -39,7 +39,7 @@ export function useProjectEvents(projectId: string, filters?: {
         .from("du_an_su_kien")
         .select(`
           *,
-          actor:profiles!actor_id(id, ho_ten, email)
+          actor:profiles(id, ho_ten, email)
         `)
         .eq("du_an_id", projectId)
         .order("occurred_at", { ascending: false });
@@ -52,7 +52,9 @@ export function useProjectEvents(projectId: string, filters?: {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as (ProjectEvent & { actor: { id: string; ho_ten: string | null; email: string } | null })[];
+      
+      // Use unknown conversion to bypass type mismatch between generated types and custom interface
+      return data as unknown as (ProjectEvent & { actor: { id: string; ho_ten: string | null; email: string } | null })[];
     },
   });
 }
