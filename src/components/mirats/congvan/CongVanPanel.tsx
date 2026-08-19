@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { GitBranch, ListTree, Loader2, Plus, Search, AlertTriangle } from "lucide-react";
+import { GitBranch, ListTree, Loader2, Plus, Search, AlertTriangle, FileText, History } from "lucide-react";
+import { LayoutPanel } from "@/components/astryx/layout-panel";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -43,57 +45,101 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
   const openCv = (cv: CongVanRow) => { setEditing(cv); setOpen(true); };
 
   if (error) {
-    return <div className="rounded-lg border p-6 text-sm text-rose-600">Không tải được công văn: {error.message}</div>;
+    return (
+      <LayoutPanel variant="error" title="Lỗi tải dữ liệu">
+        <div className="p-4 text-sm text-rose-600">
+          Không tải được công văn: {error.message}
+        </div>
+      </LayoutPanel>
+    );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm số / trích yếu…"
-            className="h-8 w-[230px] pl-7 text-sm" />
+    <LayoutPanel
+      title="Hồ sơ Công văn"
+      icon={<FileText className="h-4 w-4" />}
+      actions={
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Tìm số / trích yếu…"
+              className="h-8 w-[200px] pl-7 text-sm"
+            />
+          </div>
+          <Select value={loai} onValueChange={setLoai}>
+            <SelectTrigger className="h-8 w-[140px] text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả loại</SelectItem>
+              {Object.entries(LOAI_META).map(([k, m]) => (
+                <SelectItem key={k} value={k}>{m.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {canEdit && (
+            <Button size="sm" onClick={openNew} className="h-8">
+              <Plus className="mr-1.5 h-4 w-4" /> Thêm mới
+            </Button>
+          )}
         </div>
-        <Select value={loai} onValueChange={setLoai}>
-          <SelectTrigger className="h-8 w-[160px] text-sm"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tất cả loại</SelectItem>
-            {Object.entries(LOAI_META).map(([k, m]) => <SelectItem key={k} value={k}>{m.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Badge variant="outline" className="text-[11px]">{filtered.length} công văn</Badge>
-        <Badge variant="outline" className="text-[11px]">{soLuong} luồng liên kết</Badge>
-        {quaHan.length > 0 && (
-          <Badge variant="outline" className="border-rose-200 bg-rose-50 text-[11px] text-rose-700">
-            <AlertTriangle className="mr-1 h-3 w-3" />{quaHan.length} quá hạn phúc đáp
-          </Badge>
-        )}
-        {canEdit && (
-          <Button size="sm" className="ml-auto" onClick={openNew}>
-            <Plus className="mr-1.5 h-4 w-4" /> Thêm công văn
-          </Button>
-        )}
-      </div>
-
+      }
+      footer={
+        <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Badge variant="secondary" className="h-4 px-1 text-[10px]">{filtered.length}</Badge>
+            <span>văn bản</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Badge variant="secondary" className="h-4 px-1 text-[10px]">{soLuong}</Badge>
+            <span>luồng liên kết</span>
+          </div>
+          {quaHan.length > 0 && (
+            <div className="flex items-center gap-1 text-rose-600 font-medium">
+              <AlertTriangle className="h-3 w-3" />
+              <span>{quaHan.length} quá hạn</span>
+            </div>
+          )}
+        </div>
+      }
+    >
       {isLoading ? (
-        <div className="flex items-center gap-2 rounded-lg border p-8 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải công văn…
+        <div className="flex h-40 items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
         </div>
       ) : (
-        <Tabs defaultValue="timeline">
-          <TabsList>
-            <TabsTrigger value="timeline"><GitBranch className="mr-1.5 h-4 w-4" />Timeline</TabsTrigger>
-            <TabsTrigger value="tree"><ListTree className="mr-1.5 h-4 w-4" />Phân cấp</TabsTrigger>
-          </TabsList>
-          <TabsContent value="timeline" className="mt-3">
-            <CongVanTimeline congVans={filtered} links={links} teps={teps} onOpen={openCv} />
-          </TabsContent>
-          <TabsContent value="tree" className="mt-3">
-            <CongVanTree
-              congVans={[...filtered].sort((a, b) => cvMoc(a).getTime() - cvMoc(b).getTime())}
-              links={links} teps={teps} onOpen={openCv}
-            />
-          </TabsContent>
+        <Tabs defaultValue="timeline" className="w-full">
+          <div className="border-b px-4">
+            <TabsList className="h-10 bg-transparent p-0">
+              <TabsTrigger 
+                value="timeline" 
+                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                <GitBranch className="mr-1.5 h-4 w-4" /> Timeline
+              </TabsTrigger>
+              <TabsTrigger 
+                value="tree"
+                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                <ListTree className="mr-1.5 h-4 w-4" /> Phân cấp
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          
+          <div className="p-4">
+            <TabsContent value="timeline" className="mt-0 outline-none">
+              <CongVanTimeline congVans={filtered} links={links} teps={teps} onOpen={openCv} />
+            </TabsContent>
+            <TabsContent value="tree" className="mt-0 outline-none">
+              <CongVanTree
+                congVans={[...filtered].sort((a, b) => cvMoc(a).getTime() - cvMoc(b).getTime())}
+                links={links} teps={teps} onOpen={openCv}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
       )}
 
@@ -108,6 +154,6 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
         canEdit={canEdit}
         onDone={refresh}
       />
-    </div>
+    </LayoutPanel>
   );
 }
