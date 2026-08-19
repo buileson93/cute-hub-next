@@ -79,11 +79,14 @@ function OcrAdminPage() {
   const { data: documents, isLoading, refetch: refetchDocs } = useQuery({
     queryKey: ["unprocessed-docs", filter],
     queryFn: () => getUnprocessedDocuments({ 
-      limit: 100, 
-      status: filter.status || undefined,
-      sourceType: filter.sourceType || undefined
+      data: {
+        limit: 100, 
+        status: filter.status === "all" ? undefined : (filter.status || undefined),
+        sourceType: filter.sourceType === "all" ? undefined : (filter.sourceType || undefined)
+      }
     })
   });
+
 
   // Batch Processor
   const processor = useMemo(() => {
