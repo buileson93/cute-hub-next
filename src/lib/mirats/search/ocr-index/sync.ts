@@ -48,13 +48,13 @@ export class SearchSyncManager {
       // Map metadata safely
       const meta = row.source_type === 'model_tai_lieu' 
         ? { 
-            name: row.model_tai_lieu?.ten_tai_lieu, 
-            code: row.model_tai_lieu?.ma_tai_lieu, 
+            name: row.model_tai_lieu?.file_name, 
+            code: row.model_tai_lieu?.model?.ma, 
             desc: row.model_tai_lieu?.mo_ta 
           }
         : { 
             name: row.thiet_bi_tep_dinh_kem?.file_name, 
-            code: undefined, 
+            code: row.thiet_bi_tep_dinh_kem?.thiet_bi?.ma_thiet_bi, 
             desc: row.thiet_bi_tep_dinh_kem?.mo_ta 
           };
 
