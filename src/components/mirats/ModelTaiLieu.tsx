@@ -318,7 +318,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         } else {
           // Trigger pipeline in background (don't await fully if we want to allow dialog close, 
           // but here we have the progress dialog open)
-          startOcr(file, "model_tai_lieu", error.id, {
+          startOcr(file, "model_tai_lieu", inserted.id, {
             quality: ocrQuality,
             language: "vie+eng"
           }).catch(err => console.error("OCR Pipeline Error:", err));
