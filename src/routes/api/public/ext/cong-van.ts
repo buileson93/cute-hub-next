@@ -5,7 +5,7 @@ const extCongVanSchema = z.object({
   project_id: z.string().uuid(),
   so_cong_van: z.string().min(1),
   trich_yeu: z.string().optional(),
-  loai: z.enum(["den", "di", "to_trinh", "quyet_dinh", "bao_cao", "khac"]).default('den'),
+  loai: z.enum(["den", "di", "to_trinh", "bao_cao", "quyet_dinh", "khac"]).default('den'),
   ngay_ban_hanh: z.string().optional(),
   co_quan_ban_hanh: z.string().optional(),
   file_url: z.string().url().optional(),
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
           
           const apiKey = request.headers.get('x-mirats-api-key');
-          if (!apiKey || apiKey !== process.env.MIRATS_EXT_API_KEY) {
+          if (!apiKey || apiKey !== process.env['MIRATS_EXT_API_KEY']) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
               status: 401,
               headers: { 'Content-Type': 'application/json' }
@@ -31,7 +31,7 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           const data = extCongVanSchema.parse(body);
 
           const { data: inserted, error } = await supabaseAdmin
-            .from('du_an_cong_van')
+            .from('du_an_cong_van' as any)
             .insert({
               du_an_id: data.project_id,
               so_cong_van: data.so_cong_van,
@@ -41,13 +41,15 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
               co_quan_ban_hanh: data.co_quan_ban_hanh,
               metadata: (data.metadata || {}) as any,
               trang_thai: 'moi'
-            })
+            } as any)
             .select()
             .single();
 
           if (error) throw error;
 
-          return new Response(JSON.stringify({ success: true, id: inserted.id }), {
+          const insertedTyped = inserted as any;
+
+          return new Response(JSON.stringify({ success: true, id: insertedTyped.id }), {
             status: 201,
             headers: { 'Content-Type': 'application/json' }
           });
