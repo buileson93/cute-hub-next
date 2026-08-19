@@ -45,6 +45,20 @@ export type OcrPageResult = z.infer<typeof OcrPageResultSchema>;
 export type OcrSourceType = "model_tai_lieu" | "thiet_bi_tep_dinh_kem";
 
 /**
+ * OCR Error codes
+ */
+export type OcrErrorCode = 
+  | "PDF_ENCRYPTED" 
+  | "PDF_TOO_LARGE" 
+  | "PDF_CORRUPT"
+  | "URL_EXPIRED" 
+  | "ACCESS_DENIED" 
+  | "NETWORK_ERROR"
+  | "TIMEOUT"
+  | "EMPTY_PDF"
+  | "UNKNOWN";
+
+/**
  * Main OCR record interface
  */
 export interface TaiLieuOcr {
@@ -74,3 +88,34 @@ export interface TaiLieuOcr {
  * DTO for creating/updating OCR records
  */
 export type UpsertTaiLieuOcr = Partial<Omit<TaiLieuOcr, "id" | "created_at" | "updated_at">>;
+
+/**
+ * OCR Health statistics
+ */
+export interface OcrStats {
+  totalDocs: number;
+  completed: number;
+  partial: number;
+  failed: number;
+  pending: number;
+  totalPageCount: number;
+  totalProcessedPages: number;
+}
+
+/**
+ * Unprocessed PDF item
+ */
+export interface UnprocessedPdfItem {
+  source_type: OcrSourceType;
+  source_id: string;
+  file_name: string;
+  file_size?: number;
+  created_at: string;
+  status: OcrStatus | "not_started";
+  page_count?: number;
+  processed_pages?: number;
+  error_code?: string;
+  model_ma?: string;
+  thiet_bi_ma?: string;
+}
+

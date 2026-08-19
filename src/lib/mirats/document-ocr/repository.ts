@@ -3,7 +3,9 @@ import {
   TaiLieuOcr, 
   OcrSourceType, 
   UpsertTaiLieuOcr,
-  OcrStatus
+  OcrStatus,
+  OcrStats,
+  UnprocessedPdfItem
 } from "./types";
 
 /**
@@ -121,5 +123,39 @@ export const ocrRepository = {
       return null;
     }
     return (data as unknown) as TaiLieuOcr;
+  },
+
+  /**
+   * Get OCR health statistics
+   */
+  async getOcrStats(): Promise<OcrStats> {
+    const { data, error } = await supabase
+      .from("tai_lieu_ocr")
+      .select("status, page_count, processed_pages");
+
+    if (error) throw error;
+
+    const stats: OcrStats = {
+      totalDocs: data.length,
+      completed: 0,
+      partial: 0,
+      failed: 0,
+      pending: 0,
+      totalPageCount: 0,
+      totalProcessedPages: 0
+    };
+
+    data.forEach(row => {
+      if (row.status === "completed") stats.completed++;
+      else if (row.status === "partial") stats.partial++;
+      else if (row.status === "failed") stats.failed++;
+      else stats.pending++;
+
+      stats.totalPageCount += row.page_count || 0;
+      stats.totalProcessedPages += row.processed_pages || 0;
+    });
+
+    return stats;
   }
 };
+

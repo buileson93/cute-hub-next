@@ -19,6 +19,7 @@ import {
   LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
   Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
   Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users, Laptop,
+  Cpu,
 } from "lucide-react";
 
 import type { AppRole } from "@/hooks/use-session";
@@ -219,8 +220,10 @@ export const workspaces: Workspace[] = [
           { to: "/admin/kiem-tra-layout", label: "Kiểm tra layout", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
           { to: "/admin/ai", label: "Cấu hình AI", icon: Sparkles, roles: ADMIN_ONLY },
           { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
-         { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
+          { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
+          { to: "/admin/ocr", label: "Quản trị OCR", icon: Cpu, roles: ADMIN_ONLY },
           { to: "/admin/supabase-ngoai", label: "Kết nối Supabase ngoài", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
+
 
         ],
       },

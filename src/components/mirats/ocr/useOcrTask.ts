@@ -2,9 +2,8 @@ import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { ocrPipeline } from "@/lib/mirats/document-ocr/pipeline";
 import { ocrRepository } from "@/lib/mirats/document-ocr/repository";
-import { OcrStatus, OcrSourceType } from "@/lib/mirats/document-ocr/types";
+import { OcrStatus, OcrSourceType, OcrPageResult } from "@/lib/mirats/document-ocr/types";
 import { QualityProfile } from "@/lib/mirats/document-ocr/provider";
-import { adaptiveOcrSelector } from "@/lib/mirats/document-ocr/adaptive-selector";
 
 export function useOcrTask() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,20 +27,17 @@ export function useOcrTask() {
 
     const { quality = "auto", language = "vie+eng", startPage = 1 } = options;
     
-    let qualityOverride: QualityProfile | undefined;
-    if (quality !== "auto") {
-      qualityOverride = quality;
-    }
+    const qualityProfile = quality === "auto" ? undefined : quality;
 
     try {
       setProgress({ current: startPage - 1, total: 0, status: "Đang khởi tạo..." });
 
-      const results = await ocrPipeline.process(file, {
+      const results = await ocrPipeline.process(sourceType, sourceId, file, {
         signal: abortControllerRef.current.signal,
         language,
-        qualityOverride,
+        qualityProfile,
         startPage,
-        onProgress: async (processed, total, currentResult) => {
+        onProgress: async (processed: number, total: number, currentResult: OcrPageResult) => {
           setProgress({ 
             current: processed, 
             total, 
@@ -118,3 +114,4 @@ export function useOcrTask() {
     setIsPaused
   };
 }
+
