@@ -1,10 +1,18 @@
 import { useMemo, useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Upload, Trash2, FileText, ImageIcon, Loader2, Download, ExternalLink, Eye } from "lucide-react";
+import { Upload, Trash2, FileText, ImageIcon, Loader2, Download, ExternalLink, Eye, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
+import { OcrStatusBadge } from "./ocr/OcrStatusBadge";
+import { OcrSettings } from "./ocr/OcrSettings";
+import { OcrProgressDialog } from "./ocr/OcrProgressDialog";
+import { useOcrTask } from "./ocr/useOcrTask";
+import { sha256Hex } from "@/lib/storage/compress";
+import { ocrRepository } from "@/lib/mirats/document-ocr/repository";
+import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
+import { deviceProfiler } from "@/lib/mirats/document-ocr/device-profiler";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +41,11 @@ type TepRow = {
   kich_thuoc: number | null;
   mo_ta: string | null;
   created_at: string;
+  tai_lieu_ocr?: {
+    status: string;
+    processed_pages: number;
+    page_count: number | null;
+  } | null;
 };
 
 function fmtSize(n: number | null | undefined) {
@@ -63,13 +76,26 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
     queryKey: ["thiet_bi_tep", tbId],
     enabled: !!tbId,
     queryFn: async (): Promise<TepRow[]> => {
-      const { data, error } = await supabase
+      const { data: rows, error: rowsError } = await supabase
         .from("thiet_bi_tep_dinh_kem")
-        .select("*")
+        .select("id, thiet_bi_id, loai, bucket, file_path, file_name, mime_type, kich_thuoc, mo_ta, created_at")
         .eq("thiet_bi_id", tbId!)
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as TepRow[];
+
+      if (rowsError) throw rowsError;
+      if (!rows) return [];
+
+      // Fetch OCR status separately
+      const { data: ocrData } = await supabase
+        .from("tai_lieu_ocr")
+        .select("source_id, status, processed_pages, page_count")
+        .eq("source_type", "thiet_bi_tep_dinh_kem")
+        .in("source_id", rows.map(r => r.id));
+
+      return rows.map(row => ({
+        ...row,
+        tai_lieu_ocr: ocrData?.find(o => o.source_id === row.id) || null
+      })) as TepRow[];
     },
   });
 
@@ -193,7 +219,16 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
       <div className="flex min-w-0 items-center gap-3">
         <FileText className="h-5 w-5 shrink-0 text-red-600" />
         <div className="min-w-0">
-          <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
+          <div className="flex items-center gap-2">
+            <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
+            {row.tai_lieu_ocr && (
+              <OcrStatusBadge 
+                status={row.tai_lieu_ocr.status as any} 
+                processedPages={row.tai_lieu_ocr.processed_pages}
+                totalPages={row.tai_lieu_ocr.page_count || undefined}
+              />
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <Badge variant="outline" className="text-[10px]">{row.mime_type ?? "PDF"}</Badge>
             <span>{fmtSize(row.kich_thuoc)}</span>
@@ -212,9 +247,16 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
           </>
         )}
         {canManage && (
-          <Button size="icon" variant="ghost" onClick={onDelete} className="text-red-600" aria-label="Xoá">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <>
+            {row.tai_lieu_ocr?.status === "failed" && (
+              <Button size="sm" variant="ghost" title="Thử chạy lại OCR" onClick={() => {/* TODO */}} className="h-7 w-7 p-0">
+                <RefreshCcw className="h-4 w-4" />
+              </Button>
+            )}
+            <Button size="icon" variant="ghost" onClick={onDelete} className="text-red-600" aria-label="Xoá">
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </>
         )}
       </div>
       <DocViewerDialog
@@ -281,6 +323,17 @@ function UploadDialog({
   const [file, setFile] = useState<File | null>(null);
   const [moTa, setMoTa] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ocrEnabled, setOcrEnabled] = useState(true);
+  const [ocrQuality, setOcrQuality] = useState<any>("auto");
+  const [deviceTier, setDeviceTier] = useState<string | null>(null);
+
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } = useOcrTask();
+
+  useEffect(() => {
+    if (open) {
+      deviceProfiler.getProfile().then(p => setDeviceTier(p.tier));
+    }
+  }, [open]);
 
   const accept = loai === "hinh_anh" ? "image/*" : "application/pdf";
   const label = loai === "hinh_anh" ? "Tải ảnh lên" : "Tải PDF lên";
@@ -303,18 +356,44 @@ function UploadDialog({
       });
       if (up.error) throw up.error;
 
-      const { error } = await supabase.from("thiet_bi_tep_dinh_kem").insert({
+      const { data: inserted, error } = await supabase.from("thiet_bi_tep_dinh_kem").insert({
         thiet_bi_id: thietBiId,
         loai, bucket, file_path: filePath,
         file_name: file.name,
         mime_type: file.type || null,
         kich_thuoc: file.size,
         mo_ta: moTa.trim() || null,
-      });
+      }).select("id").single();
+
       if (error) {
         // rollback storage
         await storage.from(bucket).remove([filePath]);
         throw error;
+      }
+
+      // OCR Flow
+      if (loai === "tai_lieu" && ocrEnabled && file.type === "application/pdf" && isFeatureEnabled("documentOcrEnabled")) {
+        const hash = await sha256Hex(file);
+        
+        await ocrRepository.queueOcr("thiet_bi_tep_dinh_kem", inserted.id, hash);
+        
+        const existing = await ocrRepository.findExisting(hash);
+        if (existing) {
+          await ocrRepository.upsertOcr("thiet_bi_tep_dinh_kem", inserted.id, {
+            status: "completed",
+            full_text: existing.full_text,
+            normalized_text: existing.normalized_text,
+            pages: existing.pages as any,
+            processed_pages: existing.processed_pages,
+            page_count: existing.page_count
+          });
+          toast.success("Đã tìm thấy dữ liệu OCR cũ.");
+        } else {
+          startOcr(file, "thiet_bi_tep_dinh_kem", inserted.id, {
+            quality: ocrQuality,
+            language: "vie+eng"
+          }).catch(err => console.error("OCR Pipeline Error:", err));
+        }
       }
       toast.success("Đã tải lên");
       setOpen(false); reset(); onDone();
@@ -344,7 +423,29 @@ function UploadDialog({
             <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}
               placeholder="VD: Datasheet nhà sản xuất, ảnh mặt trước…" />
           </div>
+          {isFeatureEnabled("documentOcrEnabled") && loai === "tai_lieu" && file?.type === "application/pdf" && (
+            <OcrSettings
+              enabled={ocrEnabled}
+              onEnabledChange={setOcrEnabled}
+              quality={ocrQuality}
+              onQualityChange={setOcrQuality}
+              deviceTier={deviceTier || undefined}
+              autoReason={deviceTier === "low" ? "Ưu tiên tiết kiệm pin." : "Ưu tiên độ chính xác."}
+            />
+          )}
         </div>
+        <OcrProgressDialog
+          open={isProcessing}
+          onOpenChange={() => {}} // Controlled by pipeline
+          fileName={file?.name || ""}
+          currentPage={progress.current}
+          totalPages={progress.total}
+          status={progress.status}
+          isPaused={isPaused}
+          onPause={pauseOcr}
+          onResume={() => setIsPaused(false)}
+          onCancel={() => cancelOcr("thiet_bi_tep_dinh_kem", "")}
+        />
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Hủy</Button>
           <Button onClick={submit} disabled={busy || !file}>

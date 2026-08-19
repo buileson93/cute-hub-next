@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Upload, Trash2, FileText, Loader2, Download, ExternalLink, Tag, Eye } from "lucide-react";
+import { Upload, Trash2, FileText, Loader2, Download, ExternalLink, Tag, Eye, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
@@ -8,6 +8,14 @@ import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Badge } from "@/components/ui/badge";
+import { OcrStatusBadge } from "./ocr/OcrStatusBadge";
+import { OcrSettings } from "./ocr/OcrSettings";
+import { OcrProgressDialog } from "./ocr/OcrProgressDialog";
+import { useOcrTask } from "./ocr/useOcrTask";
+import { sha256Hex } from "@/lib/storage/compress";
+import { ocrRepository } from "@/lib/mirats/document-ocr/repository";
+import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
+import { deviceProfiler } from "@/lib/mirats/document-ocr/device-profiler";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +53,11 @@ type TaiLieuRow = {
   kich_thuoc: number | null;
   mo_ta: string | null;
   created_at: string;
+  tai_lieu_ocr?: {
+    status: string;
+    processed_pages: number;
+    page_count: number | null;
+  } | null;
 };
 
 function fmtSize(n: number | null | undefined) {
@@ -63,13 +76,26 @@ export function ModelTaiLieu({ modelId }: { modelId: string }) {
     queryKey: ["model_tai_lieu", modelId],
     enabled: !!modelId,
     queryFn: async (): Promise<TaiLieuRow[]> => {
-      const { data, error } = await supabase
+      const { data: rows, error: rowsError } = await supabase
         .from("model_tai_lieu")
-        .select("*")
+        .select("id, model_id, file_name, file_path, bucket, kich_thuoc, mime_type, loai_tai_lieu, mo_ta, created_at")
         .eq("model_id", modelId)
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as TaiLieuRow[];
+
+      if (rowsError) throw rowsError;
+      if (!rows) return [];
+
+      // Fetch OCR status separately
+      const { data: ocrData } = await supabase
+        .from("tai_lieu_ocr")
+        .select("source_id, status, processed_pages, page_count")
+        .eq("source_type", "model_tai_lieu")
+        .in("source_id", rows.map(r => r.id));
+
+      return rows.map(row => ({
+        ...row,
+        tai_lieu_ocr: ocrData?.find(o => o.source_id === row.id) || null
+      })) as TaiLieuRow[];
     },
   });
 
@@ -144,6 +170,13 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
             <Badge variant="secondary" className="gap-1 text-[10px]">
               <Tag className="h-3 w-3" /> {row.loai_tai_lieu}
             </Badge>
+            {row.tai_lieu_ocr && (
+              <OcrStatusBadge 
+                status={row.tai_lieu_ocr.status as any} 
+                processedPages={row.tai_lieu_ocr.processed_pages}
+                totalPages={row.tai_lieu_ocr.page_count || undefined}
+              />
+            )}
           </div>
           <div className="mt-0.5 truncate font-medium" title={row.file_name}>{row.file_name}</div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -182,12 +215,21 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
           </>
         )}
         {canManage && (
-          <AppTooltip noiDung="Xoá tài liệu này">
-            <Button size="sm" variant="ghost" onClick={onDelete} className="h-7 w-7 p-0 text-red-600">
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Xoá</span>
-            </Button>
-          </AppTooltip>
+          <>
+            {row.tai_lieu_ocr?.status === "failed" && (
+              <AppTooltip noiDung="Thử chạy lại OCR">
+                <Button size="sm" variant="ghost" onClick={() => {/* TODO: Implement retry */}} className="h-7 w-7 p-0">
+                  <RefreshCcw className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
+            )}
+            <AppTooltip noiDung="Xoá tài liệu này">
+              <Button size="sm" variant="ghost" onClick={onDelete} className="h-7 w-7 p-0 text-red-600">
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Xoá</span>
+              </Button>
+            </AppTooltip>
+          </>
         )}
       </div>
       <DocViewerDialog
@@ -207,6 +249,17 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
   const [loai, setLoai] = useState("");
   const [moTa, setMoTa] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ocrEnabled, setOcrEnabled] = useState(true);
+  const [ocrQuality, setOcrQuality] = useState<any>("auto");
+  const [deviceTier, setDeviceTier] = useState<string | null>(null);
+  
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } = useOcrTask();
+  
+  useEffect(() => {
+    if (open) {
+      deviceProfiler.getProfile().then(p => setDeviceTier(p.tier));
+    }
+  }, [open]);
 
   const opts: ComboOption[] = LOAI_GOI_Y.map((v) => ({ value: v, label: v }));
   const reset = () => { setFile(null); setLoai(""); setMoTa(""); };
@@ -226,7 +279,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
       });
       if (up.error) throw up.error;
 
-      const { error } = await supabase.from("model_tai_lieu").insert({
+      const { data: inserted, error } = await supabase.from("model_tai_lieu").insert({
         model_id: modelId,
         loai_tai_lieu: loai.trim(),
         bucket: BUCKET,
@@ -236,11 +289,42 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         kich_thuoc: file.size,
         mo_ta: moTa.trim() || null,
         uploaded_by: u.user?.id ?? null,
-      });
+      }).select("id").single();
+
       if (error) {
         await storage.from(BUCKET).remove([filePath]);
         throw error;
       }
+      
+      // OCR Flow
+      if (ocrEnabled && file.type === "application/pdf" && isFeatureEnabled("documentOcrEnabled")) {
+        const hash = await sha256Hex(file);
+        
+        // Initial queue status
+        await ocrRepository.queueOcr("model_tai_lieu", inserted.id, hash);
+        
+        // Check cache/duplicate
+        const existing = await ocrRepository.findExisting(hash);
+        if (existing) {
+          await ocrRepository.upsertOcr("model_tai_lieu", inserted.id, {
+            status: "completed",
+            full_text: existing.full_text,
+            normalized_text: existing.normalized_text,
+            pages: existing.pages as any,
+            processed_pages: existing.processed_pages,
+            page_count: existing.page_count
+          });
+          toast.success("Đã tìm thấy dữ liệu OCR cũ, tiết kiệm thời gian xử lý.");
+        } else {
+          // Trigger pipeline in background (don't await fully if we want to allow dialog close, 
+          // but here we have the progress dialog open)
+          startOcr(file, "model_tai_lieu", inserted.id, {
+            quality: ocrQuality,
+            language: "vie+eng"
+          }).catch(err => console.error("OCR Pipeline Error:", err));
+        }
+      }
+
       toast.success("Đã tải tài liệu lên");
       setOpen(false); reset(); onDone();
     } catch (e) {
@@ -285,7 +369,29 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
             <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}
               placeholder="VD: Datasheet phiên bản 2024, ngôn ngữ tiếng Anh…" />
           </div>
+          {isFeatureEnabled("documentOcrEnabled") && file?.type === "application/pdf" && (
+            <OcrSettings
+              enabled={ocrEnabled}
+              onEnabledChange={setOcrEnabled}
+              quality={ocrQuality}
+              onQualityChange={setOcrQuality}
+              deviceTier={deviceTier || undefined}
+              autoReason={deviceTier === "low" ? "Ưu tiên tiết kiệm pin." : "Ưu tiên độ chính xác."}
+            />
+          )}
         </div>
+        <OcrProgressDialog
+          open={isProcessing}
+          onOpenChange={() => {}} // Controlled by pipeline
+          fileName={file?.name || ""}
+          currentPage={progress.current}
+          totalPages={progress.total}
+          status={progress.status}
+          isPaused={isPaused}
+          onPause={pauseOcr}
+          onResume={() => setIsPaused(false)}
+          onCancel={() => cancelOcr("model_tai_lieu", "")} // We'll handle ID later
+        />
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Huỷ</Button>
           <Button onClick={submit} disabled={busy || !file || !loai.trim()}>

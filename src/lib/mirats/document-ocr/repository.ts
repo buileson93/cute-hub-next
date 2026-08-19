@@ -102,5 +102,24 @@ export const ocrRepository = {
       .eq("source_id", sourceId);
 
     if (error) throw error;
+  },
+  
+  /**
+   * Find existing successful OCR result by file hash
+   */
+  async findExisting(fileHash: string): Promise<TaiLieuOcr | null> {
+    const { data, error } = await supabase
+      .from("tai_lieu_ocr")
+      .select("*")
+      .eq("file_hash", fileHash)
+      .eq("status", "completed")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error finding existing OCR:", error);
+      return null;
+    }
+    return (data as unknown) as TaiLieuOcr;
   }
 };
