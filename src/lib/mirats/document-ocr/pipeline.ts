@@ -11,6 +11,7 @@ export interface PipelineOptions {
   signal?: AbortSignal;
   language?: string;
   qualityOverride?: any;
+  startPage?: number; // Added for resume support
 }
 
 /**
