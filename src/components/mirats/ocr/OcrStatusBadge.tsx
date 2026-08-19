@@ -9,13 +9,16 @@ import {
   RotateCcw 
 } from "lucide-react";
 import { OcrStatus } from "@/lib/mirats/document-ocr/types";
+import { OcrArtifact } from "@/lib/mirats/document-ocr/artifact-types";
 import { Badge } from "@/components/ui/badge";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { Database } from "lucide-react";
 
 export interface OcrStatusBadgeProps {
   status: OcrStatus;
   processedPages?: number;
   totalPages?: number;
+  artifact?: OcrArtifact;
   className?: string;
 }
 
