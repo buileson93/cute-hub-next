@@ -2,9 +2,10 @@ import { PdfExtractor } from "./pdf-extractor";
 import { adaptiveOcrSelector } from "./adaptive-selector";
 import { classifyPageText } from "./page-classifier";
 import { preprocessImage, disposeCanvas } from "./preprocess";
-import { normalizeViForSearch, getCorrectedText } from "./postprocess-vi";
-import { OcrPageResult, TaiLieuOcr, OcrStatus } from "./types";
+import { normalizeViForSearch } from "./postprocess-vi";
+import { OcrPageResult, OcrStatus } from "./types";
 import { QUALITY_PROFILES } from "./provider";
+import { isFeatureEnabled } from "../feature-flags";
 
 export interface PipelineOptions {
   onProgress?: (processed: number, total: number, currentPageResult: OcrPageResult) => void;
