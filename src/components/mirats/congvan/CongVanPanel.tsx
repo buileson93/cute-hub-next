@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { GitBranch, ListTree, Loader2, Plus, Search, AlertTriangle, FileText, History } from "lucide-react";
+import { GitBranch, ListTree, Loader2, Plus, Search, AlertTriangle, FileText } from "lucide-react";
 import { LayoutPanel } from "@/components/astryx/layout-panel";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
