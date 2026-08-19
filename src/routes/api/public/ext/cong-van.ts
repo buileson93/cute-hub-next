@@ -10,7 +10,15 @@ const extCongVanSchema = z.object({
   ngay_ban_hanh: z.string().optional(),
   co_quan_ban_hanh: z.string().optional(),
   file_url: z.string().url().optional(),
+  idempotency_key: z.string().optional(),
+  assigned_task_id: z.string().uuid().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  ocr_artifact: z.object({
+    full_text: z.string(),
+    pages: z.array(z.any()),
+    confidence: z.number().min(0).max(1),
+    version: z.string()
+  }).optional()
 });
 
 
@@ -49,6 +57,22 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           const body = await request.json();
           const data = extCongVanSchema.parse(body);
 
+          // Idempotency check
+          if (data.idempotency_key) {
+            const { data: existing } = await supabaseAdmin
+              .from('du_an_cong_van' as any)
+              .select('id')
+              .eq('idempotency_key', data.idempotency_key)
+              .maybeSingle();
+            
+            if (existing) {
+              return new Response(JSON.stringify({ success: true, id: (existing as any).id, note: 'duplicate_prevented' }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' }
+              });
+            }
+          }
+
           const { data: inserted, error } = await supabaseAdmin
             .from('du_an_cong_van' as any)
             .insert({
@@ -58,10 +82,13 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
               loai: data.loai,
               ngay_ban_hanh: data.ngay_ban_hanh,
               co_quan_ban_hanh: data.co_quan_ban_hanh,
+              idempotency_key: data.idempotency_key,
               metadata: { 
                 ...(data.metadata || {}), 
+                source: 'extension',
                 created_by_api_key: true,
-                actor_user_id: user_id 
+                actor_user_id: user_id,
+                assigned_task_id: data.assigned_task_id
               } as any,
               trang_thai: 'moi'
             } as any)
@@ -70,20 +97,54 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
 
           if (error) throw error;
 
-          // Log the event - Using "as any" to bypass RPC type validation for now
-          try {
-            await (supabaseAdmin as any).rpc('fn_log_project_event', {
-              p_project_id: data.project_id,
-              p_event_type: 'correspondence_created',
-              p_summary: `Công văn ${data.so_cong_van} được tạo qua Browser Extension`,
-              p_actor_id: user_id,
-              p_metadata: { correspondence_id: (inserted as any).id }
-            });
-          } catch (logErr) {
-            console.warn('Failed to log project event:', logErr);
+          const congVanId = (inserted as any).id;
+
+          // OCR Handling
+          if (data.ocr_artifact && scopes?.includes('ocr_artifacts:publish')) {
+             // Simple quality validation: confidence > 0.7
+             if (data.ocr_artifact.confidence >= 0.7) {
+                await supabaseAdmin.rpc('publish_ocr_artifact', {
+                  p_source_type: 'du_an_cong_van',
+                  p_source_id: congVanId,
+                  p_artifact_data: {
+                    full_text: data.ocr_artifact.full_text,
+                    pages: data.ocr_artifact.pages,
+                    average_confidence: data.ocr_artifact.confidence,
+                    ocr_version: data.ocr_artifact.version,
+                    status: 'completed'
+                  }
+                });
+             }
           }
 
-          return new Response(JSON.stringify({ success: true, id: (inserted as any).id }), {
+          // Task Linking & Notification
+          if (data.assigned_task_id) {
+            const { data: task } = await supabaseAdmin
+              .from('du_an_cong_viec')
+              .select('nguoi_xu_ly_chinh, ten')
+              .eq('id', data.assigned_task_id)
+              .single();
+
+            if (task?.nguoi_xu_ly_chinh) {
+              // Create In-App Notification using the correct column names from the schema
+              await supabaseAdmin
+                .from('notifications')
+                .insert({
+                  user_id: task.nguoi_xu_ly_chinh,
+                  tieu_de: 'Công văn mới gắn vào công việc',
+                  noi_dung: `Công văn ${data.so_cong_van} đã được gắn vào công việc "${task.ten}".`,
+                  loai: 'cv_moi',
+                  ref_id: congVanId,
+                  ref_type: 'du_an_cong_van',
+                  link: `/du-an/${data.project_id}?view=cong-van`
+                });
+              
+              // Note: Email sending logic would go here if an email provider was configured
+            }
+
+          }
+
+          return new Response(JSON.stringify({ success: true, id: congVanId }), {
             status: 201,
             headers: { 'Content-Type': 'application/json' }
           });
@@ -98,3 +159,4 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
     }
   }
 });
+

@@ -10,6 +10,14 @@ async function hashSecret(secret: string, pepper: string): Promise<string> {
   return createHmac("sha256", pepper).update(secret).digest("hex");
 }
 
+export const API_KEY_SCOPES = [
+  { id: 'projects:read', label: 'Xem dự án' },
+  { id: 'tasks:read', label: 'Xem công việc' },
+  { id: 'project_documents:write', label: 'Tải tài liệu lên' },
+  { id: 'project_correspondence:write', label: 'Tạo công văn' },
+  { id: 'ocr_artifacts:publish', label: 'Xuất bản kết quả OCR' },
+] as const;
+
 /**
  * Generate a new API key for the current user.
  */
@@ -28,6 +36,10 @@ export const createApiKey = createServerFn({ method: "POST" })
     const { userId, supabase } = context;
     if (!userId || !supabase) throw new Error("Unauthorized");
     
+    // Validate scopes
+    const validScopes = API_KEY_SCOPES.map(s => s.id);
+    const filteredScopes = data.scopes.filter(s => (validScopes as readonly string[]).includes(s));
+
     // Generate public keyId (12 chars)
     const keyIdArray = new Uint8Array(6);
     getRandomValues(keyIdArray);
@@ -53,7 +65,7 @@ export const createApiKey = createServerFn({ method: "POST" })
         secret_hash: secretHash,
         name: data.name,
         user_id: userId,
-        scopes: data.scopes,
+        scopes: filteredScopes,
         expires_at: expiresAt,
       } as any)
       .select()
@@ -61,7 +73,6 @@ export const createApiKey = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    // Return the full token ONLY once
     return {
       ...(newKey as object),
       fullToken,
@@ -116,21 +127,18 @@ export async function verifyApiKey(token: string): Promise<{
 
   const typedKey = keyData as any;
 
-  // Check revocation and expiration
   if (typedKey.revoked_at) return { isValid: false };
   if (typedKey.expires_at && new Date(typedKey.expires_at) < new Date()) return { isValid: false };
 
   const pepper = process.env["MIRATS_API_PEPPER"] || "default-pepper-change-me";
   const incomingHash = await hashSecret(secret, pepper);
 
-  // Constant-time comparison
   const isValid = timingSafeEqual(
     Buffer.from(typedKey.secret_hash),
     Buffer.from(incomingHash)
   );
 
   if (isValid) {
-    // Update last_used_at in background
     supabaseAdmin
       .from("api_keys" as any)
       .update({ last_used_at: new Date().toISOString() } as any)
@@ -147,3 +155,4 @@ export async function verifyApiKey(token: string): Promise<{
 
   return { isValid: false };
 }
+

@@ -27,10 +27,22 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
     return congVans.filter((c) => {
       if (loai !== "all" && c.loai !== loai) return false;
       if (!needle) return true;
-      return `${c.so_cong_van} ${c.trich_yeu ?? ""} ${c.co_quan_ban_hanh ?? ""} ${c.co_quan_nhan ?? ""}`
-        .toLowerCase().includes(needle);
+      
+      const searchContent = [
+        c.so_cong_van,
+        c.trich_yeu,
+        c.co_quan_ban_hanh,
+        c.co_quan_nhan,
+        c.ghi_chu,
+        // Search in OCR metadata if available
+        (c.metadata as any)?.ocr_summary,
+        (c.metadata as any)?.full_text_preview
+      ].filter(Boolean).join(" ").toLowerCase();
+      
+      return searchContent.includes(needle);
     });
   }, [congVans, q, loai]);
+
 
   const quaHan = useMemo(() => {
     const now = Date.now();
