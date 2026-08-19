@@ -27,7 +27,7 @@ export function HillChart({ project_id }: { project_id: string }) {
       
       const pitchIds = pitchesArr.map(p => p.id);
       const { data, error } = await supabase
-        .from("pitch_scopes" as any)
+        .from("pitch_scopes")
         .select("*")
         .in("pitch_id", pitchIds);
       
@@ -37,7 +37,7 @@ export function HillChart({ project_id }: { project_id: string }) {
         name: s.name,
         position: s.hill_position || 0,
         status: s.hill_status as 'climbing' | 'executing'
-      })) as HillMarker[];
+      }));
     }
   });
 
@@ -45,8 +45,8 @@ export function HillChart({ project_id }: { project_id: string }) {
     mutationFn: async ({ id, position }: { id: string; position: number }) => {
       const status = position < 50 ? 'climbing' : 'executing';
       const { error } = await supabase
-        .from("pitch_scopes" as any)
-        .update({ hill_position: position, hill_status: status } as any)
+        .from("pitch_scopes")
+        .update({ hill_position: position, hill_status: status })
         .eq("id", id);
       if (error) throw error;
     },

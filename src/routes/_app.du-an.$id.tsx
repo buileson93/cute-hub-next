@@ -302,10 +302,7 @@ function DuAnDetailPage() {
             <TabsContent value="operations" className="mt-3">
               <OperationsLane 
                 wipLimit={2}
-                incidents={[
-                  { id: "inc-01", title: "API Gateway 502 Errors in Production", severity: "P0", sla_status: "breach", owner: "Hung Nguyen", interruption_load: 85 },
-                  { id: "inc-02", title: "Storage quota reached for project dossiers", severity: "P1", sla_status: "warning", owner: "Minh Tran", interruption_load: 30 }
-                ]} 
+                incidents={[]} 
               />
             </TabsContent>
 
