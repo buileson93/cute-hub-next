@@ -106,8 +106,18 @@ export const revokeApiKey = createServerFn({ method: "POST" })
       .eq("user_id", userId);
 
     if (error) throw new Error(error.message);
+    
+    // Audit Log: Key Revocation
+    await supabase.from("api_audit_log" as any).insert({
+      user_id: userId,
+      action: 'key_revoked',
+      result: 'success',
+      metadata: { key_uuid: data.id }
+    } as any);
+
     return { success: true };
   });
+
 
 /**
  * Verify an API key (Internal helper for middleware).
