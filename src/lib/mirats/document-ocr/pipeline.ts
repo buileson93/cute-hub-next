@@ -30,7 +30,9 @@ export class OcrPipeline {
     const qualityProfile = options.qualityOverride || await adaptiveOcrSelector.getRecommendedQuality();
     const config = QUALITY_PROFILES[qualityProfile as keyof typeof QUALITY_PROFILES];
     
-    for (let i = 1; i <= totalPages; i++) {
+    const startPage = options.startPage || 1;
+    
+    for (let i = startPage; i <= totalPages; i++) {
       if (signal?.aborted) break;
 
       const startTime = Date.now();
