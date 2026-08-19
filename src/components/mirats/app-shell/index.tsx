@@ -177,7 +177,7 @@ export function UserMenu() {
                   - Pin core, CLI và theme cùng một exact version.{"\n\n"}
                   MODE B — SWIZZLE/VENDOR SOURCE:{"\n"}
                   - Chỉ dùng khi official dist không đáp ứng integration nhưng source có thể compile.{"\n"}
-                  - Lấy source bằng CLI `astryx swizzle <Component>` hoặc từ commit đã pin.{"\n"}
+                  - Lấy source bằng CLI `astryx swizzle {"<"}Component{">"}` hoặc từ commit đã pin.{"\n"}
                   - Đặt source bất biến tại src/vendor/astryx-v0.4.5/.{"\n"}
                   - Cấu hình StyleX compiler đúng bundler; không để stylex.create/defineVars chạy thô ở runtime.{"\n"}
                   - Đặt router, Supabase và business integration tại src/components/astryx-adapters/; không nhét logic MIRATS vào vendor source.{"\n\n"}
