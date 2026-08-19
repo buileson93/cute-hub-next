@@ -160,7 +160,7 @@ export function UserMenu() {
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
                 Astryx Token-Backed Density
               </div>
-              <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
+              <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
                   Loại bỏ hệ UI_DENSITY tự chế đang làm giao diện phình và thay bằng Astryx token-backed density.{"\n\n"}
                   NGUỒN SỰ THẬT:{"\n"}
