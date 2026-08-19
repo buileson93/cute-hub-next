@@ -49,34 +49,34 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
       <div key={node.key} className="space-y-1">
         <div 
           className={cn(
-            "astryx-control group flex h-9 items-center gap-2 rounded-md px-2 transition-colors hover:bg-muted/50 w-full"
+            "astryx-control group flex h-10 items-center gap-3 rounded-lg px-2 transition-all duration-200 hover:bg-primary/5 w-full cursor-default"
           )}
-          style={{ paddingLeft: `${8 + level * 16}px` }}
+          style={{ paddingLeft: `${12 + level * 20}px` }}
         >
-          <div className="flex w-6 items-center justify-center shrink-0">
+          <div className="flex w-5 items-center justify-center shrink-0">
             {hasSub ? (
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
                   toggle(node.key);
                 }} 
-                className="rounded p-0.5 hover:bg-muted"
+                className="rounded-md p-1 hover:bg-primary/10 transition-colors text-muted-foreground group-hover:text-primary"
               >
-                {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
             ) : null}
           </div>
-          <div className="flex w-6 items-center justify-center shrink-0">
-            <Icon className={cn("h-4 w-4", 
+          <div className="flex w-5 items-center justify-center shrink-0">
+            <Icon className={cn("h-4.5 w-4.5 transition-colors", 
               node.kind === 'ht' ? 'text-primary' : 
-              node.kind === 'tp' ? 'text-emerald-500' : 'text-muted-foreground'
+              node.kind === 'tp' ? 'text-emerald-500' : 'text-muted-foreground/60 group-hover:text-muted-foreground'
             )} />
           </div>
-          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            <span className={cn("truncate text-sm", node.kind === 'ht' ? "font-bold" : "font-medium")}>
+          <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
+            <span className={cn("truncate text-sm tracking-tight", node.kind === 'ht' ? "font-semibold text-primary" : "font-medium text-foreground/80 group-hover:text-foreground")}>
               {node.label}
             </span>
-            <span className="astryx-badge astryx-badge-primary astryx-number min-w-[1.75rem] h-5 px-1 justify-center shrink-0">
+            <span className="text-[10px] font-bold text-muted-foreground/40 group-hover:text-primary/60 px-1.5 py-0.5 rounded-full border border-muted-foreground/10 min-w-[1.5rem] text-center shrink-0">
               {node.count}
             </span>
           </div>
@@ -102,39 +102,38 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
         
         {isExpanded && (
           <div className="relative">
-            <div className="absolute left-[19px] top-0 bottom-2 w-px bg-border/40" style={{ left: `${19 + level * 16}px` }} />
             {node.sub.map(s => renderNode(s, level + 1))}
             {node.devices.map(d => (
               <div 
                 key={d.id} 
-                className="group/item flex h-8 items-center gap-2 hover:bg-muted/30 rounded px-2 transition-colors w-full"
-                style={{ paddingLeft: `${8 + (level + 1) * 16}px` }}
+                className="group/item flex h-9 items-center gap-3 hover:bg-primary/5 rounded-lg px-2 transition-all duration-200 w-full cursor-default"
+                style={{ paddingLeft: `${12 + (level + 1) * 20}px` }}
               >
-                <div className="flex w-6 items-center justify-center shrink-0">
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                <div className="flex w-5 items-center justify-center shrink-0">
+                  <div className="w-1 h-1 rounded-full bg-muted-foreground/20 group-hover/item:bg-primary/40 transition-colors" />
                 </div>
-                <div className="flex w-6 items-center justify-center shrink-0">
-                  <Cpu className="h-3.5 w-3.5 text-muted-foreground/50" />
+                <div className="flex w-5 items-center justify-center shrink-0">
+                  <Cpu className="h-4 w-4 text-muted-foreground/40 group-hover/item:text-primary/60 transition-colors" />
                 </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link 
                       to="/thiet-bi/$maThietBi" 
                       params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
-                      className="text-xs hover:underline truncate flex-1 font-medium"
+                      className="text-xs hover:text-primary transition-colors truncate flex-1 font-medium text-foreground/70"
                     >
                       {d.ten}
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    <div className="text-xs font-mono">Mã: {d.ma_thiet_bi}</div>
+                    <div className="text-[10px] font-mono opacity-80">Mã: {d.ma_thiet_bi}</div>
                   </TooltipContent>
                 </Tooltip>
-                <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2 shrink-0">
+                <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-1 shrink-0 px-1">
                    <AppTooltip noiDung="Xem sổ lý lịch tài sản">
-                     <Button asChild variant="ghost" size="sm" className="h-6 w-6 p-0">
+                     <Button asChild variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-md hover:bg-primary/10">
                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
-                         <History className="h-3.5 w-3.5 text-primary hover:scale-110 transition-transform" />
+                         <History className="h-3.5 w-3.5 text-primary/60 group-hover/item:text-primary transition-colors" />
                          <span className="sr-only">Xem sổ lý lịch</span>
                        </Link>
                      </Button>
