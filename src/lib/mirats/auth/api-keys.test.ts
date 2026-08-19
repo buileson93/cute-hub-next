@@ -1,9 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { verifyApiKey } from './api-keys.functions';
 
-// Mocking crypto since it's used in api-keys.functions
-// In vitest environment, crypto is usually available or can be mocked.
-
 describe('API Key Verification Logic', () => {
   it('should reject invalid token formats', async () => {
     const result = await verifyApiKey('invalid_token');
@@ -19,4 +16,7 @@ describe('API Key Verification Logic', () => {
     const result = await verifyApiKey('mrt_ext_live_keyid_secret_extra');
     expect(result.isValid).toBe(false);
   });
+
+  // Note: Database-dependent tests (hashing, lookup) require a running Supabase instance 
+  // or more complex mocking of supabaseAdmin.
 });
