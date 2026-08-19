@@ -273,13 +273,7 @@ function DuAnDetailPage() {
             <TabsContent value="delivery" className="mt-3 space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div className="lg:col-span-3">
-                  <HillChart 
-                    markers={[
-                      { id: "1", name: "Backend API", position: 35, status: "climbing" },
-                      { id: "2", name: "UI Components", position: 65, status: "executing" },
-                      { id: "3", name: "Dossier Integration", position: 10, status: "climbing" }
-                    ]} 
-                  />
+                  <HillChart project_id={id} />
                 </div>
                 <div className="space-y-4">
                   <Card className="border-slate-200 shadow-none bg-slate-50/50">
@@ -310,7 +304,7 @@ function DuAnDetailPage() {
             </TabsContent>
 
             <TabsContent value="hoso" className="mt-3">
-              <DossierRegister dossier_id="default" />
+              <DossierRegister project_id={id} />
             </TabsContent>
 
             <TabsContent value="list" className="mt-3">
