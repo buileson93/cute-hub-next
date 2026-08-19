@@ -182,7 +182,7 @@ function TaiLieuLibraryPage() {
                     setViewerOpen(true);
                   }}
                 >
-                  Trang {res.page}: {res.snippet}
+                  Trang {res.page}: <SnippetHighlight text={res.snippet} />
                 </div>
               ))}
             </div>
