@@ -8,11 +8,13 @@ import { QUALITY_PROFILES } from "./provider";
 
 export interface PipelineOptions {
   onProgress?: (processed: number, total: number, currentPageResult: OcrPageResult) => void;
+  onPageCompleted?: (page: number, result: OcrPageResult) => void;
   signal?: AbortSignal;
   language?: string;
-  qualityOverride?: any;
-  startPage?: number; // Added for resume support
+  qualityProfile?: string;
+  startPage?: number; 
 }
+
 
 /**
  * The main OCR Pipeline for Vietnamese PDF documents.
@@ -20,17 +22,18 @@ export interface PipelineOptions {
 export class OcrPipeline {
   private extractor = new PdfExtractor();
 
-  async process(file: Blob, options: PipelineOptions = {}): Promise<OcrPageResult[]> {
+  async process(sourceType: string, sourceId: string, file: Blob, options: PipelineOptions = {}): Promise<OcrPageResult[]> {
     const { onProgress, signal, language = "vie+eng" } = options;
     
     const totalPages = await this.extractor.load(file);
     const results: OcrPageResult[] = [];
     
     // Choose quality profile based on device
-    const qualityProfile = options.qualityOverride || await adaptiveOcrSelector.getRecommendedQuality();
-    const config = QUALITY_PROFILES[qualityProfile as keyof typeof QUALITY_PROFILES];
+    const qualityProfile = options.qualityProfile || await adaptiveOcrSelector.getRecommendedQuality();
+    const config = QUALITY_PROFILES[qualityProfile as keyof typeof QUALITY_PROFILES] || QUALITY_PROFILES.balanced;
     
     const startPage = options.startPage || 1;
+
     
     for (let i = startPage; i <= totalPages; i++) {
       if (signal?.aborted) break;
@@ -93,9 +96,14 @@ export class OcrPipeline {
       
       results.push(finalResult);
       
+      if (options.onPageCompleted) {
+        options.onPageCompleted(i, finalResult);
+      }
+      
       if (onProgress) {
         onProgress(i, totalPages, finalResult);
       }
+
     }
     
     await this.extractor.close();
