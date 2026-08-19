@@ -1,12 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
-import { supabaseAdmin } from '@/integrations/backend/admin.server';
 
 const extCongVanSchema = z.object({
   project_id: z.string().uuid(),
   so_cong_van: z.string().min(1),
   trich_yeu: z.string().optional(),
-  loai: z.string().default('van_ban_den'),
+  loai: z.enum(["den", "di", "to_trinh", "quyet_dinh", "bao_cao", "khac"]).default('den'),
   ngay_ban_hanh: z.string().optional(),
   co_quan_ban_hanh: z.string().optional(),
   file_url: z.string().url().optional(),
@@ -18,6 +17,8 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
     handlers: {
       POST: async ({ request }) => {
         try {
+          const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
+          
           const apiKey = request.headers.get('x-mirats-api-key');
           if (!apiKey || apiKey !== process.env.MIRATS_EXT_API_KEY) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
@@ -38,7 +39,7 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
               loai: data.loai,
               ngay_ban_hanh: data.ngay_ban_hanh,
               co_quan_ban_hanh: data.co_quan_ban_hanh,
-              metadata: data.metadata || {},
+              metadata: (data.metadata || {}) as any,
               trang_thai: 'moi'
             })
             .select()
