@@ -32,6 +32,26 @@ import { UiDensityMode } from "@/lib/mirats/ui/ui-density";
 const vatmLogoFullSrc = vatmLogoFull.url;
 const vatmMarkSrc = vatmMark.url;
 
+export const TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="rail"]',
+    content: "Thanh điều hướng chính chứa các không gian làm việc (Workspace).",
+    title: "Không gian làm việc",
+  },
+  {
+    selector: '[data-tour="sidebar"]',
+    content: "Menu chi tiết của từng không gian, giúp bạn truy cập nhanh các tính năng.",
+    title: "Menu tính năng",
+  },
+  {
+    selector: '[data-tour="user"]',
+    content: "Quản lý tài khoản, cấu hình mật độ giao diện và đăng xuất.",
+    title: "Tài khoản & Cài đặt",
+  },
+];
+
+
+
 export function BrandMark({ className }: { className?: string }) {
   const { data } = useBranding();
   const src = data?.logoCompact || vatmMarkSrc;
@@ -138,137 +158,39 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Visual Contract & Source Fidelity
+                Astryx Token-Backed Density
               </div>
-              <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
+              <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Xây lớp giao diện MIRATS giống demo Astryx theo source chính thức, nhưng không import React component từ @astryxdesign/core/* vào route production.{"\n\n"}
-                  MỤC TIÊU CHÍNH XÁC:{"\n"}
-                  - Không mô phỏng bằng mắt.{"\n"}
-                  - Không viết lại từ screenshot.{"\n"}
-                  - Không tự chọn màu, radius, shadow, spacing hoặc animation “gần giống”.{"\n"}
-                  - Nguồn duy nhất là repo, compiled CSS, Storybook và demo Astryx tại commit/version đã pin.{"\n"}
-                  - Giữ behavior shadcn/Radix đang hoạt động; thay visual contract và state mapping theo Astryx.{"\n\n"}
-                  RANH GIỚI:{"\n"}
-                  - Production được dùng static reset/theme/token/component CSS đã vendor hoặc build từ upstream đã pin.{"\n"}
-                  - Production không import Button, Dialog, AppShell, Table hoặc component React khác từ @astryxdesign/core/*.{"\n"}
-                  - Official component chỉ render trong dev-only reference harness để tạo ảnh, DOM/state inventory và computed-style baseline.{"\n"}
-                  - Không bundle reference harness vào production.{"\n\n"}
-                  BƯỚC 1 — THU THẬP NGUYÊN GỐC:{"\n"}
-                  1. Checkout commit 683015aa9b3f4ba258dc7e4c8f2cc274afce46a5.{"\n"}
-                  2. Đọc source, StyleX style, docs, test và Storybook của từng component.{"\n"}
-                  3. Build upstream CSS bằng toolchain chính thức hoặc lấy compiled CSS đúng package version.{"\n"}
-                  4. Lưu source URL, commit, version, license và SHA-256 của file tham chiếu.{"\n"}
-                  5. Không dùng nhánh main thay đổi theo thời gian.{"\n\n"}
-                  BƯỚC 2 — TẠO STATIC CSS VENDOR:{"\n"}
-                  - vendor/astryx-v0.4.5/reset.css{"\n"}
-                  - vendor/astryx-v0.4.5/astryx.css hoặc CSS subset đã build chính thức{"\n"}
-                  - vendor/astryx-v0.4.5/theme-stone.css{"\n"}
-                  - vendor/astryx-v0.4.5/tailwind-theme.css nếu MIRATS dùng bridge này{"\n"}
-                  - vendor/astryx-v0.4.5/LICENSE{"\n"}
-                  - vendor/astryx-v0.4.5/NOTICE.md{"\n"}
-                  - vendor/astryx-v0.4.5/manifest.json{"\n\n"}
-                  Không chỉnh trực tiếp file vendor. Override MIRATS phải nằm trong layer/app stylesheet riêng và có lý do được ghi lại.{"\n\n"}
-                  BƯỚC 3 — CSS LAYER:{"\n"}
-                  Dùng canonical order của version đã pin:{"\n"}
-                  @layer reset, theme, base, astryx-base, astryx-theme, components, utilities;{"\n\n"}
-                  - Reset vào reset.{"\n"}
-                  - Tailwind preflight vào base.{"\n"}
-                  - Astryx component CSS vào astryx-base.{"\n"}
-                  - Theme vào astryx-theme.{"\n"}
-                  - MIRATS component mapping vào components.{"\n"}
-                  - App layout utilities vào utilities.{"\n"}
-                  - Không để stylesheet unlayered thắng toàn hệ thống.{"\n"}
-                  - Không dùng !important.{"\n\n"}
-                  BƯỚC 4 — TÁI TẠO ANATOMY VÀ STATE:{"\n"}
-                  Với mỗi local component, lập bảng đối chiếu upstream {"->"} MIRATS:{"\n"}
-                  - root element{"\n"}
-                  - child/slot order{"\n"}
-                  - stable `.astryx-*` class{"\n"}
-                  - data-variant{"\n"}
-                  - data-size{"\n"}
-                  - data-state{"\n"}
-                  - disabled/aria-disabled{"\n"}
-                  - loading{"\n"}
-                  - selected/checked{"\n"}
-                  - invalid{"\n"}
-                  - open/closed{"\n"}
-                  - icon slots{"\n"}
-                  - label/supporting/status slots{"\n\n"}
-                  Local component phải phát đúng stable class và data attributes mà static Astryx CSS cần. Không sao chép atomic/hash class do StyleX sinh nếu class đó không phải public stable surface.{"\n\n"}
-                  BƯỚC 5 — VISUAL VÀ MOTION:{"\n"}
-                  Sao chép nguyên contract từ source đã pin:{"\n"}
-                  - semantic color tokens{"\n"}
-                  - typography và Figtree font loading{"\n"}
-                  - icon family, stroke và exact size{"\n"}
-                  - spacing{"\n"}
-                  - control height{"\n"}
-                  - border/radius{"\n"}
-                  - shadow/elevation{"\n"}
-                  - hover/pressed/selected/focus-visible{"\n"}
-                  - disabled/loading{"\n"}
-                  - overlay/scrim{"\n"}
-                  - enter/exit transitions{"\n"}
-                  - duration/easing{"\n"}
-                  - responsive media query{"\n"}
-                  - RTL{"\n"}
-                  - prefers-reduced-motion{"\n\n"}
-                  Mọi hover effect phải có @media (hover: hover) nếu upstream có guard này. Không tự thêm scale/bounce/glow nếu demo không có.{"\n\n"}
-                  BƯỚC 6 — BEHAVIOR LAYER:{"\n"}
-                  CSS không thay thế JavaScript. Giữ Radix/shadcn hoặc local hooks cho:{"\n"}
-                  - focus trap và focus return{"\n"}
-                  - Escape/outside click{"\n"}
-                  - roving tabindex{"\n"}
-                  - arrow-key navigation{"\n"}
-                  - portal và stacking{"\n"}
-                  - controlled/uncontrolled state{"\n"}
-                  - scroll lock{"\n"}
-                  - selection{"\n"}
-                  - IME handling{"\n"}
-                  - touch/drag/gesture{"\n"}
-                  - live-region announcement{"\n\n"}
-                  Map state behavior sang đúng data-state/data-variant để CSS Astryx hiển thị chính xác. Test contract với upstream; không chỉ test click chuột.{"\n\n"}
-                  BƯỚC 7 — COMPONENT ƯU TIÊN:{"\n"}
-                  1. Button/IconButton/ToggleButton.{"\n"}
-                  2. TextInput/TextArea/Switch/CheckboxInput.{"\n"}
-                  3. Tooltip/Popover/DropdownMenu/MoreMenu.{"\n"}
-                  4. Dialog/AlertDialog/BottomSheet/Toast.{"\n"}
-                  5. TabList/SideNav/MobileNav/TopNav.{"\n"}
-                  6. List/Item/Table/MetadataList.{"\n"}
-                  7. AppShell/Layout/LayoutPanel/EmptyState.{"\n\n"}
-                  Mỗi component chỉ hoàn tất khi tất cả variant, size và state trong Storybook tương ứng đều được tái tạo.{"\n\n"}
-                  BƯỚC 8 — REFERENCE HARNESS:{"\n"}
-                  Tạo hai cột dev-only cùng viewport:{"\n"}
-                  - trái: official Astryx component tại version đã pin;{"\n"}
-                  - phải: MIRATS local component + Source-Fidelity CSS Bridge.{"\n\n"}
-                  Chụp và so sánh:{"\n"}
-                  - light/dark{"\n"}
-                  - 1440, 1024, 768, 390, 360{"\n"}
-                  - default/hover/pressed/focus-visible{"\n"}
-                  - disabled/loading/selected/invalid/open{"\n"}
-                  - long Vietnamese text{"\n"}
-                  - LTR/RTL{"\n"}
-                  - reduced motion{"\n\n"}
-                  So sánh computed style cho font, color, background, border, radius, padding, gap, height, shadow, transform, transition và opacity.{"\n\n"}
-                  BƯỚC 9 — MOBILE VÀ THIẾT BỊ THẬT:{"\n"}
-                  - Chrome Android.{"\n"}
-                  - Safari iOS.{"\n"}
-                  - Desktop Chromium/WebKit/Firefox.{"\n"}
-                  - Touch không bị phụ thuộc hover.{"\n"}
-                  - Bottom sheet/dialog không bị keyboard che.{"\n"}
-                  - Safe-area đúng.{"\n"}
-                  - Không scroll lock kẹt sau khi đóng overlay.{"\n"}
-                  - Focus không bị mất sau navigation/dialog.{"\n\n"}
-                  DEFINITION OF DONE:{"\n"}
-                  - Không có import runtime từ @astryxdesign/core/* trong route production.{"\n"}
-                  - Static CSS/tokens có version, commit và hash.{"\n"}
-                  - Không còn style “ước lượng”.{"\n"}
-                  - Tất cả stable classes/data attributes được map có tài liệu.{"\n"}
-                  - Visual diff đạt trong môi trường cố định.{"\n"}
-                  - Interaction, keyboard, focus, portal và gesture test đạt.{"\n"}
-                  - Light/dark/mobile giống reference demo.{"\n"}
-                  - Không làm thay đổi callback, mutation, permission hoặc business logic MIRATS.{"\n"}
-                  - Nếu DOM behavior khác upstream dù nhìn giống, báo cáo rõ “exact visual parity + contract-compatible local behavior”, không ghi sai là cùng implementation.
+                  Loại bỏ hệ UI_DENSITY tự chế đang làm giao diện phình và thay bằng Astryx token-backed density.{"\n\n"}
+                  NGUỒN SỰ THẬT:{"\n"}
+                  - spacing tokens 4px base.{"\n"}
+                  - size element sm/md/lg.{"\n"}
+                  - radius inner/element/container.{"\n"}
+                  - semantic typography Body/Label/Supporting/H1–H6.{"\n"}
+                  - shadow low/med/high.{"\n\n"}
+                  MỤC TIÊU MẶC ĐỊNH CHO WORK TOOL:{"\n"}
+                  - Density compact hoặc balanced, không spacious.{"\n"}
+                  - Control desktop 28–32px theo Astryx token.{"\n"}
+                  - Row desktop 32–40px.{"\n"}
+                  - Page horizontal padding desktop 16–20px; mobile 12–16px.{"\n"}
+                  - Section gap 12–16px.{"\n"}
+                  - Không dùng p-8 cho card/form mặc định.{"\n"}
+                  - Radius dùng element/container; không tự tăng rounded-2xl {"->"} rounded-4xl theo density.{"\n"}
+                  - Shadow chỉ khi cần elevation; divider/border cho vùng dữ liệu.{"\n\n"}
+                  MOBILE:{"\n"}
+                  - Visual control có thể compact nhưng hit area phải đủ chạm; dùng pseudo/slot/hit target của component, không ép mọi nút cao quá mức.{"\n"}
+                  - Body text không nhỏ đến mức khó đọc.{"\n"}
+                  - Supporting text không dùng hàng loạt 9–10px.{"\n"}
+                  - Số liệu dùng tabular/mono có chủ đích.{"\n\n"}
+                  DENSITY SETTING:{"\n"}
+                  - Auto theo viewport + user override Compact/Comfortable.{"\n"}
+                  - Không cung cấp Spacious cho tracker nếu làm mất dữ liệu hữu ích.{"\n"}
+                  - Density áp ở shell root, không gắn `data-density` riêng rải rác gây nested override.{"\n"}
+                  - Lưu preference nhưng mobile có thể giới hạn cấu hình không phù hợp.{"\n\n"}
+                  TẠO TOKEN BRIDGE:{"\n"}
+                  - Không dùng arbitrary `text-[11px]`, `w-[...]`, `rounded-[...]` nếu đã có token/component prop.{"\n"}
+                  - Lập allowlist cho arbitrary size thực sự cần như chart/graph canvas.
                 </div>
               </ScrollArea>
             </div>
@@ -346,58 +268,24 @@ export function UserMenu() {
 export function TourButton() {
   const { start } = useProductTour();
   const reduce = useReducedMotion();
+
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <motion.button
-          type="button"
-          data-tour="help"
-          onClick={() => start({ force: true })}
-          whileHover={reduce ? undefined : { scale: 1.06 }}
-          whileTap={reduce ? undefined : { scale: 0.92 }}
-          transition={{ type: "spring", stiffness: 500, damping: 25 }}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
-          aria-label="Hướng dẫn sử dụng"
-        >
-          <LifeBuoy className="h-[18px] w-[18px]" strokeWidth={1.8} />
-        </motion.button>
-      </TooltipTrigger>
-      <TooltipContent side="bottom">Hướng dẫn sử dụng</TooltipContent>
-    </Tooltip>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => start()}
+            className="rounded-full h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
+          >
+            <LifeBuoy className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-[11px] font-medium bg-popover/90 backdrop-blur-sm border-border/40">
+          Hướng dẫn hệ thống (Tour)
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
-
-export const TOUR_STEPS: TourStep[] = [
-  {
-    selector: '[data-tour="rail"]',
-    title: "Thanh không gian làm việc",
-    content: "Rê chuột để bung phân hệ, bấm để mở nhanh.",
-    placement: "right",
-    optional: true,
-  },
-  {
-    selector: '[data-tour="search"]',
-    title: "Tìm kiếm nhanh",
-    content: "Gõ để tìm khắp hệ thống. Mẹo: Ctrl/⌘ + K.",
-    placement: "bottom",
-    optional: true,
-  },
-  {
-    selector: '[data-tour="ai"]',
-    title: "Trợ lý MIRATS AI",
-    content: "Hỏi AI về dữ liệu và nhờ hỗ trợ nhập liệu.",
-    placement: "left",
-  },
-  {
-    selector: '[data-tour="notify"]',
-    title: "Thông báo thời gian thực",
-    content: "Nhận cảnh báo công việc, sự cố, tin nhắn liên quan.",
-    placement: "bottom",
-  },
-  {
-    selector: '[data-tour="help"]',
-    title: "Mở lại hướng dẫn",
-    content: "Bấm đây để xem lại tour bất cứ lúc nào.",
-    placement: "bottom",
-  },
-];
