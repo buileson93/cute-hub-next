@@ -39,6 +39,25 @@ export const Route = createFileRoute("/_app/tai-lieu")({
   }),
 });
 
+function SnippetHighlight({ text }: { text: string }) {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return (
+    <span>
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return (
+            <span key={i} className="bg-yellow-200 text-yellow-900 font-medium px-0.5 rounded">
+              {part.slice(2, -2)}
+            </span>
+          );
+        }
+        return part;
+      })}
+    </span>
+  );
+}
+
 function TaiLieuLibraryPage() {
   const { q: initialQ, doc: initialDoc, filter: initialFilter } = Route.useSearch();
   const [searchTerm, setSearchTerm] = useState(initialQ);
