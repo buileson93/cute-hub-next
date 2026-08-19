@@ -38,7 +38,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
 
     return (
       <div className="fixed inset-x-4 bottom-20 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-        <div className="bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-2xl flex items-center justify-between gap-3 border border-primary-foreground/10">
+        <div className="!bg-[#0074e2] text-primary-foreground px-4 py-3 rounded-full shadow-2xl flex items-center justify-between gap-3 border border-white/10">
           <div className="flex items-center gap-2">
             <Button 
               variant="ghost" 
@@ -107,7 +107,10 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
             key={idx}
             variant={action.variant || "outline"}
             size="sm"
-            className="h-8 text-xs"
+            className={cn(
+              "h-8 text-xs",
+              (action.variant === "outline" || !action.variant) && "!bg-white !text-[#0074e2] border-primary/20 hover:bg-primary/5"
+            )}
             onClick={action.onClick}
           >
             {action.icon && <span className="mr-1.5">{action.icon}</span>}
