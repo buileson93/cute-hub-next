@@ -158,34 +158,39 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Unified Anatomy & Responsive Frame
+                Container Policy & Archetypes
               </div>
               <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Chuẩn hóa anatomy của mọi trang để giảm chiều cao và nested padding.{"\n\n"}
-                  PAGE FRAME:{"\n"}
-                  - Breadcrumb/supporting chỉ hiện khi có giá trị điều hướng thực sự.{"\n"}
-                  - Một hàng title + metadata quan trọng + primary action.{"\n"}
-                  - Secondary action đưa vào MoreMenu.{"\n"}
-                  - Filter/search là toolbar riêng nhưng không lặp card/surface.{"\n"}
-                  - Page content có container policy theo archetype.{"\n\n"}
-                  PAGEHEADER:{"\n"}
-                  - Dùng Heading/Breadcrumbs/metadata component Astryx.{"\n"}
-                  - Không sticky toàn bộ header nếu làm mất nhiều viewport mobile.{"\n"}
-                  - Trên mobile chỉ sticky top nav hoặc toolbar cần thiết.{"\n"}
-                  - Subtitle/help dài chuyển sang tooltip/inspector, không kéo header cao.{"\n"}
-                  - Action phải có thứ tự: primary, secondary, overflow.{"\n\n"}
-                  PAGEBODY:{"\n"}
-                  - Chỉ một padding boundary.{"\n"}
-                  - Loại bỏ pattern PageBody padding {"->"} wrapper space {"->"} Card padding {"->"} table padding.{"\n"}
-                  - `overflow: auto` chỉ ở region được thiết kế scroll.{"\n"}
-                  - `min-width: 0` cho flex/grid content.{"\n\n"}
-                  TOOLBAR RESPONSIVE:{"\n"}
-                  - Desktop: search + filter + actions cùng vùng có OverflowList/MoreMenu.{"\n"}
-                  - Tablet: filter có thể vào popover.{"\n"}
-                  - Mobile: search full-width hoặc mở qua action; filter mở sheet; primary action sticky bottom/floating theo workflow; secondary action vào MoreMenu.{"\n"}
-                  - Không để TabsList dài buộc horizontal scroll nếu có thể dùng primary tabs + overflow.{"\n\n"}
-                  Viết PageFrame/TrackerFrame/FormFrame/DetailFrame typed components thay vì mỗi route tự ghép class.
+                  Rà từng route và áp container policy Astryx theo archetype.{"\n\n"}
+                  TRACKER/WORK TOOL:{"\n"}
+                  - Tài sản, hệ thống, công việc, sự cố, dự án, giấy phép, tài liệu.{"\n"}
+                  - Dùng Table hoặc List/ListItem edge-to-edge có divider.{"\n"}
+                  - Chọn row mở LayoutPanel inspector.{"\n"}
+                  - Không bọc từng record bằng Card.{"\n\n"}
+                  DASHBOARD:{"\n"}
+                  - Card chỉ cho KPI/widget/chart độc lập.{"\n"}
+                  - Không Card lồng Card.{"\n"}
+                  - Dùng grid responsive và allow user customize layout nhưng không phá minimum size.{"\n\n"}
+                  FORMS/SETTINGS:{"\n"}
+                  - FormLayout/Section.{"\n"}
+                  - Card chỉ cho nhóm billing/dangerous hoặc boundary có ý nghĩa.{"\n"}
+                  - Label/description/error đúng anatomy.{"\n\n"}
+                  MEDIA/DOCUMENT:{"\n"}
+                  - Grid card chỉ cho thumbnail/gallery.{"\n"}
+                  - Chế độ list dùng rows với metadata và action overflow.{"\n\n"}
+                  KANBAN:{"\n"}
+                  - Column là region, task là compact interactive item; giảm padding/radius/shadow.{"\n"}
+                  - Metadata một dòng, status qua column/StatusDot thay vì nhiều badge.{"\n"}
+                  - Mobile không ép 5 cột ngang cùng lúc; hiển thị một status tại một thời điểm hoặc selector/tab + swipe có kiểm soát.{"\n\n"}
+                  TIMELINE:{"\n"}
+                  - Vertical List rows + divider + marker.{"\n"}
+                  - Attachment nested rows.{"\n"}
+                  - Không Card cho từng event.{"\n\n"}
+                  TABLE:{"\n"}
+                  - Column priority/responsive visibility.{"\n"}
+                  - Mobile chuyển row thành compact list item hoặc horizontal table có frozen key column nếu dữ liệu thật sự columnar.{"\n"}
+                  - Không thu nhỏ chữ để nhét tất cả cột.
                 </div>
               </ScrollArea>
             </div>
