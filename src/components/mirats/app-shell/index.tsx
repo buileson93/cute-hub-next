@@ -158,39 +158,34 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Astryx Token-Backed Density
+                Unified Anatomy & Responsive Frame
               </div>
               <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Loại bỏ hệ UI_DENSITY tự chế đang làm giao diện phình và thay bằng Astryx token-backed density.{"\n\n"}
-                  NGUỒN SỰ THẬT:{"\n"}
-                  - spacing tokens 4px base.{"\n"}
-                  - size element sm/md/lg.{"\n"}
-                  - radius inner/element/container.{"\n"}
-                  - semantic typography Body/Label/Supporting/H1–H6.{"\n"}
-                  - shadow low/med/high.{"\n\n"}
-                  MỤC TIÊU MẶC ĐỊNH CHO WORK TOOL:{"\n"}
-                  - Density compact hoặc balanced, không spacious.{"\n"}
-                  - Control desktop 28–32px theo Astryx token.{"\n"}
-                  - Row desktop 32–40px.{"\n"}
-                  - Page horizontal padding desktop 16–20px; mobile 12–16px.{"\n"}
-                  - Section gap 12–16px.{"\n"}
-                  - Không dùng p-8 cho card/form mặc định.{"\n"}
-                  - Radius dùng element/container; không tự tăng rounded-2xl {"->"} rounded-4xl theo density.{"\n"}
-                  - Shadow chỉ khi cần elevation; divider/border cho vùng dữ liệu.{"\n\n"}
-                  MOBILE:{"\n"}
-                  - Visual control có thể compact nhưng hit area phải đủ chạm; dùng pseudo/slot/hit target của component, không ép mọi nút cao quá mức.{"\n"}
-                  - Body text không nhỏ đến mức khó đọc.{"\n"}
-                  - Supporting text không dùng hàng loạt 9–10px.{"\n"}
-                  - Số liệu dùng tabular/mono có chủ đích.{"\n\n"}
-                  DENSITY SETTING:{"\n"}
-                  - Auto theo viewport + user override Compact/Comfortable.{"\n"}
-                  - Không cung cấp Spacious cho tracker nếu làm mất dữ liệu hữu ích.{"\n"}
-                  - Density áp ở shell root, không gắn `data-density` riêng rải rác gây nested override.{"\n"}
-                  - Lưu preference nhưng mobile có thể giới hạn cấu hình không phù hợp.{"\n\n"}
-                  TẠO TOKEN BRIDGE:{"\n"}
-                  - Không dùng arbitrary `text-[11px]`, `w-[...]`, `rounded-[...]` nếu đã có token/component prop.{"\n"}
-                  - Lập allowlist cho arbitrary size thực sự cần như chart/graph canvas.
+                  Chuẩn hóa anatomy của mọi trang để giảm chiều cao và nested padding.{"\n\n"}
+                  PAGE FRAME:{"\n"}
+                  - Breadcrumb/supporting chỉ hiện khi có giá trị điều hướng thực sự.{"\n"}
+                  - Một hàng title + metadata quan trọng + primary action.{"\n"}
+                  - Secondary action đưa vào MoreMenu.{"\n"}
+                  - Filter/search là toolbar riêng nhưng không lặp card/surface.{"\n"}
+                  - Page content có container policy theo archetype.{"\n\n"}
+                  PAGEHEADER:{"\n"}
+                  - Dùng Heading/Breadcrumbs/metadata component Astryx.{"\n"}
+                  - Không sticky toàn bộ header nếu làm mất nhiều viewport mobile.{"\n"}
+                  - Trên mobile chỉ sticky top nav hoặc toolbar cần thiết.{"\n"}
+                  - Subtitle/help dài chuyển sang tooltip/inspector, không kéo header cao.{"\n"}
+                  - Action phải có thứ tự: primary, secondary, overflow.{"\n\n"}
+                  PAGEBODY:{"\n"}
+                  - Chỉ một padding boundary.{"\n"}
+                  - Loại bỏ pattern PageBody padding {"->"} wrapper space {"->"} Card padding {"->"} table padding.{"\n"}
+                  - `overflow: auto` chỉ ở region được thiết kế scroll.{"\n"}
+                  - `min-width: 0` cho flex/grid content.{"\n\n"}
+                  TOOLBAR RESPONSIVE:{"\n"}
+                  - Desktop: search + filter + actions cùng vùng có OverflowList/MoreMenu.{"\n"}
+                  - Tablet: filter có thể vào popover.{"\n"}
+                  - Mobile: search full-width hoặc mở qua action; filter mở sheet; primary action sticky bottom/floating theo workflow; secondary action vào MoreMenu.{"\n"}
+                  - Không để TabsList dài buộc horizontal scroll nếu có thể dùng primary tabs + overflow.{"\n\n"}
+                  Viết PageFrame/TrackerFrame/FormFrame/DetailFrame typed components thay vì mỗi route tự ghép class.
                 </div>
               </ScrollArea>
             </div>
