@@ -123,12 +123,20 @@ export class MiniSearchAdapter {
       if (exactRegex.test(highlighted)) {
         highlighted = highlighted.replace(exactRegex, '**$1**');
       } else {
-        // Try to find the normalized version in the snippet (which might have accents)
-        // This is tricky. Let's use a simpler approach for the prototype: 
-        // Iterate through words and check their normalized version.
-        highlighted = highlighted.split(/\s+/).map(word => {
-          if (boDauTiengViet(word.toLowerCase()).includes(normalizedTerm)) {
-            if (word.startsWith('**') && word.endsWith('**')) return word;
+        // Try word-by-word comparison with normalized versions
+        highlighted = highlighted.split(' ').map(word => {
+          // Skip if already highlighted
+          if (word.includes('**')) return word;
+          
+          const normalizedWord = boDauTiengViet(word.toLowerCase());
+          if (normalizedWord.includes(normalizedTerm)) {
+            // Find where the term starts in the normalized word
+            const startIdx = normalizedWord.indexOf(normalizedTerm);
+            const termLen = normalizedTerm.length;
+            
+            // This is a simple wrap for the whole word if it contains the term
+            // Better would be wrapping just the substring, but mapping normalized 
+            // indices to original indices is complex for Vietnamese.
             return `**${word}**`;
           }
           return word;
