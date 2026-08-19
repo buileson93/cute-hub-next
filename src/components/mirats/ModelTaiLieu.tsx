@@ -170,6 +170,13 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
             <Badge variant="secondary" className="gap-1 text-[10px]">
               <Tag className="h-3 w-3" /> {row.loai_tai_lieu}
             </Badge>
+            {row.tai_lieu_ocr && (
+              <OcrStatusBadge 
+                status={row.tai_lieu_ocr.status as any} 
+                processedPages={row.tai_lieu_ocr.processed_pages}
+                totalPages={row.tai_lieu_ocr.page_count || undefined}
+              />
+            )}
           </div>
           <div className="mt-0.5 truncate font-medium" title={row.file_name}>{row.file_name}</div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
