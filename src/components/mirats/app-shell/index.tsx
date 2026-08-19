@@ -161,11 +161,11 @@ export function UserMenu() {
                   - Main content flex, min-width: 0.{"\n"}
                   - Inspector 340–420px, resizable.{"\n"}
                   - Chỉ một main scroll container cho route.{"\n\n"}
-                  TABLET <=1024px:{"\n"}
+                  TABLET {"<"}=1024px:{"\n"}
                   - Inspector overlay content thay vì ép hẹp main.{"\n"}
                   - SideNav collapse.{"\n"}
                   - Toolbar action ít quan trọng vào MoreMenu.{"\n\n"}
-                  MOBILE <=768px:{"\n"}
+                  MOBILE {"<"}=768px:{"\n"}
                   - SideNav thành MobileNav/Drawer có focus trap và đóng khi route đổi.{"\n"}
                   - TopNav gọn: menu, title, search/action chính.{"\n"}
                   - Không giữ rail desktop 56–80px cạnh nội dung.{"\n"}
