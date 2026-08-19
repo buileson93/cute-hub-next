@@ -142,48 +142,48 @@ export function UserMenu() {
               </div>
               <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Sửa nền tảng Astryx trước khi chỉnh bất kỳ màn hình nào.{"\n\n"}
+                  Migration persistent frame MIRATS sang Astryx chính thức, giữ nguyên router và nghiệp vụ.{"\n\n"}
                   MỤC TIÊU:{"\n"}
-                  Chỉ còn một nguồn theme rõ ràng, CSS layer đúng theo version Astryx đang cài và utility override hoạt động có chủ đích.{"\n\n"}
-                  YÊU CẦU:{"\n"}
-                  1. Đọc Migration Guide và dùng chính snippet Tailwind v4 phù hợp package hiện tại.{"\n"}
-                  2. Khai báo canonical @layer order một lần trước mọi import.{"\n"}
-                  3. Import Astryx reset/core/theme và Tailwind preflight/utilities đúng layer.{"\n"}
-                  4. Audit tất cả global/reset stylesheet; không để reset unlayered ghi đè component.{"\n"}
-                  5. Loại bỏ hoặc hạ layer custom reset/skin xung đột.{"\n"}
-                  6. `.astryx-control` không được đặt cứng background/border làm mất variant.{"\n"}
-                  7. App utility nằm ở utilities layer và thắng có chủ đích.{"\n"}
-                  8. Không dùng `!important` để vá cascade.{"\n\n"}
-                  CHỌN MỘT NGUỒN THEME:{"\n"}
-                  - Hoặc theme Stone chính thức + override qua defineTheme.{"\n"}
-                  - Hoặc df3Theme hoàn chỉnh dựa trên Astryx token API.{"\n"}
-                  - Không đồng thời dùng theme Stone, root token viết tay và component skin như ba theme độc lập.{"\n\n"}
-                  THEME:{"\n"}
-                  - Dùng defineTheme/accent family theo API thực tế.{"\n"}
-                  - Không chỉ override `--color-accent` rồi bỏ stale `--color-on-accent`.{"\n"}
-                  - Dùng token semantic cho body/surface/card/text/border/status.{"\n"}
-                  - Kiểm tra contrast light/dark.{"\n\n"}
-                  PROVIDER:{"\n"}
-                  - Kiểm tra cách SSR-safe được Astryx version hiện tại hỗ trợ.{"\n"}
-                  - Không bỏ Theme khỏi SSR chỉ để né browser API nếu có cách import/build đúng.{"\n"}
-                  - Loại bỏ comment/lazy logic không đúng thực tế.{"\n"}
-                  - Không tạo flash đổi theme sau hydration.{"\n\n"}
-                  TẠO FOUNDATION SMOKE TEST:{"\n"}
-                  - Official Astryx Button primary.{"\n"}
-                  - IconButton.{"\n"}
-                  - TextInput.{"\n"}
-                  - Card.{"\n"}
-                  - Table/List.{"\n"}
-                  - TabList.{"\n"}
-                  - Dialog.{"\n"}
-                  - Light/dark toggle.{"\n\n"}
-                  ASSERT:{"\n"}
-                  - Button có padding khác 0.{"\n"}
-                  - Primary fill đúng.{"\n"}
-                  - Input/card/list có spacing/border đúng.{"\n"}
-                  - Focus ring đúng.{"\n"}
-                  - Không có hydration mismatch.{"\n\n"}
-                  Chỉ khi foundation test đạt mới chuyển sang Prompt 2.
+                  Shell sở hữu navigation, surface, content boundary, responsive behavior và skip-to-content. Route chỉ sở hữu nội dung trang.{"\n\n"}
+                  DÙNG COMPONENT THEO DOCS THỰC TẾ:{"\n"}
+                  - Theme{"\n"}
+                  - AppShell{"\n"}
+                  - TopNav{"\n"}
+                  - SideNav{"\n"}
+                  - MobileNav hoặc AppShell mobile behavior{"\n"}
+                  - Layout{"\n"}
+                  - LayoutContent{"\n"}
+                  - LayoutPanel{"\n"}
+                  - ResizeHandle/useResizable nếu có{"\n\n"}
+                  DESKTOP CONTRACT:{"\n"}
+                  - AppShell toàn viewport.{"\n"}
+                  - SideNav mở 240–280px hoặc collapsed rail theo component API.{"\n"}
+                  - Main content flex, min-width: 0.{"\n"}
+                  - Inspector 340–420px, resizable.{"\n"}
+                  - Chỉ một main scroll container cho route.{"\n\n"}
+                  TABLET {"<"}=1024px:{"\n"}
+                  - Inspector overlay content thay vì ép hẹp main.{"\n"}
+                  - SideNav collapse.{"\n"}
+                  - Toolbar action ít quan trọng vào MoreMenu.{"\n\n"}
+                  MOBILE {"<"}=768px:{"\n"}
+                  - SideNav thành MobileNav/Drawer có focus trap và đóng khi route đổi.{"\n"}
+                  - TopNav gọn: menu, title, search/action chính.{"\n"}
+                  - Không giữ rail desktop 56–80px cạnh nội dung.{"\n"}
+                  - Main content full width.{"\n"}
+                  - Inspector thành full-screen sheet hoặc bottom sheet theo workflow.{"\n"}
+                  - Có skip-to-content và restore focus.{"\n\n"}
+                  KHÔNG ĐƯỢC:{"\n"}
+                  - Chỉ đổi class của AppShell cũ thành `astryx-*`.{"\n"}
+                  - Giữ hai shell cùng lúc.{"\n"}
+                  - Hard-code width bằng nhiều class riêng theo route.{"\n"}
+                  - Mỗi route tạo một scroll container riêng nếu không cần.{"\n\n"}
+                  TEST:{"\n"}
+                  - Router selection state đúng.{"\n"}
+                  - Collapse/expand được lưu hợp lý.{"\n"}
+                  - Keyboard navigation.{"\n"}
+                  - Mobile open/close/focus.{"\n"}
+                  - Không che toast/dialog.{"\n"}
+                  - Không CLS khi hydrate.
                 </div>
               </ScrollArea>
             </div>
