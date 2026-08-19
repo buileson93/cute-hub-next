@@ -432,8 +432,7 @@ function HeThongCayPage() {
                   size="icon" 
                   variant={editMode ? "default" : "outline"} 
                   className={cn(
-                    "h-8 w-8 transition-all shadow-none",
-                    editMode && "bg-primary text-primary-foreground hover:bg-primary/90"
+                    "h-8 w-8 transition-all shadow-none"
                   )}
                   onClick={() => setEditMode(!editMode)} 
                 >
