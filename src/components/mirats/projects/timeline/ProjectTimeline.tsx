@@ -5,7 +5,8 @@ import {
   Calendar, CheckCircle2, Circle, Clock, FileText, 
   History, Info, Layout, ListTodo, Milestone, 
   MoreHorizontal, Plus, User, Search, Filter, 
-  ArrowUpRight, Download, Eye, ExternalLink
+  ArrowUpRight, Download, Eye, ExternalLink,
+  Pencil, Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
