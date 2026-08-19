@@ -1501,7 +1501,7 @@ export function StandardTableInner<T>({
                           className={cn(
                             "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
                             (onRowClick || selectable) && "cursor-pointer", 
-                            isSel && "bg-primary/5", 
+                            isSel && "bg-[#0074e2]/5", 
                             expandedRows.has(rid) && "bg-muted/40",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r)
@@ -1523,7 +1523,7 @@ export function StandardTableInner<T>({
                               className="sticky left-0 z-10 bg-card border-r border-border/30 p-0 text-center"
                             >
                               <div className="flex h-full w-full items-center justify-center">
-                                <Button variant="ghost" size="icon" className="h-6 w-6">
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-[#0074e2] hover:bg-[#0074e2]/10">
                                   {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                                 </Button>
                               </div>
@@ -1648,7 +1648,7 @@ function ColFilter({
           size="icon"
           className={cn(
             "h-6 w-6 ml-auto shrink-0 transition-colors",
-            active ? "text-primary bg-primary/10" : "text-muted-foreground/30 hover:text-muted-foreground hover:bg-muted"
+            active ? "text-[#0074e2] bg-[#0074e2]/10" : "text-muted-foreground/30 hover:text-[#0074e2] hover:bg-[#0074e2]/5"
           )}
           onClick={(e) => {
             e.stopPropagation();
