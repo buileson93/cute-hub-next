@@ -447,7 +447,7 @@ function ThietBiPage() {
               ))}
             </div>
           ) : (
-            <TreeView tree={tree} total={filtered.length} histMap={histMap} />
+            <TreeView tree={tree} total={filtered.length} />
           )}
         </DataState>
       </div>
