@@ -423,7 +423,29 @@ function UploadDialog({
             <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}
               placeholder="VD: Datasheet nhà sản xuất, ảnh mặt trước…" />
           </div>
+          {isFeatureEnabled("documentOcrEnabled") && loai === "tai_lieu" && file?.type === "application/pdf" && (
+            <OcrSettings
+              enabled={ocrEnabled}
+              onEnabledChange={setOcrEnabled}
+              quality={ocrQuality}
+              onQualityChange={setOcrQuality}
+              deviceTier={deviceTier || undefined}
+              autoReason={deviceTier === "low" ? "Ưu tiên tiết kiệm pin." : "Ưu tiên độ chính xác."}
+            />
+          )}
         </div>
+        <OcrProgressDialog
+          open={isProcessing}
+          onOpenChange={() => {}} // Controlled by pipeline
+          fileName={file?.name || ""}
+          currentPage={progress.current}
+          totalPages={progress.total}
+          status={progress.status}
+          isPaused={isPaused}
+          onPause={pauseOcr}
+          onResume={() => setIsPaused(false)}
+          onCancel={() => cancelOcr("thiet_bi_tep_dinh_kem", "")}
+        />
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Hủy</Button>
           <Button onClick={submit} disabled={busy || !file}>
