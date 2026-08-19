@@ -202,8 +202,9 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           
           return new Response(JSON.stringify({ error: publicError }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
+
         }
 
       }
