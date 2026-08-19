@@ -22,8 +22,8 @@ export class SearchSyncManager {
       .from('tai_lieu_ocr')
       .select(`
         *,
-        model_tai_lieu!source_id (ten_tai_lieu, ma_tai_lieu, mo_ta),
-        thiet_bi_tep_dinh_kem!source_id (file_name, mo_ta)
+        model_tai_lieu!source_id (file_name, mo_ta, model:model_id(ten, ma)),
+        thiet_bi_tep_dinh_kem!source_id (file_name, mo_ta, thiet_bi:thiet_bi_id(ten_thiet_bi, ma_thiet_bi))
       `)
       .gt('updated_at', lastSyncedAt)
       .eq('status', 'completed')
