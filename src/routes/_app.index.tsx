@@ -109,7 +109,7 @@ function Dashboard() {
             className={cn(
               "astryx-control h-8 px-4 transition-all gap-2 shadow-none border-primary/20",
               isEditing 
-                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" 
+                ? "!bg-primary !text-primary-foreground !border-primary hover:!bg-primary/90" 
                 : "bg-background text-foreground hover:bg-primary/5 hover:border-primary/40"
             )}
           >
