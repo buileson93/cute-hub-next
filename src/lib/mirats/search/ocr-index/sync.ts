@@ -66,7 +66,7 @@ export class SearchSyncManager {
         sourceName: meta.name,
         sourceCode: meta.code,
         description: meta.desc,
-        route: row.source_type === 'model_tai_lieu' ? `/danh-muc/tai-lieu/${row.source_id}` : `/thiet-bi/${row.source_id}`,
+        route: `/tai-lieu?doc=${row.source_id}`,
         updatedAt: row.updated_at,
         ocrVersion: row.ocr_version || '1.0'
       };
