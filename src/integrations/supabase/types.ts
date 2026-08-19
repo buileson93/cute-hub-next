@@ -3195,6 +3195,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "du_an_su_kien_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "du_an_su_kien_du_an_id_fkey"
             columns: ["du_an_id"]
             isOneToOne: false
