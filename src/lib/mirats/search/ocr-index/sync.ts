@@ -22,8 +22,8 @@ export class SearchSyncManager {
       .from('tai_lieu_ocr')
       .select(`
         *,
-        model_tai_lieu!source_id (ten_tai_lieu, ma_tai_lieu, mo_ta),
-        thiet_bi_tep_dinh_kem!source_id (file_name, mo_ta)
+        model_tai_lieu!source_id (file_name, mo_ta, model:model_id(ten, ma)),
+        thiet_bi_tep_dinh_kem!source_id (file_name, mo_ta, thiet_bi:thiet_bi_id(ten_thiet_bi, ma_thiet_bi))
       `)
       .gt('updated_at', lastSyncedAt)
       .eq('status', 'completed')
@@ -48,13 +48,13 @@ export class SearchSyncManager {
       // Map metadata safely
       const meta = row.source_type === 'model_tai_lieu' 
         ? { 
-            name: row.model_tai_lieu?.ten_tai_lieu, 
-            code: row.model_tai_lieu?.ma_tai_lieu, 
+            name: row.model_tai_lieu?.file_name, 
+            code: row.model_tai_lieu?.model?.ma, 
             desc: row.model_tai_lieu?.mo_ta 
           }
         : { 
             name: row.thiet_bi_tep_dinh_kem?.file_name, 
-            code: undefined, 
+            code: row.thiet_bi_tep_dinh_kem?.thiet_bi?.ma_thiet_bi, 
             desc: row.thiet_bi_tep_dinh_kem?.mo_ta 
           };
 
@@ -66,7 +66,7 @@ export class SearchSyncManager {
         sourceName: meta.name,
         sourceCode: meta.code,
         description: meta.desc,
-        route: row.source_type === 'model_tai_lieu' ? `/danh-muc/tai-lieu/${row.source_id}` : `/thiet-bi/${row.source_id}`,
+        route: `/tai-lieu?doc=${row.source_id}`,
         updatedAt: row.updated_at,
         ocrVersion: row.ocr_version || '1.0'
       };

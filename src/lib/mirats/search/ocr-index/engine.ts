@@ -37,7 +37,7 @@ export class MiniSearchAdapter {
   constructor() {
     this.engine = new MiniSearch({
       fields: ['fileName', 'sourceCode', 'sourceName', 'description', 'normalizedText'],
-      storeFields: ['id', 'sourceType', 'sourceId', 'fileName', 'page', 'route'],
+      storeFields: ['id', 'sourceType', 'sourceId', 'fileName', 'page', 'route', 'normalizedText'],
       searchOptions: {
         boost: {
           fileName: 4,
@@ -51,11 +51,12 @@ export class MiniSearchAdapter {
       },
       // Custom tokenizer to handle technical tokens better
       tokenize: (text) => {
-        const tokens = text.match(TECHNICAL_TOKEN) || [];
-        return tokens.map(t => t.toLowerCase());
+        const tokens = (text.match(TECHNICAL_TOKEN) || []) as string[];
+        const words = text.split(/\s+/);
+        return [...tokens, ...words].map(t => boDauTiengViet(t.toLowerCase()));
       },
       // Process term for matching
-      processTerm: (term) => chuanHoaTho(term)
+      processTerm: (term) => boDauTiengViet(term.toLowerCase())
     });
   }
 
@@ -84,10 +85,64 @@ export class MiniSearchAdapter {
   }
 
   private generateSnippet(result: SearchResult, query: string): string {
-    // Basic snippet logic - in a real app we'd fetch the raw text
-    // MiniSearch doesn't store the full text by default unless in storeFields
-    // We'll return a placeholder or implement snippet extraction if we store rawText
-    return "..."; 
+    const text = result.normalizedText || "";
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    const index = text.toLowerCase().indexOf(terms[0]);
+    
+    if (index === -1) return text.substring(0, 100) + "...";
+    
+    const start = Math.max(0, index - 40);
+    const end = Math.min(text.length, index + 60);
+    let snippet = text.substring(start, end);
+    
+    if (start > 0) snippet = "..." + snippet;
+    if (end < text.length) snippet = snippet + "...";
+    
+    return this.highlightSnippet(snippet, query);
+  }
+
+  private highlightSnippet(snippet: string, query: string): string {
+    const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+    let highlighted = snippet;
+    
+    // Sort terms by length descending
+    terms.sort((a, b) => b.length - a.length);
+    
+    for (const term of terms) {
+      const normalizedTerm = boDauTiengViet(term);
+      // Escape for regex
+      const escapedTerm = normalizedTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      
+      // We need to match the original text but searching via normalized version.
+      // A simple but effective way: find all matches of normalized characters.
+      // For Vietnamese, we'll use a property-based search if available, but here 
+      // we'll just try to match the term directly first, then try the normalized version.
+      
+      // Try exact match first
+      const exactRegex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      if (exactRegex.test(highlighted)) {
+        highlighted = highlighted.replace(exactRegex, '**$1**');
+      } else {
+        // Try word-by-word comparison with normalized versions
+        highlighted = highlighted.split(' ').map(word => {
+          // Skip if already highlighted or empty
+          if (!word || word.includes('**')) return word;
+          
+          // Match multi-word terms by checking ahead or simple word match
+          const cleanWord = word.replace(/[.,!?:;]$/, '');
+          const punctuation = word.slice(cleanWord.length);
+          
+          const normalizedWord = boDauTiengViet(cleanWord.toLowerCase());
+          // Check if the term is part of this word or matches exactly
+          if (normalizedWord === normalizedTerm || normalizedWord.includes(normalizedTerm)) {
+            return `**${cleanWord}**${punctuation}`;
+          }
+          return word;
+        }).join(' ');
+      }
+    }
+    
+    return highlighted;
   }
 
   toJSON(): string {

@@ -4,6 +4,7 @@
 // - DOCX / XLSX / PPTX: dùng Microsoft Office Online Viewer (yêu cầu URL công khai
 //   truy cập được từ Internet — signed URL của Supabase Storage đủ điều kiện).
 // ============================================================================
+import React, { useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, ExternalLink, AlertTriangle, Loader2, RefreshCw } from "lucide-react";
@@ -21,7 +22,7 @@ function detectKind(fileName: string, mimeType?: string | null): Kind {
 }
 
 export function DocViewerDialog({
-  open, onOpenChange, url, fileName, mimeType, isLoading, error, onRetry,
+  open, onOpenChange, url, fileName, mimeType, isLoading, error, onRetry, initialPage, query
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -31,8 +32,17 @@ export function DocViewerDialog({
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
+  initialPage?: number;
+  query?: string;
 }) {
   const kind = detectKind(fileName, mimeType);
+  
+  const finalUrl = useMemo(() => {
+    if (!url) return null;
+    if (kind !== "pdf" || !initialPage) return url;
+    return `${url}#page=${initialPage}`;
+  }, [url, kind, initialPage]);
+
   const officeSrc = url ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}` : null;
   const canDownload = useCanDownloadAttachments();
 
@@ -77,7 +87,19 @@ export function DocViewerDialog({
               <span>Đang tải file…</span>
             </div>
           ) : kind === "pdf" ? (
-            <iframe src={url} title={fileName} className="h-full w-full" />
+            <div className="flex flex-col h-full">
+              {initialPage && (
+                <div className="bg-blue-50 border-b border-blue-100 px-4 py-1.5 flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-blue-700">
+                    Kết quả tìm thấy tại Trang {initialPage}
+                  </span>
+                  <span className="text-[10px] text-blue-500 italic">
+                    (Cuộn xuống nếu trình duyệt không tự nhảy trang)
+                  </span>
+                </div>
+              )}
+              <iframe src={finalUrl || url || ''} title={fileName} className="flex-1 w-full" />
+            </div>
           ) : kind === "image" ? (
             <div className="flex h-full items-center justify-center p-4">
               <img src={url} alt={fileName} className="max-h-full max-w-full object-contain" />
