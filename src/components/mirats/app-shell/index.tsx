@@ -158,47 +158,34 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Quality Gates & Integrity
+                Unified Anatomy & Responsive Frame
               </div>
               <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Tạo quality gate để UI không mất đồng bộ trở lại.{"\n\n"}
-                  AUTOMATED GUARDRAILS:{"\n"}
-                  - Cấm import mới từ wrapper deprecated.{"\n"}
-                  - Cảnh báo hard-coded hex/rgb và Tailwind color families ngoài allowlist.{"\n"}
-                  - Cảnh báo arbitrary width/radius/font size ngoài graph/chart allowlist.{"\n"}
-                  - Cảnh báo Card trong map/list loop ở tracker route.{"\n"}
-                  - Cảnh báo nested scroll container.{"\n"}
-                  - Kiểm tra button/icon accessible label.{"\n"}
-                  - Kiểm tra foundation computed style.{"\n\n"}
-                  VISUAL REGRESSION:{"\n"}
-                  - Playwright screenshots light/dark.{"\n"}
-                  - 1440, 1024, 768, 390, 360.{"\n"}
-                  - Shell open/collapsed/mobile drawer.{"\n"}
-                  - Empty/loading/error/populated.{"\n"}
-                  - Dialog/popover/sheet/command palette.{"\n\n"}
-                  ACCESSIBILITY:{"\n"}
-                  - Keyboard-only flow.{"\n"}
-                  - Focus visible và focus return.{"\n"}
-                  - Skip-to-content.{"\n"}
-                  - Dialog focus trap.{"\n"}
-                  - Mobile drawer accessible.{"\n"}
-                  - Screen reader labels.{"\n"}
-                  - Status không chỉ truyền bằng màu.{"\n\n"}
-                  UX METRIC:{"\n"}
-                  - Tăng diện tích content hữu ích.{"\n"}
-                  - Giảm chiều cao header/toolbar.{"\n"}
-                  - Giảm số lớp padding.{"\n"}
-                  - Giảm số click để tới action chính.{"\n"}
-                  - Không action bị khuất ở 360px.{"\n"}
-                  - Không horizontal overflow ngoài vùng chủ đích.{"\n"}
-                  - Table/list scan nhanh hơn; không hy sinh readability.{"\n\n"}
-                  PERFORMANCE:{"\n"}
-                  - Bundle route.{"\n"}
-                  - LCP/CLS/INP.{"\n"}
-                  - Hydration warnings.{"\n"}
-                  - Heavy component lazy-load.{"\n"}
-                  - Long list virtualization.
+                  Chuẩn hóa anatomy của mọi trang để giảm chiều cao và nested padding.{"\n\n"}
+                  PAGE FRAME:{"\n"}
+                  - Breadcrumb/supporting chỉ hiện khi có giá trị điều hướng thực sự.{"\n"}
+                  - Một hàng title + metadata quan trọng + primary action.{"\n"}
+                  - Secondary action đưa vào MoreMenu.{"\n"}
+                  - Filter/search là toolbar riêng nhưng không lặp card/surface.{"\n"}
+                  - Page content có container policy theo archetype.{"\n\n"}
+                  PAGEHEADER:{"\n"}
+                  - Dùng Heading/Breadcrumbs/metadata component Astryx.{"\n"}
+                  - Không sticky toàn bộ header nếu làm mất nhiều viewport mobile.{"\n"}
+                  - Trên mobile chỉ sticky top nav hoặc toolbar cần thiết.{"\n"}
+                  - Subtitle/help dài chuyển sang tooltip/inspector, không kéo header cao.{"\n"}
+                  - Action phải có thứ tự: primary, secondary, overflow.{"\n\n"}
+                  PAGEBODY:{"\n"}
+                  - Chỉ một padding boundary.{"\n"}
+                  - Loại bỏ pattern PageBody padding -&gt; wrapper space -&gt; Card padding -&gt; table padding.{"\n"}
+                  - `overflow: auto` chỉ ở region được thiết kế scroll.{"\n"}
+                  - `min-width: 0` cho flex/grid content.{"\n\n"}
+                  TOOLBAR RESPONSIVE:{"\n"}
+                  - Desktop: search + filter + actions cùng vùng có OverflowList/MoreMenu.{"\n"}
+                  - Tablet: filter có thể vào popover.{"\n"}
+                  - Mobile: search full-width hoặc mở qua action; filter mở sheet; primary action sticky bottom/floating theo workflow; secondary action vào MoreMenu.{"\n"}
+                  - Không để TabsList dài buộc horizontal scroll nếu có thể dùng primary tabs + overflow.{"\n\n"}
+                  Viết PageFrame/TrackerFrame/FormFrame/DetailFrame typed components thay vì mỗi route tự ghép class.
                 </div>
               </ScrollArea>
             </div>
