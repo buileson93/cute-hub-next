@@ -9,7 +9,7 @@ const extCongVanSchema = z.object({
   ngay_ban_hanh: z.string().optional(),
   co_quan_ban_hanh: z.string().optional(),
   file_url: z.string().url().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 
