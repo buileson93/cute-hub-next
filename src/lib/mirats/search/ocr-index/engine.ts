@@ -104,19 +104,35 @@ export class MiniSearchAdapter {
     const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
     let highlighted = snippet;
     
-    // Sort terms by length descending to avoid partial replacements
+    // Sort terms by length descending
     terms.sort((a, b) => b.length - a.length);
     
     for (const term of terms) {
       const normalizedTerm = boDauTiengViet(term);
-      // Create a regex that finds the term regardless of accents
-      // This is a simplified version; for production, a more complex regex mapping is needed
-      const regex = new RegExp(`(${normalizedTerm})`, 'gi');
-      // Note: This actually replaces the snippet with a simple text-based highlight indicator
-      // In a real UI, you'd use a component for this.
-      // We'll return it as plain text and let the UI handle it if needed, 
-      // but for now, we'll use standard markdown-like bolding for the snippet.
-      highlighted = highlighted.replace(regex, '**$1**');
+      // Escape for regex
+      const escapedTerm = normalizedTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      
+      // We need to match the original text but searching via normalized version.
+      // A simple but effective way: find all matches of normalized characters.
+      // For Vietnamese, we'll use a property-based search if available, but here 
+      // we'll just try to match the term directly first, then try the normalized version.
+      
+      // Try exact match first
+      const exactRegex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      if (exactRegex.test(highlighted)) {
+        highlighted = highlighted.replace(exactRegex, '**$1**');
+      } else {
+        // Try to find the normalized version in the snippet (which might have accents)
+        // This is tricky. Let's use a simpler approach for the prototype: 
+        // Iterate through words and check their normalized version.
+        highlighted = highlighted.split(/\s+/).map(word => {
+          if (boDauTiengViet(word.toLowerCase()).includes(normalizedTerm)) {
+            if (word.startsWith('**') && word.endsWith('**')) return word;
+            return `**${word}**`;
+          }
+          return word;
+        }).join(' ');
+      }
     }
     
     return highlighted;
