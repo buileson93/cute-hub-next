@@ -222,7 +222,9 @@ export const workspaces: Workspace[] = [
           { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
           { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
           { to: "/admin/ocr", label: "Quản trị OCR", icon: Cpu, roles: ADMIN_ONLY },
+          { to: "/admin/tich-hop", label: "Browser Extension", icon: KeyRound, roles: MANAGER_ROLES },
           { to: "/admin/supabase-ngoai", label: "Kết nối Supabase ngoài", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
+
 
 
         ],
