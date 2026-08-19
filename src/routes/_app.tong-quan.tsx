@@ -112,8 +112,10 @@ function OverviewReport() {
             size="sm" 
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none border-primary/20 hover:bg-primary/5 hover:border-primary/40",
-              isEditing && "bg-primary text-primary-foreground border-primary hover:bg-primary/90 hover:text-primary-foreground"
+              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none border-primary/20",
+              isEditing 
+                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" 
+                : "bg-background text-foreground hover:bg-primary/5 hover:border-primary/40"
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />
