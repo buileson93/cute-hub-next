@@ -257,7 +257,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
   
   useEffect(() => {
     if (open) {
-      deviceProfiler.getTier().then(tier => setDeviceTier(tier));
+      deviceProfiler.getProfile().then(p => setDeviceTier(p.tier));
     }
   }, [open]);
 
