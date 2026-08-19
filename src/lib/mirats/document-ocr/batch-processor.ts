@@ -1,13 +1,14 @@
-import { OcrStatus, OcrSourceType, OcrErrorCode, TaiLieuOcr } from "./types";
+import { OcrStatus, OcrSourceType, OcrErrorCode, TaiLieuOcr, OcrPageResult } from "./types";
 import { ocrRepository } from "./repository";
 import { ocrPipeline } from "./pipeline";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { QualityProfile } from "./provider";
 
 export interface BatchConfig {
   concurrency: number;
   maxPagesPerSession?: number;
-  qualityProfile: "eco" | "balanced" | "quality";
+  qualityProfile: QualityProfile;
   pauseOnHidden: boolean;
   pauseOnResourcePressure: boolean;
 }
@@ -145,9 +146,6 @@ export class OcrBatchProcessor {
   private async processItem(item: BatchItem) {
     // 1. Get signed URL
     const bucket = item.sourceType === "model_tai_lieu" ? "model-tai-lieu" : "thiet-bi-attachments";
-    // We need the file_path, which we don't have in BatchItem. 
-    // Let's fetch it first from Supabase or pass it in.
-    // For now, assume it's stored in a way we can fetch it.
     
     const { data: fileData, error: fetchError } = await supabase
       .from(item.sourceType)
@@ -172,11 +170,10 @@ export class OcrBatchProcessor {
     await ocrPipeline.process(item.sourceType, item.sourceId, blob, {
       qualityProfile: this.config.qualityProfile,
       signal: this.abortController?.signal,
-      onProgress: (p) => {
-        // Pipeline progress is 0-1 across all pages
-        // We could refine this to update status.currentPage
+      onProgress: (p: number) => {
+        // Optional progress handling
       },
-      onPageCompleted: (page, res) => {
+      onPageCompleted: (page: number, res: OcrPageResult) => {
         this.status.pagesInSession++;
         this.status.currentPage = page;
         this.notify();
@@ -214,3 +211,4 @@ export class OcrBatchProcessor {
     this.stop();
   }
 }
+
