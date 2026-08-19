@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Paperclip, Plus, Save, Trash2, Upload, Eye, Link2 } from "lucide-react";
+import { Loader2, Paperclip, Plus, Save, Trash2, Upload, Eye, Link2, FileSearch, Sparkles, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
@@ -359,12 +359,19 @@ export function CongVanSheet({
               <Separator className="my-3" />
               <section className="space-y-2 pb-6">
                 <h4 className="flex items-center gap-1.5 text-sm font-semibold">
-                  <Paperclip className="h-4 w-4" /> Bản scan đính kèm
+                  <Paperclip className="h-4 w-4" /> Bản scan & OCR
                 </h4>
+
                 {myTeps.map((t) => (
                   <div key={t.id} className="flex items-center gap-2 rounded-md border px-2 py-1.5 text-xs">
                     <span className="min-w-0 flex-1 truncate">{t.file_name}</span>
+                    {(t.metadata as any)?.ocr_status === 'completed' && (
+                      <Badge variant="outline" className="h-5 gap-1 border-emerald-200 bg-emerald-50 px-1 text-[9px] text-emerald-700">
+                        <Sparkles className="h-2.5 w-2.5" /> OCR
+                      </Badge>
+                    )}
                     <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => void openTep(t)}>
+
                       <Eye className="h-3.5 w-3.5" />
                     </Button>
                     {canEdit && (
@@ -398,6 +405,10 @@ export function CongVanSheet({
         url={viewer?.url ?? null}
         fileName={viewer?.name ?? ""}
         mimeType={viewer?.mime ?? null}
+        tepId={viewer?.id}
+        sourceType="du_an_cong_van"
+        sourceId={editing?.id}
+
         isLoading={!!viewer && !viewer.url}
       />
     </>
