@@ -38,7 +38,7 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsOpen((open: boolean) => !open);
+        setIsOpen(!isOpen);
       }
     };
     document.addEventListener("keydown", down);
