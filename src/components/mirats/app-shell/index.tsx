@@ -142,48 +142,74 @@ export function UserMenu() {
               </div>
               <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Migration persistent frame MIRATS sang Astryx chính thức, giữ nguyên router và nghiệp vụ.{"\n\n"}
-                  MỤC TIÊU:{"\n"}
-                  Shell sở hữu navigation, surface, content boundary, responsive behavior và skip-to-content. Route chỉ sở hữu nội dung trang.{"\n\n"}
-                  DÙNG COMPONENT THEO DOCS THỰC TẾ:{"\n"}
-                  - Theme{"\n"}
-                  - AppShell{"\n"}
-                  - TopNav{"\n"}
-                  - SideNav{"\n"}
-                  - MobileNav hoặc AppShell mobile behavior{"\n"}
-                  - Layout{"\n"}
-                  - LayoutContent{"\n"}
-                  - LayoutPanel{"\n"}
-                  - ResizeHandle/useResizable nếu có{"\n\n"}
-                  DESKTOP CONTRACT:{"\n"}
-                  - AppShell toàn viewport.{"\n"}
-                  - SideNav mở 240–280px hoặc collapsed rail theo component API.{"\n"}
-                  - Main content flex, min-width: 0.{"\n"}
-                  - Inspector 340–420px, resizable.{"\n"}
-                  - Chỉ một main scroll container cho route.{"\n\n"}
-                  TABLET {"<"}=1024px:{"\n"}
-                  - Inspector overlay content thay vì ép hẹp main.{"\n"}
-                  - SideNav collapse.{"\n"}
-                  - Toolbar action ít quan trọng vào MoreMenu.{"\n\n"}
-                  MOBILE {"<"}=768px:{"\n"}
-                  - SideNav thành MobileNav/Drawer có focus trap và đóng khi route đổi.{"\n"}
-                  - TopNav gọn: menu, title, search/action chính.{"\n"}
-                  - Không giữ rail desktop 56–80px cạnh nội dung.{"\n"}
-                  - Main content full width.{"\n"}
-                  - Inspector thành full-screen sheet hoặc bottom sheet theo workflow.{"\n"}
-                  - Có skip-to-content và restore focus.{"\n\n"}
-                  KHÔNG ĐƯỢC:{"\n"}
-                  - Chỉ đổi class của AppShell cũ thành `astryx-*`.{"\n"}
-                  - Giữ hai shell cùng lúc.{"\n"}
-                  - Hard-code width bằng nhiều class riêng theo route.{"\n"}
-                  - Mỗi route tạo một scroll container riêng nếu không cần.{"\n\n"}
-                  TEST:{"\n"}
-                  - Router selection state đúng.{"\n"}
-                  - Collapse/expand được lưu hợp lý.{"\n"}
-                  - Keyboard navigation.{"\n"}
-                  - Mobile open/close/focus.{"\n"}
-                  - Không che toast/dialog.{"\n"}
-                  - Không CLS khi hydrate.
+                  Bạn đang thực hiện Astryx Exact Parity cho MIRATS. Không thay component hàng loạt và không sửa nghiệp vụ trong prompt này.{"\n\n"}
+                  UPSTREAM ĐÃ PIN:{"\n"}
+                  - Repo: https://github.com/facebook/astryx{"\n"}
+                  - Commit: 683015aa9b3f4ba258dc7e4c8f2cc274afce46a5{"\n"}
+                  - Package source version tại commit: 0.4.5{"\n"}
+                  - License: MIT; phải giữ LICENSE/NOTICE khi vendor hoặc swizzle source.{"\n\n"}
+                  BƯỚC 1 — COMPATIBILITY REPORT:{"\n"}
+                  1. Xác định React/React DOM thực tế; Astryx yêu cầu React 19+.{"\n"}
+                  2. Chạy dependency tree để tìm duplicate React.{"\n"}
+                  3. Kiểm tra @astryxdesign/core, CLI, theme và @stylexjs/stylex có khớp version/peer dependency.{"\n"}
+                  4. Xác định MIRATS đang resolve Astryx từ dist hay raw src.{"\n"}
+                  5. Xác định Vite/TanStack Start/SSR import path và lỗi hydration/browser API.{"\n"}
+                  6. Kiểm tra CSS layer, reset, Tailwind preflight và custom skin.{"\n"}
+                  7. Kiểm tra `.astryx-control` đang ghi đè variant nào.{"\n"}
+                  8. Xác định lỗi cũ đến từ React, package mismatch, SSR, CSS cascade hay thiếu StyleX compiler; không đoán.{"\n\n"}
+                  Thêm package script ổn định nếu chưa có:{"\n"}
+                  "scripts": {"{"}{"\n"}
+                    "astryx": "node node_modules/@astryxdesign/cli/clients/cli/bin/astryx.mjs"{"\n"}
+                  {"}"}{"\n"}
+                  {"}"}{"\n\n"}
+                  Chạy:{"\n"}
+                  - npm run astryx -- doctor{"\n"}
+                  - npm run astryx -- component --list{"\n"}
+                  - npm run astryx -- docs migration --dense{"\n"}
+                  - npm run astryx -- docs styling --dense{"\n"}
+                  - npm run astryx -- docs tokens --dense{"\n"}
+                  - npm run astryx -- docs theme --dense{"\n\n"}
+                  Không dùng bare `npx astryx` trước khi CLI chính thức được cài vì có thể resolve nhầm package.{"\n\n"}
+                  BƯỚC 2 — CHỌN MỘT MODE CHO TỪNG COMPONENT:{"\n\n"}
+                  MODE A — OFFICIAL DIST, ƯU TIÊN:{"\n"}
+                  - Import component từ public subpath của @astryxdesign/core.{"\n"}
+                  - Import reset.css, astryx.css và đúng một theme CSS theo canonical layer order.{"\n"}
+                  - Dùng precompiled dist; không alias về packages/core/src.{"\n"}
+                  - Pin core, CLI và theme cùng một exact version.{"\n\n"}
+                  MODE B — SWIZZLE/VENDOR SOURCE:{"\n"}
+                  - Chỉ dùng khi official dist không đáp ứng integration nhưng source có thể compile.{"\n"}
+                  - Lấy source bằng CLI `astryx swizzle {"<"}Component{">"}` hoặc từ commit đã pin.{"\n"}
+                  - Đặt source bất biến tại src/vendor/astryx-v0.4.5/.{"\n"}
+                  - Cấu hình StyleX compiler đúng bundler; không để stylex.create/defineVars chạy thô ở runtime.{"\n"}
+                  - Đặt router, Supabase và business integration tại src/components/astryx-adapters/; không nhét logic MIRATS vào vendor source.{"\n\n"}
+                  MODE C — CSS COMPATIBILITY:{"\n"}
+                  - Giữ behavior shadcn/Radix nếu official component còn gây regression.{"\n"}
+                  - Dùng cùng semantic tokens, anatomy, spacing, radius và state visuals.{"\n"}
+                  - Target selector bằng component class + data attribute; không đặt background chung lên mọi control.{"\n"}
+                  - Mode này chỉ được ghi “visual compatibility”; không gọi là exact behavior parity nếu DOM/ARIA/keyboard khác upstream.{"\n\n"}
+                  BƯỚC 3 — THỨ TỰ THỬ NGHIỆM:{"\n"}
+                  1. Theme, Text, Heading, Divider, StatusDot, Token, Badge.{"\n"}
+                  2. Button, IconButton, Tooltip.{"\n"}
+                  3. TextInput, TextArea, Switch, CheckboxInput.{"\n"}
+                  4. Dialog, Popover, MoreMenu, BottomSheet.{"\n"}
+                  5. AppShell, TopNav, SideNav, MobileNav, TabList.{"\n"}
+                  6. Layout, LayoutPanel, List, MetadataList, Table, EmptyState.{"\n\n"}
+                  Không chuyển nhóm tiếp theo nếu nhóm trước chưa qua build, SSR, interaction và screenshot test.{"\n\n"}
+                  BƯỚC 4 — ADAPTER MAP:{"\n"}
+                  - shadcn Button → Astryx Button/IconButton adapter.{"\n"}
+                  - Input → TextInput/NumberInput adapter.{"\n"}
+                  - Textarea → TextArea adapter.{"\n"}
+                  - Select/Combobox → Selector/Typeahead adapter.{"\n"}
+                  - Switch → Switch adapter.{"\n"}
+                  - Checkbox → CheckboxInput/CheckboxList adapter.{"\n"}
+                  - Tabs điều hướng → TabList adapter kết nối router.{"\n"}
+                  - Dialog/AlertDialog → Astryx Dialog/AlertDialog adapter.{"\n"}
+                  - Dropdown action → MoreMenu/DropdownMenu adapter.{"\n"}
+                  - Card-like list row → Item/List row.{"\n"}
+                  - Metadata pair → MetadataList.{"\n"}
+                  - Dense records → Table/List.{"\n"}
+                  - Status → StatusDot/Token; Badge chỉ cho count/enumerated state.{"\n\n"}
+                  Mỗi adapter phải giữ nguyên business-facing callback hiện tại trong giai đoạn chuyển đổi và có typed deprecation path.
                 </div>
               </ScrollArea>
             </div>
