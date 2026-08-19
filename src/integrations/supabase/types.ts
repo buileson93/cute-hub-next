@@ -202,6 +202,83 @@ export type Database = {
         }
         Relationships: []
       }
+      api_key_project_scopes: {
+        Row: {
+          api_key_id: string
+          can_create_correspondence: boolean | null
+          can_read: boolean | null
+          can_upload_documents: boolean | null
+          project_id: string
+        }
+        Insert: {
+          api_key_id: string
+          can_create_correspondence?: boolean | null
+          can_read?: boolean | null
+          can_upload_documents?: boolean | null
+          project_id: string
+        }
+        Update: {
+          api_key_id?: string
+          can_create_correspondence?: boolean | null
+          can_read?: boolean | null
+          can_upload_documents?: boolean | null
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_key_project_scopes_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          key_id: string
+          last_used_at: string | null
+          last_used_ip_hash: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[] | null
+          secret_hash: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          key_id: string
+          last_used_at?: string | null
+          last_used_ip_hash?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[] | null
+          secret_hash: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          key_id?: string
+          last_used_at?: string | null
+          last_used_ip_hash?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[] | null
+          secret_hash?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       app_cai_dat: {
         Row: {
           gia_tri: string | null
