@@ -16,8 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 
-export function PowerSearch() {
-  const [open, setOpen] = useState(false);
+export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChange?: (open: boolean) => void }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+  const setIsOpen = isControlled ? onOpenChange! : setInternalOpen;
+
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
