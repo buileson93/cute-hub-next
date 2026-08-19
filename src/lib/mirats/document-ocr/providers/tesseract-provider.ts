@@ -1,7 +1,9 @@
 import { OcrProvider, OcrProviderOptions } from "../provider";
 import { OcrPageResult } from "../types";
 import { DeviceCapabilities } from "../capabilities";
-import { createWorker, Worker } from "tesseract.js";
+// Lazy import Tesseract to keep initial bundle small
+// import { createWorker, Worker } from "tesseract.js";
+type TesseractWorker = any;
 
 export class TesseractProvider implements OcrProvider {
   readonly id = "tesseract-wasm";
