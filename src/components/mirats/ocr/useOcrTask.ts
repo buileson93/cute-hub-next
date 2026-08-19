@@ -114,7 +114,8 @@ export function useOcrTask() {
     startOcr,
     pauseOcr,
     cancelOcr,
-    setIsPaused
+    setIsPaused,
+    activeArtifact
   };
 }
 
