@@ -138,78 +138,68 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Lộ trình di chuyển Astryx
+                Parity Manifest & Guidelines
               </div>
               <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Bạn đang thực hiện Astryx Exact Parity cho MIRATS. Không thay component hàng loạt và không sửa nghiệp vụ trong prompt này.{"\n\n"}
-                  UPSTREAM ĐÃ PIN:{"\n"}
-                  - Repo: https://github.com/facebook/astryx{"\n"}
-                  - Commit: 683015aa9b3f4ba258dc7e4c8f2cc274afce46a5{"\n"}
-                  - Package source version tại commit: 0.4.5{"\n"}
-                  - License: MIT; phải giữ LICENSE/NOTICE khi vendor hoặc swizzle source.{"\n\n"}
-                  BƯỚC 1 — COMPATIBILITY REPORT:{"\n"}
-                  1. Xác định React/React DOM thực tế; Astryx yêu cầu React 19+.{"\n"}
-                  2. Chạy dependency tree để tìm duplicate React.{"\n"}
-                  3. Kiểm tra @astryxdesign/core, CLI, theme và @stylexjs/stylex có khớp version/peer dependency.{"\n"}
-                  4. Xác định MIRATS đang resolve Astryx từ dist hay raw src.{"\n"}
-                  5. Xác định Vite/TanStack Start/SSR import path và lỗi hydration/browser API.{"\n"}
-                  6. Kiểm tra CSS layer, reset, Tailwind preflight và custom skin.{"\n"}
-                  7. Kiểm tra `.astryx-control` đang ghi đè variant nào.{"\n"}
-                  8. Xác định lỗi cũ đến từ React, package mismatch, SSR, CSS cascade hay thiếu StyleX compiler; không đoán.{"\n\n"}
-                  Thêm package script ổn định nếu chưa có:{"\n"}
-                  "scripts": {"{"}{"\n"}
-                    "astryx": "node node_modules/@astryxdesign/cli/clients/cli/bin/astryx.mjs"{"\n"}
-                  {"}"}{"\n"}
+                  Với mỗi component MIRATS thực sự sử dụng, tạo parity manifest trước khi code:{"\n\n"}
+                  {"{"}{"\n"}
+                  {"  "}"component": "Button",{"\n"}
+                  {"  "}"upstreamVersion": "0.4.5",{"\n"}
+                  {"  "}"upstreamCommit": "683015aa9b3f4ba258dc7e4c8f2cc274afce46a5",{"\n"}
+                  {"  "}"integrationMode": "official-dist | swizzle | css-compatibility",{"\n"}
+                  {"  "}"sourceFiles": [],{"\n"}
+                  {"  "}"dependencyFiles": [],{"\n"}
+                  {"  "}"publicProps": [],{"\n"}
+                  {"  "}"variants": [],{"\n"}
+                  {"  "}"sizes": [],{"\n"}
+                  {"  "}"states": [],{"\n"}
+                  {"  "}"slots": [],{"\n"}
+                  {"  "}"stableClasses": [],{"\n"}
+                  {"  "}"dataAttributes": [],{"\n"}
+                  {"  "}"ariaContract": [],{"\n"}
+                  {"  "}"keyboardContract": [],{"\n"}
+                  {"  "}"rtlContract": [],{"\n"}
+                  {"  "}"responsiveContract": [],{"\n"}
+                  {"  "}"sourceHashes": {"{}"}{"\n"}
                   {"}"}{"\n\n"}
-                  Chạy:{"\n"}
-                  - npm run astryx -- doctor{"\n"}
-                  - npm run astryx -- component --list{"\n"}
-                  - npm run astryx -- docs migration --dense{"\n"}
-                  - npm run astryx -- docs styling --dense{"\n"}
-                  - npm run astryx -- docs tokens --dense{"\n"}
-                  - npm run astryx -- docs theme --dense{"\n\n"}
-                  Không dùng bare `npx astryx` trước khi CLI chính thức được cài vì có thể resolve nhầm package.{"\n\n"}
-                  BƯỚC 2 — CHỌN MỘT MODE CHO TỪNG COMPONENT:{"\n\n"}
-                  MODE A — OFFICIAL DIST, ƯU TIÊN:{"\n"}
-                  - Import component từ public subpath của @astryxdesign/core.{"\n"}
-                  - Import reset.css, astryx.css và đúng một theme CSS theo canonical layer order.{"\n"}
-                  - Dùng precompiled dist; không alias về packages/core/src.{"\n"}
-                  - Pin core, CLI và theme cùng một exact version.{"\n\n"}
-                  MODE B — SWIZZLE/VENDOR SOURCE:{"\n"}
-                  - Chỉ dùng khi official dist không đáp ứng integration nhưng source có thể compile.{"\n"}
-                  - Lấy source bằng CLI `astryx swizzle {"<"}Component{">"}` hoặc từ commit đã pin.{"\n"}
-                  - Đặt source bất biến tại src/vendor/astryx-v0.4.5/.{"\n"}
-                  - Cấu hình StyleX compiler đúng bundler; không để stylex.create/defineVars chạy thô ở runtime.{"\n"}
-                  - Đặt router, Supabase và business integration tại src/components/astryx-adapters/; không nhét logic MIRATS vào vendor source.{"\n\n"}
-                  MODE C — CSS COMPATIBILITY:{"\n"}
-                  - Giữ behavior shadcn/Radix nếu official component còn gây regression.{"\n"}
-                  - Dùng cùng semantic tokens, anatomy, spacing, radius và state visuals.{"\n"}
-                  - Target selector bằng component class + data attribute; không đặt background chung lên mọi control.{"\n"}
-                  - Mode này chỉ được ghi “visual compatibility”; không gọi là exact behavior parity nếu DOM/ARIA/keyboard khác upstream.{"\n\n"}
-                  BƯỚC 3 — THỨ TỰ THỬ NGHIỆM:{"\n"}
-                  1. Theme, Text, Heading, Divider, StatusDot, Token, Badge.{"\n"}
-                  2. Button, IconButton, Tooltip.{"\n"}
-                  3. TextInput, TextArea, Switch, CheckboxInput.{"\n"}
-                  4. Dialog, Popover, MoreMenu, BottomSheet.{"\n"}
-                  5. AppShell, TopNav, SideNav, MobileNav, TabList.{"\n"}
-                  6. Layout, LayoutPanel, List, MetadataList, Table, EmptyState.{"\n\n"}
-                  Không chuyển nhóm tiếp theo nếu nhóm trước chưa qua build, SSR, interaction và screenshot test.{"\n\n"}
-                  BƯỚC 4 — ADAPTER MAP:{"\n"}
-                  - shadcn Button → Astryx Button/IconButton adapter.{"\n"}
-                  - Input → TextInput/NumberInput adapter.{"\n"}
-                  - Textarea → TextArea adapter.{"\n"}
-                  - Select/Combobox → Selector/Typeahead adapter.{"\n"}
-                  - Switch → Switch adapter.{"\n"}
-                  - Checkbox → CheckboxInput/CheckboxList adapter.{"\n"}
-                  - Tabs điều hướng → TabList adapter kết nối router.{"\n"}
-                  - Dialog/AlertDialog → Astryx Dialog/AlertDialog adapter.{"\n"}
-                  - Dropdown action → MoreMenu/DropdownMenu adapter.{"\n"}
-                  - Card-like list row → Item/List row.{"\n"}
-                  - Metadata pair → MetadataList.{"\n"}
-                  - Dense records → Table/List.{"\n"}
-                  - Status → StatusDot/Token; Badge chỉ cho count/enumerated state.{"\n\n"}
-                  Mỗi adapter phải giữ nguyên business-facing callback hiện tại trong giai đoạn chuyển đổi và có typed deprecation path.
+                  ĐỌC CHO MỖI COMPONENT:{"\n"}
+                  - implementation source{"\n"}
+                  - TypeScript types{"\n"}
+                  - component styles{"\n"}
+                  - tests{"\n"}
+                  - Storybook/showcase{"\n"}
+                  - docs/CLI output{"\n"}
+                  - token dependencies{"\n"}
+                  - hooks, portal, focus và i18n dependencies{"\n\n"}
+                  GIỮ NGUYÊN KHI YÊU CẦU EXACT PARITY:{"\n"}
+                  - default props{"\n"}
+                  - controlled/uncontrolled behavior{"\n"}
+                  - DOM anatomy và slot order{"\n"}
+                  - ref forwarding{"\n"}
+                  - event order{"\n"}
+                  - disabled/loading/selected/invalid/open states{"\n"}
+                  - ARIA và live region{"\n"}
+                  - keyboard navigation{"\n"}
+                  - focus trap/focus return{"\n"}
+                  - portal behavior{"\n"}
+                  - stable `.astryx-*` classes{"\n"}
+                  - data-variant/data-size/data-state{"\n"}
+                  - RTL{"\n"}
+                  - reduced motion{"\n"}
+                  - locale/IME behavior{"\n\n"}
+                  Không tự thay padding, radius, font, icon size hoặc animation. Nếu muốn cải thiện bố cục MIRATS, thực hiện ở composition/page frame, không sửa internals của component đang kiểm tra parity.{"\n\n"}
+                  CSS MỚI:{"\n"}
+                  - Dùng `.mirats .astryx-button[data-variant="primary"]`.{"\n"}
+                  - Không dùng bare `.primary`, `.sm`, `.checked`.{"\n"}
+                  - Không hard-code hex/rgb khi có token.{"\n"}
+                  - Không dùng `!important`.{"\n"}
+                  - Không viết một `.astryx-control` đặt cùng background cho primary/secondary/outline/destructive.{"\n\n"}
+                  MIT:{"\n"}
+                  - Giữ LICENSE và copyright notice trong src/vendor/astryx-v0.4.5/NOTICE.md.{"\n"}
+                  - Ghi source URL, commit, version và file hashes.
+                </div>
+              </ScrollArea>
                 </div>
               </ScrollArea>
             </div>
