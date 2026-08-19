@@ -16,19 +16,27 @@ export class AdaptiveOcrSelector {
   async selectBestProvider(inputContext: { isPdf: boolean }): Promise<OcrProvider> {
     const profile = await deviceProfiler.getProfile();
     const providers = await ocrProviderRegistry.getSupportedProviders(profile.capabilities);
+    
+    const textLayerProvider = providers.find(p => p.id === "pdf-text-layer");
+    const tesseractProvider = providers.find(p => p.id === "tesseract-wasm");
 
-    // 1. Always check PDF text layer first if it's a PDF
-    if (inputContext.isPdf) {
-      const pdfProvider = providers.find(p => p.id === "pdf-text-layer");
-      if (pdfProvider) return pdfProvider;
+    // Stage 1: Text-layer extraction only
+    if (ocrConfig.rolloutStage <= 1) {
+      if (textLayerProvider) return textLayerProvider;
     }
 
-    // 2. Experimental / High-end providers detection logic would go here
-    // Example: if (profile.tier === 'high' && profile.capabilities.hasWebGPU) ...
+    // 1. Always check PDF text layer first if it's a PDF
+    if (inputContext.isPdf && textLayerProvider) {
+      return textLayerProvider;
+    }
 
-    // 3. Fallback to Tesseract
-    const fallback = providers.find(p => p.id === "tesseract-wasm");
-    if (fallback) return fallback;
+    // Stage 2+: Enable Tesseract for test group / specific devices
+    // Stage 3+: Full adaptive selection
+    if (ocrConfig.rolloutStage >= 2 && tesseractProvider) {
+      return tesseractProvider;
+    }
+
+    if (textLayerProvider) return textLayerProvider;
 
     throw new Error("No suitable OCR provider found for this device");
   }
