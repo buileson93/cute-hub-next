@@ -142,72 +142,48 @@ export function UserMenu() {
               </div>
               <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Bạn đang cải thiện UI/UX source MIRATS theo Astryx. Chưa sửa code trong bước này.{"\n\n"}
+                  Sửa nền tảng Astryx trước khi chỉnh bất kỳ màn hình nào.{"\n\n"}
                   MỤC TIÊU:{"\n"}
-                  Tạo inventory đầy đủ, đo baseline và phân loại bề mặt trước khi migration. Không thực hiện full-app rewrite.{"\n\n"}
-                  BẮT BUỘC CHẠY/ĐỌC:{"\n"}
-                  - astryx docs migration --dense{"\n"}
-                  - astryx docs principles --dense{"\n"}
-                  - astryx docs layout --dense{"\n"}
-                  - astryx docs tokens --dense{"\n"}
-                  - astryx template --list{"\n"}
-                  - astryx template AppShellTopNavWithSideNav --skeleton nếu template tồn tại ở version đã cài{"\n"}
-                  - astryx component AppShell --json{"\n"}
-                  - astryx component SideNav --json{"\n"}
-                  - astryx component TopNav --json{"\n"}
-                  - astryx component Layout --json{"\n"}
-                  - astryx component LayoutPanel --json{"\n"}
-                  - astryx component List --json{"\n"}
-                  - astryx component Table --json{"\n"}
-                  - astryx component Button --json{"\n"}
-                  - astryx component IconButton --json{"\n"}
-                  - astryx component TabList --json{"\n\n"}
-                  Không đoán prop. Nếu tên template/component thay đổi theo version, dùng CLI của package đang cài làm nguồn sự thật.{"\n\n"}
-                  INVENTORY:{"\n"}
-                  1. Root Theme/provider và CSS import order.{"\n"}
-                  2. AppShell, TopNav, SideNav, MobileNav.{"\n"}
-                  3. Shared primitives trong src/components/ui.{"\n"}
-                  4. PageHeader, PageBody, StandardTable, Card, dialog, sheet, tabs, form controls.{"\n"}
-                  5. Các route theo archetype:{"\n"}
-                     - tracker/work tool{"\n"}
-                     - dashboard{"\n"}
-                     - form/settings{"\n"}
-                     - media/document library{"\n"}
-                     - graph/canvas{"\n"}
-                  6. Hard-coded colors, arbitrary width/height/radius/shadow.{"\n"}
-                  7. Nested scroll container và nested padding.{"\n"}
-                  8. Fixed toolbar/tab/filter gây tràn mobile.{"\n\n"}
-                  BASELINE SCREENSHOT:{"\n"}
-                  - 1440×900{"\n"}
-                  - 1024×768{"\n"}
-                  - 768×1024{"\n"}
-                  - 390×844{"\n"}
-                  - 360×800{"\n\n"}
-                  BẮT BUỘC CHỤP LIGHT/DARK:{"\n"}
-                  - Dashboard{"\n"}
-                  - Danh sách tài sản{"\n"}
-                  - Chi tiết tài sản{"\n"}
-                  - Hệ thống cây{"\n"}
-                  - Dự án/Kanban/Gantt{"\n"}
-                  - Thư viện tài liệu{"\n"}
-                  - Một form/dialog dài{"\n"}
-                  - Một trang admin bảng dữ liệu{"\n\n"}
-                  METRIC BASELINE:{"\n"}
-                  - chiều cao shell/header chiếm viewport{"\n"}
-                  - diện tích content thực dùng{"\n"}
-                  - số lớp padding từ shell đến dữ liệu{"\n"}
-                  - số horizontal scrollbar ngoài ý muốn{"\n"}
-                  - số action bị rớt khỏi màn hình{"\n"}
-                  - số card dùng để bọc list row{"\n"}
-                  - số hard-coded colors/arbitrary sizes{"\n"}
-                  - CLS/hydration flash{"\n\n"}
-                  ĐẦU RA:{"\n"}
-                  - UI inventory theo file/route.{"\n"}
-                  - Danh sách P0/P1/P2.{"\n"}
-                  - Bản đồ component cũ → Astryx component.{"\n"}
-                  - Responsive contract từng archetype.{"\n"}
-                  - Kế hoạch migration route-by-route.{"\n"}
-                  - Không viết code cho đến khi baseline được lưu.
+                  Chỉ còn một nguồn theme rõ ràng, CSS layer đúng theo version Astryx đang cài và utility override hoạt động có chủ đích.{"\n\n"}
+                  YÊU CẦU:{"\n"}
+                  1. Đọc Migration Guide và dùng chính snippet Tailwind v4 phù hợp package hiện tại.{"\n"}
+                  2. Khai báo canonical @layer order một lần trước mọi import.{"\n"}
+                  3. Import Astryx reset/core/theme và Tailwind preflight/utilities đúng layer.{"\n"}
+                  4. Audit tất cả global/reset stylesheet; không để reset unlayered ghi đè component.{"\n"}
+                  5. Loại bỏ hoặc hạ layer custom reset/skin xung đột.{"\n"}
+                  6. `.astryx-control` không được đặt cứng background/border làm mất variant.{"\n"}
+                  7. App utility nằm ở utilities layer và thắng có chủ đích.{"\n"}
+                  8. Không dùng `!important` để vá cascade.{"\n\n"}
+                  CHỌN MỘT NGUỒN THEME:{"\n"}
+                  - Hoặc theme Stone chính thức + override qua defineTheme.{"\n"}
+                  - Hoặc df3Theme hoàn chỉnh dựa trên Astryx token API.{"\n"}
+                  - Không đồng thời dùng theme Stone, root token viết tay và component skin như ba theme độc lập.{"\n\n"}
+                  THEME:{"\n"}
+                  - Dùng defineTheme/accent family theo API thực tế.{"\n"}
+                  - Không chỉ override `--color-accent` rồi bỏ stale `--color-on-accent`.{"\n"}
+                  - Dùng token semantic cho body/surface/card/text/border/status.{"\n"}
+                  - Kiểm tra contrast light/dark.{"\n\n"}
+                  PROVIDER:{"\n"}
+                  - Kiểm tra cách SSR-safe được Astryx version hiện tại hỗ trợ.{"\n"}
+                  - Không bỏ Theme khỏi SSR chỉ để né browser API nếu có cách import/build đúng.{"\n"}
+                  - Loại bỏ comment/lazy logic không đúng thực tế.{"\n"}
+                  - Không tạo flash đổi theme sau hydration.{"\n\n"}
+                  TẠO FOUNDATION SMOKE TEST:{"\n"}
+                  - Official Astryx Button primary.{"\n"}
+                  - IconButton.{"\n"}
+                  - TextInput.{"\n"}
+                  - Card.{"\n"}
+                  - Table/List.{"\n"}
+                  - TabList.{"\n"}
+                  - Dialog.{"\n"}
+                  - Light/dark toggle.{"\n\n"}
+                  ASSERT:{"\n"}
+                  - Button có padding khác 0.{"\n"}
+                  - Primary fill đúng.{"\n"}
+                  - Input/card/list có spacing/border đúng.{"\n"}
+                  - Focus ring đúng.{"\n"}
+                  - Không có hydration mismatch.{"\n\n"}
+                  Chỉ khi foundation test đạt mới chuyển sang Prompt 2.
                 </div>
               </ScrollArea>
             </div>
