@@ -515,3 +515,131 @@ function StatusBadge({ status }: { status: string }) {
     default: return <Badge variant="outline">Chưa có</Badge>;
   }
 }
+
+function OcrBenchmarkTab() {
+  const [profile, setProfile] = useState<any>(null);
+  
+  useEffect(() => {
+    deviceProfiler.getProfile().then(setProfile);
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs flex items-center gap-2">
+              <Monitor className="h-3.5 w-3.5 text-blue-500" />
+              Cấu hình thiết bị
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {profile ? (
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Phân lớp:</span>
+                  <Badge variant={profile.tier === 'high' ? 'info' : 'secondary'}>
+                    {profile.tier.toUpperCase()}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">WebGPU:</span>
+                  <span>{profile.capabilities.hasWebGPU ? "✅" : "❌"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">WASM SIMD:</span>
+                  <span>{profile.capabilities.hasWasmSimd ? "✅" : "❌"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Benchmark:</span>
+                  <span>{Math.round(profile.benchmarkScore)}ms</span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground">Đang phân tích...</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs flex items-center gap-2">
+              <Activity className="h-3.5 w-3.5 text-green-500" />
+              Target Metrics
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">CER Target:</span>
+              <span className="font-mono text-green-600">&lt; 2.5%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Technical Acc:</span>
+              <span className="font-mono text-blue-600">&gt; 98%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Search Latency:</span>
+              <span className="font-mono">&lt; 100ms</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs flex items-center gap-2">
+              <Zap className="h-3.5 w-3.5 text-amber-500" />
+              Quality Gate
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-muted-foreground italic">
+            Tự động loại bỏ provider nếu CER cao hơn Tesseract 15% trên tập fixture.
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Bộ Fixture & Kết quả gần đây</CardTitle>
+          <CardDescription className="text-[10px]">
+            Kiểm thử độ chính xác trên các mẫu tài liệu chuẩn
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="border rounded-md">
+            <table className="w-full text-[11px] text-left">
+              <thead className="bg-muted border-b">
+                <tr>
+                  <th className="p-2 font-medium">Fixture</th>
+                  <th className="p-2 font-medium">Loại</th>
+                  <th className="p-2 font-medium">CER</th>
+                  <th className="p-2 font-medium">Tech Acc</th>
+                  <th className="p-2 font-medium">Thời gian</th>
+                  <th className="p-2 font-medium">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {OCR_BENCHMARK_FIXTURES.map(f => (
+                  <tr key={f.id} className="hover:bg-muted/30">
+                    <td className="p-2 font-medium">{f.name}</td>
+                    <td className="p-2 capitalize">{f.type}</td>
+                    <td className="p-2 text-muted-foreground">--</td>
+                    <td className="p-2 text-muted-foreground">--</td>
+                    <td className="p-2 text-muted-foreground">--</td>
+                    <td className="p-2">
+                      <Badge variant="outline" className="text-[9px]">READY</Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <Button size="sm" className="h-8 text-xs">
+              <Play className="h-3 w-3 mr-2" /> Chạy Benchmark Toàn bộ
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
