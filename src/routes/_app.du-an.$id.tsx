@@ -155,15 +155,15 @@ function DuAnDetailPage() {
   const [defaultMocId, setDefaultMocId] = useState<string | null>(null);
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
 
+  const currentSearch = Route.useSearch();
+  const activeTab = currentSearch.view;
+
   if (loadingDA) {
     return <div className="p-8 text-slate-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Đang tải…</div>;
   }
   if (!duAn) {
     return <Card><CardContent className="p-6">Không tìm thấy dự án.</CardContent></Card>;
   }
-
-  const currentSearch = Route.useSearch();
-  const activeTab = currentSearch.view;
 
   return (
     <div className="flex flex-col gap-4">
@@ -227,6 +227,8 @@ function DuAnDetailPage() {
                 <TabsTrigger value="discovery" className="px-3 h-7 text-xs font-medium">Discovery</TabsTrigger>
                 <TabsTrigger value="delivery" className="px-3 h-7 text-xs font-medium">Delivery</TabsTrigger>
                 <TabsTrigger value="operations" className="px-3 h-7 text-xs font-medium">Operations</TabsTrigger>
+                <TabsTrigger value="hoso" className="px-3 h-7 text-xs font-medium">Hồ sơ</TabsTrigger>
+                <TabsTrigger value="cong-van" className="px-3 h-7 text-xs font-medium">Công văn</TabsTrigger>
               </TabsList>
             </Tabs>
 

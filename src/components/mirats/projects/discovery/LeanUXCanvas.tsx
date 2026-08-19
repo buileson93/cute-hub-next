@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,8 +22,23 @@ interface CanvasData {
   first_steps_experiments: string;
 }
 
-export function LeanUXCanvas({ project_id, initialData }: { project_id: string; initialData?: CanvasData }) {
-  const [data, setData] = useState<CanvasData>(initialData || {
+export function LeanUXCanvas({ project_id }: { project_id: string }) {
+  const qc = useQueryClient();
+  const [saving, setSaving] = useState(false);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["lean-ux-canvas", project_id],
+    queryFn: async () => {
+      const { data, error } = await (supabase.from("lean_ux_canvases" as any) as any)
+        .select("*")
+        .eq("project_id", project_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data as CanvasData;
+    },
+  });
+
+  const [form, setForm] = useState<CanvasData>({
     business_problem: "",
     business_outcomes: "",
     users_customers: "",
@@ -32,16 +48,22 @@ export function LeanUXCanvas({ project_id, initialData }: { project_id: string; 
     riskiest_assumptions: "",
     first_steps_experiments: "",
   });
-  const [saving, setSaving] = useState(false);
+
+  React.useEffect(() => {
+    if (data) setForm(data);
+  }, [data]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = data.id 
-        ? await (supabase.from("lean_ux_canvases" as any) as any).update(data).eq("id", data.id)
-        : await (supabase.from("lean_ux_canvases" as any) as any).insert({ ...data, project_id } as any);
+      const payload = { ...form, project_id };
+      const { data: saved, error } = form.id 
+        ? await (supabase.from("lean_ux_canvases" as any) as any).update(payload).eq("id", form.id).select().single()
+        : await (supabase.from("lean_ux_canvases" as any) as any).insert(payload).select().single();
       
       if (error) throw error;
+      setForm(saved);
+      qc.invalidateQueries({ queryKey: ["lean-ux-canvas", project_id] });
       toast.success("Đã lưu Lean UX Canvas");
     } catch (e: any) {
       toast.error(e.message);
@@ -49,6 +71,8 @@ export function LeanUXCanvas({ project_id, initialData }: { project_id: string; 
       setSaving(false);
     }
   };
+
+  if (isLoading) return <div className="p-4 text-xs text-slate-500">Đang tải canvas...</div>;
 
   return (
     <div className="space-y-6">
@@ -72,51 +96,51 @@ export function LeanUXCanvas({ project_id, initialData }: { project_id: string; 
         <CanvasSection 
           title="1. Business Problem" 
           description="Khía cạnh sản phẩm/doanh nghiệp đang hoạt động kém."
-          value={data.business_problem}
-          onChange={(v) => setData({ ...data, business_problem: v })}
+          value={form.business_problem}
+          onChange={(v) => setForm({ ...form, business_problem: v })}
         />
         <CanvasSection 
           title="2. Business Outcomes" 
           description="Thay đổi hành vi đo được, baseline/target/timeframe."
-          value={data.business_outcomes}
-          onChange={(v) => setData({ ...data, business_outcomes: v })}
+          value={form.business_outcomes}
+          onChange={(v) => setForm({ ...form, business_outcomes: v })}
         />
         <CanvasSection 
           title="3. Users & Customers" 
           description="Nhóm người dùng chịu ảnh hưởng."
-          value={data.users_customers}
-          onChange={(v) => setData({ ...data, users_customers: v })}
+          value={form.users_customers}
+          onChange={(v) => setForm({ ...form, users_customers: v })}
         />
         <CanvasSection 
           title="4. User Benefits" 
           description="Nhu cầu, động lực và giá trị."
-          value={data.user_benefits}
-          onChange={(v) => setData({ ...data, user_benefits: v })}
+          value={form.user_benefits}
+          onChange={(v) => setForm({ ...form, user_benefits: v })}
         />
         <CanvasSection 
           title="5. Solution Ideas" 
           description="Ý tưởng sơ bộ, chưa biến thành cam kết build."
-          value={data.solution_ideas}
-          onChange={(v) => setData({ ...data, solution_ideas: v })}
+          value={form.solution_ideas}
+          onChange={(v) => setForm({ ...form, solution_ideas: v })}
         />
         <CanvasSection 
           title="6. Hypotheses" 
           description="Phát biểu có thể kiểm chứng."
-          value={data.hypotheses}
-          onChange={(v) => setData({ ...data, hypotheses: v })}
+          value={form.hypotheses}
+          onChange={(v) => setForm({ ...form, hypotheses: v })}
           placeholder="“Chúng tôi tin rằng [business outcome] sẽ đạt được nếu [users] nhận được [benefit] nhờ [solution]...”"
         />
         <CanvasSection 
           title="7. Riskiest Assumptions" 
-          description="Giả định rủi ro nhất + impact/confidence/evidence."
-          value={data.riskiest_assumptions}
-          onChange={(v) => setData({ ...data, riskiest_assumptions: v })}
+          description="Giả định rủi r nhất + impact/confidence/evidence."
+          value={form.riskiest_assumptions}
+          onChange={(v) => setForm({ ...form, riskiest_assumptions: v })}
         />
         <CanvasSection 
           title="8. First Steps / Experiments" 
           description="Thử nghiệm nhỏ nhất, metric, threshold, owner, due date và result."
-          value={data.first_steps_experiments}
-          onChange={(v) => setData({ ...data, first_steps_experiments: v })}
+          value={form.first_steps_experiments}
+          onChange={(v) => setForm({ ...form, first_steps_experiments: v })}
         />
       </div>
     </div>
