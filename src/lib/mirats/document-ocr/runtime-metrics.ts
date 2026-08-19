@@ -20,7 +20,7 @@ export const runtimeMetricsManager = {
       const profile = await deviceProfiler.getProfile();
       
       // Hardware bucketing to prevent fingerprinting
-      const cpu = profile.capabilities.cpuCores || 0;
+      const cpu = profile.capabilities.hardwareConcurrency || 0;
       const mem = profile.capabilities.deviceMemory || 0;
       
       const cpuBucket = cpu <= 2 ? '1-2' : cpu <= 4 ? '3-4' : cpu <= 8 ? '5-8' : '9+';
