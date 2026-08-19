@@ -90,7 +90,7 @@ function OverviewReport() {
                 currentLayout={layout}
                 onAdd={handleAddWidget}
                 trigger={
-                  <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl border-primary/20 hover:bg-primary/5 transition-all">
+                  <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl !bg-white !text-[#0074e2] border-primary/20 hover:bg-primary/5 transition-all">
                     <Icon name="action.add" size="tiny" className="text-primary" />
                     <span className="text-[11px] font-bold uppercase tracking-wider">Thêm Widget</span>
                   </Button>

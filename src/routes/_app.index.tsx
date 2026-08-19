@@ -85,10 +85,10 @@ function Dashboard() {
                  currentLayout={layout}
                  onAdd={handleAddWidget}
                  trigger={
-                   <Button size="default" variant="outline" className="astryx-control gap-2 border-primary/20 hover:bg-primary/5">
-                     <Icon name="action.add" size="tiny" className="text-primary" />
-                     <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
-                   </Button>
+                    <Button size="default" variant="outline" className="astryx-control gap-2 !bg-white !text-[#0074e2] border-primary/20 hover:bg-primary/5">
+                      <Icon name="action.add" size="tiny" className="text-primary" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
+                    </Button>
                  }
                />
                <Button 
