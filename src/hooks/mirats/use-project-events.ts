@@ -46,7 +46,7 @@ export function useProjectEvents(projectId: string, filters?: {
         .eq("du_an_id", projectId)
         .order("occurred_at", { ascending: false });
 
-      if (filters?.eventType) query = query.eq("event_type", filters.eventType);
+      if (filters?.eventType) query = query.eq("event_type", filters.eventType as any);
       if (filters?.actorId) query = query.eq("actor_id", filters.actorId);
       if (filters?.startDate) query = query.gte("occurred_at", filters.startDate);
       if (filters?.endDate) query = query.lte("occurred_at", filters.endDate);
