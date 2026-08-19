@@ -2,6 +2,7 @@ import { DeviceProfile, deviceProfiler } from "./device-profiler";
 import { QualityProfile, QUALITY_PROFILES } from "./provider";
 import { OcrProvider } from "./provider";
 import { ocrProviderRegistry } from "./provider-registry";
+import { ocrConfig } from "./config";
 
 export class AdaptiveOcrSelector {
   async getRecommendedQuality(): Promise<QualityProfile> {
