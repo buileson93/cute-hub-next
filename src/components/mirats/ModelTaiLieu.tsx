@@ -301,7 +301,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         const hash = await sha256Hex(file);
         
         // Initial queue status
-        const { data: ocrRecord } = await ocrRepository.queueOcr("model_tai_lieu", error.id, hash);
+        await ocrRepository.queueOcr("model_tai_lieu", inserted.id, hash);
         
         // Check cache/duplicate
         const existing = await ocrRepository.findExisting(hash);
