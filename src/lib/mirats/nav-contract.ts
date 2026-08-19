@@ -19,6 +19,7 @@ import {
   LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
   Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
   Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users, Laptop,
+  Cpu,
 } from "lucide-react";
 
 import type { AppRole } from "@/hooks/use-session";
