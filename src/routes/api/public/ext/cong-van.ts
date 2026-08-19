@@ -20,7 +20,9 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
           
           const apiKey = request.headers.get('x-mirats-api-key');
-          if (!apiKey || apiKey !== process.env['MIRATS_EXT_API_KEY']) {
+          const secretKey = (globalThis as any).process?.env?.['MIRATS_EXT_API_KEY'];
+          
+          if (!apiKey || !secretKey || apiKey !== secretKey) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
               status: 401,
               headers: { 'Content-Type': 'application/json' }
