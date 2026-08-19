@@ -158,39 +158,52 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Container Policy & Archetypes
+                Mobile-First & Performance
               </div>
               <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Rà từng route và áp container policy Astryx theo archetype.{"\n\n"}
-                  TRACKER/WORK TOOL:{"\n"}
-                  - Tài sản, hệ thống, công việc, sự cố, dự án, giấy phép, tài liệu.{"\n"}
-                  - Dùng Table hoặc List/ListItem edge-to-edge có divider.{"\n"}
-                  - Chọn row mở LayoutPanel inspector.{"\n"}
-                  - Không bọc từng record bằng Card.{"\n\n"}
-                  DASHBOARD:{"\n"}
-                  - Card chỉ cho KPI/widget/chart độc lập.{"\n"}
-                  - Không Card lồng Card.{"\n"}
-                  - Dùng grid responsive và allow user customize layout nhưng không phá minimum size.{"\n\n"}
-                  FORMS/SETTINGS:{"\n"}
-                  - FormLayout/Section.{"\n"}
-                  - Card chỉ cho nhóm billing/dangerous hoặc boundary có ý nghĩa.{"\n"}
-                  - Label/description/error đúng anatomy.{"\n\n"}
-                  MEDIA/DOCUMENT:{"\n"}
-                  - Grid card chỉ cho thumbnail/gallery.{"\n"}
-                  - Chế độ list dùng rows với metadata và action overflow.{"\n\n"}
-                  KANBAN:{"\n"}
-                  - Column là region, task là compact interactive item; giảm padding/radius/shadow.{"\n"}
-                  - Metadata một dòng, status qua column/StatusDot thay vì nhiều badge.{"\n"}
-                  - Mobile không ép 5 cột ngang cùng lúc; hiển thị một status tại một thời điểm hoặc selector/tab + swipe có kiểm soát.{"\n\n"}
+                  Thiết kế lại mobile từ 360px trước, sau đó mở rộng lên tablet/desktop. Không chỉ thêm `md:` vào giao diện desktop.{"\n\n"}
+                  VIEWPORT TEST:{"\n"}
+                  - 360×800{"\n"}
+                  - 390×844{"\n"}
+                  - 412×915{"\n"}
+                  - 768×1024{"\n\n"}
+                  GLOBAL:{"\n"}
+                  - Không horizontal scroll ngoài Gantt/graph/table được chủ đích.{"\n"}
+                  - Không fixed width vượt viewport.{"\n"}
+                  - Dùng minmax(0,1fr), min-width:0 và responsive stack.{"\n"}
+                  - Safe-area cho iPhone notch/home indicator.{"\n"}
+                  - Virtual keyboard không che field/action.{"\n"}
+                  - Dialog dài thành full-screen sheet trên mobile.{"\n"}
+                  - Inspector thành sheet/route detail; back đóng đúng context.{"\n\n"}
+                  NAVIGATION:{"\n"}
+                  - MobileNav chính thức hoặc AppShell mobile behavior.{"\n"}
+                  - Tối đa 4–5 hành động thường dùng; phần còn lại vào MoreMenu.{"\n"}
+                  - Search/CommandPalette mở bằng action gọn.{"\n"}
+                  - Route change đóng drawer và trả focus hợp lý.{"\n\n"}
+                  FORMS:{"\n"}
+                  - Một cột.{"\n"}
+                  - Date/time/select full width.{"\n"}
+                  - Footer action sticky có safe-area.{"\n"}
+                  - Validation gần field.{"\n"}
+                  - Không grid `grid-cols-2/3` trên mobile.{"\n\n"}
+                  TABLE/LIST:{"\n"}
+                  - Chỉ giữ title, status, primary metadata và primary action.{"\n"}
+                  - Metadata phụ vào inspector.{"\n"}
+                  - Swipe action chỉ khi có affordance và accessible alternative.{"\n\n"}
+                  KANBAN/GANTT:{"\n"}
+                  - Kanban mobile: status selector + một column visible; giữ filter/task count.{"\n"}
+                  - Gantt mobile: overview + horizontal pan chủ đích; chọn item mở inspector; có List fallback.{"\n\n"}
                   TIMELINE:{"\n"}
-                  - Vertical List rows + divider + marker.{"\n"}
-                  - Attachment nested rows.{"\n"}
-                  - Không Card cho từng event.{"\n\n"}
-                  TABLE:{"\n"}
-                  - Column priority/responsive visibility.{"\n"}
-                  - Mobile chuyển row thành compact list item hoặc horizontal table có frozen key column nếu dữ liệu thật sự columnar.{"\n"}
-                  - Không thu nhỏ chữ để nhét tất cả cột.
+                  - Cột ngày thu gọn.{"\n"}
+                  - Marker 16–20px.{"\n"}
+                  - Nội dung flex-1, attachment wrap.{"\n"}
+                  - Filter mở bottom sheet.{"\n\n"}
+                  PERFORMANCE:{"\n"}
+                  - Lazy-load chart/Gantt/map/OCR/heavy dialogs.{"\n"}
+                  - Virtualize list dài.{"\n"}
+                  - Không render tất cả hidden tab content.{"\n"}
+                  - Image responsive và reserve dimensions để tránh CLS.
                 </div>
               </ScrollArea>
             </div>
