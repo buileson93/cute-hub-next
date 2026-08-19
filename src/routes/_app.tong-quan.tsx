@@ -90,9 +90,9 @@ function OverviewReport() {
                 currentLayout={layout}
                 onAdd={handleAddWidget}
                 trigger={
-                  <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl bg-white text-primary border-primary/20 hover:bg-primary/5 transition-all">
+                  <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl hover:bg-primary/5 transition-all">
                     <Icon name="action.add" size="tiny" className="text-primary" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider">Thêm Widget</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Thêm Widget</span>
                   </Button>
                 }
               />
@@ -112,10 +112,8 @@ function OverviewReport() {
             size="sm" 
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none border-primary/20",
-              isEditing 
-                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" 
-                : "bg-white text-primary hover:bg-primary/5 hover:border-primary/40"
+              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none",
+              !isEditing && "hover:bg-primary/5 hover:border-primary/40"
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />
@@ -128,10 +126,10 @@ function OverviewReport() {
               variant="outline" 
               size="sm" 
               onClick={handleExport}
-              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl bg-white text-primary border-primary/20 hover:bg-primary/5 transition-all"
+              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl hover:bg-primary/5 transition-all"
             >
               <Icon name="action.download" className="text-primary" />
-              <span className="font-bold text-[11px] uppercase tracking-wider">Xuất PDF</span>
+              <span className="font-bold text-[11px] uppercase tracking-wider text-primary">Xuất PDF</span>
             </Button>
           )}
         </div>
