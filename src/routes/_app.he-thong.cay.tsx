@@ -444,7 +444,7 @@ function HeThongCayPage() {
               </AppTooltip>
             )}
             <AppTooltip noiDung="Cấu hình sơ đồ">
-              <Button variant="outline" size="icon" className="h-8 w-8 bg-white text-primary border-primary/20 hover:bg-primary/5" onClick={() => setReorgOpen(true)}>
+              <Button variant="outline" size="icon" className="h-8 w-8 bg-transparent text-primary border-primary/20 hover:bg-primary/5 hover:border-primary/40 shadow-none" onClick={() => setReorgOpen(true)}>
                 <Settings2 className="h-4 w-4" />
               </Button>
             </AppTooltip>
