@@ -336,10 +336,11 @@ function getEventIcon(type: ProjectEventType) {
     case 'task_status_changed': return Clock;
     case 'canvas_published': return Layout;
     case 'document_uploaded': return FileText;
-    case 'document_linked': return ExternalLink;
+    case 'correspondence_created': return FileText;
     default: return Info;
   }
 }
+
 
 function getEventColor(type: ProjectEventType) {
   if (type.includes('created') || type === 'task_completed') {
