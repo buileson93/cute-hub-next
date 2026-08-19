@@ -252,7 +252,9 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/messages": { crumb: "Trao đổi", title: "Tin nhắn" },
   "/forms": { crumb: "Hồ sơ", title: "Biên bản" },
   "/admin/forms": { crumb: "Hồ sơ", title: "Mẫu biên bản" },
+  "/admin/tich-hop": { crumb: "Quản trị", title: "Tích hợp Browser Extension" },
   "/vat-tu": { crumb: "Kho", title: "Vật tư & Kho" },
+
   "/kiem-ke": { crumb: "Tài sản", title: "Kiểm kê tài sản" },
   
   "/kiem-dinh": { crumb: "Vận hành", title: "Kiểm định & Hiệu chuẩn" },
