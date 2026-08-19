@@ -4,6 +4,7 @@ import { ocrPipeline } from "@/lib/mirats/document-ocr/pipeline";
 import { ocrRepository } from "@/lib/mirats/document-ocr/repository";
 import { OcrStatus, OcrSourceType, OcrPageResult } from "@/lib/mirats/document-ocr/types";
 import { QualityProfile } from "@/lib/mirats/document-ocr/provider";
+import { OcrArtifact } from "@/lib/mirats/document-ocr/artifact-types";
 
 export function useOcrTask() {
   const [isProcessing, setIsProcessing] = useState(false);
