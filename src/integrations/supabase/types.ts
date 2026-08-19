@@ -2911,6 +2911,7 @@ export type Database = {
           ghi_chu: string | null
           han_phuc_dap: string | null
           id: string
+          idempotency_key: string | null
           loai: Database["public"]["Enums"]["cong_van_loai"]
           ngay_ban_hanh: string | null
           ngay_tiep_nhan: string | null
@@ -2931,6 +2932,7 @@ export type Database = {
           ghi_chu?: string | null
           han_phuc_dap?: string | null
           id?: string
+          idempotency_key?: string | null
           loai?: Database["public"]["Enums"]["cong_van_loai"]
           ngay_ban_hanh?: string | null
           ngay_tiep_nhan?: string | null
@@ -2951,6 +2953,7 @@ export type Database = {
           ghi_chu?: string | null
           han_phuc_dap?: string | null
           id?: string
+          idempotency_key?: string | null
           loai?: Database["public"]["Enums"]["cong_van_loai"]
           ngay_ban_hanh?: string | null
           ngay_tiep_nhan?: string | null
@@ -2985,6 +2988,7 @@ export type Database = {
           ghi_chu: string | null
           id: string
           loai: Database["public"]["Enums"]["cong_van_lien_ket_loai"]
+          loai_lien_ket: string | null
           tu_id: string
           updated_at: string
         }
@@ -2994,6 +2998,7 @@ export type Database = {
           ghi_chu?: string | null
           id?: string
           loai?: Database["public"]["Enums"]["cong_van_lien_ket_loai"]
+          loai_lien_ket?: string | null
           tu_id: string
           updated_at?: string
         }
@@ -3003,6 +3008,7 @@ export type Database = {
           ghi_chu?: string | null
           id?: string
           loai?: Database["public"]["Enums"]["cong_van_lien_ket_loai"]
+          loai_lien_ket?: string | null
           tu_id?: string
           updated_at?: string
         }
@@ -3235,6 +3241,7 @@ export type Database = {
           external_request_id: string | null
           id: string
           metadata: Json | null
+          metadata_hidden: boolean | null
           occurred_at: string | null
           source: string | null
           summary: string | null
@@ -3250,6 +3257,7 @@ export type Database = {
           external_request_id?: string | null
           id?: string
           metadata?: Json | null
+          metadata_hidden?: boolean | null
           occurred_at?: string | null
           source?: string | null
           summary?: string | null
@@ -3265,6 +3273,7 @@ export type Database = {
           external_request_id?: string | null
           id?: string
           metadata?: Json | null
+          metadata_hidden?: boolean | null
           occurred_at?: string | null
           source?: string | null
           summary?: string | null
