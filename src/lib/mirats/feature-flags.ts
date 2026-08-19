@@ -24,7 +24,12 @@ export type FeatureFlag =
   | "baoTriKpiV2"
   // Bật nền tảng OCR tài liệu PDF.
   | "documentOcrEnabled"
+  | "projectWorkspaceV2"
+  | "projectTimeline"
+  | "externalDocumentApi"
+  | "browserExtensionUpload"
   // Bật lập chỉ mục phía client cho tìm kiếm vector.
+
   | "documentClientIndexEnabled"
   // Thử nghiệm các provider OCR mới.
   | "documentOcrExperimentalProvidersEnabled";
@@ -36,7 +41,12 @@ const DEFAULTS: Record<FeatureFlag, boolean> = {
   reliabilityKpiV2: false,
   baoTriKpiV2: false,
   documentOcrEnabled: false,
+  projectWorkspaceV2: false,
+  projectTimeline: false,
+  externalDocumentApi: false,
+  browserExtensionUpload: false,
   documentClientIndexEnabled: false,
+
   documentOcrExperimentalProvidersEnabled: false,
 };
 
