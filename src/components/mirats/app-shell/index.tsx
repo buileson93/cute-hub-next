@@ -158,52 +158,42 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Mobile-First & Performance
+                Migration & Rollout Loop
               </div>
               <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Thiết kế lại mobile từ 360px trước, sau đó mở rộng lên tablet/desktop. Không chỉ thêm `md:` vào giao diện desktop.{"\n\n"}
-                  VIEWPORT TEST:{"\n"}
-                  - 360×800{"\n"}
-                  - 390×844{"\n"}
-                  - 412×915{"\n"}
-                  - 768×1024{"\n\n"}
-                  GLOBAL:{"\n"}
-                  - Không horizontal scroll ngoài Gantt/graph/table được chủ đích.{"\n"}
-                  - Không fixed width vượt viewport.{"\n"}
-                  - Dùng minmax(0,1fr), min-width:0 và responsive stack.{"\n"}
-                  - Safe-area cho iPhone notch/home indicator.{"\n"}
-                  - Virtual keyboard không che field/action.{"\n"}
-                  - Dialog dài thành full-screen sheet trên mobile.{"\n"}
-                  - Inspector thành sheet/route detail; back đóng đúng context.{"\n\n"}
-                  NAVIGATION:{"\n"}
-                  - MobileNav chính thức hoặc AppShell mobile behavior.{"\n"}
-                  - Tối đa 4–5 hành động thường dùng; phần còn lại vào MoreMenu.{"\n"}
-                  - Search/CommandPalette mở bằng action gọn.{"\n"}
-                  - Route change đóng drawer và trả focus hợp lý.{"\n\n"}
-                  FORMS:{"\n"}
-                  - Một cột.{"\n"}
-                  - Date/time/select full width.{"\n"}
-                  - Footer action sticky có safe-area.{"\n"}
-                  - Validation gần field.{"\n"}
-                  - Không grid `grid-cols-2/3` trên mobile.{"\n\n"}
-                  TABLE/LIST:{"\n"}
-                  - Chỉ giữ title, status, primary metadata và primary action.{"\n"}
-                  - Metadata phụ vào inspector.{"\n"}
-                  - Swipe action chỉ khi có affordance và accessible alternative.{"\n\n"}
-                  KANBAN/GANTT:{"\n"}
-                  - Kanban mobile: status selector + một column visible; giữ filter/task count.{"\n"}
-                  - Gantt mobile: overview + horizontal pan chủ đích; chọn item mở inspector; có List fallback.{"\n\n"}
-                  TIMELINE:{"\n"}
-                  - Cột ngày thu gọn.{"\n"}
-                  - Marker 16–20px.{"\n"}
-                  - Nội dung flex-1, attachment wrap.{"\n"}
-                  - Filter mở bottom sheet.{"\n\n"}
-                  PERFORMANCE:{"\n"}
-                  - Lazy-load chart/Gantt/map/OCR/heavy dialogs.{"\n"}
-                  - Virtualize list dài.{"\n"}
-                  - Không render tất cả hidden tab content.{"\n"}
-                  - Image responsive và reserve dimensions để tránh CLS.
+                  Thực hiện migration từng surface, không rewrite toàn app.{"\n\n"}
+                  THỨ TỰ:{"\n\n"}
+                  P0 Foundation:{"\n"}
+                  1. Theme/CSS layer.{"\n"}
+                  2. Official AppShell/MobileNav.{"\n"}
+                  3. Shared primitives.{"\n"}
+                  4. Page frames và responsive contracts.{"\n\n"}
+                  P1 Core workflows:{"\n"}
+                  5. Danh sách tài sản.{"\n"}
+                  6. Chi tiết tài sản.{"\n"}
+                  7. Hệ thống cây/thành phần.{"\n"}
+                  8. Dự án: Board/Gantt/Timeline/Discovery/Tài liệu.{"\n"}
+                  9. Bảo trì/sự cố/công việc.{"\n"}
+                  10. Thư viện tài liệu và search.{"\n\n"}
+                  P2 Supporting:{"\n"}
+                  11. Dashboard.{"\n"}
+                  12. Forms/settings.{"\n"}
+                  13. Admin tables.{"\n"}
+                  14. Messaging/AI/quick actions.{"\n\n"}
+                  VÒNG LẶP MỖI ROUTE:{"\n"}
+                  1. Đọc Astryx component docs chính xác.{"\n"}
+                  2. Chụp before.{"\n"}
+                  3. Ghi responsive contract.{"\n"}
+                  4. Giữ nguyên data/routing/business logic.{"\n"}
+                  5. Chuyển frame/container trước.{"\n"}
+                  6. Thay primitive.{"\n"}
+                  7. Xóa hard-coded color/arbitrary spacing.{"\n"}
+                  8. Kiểm tra loading/empty/error/permission denied.{"\n"}
+                  9. Screenshot light/dark ở 5 viewport.{"\n"}
+                  10. Typecheck/test/build.{"\n"}
+                  11. Chỉ đánh dấu hoàn tất khi không còn wrapper legacy mới.{"\n\n"}
+                  Không merge nhiều route chưa test trong một batch lớn.
                 </div>
               </ScrollArea>
             </div>
