@@ -6,14 +6,15 @@ import { ocrConfig } from "../config";
 describe("AdaptiveOcrSelector", () => {
   let selector: AdaptiveOcrSelector;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     selector = new AdaptiveOcrSelector();
     deviceProfiler.setTierOverride(null);
     // Ensure rollout stage allows Tesseract for tests
     vi.spyOn(ocrConfig, 'rolloutStage', 'get').mockReturnValue(3);
     
     // Explicitly mock isSupported for providers to avoid environment-specific failures in tests
-    const providers = (await import('../provider-registry')).ocrProviderRegistry.getAllProviders();
+    const registryModule = await import('../provider-registry');
+    const providers = registryModule.ocrProviderRegistry.getAllProviders();
     providers.forEach(p => {
       vi.spyOn(p, 'isSupported').mockResolvedValue(true);
     });
