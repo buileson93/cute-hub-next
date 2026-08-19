@@ -37,7 +37,7 @@ export class MiniSearchAdapter {
   constructor() {
     this.engine = new MiniSearch({
       fields: ['fileName', 'sourceCode', 'sourceName', 'description', 'normalizedText'],
-      storeFields: ['id', 'sourceType', 'sourceId', 'fileName', 'page', 'route'],
+      storeFields: ['id', 'sourceType', 'sourceId', 'fileName', 'page', 'route', 'normalizedText'],
       searchOptions: {
         boost: {
           fileName: 4,
@@ -84,10 +84,20 @@ export class MiniSearchAdapter {
   }
 
   private generateSnippet(result: SearchResult, query: string): string {
-    // Basic snippet logic - in a real app we'd fetch the raw text
-    // MiniSearch doesn't store the full text by default unless in storeFields
-    // We'll return a placeholder or implement snippet extraction if we store rawText
-    return "..."; 
+    const text = result.normalizedText || "";
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    const index = text.toLowerCase().indexOf(terms[0]);
+    
+    if (index === -1) return text.substring(0, 100) + "...";
+    
+    const start = Math.max(0, index - 40);
+    const end = Math.min(text.length, index + 60);
+    let snippet = text.substring(start, end);
+    
+    if (start > 0) snippet = "..." + snippet;
+    if (end < text.length) snippet = snippet + "...";
+    
+    return snippet;
   }
 
   toJSON(): string {

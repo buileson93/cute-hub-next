@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { FileText, Search, Package, HardDrive, Download, Eye, ExternalLink } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { storage } from "@/lib/storage";
 import { useCanDownloadAttachments } from "@/hooks/use-can-download";
+import { useOcrSearch } from "@/lib/mirats/search/ocr-index/use-ocr-search";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type TaiLieuRow = {
   id: string;
@@ -32,14 +35,20 @@ export const Route = createFileRoute("/_app/tai-lieu")({
   validateSearch: (search: Record<string, unknown>) => ({
     q: (search.q as string) || "",
     doc: (search.doc as string) || "",
+    filter: (search.filter as string) || "all",
   }),
 });
 
 function TaiLieuLibraryPage() {
-  const { q: initialQ, doc: initialDoc } = Route.useSearch();
+  const { q: initialQ, doc: initialDoc, filter: initialFilter } = Route.useSearch();
   const [searchTerm, setSearchTerm] = useState(initialQ);
-  const [selectedDocId, setSelectedDocId] = useState<string | null>(initialDoc || null);
+  const [activeFilter, setActiveFilter] = useState(initialFilter);
+  const [selectedDocData, setSelectedDocData] = useState<{ id: string; page?: number } | null>(
+    initialDoc ? { id: initialDoc } : null
+  );
   const [viewerOpen, setViewerOpen] = useState(!!initialDoc);
+  
+  const { search: searchOcr, isReady: ocrReady } = useOcrSearch();
   
   const { data: allDocs, isLoading } = useQuery({
     queryKey: ["all_tai_lieu"],
@@ -47,12 +56,12 @@ function TaiLieuLibraryPage() {
       const [thietBiTep, modelTep] = await Promise.all([
         supabase
           .from("thiet_bi_tep_dinh_kem")
-          .select("*, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi)")
+          .select("*, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi), tai_lieu_ocr(status)")
           .eq("loai", "tai_lieu")
           .order("created_at", { ascending: false }),
         supabase
           .from("model_tai_lieu")
-          .select("*, model:model_id(ten, ma)")
+          .select("*, model:model_id(ten, ma), tai_lieu_ocr(status)")
           .order("created_at", { ascending: false })
       ]);
 
@@ -82,42 +91,105 @@ function TaiLieuLibraryPage() {
 
   const filteredDocs = useMemo(() => {
     if (!allDocs) return [];
-    if (!searchTerm) return allDocs;
+    
+    let base = allDocs;
+    
+    // Status filters
+    if (activeFilter === 'indexed') base = base.filter(d => (d as any).tai_lieu_ocr?.some((o: any) => o.status === 'completed'));
+    if (activeFilter === 'ocr_pending') base = base.filter(d => (d as any).tai_lieu_ocr?.some((o: any) => o.status === 'processing' || o.status === 'pending'));
+    if (activeFilter === 'ocr_error') base = base.filter(d => (d as any).tai_lieu_ocr?.some((o: any) => o.status === 'failed'));
+
+    if (!searchTerm.trim()) return base.map(d => ({ ...d, ocrResults: [] }));
+
+    // Use OCR engine if ready
+    if (ocrReady) {
+      const ocrResults = searchOcr(searchTerm);
+      // Group results by sourceId
+      const grouped = new Map<string, any[]>();
+      ocrResults.forEach(r => {
+        if (!grouped.has(r.sourceId)) grouped.set(r.sourceId, []);
+        grouped.get(r.sourceId)!.push(r);
+      });
+
+      return base.map(doc => {
+        const matches = grouped.get(doc.id) || [];
+        const lowerQ = searchTerm.toLowerCase();
+        const metaMatch = 
+          doc.file_name?.toLowerCase().includes(lowerQ) || 
+          doc.mo_ta?.toLowerCase().includes(lowerQ) ||
+          doc.sourceName?.toLowerCase().includes(lowerQ) ||
+          doc.sourceCode?.toLowerCase().includes(lowerQ);
+        
+        return {
+          ...doc,
+          ocrResults: matches,
+          isMetaMatch: metaMatch
+        };
+      }).filter(d => d.isMetaMatch || d.ocrResults.length > 0)
+        .sort((a, b) => {
+          if (a.isMetaMatch && !b.isMetaMatch) return -1;
+          if (!a.isMetaMatch && b.isMetaMatch) return 1;
+          return (b.ocrResults[0]?.score || 0) - (a.ocrResults[0]?.score || 0);
+        });
+    }
+
+    // Fallback to basic search
     const lowerQ = searchTerm.toLowerCase();
-    return allDocs.filter(d => 
+    return base.filter(d => 
       d.file_name?.toLowerCase().includes(lowerQ) || 
       d.mo_ta?.toLowerCase().includes(lowerQ) ||
       d.sourceName?.toLowerCase().includes(lowerQ) ||
       d.sourceCode?.toLowerCase().includes(lowerQ)
-    );
-  }, [allDocs, searchTerm]);
+    ).map(d => ({ ...d, ocrResults: [] }));
+  }, [allDocs, searchTerm, activeFilter, ocrReady, searchOcr]);
 
   const selectedDoc = useMemo(() => 
-    allDocs?.find(d => d.id === selectedDocId), 
-    [allDocs, selectedDocId]
+    allDocs?.find(d => d.id === selectedDocData?.id), 
+    [allDocs, selectedDocData]
   );
 
   const columns: ColumnDef<TaiLieuRow>[] = [
     {
       header: "Tên tài liệu",
       key: "file_name",
-      render: (row) => (
-        <div className="flex items-center gap-2 py-1">
-          <FileText className="h-4 w-4 text-red-500 shrink-0" />
-          <div className="min-w-0">
-            <button 
-              className="font-medium hover:underline text-left block truncate"
-              onClick={() => {
-                setSelectedDocId(row.id);
-                setViewerOpen(true);
-              }}
-            >
-              {row.file_name}
-            </button>
-            {row.mo_ta && (
-              <div className="text-[10px] text-muted-foreground truncate">{row.mo_ta}</div>
+      render: (row: any) => (
+        <div className="flex flex-col py-1 gap-1">
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-red-500 shrink-0" />
+            <div className="min-w-0">
+              <button 
+                className="font-medium hover:underline text-left block truncate"
+                onClick={() => {
+                  setSelectedDocData({ id: row.id });
+                  setViewerOpen(true);
+                }}
+              >
+                {row.file_name}
+              </button>
+            </div>
+            {row.tai_lieu_ocr?.[0]?.status === 'completed' && (
+              <Badge variant="outline" className="text-[9px] h-4 px-1 bg-green-50 text-green-700 border-green-200">OCR</Badge>
             )}
           </div>
+          {row.ocrResults?.length > 0 && (
+            <div className="ml-6 space-y-1">
+              {row.ocrResults.slice(0, 2).map((res: any, idx: number) => (
+                <div 
+                  key={idx} 
+                  className="text-[10px] text-muted-foreground italic cursor-pointer hover:text-foreground line-clamp-1 bg-muted/30 px-1.5 py-0.5 rounded"
+                  onClick={() => {
+                    setSelectedDocData({ id: row.id, page: res.page });
+                    setViewerOpen(true);
+                  }}
+                >
+                  Trang {res.page}: {res.snippet}
+                </div>
+              ))}
+            </div>
+          )}
+          {row.mo_ta && !row.ocrResults?.length && (
+            <div className="ml-6 text-[10px] text-muted-foreground truncate">{row.mo_ta}</div>
+          )}
         </div>
       )
     },
@@ -163,7 +235,7 @@ function TaiLieuLibraryPage() {
       header: "",
       render: (row) => (
         <DocActions row={row} onOpenViewer={() => {
-          setSelectedDocId(row.id);
+          setSelectedDocData({ id: row.id });
           setViewerOpen(true);
         }} />
       )
@@ -176,11 +248,19 @@ function TaiLieuLibraryPage() {
         title="Thư viện tài liệu" 
         icon={FileText} 
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <Tabs value={activeFilter} onValueChange={setActiveFilter} className="h-8">
+              <TabsList className="h-8">
+                <TabsTrigger value="all" className="text-[10px] px-2 h-7">Tất cả</TabsTrigger>
+                <TabsTrigger value="indexed" className="text-[10px] px-2 h-7">Đã OCR</TabsTrigger>
+                <TabsTrigger value="ocr_pending" className="text-[10px] px-2 h-7">Đang xử lý</TabsTrigger>
+                <TabsTrigger value="ocr_error" className="text-[10px] px-2 h-7">Lỗi OCR</TabsTrigger>
+              </TabsList>
+            </Tabs>
             <div className="relative w-64">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Tìm tên file, mô tả..."
+                placeholder="Tìm tên file, mô tả, nội dung..."
                 className="h-8 pl-8 text-xs"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -203,6 +283,7 @@ function TaiLieuLibraryPage() {
           open={viewerOpen}
           onOpenChange={setViewerOpen}
           doc={selectedDoc}
+          initialPage={selectedDocData?.page}
         />
       )}
     </div>
@@ -240,7 +321,7 @@ function DocActions({ row, onOpenViewer }: { row: TaiLieuRow, onOpenViewer: () =
   );
 }
 
-function DocViewerWrapper({ open, onOpenChange, doc }: { open: boolean, onOpenChange: (v: boolean) => void, doc: any }) {
+function DocViewerWrapper({ open, onOpenChange, doc, initialPage }: { open: boolean, onOpenChange: (v: boolean) => void, doc: any, initialPage?: number }) {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -260,6 +341,7 @@ function DocViewerWrapper({ open, onOpenChange, doc }: { open: boolean, onOpenCh
       fileName={doc.file_name}
       mimeType={doc.mime_type}
       isLoading={loading}
+      initialPage={initialPage}
     />
   );
 }
