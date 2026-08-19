@@ -21,7 +21,13 @@ export type FeatureFlag =
   // (src/lib/mirats/bao-tri-kpi.ts) dựa trên phiếu công việc bảo dưỡng
   // (cong_viec_bao_tri) có ngày đến hạn thực. Mặc định TẮT để không đổi con số
   // đang hiển thị; bật khi đã kiểm chứng parity.
-  | "baoTriKpiV2";
+  | "baoTriKpiV2"
+  // Bật nền tảng OCR tài liệu PDF.
+  | "documentOcrEnabled"
+  // Bật lập chỉ mục phía client cho tìm kiếm vector.
+  | "documentClientIndexEnabled"
+  // Thử nghiệm các provider OCR mới.
+  | "documentOcrExperimentalProvidersEnabled";
 
 const DEFAULTS: Record<FeatureFlag, boolean> = {
   importStaging: true,
@@ -29,6 +35,9 @@ const DEFAULTS: Record<FeatureFlag, boolean> = {
   importEngineUnified: false,
   reliabilityKpiV2: false,
   baoTriKpiV2: false,
+  documentOcrEnabled: false,
+  documentClientIndexEnabled: false,
+  documentOcrExperimentalProvidersEnabled: false,
 };
 
 const KEY = "mirats.features";

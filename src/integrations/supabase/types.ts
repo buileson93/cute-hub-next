@@ -6557,6 +6557,75 @@ export type Database = {
         }
         Relationships: []
       }
+      tai_lieu_ocr: {
+        Row: {
+          average_confidence: number | null
+          created_at: string
+          created_by: string | null
+          error_code: string | null
+          error_message: string | null
+          file_hash: string | null
+          full_text: string | null
+          id: string
+          language: string | null
+          normalized_text: string | null
+          ocr_version: string | null
+          page_count: number | null
+          pages: Json | null
+          processed_pages: number | null
+          provider_id: string | null
+          quality_profile: string | null
+          source_id: string
+          source_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          average_confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          file_hash?: string | null
+          full_text?: string | null
+          id?: string
+          language?: string | null
+          normalized_text?: string | null
+          ocr_version?: string | null
+          page_count?: number | null
+          pages?: Json | null
+          processed_pages?: number | null
+          provider_id?: string | null
+          quality_profile?: string | null
+          source_id: string
+          source_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          average_confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          file_hash?: string | null
+          full_text?: string | null
+          id?: string
+          language?: string | null
+          normalized_text?: string | null
+          ocr_version?: string | null
+          page_count?: number | null
+          pages?: Json | null
+          processed_pages?: number | null
+          provider_id?: string | null
+          quality_profile?: string | null
+          source_id?: string
+          source_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       telegram_da_gui: {
         Row: {
           chat_id: string
