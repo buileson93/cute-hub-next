@@ -4,11 +4,13 @@ import { ocrPipeline } from "@/lib/mirats/document-ocr/pipeline";
 import { ocrRepository } from "@/lib/mirats/document-ocr/repository";
 import { OcrStatus, OcrSourceType, OcrPageResult } from "@/lib/mirats/document-ocr/types";
 import { QualityProfile } from "@/lib/mirats/document-ocr/provider";
+import { OcrArtifact } from "@/lib/mirats/document-ocr/artifact-types";
 
 export function useOcrTask() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, status: "" });
   const [isPaused, setIsPaused] = useState(false);
+  const [activeArtifact, setActiveArtifact] = useState<OcrArtifact | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const startOcr = useCallback(async (
@@ -32,6 +34,7 @@ export function useOcrTask() {
     try {
       setProgress({ current: startPage - 1, total: 0, status: "Đang khởi tạo..." });
 
+      // Note: ocrPipeline.process now internally handles reuse and publishing
       const results = await ocrPipeline.process(sourceType, sourceId, file, {
         signal: abortControllerRef.current.signal,
         language,
@@ -111,7 +114,8 @@ export function useOcrTask() {
     startOcr,
     pauseOcr,
     cancelOcr,
-    setIsPaused
+    setIsPaused,
+    activeArtifact
   };
 }
 

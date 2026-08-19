@@ -5558,6 +5558,132 @@ export type Database = {
         }
         Relationships: []
       }
+      ocr_artifact: {
+        Row: {
+          average_confidence: number | null
+          created_at: string
+          created_by: string | null
+          file_hash: string
+          full_text: string | null
+          id: string
+          language: string
+          model_checksum: string | null
+          model_id: string | null
+          normalized_text: string | null
+          ocr_version: string
+          page_count: number | null
+          pages: Json | null
+          preprocessing_profile: string
+          provider_id: string
+          provider_version: string
+          quality_score: number | null
+          status: string
+          technical_token_accuracy: number | null
+          updated_at: string
+          verified_level: string
+        }
+        Insert: {
+          average_confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          file_hash: string
+          full_text?: string | null
+          id?: string
+          language: string
+          model_checksum?: string | null
+          model_id?: string | null
+          normalized_text?: string | null
+          ocr_version: string
+          page_count?: number | null
+          pages?: Json | null
+          preprocessing_profile: string
+          provider_id: string
+          provider_version: string
+          quality_score?: number | null
+          status: string
+          technical_token_accuracy?: number | null
+          updated_at?: string
+          verified_level?: string
+        }
+        Update: {
+          average_confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          file_hash?: string
+          full_text?: string | null
+          id?: string
+          language?: string
+          model_checksum?: string | null
+          model_id?: string | null
+          normalized_text?: string | null
+          ocr_version?: string
+          page_count?: number | null
+          pages?: Json | null
+          preprocessing_profile?: string
+          provider_id?: string
+          provider_version?: string
+          quality_score?: number | null
+          status?: string
+          technical_token_accuracy?: number | null
+          updated_at?: string
+          verified_level?: string
+        }
+        Relationships: []
+      }
+      ocr_runtime_profile_stats: {
+        Row: {
+          avg_confidence: number | null
+          avg_duration_ms: number | null
+          fallback_rate: number | null
+          id: string
+          model_checksum: string | null
+          p50_duration_ms: number | null
+          p95_duration_ms: number | null
+          page_class: string | null
+          profile_bucket: string
+          provider_id: string
+          provider_version: string
+          quality_profile: string
+          sample_count: number | null
+          success_rate: number | null
+          updated_at: string
+        }
+        Insert: {
+          avg_confidence?: number | null
+          avg_duration_ms?: number | null
+          fallback_rate?: number | null
+          id?: string
+          model_checksum?: string | null
+          p50_duration_ms?: number | null
+          p95_duration_ms?: number | null
+          page_class?: string | null
+          profile_bucket: string
+          provider_id: string
+          provider_version: string
+          quality_profile: string
+          sample_count?: number | null
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Update: {
+          avg_confidence?: number | null
+          avg_duration_ms?: number | null
+          fallback_rate?: number | null
+          id?: string
+          model_checksum?: string | null
+          p50_duration_ms?: number | null
+          p95_duration_ms?: number | null
+          page_class?: string | null
+          profile_bucket?: string
+          provider_id?: string
+          provider_version?: string
+          quality_profile?: string
+          sample_count?: number | null
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       phan_mem_ban_quyen: {
         Row: {
           created_at: string
@@ -6625,6 +6751,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tai_lieu_ocr_link: {
+        Row: {
+          active: boolean | null
+          artifact_id: string | null
+          created_at: string
+          id: string
+          linked_by: string | null
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          active?: boolean | null
+          artifact_id?: string | null
+          created_at?: string
+          id?: string
+          linked_by?: string | null
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          active?: boolean | null
+          artifact_id?: string | null
+          created_at?: string
+          id?: string
+          linked_by?: string | null
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tai_lieu_ocr_link_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "ocr_artifact"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       telegram_da_gui: {
         Row: {
@@ -9601,6 +9765,44 @@ export type Database = {
         Returns: number
       }
       f_unaccent: { Args: { "": string }; Returns: string }
+      find_reusable_ocr_artifact: {
+        Args: {
+          p_file_hash: string
+          p_language: string
+          p_ocr_version: string
+          p_source_id: string
+          p_source_type: string
+        }
+        Returns: {
+          average_confidence: number | null
+          created_at: string
+          created_by: string | null
+          file_hash: string
+          full_text: string | null
+          id: string
+          language: string
+          model_checksum: string | null
+          model_id: string | null
+          normalized_text: string | null
+          ocr_version: string
+          page_count: number | null
+          pages: Json | null
+          preprocessing_profile: string
+          provider_id: string
+          provider_version: string
+          quality_score: number | null
+          status: string
+          technical_token_accuracy: number | null
+          updated_at: string
+          verified_level: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "ocr_artifact"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_ai_public_config: {
         Args: never
         Returns: {
@@ -9923,6 +10125,14 @@ export type Database = {
         Args: { p_ticket_id: string }
         Returns: string
       }
+      publish_ocr_artifact: {
+        Args: {
+          p_artifact_data: Json
+          p_source_id: string
+          p_source_type: string
+        }
+        Returns: string
+      }
       purge_thiet_bi: { Args: { _mas: string[] }; Returns: Json }
       rebuild_search_index: { Args: never; Returns: number }
       record_user_recent: {
@@ -9969,6 +10179,10 @@ export type Database = {
           ten_thiet_bi: string
           thiet_bi_id: string
         }[]
+      }
+      report_ocr_runtime_metric: {
+        Args: { p_metric_data: Json }
+        Returns: undefined
       }
       reset_user_layout_prefs: { Args: never; Returns: undefined }
       resolve_he_thong_ten: { Args: { _he_thong_id: string }; Returns: string }

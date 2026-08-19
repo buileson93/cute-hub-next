@@ -3,9 +3,12 @@ import { adaptiveOcrSelector } from "./adaptive-selector";
 import { classifyPageText } from "./page-classifier";
 import { preprocessImage, disposeCanvas } from "./preprocess";
 import { normalizeViForSearch } from "./postprocess-vi";
-import { OcrPageResult, OcrStatus } from "./types";
+import { OcrPageResult, OcrStatus, OcrSourceType } from "./types";
 import { QUALITY_PROFILES } from "./provider";
 import { isFeatureEnabled } from "../feature-flags";
+import { artifactReuseManager } from "./artifact-reuse";
+import { artifactRepository } from "./artifact-repository";
+import { runtimeMetricsManager } from "./runtime-metrics";
 
 export interface PipelineOptions {
   onProgress?: (processed: number, total: number, currentPageResult: OcrPageResult) => void;
@@ -32,7 +35,20 @@ export class OcrPipeline {
       return [];
     }
 
-    let results: OcrPageResult[] = [];
+    // 1. Attempt Reuse
+    const reuse = await artifactReuseManager.attemptReuse(
+      sourceType as OcrSourceType,
+      sourceId,
+      file,
+      language
+    );
+
+    if (reuse.reused && reuse.artifact) {
+      console.log("Using cached OCR result from Supabase.");
+      return reuse.artifact.pages || [];
+    }
+
+    let results: OcrPageResult[] = reuse.artifact?.pages || [];
     
     try {
       const totalPages = await this.extractor.load(file);
@@ -45,6 +61,9 @@ export class OcrPipeline {
 
       for (let i = startPage; i <= totalPages; i++) {
         if (signal?.aborted) break;
+
+        // Skip pages already in reuse artifact
+        if (reuse.completedPages.has(i)) continue;
 
         const startTime = Date.now();
         const pageData = await this.extractor.getPage(i);
@@ -101,6 +120,9 @@ export class OcrPipeline {
                 page: i,
                 durationMs: Date.now() - startTime
               };
+
+              // Report runtime metrics for collective intelligence
+              runtimeMetricsManager.capturePageMetric(finalResult, qualityProfile as any);
             }
           } finally {
             disposeCanvas(canvas);
@@ -110,7 +132,13 @@ export class OcrPipeline {
         // 3. Post-processing
         finalResult.normalizedText = normalizeViForSearch(finalResult.rawText);
         
-        results.push(finalResult);
+        // Merge with existing partial results
+        const existingIdx = results.findIndex(r => r.page === i);
+        if (existingIdx >= 0) {
+          results[existingIdx] = finalResult;
+        } else {
+          results.push(finalResult);
+        }
         
         if (options.onPageCompleted) {
           options.onPageCompleted(i, finalResult);
@@ -120,6 +148,34 @@ export class OcrPipeline {
           onProgress(i, totalPages, finalResult);
         }
       }
+
+      // Sort results by page number
+      results.sort((a, b) => a.page - b.page);
+
+      // 4. Publish artifact if completed
+      const isComplete = results.length >= totalPages && results.every(r => !!r.rawText);
+      if (isComplete) {
+        const fileHash = await artifactRepository.calculateHash(file);
+        const fullText = results.map(r => r.rawText).join('\n');
+        const avgConfidence = results.reduce((acc, r) => acc + r.confidence, 0) / results.length;
+
+        artifactRepository.publishArtifact(sourceType as OcrSourceType, sourceId, {
+          file_hash: fileHash,
+          ocr_version: "1.0.0",
+          language,
+          provider_id: results[0]?.providerId || "unknown",
+          provider_version: "1.0.0",
+          preprocessing_profile: qualityProfile,
+          page_count: totalPages,
+          pages: results,
+          full_text: fullText,
+          normalized_text: normalizeViForSearch(fullText),
+          average_confidence: avgConfidence,
+          status: 'completed',
+          quality_score: avgConfidence // Simple score for now
+        });
+      }
+
     } finally {
       await this.extractor.close();
     }
