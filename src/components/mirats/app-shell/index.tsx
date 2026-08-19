@@ -32,6 +32,25 @@ import { UiDensityMode } from "@/lib/mirats/ui/ui-density";
 const vatmLogoFullSrc = vatmLogoFull.url;
 const vatmMarkSrc = vatmMark.url;
 
+export const TOUR_STEPS: TourStep[] = [
+  {
+    target: '[data-tour="rail"]',
+    content: "Thanh điều hướng chính chứa các không gian làm việc (Workspace).",
+    title: "Không gian làm việc",
+  },
+  {
+    target: '[data-tour="sidebar"]',
+    content: "Menu chi tiết của từng không gian, giúp bạn truy cập nhanh các tính năng.",
+    title: "Menu tính năng",
+  },
+  {
+    target: '[data-tour="user"]',
+    content: "Quản lý tài khoản, cấu hình mật độ giao diện và đăng xuất.",
+    title: "Tài khoản & Cài đặt",
+  },
+];
+
+
 export function BrandMark({ className }: { className?: string }) {
   const { data } = useBranding();
   const src = data?.logoCompact || vatmMarkSrc;
