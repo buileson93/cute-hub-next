@@ -3,9 +3,12 @@ import { adaptiveOcrSelector } from "./adaptive-selector";
 import { classifyPageText } from "./page-classifier";
 import { preprocessImage, disposeCanvas } from "./preprocess";
 import { normalizeViForSearch } from "./postprocess-vi";
-import { OcrPageResult, OcrStatus } from "./types";
+import { OcrPageResult, OcrStatus, OcrSourceType } from "./types";
 import { QUALITY_PROFILES } from "./provider";
 import { isFeatureEnabled } from "../feature-flags";
+import { artifactReuseManager } from "./artifact-reuse";
+import { artifactRepository } from "./artifact-repository";
+import { runtimeMetricsManager } from "./runtime-metrics";
 
 export interface PipelineOptions {
   onProgress?: (processed: number, total: number, currentPageResult: OcrPageResult) => void;
