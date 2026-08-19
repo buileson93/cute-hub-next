@@ -20,6 +20,25 @@ import { DocViewerDialog } from "../DocViewerDialog";
 import { storage } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 
+function SnippetHighlight({ text }: { text: string }) {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return (
+    <span>
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return (
+            <span key={i} className="bg-yellow-200 text-yellow-900 font-medium px-0.5 rounded">
+              {part.slice(2, -2)}
+            </span>
+          );
+        }
+        return part;
+      })}
+    </span>
+  );
+}
+
 export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChange?: (open: boolean) => void }) {
   const [internalOpen, setInternalOpen] = useState(false);
   
