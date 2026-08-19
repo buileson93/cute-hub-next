@@ -53,9 +53,15 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             level > 0 && "ml-4"
           )}
         >
-          <div className="flex w-6 items-center justify-center shrink-0">
+          <div className="flex w-5 items-center justify-center shrink-0">
             {hasSub ? (
-              <button onClick={() => toggle(node.key)} className="rounded p-0.5 hover:bg-muted">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggle(node.key);
+                }} 
+                className="rounded p-0.5 hover:bg-muted"
+              >
                 {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </button>
             ) : null}
