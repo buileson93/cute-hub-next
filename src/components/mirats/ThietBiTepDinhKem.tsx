@@ -76,13 +76,26 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
     queryKey: ["thiet_bi_tep", tbId],
     enabled: !!tbId,
     queryFn: async (): Promise<TepRow[]> => {
-      const { data, error } = await supabase
+      const { data: rows, error: rowsError } = await supabase
         .from("thiet_bi_tep_dinh_kem")
-        .select("*")
+        .select("id, thiet_bi_id, loai, bucket, file_path, file_name, mime_type, kich_thuoc, mo_ta, created_at")
         .eq("thiet_bi_id", tbId!)
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as TepRow[];
+
+      if (rowsError) throw rowsError;
+      if (!rows) return [];
+
+      // Fetch OCR status separately
+      const { data: ocrData } = await supabase
+        .from("tai_lieu_ocr")
+        .select("source_id, status, processed_pages, page_count")
+        .eq("source_type", "thiet_bi_tep_dinh_kem")
+        .in("source_id", rows.map(r => r.id));
+
+      return rows.map(row => ({
+        ...row,
+        tai_lieu_ocr: ocrData?.find(o => o.source_id === row.id) || null
+      })) as TepRow[];
     },
   });
 
