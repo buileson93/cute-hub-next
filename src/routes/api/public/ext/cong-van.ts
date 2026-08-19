@@ -12,6 +12,7 @@ const extCongVanSchema = z.object({
   metadata: z.record(z.any()).optional(),
 });
 
+
 export const Route = createFileRoute('/api/public/ext/cong-van')({
   server: {
     handlers: {
