@@ -1,8 +1,8 @@
 import * as pdfjsLib from "pdfjs-dist";
 import { RawPdfItem, linesFromItems } from "../gpkt-pdf-parse";
 
-// eslint-disable-next-line import/no-unresolved
-import PdfWorker from "pdfjs-dist/build/pdf.worker.mjs?worker";
+// Lazy load worker only when needed
+let PdfWorker: any = null;
 
 let workerInitialized = false;
 function ensureWorker() {
