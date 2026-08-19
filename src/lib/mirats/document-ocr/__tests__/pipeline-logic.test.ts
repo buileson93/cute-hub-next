@@ -24,7 +24,7 @@ describe("OCR Pipeline Logic", () => {
     });
     
     it("should flag high error ratio", () => {
-      const errorText = "Page content with many invalid characters \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD";
+      const errorText = "Page content with many invalid characters \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD";
       const result = classifyPageText(errorText);
       expect(result.needsOcr).toBe(true);
       expect(result.reason).toContain("High error/placeholder ratio");
