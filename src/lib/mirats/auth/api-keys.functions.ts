@@ -73,11 +73,21 @@ export const createApiKey = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
+    // Audit Log: Key Creation
+    await supabase.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: userId,
+      action: 'key_created',
+      result: 'success',
+      metadata: { name: data.name }
+    } as any);
+
     return {
       ...(newKey as object),
       fullToken,
     };
   });
+
 
 /**
  * Revoke an API key.
