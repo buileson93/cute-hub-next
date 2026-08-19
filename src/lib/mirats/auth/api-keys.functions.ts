@@ -122,7 +122,7 @@ export const revokeApiKey = createServerFn({ method: "POST" })
 /**
  * Verify an API key (Internal helper for middleware).
  */
-export async function verifyApiKey(token: string): Promise<{ 
+export async function verifyApiKey(token: string, ip?: string): Promise<{ 
   isValid: boolean; 
   user_id?: string; 
   scopes?: string[];
@@ -136,7 +136,12 @@ export async function verifyApiKey(token: string): Promise<{
   const keyId = parts[3];
   const secret = parts[4];
 
+  // IP Hashing for privacy
+  const crypto = await import("crypto");
+  const ipHash = ip ? crypto.createHash("sha256").update(ip).digest("hex") : null;
+
   const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
+
   const { data: keyData, error } = await supabaseAdmin
     .from("api_keys" as any)
     .select("secret_hash, user_id, scopes, expires_at, revoked_at")
