@@ -3,7 +3,7 @@
 Giải quyết các lỗi Hooks, đồng bộ dữ liệu Lean UX, và khôi phục tính toàn vẹn cho luồng Dossier/Công văn.
 
 ## 1. Sửa lỗi P0 & Runtime
-- **_app.du-an.\$id.tsx**: Chuyển `Route.useSearch()` lên đầu hàm component, trước mọi `if (loadingDA)` hoặc `if (!duAn)` để tránh vi phạm Rule of Hooks.
+- **_app.du-an.$id.tsx**: Chuyển `Route.useSearch()` lên đầu hàm component, trước mọi `if (loadingDA)` hoặc `if (!duAn)` để tránh vi phạm Rule of Hooks.
 - **Lean UX Canvas**:
     - Chỉnh sửa `LeanUXCanvas.tsx` để nhận dữ liệu từ Supabase theo `project_id`.
     - Sau khi `upsert`, sử dụng `.select().single()` để lấy ID thật từ DB và cập nhật state local, tránh tạo bản ghi trùng khi nhấn Lưu nhiều lần.
@@ -31,4 +31,3 @@ Giải quyết các lỗi Hooks, đồng bộ dữ liệu Lean UX, và khôi ph�
 - **Supabase Types**: Chạy regenerate types để đảm bảo `lean_ux_canvases` và các bảng dự án mới được định nghĩa rõ ràng, loại bỏ `as any`.
 - **RLS**: Kiểm tra lại chính sách RLS cho các bảng `lean_ux_canvases`, `project_dossiers`, `du_an_cong_van` để đảm bảo quyền truy cập đúng theo `user_id` và `role`.
 - **Performance**: Tối ưu hóa việc fetch dữ liệu trong `useProjectWorkspace` để tránh over-fetching.
-
