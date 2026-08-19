@@ -75,9 +75,9 @@ export function PageHeader({
             {Icon && (
               <div className="flex shrink-0 items-center justify-center">
                 {typeof Icon === "string" ? (
-                  <SemanticIcon name={Icon} className="h-4 w-4 text-[#0074e2]" />
+                  <SemanticIcon name={Icon} className="h-4 w-4 text-primary" />
                 ) : (
-                  <Icon className="h-4 w-4 text-[#0074e2]" />
+                  <Icon className="h-4 w-4 text-primary" />
                 )}
               </div>
             )}
