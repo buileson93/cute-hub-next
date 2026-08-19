@@ -121,7 +121,7 @@ export function ListToolbar({
         <div className="ml-auto flex items-center gap-2">
           {extra}
           {onExport && (
-            <Button variant="outline" size="sm" onClick={onExport} className="gap-1">
+            <Button variant="outline" size="sm" onClick={onExport} className="gap-1 !bg-white !text-[#0074e2] border-primary/20 hover:bg-primary/5">
               <Download className="h-4 w-4" />
               Xuất
             </Button>
