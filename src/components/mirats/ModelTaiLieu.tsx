@@ -249,6 +249,17 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
   const [loai, setLoai] = useState("");
   const [moTa, setMoTa] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ocrEnabled, setOcrEnabled] = useState(true);
+  const [ocrQuality, setOcrQuality] = useState<any>("auto");
+  const [deviceTier, setDeviceTier] = useState<string | null>(null);
+  
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } = useOcrTask();
+  
+  useEffect(() => {
+    if (open) {
+      deviceProfiler.getTier().then(tier => setDeviceTier(tier));
+    }
+  }, [open]);
 
   const opts: ComboOption[] = LOAI_GOI_Y.map((v) => ({ value: v, label: v }));
   const reset = () => { setFile(null); setLoai(""); setMoTa(""); };
