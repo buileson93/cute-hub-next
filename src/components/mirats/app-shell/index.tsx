@@ -138,66 +138,44 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Parity Manifest & Guidelines
+                Parity Harness & Comparison
               </div>
               <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Với mỗi component MIRATS thực sự sử dụng, tạo parity manifest trước khi code:{"\n\n"}
-                  {"{"}{"\n"}
-                  {"  "}"component": "Button",{"\n"}
-                  {"  "}"upstreamVersion": "0.4.5",{"\n"}
-                  {"  "}"upstreamCommit": "683015aa9b3f4ba258dc7e4c8f2cc274afce46a5",{"\n"}
-                  {"  "}"integrationMode": "official-dist | swizzle | css-compatibility",{"\n"}
-                  {"  "}"sourceFiles": [],{"\n"}
-                  {"  "}"dependencyFiles": [],{"\n"}
-                  {"  "}"publicProps": [],{"\n"}
-                  {"  "}"variants": [],{"\n"}
-                  {"  "}"sizes": [],{"\n"}
-                  {"  "}"states": [],{"\n"}
-                  {"  "}"slots": [],{"\n"}
-                  {"  "}"stableClasses": [],{"\n"}
-                  {"  "}"dataAttributes": [],{"\n"}
-                  {"  "}"ariaContract": [],{"\n"}
-                  {"  "}"keyboardContract": [],{"\n"}
-                  {"  "}"rtlContract": [],{"\n"}
-                  {"  "}"responsiveContract": [],{"\n"}
-                  {"  "}"sourceHashes": {"{}"}{"\n"}
-                  {"}"}{"\n\n"}
-                  ĐỌC CHO MỖI COMPONENT:{"\n"}
-                  - implementation source{"\n"}
-                  - TypeScript types{"\n"}
-                  - component styles{"\n"}
-                  - tests{"\n"}
-                  - Storybook/showcase{"\n"}
-                  - docs/CLI output{"\n"}
-                  - token dependencies{"\n"}
-                  - hooks, portal, focus và i18n dependencies{"\n\n"}
-                  GIỮ NGUYÊN KHI YÊU CẦU EXACT PARITY:{"\n"}
-                  - default props{"\n"}
-                  - controlled/uncontrolled behavior{"\n"}
-                  - DOM anatomy và slot order{"\n"}
-                  - ref forwarding{"\n"}
-                  - event order{"\n"}
-                  - disabled/loading/selected/invalid/open states{"\n"}
-                  - ARIA và live region{"\n"}
-                  - keyboard navigation{"\n"}
-                  - focus trap/focus return{"\n"}
-                  - portal behavior{"\n"}
-                  - stable `.astryx-*` classes{"\n"}
-                  - data-variant/data-size/data-state{"\n"}
-                  - RTL{"\n"}
-                  - reduced motion{"\n"}
-                  - locale/IME behavior{"\n\n"}
-                  Không tự thay padding, radius, font, icon size hoặc animation. Nếu muốn cải thiện bố cục MIRATS, thực hiện ở composition/page frame, không sửa internals của component đang kiểm tra parity.{"\n\n"}
-                  CSS MỚI:{"\n"}
-                  - Dùng `.mirats .astryx-button[data-variant="primary"]`.{"\n"}
-                  - Không dùng bare `.primary`, `.sm`, `.checked`.{"\n"}
-                  - Không hard-code hex/rgb khi có token.{"\n"}
-                  - Không dùng `!important`.{"\n"}
-                  - Không viết một `.astryx-control` đặt cùng background cho primary/secondary/outline/destructive.{"\n\n"}
-                  MIT:{"\n"}
-                  - Giữ LICENSE và copyright notice trong src/vendor/astryx-v0.4.5/NOTICE.md.{"\n"}
-                  - Ghi source URL, commit, version và file hashes.
+                  Tạo upstream reference harness và MIRATS harness trong cùng môi trường cố định:{"\n"}
+                  - cùng Chromium version{"\n"}
+                  - cùng OS/container{"\n"}
+                  - cùng deviceScaleFactor{"\n"}
+                  - cùng font files{"\n"}
+                  - cùng viewport{"\n"}
+                  - cùng light/dark mode{"\n"}
+                  - cùng reduced-motion setting{"\n\n"}
+                  Với mỗi component, render toàn bộ:{"\n"}
+                  - variant và size{"\n"}
+                  - default/hover/pressed/focus-visible{"\n"}
+                  - disabled/loading/selected/invalid{"\n"}
+                  - open/closed{"\n"}
+                  - icon leading/trailing{"\n"}
+                  - empty/long text{"\n"}
+                  - LTR/RTL{"\n"}
+                  - light/dark{"\n\n"}
+                  SO SÁNH:{"\n"}
+                  1. TypeScript public API.{"\n"}
+                  2. DOM snapshot/anatomy.{"\n"}
+                  3. Stable classes và data attributes.{"\n"}
+                  4. Computed styles.{"\n"}
+                  5. Bounding boxes.{"\n"}
+                  6. Pixel screenshot.{"\n"}
+                  7. Accessibility tree.{"\n"}
+                  8. Keyboard/focus order.{"\n"}
+                  9. Event sequence.{"\n"}
+                  10. Mobile behavior.{"\n\n"}
+                  OUTPUT:{"\n"}
+                  - reports/astryx-parity/{"<"}Component{">"}.json{"\n"}
+                  - reports/astryx-parity/{"<"}Component{">"}-light.png{"\n"}
+                  - reports/astryx-parity/{"<"}Component{">"}-dark.png{"\n"}
+                  - reports/astryx-parity/{"<"}Component{">"}-diff.png{"\n\n"}
+                  Chỉ ghi “100% exact parity” khi source/API/DOM/state/ARIA/keyboard và visual test đều đạt. Nếu chỉ giống hình ảnh nhưng vẫn dùng Radix DOM/behavior khác upstream, ghi rõ “visual parity only”. Không tăng threshold ảnh để che sai padding, màu, font hoặc radius.
                 </div>
               </ScrollArea>
             </div>
