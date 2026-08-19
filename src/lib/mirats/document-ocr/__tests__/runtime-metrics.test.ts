@@ -35,12 +35,14 @@ describe("RuntimeMetricsManager", () => {
     expect(artifactRepository.reportMetric).toHaveBeenCalledWith(
       expect.objectContaining({
         profile_bucket: expect.stringContaining("cpu:5-8"),
-        profile_bucket: expect.stringContaining("mem:9+"),
-        profile_bucket: expect.stringContaining("gpu:y"),
         duration_ms: 500,
         confidence: 0.95
       })
     );
+    
+    const lastCall = vi.mocked(artifactRepository.reportMetric).mock.calls[0][0];
+    expect(lastCall.profile_bucket).toContain("mem:9+");
+    expect(lastCall.profile_bucket).toContain("gpu:y");
   });
 
   it("should handle low-end devices correctly", async () => {
@@ -69,9 +71,12 @@ describe("RuntimeMetricsManager", () => {
     expect(artifactRepository.reportMetric).toHaveBeenCalledWith(
       expect.objectContaining({
         profile_bucket: expect.stringContaining("cpu:1-2"),
-        profile_bucket: expect.stringContaining("mem:<=2"),
-        profile_bucket: expect.stringContaining("gpu:n"),
+        duration_ms: 2000
       })
     );
+    
+    const lastCall = vi.mocked(artifactRepository.reportMetric).mock.calls[0][0];
+    expect(lastCall.profile_bucket).toContain("mem:<=2");
+    expect(lastCall.profile_bucket).toContain("gpu:n");
   });
 });
