@@ -9,6 +9,8 @@ describe("AdaptiveOcrSelector", () => {
   beforeEach(() => {
     selector = new AdaptiveOcrSelector();
     deviceProfiler.setTierOverride(null);
+    // Ensure rollout stage allows Tesseract for tests
+    vi.spyOn(ocrConfig, 'rolloutStage', 'get').mockReturnValue(3);
   });
 
   it("should recommend quality profile based on device tier", async () => {
