@@ -65,7 +65,7 @@ export class OcrPipeline {
         const actualOcrProvider = provider.id === 'pdf-text-layer' 
           ? await (async () => {
               const providers = await (import('./provider-registry').then(m => m.ocrProviderRegistry.getAllProviders()));
-              return providers.find(p => p.id === 'tesseract-wasm')!;
+              return providers.find((p: any) => p.id === 'tesseract-wasm')!;
             })()
           : provider;
 
