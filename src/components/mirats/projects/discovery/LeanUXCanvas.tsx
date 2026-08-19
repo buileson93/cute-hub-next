@@ -29,7 +29,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ["lean-ux-canvas", project_id],
     queryFn: async () => {
-      const { data, error } = await (supabase.from("lean_ux_canvases" as any) as any)
+      const { data, error } = await supabase.from("lean_ux_canvases" as any)
         .select("*")
         .eq("project_id", project_id)
         .maybeSingle();
@@ -58,8 +58,8 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
     try {
       const payload = { ...form, project_id };
       const { data: saved, error } = form.id 
-        ? await (supabase.from("lean_ux_canvases" as any) as any).update(payload).eq("id", form.id).select().single()
-        : await (supabase.from("lean_ux_canvases" as any) as any).insert(payload).select().single();
+        ? await supabase.from("lean_ux_canvases" as any).update(payload).eq("id", form.id).select().single()
+        : await supabase.from("lean_ux_canvases" as any).insert(payload).select().single();
       
       if (error) throw error;
       setForm(saved);
