@@ -49,11 +49,11 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
       <div key={node.key} className="space-y-1">
         <div 
           className={cn(
-            "astryx-control group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50",
-            level > 0 && "ml-4"
+            "astryx-control group flex h-9 items-center gap-2 rounded-md px-2 transition-colors hover:bg-muted/50 w-full"
           )}
+          style={{ paddingLeft: `${8 + level * 16}px` }}
         >
-          <div className="flex w-5 items-center justify-center shrink-0">
+          <div className="flex w-6 items-center justify-center shrink-0">
             {hasSub ? (
               <button 
                 onClick={(e) => {
@@ -66,15 +66,17 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
               </button>
             ) : null}
           </div>
-          <Icon className={cn("h-4 w-4 shrink-0", 
-            node.kind === 'ht' ? 'text-primary' : 
-            node.kind === 'tp' ? 'text-emerald-500' : 'text-muted-foreground'
-          )} />
+          <div className="flex w-6 items-center justify-center shrink-0">
+            <Icon className={cn("h-4 w-4", 
+              node.kind === 'ht' ? 'text-primary' : 
+              node.kind === 'tp' ? 'text-emerald-500' : 'text-muted-foreground'
+            )} />
+          </div>
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
             <span className={cn("truncate text-sm", node.kind === 'ht' ? "font-bold" : "font-medium")}>
               {node.label}
             </span>
-            <span className="astryx-badge astryx-badge-primary astryx-number min-w-[1.25rem] justify-center">
+            <span className="astryx-badge astryx-badge-primary astryx-number min-w-[1.75rem] h-5 px-1 justify-center shrink-0">
               {node.count}
             </span>
           </div>
@@ -99,17 +101,27 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
         </div>
         
         {isExpanded && (
-          <div className="border-l ml-5 pl-1">
+          <div className="relative">
+            <div className="absolute left-[19px] top-0 bottom-2 w-px bg-border/40" style={{ left: `${19 + level * 16}px` }} />
             {node.sub.map(s => renderNode(s, level + 1))}
             {node.devices.map(d => (
-              <div key={d.id} className="group/item ml-8 flex items-center gap-2 py-1 hover:bg-muted/30 rounded px-1 pr-2">
-                <Cpu className="h-3.5 w-3.5 text-muted-foreground/50" />
+              <div 
+                key={d.id} 
+                className="group/item flex h-8 items-center gap-2 hover:bg-muted/30 rounded px-2 transition-colors w-full"
+                style={{ paddingLeft: `${8 + (level + 1) * 16}px` }}
+              >
+                <div className="flex w-6 items-center justify-center shrink-0">
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                </div>
+                <div className="flex w-6 items-center justify-center shrink-0">
+                  <Cpu className="h-3.5 w-3.5 text-muted-foreground/50" />
+                </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link 
                       to="/thiet-bi/$maThietBi" 
                       params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
-                      className="text-xs hover:underline truncate flex-1"
+                      className="text-xs hover:underline truncate flex-1 font-medium"
                     >
                       {d.ten}
                     </Link>
@@ -118,7 +130,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
                     <div className="text-xs font-mono">Mã: {d.ma_thiet_bi}</div>
                   </TooltipContent>
                 </Tooltip>
-                <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2">
+                <div className="ml-auto opacity-0 group-hover/item:opacity-100 flex gap-2 shrink-0">
                    <AppTooltip noiDung="Xem sổ lý lịch tài sản">
                      <Button asChild variant="ghost" size="sm" className="h-6 w-6 p-0">
                        <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: d.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
