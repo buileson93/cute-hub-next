@@ -25,17 +25,17 @@ export class AdaptiveOcrSelector {
       if (textLayerProvider) return textLayerProvider;
     }
 
-    // 1. Always check PDF text layer first if it's a PDF
+    // 1. If it's a PDF, prioritize text layer (it's faster and more accurate for digital text)
     if (inputContext.isPdf && textLayerProvider) {
       return textLayerProvider;
     }
 
-    // Stage 2+: Enable Tesseract for test group / specific devices
-    // Stage 3+: Full adaptive selection
+    // 2. If it's not a PDF (e.g., image) or Stage 2+ allows it, use Tesseract
     if (ocrConfig.rolloutStage >= 2 && tesseractProvider) {
       return tesseractProvider;
     }
 
+    // Fallback if Tesseract isn't available or rollout stage is low
     if (textLayerProvider) return textLayerProvider;
 
     throw new Error("No suitable OCR provider found for this device");
