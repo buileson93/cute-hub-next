@@ -110,7 +110,7 @@ function Dashboard() {
               "astryx-control h-8 px-4 transition-all gap-2 shadow-none border-primary/20",
               isEditing 
                 ? "!bg-[#0074e2] !text-white !border-[#0074e2] hover:!bg-[#0060bc]" 
-                : "bg-white text-[#1d52e0] hover:bg-primary/5 hover:border-primary/40"
+                : "bg-white !text-[#0074e2] hover:bg-primary/5 hover:border-primary/40"
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} size="tiny" className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />

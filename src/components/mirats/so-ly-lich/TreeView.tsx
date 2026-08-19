@@ -23,7 +23,7 @@ export interface TreeNode {
   tpId?: string;
 }
 
-export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: number; histMap: Map<string, any> }) {
+export function TreeView({ tree, total }: { tree: TreeNode[]; total: number }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const toggle = useCallback((key: string) => {

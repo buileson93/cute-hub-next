@@ -59,30 +59,42 @@ export function CayProvider({ children }: { children: ReactNode }) {
 
   const seededTreeRef = React.useRef<string>("");
   React.useEffect(() => {
-    // Generate a simple fingerprint of the tree structure to detect real changes
+    // Generate a fingerprint of the tree structure to detect real data loads
     const fingerprint = viewTree.map(pl => `${pl.id}:${pl.count}`).join("|");
     if (viewTree.length > 0 && seededTreeRef.current !== fingerprint) {
       seededTreeRef.current = fingerprint;
-      setExpandedNodes(prev => {
-        const next = new Set(prev);
-        // Always ensure root and stopped are expanded
-        next.add("root");
-        next.add("root-stopped");
-        
-        // Mặc định bung đến level Nhóm hệ thống (nh) cho người dùng dễ nhìn
-        // Nhưng không bung sâu đến level Hệ thống (ht) hoặc Thiết bị (tb)
-        viewTree.forEach(pl => {
-          next.add(`pl:${pl.id}`);
-          pl.fields.forEach(lv => {
-            if (lv.id && lv.id !== "all") next.add(`lv:${pl.id}:${lv.id}`);
-            // Expand first few groups by default
-            lv.groups.slice(0, 5).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
+      
+      // Auto-expand on search or initial load
+      if (searchQuery.trim() !== "") {
+         const allKeys = new Set<string>(["root", "root-stopped"]);
+         const walk = (nodes: any[]) => {
+           nodes.forEach(n => {
+             allKeys.add(n.key || `pl:${n.id}`);
+             if (n.sub) walk(n.sub);
+             if (n.fields) walk(n.fields);
+             if (n.groups) walk(n.groups);
+             if (n.systems) walk(n.systems);
+           });
+         };
+         walk(viewTree);
+         setExpandedNodes(allKeys);
+      } else {
+        setExpandedNodes(prev => {
+          const next = new Set(prev);
+          next.add("root");
+          next.add("root-stopped");
+          viewTree.forEach(pl => {
+            next.add(`pl:${pl.id}`);
+            pl.fields.forEach(lv => {
+              if (lv.id && lv.id !== "all") next.add(`lv:${pl.id}:${lv.id}`);
+              lv.groups.slice(0, 3).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
+            });
           });
+          return next;
         });
-        return next;
-      });
+      }
     }
-  }, [viewTree]);
+  }, [viewTree, searchQuery]);
 
   const toggleNode = React.useCallback((id: string) => {
     setExpandedNodes((prev) => {
