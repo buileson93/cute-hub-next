@@ -33,13 +33,13 @@ export function DossierRegister({ project_id }: { project_id: string }) {
   const { data: docs = [], isLoading } = useQuery({
     queryKey: ["dossier-docs", project_id],
     queryFn: async () => {
-      const { data: dossiers } = await supabase.from("project_dossiers" as any).select("id").eq("project_id", project_id);
+      const { data: dossiers } = await supabase.from("project_dossiers").select("id").eq("project_id", project_id);
       const dossiersArr = (dossiers || []) as any[];
       if (!dossiersArr.length) return [];
       
       const dossierIds = dossiersArr.map(d => d.id);
       const { data, error } = await supabase
-        .from("dossier_documents" as any)
+        .from("dossier_documents")
         .select("*")
         .in("dossier_id", dossierIds)
         .order("created_at", { ascending: false });

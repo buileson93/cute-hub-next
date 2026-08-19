@@ -21,7 +21,7 @@ export function HillChart({ project_id }: { project_id: string }) {
   const { data: markers = [], isLoading } = useQuery({
     queryKey: ["hill-chart", project_id],
     queryFn: async () => {
-      const { data: pitches } = await supabase.from("pitches" as any).select("id").eq("project_id", project_id);
+      const { data: pitches } = await supabase.from("pitches").select("id").eq("project_id", project_id);
       const pitchesArr = (pitches || []) as any[];
       if (!pitchesArr.length) return [];
       
