@@ -458,7 +458,7 @@ function KanbanView({
 // =====================================================
 // GANTT (frappe-gantt)
 // =====================================================
-function GanttView({ mocs, tasks, projectStart }: { mocs: Moc[]; tasks: CongViec[]; projectStart: string | null }) {
+function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: Moc[]; tasks: CongViec[]; projectStart: string | null; density?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<"Day" | "Week" | "Month">("Week");
 
@@ -522,7 +522,7 @@ function GanttView({ mocs, tasks, projectStart }: { mocs: Moc[]; tasks: CongViec
 
 
   return (
-    <Card>
+    <Card data-density={density}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>
