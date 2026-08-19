@@ -215,12 +215,21 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
           </>
         )}
         {canManage && (
-          <AppTooltip noiDung="Xoá tài liệu này">
-            <Button size="sm" variant="ghost" onClick={onDelete} className="h-7 w-7 p-0 text-red-600">
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Xoá</span>
-            </Button>
-          </AppTooltip>
+          <>
+            {row.tai_lieu_ocr?.status === "failed" && (
+              <AppTooltip noiDung="Thử chạy lại OCR">
+                <Button size="sm" variant="ghost" onClick={() => {/* TODO: Implement retry */}} className="h-7 w-7 p-0">
+                  <RefreshCcw className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
+            )}
+            <AppTooltip noiDung="Xoá tài liệu này">
+              <Button size="sm" variant="ghost" onClick={onDelete} className="h-7 w-7 p-0 text-red-600">
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Xoá</span>
+              </Button>
+            </AppTooltip>
+          </>
         )}
       </div>
       <DocViewerDialog
