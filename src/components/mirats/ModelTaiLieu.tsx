@@ -306,7 +306,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         // Check cache/duplicate
         const existing = await ocrRepository.findExisting(hash);
         if (existing) {
-          await ocrRepository.upsertOcr("model_tai_lieu", error.id, {
+          await ocrRepository.upsertOcr("model_tai_lieu", inserted.id, {
             status: "completed",
             full_text: existing.full_text,
             normalized_text: existing.normalized_text,
