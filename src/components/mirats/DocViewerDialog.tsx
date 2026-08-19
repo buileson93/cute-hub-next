@@ -22,7 +22,8 @@ function detectKind(fileName: string, mimeType?: string | null): Kind {
 }
 
 export function DocViewerDialog({
-  open, onOpenChange, url, fileName, mimeType, isLoading, error, onRetry, initialPage, query
+  open, onOpenChange, url, fileName, mimeType, isLoading, error, onRetry, initialPage, query,
+  tepId, sourceType, sourceId
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -34,7 +35,11 @@ export function DocViewerDialog({
   onRetry?: () => void;
   initialPage?: number;
   query?: string;
+  tepId?: string;
+  sourceType?: string;
+  sourceId?: string;
 }) {
+
   const kind = detectKind(fileName, mimeType);
   
   const finalUrl = useMemo(() => {
