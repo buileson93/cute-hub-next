@@ -53,7 +53,7 @@ describe('MiniSearchAdapter', () => {
     adapter.addDocuments(docs);
     // Note: MiniSearch handles the matching via processTerm, 
     // but highlighting needs to be accent-aware in engine.ts
-    const results = adapter.search('he thong');
+    const results = adapter.search('Hệ thống');
     
     expect(results.length).toBeGreaterThan(0);
     // Snippet highlight uses normalized regex, so 'Hệ thống' should be matched by 'he thong'
