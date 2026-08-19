@@ -158,42 +158,47 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Migration & Rollout Loop
+                Quality Gates & Integrity
               </div>
               <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Thực hiện migration từng surface, không rewrite toàn app.{"\n\n"}
-                  THỨ TỰ:{"\n\n"}
-                  P0 Foundation:{"\n"}
-                  1. Theme/CSS layer.{"\n"}
-                  2. Official AppShell/MobileNav.{"\n"}
-                  3. Shared primitives.{"\n"}
-                  4. Page frames và responsive contracts.{"\n\n"}
-                  P1 Core workflows:{"\n"}
-                  5. Danh sách tài sản.{"\n"}
-                  6. Chi tiết tài sản.{"\n"}
-                  7. Hệ thống cây/thành phần.{"\n"}
-                  8. Dự án: Board/Gantt/Timeline/Discovery/Tài liệu.{"\n"}
-                  9. Bảo trì/sự cố/công việc.{"\n"}
-                  10. Thư viện tài liệu và search.{"\n\n"}
-                  P2 Supporting:{"\n"}
-                  11. Dashboard.{"\n"}
-                  12. Forms/settings.{"\n"}
-                  13. Admin tables.{"\n"}
-                  14. Messaging/AI/quick actions.{"\n\n"}
-                  VÒNG LẶP MỖI ROUTE:{"\n"}
-                  1. Đọc Astryx component docs chính xác.{"\n"}
-                  2. Chụp before.{"\n"}
-                  3. Ghi responsive contract.{"\n"}
-                  4. Giữ nguyên data/routing/business logic.{"\n"}
-                  5. Chuyển frame/container trước.{"\n"}
-                  6. Thay primitive.{"\n"}
-                  7. Xóa hard-coded color/arbitrary spacing.{"\n"}
-                  8. Kiểm tra loading/empty/error/permission denied.{"\n"}
-                  9. Screenshot light/dark ở 5 viewport.{"\n"}
-                  10. Typecheck/test/build.{"\n"}
-                  11. Chỉ đánh dấu hoàn tất khi không còn wrapper legacy mới.{"\n\n"}
-                  Không merge nhiều route chưa test trong một batch lớn.
+                  Tạo quality gate để UI không mất đồng bộ trở lại.{"\n\n"}
+                  AUTOMATED GUARDRAILS:{"\n"}
+                  - Cấm import mới từ wrapper deprecated.{"\n"}
+                  - Cảnh báo hard-coded hex/rgb và Tailwind color families ngoài allowlist.{"\n"}
+                  - Cảnh báo arbitrary width/radius/font size ngoài graph/chart allowlist.{"\n"}
+                  - Cảnh báo Card trong map/list loop ở tracker route.{"\n"}
+                  - Cảnh báo nested scroll container.{"\n"}
+                  - Kiểm tra button/icon accessible label.{"\n"}
+                  - Kiểm tra foundation computed style.{"\n\n"}
+                  VISUAL REGRESSION:{"\n"}
+                  - Playwright screenshots light/dark.{"\n"}
+                  - 1440, 1024, 768, 390, 360.{"\n"}
+                  - Shell open/collapsed/mobile drawer.{"\n"}
+                  - Empty/loading/error/populated.{"\n"}
+                  - Dialog/popover/sheet/command palette.{"\n\n"}
+                  ACCESSIBILITY:{"\n"}
+                  - Keyboard-only flow.{"\n"}
+                  - Focus visible và focus return.{"\n"}
+                  - Skip-to-content.{"\n"}
+                  - Dialog focus trap.{"\n"}
+                  - Mobile drawer accessible.{"\n"}
+                  - Screen reader labels.{"\n"}
+                  - Status không chỉ truyền bằng màu.{"\n\n"}
+                  UX METRIC:{"\n"}
+                  - Tăng diện tích content hữu ích.{"\n"}
+                  - Giảm chiều cao header/toolbar.{"\n"}
+                  - Giảm số lớp padding.{"\n"}
+                  - Giảm số click để tới action chính.{"\n"}
+                  - Không action bị khuất ở 360px.{"\n"}
+                  - Không horizontal overflow ngoài vùng chủ đích.{"\n"}
+                  - Table/list scan nhanh hơn; không hy sinh readability.{"\n\n"}
+                  PERFORMANCE:{"\n"}
+                  - Bundle route.{"\n"}
+                  - LCP/CLS/INP.{"\n"}
+                  - Hydration warnings.{"\n"}
+                  - Heavy component lazy-load.{"\n"}
+                  - Long list virtualization.
                 </div>
               </ScrollArea>
             </div>
