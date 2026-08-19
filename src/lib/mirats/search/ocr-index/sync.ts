@@ -82,7 +82,7 @@ export class SearchSyncManager {
           docId: docId,
           page: p.page,
           rawText: p.rawText,
-          normalizedText: boDauTiengViet(p.rawText).toLowerCase(),
+          normalizedText: chuanHoaTho(p.rawText),
           confidence: p.confidence
         };
         await pageStore.put(pageDoc);
