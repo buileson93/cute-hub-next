@@ -53,6 +53,11 @@ type TaiLieuRow = {
   kich_thuoc: number | null;
   mo_ta: string | null;
   created_at: string;
+  tai_lieu_ocr?: {
+    status: string;
+    processed_pages: number;
+    page_count: number | null;
+  } | null;
 };
 
 function fmtSize(n: number | null | undefined) {
