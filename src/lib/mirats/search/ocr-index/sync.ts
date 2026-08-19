@@ -17,15 +17,13 @@ export class SearchSyncManager {
     const lastSyncedAt = syncState?.lastSyncedAt || '1970-01-01T00:00:00Z';
 
     // 1. Fetch incremental updates from Supabase
-    // We join with the source tables to get fileName, sourceName, etc.
-    // This is a simplified fetch; in production we might need multiple queries 
-    // or a specialized RPC to get metadata + OCR text in one go.
+    // Using manual type casting because the generated types might not have the relationships inferred correctly
     const { data: ocrRows, error } = await supabase
       .from('tai_lieu_ocr')
       .select(`
         *,
-        model_tai_lieu (ten_tai_lieu, ma_tai_lieu, mo_ta),
-        thiet_bi_tep_dinh_kem (file_name, mo_ta)
+        model_tai_lieu!source_id (ten_tai_lieu, ma_tai_lieu, mo_ta),
+        thiet_bi_tep_dinh_kem!source_id (file_name, mo_ta)
       `)
       .gt('updated_at', lastSyncedAt)
       .eq('status', 'completed')
@@ -44,13 +42,21 @@ export class SearchSyncManager {
 
     const indexableDocs: IndexableDoc[] = [];
 
-    for (const row of ocrRows) {
+    for (const row of (ocrRows as any[])) {
       const docId = `${row.source_type}:${row.source_id}`;
       
-      // Map metadata
+      // Map metadata safely
       const meta = row.source_type === 'model_tai_lieu' 
-        ? { name: row.model_tai_lieu?.ten_tai_lieu, code: row.model_tai_lieu?.ma_tai_lieu, desc: row.model_tai_lieu?.mo_ta }
-        : { name: row.thiet_bi_tep_dinh_kem?.file_name, code: undefined, desc: row.thiet_bi_tep_dinh_kem?.mo_ta };
+        ? { 
+            name: row.model_tai_lieu?.ten_tai_lieu, 
+            code: row.model_tai_lieu?.ma_tai_lieu, 
+            desc: row.model_tai_lieu?.mo_ta 
+          }
+        : { 
+            name: row.thiet_bi_tep_dinh_kem?.file_name, 
+            code: undefined, 
+            desc: row.thiet_bi_tep_dinh_kem?.mo_ta 
+          };
 
       const doc: OcrSearchDoc = {
         id: docId,
@@ -60,7 +66,7 @@ export class SearchSyncManager {
         sourceName: meta.name,
         sourceCode: meta.code,
         description: meta.desc,
-        route: row.source_type === 'model_tai_lieu' ? `/danh-muc/tai-lieu/${row.source_id}` : `/thiet-bi/${row.source_id}`, // Simplified routes
+        route: row.source_type === 'model_tai_lieu' ? `/danh-muc/tai-lieu/${row.source_id}` : `/thiet-bi/${row.source_id}`,
         updatedAt: row.updated_at,
         ocrVersion: row.ocr_version || '1.0'
       };
