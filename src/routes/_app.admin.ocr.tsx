@@ -17,8 +17,12 @@ import {
   CheckCircle2,
   Clock,
   HardDrive,
-  Monitor
+  Monitor,
+  BarChart3,
+  Activity,
+  Zap
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -47,7 +51,12 @@ import { getUnprocessedDocuments } from "@/lib/mirats/document-ocr/ocr-admin.fun
 import { OcrBatchProcessor, BatchStatus, BatchConfig } from "@/lib/mirats/document-ocr/batch-processor";
 import { OcrStatus, UnprocessedPdfItem } from "@/lib/mirats/document-ocr/types";
 
+import { calculateCER, calculateTechnicalAccuracy } from "@/lib/mirats/document-ocr/__tests__/utils/metrics";
+import { OCR_BENCHMARK_FIXTURES, OcrFixture } from "@/lib/mirats/document-ocr/__tests__/fixtures/benchmark-docs";
+import { deviceProfiler } from "@/lib/mirats/document-ocr/device-profiler";
+
 export const Route = createFileRoute("/_app/admin/ocr")({
+
   component: OcrAdminPage,
 });
 
@@ -167,11 +176,13 @@ function OcrAdminPage() {
 
       <div className="flex-1 overflow-hidden p-6 space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <TabsList className="grid w-fit grid-cols-3 mb-4">
+          <TabsList className="grid w-fit grid-cols-4 mb-4">
             <TabsTrigger value="dashboard">Bảng điều khiển</TabsTrigger>
             <TabsTrigger value="documents">Tài liệu ({filteredDocs.length})</TabsTrigger>
             <TabsTrigger value="processing">Tiến trình {batchStatus?.isProcessing ? "●" : ""}</TabsTrigger>
+            <TabsTrigger value="benchmark">Benchmark</TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="dashboard" className="flex-1 overflow-auto space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -382,7 +393,12 @@ function OcrAdminPage() {
             </div>
           </TabsContent>
 
+          <TabsContent value="benchmark" className="flex-1 space-y-6 overflow-auto">
+             <OcrBenchmarkTab />
+          </TabsContent>
+
           <TabsContent value="processing" className="flex-1 space-y-6 overflow-auto">
+
             {batchStatus ? (
               <div className="space-y-6 max-w-2xl mx-auto py-4">
                 <Card>
