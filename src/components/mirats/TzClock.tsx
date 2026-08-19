@@ -12,9 +12,7 @@ import { cn } from "@/lib/utils";
 import { getTz, setTz, onTzChange, formatDT, TZ_LABEL, type TzMode } from "@/lib/time";
 
 /**
- * Đồng hồ realtime + selector timezone trên topbar.
- * - Mặc định UTC, có nút chuyển +7 (VN).
- * - Đồng hồ tick mỗi giây, luôn hiển thị theo TZ đang chọn (không dùng giờ máy local).
+ * tìm hiếu nguyên nhân vì sao publish web lên vatm.app không được và cách khắc phục do gì https://cuddly-device-core.lovable.app/ hiện nay cũng không vào được
  */
 export function TzClock() {
   const [mounted, setMounted] = useState(false);
