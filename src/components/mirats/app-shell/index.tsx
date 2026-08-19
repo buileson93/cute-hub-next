@@ -74,7 +74,8 @@ export function UserMenu() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [density, setDensity] = useUserPref<UiDensityMode>("ui-density", "compact");
-  const isInventoryMode = useFeatureFlag("astryxInventoryMode");
+  const isInventoryMode = useMemo(() => isFeatureEnabled("astryxInventoryMode"), []);
+
 
 
   async function handleSignOut() {
