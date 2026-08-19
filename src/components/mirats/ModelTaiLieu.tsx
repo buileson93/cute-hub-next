@@ -294,6 +294,36 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         await storage.from(BUCKET).remove([filePath]);
         throw error;
       }
+      
+      // OCR Flow
+      if (ocrEnabled && file.type === "application/pdf" && isFeatureEnabled("documentOcrEnabled")) {
+        const hash = await sha256Hex(file);
+        
+        // Initial queue status
+        const { data: ocrRecord } = await ocrRepository.queueOcr("model_tai_lieu", error.id, hash);
+        
+        // Check cache/duplicate
+        const existing = await ocrRepository.findExisting(hash);
+        if (existing) {
+          await ocrRepository.upsertOcr("model_tai_lieu", error.id, {
+            status: "completed",
+            full_text: existing.full_text,
+            normalized_text: existing.normalized_text,
+            pages: existing.pages as any,
+            processed_pages: existing.processed_pages,
+            page_count: existing.page_count
+          });
+          toast.success("Đã tìm thấy dữ liệu OCR cũ, tiết kiệm thời gian xử lý.");
+        } else {
+          // Trigger pipeline in background (don't await fully if we want to allow dialog close, 
+          // but here we have the progress dialog open)
+          startOcr(file, "model_tai_lieu", error.id, {
+            quality: ocrQuality,
+            language: "vie+eng"
+          }).catch(err => console.error("OCR Pipeline Error:", err));
+        }
+      }
+
       toast.success("Đã tải tài liệu lên");
       setOpen(false); reset(); onDone();
     } catch (e) {
