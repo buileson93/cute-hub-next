@@ -33,11 +33,14 @@ export function classifyPageText(
   // Count meaningful words
   const words = text.split(/\s+/);
   const meaningfulWords = words.filter(w => {
+    // Only allow words with alphabetic characters (including Vietnamese)
+    const hasAlpha = /[A-Za-zÀ-ỹ]/.test(w);
     const cleaned = w.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
-    return cleaned.length > 0 && !NON_MEANINGFUL_WORDS.has(cleaned);
+    return hasAlpha && cleaned.length > 0 && !NON_MEANINGFUL_WORDS.has(cleaned);
   });
   
   const meaningfulWordCount = meaningfulWords.length;
+  
   
   // Detect placeholder/error characters (e.g. unknown symbols, excessive CID codes)
   const placeholderMatches = text.match(/[\uFFFD]|(cid:\d+)/gi) || [];
