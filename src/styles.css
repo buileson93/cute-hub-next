@@ -110,6 +110,8 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@layer astryx-brand, astryx-skins;
+
 @layer astryx-brand {
   :root {
     --radius: 0.75rem; /* 12px from DF3 */

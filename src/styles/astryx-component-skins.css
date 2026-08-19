@@ -113,12 +113,6 @@
     cursor: pointer;
     user-select: none;
     border: 1px solid var(--color-border);
-    background-color: transparent !important;
-  }
-
-  /* Specific control surfaces that shouldn't be transparent */
-  .astryx-surface, .astryx-card, .astryx-input, .astryx-popover, .astryx-dialog, .astryx-toast, .astryx-command, .astryx-table-container, .astryx-rail, .astryx-sidebar {
-    background-color: revert !important;
   }
 
   /* Control Default Skin (Applied when no specific variant bg overrides it) */
