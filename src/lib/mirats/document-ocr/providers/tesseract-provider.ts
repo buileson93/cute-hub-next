@@ -31,7 +31,7 @@ export class TesseractProvider implements OcrProvider {
     this.currentLang = lang;
   }
 
-  async recognize(input: Blob | ImageData | HTMLCanvasElement, options?: OcrProviderOptions): Promise<OcrPageResult> {
+  async recognize(input: Blob | HTMLCanvasElement, options?: OcrProviderOptions): Promise<OcrPageResult> {
     await this.warmup(options);
     if (!this.worker) throw new Error("Tesseract worker failed to initialize");
 

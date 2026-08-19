@@ -1,6 +1,7 @@
-import { OcrProvider, OcrProviderOptions } from "./provider";
-import { OcrPageResult } from "./types";
-import { DeviceCapabilities } from "./capabilities";
+import { OcrProvider, OcrProviderOptions } from "../provider";
+import { OcrPageResult } from "../types";
+import { DeviceCapabilities } from "../capabilities";
+
 import * as pdfjsLib from "pdfjs-dist";
 
 // Note: pdfjs worker usually needs to be set up globally or passed in
