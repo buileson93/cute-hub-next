@@ -74,7 +74,7 @@ export function TreeView({ tree, total, histMap }: { tree: TreeNode[]; total: nu
             <span className={cn("truncate text-sm", node.kind === 'ht' ? "font-bold" : "font-medium")}>
               {node.label}
             </span>
-            <span className="astryx-badge astryx-badge-primary astryx-number">
+            <span className="astryx-badge astryx-badge-primary astryx-number min-w-[1.25rem] justify-center">
               {node.count}
             </span>
           </div>
