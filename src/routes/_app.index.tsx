@@ -85,9 +85,9 @@ function Dashboard() {
                  currentLayout={layout}
                  onAdd={handleAddWidget}
                  trigger={
-                    <Button size="default" variant="outline" className="astryx-control gap-2 bg-white text-primary border-primary/20 hover:bg-primary/5">
+                    <Button size="default" variant="outline" className="astryx-control gap-2 hover:bg-primary/5">
                       <Icon name="action.add" size="tiny" className="text-primary" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">Thêm Widget</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Thêm Widget</span>
                     </Button>
                  }
                />
@@ -107,10 +107,8 @@ function Dashboard() {
             variant={isEditing ? "default" : "outline"}
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "astryx-control h-8 px-4 transition-all gap-2 shadow-none border-primary/20",
-              isEditing 
-                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" 
-                : "bg-white text-primary hover:bg-primary/5 hover:border-primary/40"
+              "astryx-control h-8 px-4 transition-all gap-2 shadow-none",
+              !isEditing && "hover:bg-primary/5 hover:border-primary/40"
             )}
           >
             <Icon name={isEditing ? "status.success" : "action.settings"} size="tiny" className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />

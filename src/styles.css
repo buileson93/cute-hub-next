@@ -127,7 +127,7 @@
     --popover-foreground: oklch(0.12 0.01 260);
 
     --primary: oklch(0.55 0.2 260); /* MIRATS Blue #0074e2 equivalents */
-    --primary-foreground: oklch(0.99 0 0);
+    --primary-foreground: oklch(1 0 0); /* Pure white for maximum contrast */
 
     --secondary: oklch(0.92 0.005 260);
     --secondary-foreground: oklch(0.2 0.01 260);
@@ -135,7 +135,7 @@
     --muted: oklch(0.92 0.005 260);
     --muted-foreground: oklch(0.35 0.01 260);
 
-    --accent: oklch(0.96 0.01 260);
+    --accent: oklch(0.55 0.2 260 / 0.1); /* 10% primary blue for hover states */
     --accent-foreground: var(--primary);
 
     --destructive: oklch(0.6 0.18 25);
@@ -182,7 +182,7 @@
     --popover-foreground: oklch(0.98 0.002 260);
 
     --primary: oklch(0.65 0.18 260);
-    --primary-foreground: oklch(0.98 0 0);
+    --primary-foreground: oklch(1 0 0);
 
     --secondary: oklch(0.25 0.01 260);
     --secondary-foreground: oklch(0.95 0.005 260);
@@ -190,7 +190,7 @@
     --muted: oklch(0.25 0.01 260);
     --muted-foreground: oklch(0.8 0.01 260);
 
-    --accent: oklch(0.2 0.02 260);
+    --accent: oklch(0.65 0.18 260 / 0.15);
     --accent-foreground: var(--primary);
 
     --destructive: oklch(0.65 0.18 25);

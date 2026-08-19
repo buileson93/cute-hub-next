@@ -90,7 +90,7 @@ function OverviewReport() {
                 currentLayout={layout}
                 onAdd={handleAddWidget}
                 trigger={
-                  <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl bg-white text-primary border-primary/20 hover:bg-primary/5 transition-all">
+                  <Button size="sm" variant="outline" className="h-9 gap-2 rounded-xl hover:bg-primary/5 transition-all">
                     <Icon name="action.add" size="tiny" className="text-primary" />
                     <span className="text-[11px] font-bold uppercase tracking-wider">Thêm Widget</span>
                   </Button>
@@ -128,7 +128,7 @@ function OverviewReport() {
               variant="outline" 
               size="sm" 
               onClick={handleExport}
-              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl bg-white text-primary border-primary/20 hover:bg-primary/5 transition-all"
+              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl hover:bg-primary/5 transition-all"
             >
               <Icon name="action.download" className="text-primary" />
               <span className="font-bold text-[11px] uppercase tracking-wider">Xuất PDF</span>
