@@ -19,7 +19,9 @@ export type CongVanRow = {
   can_cu_text: string | null;
   ghi_chu: string | null;
   created_at: string;
+  metadata: Record<string, any> | null;
 };
+
 
 export type CongVanLinkRow = {
   id: string;
@@ -38,7 +40,9 @@ export type CongVanTepRow = {
   mime_type: string | null;
   kich_thuoc: number | null;
   created_at: string;
+  metadata: Record<string, any> | null;
 };
+
 
 export const CV_BUCKET = "du-an-cong-van";
 
