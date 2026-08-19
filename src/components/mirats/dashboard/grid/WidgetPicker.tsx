@@ -71,7 +71,7 @@ export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProp
                   </div>
                 </div>
                 {!widget.isAdded && (
-                  <Button size="sm" variant="secondary" className="w-full h-8 text-[11px] font-bold">
+                  <Button size="sm" variant="secondary" className="w-full h-8 text-[11px] font-bold bg-primary text-primary-foreground hover:bg-primary/90">
                     Thêm ngay
                   </Button>
                 )}
