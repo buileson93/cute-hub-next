@@ -368,5 +368,3 @@ function getEventColor(type: ProjectEventType) {
     border: 'border-slate-200',
   };
 }
-
-import { Pencil, Trash2 } from "lucide-react";
