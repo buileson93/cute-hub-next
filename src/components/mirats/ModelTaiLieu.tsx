@@ -279,7 +279,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
       });
       if (up.error) throw up.error;
 
-      const { error } = await supabase.from("model_tai_lieu").insert({
+      const { data: inserted, error } = await supabase.from("model_tai_lieu").insert({
         model_id: modelId,
         loai_tai_lieu: loai.trim(),
         bucket: BUCKET,
@@ -289,7 +289,8 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         kich_thuoc: file.size,
         mo_ta: moTa.trim() || null,
         uploaded_by: u.user?.id ?? null,
-      });
+      }).select("id").single();
+
       if (error) {
         await storage.from(BUCKET).remove([filePath]);
         throw error;
