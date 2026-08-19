@@ -49,9 +49,10 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return new Response(JSON.stringify({ error: 'Unauthorized: Missing or invalid Authorization header' }), { 
               status: 401,
-              headers: { 'Content-Type': 'application/json' }
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
+
 
           const token = authHeader.replace('Bearer ', '');
           const ip = request.headers.get('x-forwarded-for') || request.headers.get('cf-connecting-ip');
