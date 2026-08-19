@@ -106,6 +106,7 @@ import { Route as AppBanGiaoMoiRouteImport } from './routes/_app.ban-giao.moi'
 import { Route as AppAdminThuongHieuRouteImport } from './routes/_app.admin.thuong-hieu'
 import { Route as AppAdminReviewRouteImport } from './routes/_app.admin.review'
 import { Route as AppAdminPermissionsRouteImport } from './routes/_app.admin.permissions'
+import { Route as AppAdminOcrRouteImport } from './routes/_app.admin.ocr'
 import { Route as AppAdminNhapLieuRouteImport } from './routes/_app.admin.nhap-lieu'
 import { Route as AppAdminNhanVienRouteImport } from './routes/_app.admin.nhan-vien'
 import { Route as AppAdminLuuTruRouteImport } from './routes/_app.admin.luu-tru'
@@ -624,6 +625,11 @@ const AppAdminPermissionsRoute = AppAdminPermissionsRouteImport.update({
   path: '/admin/permissions',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminOcrRoute = AppAdminOcrRouteImport.update({
+  id: '/admin/ocr',
+  path: '/admin/ocr',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminNhapLieuRoute = AppAdminNhapLieuRouteImport.update({
   id: '/admin/nhap-lieu',
   path: '/admin/nhap-lieu',
@@ -845,6 +851,7 @@ export interface FileRoutesByFullPath {
   '/admin/luu-tru': typeof AppAdminLuuTruRoute
   '/admin/nhan-vien': typeof AppAdminNhanVienRoute
   '/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
+  '/admin/ocr': typeof AppAdminOcrRoute
   '/admin/permissions': typeof AppAdminPermissionsRoute
   '/admin/review': typeof AppAdminReviewRoute
   '/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
@@ -967,6 +974,7 @@ export interface FileRoutesByTo {
   '/admin/luu-tru': typeof AppAdminLuuTruRoute
   '/admin/nhan-vien': typeof AppAdminNhanVienRoute
   '/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
+  '/admin/ocr': typeof AppAdminOcrRoute
   '/admin/permissions': typeof AppAdminPermissionsRoute
   '/admin/review': typeof AppAdminReviewRoute
   '/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
@@ -1096,6 +1104,7 @@ export interface FileRoutesById {
   '/_app/admin/luu-tru': typeof AppAdminLuuTruRoute
   '/_app/admin/nhan-vien': typeof AppAdminNhanVienRoute
   '/_app/admin/nhap-lieu': typeof AppAdminNhapLieuRoute
+  '/_app/admin/ocr': typeof AppAdminOcrRoute
   '/_app/admin/permissions': typeof AppAdminPermissionsRoute
   '/_app/admin/review': typeof AppAdminReviewRoute
   '/_app/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
@@ -1226,6 +1235,7 @@ export interface FileRouteTypes {
     | '/admin/luu-tru'
     | '/admin/nhan-vien'
     | '/admin/nhap-lieu'
+    | '/admin/ocr'
     | '/admin/permissions'
     | '/admin/review'
     | '/admin/thuong-hieu'
@@ -1348,6 +1358,7 @@ export interface FileRouteTypes {
     | '/admin/luu-tru'
     | '/admin/nhan-vien'
     | '/admin/nhap-lieu'
+    | '/admin/ocr'
     | '/admin/permissions'
     | '/admin/review'
     | '/admin/thuong-hieu'
@@ -1476,6 +1487,7 @@ export interface FileRouteTypes {
     | '/_app/admin/luu-tru'
     | '/_app/admin/nhan-vien'
     | '/_app/admin/nhap-lieu'
+    | '/_app/admin/ocr'
     | '/_app/admin/permissions'
     | '/_app/admin/review'
     | '/_app/admin/thuong-hieu'
@@ -2260,6 +2272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminPermissionsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/ocr': {
+      id: '/_app/admin/ocr'
+      path: '/admin/ocr'
+      fullPath: '/admin/ocr'
+      preLoaderRoute: typeof AppAdminOcrRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/nhap-lieu': {
       id: '/_app/admin/nhap-lieu'
       path: '/admin/nhap-lieu'
@@ -2695,6 +2714,7 @@ interface AppRouteChildren {
   AppAdminLuuTruRoute: typeof AppAdminLuuTruRoute
   AppAdminNhanVienRoute: typeof AppAdminNhanVienRoute
   AppAdminNhapLieuRoute: typeof AppAdminNhapLieuRoute
+  AppAdminOcrRoute: typeof AppAdminOcrRoute
   AppAdminPermissionsRoute: typeof AppAdminPermissionsRoute
   AppAdminReviewRoute: typeof AppAdminReviewRoute
   AppAdminThuongHieuRoute: typeof AppAdminThuongHieuRoute
@@ -2760,6 +2780,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminLuuTruRoute: AppAdminLuuTruRoute,
   AppAdminNhanVienRoute: AppAdminNhanVienRoute,
   AppAdminNhapLieuRoute: AppAdminNhapLieuRoute,
+  AppAdminOcrRoute: AppAdminOcrRoute,
   AppAdminPermissionsRoute: AppAdminPermissionsRoute,
   AppAdminReviewRoute: AppAdminReviewRoute,
   AppAdminThuongHieuRoute: AppAdminThuongHieuRoute,
