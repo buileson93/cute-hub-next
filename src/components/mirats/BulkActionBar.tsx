@@ -109,7 +109,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
             size="sm"
             className={cn(
               "h-8 text-xs shadow-none",
-              (action.variant === "outline" || !action.variant) && "border-primary/20 hover:bg-primary/5 hover:border-primary/40"
+              (action.variant === "outline" || !action.variant) && "border-primary/20 hover:bg-primary/5"
             )}
             onClick={action.onClick}
           >

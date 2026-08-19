@@ -431,15 +431,14 @@ function HeThongCayPage() {
                 <Button 
                   size="icon" 
                   variant={editMode ? "default" : "outline"} 
-                  className={cn(
-                    "h-8 w-8 transition-all shadow-none",
-                    editMode 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "hover:bg-primary/5 hover:border-primary/40"
-                  )}
+                  className="h-8 w-8 transition-all shadow-none"
                   onClick={() => setEditMode(!editMode)} 
                 >
-                  {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                  {editMode ? (
+                    <Check className="h-4 w-4 text-primary-foreground" />
+                  ) : (
+                    <Pencil className="h-4 w-4 text-primary" />
+                  )}
                 </Button>
               </AppTooltip>
             )}

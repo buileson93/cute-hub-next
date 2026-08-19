@@ -111,12 +111,12 @@ function OverviewReport() {
             variant={isEditing ? "default" : "outline"} 
             size="sm" 
             onClick={() => setIsEditing(!isEditing)}
-            className={cn(
-              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none",
-              isEditing ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-primary/5 hover:border-primary/40"
-            )}
+            className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none"
           >
-            <Icon name={isEditing ? "status.success" : "action.settings"} className={cn(isEditing ? "text-primary-foreground" : "text-primary")} />
+            <Icon 
+              name={isEditing ? "status.success" : "action.settings"} 
+              className={cn(isEditing ? "text-primary-foreground" : "text-primary")} 
+            />
             <span className="font-bold text-[11px] uppercase tracking-wider">
               {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
             </span>
