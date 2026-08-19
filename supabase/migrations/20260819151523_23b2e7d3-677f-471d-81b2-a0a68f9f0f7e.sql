@@ -1,0 +1,1 @@
+ALTER FUNCTION public.fn_log_project_event() SET search_path = public;
