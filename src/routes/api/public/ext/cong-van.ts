@@ -25,7 +25,19 @@ const extCongVanSchema = z.object({
 export const Route = createFileRoute('/api/public/ext/cong-van')({
   server: {
     handlers: {
+      OPTIONS: async () => {
+        return new Response(null, {
+          status: 204,
+          headers: {
+            'Access-Control-Allow-Origin': '*', // Should be restricted to extension ID in production
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '86400',
+          },
+        });
+      },
       POST: async ({ request }) => {
+
         try {
           const authHeader = request.headers.get('Authorization');
           if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -153,11 +165,16 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           });
         } catch (err: any) {
           console.error('[ext-api] error:', err);
-          return new Response(JSON.stringify({ error: err.message }), {
+          
+          // Security: Do not leak detailed internal error messages to the client
+          const publicError = err.name === 'ZodError' ? 'Invalid request data' : 'An internal error occurred';
+          
+          return new Response(JSON.stringify({ error: publicError }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
           });
         }
+
       }
     }
   }
