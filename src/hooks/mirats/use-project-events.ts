@@ -7,7 +7,9 @@ export type ProjectEventType =
   | 'task_created' | 'task_updated' | 'task_status_changed' | 'task_completed'
   | 'canvas_published' | 'pitch_created'
   | 'document_uploaded' | 'document_linked'
+  | 'correspondence_created'
   | 'delivery_update' | 'operations_update';
+
 
 export interface ProjectEvent {
   id: string;
