@@ -356,18 +356,44 @@ function UploadDialog({
       });
       if (up.error) throw up.error;
 
-      const { error } = await supabase.from("thiet_bi_tep_dinh_kem").insert({
+      const { data: inserted, error } = await supabase.from("thiet_bi_tep_dinh_kem").insert({
         thiet_bi_id: thietBiId,
         loai, bucket, file_path: filePath,
         file_name: file.name,
         mime_type: file.type || null,
         kich_thuoc: file.size,
         mo_ta: moTa.trim() || null,
-      });
+      }).select("id").single();
+
       if (error) {
         // rollback storage
         await storage.from(bucket).remove([filePath]);
         throw error;
+      }
+
+      // OCR Flow
+      if (loai === "tai_lieu" && ocrEnabled && file.type === "application/pdf" && isFeatureEnabled("documentOcrEnabled")) {
+        const hash = await sha256Hex(file);
+        
+        await ocrRepository.queueOcr("thiet_bi_tep_dinh_kem", inserted.id, hash);
+        
+        const existing = await ocrRepository.findExisting(hash);
+        if (existing) {
+          await ocrRepository.upsertOcr("thiet_bi_tep_dinh_kem", inserted.id, {
+            status: "completed",
+            full_text: existing.full_text,
+            normalized_text: existing.normalized_text,
+            pages: existing.pages as any,
+            processed_pages: existing.processed_pages,
+            page_count: existing.page_count
+          });
+          toast.success("Đã tìm thấy dữ liệu OCR cũ.");
+        } else {
+          startOcr(file, "thiet_bi_tep_dinh_kem", inserted.id, {
+            quality: ocrQuality,
+            language: "vie+eng"
+          }).catch(err => console.error("OCR Pipeline Error:", err));
+        }
       }
       toast.success("Đã tải lên");
       setOpen(false); reset(); onDone();
