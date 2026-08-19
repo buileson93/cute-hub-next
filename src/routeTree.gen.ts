@@ -103,6 +103,7 @@ import { Route as AppBaoTriCongViecRouteImport } from './routes/_app.bao-tri.con
 import { Route as AppBaoTriMaBaoTriRouteImport } from './routes/_app.bao-tri.$maBaoTri'
 import { Route as AppBaoCaoDoTinCayRouteImport } from './routes/_app.bao-cao.do-tin-cay'
 import { Route as AppBanGiaoMoiRouteImport } from './routes/_app.ban-giao.moi'
+import { Route as AppAdminTichHopRouteImport } from './routes/_app.admin.tich-hop'
 import { Route as AppAdminThuongHieuRouteImport } from './routes/_app.admin.thuong-hieu'
 import { Route as AppAdminReviewRouteImport } from './routes/_app.admin.review'
 import { Route as AppAdminPermissionsRouteImport } from './routes/_app.admin.permissions'
@@ -611,6 +612,11 @@ const AppBanGiaoMoiRoute = AppBanGiaoMoiRouteImport.update({
   path: '/moi',
   getParentRoute: () => AppBanGiaoRoute,
 } as any)
+const AppAdminTichHopRoute = AppAdminTichHopRouteImport.update({
+  id: '/admin/tich-hop',
+  path: '/admin/tich-hop',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminThuongHieuRoute = AppAdminThuongHieuRouteImport.update({
   id: '/admin/thuong-hieu',
   path: '/admin/thuong-hieu',
@@ -861,6 +867,7 @@ export interface FileRoutesByFullPath {
   '/admin/permissions': typeof AppAdminPermissionsRoute
   '/admin/review': typeof AppAdminReviewRoute
   '/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
+  '/admin/tich-hop': typeof AppAdminTichHopRoute
   '/ban-giao/moi': typeof AppBanGiaoMoiRoute
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
@@ -985,6 +992,7 @@ export interface FileRoutesByTo {
   '/admin/permissions': typeof AppAdminPermissionsRoute
   '/admin/review': typeof AppAdminReviewRoute
   '/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
+  '/admin/tich-hop': typeof AppAdminTichHopRoute
   '/ban-giao/moi': typeof AppBanGiaoMoiRoute
   '/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
@@ -1116,6 +1124,7 @@ export interface FileRoutesById {
   '/_app/admin/permissions': typeof AppAdminPermissionsRoute
   '/_app/admin/review': typeof AppAdminReviewRoute
   '/_app/admin/thuong-hieu': typeof AppAdminThuongHieuRoute
+  '/_app/admin/tich-hop': typeof AppAdminTichHopRoute
   '/_app/ban-giao/moi': typeof AppBanGiaoMoiRoute
   '/_app/bao-cao/do-tin-cay': typeof AppBaoCaoDoTinCayRoute
   '/_app/bao-tri/$maBaoTri': typeof AppBaoTriMaBaoTriRoute
@@ -1248,6 +1257,7 @@ export interface FileRouteTypes {
     | '/admin/permissions'
     | '/admin/review'
     | '/admin/thuong-hieu'
+    | '/admin/tich-hop'
     | '/ban-giao/moi'
     | '/bao-cao/do-tin-cay'
     | '/bao-tri/$maBaoTri'
@@ -1372,6 +1382,7 @@ export interface FileRouteTypes {
     | '/admin/permissions'
     | '/admin/review'
     | '/admin/thuong-hieu'
+    | '/admin/tich-hop'
     | '/ban-giao/moi'
     | '/bao-cao/do-tin-cay'
     | '/bao-tri/$maBaoTri'
@@ -1502,6 +1513,7 @@ export interface FileRouteTypes {
     | '/_app/admin/permissions'
     | '/_app/admin/review'
     | '/_app/admin/thuong-hieu'
+    | '/_app/admin/tich-hop'
     | '/_app/ban-giao/moi'
     | '/_app/bao-cao/do-tin-cay'
     | '/_app/bao-tri/$maBaoTri'
@@ -2264,6 +2276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBanGiaoMoiRouteImport
       parentRoute: typeof AppBanGiaoRoute
     }
+    '/_app/admin/tich-hop': {
+      id: '/_app/admin/tich-hop'
+      path: '/admin/tich-hop'
+      fullPath: '/admin/tich-hop'
+      preLoaderRoute: typeof AppAdminTichHopRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/thuong-hieu': {
       id: '/_app/admin/thuong-hieu'
       path: '/admin/thuong-hieu'
@@ -2738,6 +2757,7 @@ interface AppRouteChildren {
   AppAdminPermissionsRoute: typeof AppAdminPermissionsRoute
   AppAdminReviewRoute: typeof AppAdminReviewRoute
   AppAdminThuongHieuRoute: typeof AppAdminThuongHieuRoute
+  AppAdminTichHopRoute: typeof AppAdminTichHopRoute
   AppBaoCaoDoTinCayRoute: typeof AppBaoCaoDoTinCayRoute
   AppCaiDatTaiKhoanRoute: typeof AppCaiDatTaiKhoanRoute
   AppDanhMucDacTinhRoute: typeof AppDanhMucDacTinhRoute
@@ -2804,6 +2824,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminPermissionsRoute: AppAdminPermissionsRoute,
   AppAdminReviewRoute: AppAdminReviewRoute,
   AppAdminThuongHieuRoute: AppAdminThuongHieuRoute,
+  AppAdminTichHopRoute: AppAdminTichHopRoute,
   AppBaoCaoDoTinCayRoute: AppBaoCaoDoTinCayRoute,
   AppCaiDatTaiKhoanRoute: AppCaiDatTaiKhoanRoute,
   AppDanhMucDacTinhRoute: AppDanhMucDacTinhRoute,

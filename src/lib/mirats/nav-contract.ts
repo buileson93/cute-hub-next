@@ -222,7 +222,9 @@ export const workspaces: Workspace[] = [
           { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
           { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
           { to: "/admin/ocr", label: "Quản trị OCR", icon: Cpu, roles: ADMIN_ONLY },
+          { to: "/admin/tich-hop", label: "Browser Extension", icon: KeyRound, roles: MANAGER_ROLES },
           { to: "/admin/supabase-ngoai", label: "Kết nối Supabase ngoài", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
+
 
 
         ],
@@ -250,7 +252,9 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/messages": { crumb: "Trao đổi", title: "Tin nhắn" },
   "/forms": { crumb: "Hồ sơ", title: "Biên bản" },
   "/admin/forms": { crumb: "Hồ sơ", title: "Mẫu biên bản" },
+  "/admin/tich-hop": { crumb: "Quản trị", title: "Tích hợp Browser Extension" },
   "/vat-tu": { crumb: "Kho", title: "Vật tư & Kho" },
+
   "/kiem-ke": { crumb: "Tài sản", title: "Kiểm kê tài sản" },
   
   "/kiem-dinh": { crumb: "Vận hành", title: "Kiểm định & Hiệu chuẩn" },
