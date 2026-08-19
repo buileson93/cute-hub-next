@@ -431,7 +431,12 @@ function HeThongCayPage() {
                 <Button 
                   size="icon" 
                   variant={editMode ? "default" : "outline"} 
-                  className="h-8 w-8"
+                  className={cn(
+                    "h-8 w-8 transition-all",
+                    editMode 
+                      ? "!bg-[#0074e2] !text-white !border-[#0074e2] hover:!bg-[#0060bc]" 
+                      : "bg-white !text-[#0074e2] border-primary/20 hover:bg-primary/5 hover:border-primary/40"
+                  )}
                   onClick={() => setEditMode(!editMode)} 
                 >
                   {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
