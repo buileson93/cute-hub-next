@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useFeatureFlag } from "@/lib/mirats/feature-flags";
+import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
 
 import { motion, useReducedMotion } from "motion/react";
 import {
