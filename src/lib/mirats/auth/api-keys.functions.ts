@@ -1,10 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabase } from "@/integrations/backend/client";
 import { createHmac, timingSafeEqual, getRandomValues } from "crypto";
-
-// Ideally these would be server-only helpers, but for simplicity in this artifact
-// we include the logic here. In a real project, splitting into .server.ts is preferred.
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
  * Hash a secret using HMAC-SHA256 with a pepper.
@@ -17,6 +14,7 @@ async function hashSecret(secret: string, pepper: string): Promise<string> {
  * Generate a new API key for the current user.
  */
 export const createApiKey = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
     z
       .object({
@@ -26,8 +24,9 @@ export const createApiKey = createServerFn({ method: "POST" })
       })
       .parse(data)
   )
-  .handler(async ({ data, request }) => {
-    const { profile, userId } = (await import("@/integrations/supabase/auth-middleware")).requireSupabaseAuth({ request }) as any;
+  .handler(async ({ data, context }) => {
+    const { userId, supabase } = context;
+    if (!userId || !supabase) throw new Error("Unauthorized");
     
     // Generate public keyId (12 chars)
     const keyIdArray = new Uint8Array(6);
@@ -64,7 +63,7 @@ export const createApiKey = createServerFn({ method: "POST" })
 
     // Return the full token ONLY once
     return {
-      ...newKey,
+      ...(newKey as object),
       fullToken,
     };
   });
@@ -73,9 +72,11 @@ export const createApiKey = createServerFn({ method: "POST" })
  * Revoke an API key.
  */
 export const revokeApiKey = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
-  .handler(async ({ data, request }) => {
-    const { userId } = (await import("@/integrations/supabase/auth-middleware")).requireSupabaseAuth({ request }) as any;
+  .handler(async ({ data, context }) => {
+    const { userId, supabase } = context;
+    if (!userId || !supabase) throw new Error("Unauthorized");
     
     const { error } = await supabase
       .from("api_keys" as any)
@@ -89,7 +90,6 @@ export const revokeApiKey = createServerFn({ method: "POST" })
 
 /**
  * Verify an API key (Internal helper for middleware).
- * In a real app, this should be in a .server.ts file.
  */
 export async function verifyApiKey(token: string): Promise<{ 
   isValid: boolean; 
@@ -101,12 +101,12 @@ export async function verifyApiKey(token: string): Promise<{
 
   const parts = token.split("_");
   if (parts.length !== 5) return { isValid: false }; 
-  // mrt_ext_live_<keyId>_<secret> -> split by "_" gives ["mrt", "ext", "live", "keyId", "secret"]
 
   const keyId = parts[3];
   const secret = parts[4];
 
-  const { data: keyData, error } = await (await import("@/integrations/backend/admin.server")).supabaseAdmin
+  const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
+  const { data: keyData, error } = await supabaseAdmin
     .from("api_keys" as any)
     .select("secret_hash, user_id, scopes, expires_at, revoked_at")
     .eq("key_id", keyId)
@@ -131,7 +131,7 @@ export async function verifyApiKey(token: string): Promise<{
 
   if (isValid) {
     // Update last_used_at in background
-    (await import("@/integrations/backend/admin.server")).supabaseAdmin
+    supabaseAdmin
       .from("api_keys" as any)
       .update({ last_used_at: new Date().toISOString() } as any)
       .eq("key_id", keyId)
