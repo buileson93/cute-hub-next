@@ -49,8 +49,6 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
           const body = await request.json();
           const data = extCongVanSchema.parse(body);
 
-          // We use user_id from the verified API key for logging or RLS if necessary, 
-          // although supabaseAdmin bypasses RLS, we should still respect the user's identity.
           const { data: inserted, error } = await supabaseAdmin
             .from('du_an_cong_van' as any)
             .insert({
@@ -72,9 +70,9 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
 
           if (error) throw error;
 
-          // Log the event
+          // Log the event - Using "as any" to bypass RPC type validation for now
           try {
-            await supabaseAdmin.rpc('fn_log_project_event', {
+            await (supabaseAdmin as any).rpc('fn_log_project_event', {
               p_project_id: data.project_id,
               p_event_type: 'correspondence_created',
               p_summary: `Công văn ${data.so_cong_van} được tạo qua Browser Extension`,
