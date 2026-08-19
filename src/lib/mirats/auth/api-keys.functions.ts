@@ -148,12 +148,35 @@ export async function verifyApiKey(token: string, ip?: string): Promise<{
     .eq("key_id", keyId)
     .single();
 
-  if (error || !keyData) return { isValid: false };
+  if (error || !keyData) {
+    // Audit Log: Failed attempt (invalid key_id)
+    supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      action: 'api_call',
+      result: 'failure',
+      ip_hash: ipHash,
+      metadata: { reason: 'invalid_key_id' }
+    } as any).then();
+
+    return { isValid: false };
+  }
 
   const typedKey = keyData as any;
 
-  if (typedKey.revoked_at) return { isValid: false };
-  if (typedKey.expires_at && new Date(typedKey.expires_at) < new Date()) return { isValid: false };
+  if (typedKey.revoked_at || (typedKey.expires_at && new Date(typedKey.expires_at) < new Date())) {
+     // Audit Log: Failed attempt (expired/revoked)
+     supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: typedKey.user_id,
+      action: 'api_call',
+      result: 'failure',
+      ip_hash: ipHash,
+      metadata: { reason: typedKey.revoked_at ? 'revoked' : 'expired' }
+    } as any).then();
+    
+    return { isValid: false };
+  }
+
 
   const pepper = process.env["MIRATS_API_PEPPER"] || "default-pepper-change-me";
   const incomingHash = await hashSecret(secret, pepper);
