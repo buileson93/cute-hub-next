@@ -52,9 +52,9 @@ export class MiniSearchAdapter {
       // Custom tokenizer to handle technical tokens better
       tokenize: (text) => {
         const tokens = text.match(TECHNICAL_TOKEN) || [];
-        // Also include standard words for better natural language search
         const words = text.split(/\s+/).filter(w => !tokens.includes(w));
-        return [...tokens, ...words].map(t => boDauTiengViet(t.toLowerCase()));
+        const all = [...tokens, ...words];
+        return all.map(t => boDauTiengViet(t.toLowerCase()));
       },
       // Process term for matching
       processTerm: (term) => boDauTiengViet(term.toLowerCase())
