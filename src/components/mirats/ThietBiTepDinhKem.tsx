@@ -323,6 +323,17 @@ function UploadDialog({
   const [file, setFile] = useState<File | null>(null);
   const [moTa, setMoTa] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ocrEnabled, setOcrEnabled] = useState(true);
+  const [ocrQuality, setOcrQuality] = useState<any>("auto");
+  const [deviceTier, setDeviceTier] = useState<string | null>(null);
+
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } = useOcrTask();
+
+  useEffect(() => {
+    if (open) {
+      deviceProfiler.getProfile().then(p => setDeviceTier(p.tier));
+    }
+  }, [open]);
 
   const accept = loai === "hinh_anh" ? "image/*" : "application/pdf";
   const label = loai === "hinh_anh" ? "Tải ảnh lên" : "Tải PDF lên";
