@@ -28,6 +28,8 @@ export type FeatureFlag =
   | "projectTimeline"
   | "externalDocumentApi"
   | "browserExtensionUpload"
+  | "astryxInventoryMode"
+
   // Bật lập chỉ mục phía client cho tìm kiếm vector.
 
   | "documentClientIndexEnabled"
@@ -45,6 +47,8 @@ const DEFAULTS: Record<FeatureFlag, boolean> = {
   projectTimeline: false,
   externalDocumentApi: false,
   browserExtensionUpload: false,
+  astryxInventoryMode: true,
+
   documentClientIndexEnabled: false,
 
   documentOcrExperimentalProvidersEnabled: false,

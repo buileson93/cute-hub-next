@@ -1,5 +1,8 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useFeatureFlag } from "@/lib/mirats/feature-flags";
+
 import { motion, useReducedMotion } from "motion/react";
 import {
   ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon, LayoutPanelLeft, LayoutPanelTop
@@ -71,6 +74,8 @@ export function UserMenu() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [density, setDensity] = useUserPref<UiDensityMode>("ui-density", "compact");
+  const isInventoryMode = useFeatureFlag("astryxInventoryMode");
+
 
   async function handleSignOut() {
     try {
@@ -129,17 +134,96 @@ export function UserMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
-            aria-label="thay đổi mật độ ở đây"
-          >
-            {density === "compact" ? (
-              <LayoutPanelTop className="mr-2 h-3.5 w-3.5" />
-            ) : (
-              <LayoutPanelLeft className="mr-2 h-3.5 w-3.5" />
-            )}
-            Mật độ: {density === "compact" ? "Gọn (Compact)" : "Rộng (Comfortable)"}
-          </DropdownMenuItem>
+          {isInventoryMode ? (
+            <div className="px-2 py-1.5">
+              <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                Lộ trình di chuyển Astryx
+              </div>
+              <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
+                <div className="whitespace-pre-wrap text-muted-foreground">
+                  Bạn đang cải thiện UI/UX source MIRATS theo Astryx. Chưa sửa code trong bước này.{"\n\n"}
+                  MỤC TIÊU:{"\n"}
+                  Tạo inventory đầy đủ, đo baseline và phân loại bề mặt trước khi migration. Không thực hiện full-app rewrite.{"\n\n"}
+                  BẮT BUỘC CHẠY/ĐỌC:{"\n"}
+                  - astryx docs migration --dense{"\n"}
+                  - astryx docs principles --dense{"\n"}
+                  - astryx docs layout --dense{"\n"}
+                  - astryx docs tokens --dense{"\n"}
+                  - astryx template --list{"\n"}
+                  - astryx template AppShellTopNavWithSideNav --skeleton nếu template tồn tại ở version đã cài{"\n"}
+                  - astryx component AppShell --json{"\n"}
+                  - astryx component SideNav --json{"\n"}
+                  - astryx component TopNav --json{"\n"}
+                  - astryx component Layout --json{"\n"}
+                  - astryx component LayoutPanel --json{"\n"}
+                  - astryx component List --json{"\n"}
+                  - astryx component Table --json{"\n"}
+                  - astryx component Button --json{"\n"}
+                  - astryx component IconButton --json{"\n"}
+                  - astryx component TabList --json{"\n\n"}
+                  Không đoán prop. Nếu tên template/component thay đổi theo version, dùng CLI của package đang cài làm nguồn sự thật.{"\n\n"}
+                  INVENTORY:{"\n"}
+                  1. Root Theme/provider và CSS import order.{"\n"}
+                  2. AppShell, TopNav, SideNav, MobileNav.{"\n"}
+                  3. Shared primitives trong src/components/ui.{"\n"}
+                  4. PageHeader, PageBody, StandardTable, Card, dialog, sheet, tabs, form controls.{"\n"}
+                  5. Các route theo archetype:{"\n"}
+                     - tracker/work tool{"\n"}
+                     - dashboard{"\n"}
+                     - form/settings{"\n"}
+                     - media/document library{"\n"}
+                     - graph/canvas{"\n"}
+                  6. Hard-coded colors, arbitrary width/height/radius/shadow.{"\n"}
+                  7. Nested scroll container và nested padding.{"\n"}
+                  8. Fixed toolbar/tab/filter gây tràn mobile.{"\n\n"}
+                  BASELINE SCREENSHOT:{"\n"}
+                  - 1440×900{"\n"}
+                  - 1024×768{"\n"}
+                  - 768×1024{"\n"}
+                  - 390×844{"\n"}
+                  - 360×800{"\n\n"}
+                  BẮT BUỘC CHỤP LIGHT/DARK:{"\n"}
+                  - Dashboard{"\n"}
+                  - Danh sách tài sản{"\n"}
+                  - Chi tiết tài sản{"\n"}
+                  - Hệ thống cây{"\n"}
+                  - Dự án/Kanban/Gantt{"\n"}
+                  - Thư viện tài liệu{"\n"}
+                  - Một form/dialog dài{"\n"}
+                  - Một trang admin bảng dữ liệu{"\n\n"}
+                  METRIC BASELINE:{"\n"}
+                  - chiều cao shell/header chiếm viewport{"\n"}
+                  - diện tích content thực dùng{"\n"}
+                  - số lớp padding từ shell đến dữ liệu{"\n"}
+                  - số horizontal scrollbar ngoài ý muốn{"\n"}
+                  - số action bị rớt khỏi màn hình{"\n"}
+                  - số card dùng để bọc list row{"\n"}
+                  - số hard-coded colors/arbitrary sizes{"\n"}
+                  - CLS/hydration flash{"\n\n"}
+                  ĐẦU RA:{"\n"}
+                  - UI inventory theo file/route.{"\n"}
+                  - Danh sách P0/P1/P2.{"\n"}
+                  - Bản đồ component cũ → Astryx component.{"\n"}
+                  - Responsive contract từng archetype.{"\n"}
+                  - Kế hoạch migration route-by-route.{"\n"}
+                  - Không viết code cho đến khi baseline được lưu.
+                </div>
+              </ScrollArea>
+            </div>
+          ) : (
+            <DropdownMenuItem
+              onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
+              aria-label="thay đổi mật độ ở đây"
+            >
+              {density === "compact" ? (
+                <LayoutPanelTop className="mr-2 h-3.5 w-3.5" />
+              ) : (
+                <LayoutPanelLeft className="mr-2 h-3.5 w-3.5" />
+              )}
+              Mật độ: {density === "compact" ? "Gọn (Compact)" : "Rộng (Comfortable)"}
+            </DropdownMenuItem>
+          )}
+
 
           <DropdownMenuItem asChild>
             <Link to="/cai-dat/tai-khoan">
