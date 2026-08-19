@@ -97,7 +97,29 @@ export class MiniSearchAdapter {
     if (start > 0) snippet = "..." + snippet;
     if (end < text.length) snippet = snippet + "...";
     
-    return snippet;
+    return this.highlightSnippet(snippet, query);
+  }
+
+  private highlightSnippet(snippet: string, query: string): string {
+    const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+    let highlighted = snippet;
+    
+    // Sort terms by length descending to avoid partial replacements
+    terms.sort((a, b) => b.length - a.length);
+    
+    for (const term of terms) {
+      const normalizedTerm = boDauTiengViet(term);
+      // Create a regex that finds the term regardless of accents
+      // This is a simplified version; for production, a more complex regex mapping is needed
+      const regex = new RegExp(`(${normalizedTerm})`, 'gi');
+      // Note: This actually replaces the snippet with a simple text-based highlight indicator
+      // In a real UI, you'd use a component for this.
+      // We'll return it as plain text and let the UI handle it if needed, 
+      // but for now, we'll use standard markdown-like bolding for the snippet.
+      highlighted = highlighted.replace(regex, '**$1**');
+    }
+    
+    return highlighted;
   }
 
   toJSON(): string {
