@@ -73,11 +73,21 @@ export const createApiKey = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
+    // Audit Log: Key Creation
+    await supabase.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: userId,
+      action: 'key_created',
+      result: 'success',
+      metadata: { name: data.name }
+    } as any);
+
     return {
       ...(newKey as object),
       fullToken,
     };
   });
+
 
 /**
  * Revoke an API key.
@@ -96,13 +106,23 @@ export const revokeApiKey = createServerFn({ method: "POST" })
       .eq("user_id", userId);
 
     if (error) throw new Error(error.message);
+    
+    // Audit Log: Key Revocation
+    await supabase.from("api_audit_log" as any).insert({
+      user_id: userId,
+      action: 'key_revoked',
+      result: 'success',
+      metadata: { key_uuid: data.id }
+    } as any);
+
     return { success: true };
   });
+
 
 /**
  * Verify an API key (Internal helper for middleware).
  */
-export async function verifyApiKey(token: string): Promise<{ 
+export async function verifyApiKey(token: string, ip?: string): Promise<{ 
   isValid: boolean; 
   user_id?: string; 
   scopes?: string[];
@@ -116,19 +136,47 @@ export async function verifyApiKey(token: string): Promise<{
   const keyId = parts[3];
   const secret = parts[4];
 
+  // IP Hashing for privacy
+  const crypto = await import("crypto");
+  const ipHash = ip ? crypto.createHash("sha256").update(ip).digest("hex") : null;
+
   const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
+
   const { data: keyData, error } = await supabaseAdmin
     .from("api_keys" as any)
     .select("secret_hash, user_id, scopes, expires_at, revoked_at")
     .eq("key_id", keyId)
     .single();
 
-  if (error || !keyData) return { isValid: false };
+  if (error || !keyData) {
+    // Audit Log: Failed attempt (invalid key_id)
+    supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      action: 'api_call',
+      result: 'failure',
+      ip_hash: ipHash,
+      metadata: { reason: 'invalid_key_id' }
+    } as any).then();
+
+    return { isValid: false };
+  }
 
   const typedKey = keyData as any;
 
-  if (typedKey.revoked_at) return { isValid: false };
-  if (typedKey.expires_at && new Date(typedKey.expires_at) < new Date()) return { isValid: false };
+  if (typedKey.revoked_at || (typedKey.expires_at && new Date(typedKey.expires_at) < new Date())) {
+     // Audit Log: Failed attempt (expired/revoked)
+     supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: typedKey.user_id,
+      action: 'api_call',
+      result: 'failure',
+      ip_hash: ipHash,
+      metadata: { reason: typedKey.revoked_at ? 'revoked' : 'expired' }
+    } as any).then();
+    
+    return { isValid: false };
+  }
+
 
   const pepper = process.env["MIRATS_API_PEPPER"] || "default-pepper-change-me";
   const incomingHash = await hashSecret(secret, pepper);
@@ -139,11 +187,24 @@ export async function verifyApiKey(token: string): Promise<{
   );
 
   if (isValid) {
+    // Non-blocking update of last used info
     supabaseAdmin
       .from("api_keys" as any)
-      .update({ last_used_at: new Date().toISOString() } as any)
+      .update({ 
+        last_used_at: new Date().toISOString(),
+        last_used_ip_hash: ipHash
+      } as any)
       .eq("key_id", keyId)
       .then();
+
+    // Audit Log: API Call
+    supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: typedKey.user_id,
+      action: 'api_call',
+      result: 'success',
+      ip_hash: ipHash
+    } as any).then();
 
     return { 
       isValid: true, 
@@ -153,6 +214,16 @@ export async function verifyApiKey(token: string): Promise<{
     };
   }
 
+  // Audit Log: Failed attempt
+  supabaseAdmin.from("api_audit_log" as any).insert({
+    key_id: keyId,
+    action: 'api_call',
+    result: 'failure',
+    ip_hash: ipHash,
+    metadata: { reason: 'invalid_secret' }
+  } as any).then();
+
   return { isValid: false };
 }
+
 

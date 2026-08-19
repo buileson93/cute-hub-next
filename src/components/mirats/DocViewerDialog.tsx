@@ -44,9 +44,25 @@ export function DocViewerDialog({
   
   const finalUrl = useMemo(() => {
     if (!url) return null;
+
+    // Hardening: Prevent untrusted URLs
+    // Only allow local blobs, data URLs (images), or specific trusted domains (Supabase/MIRATS)
+    const isTrusted = 
+      url.startsWith('blob:') || 
+      url.startsWith('data:') || 
+      url.includes('.supabase.co/') || 
+      url.includes('localhost') ||
+      url.includes('.lovable.app/');
+      
+    if (!isTrusted) {
+      console.warn("Attempted to load untrusted URL in DocViewer:", url);
+      return null;
+    }
+
     if (kind !== "pdf" || !initialPage) return url;
     return `${url}#page=${initialPage}`;
   }, [url, kind, initialPage]);
+
 
   const officeSrc = url ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}` : null;
   const canDownload = useCanDownloadAttachments();

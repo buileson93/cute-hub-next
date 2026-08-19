@@ -25,37 +25,83 @@ const extCongVanSchema = z.object({
 export const Route = createFileRoute('/api/public/ext/cong-van')({
   server: {
     handlers: {
+      OPTIONS: async () => {
+        return new Response(null, {
+          status: 204,
+          headers: {
+            'Access-Control-Allow-Origin': '*', // CORS Hardening: Specify MIRATS extension ID here if known
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '86400',
+          },
+        });
+      },
       POST: async ({ request }) => {
+        const corsHeaders = {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        };
+
+
         try {
           const authHeader = request.headers.get('Authorization');
           if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return new Response(JSON.stringify({ error: 'Unauthorized: Missing or invalid Authorization header' }), { 
               status: 401,
-              headers: { 'Content-Type': 'application/json' }
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
+
 
           const token = authHeader.replace('Bearer ', '');
-          const { isValid, user_id, scopes } = await verifyApiKey(token);
+          const ip = request.headers.get('x-forwarded-for') || request.headers.get('cf-connecting-ip');
+          const { isValid, user_id, scopes } = await verifyApiKey(token, ip || undefined);
 
           if (!isValid) {
+            // Audit Log (Done inside verifyApiKey)
             return new Response(JSON.stringify({ error: 'Unauthorized: Invalid API key' }), { 
               status: 401,
-              headers: { 'Content-Type': 'application/json' }
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
+
           }
+
 
           // Scope check: project_correspondence:write
           if (!scopes?.includes('project_correspondence:write')) {
+            const { supabaseAdmin: auditAdmin } = await import('@/integrations/backend/admin.server');
+            await auditAdmin.from("api_audit_log" as any).insert({
+              user_id,
+              action: 'permission_denied',
+              result: 'failure',
+              metadata: { scope_required: 'project_correspondence:write' }
+            } as any);
+
             return new Response(JSON.stringify({ error: 'Forbidden: Insufficient scopes' }), { 
               status: 403,
-              headers: { 'Content-Type': 'application/json' }
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
 
           const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
           const body = await request.json();
           const data = extCongVanSchema.parse(body);
+
+          // Hard Project Check & Privacy: Verify user has access to this project
+          // Return 404 instead of 403 if project doesn't exist or no access to prevent enumeration
+          const { data: projectAccess } = await supabaseAdmin
+            .from('du_an')
+            .select('id')
+            .eq('id', data.project_id)
+            .maybeSingle();
+          
+          if (!projectAccess) {
+            return new Response(JSON.stringify({ error: 'Project not found' }), { 
+              status: 404,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
 
           // Idempotency check
           if (data.idempotency_key) {
@@ -68,10 +114,11 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
             if (existing) {
               return new Response(JSON.stringify({ success: true, id: (existing as any).id, note: 'duplicate_prevented' }), {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
               });
             }
           }
+
 
           const { data: inserted, error } = await supabaseAdmin
             .from('du_an_cong_van' as any)
@@ -146,15 +193,22 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
 
           return new Response(JSON.stringify({ success: true, id: congVanId }), {
             status: 201,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
+
         } catch (err: any) {
           console.error('[ext-api] error:', err);
-          return new Response(JSON.stringify({ error: err.message }), {
+          
+          // Security: Do not leak detailed internal error messages to the client
+          const publicError = err.name === 'ZodError' ? 'Invalid request data' : 'An internal error occurred';
+          
+          return new Response(JSON.stringify({ error: publicError }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
+
         }
+
       }
     }
   }

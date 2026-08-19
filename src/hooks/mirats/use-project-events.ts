@@ -1,12 +1,14 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 
+// Local definition to match DB enum until sync completes
 export type ProjectEventType = 
   | 'project_created' | 'project_updated'
   | 'milestone_created' | 'milestone_updated' | 'milestone_deleted'
   | 'task_created' | 'task_updated' | 'task_status_changed' | 'task_completed'
   | 'canvas_published' | 'pitch_created'
   | 'document_uploaded' | 'document_linked'
+  | 'correspondence_created'
   | 'delivery_update' | 'operations_update';
 
 export interface ProjectEvent {
@@ -44,7 +46,7 @@ export function useProjectEvents(projectId: string, filters?: {
         .eq("du_an_id", projectId)
         .order("occurred_at", { ascending: false });
 
-      if (filters?.eventType) query = query.eq("event_type", filters.eventType);
+      if (filters?.eventType) query = query.eq("event_type", filters.eventType as any);
       if (filters?.actorId) query = query.eq("actor_id", filters.actorId);
       if (filters?.startDate) query = query.gte("occurred_at", filters.startDate);
       if (filters?.endDate) query = query.lte("occurred_at", filters.endDate);
@@ -54,12 +56,13 @@ export function useProjectEvents(projectId: string, filters?: {
       if (error) throw error;
       
       // Map data to ensure required fields for components are present even if null in DB
+      // Cast to any to bypass strict enum check until types.ts is regenerated
       const events = (data || []).map(item => ({
         ...item,
         occurred_at: item.occurred_at || new Date().toISOString()
-      }));
+      })) as any[];
 
-      return events as unknown as (ProjectEvent & { actor: { id: string; ho_ten: string | null; email: string } | null })[];
+      return events as (ProjectEvent & { actor: { id: string; ho_ten: string | null; email: string } | null })[];
     },
   });
 }
