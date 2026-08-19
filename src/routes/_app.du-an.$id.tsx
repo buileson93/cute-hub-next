@@ -333,6 +333,7 @@ function DuAnDetailPage() {
             <TabsContent value="cong-van" className="mt-3">
               <CongVanPanel duAnId={id} canEdit={isManager} />
             </TabsContent>
+
           </Tabs>
         </div>
 
