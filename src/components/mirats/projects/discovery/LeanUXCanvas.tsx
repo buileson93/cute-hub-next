@@ -34,7 +34,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
         .eq("project_id", project_id)
         .maybeSingle();
       if (error) throw error;
-      return data as CanvasData;
+      return (data as any) as CanvasData;
     },
   });
 
@@ -62,7 +62,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
         : await supabase.from("lean_ux_canvases" as any).insert(payload).select().single();
       
       if (error) throw error;
-      setForm(saved);
+      setForm(saved as any);
       qc.invalidateQueries({ queryKey: ["lean-ux-canvas", project_id] });
       toast.success("Đã lưu Lean UX Canvas");
     } catch (e: any) {

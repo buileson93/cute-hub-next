@@ -21,17 +21,18 @@ export function HillChart({ project_id }: { project_id: string }) {
   const { data: markers = [], isLoading } = useQuery({
     queryKey: ["hill-chart", project_id],
     queryFn: async () => {
-      const { data: pitches } = await supabase.from("pitches").select("id").eq("project_id", project_id);
-      if (!pitches?.length) return [];
+      const { data: pitches } = await supabase.from("pitches" as any).select("id").eq("project_id", project_id);
+      const pitchesArr = (pitches || []) as any[];
+      if (!pitchesArr.length) return [];
       
-      const pitchIds = pitches.map(p => p.id);
+      const pitchIds = pitchesArr.map(p => p.id);
       const { data, error } = await supabase
-        .from("pitch_scopes")
+        .from("pitch_scopes" as any)
         .select("*")
         .in("pitch_id", pitchIds);
       
       if (error) throw error;
-      return (data || []).map(s => ({
+      return (data || []).map((s: any) => ({
         id: s.id,
         name: s.name,
         position: s.hill_position || 0,
@@ -44,7 +45,7 @@ export function HillChart({ project_id }: { project_id: string }) {
     mutationFn: async ({ id, position }: { id: string; position: number }) => {
       const status = position < 50 ? 'climbing' : 'executing';
       const { error } = await supabase
-        .from("pitch_scopes")
+        .from("pitch_scopes" as any)
         .update({ hill_position: position, hill_status: status } as any)
         .eq("id", id);
       if (error) throw error;
