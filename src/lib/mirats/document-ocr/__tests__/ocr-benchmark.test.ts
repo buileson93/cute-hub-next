@@ -1,10 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
-import { calculateCER, calculateTechnicalAccuracy } from "../utils/metrics";
-import { OCR_BENCHMARK_FIXTURES } from "../fixtures/benchmark-docs";
+import { describe, it, expect } from "vitest";
+import { calculateCER, calculateTechnicalAccuracy } from "./utils/metrics";
+import { OCR_BENCHMARK_FIXTURES, OcrFixture } from "./fixtures/benchmark-docs";
+
 
 describe("OCR Benchmark Integration", () => {
   it("should calculate metrics accurately against fixtures", () => {
-    const fixture = OCR_BENCHMARK_FIXTURES.find(f => f.id === 'tech-spec-01')!;
+    const fixture = OCR_BENCHMARK_FIXTURES.find((f: OcrFixture) => f.id === 'tech-spec-01')!;
+
     const extractedText = "Model: ABC-1234. S/N: 998877. Công suất: 500kW. Tần số: 50Hz.";
     
     const cer = calculateCER(fixture.groundTruth.fullText, extractedText);
@@ -15,7 +17,7 @@ describe("OCR Benchmark Integration", () => {
   });
 
   it("should penalize errors in technical tokens", () => {
-    const fixture = OCR_BENCHMARK_FIXTURES.find(f => f.id === 'tech-spec-01')!;
+    const fixture = OCR_BENCHMARK_FIXTURES.find((f: OcrFixture) => f.id === 'tech-spec-01')!;
     const badText = "Model: ABC-1234. S/N: 9988??. Cong suat: 500kW. Tan so: 50Hz.";
     
     const techAcc = calculateTechnicalAccuracy(fixture.groundTruth.technicalTokens, badText);
@@ -25,7 +27,7 @@ describe("OCR Benchmark Integration", () => {
   });
 
   it("should handle mixed language content", () => {
-    const fixture = OCR_BENCHMARK_FIXTURES.find(f => f.id === 'mixed-en-vi-01')!;
+    const fixture = OCR_BENCHMARK_FIXTURES.find((f: OcrFixture) => f.id === 'mixed-en-vi-01')!;
     const extractedText = "Installation Guide - Huong dan lap dat may phat dien.";
     
     // Note: If we don't normalize, CER will be high due to missing accents
