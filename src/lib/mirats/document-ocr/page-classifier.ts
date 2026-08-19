@@ -46,15 +46,15 @@ export function classifyPageText(
   let needsOcr = false;
   let reason: string | undefined;
   
-  if (textLength < minChars) {
+  if (errorRatio > 0.1) {
+    needsOcr = true;
+    reason = `High error/placeholder ratio (${(errorRatio * 100).toFixed(1)}%)`;
+  } else if (textLength < minChars) {
     needsOcr = true;
     reason = `Insufficient character count (${textLength} < ${minChars})`;
   } else if (meaningfulWordCount < minWords) {
     needsOcr = true;
     reason = `Insufficient meaningful words (${meaningfulWordCount} < ${minWords})`;
-  } else if (errorRatio > 0.1) {
-    needsOcr = true;
-    reason = `High error/placeholder ratio (${(errorRatio * 100).toFixed(1)}%)`;
   }
   
   return {
