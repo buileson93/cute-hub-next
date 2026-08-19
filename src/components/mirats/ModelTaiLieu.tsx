@@ -78,7 +78,7 @@ export function ModelTaiLieu({ modelId }: { modelId: string }) {
     queryFn: async (): Promise<TaiLieuRow[]> => {
       const { data, error } = await supabase
         .from("model_tai_lieu")
-        .select("*, tai_lieu_ocr(status, processed_pages, page_count)")
+        .select("id, model_id, file_name, file_path, bucket, kich_thuoc, mime_type, loai_tai_lieu, mo_ta, created_at, tai_lieu_ocr(status, processed_pages, page_count)")
         .eq("model_id", modelId)
         .order("created_at", { ascending: false });
       if (error) throw error;
