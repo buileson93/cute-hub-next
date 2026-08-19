@@ -10,6 +10,7 @@ export function useOcrTask() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, status: "" });
   const [isPaused, setIsPaused] = useState(false);
+  const [activeArtifact, setActiveArtifact] = useState<OcrArtifact | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const startOcr = useCallback(async (
