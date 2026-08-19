@@ -138,44 +138,137 @@ export function UserMenu() {
           {isInventoryMode ? (
             <div className="px-2 py-1.5">
               <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Parity Harness & Comparison
+                Visual Contract & Source Fidelity
               </div>
-              <ScrollArea className="h-[300px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
+              <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10px] leading-relaxed">
                 <div className="whitespace-pre-wrap text-muted-foreground">
-                  Tạo upstream reference harness và MIRATS harness trong cùng môi trường cố định:{"\n"}
-                  - cùng Chromium version{"\n"}
-                  - cùng OS/container{"\n"}
-                  - cùng deviceScaleFactor{"\n"}
-                  - cùng font files{"\n"}
-                  - cùng viewport{"\n"}
-                  - cùng light/dark mode{"\n"}
-                  - cùng reduced-motion setting{"\n\n"}
-                  Với mỗi component, render toàn bộ:{"\n"}
-                  - variant và size{"\n"}
-                  - default/hover/pressed/focus-visible{"\n"}
-                  - disabled/loading/selected/invalid{"\n"}
+                  Xây lớp giao diện MIRATS giống demo Astryx theo source chính thức, nhưng không import React component từ @astryxdesign/core/* vào route production.{"\n\n"}
+                  MỤC TIÊU CHÍNH XÁC:{"\n"}
+                  - Không mô phỏng bằng mắt.{"\n"}
+                  - Không viết lại từ screenshot.{"\n"}
+                  - Không tự chọn màu, radius, shadow, spacing hoặc animation “gần giống”.{"\n"}
+                  - Nguồn duy nhất là repo, compiled CSS, Storybook và demo Astryx tại commit/version đã pin.{"\n"}
+                  - Giữ behavior shadcn/Radix đang hoạt động; thay visual contract và state mapping theo Astryx.{"\n\n"}
+                  RANH GIỚI:{"\n"}
+                  - Production được dùng static reset/theme/token/component CSS đã vendor hoặc build từ upstream đã pin.{"\n"}
+                  - Production không import Button, Dialog, AppShell, Table hoặc component React khác từ @astryxdesign/core/*.{"\n"}
+                  - Official component chỉ render trong dev-only reference harness để tạo ảnh, DOM/state inventory và computed-style baseline.{"\n"}
+                  - Không bundle reference harness vào production.{"\n\n"}
+                  BƯỚC 1 — THU THẬP NGUYÊN GỐC:{"\n"}
+                  1. Checkout commit 683015aa9b3f4ba258dc7e4c8f2cc274afce46a5.{"\n"}
+                  2. Đọc source, StyleX style, docs, test và Storybook của từng component.{"\n"}
+                  3. Build upstream CSS bằng toolchain chính thức hoặc lấy compiled CSS đúng package version.{"\n"}
+                  4. Lưu source URL, commit, version, license và SHA-256 của file tham chiếu.{"\n"}
+                  5. Không dùng nhánh main thay đổi theo thời gian.{"\n\n"}
+                  BƯỚC 2 — TẠO STATIC CSS VENDOR:{"\n"}
+                  - vendor/astryx-v0.4.5/reset.css{"\n"}
+                  - vendor/astryx-v0.4.5/astryx.css hoặc CSS subset đã build chính thức{"\n"}
+                  - vendor/astryx-v0.4.5/theme-stone.css{"\n"}
+                  - vendor/astryx-v0.4.5/tailwind-theme.css nếu MIRATS dùng bridge này{"\n"}
+                  - vendor/astryx-v0.4.5/LICENSE{"\n"}
+                  - vendor/astryx-v0.4.5/NOTICE.md{"\n"}
+                  - vendor/astryx-v0.4.5/manifest.json{"\n\n"}
+                  Không chỉnh trực tiếp file vendor. Override MIRATS phải nằm trong layer/app stylesheet riêng và có lý do được ghi lại.{"\n\n"}
+                  BƯỚC 3 — CSS LAYER:{"\n"}
+                  Dùng canonical order của version đã pin:{"\n"}
+                  @layer reset, theme, base, astryx-base, astryx-theme, components, utilities;{"\n\n"}
+                  - Reset vào reset.{"\n"}
+                  - Tailwind preflight vào base.{"\n"}
+                  - Astryx component CSS vào astryx-base.{"\n"}
+                  - Theme vào astryx-theme.{"\n"}
+                  - MIRATS component mapping vào components.{"\n"}
+                  - App layout utilities vào utilities.{"\n"}
+                  - Không để stylesheet unlayered thắng toàn hệ thống.{"\n"}
+                  - Không dùng !important.{"\n\n"}
+                  BƯỚC 4 — TÁI TẠO ANATOMY VÀ STATE:{"\n"}
+                  Với mỗi local component, lập bảng đối chiếu upstream {"->"} MIRATS:{"\n"}
+                  - root element{"\n"}
+                  - child/slot order{"\n"}
+                  - stable `.astryx-*` class{"\n"}
+                  - data-variant{"\n"}
+                  - data-size{"\n"}
+                  - data-state{"\n"}
+                  - disabled/aria-disabled{"\n"}
+                  - loading{"\n"}
+                  - selected/checked{"\n"}
+                  - invalid{"\n"}
                   - open/closed{"\n"}
-                  - icon leading/trailing{"\n"}
-                  - empty/long text{"\n"}
+                  - icon slots{"\n"}
+                  - label/supporting/status slots{"\n\n"}
+                  Local component phải phát đúng stable class và data attributes mà static Astryx CSS cần. Không sao chép atomic/hash class do StyleX sinh nếu class đó không phải public stable surface.{"\n\n"}
+                  BƯỚC 5 — VISUAL VÀ MOTION:{"\n"}
+                  Sao chép nguyên contract từ source đã pin:{"\n"}
+                  - semantic color tokens{"\n"}
+                  - typography và Figtree font loading{"\n"}
+                  - icon family, stroke và exact size{"\n"}
+                  - spacing{"\n"}
+                  - control height{"\n"}
+                  - border/radius{"\n"}
+                  - shadow/elevation{"\n"}
+                  - hover/pressed/selected/focus-visible{"\n"}
+                  - disabled/loading{"\n"}
+                  - overlay/scrim{"\n"}
+                  - enter/exit transitions{"\n"}
+                  - duration/easing{"\n"}
+                  - responsive media query{"\n"}
+                  - RTL{"\n"}
+                  - prefers-reduced-motion{"\n\n"}
+                  Mọi hover effect phải có @media (hover: hover) nếu upstream có guard này. Không tự thêm scale/bounce/glow nếu demo không có.{"\n\n"}
+                  BƯỚC 6 — BEHAVIOR LAYER:{"\n"}
+                  CSS không thay thế JavaScript. Giữ Radix/shadcn hoặc local hooks cho:{"\n"}
+                  - focus trap và focus return{"\n"}
+                  - Escape/outside click{"\n"}
+                  - roving tabindex{"\n"}
+                  - arrow-key navigation{"\n"}
+                  - portal và stacking{"\n"}
+                  - controlled/uncontrolled state{"\n"}
+                  - scroll lock{"\n"}
+                  - selection{"\n"}
+                  - IME handling{"\n"}
+                  - touch/drag/gesture{"\n"}
+                  - live-region announcement{"\n\n"}
+                  Map state behavior sang đúng data-state/data-variant để CSS Astryx hiển thị chính xác. Test contract với upstream; không chỉ test click chuột.{"\n\n"}
+                  BƯỚC 7 — COMPONENT ƯU TIÊN:{"\n"}
+                  1. Button/IconButton/ToggleButton.{"\n"}
+                  2. TextInput/TextArea/Switch/CheckboxInput.{"\n"}
+                  3. Tooltip/Popover/DropdownMenu/MoreMenu.{"\n"}
+                  4. Dialog/AlertDialog/BottomSheet/Toast.{"\n"}
+                  5. TabList/SideNav/MobileNav/TopNav.{"\n"}
+                  6. List/Item/Table/MetadataList.{"\n"}
+                  7. AppShell/Layout/LayoutPanel/EmptyState.{"\n\n"}
+                  Mỗi component chỉ hoàn tất khi tất cả variant, size và state trong Storybook tương ứng đều được tái tạo.{"\n\n"}
+                  BƯỚC 8 — REFERENCE HARNESS:{"\n"}
+                  Tạo hai cột dev-only cùng viewport:{"\n"}
+                  - trái: official Astryx component tại version đã pin;{"\n"}
+                  - phải: MIRATS local component + Source-Fidelity CSS Bridge.{"\n\n"}
+                  Chụp và so sánh:{"\n"}
+                  - light/dark{"\n"}
+                  - 1440, 1024, 768, 390, 360{"\n"}
+                  - default/hover/pressed/focus-visible{"\n"}
+                  - disabled/loading/selected/invalid/open{"\n"}
+                  - long Vietnamese text{"\n"}
                   - LTR/RTL{"\n"}
-                  - light/dark{"\n\n"}
-                  SO SÁNH:{"\n"}
-                  1. TypeScript public API.{"\n"}
-                  2. DOM snapshot/anatomy.{"\n"}
-                  3. Stable classes và data attributes.{"\n"}
-                  4. Computed styles.{"\n"}
-                  5. Bounding boxes.{"\n"}
-                  6. Pixel screenshot.{"\n"}
-                  7. Accessibility tree.{"\n"}
-                  8. Keyboard/focus order.{"\n"}
-                  9. Event sequence.{"\n"}
-                  10. Mobile behavior.{"\n\n"}
-                  OUTPUT:{"\n"}
-                  - reports/astryx-parity/{"<"}Component{">"}.json{"\n"}
-                  - reports/astryx-parity/{"<"}Component{">"}-light.png{"\n"}
-                  - reports/astryx-parity/{"<"}Component{">"}-dark.png{"\n"}
-                  - reports/astryx-parity/{"<"}Component{">"}-diff.png{"\n\n"}
-                  Chỉ ghi “100% exact parity” khi source/API/DOM/state/ARIA/keyboard và visual test đều đạt. Nếu chỉ giống hình ảnh nhưng vẫn dùng Radix DOM/behavior khác upstream, ghi rõ “visual parity only”. Không tăng threshold ảnh để che sai padding, màu, font hoặc radius.
+                  - reduced motion{"\n\n"}
+                  So sánh computed style cho font, color, background, border, radius, padding, gap, height, shadow, transform, transition và opacity.{"\n\n"}
+                  BƯỚC 9 — MOBILE VÀ THIẾT BỊ THẬT:{"\n"}
+                  - Chrome Android.{"\n"}
+                  - Safari iOS.{"\n"}
+                  - Desktop Chromium/WebKit/Firefox.{"\n"}
+                  - Touch không bị phụ thuộc hover.{"\n"}
+                  - Bottom sheet/dialog không bị keyboard che.{"\n"}
+                  - Safe-area đúng.{"\n"}
+                  - Không scroll lock kẹt sau khi đóng overlay.{"\n"}
+                  - Focus không bị mất sau navigation/dialog.{"\n\n"}
+                  DEFINITION OF DONE:{"\n"}
+                  - Không có import runtime từ @astryxdesign/core/* trong route production.{"\n"}
+                  - Static CSS/tokens có version, commit và hash.{"\n"}
+                  - Không còn style “ước lượng”.{"\n"}
+                  - Tất cả stable classes/data attributes được map có tài liệu.{"\n"}
+                  - Visual diff đạt trong môi trường cố định.{"\n"}
+                  - Interaction, keyboard, focus, portal và gesture test đạt.{"\n"}
+                  - Light/dark/mobile giống reference demo.{"\n"}
+                  - Không làm thay đổi callback, mutation, permission hoặc business logic MIRATS.{"\n"}
+                  - Nếu DOM behavior khác upstream dù nhìn giống, báo cáo rõ “exact visual parity + contract-compatible local behavior”, không ghi sai là cùng implementation.
                 </div>
               </ScrollArea>
             </div>
