@@ -125,15 +125,16 @@ export class MiniSearchAdapter {
       } else {
         // Try word-by-word comparison with normalized versions
         highlighted = highlighted.split(' ').map(word => {
-          // Skip if already highlighted
-          if (word.includes('**')) return word;
+          // Skip if already highlighted or empty
+          if (!word || word.includes('**')) return word;
           
-          // Remove trailing punctuation for matching
+          // Match multi-word terms by checking ahead or simple word match
           const cleanWord = word.replace(/[.,!?:;]$/, '');
           const punctuation = word.slice(cleanWord.length);
           
           const normalizedWord = boDauTiengViet(cleanWord.toLowerCase());
-          if (normalizedWord.includes(normalizedTerm)) {
+          // Check if the term is part of this word or matches exactly
+          if (normalizedWord === normalizedTerm || normalizedWord.includes(normalizedTerm)) {
             return `**${cleanWord}**${punctuation}`;
           }
           return word;
