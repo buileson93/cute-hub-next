@@ -25,6 +25,16 @@ export function normalizeViForSearch(text: string): string {
 const TECHNICAL_PATTERN = /\b(S\/N|P\/N|Serial|Model|Type|Unit|Qty|WGS84)\s*[:=]?\s*[A-Z0-9\-/.]+|\d+\s*(kW|MW|Hz|V|A|kVA|kg|m|cm|mm|°|')/gi;
 
 /**
+ * Resets technical pattern regex for global state issues.
+ */
+function testTechnicalPattern(text: string): boolean {
+  // We avoid the global flag issues by using match or a fresh regex
+  return !!text.match(/\b(S\/N|P\/N|Serial|Model|Type|Unit|Qty|WGS84)\s*[:=]?\s*[A-Z0-9\-/.]+|\d+\s*(kW|MW|Hz|V|A|kVA|kg|m|cm|mm|°|')/i);
+}
+
+
+
+/**
  * Creates a "corrected" version of the text using simple Vietnamese dictionary heuristic.
  * This does NOT overwrite the raw text.
  */
@@ -39,5 +49,6 @@ export function getCorrectedText(text: string): string {
  * Determines if a string segment is likely technical data.
  */
 export function isTechnicalSegment(segment: string): boolean {
-  return TECHNICAL_PATTERN.test(segment);
+  return testTechnicalPattern(segment);
 }
+

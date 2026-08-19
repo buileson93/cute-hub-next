@@ -9,14 +9,24 @@ export interface DeviceProfile {
   appVersion: string;
 }
 
+export type ProfileTierOverride = "low" | "medium" | "high" | null;
+
+
 const DB_NAME = "mirats_ocr_profiler";
 const STORE_NAME = "device_profiles";
 const APP_VERSION = "1.0.0"; // Should ideally come from env
 
 export class DeviceProfiler {
   private db: Promise<IDBPDatabase> | null = null;
+  private tierOverride: ProfileTierOverride = null;
+
+  setTierOverride(tier: ProfileTierOverride) {
+    this.tierOverride = tier;
+  }
+
 
   private getDB() {
+    if (typeof window === "undefined" || !window.indexedDB) return null;
     if (!this.db) {
       this.db = openDB(DB_NAME, 1, {
         upgrade(db) {
@@ -27,17 +37,23 @@ export class DeviceProfiler {
     return this.db;
   }
 
+
   async getProfile(): Promise<DeviceProfile> {
     const caps = await detectCapabilities();
     const db = await this.getDB();
-    const cached = await db.get(STORE_NAME, "current");
+    
+    if (db) {
+      const cached = await db.get(STORE_NAME, "current");
 
-    if (cached && cached.appVersion === APP_VERSION && Date.now() - cached.timestamp < 1000 * 60 * 60 * 24 * 7) {
-      return cached;
+      if (cached && cached.appVersion === APP_VERSION && Date.now() - cached.timestamp < 1000 * 60 * 60 * 24 * 7) {
+        return cached;
+      }
     }
 
+
     const score = await this.runMicroBenchmark(caps);
-    const tier = this.determineTier(caps, score);
+    const tier = this.tierOverride || this.determineTier(caps, score);
+
 
     const profile: DeviceProfile = {
       capabilities: caps,
@@ -47,9 +63,12 @@ export class DeviceProfiler {
       appVersion: APP_VERSION,
     };
 
-    await db.put(STORE_NAME, profile, "current");
+    if (db) {
+      await db.put(STORE_NAME, profile, "current");
+    }
     return profile;
   }
+
 
   private async runMicroBenchmark(caps: DeviceCapabilities): Promise<number> {
     if (typeof window === "undefined") return 0;
