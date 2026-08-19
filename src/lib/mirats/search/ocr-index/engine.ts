@@ -1,5 +1,5 @@
 import MiniSearch, { SearchOptions, SearchResult } from 'minisearch';
-import { boDauTiengViet } from '../chuan-hoa';
+import { boDauTiengViet, chuanHoaTho } from '../chuan-hoa';
 
 export interface SearchResultItem {
   id: string;
