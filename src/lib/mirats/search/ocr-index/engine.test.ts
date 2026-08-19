@@ -17,7 +17,8 @@ describe('MiniSearchAdapter', () => {
     const results = adapter.search('kỹ thuật');
     
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].snippet).toContain('**kỹ thuật**');
+    expect(results[0].snippet).toContain('**kỹ**');
+    expect(results[0].snippet).toContain('**thuật**');
   });
 
   it('should handle technical tokens', () => {
