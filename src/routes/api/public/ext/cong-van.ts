@@ -29,7 +29,7 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
         return new Response(null, {
           status: 204,
           headers: {
-            'Access-Control-Allow-Origin': '*', // Should be restricted to extension ID in production
+            'Access-Control-Allow-Origin': '*', // CORS Hardening: Specify MIRATS extension ID here if known
             'Access-Control-Allow-Methods': 'POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'Access-Control-Max-Age': '86400',
