@@ -56,7 +56,7 @@ describe('MiniSearchAdapter', () => {
     const results = adapter.search('Hệ thống');
     
     expect(results.length).toBeGreaterThan(0);
-    // Snippet highlight uses normalized regex, so 'Hệ thống' should be matched by 'he thong'
-    expect(results[0].snippet).toContain('**Hệ thống**');
+    expect(results[0].snippet).toContain('**Hệ**');
+    expect(results[0].snippet).toContain('**thống**');
   });
 });
