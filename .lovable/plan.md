@@ -1,23 +1,23 @@
 ---
-name: Standardize TreeView Node Heights and Alignment
-description: Standardize the height and horizontal alignment of tree nodes in the Life History TreeView to ensure visual consistency across different levels and node types.
+name: Chuẩn hóa chiều cao và căn lề TreeView
+description: Chuẩn hóa chiều cao và căn lề ngang của các nút cây trong TreeView Sổ lý lịch để đảm bảo tính nhất quán về thị giác giữa các cấp độ và loại nút khác nhau.
 type: design
 ---
 
-## Goals
-- Ensure all tree nodes have consistent vertical alignment regardless of their content or depth.
-- Fix the issue where tree item "boxes" (hoverable areas) have inconsistent widths or alignments.
-- Align icons and labels across different nesting levels.
+## Mục tiêu
+- Đảm bảo tất cả các nút cây có căn lề dọc nhất quán bất kể nội dung hoặc độ sâu của chúng.
+- Khắc phục sự cố các "ô" mục cây (vùng hover) có chiều dài không bằng nhau hoặc căn lề không khớp.
+- Căn chỉnh các icon và nhãn (label) trên các mức độ phân cấp khác nhau.
 
-## Implementation Details
-- **Consistent Height**: Set a fixed height or min-height for node rows (e.g., `h-8` or `h-9`) to prevent layout shifts.
-- **Icon Alignment**: Use a standardized container width for tree expansion arrows and node icons (e.g., `w-6`) to keep text labels aligned vertically.
-- **Nesting Logic**: Adjust the left margin/padding strategy to use a consistent indentation per level (e.g., `20px` per level) instead of varying `ml-*` classes.
-- **Badge Standardization**: Fix the width of count badges to prevent them from pushing other elements or causing alignment issues.
-- **Action Buttons**: Ensure "ghost" buttons on the right do not affect the row height and remain vertically centered.
+## Chi tiết triển khai
+- **Chiều cao nhất quán**: Thiết lập chiều cao cố định hoặc chiều cao tối thiểu cho các hàng nút (ví dụ: `h-8` hoặc `h-9`) để ngăn chặn việc thay đổi bố cục.
+- **Căn lề Icon**: Sử dụng chiều rộng container tiêu chuẩn cho các mũi tên mở rộng và icon nút (ví dụ: `w-6`) để giữ cho các nhãn văn bản được căn thẳng hàng theo chiều dọc.
+- **Logic phân cấp**: Điều chỉnh chiến lược lề trái/padding để sử dụng khoảng cách thụt đầu dòng nhất quán cho mỗi cấp độ (ví dụ: `20px` mỗi cấp) thay vì sử dụng các class `ml-*` thay đổi.
+- **Chuẩn hóa Badge**: Cố định chiều rộng của các badge đếm số lượng để ngăn chúng đẩy các thành phần khác hoặc gây ra vấn đề căn lề.
+- **Nút hành động**: Đảm bảo các nút "ghost" ở bên phải không ảnh hưởng đến chiều cao hàng và luôn được căn giữa theo chiều dọc.
 
-## Technical Tasks
-- Refactor `renderNode` in `src/components/mirats/so-ly-lich/TreeView.tsx`.
-- Replace conditional `ml-4` with a dynamic `style={{ paddingLeft: level * 20 }}` or consistent Tailwind padding.
-- Standardize icon wrappers to `w-5` or `w-6` with flex-center.
-- Ensure the row container `astryx-control` has a fixed height and `items-center`.
+## Nhiệm vụ kỹ thuật
+- Tái cấu trúc hàm `renderNode` trong `src/components/mirats/so-ly-lich/TreeView.tsx`.
+- Thay thế `ml-4` có điều kiện bằng `style={{ paddingLeft: level * 20 }}` hoặc padding Tailwind nhất quán.
+- Chuẩn hóa các wrapper icon thành `w-5` hoặc `w-6` với flex-center.
+- Đảm bảo container hàng `astryx-control` có chiều cao cố định và `items-center`.
