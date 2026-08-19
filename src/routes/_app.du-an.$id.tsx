@@ -34,6 +34,7 @@ import { HillChart } from "@/components/mirats/projects/delivery/HillChart";
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
 import { PitchEditor } from "@/components/mirats/projects/delivery/PitchEditor";
 import { OperationsLane } from "@/components/mirats/projects/operations/OperationsLane";
+import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
 
 export const Route = createFileRoute("/_app/du-an/$id")({
@@ -326,7 +327,7 @@ function DuAnDetailPage() {
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-3">
-              <div className="p-8 text-center text-slate-400 text-sm">Timeline dự án sẽ hiển thị tại đây.</div>
+              <ProjectTimeline projectId={id} />
             </TabsContent>
 
           </Tabs>
