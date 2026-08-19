@@ -247,9 +247,16 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
           </>
         )}
         {canManage && (
-          <Button size="icon" variant="ghost" onClick={onDelete} className="text-red-600" aria-label="Xoá">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <>
+            {row.tai_lieu_ocr?.status === "failed" && (
+              <Button size="sm" variant="ghost" title="Thử chạy lại OCR" onClick={() => {/* TODO */}} className="h-7 w-7 p-0">
+                <RefreshCcw className="h-4 w-4" />
+              </Button>
+            )}
+            <Button size="icon" variant="ghost" onClick={onDelete} className="text-red-600" aria-label="Xoá">
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </>
         )}
       </div>
       <DocViewerDialog
