@@ -158,9 +158,9 @@ export function UserMenu() {
                   7. Kiểm tra `.astryx-control` đang ghi đè variant nào.{"\n"}
                   8. Xác định lỗi cũ đến từ React, package mismatch, SSR, CSS cascade hay thiếu StyleX compiler; không đoán.{"\n\n"}
                   Thêm package script ổn định nếu chưa có:{"\n"}
-                  "scripts": {"\n"}
+                  "scripts": {"{"}{"\n"}
                     "astryx": "node node_modules/@astryxdesign/cli/clients/cli/bin/astryx.mjs"{"\n"}
-                  }{"\n\n"}
+                  }{"}"}{"\n\n"}
                   Chạy:{"\n"}
                   - npm run astryx -- doctor{"\n"}
                   - npm run astryx -- component --list{"\n"}
