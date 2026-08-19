@@ -37,6 +37,12 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
         });
       },
       POST: async ({ request }) => {
+        const corsHeaders = {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        };
+
 
         try {
           const authHeader = request.headers.get('Authorization');
