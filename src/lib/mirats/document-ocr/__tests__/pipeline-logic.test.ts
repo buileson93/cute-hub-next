@@ -11,7 +11,8 @@ describe("OCR Pipeline Logic", () => {
     });
 
     it("should flag low meaningful word count", () => {
-      const result = classifyPageText("123 456 789 !!! ???");
+      const longButMeaningless = "123 456 789 !!! ??? 000 111 222 333 444 555 666 777 888 999 000 111 222 333 444 555";
+      const result = classifyPageText(longButMeaningless);
       expect(result.needsOcr).toBe(true);
       expect(result.reason).toContain("Insufficient meaningful words");
     });
