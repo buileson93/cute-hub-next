@@ -9,12 +9,21 @@ export interface DeviceProfile {
   appVersion: string;
 }
 
+export type ProfileTierOverride = "low" | "medium" | "high" | null;
+
+
 const DB_NAME = "mirats_ocr_profiler";
 const STORE_NAME = "device_profiles";
 const APP_VERSION = "1.0.0"; // Should ideally come from env
 
 export class DeviceProfiler {
   private db: Promise<IDBPDatabase> | null = null;
+  private tierOverride: ProfileTierOverride = null;
+
+  setTierOverride(tier: ProfileTierOverride) {
+    this.tierOverride = tier;
+  }
+
 
   private getDB() {
     if (!this.db) {
@@ -37,7 +46,8 @@ export class DeviceProfiler {
     }
 
     const score = await this.runMicroBenchmark(caps);
-    const tier = this.determineTier(caps, score);
+    const tier = this.tierOverride || this.determineTier(caps, score);
+
 
     const profile: DeviceProfile = {
       capabilities: caps,
