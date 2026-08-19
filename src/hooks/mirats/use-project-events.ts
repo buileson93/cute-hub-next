@@ -11,17 +11,17 @@ export type ProjectEventType =
 
 export interface ProjectEvent {
   id: string;
-  du_an_id: string;
+  du_an_id: string | null;
   event_type: ProjectEventType;
   entity_type: string;
   entity_id: string;
   title: string;
   summary: string | null;
   actor_id: string | null;
-  occurred_at: string;
+  occurred_at: string | null;
   metadata: any;
-  source: string;
-  created_at: string;
+  source: string | null;
+  created_at: string | null;
 }
 
 export function useProjectEvents(projectId: string, filters?: {
@@ -53,8 +53,13 @@ export function useProjectEvents(projectId: string, filters?: {
       const { data, error } = await query;
       if (error) throw error;
       
-      // Use unknown conversion to bypass type mismatch between generated types and custom interface
-      return data as unknown as (ProjectEvent & { actor: { id: string; ho_ten: string | null; email: string } | null })[];
+      // Map data to ensure required fields for components are present even if null in DB
+      const events = (data || []).map(item => ({
+        ...item,
+        occurred_at: item.occurred_at || new Date().toISOString()
+      }));
+
+      return events as unknown as (ProjectEvent & { actor: { id: string; ho_ten: string | null; email: string } | null })[];
     },
   });
 }
