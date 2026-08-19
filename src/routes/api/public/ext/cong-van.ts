@@ -191,8 +191,9 @@ export const Route = createFileRoute('/api/public/ext/cong-van')({
 
           return new Response(JSON.stringify({ success: true, id: congVanId }), {
             status: 201,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
+
         } catch (err: any) {
           console.error('[ext-api] error:', err);
           
