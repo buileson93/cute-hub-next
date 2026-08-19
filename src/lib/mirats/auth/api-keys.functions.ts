@@ -164,11 +164,24 @@ export async function verifyApiKey(token: string, ip?: string): Promise<{
   );
 
   if (isValid) {
+    // Non-blocking update of last used info
     supabaseAdmin
       .from("api_keys" as any)
-      .update({ last_used_at: new Date().toISOString() } as any)
+      .update({ 
+        last_used_at: new Date().toISOString(),
+        last_used_ip_hash: ipHash
+      } as any)
       .eq("key_id", keyId)
       .then();
+
+    // Audit Log: API Call
+    supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: typedKey.user_id,
+      action: 'api_call',
+      result: 'success',
+      ip_hash: ipHash
+    } as any).then();
 
     return { 
       isValid: true, 
@@ -178,6 +191,16 @@ export async function verifyApiKey(token: string, ip?: string): Promise<{
     };
   }
 
+  // Audit Log: Failed attempt
+  supabaseAdmin.from("api_audit_log" as any).insert({
+    key_id: keyId,
+    action: 'api_call',
+    result: 'failure',
+    ip_hash: ipHash,
+    metadata: { reason: 'invalid_secret' }
+  } as any).then();
+
   return { isValid: false };
 }
+
 
