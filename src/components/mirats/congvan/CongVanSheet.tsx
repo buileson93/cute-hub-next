@@ -58,7 +58,7 @@ export function CongVanSheet({
   const [uploading, setUploading] = useState(false);
   const [linkTarget, setLinkTarget] = useState("");
   const [linkLoai, setLinkLoai] = useState<CongVanLienKetLoai>("tra_loi");
-  const [viewer, setViewer] = useState<{ url: string | null; name: string; mime?: string | null } | null>(null);
+  const [viewer, setViewer] = useState<{ id: string; url: string | null; name: string; mime?: string | null } | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -184,10 +184,11 @@ export function CongVanSheet({
   }
 
   async function openTep(t: CongVanTepRow) {
-    setViewer({ url: null, name: t.file_name, mime: t.mime_type });
+    setViewer({ id: t.id, url: null, name: t.file_name, mime: t.mime_type });
     const { data } = await storage.from(t.bucket).createSignedUrl(t.file_path, 3600);
-    setViewer({ url: (data as { signedUrl?: string } | null)?.signedUrl ?? null, name: t.file_name, mime: t.mime_type });
+    setViewer({ id: t.id, url: (data as { signedUrl?: string } | null)?.signedUrl ?? null, name: t.file_name, mime: t.mime_type });
   }
+
 
   async function removeCongVan() {
     if (!editing) return;
