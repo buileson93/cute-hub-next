@@ -200,8 +200,6 @@ export function UserMenu() {
                   - Ghi source URL, commit, version và file hashes.
                 </div>
               </ScrollArea>
-                </div>
-              </ScrollArea>
             </div>
           ) : (
             <DropdownMenuItem
