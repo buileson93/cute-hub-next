@@ -259,11 +259,17 @@ function DuAnDetailPage() {
                 onEdit={(t) => { setEditingCV(t); setDefaultMocId(t.moc_id); setOpenCV(true); }}
                 canAdd={canAddTask}
                 onAddIn={(mocId) => { setDefaultMocId(mocId); setEditingCV(null); setOpenCV(true); }}
+                density="comfortable"
               />
             </TabsContent>
 
             <TabsContent value="gantt" className="mt-3">
-              <GanttView mocs={mocs ?? []} tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []} projectStart={duAn.ngay_bat_dau} />
+              <GanttView 
+                mocs={mocs ?? []} 
+                tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []} 
+                projectStart={duAn.ngay_bat_dau} 
+                density="comfortable"
+              />
             </TabsContent>
 
             <TabsContent value="discovery" className="mt-3">
@@ -368,15 +374,16 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
 // KANBAN
 // =====================================================
 function KanbanView({
-  mocs, tasks, nameOf, onEdit, canAdd, onAddIn,
+  mocs, tasks, nameOf, onEdit, canAdd, onAddIn, density = "default"
 }: {
   mocs: Moc[]; tasks: CongViec[]; nameOf: (u: string | null) => string;
   onEdit: (t: CongViec) => void;
   canAdd: boolean; onAddIn: (mocId: string) => void;
+  density?: "default" | "comfortable" | "compact";
 }) {
   const mocMap = useMemo(() => Object.fromEntries(mocs.map((m) => [m.id, m])), [mocs]);
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]">
+    <div className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]" data-density={density}>
       {CV_STATUSES.map((st) => {
         const col = CV_TRANG_THAI[st];
         const list = tasks.filter((t) => t.trang_thai === st);
