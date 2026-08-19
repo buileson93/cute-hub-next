@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { isValidStatusTransition, isTerminalState } from "../status";
-import { OcrStatus } from "../types";
 
 describe("OCR Status Logic", () => {
   it("should validate allowed status transitions", () => {
