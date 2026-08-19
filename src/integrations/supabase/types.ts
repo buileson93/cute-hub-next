@@ -3147,6 +3147,69 @@ export type Database = {
           },
         ]
       }
+      du_an_su_kien: {
+        Row: {
+          actor_id: string | null
+          created_at: string | null
+          du_an_id: string | null
+          entity_id: string
+          entity_type: string
+          event_type: Database["public"]["Enums"]["project_event_type"]
+          external_request_id: string | null
+          id: string
+          metadata: Json | null
+          occurred_at: string | null
+          source: string | null
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string | null
+          du_an_id?: string | null
+          entity_id: string
+          entity_type: string
+          event_type: Database["public"]["Enums"]["project_event_type"]
+          external_request_id?: string | null
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string | null
+          source?: string | null
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string | null
+          du_an_id?: string | null
+          entity_id?: string
+          entity_type?: string
+          event_type?: Database["public"]["Enums"]["project_event_type"]
+          external_request_id?: string | null
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string | null
+          source?: string | null
+          summary?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_su_kien_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "du_an_su_kien_du_an_id_fkey"
+            columns: ["du_an_id"]
+            isOneToOne: false
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_usage_log: {
         Row: {
           created_at: string
@@ -10735,6 +10798,22 @@ export type Database = {
         | "he_thong"
         | "cv_moi"
         | "cv_cap_nhat"
+      project_event_type:
+        | "project_created"
+        | "project_updated"
+        | "milestone_created"
+        | "milestone_updated"
+        | "milestone_deleted"
+        | "task_created"
+        | "task_updated"
+        | "task_status_changed"
+        | "task_completed"
+        | "canvas_published"
+        | "pitch_created"
+        | "document_uploaded"
+        | "document_linked"
+        | "delivery_update"
+        | "operations_update"
       thiet_bi_tep_loai: "hinh_anh" | "tai_lieu"
       ticket_loai:
         | "cap_tai_khoan"
@@ -10991,6 +11070,23 @@ export const Constants = {
         "he_thong",
         "cv_moi",
         "cv_cap_nhat",
+      ],
+      project_event_type: [
+        "project_created",
+        "project_updated",
+        "milestone_created",
+        "milestone_updated",
+        "milestone_deleted",
+        "task_created",
+        "task_updated",
+        "task_status_changed",
+        "task_completed",
+        "canvas_published",
+        "pitch_created",
+        "document_uploaded",
+        "document_linked",
+        "delivery_update",
+        "operations_update",
       ],
       thiet_bi_tep_loai: ["hinh_anh", "tai_lieu"],
       ticket_loai: [
