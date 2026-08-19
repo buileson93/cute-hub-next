@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   ArrowLeft, Plus, Loader2, Calendar as CalendarIcon, GanttChart, KanbanSquare,
@@ -99,6 +99,8 @@ function DuAnDetailPage() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const { session, hasRole } = useSession();
+  const currentSearch = Route.useSearch();
+  const activeTab = currentSearch.view;
 
   const { data: duAn, isLoading: loadingDA } = useQuery({
     queryKey: ["du-an", id],
@@ -143,8 +145,8 @@ function DuAnDetailPage() {
     enabled: userIds.length > 0,
   });
   const profileMap = useMemo(() => Object.fromEntries((profiles ?? []).map((p) => [p.id, p])), [profiles]);
-  const nameOf = (uid: string | null) =>
-    uid ? profileMap[uid]?.ho_ten ?? profileMap[uid]?.email ?? uid.slice(0, 8) : "—";
+  const nameOf = useCallback((uid: string | null) =>
+    uid ? profileMap[uid]?.ho_ten ?? profileMap[uid]?.email ?? uid.slice(0, 8) : "—", [profileMap]);
 
   const uid = session?.user?.id;
   const isManager = !!duAn && !!uid && (hasRole("admin") || duAn.quan_ly_id === uid);
@@ -154,9 +156,6 @@ function DuAnDetailPage() {
   const [openCV, setOpenCV] = useState(false);
   const [defaultMocId, setDefaultMocId] = useState<string | null>(null);
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
-
-  const currentSearch = Route.useSearch();
-  const activeTab = currentSearch.view;
 
   if (loadingDA) {
     return <div className="p-8 text-slate-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Đang tải…</div>;

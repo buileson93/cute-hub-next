@@ -37,7 +37,7 @@ export function HillChart({ project_id }: { project_id: string }) {
         name: s.name,
         position: s.hill_position || 0,
         status: s.hill_status as 'climbing' | 'executing'
-      }));
+      })) as HillMarker[];
     }
   });
 
