@@ -202,6 +202,42 @@ export type Database = {
         }
         Relationships: []
       }
+      api_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_hash: string | null
+          key_id: string | null
+          metadata: Json | null
+          project_id: string | null
+          result: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          key_id?: string | null
+          metadata?: Json | null
+          project_id?: string | null
+          result?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          key_id?: string | null
+          metadata?: Json | null
+          project_id?: string | null
+          result?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       api_key_project_scopes: {
         Row: {
           api_key_id: string
