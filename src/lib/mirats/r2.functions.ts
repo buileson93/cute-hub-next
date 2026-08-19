@@ -36,7 +36,11 @@ const putSchema = z.object({
 const getSchema = z.object({ key: z.string().min(1).max(1024) });
 const delSchema = z.object({ key: z.string().min(1).max(1024) });
 
-export function isPrivateKey(_key: string): boolean { return true; }
+/** Kiểm tra xem key có thuộc vùng bảo mật không. */
+export function isPrivateKey(key: string): boolean {
+  return key.startsWith("private/") || key.startsWith("user/");
+}
+
 
 function sanitizeKey(userId: string, rawKey: string): string {
   const clean = rawKey.replace(/\\/g, "/").replace(/\.\.+/g, "").replace(/^\/+/, "");
@@ -46,19 +50,34 @@ function sanitizeKey(userId: string, rawKey: string): string {
   return clean;
 }
 
-async function assertAccess(supabase: any, userId: string, key: string, action: "put"|"get"|"delete") {
+async function assertAccess(supabase: any, userId: string, key: string, action: "put" | "get" | "delete") {
+  // 1. Luôn cho phép truy cập file cá nhân của chính mình
   if (key.startsWith(`user/${userId}/`)) return;
-  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-  if (error) throw new Error(error.message);
+
+  // 2. Admin có toàn quyền
+  const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (isAdmin) return;
-  const { data: row } = await supabase.from("r2_file").select("user_id").eq("key", key).maybeSingle();
-  if (row?.user_id === userId) return;
+
+  // 3. Kiểm tra quyền sở hữu hoặc quyền chia sẻ qua r2_file
+  const { data: file } = await supabase
+    .from("r2_file")
+    .select("user_id, status")
+    .eq("key", key)
+    .maybeSingle();
+
+  if (file?.user_id === userId) return;
+
+  // 4. Cho phép PUT lên các prefix công khai đã định nghĩa (để upload mới)
   if (action === "put") {
-    const publicPrefix = /^(uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|public)\//;
+    const publicPrefix = /^(uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|public|project)\//;
     if (publicPrefix.test(key)) return;
   }
+
+  // 5. Nếu file không thuộc sở hữu và không phải upload mới, chặn truy cập mặc định
   throw new Error("Không có quyền truy cập file này");
 }
+
+
 
 async function logAccess(entry: { user_id: string|null; key: string; action: string; category?: string|null; expires_in?: number|null; ok?: boolean; reason?: string|null }) {
   try {

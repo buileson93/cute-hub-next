@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/backend/client";
 import { 
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  FileText, Plus, Search, FileUp, Filter, MoreHorizontal, CheckCircle2, AlertCircle 
+  FileText, Plus, Search, FileUp, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Loader2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -16,43 +18,38 @@ import { Blockquote } from "@/components/ui/blockquote";
 interface DocumentRecord {
   id: string;
   title: string;
-  abstract: string;
-  submit_date: string;
-  sign_date: string;
-  format: 'paper' | 'digital';
-  copy_type: 'original' | 'copy' | 'certified';
-  issuing_body: string;
-  status: 'complete' | 'incomplete';
+  abstract: string | null;
+  submit_date: string | null;
+  sign_date: string | null;
+  format: string | null;
+  copy_type: string | null;
+  issuing_body: string | null;
+  status: string | null;
 }
 
-export function DossierRegister({ dossier_id }: { dossier_id: string }) {
+export function DossierRegister({ project_id }: { project_id: string }) {
   const [search, setSearch] = useState("");
   
-  // Mock data for demonstration
-  const [docs] = useState<DocumentRecord[]>([
-    {
-      id: "1",
-      title: "Quyết định phê duyệt dự án",
-      abstract: "V/v phê duyệt đầu tư xây dựng hạ tầng MIRATS",
-      submit_date: "2026-08-01",
-      sign_date: "2026-08-05",
-      format: "digital",
-      copy_type: "original",
-      issuing_body: "Ban Giám đốc",
-      status: "complete"
-    },
-    {
-      id: "2",
-      title: "Hợp đồng kinh tế số 123/HĐ",
-      abstract: "Cung cấp thiết bị mạng và server",
-      submit_date: "2026-08-10",
-      sign_date: "",
-      format: "paper",
-      copy_type: "copy",
-      issuing_body: "Công ty Cổ phần MIRATS",
-      status: "incomplete"
+  const { data: docs = [], isLoading } = useQuery({
+    queryKey: ["dossier-docs", project_id],
+    queryFn: async () => {
+      const { data: dossiers } = await supabase.from("project_dossiers" as any).select("id").eq("project_id", project_id);
+      const dossiersArr = (dossiers || []) as any[];
+      if (!dossiersArr.length) return [];
+      
+      const dossierIds = dossiersArr.map(d => d.id);
+      const { data, error } = await supabase
+        .from("dossier_documents" as any)
+        .select("*")
+        .in("dossier_id", dossierIds)
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return (data as any || []) as DocumentRecord[];
     }
-  ]);
+  });
+
+  if (isLoading) return <div className="p-8 text-slate-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Đang tải hồ sơ…</div>;
 
   return (
     <div className="space-y-4">

@@ -155,15 +155,15 @@ function DuAnDetailPage() {
   const [defaultMocId, setDefaultMocId] = useState<string | null>(null);
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
 
+  const currentSearch = Route.useSearch();
+  const activeTab = currentSearch.view;
+
   if (loadingDA) {
     return <div className="p-8 text-slate-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Đang tải…</div>;
   }
   if (!duAn) {
     return <Card><CardContent className="p-6">Không tìm thấy dự án.</CardContent></Card>;
   }
-
-  const currentSearch = Route.useSearch();
-  const activeTab = currentSearch.view;
 
   return (
     <div className="flex flex-col gap-4">
@@ -227,6 +227,8 @@ function DuAnDetailPage() {
                 <TabsTrigger value="discovery" className="px-3 h-7 text-xs font-medium">Discovery</TabsTrigger>
                 <TabsTrigger value="delivery" className="px-3 h-7 text-xs font-medium">Delivery</TabsTrigger>
                 <TabsTrigger value="operations" className="px-3 h-7 text-xs font-medium">Operations</TabsTrigger>
+                <TabsTrigger value="hoso" className="px-3 h-7 text-xs font-medium">Hồ sơ</TabsTrigger>
+                <TabsTrigger value="cong-van" className="px-3 h-7 text-xs font-medium">Công văn</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -257,11 +259,17 @@ function DuAnDetailPage() {
                 onEdit={(t) => { setEditingCV(t); setDefaultMocId(t.moc_id); setOpenCV(true); }}
                 canAdd={canAddTask}
                 onAddIn={(mocId) => { setDefaultMocId(mocId); setEditingCV(null); setOpenCV(true); }}
+                density="comfortable"
               />
             </TabsContent>
 
             <TabsContent value="gantt" className="mt-3">
-              <GanttView mocs={mocs ?? []} tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []} projectStart={duAn.ngay_bat_dau} />
+              <GanttView 
+                mocs={mocs ?? []} 
+                tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []} 
+                projectStart={duAn.ngay_bat_dau} 
+                density="comfortable"
+              />
             </TabsContent>
 
             <TabsContent value="discovery" className="mt-3">
@@ -271,13 +279,7 @@ function DuAnDetailPage() {
             <TabsContent value="delivery" className="mt-3 space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div className="lg:col-span-3">
-                  <HillChart 
-                    markers={[
-                      { id: "1", name: "Backend API", position: 35, status: "climbing" },
-                      { id: "2", name: "UI Components", position: 65, status: "executing" },
-                      { id: "3", name: "Dossier Integration", position: 10, status: "climbing" }
-                    ]} 
-                  />
+                  <HillChart project_id={id} />
                 </div>
                 <div className="space-y-4">
                   <Card className="border-slate-200 shadow-none bg-slate-50/50">
@@ -308,7 +310,7 @@ function DuAnDetailPage() {
             </TabsContent>
 
             <TabsContent value="hoso" className="mt-3">
-              <DossierRegister dossier_id="default" />
+              <DossierRegister project_id={id} />
             </TabsContent>
 
             <TabsContent value="list" className="mt-3">
@@ -331,6 +333,7 @@ function DuAnDetailPage() {
             <TabsContent value="cong-van" className="mt-3">
               <CongVanPanel duAnId={id} canEdit={isManager} />
             </TabsContent>
+
           </Tabs>
         </div>
 
@@ -372,15 +375,16 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
 // KANBAN
 // =====================================================
 function KanbanView({
-  mocs, tasks, nameOf, onEdit, canAdd, onAddIn,
+  mocs, tasks, nameOf, onEdit, canAdd, onAddIn, density = "default"
 }: {
   mocs: Moc[]; tasks: CongViec[]; nameOf: (u: string | null) => string;
   onEdit: (t: CongViec) => void;
   canAdd: boolean; onAddIn: (mocId: string) => void;
+  density?: "default" | "comfortable" | "compact";
 }) {
   const mocMap = useMemo(() => Object.fromEntries(mocs.map((m) => [m.id, m])), [mocs]);
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]">
+    <div className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]" data-density={density}>
       {CV_STATUSES.map((st) => {
         const col = CV_TRANG_THAI[st];
         const list = tasks.filter((t) => t.trang_thai === st);
@@ -455,7 +459,7 @@ function KanbanView({
 // =====================================================
 // GANTT (frappe-gantt)
 // =====================================================
-function GanttView({ mocs, tasks, projectStart }: { mocs: Moc[]; tasks: CongViec[]; projectStart: string | null }) {
+function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: Moc[]; tasks: CongViec[]; projectStart: string | null; density?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<"Day" | "Week" | "Month">("Week");
 
@@ -519,7 +523,7 @@ function GanttView({ mocs, tasks, projectStart }: { mocs: Moc[]; tasks: CongViec
 
 
   return (
-    <Card>
+    <Card data-density={density}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>

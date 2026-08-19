@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/backend/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface HillMarker {
   id: string;
@@ -10,9 +13,47 @@ interface HillMarker {
   status: 'climbing' | 'executing';
 }
 
-export function HillChart({ markers, onMarkerMove }: { markers: HillMarker[]; onMarkerMove?: (id: string, pos: number) => void }) {
+export function HillChart({ project_id }: { project_id: string }) {
+  const qc = useQueryClient();
   const containerRef = useRef<SVGSVGElement>(null);
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+
+  const { data: markers = [], isLoading } = useQuery({
+    queryKey: ["hill-chart", project_id],
+    queryFn: async () => {
+      const { data: pitches } = await supabase.from("pitches" as any).select("id").eq("project_id", project_id);
+      const pitchesArr = (pitches || []) as any[];
+      if (!pitchesArr.length) return [];
+      
+      const pitchIds = pitchesArr.map(p => p.id);
+      const { data, error } = await supabase
+        .from("pitch_scopes" as any)
+        .select("*")
+        .in("pitch_id", pitchIds);
+      
+      if (error) throw error;
+      return (data || []).map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        position: s.hill_position || 0,
+        status: s.hill_status as 'climbing' | 'executing'
+      })) as HillMarker[];
+    }
+  });
+
+  const updatePosition = useMutation({
+    mutationFn: async ({ id, position }: { id: string; position: number }) => {
+      const status = position < 50 ? 'climbing' : 'executing';
+      const { error } = await supabase
+        .from("pitch_scopes" as any)
+        .update({ hill_position: position, hill_status: status } as any)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["hill-chart", project_id] });
+    }
+  });
 
   // Simple parabolic hill: y = 4 * x * (1 - x)
   const getPoint = (x: number) => {
@@ -28,6 +69,8 @@ export function HillChart({ markers, onMarkerMove }: { markers: HillMarker[]; on
     const p = getPoint(i);
     return `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`;
   }).join(" ");
+
+  if (isLoading) return <div className="p-4 text-xs text-slate-500">Đang tải Hill Chart...</div>;
 
   return (
     <div className="space-y-4">

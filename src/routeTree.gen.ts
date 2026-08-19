@@ -131,6 +131,7 @@ import { Route as ApiPublicHooksPmGenerateRouteImport } from './routes/api/publi
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicHooksCanhBaoHetHanRouteImport } from './routes/api/public/hooks/canh-bao-het-han'
 import { Route as ApiPublicHooksBootstrapAdminRouteImport } from './routes/api/public/hooks/bootstrap-admin'
+import { Route as ApiPublicExtCongVanRouteImport } from './routes/api/public/ext/cong-van'
 import { Route as AppFormsSubmissionsIdRouteImport } from './routes/_app.forms.submissions.$id'
 import { Route as AppFormsNewCodeRouteImport } from './routes/_app.forms.new.$code'
 import { Route as AppBaoTriDotIdRouteImport } from './routes/_app.bao-tri.dot.$id'
@@ -760,6 +761,11 @@ const ApiPublicHooksBootstrapAdminRoute =
     path: '/api/public/hooks/bootstrap-admin',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicExtCongVanRoute = ApiPublicExtCongVanRouteImport.update({
+  id: '/api/public/ext/cong-van',
+  path: '/api/public/ext/cong-van',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppFormsSubmissionsIdRoute = AppFormsSubmissionsIdRouteImport.update({
   id: '/submissions/$id',
   path: '/submissions/$id',
@@ -904,6 +910,7 @@ export interface FileRoutesByFullPath {
   '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/api/public/ext/cong-van': typeof ApiPublicExtCongVanRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -1026,6 +1033,7 @@ export interface FileRoutesByTo {
   '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
   '/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/api/public/ext/cong-van': typeof ApiPublicExtCongVanRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -1157,6 +1165,7 @@ export interface FileRoutesById {
   '/_app/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/_app/forms/new/$code': typeof AppFormsNewCodeRoute
   '/_app/forms/submissions/$id': typeof AppFormsSubmissionsIdRoute
+  '/api/public/ext/cong-van': typeof ApiPublicExtCongVanRoute
   '/api/public/hooks/bootstrap-admin': typeof ApiPublicHooksBootstrapAdminRoute
   '/api/public/hooks/canh-bao-het-han': typeof ApiPublicHooksCanhBaoHetHanRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -1288,6 +1297,7 @@ export interface FileRouteTypes {
     | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
+    | '/api/public/ext/cong-van'
     | '/api/public/hooks/bootstrap-admin'
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
@@ -1410,6 +1420,7 @@ export interface FileRouteTypes {
     | '/bao-tri/dot/$id'
     | '/forms/new/$code'
     | '/forms/submissions/$id'
+    | '/api/public/ext/cong-van'
     | '/api/public/hooks/bootstrap-admin'
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
@@ -1540,6 +1551,7 @@ export interface FileRouteTypes {
     | '/_app/bao-tri/dot/$id'
     | '/_app/forms/new/$code'
     | '/_app/forms/submissions/$id'
+    | '/api/public/ext/cong-van'
     | '/api/public/hooks/bootstrap-admin'
     | '/api/public/hooks/canh-bao-het-han'
     | '/api/public/hooks/daily-backup'
@@ -1577,6 +1589,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicQaResetTestPasswordsRoute: typeof ApiPublicQaResetTestPasswordsRoute
   QrThietBiIdRoute: typeof QrThietBiIdRoute
+  ApiPublicExtCongVanRoute: typeof ApiPublicExtCongVanRoute
   ApiPublicHooksBootstrapAdminRoute: typeof ApiPublicHooksBootstrapAdminRoute
   ApiPublicHooksCanhBaoHetHanRoute: typeof ApiPublicHooksCanhBaoHetHanRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
@@ -2447,6 +2460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksBootstrapAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ext/cong-van': {
+      id: '/api/public/ext/cong-van'
+      path: '/api/public/ext/cong-van'
+      fullPath: '/api/public/ext/cong-van'
+      preLoaderRoute: typeof ApiPublicExtCongVanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/forms/submissions/$id': {
       id: '/_app/forms/submissions/$id'
       path: '/submissions/$id'
@@ -2862,6 +2882,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicQaResetTestPasswordsRoute: ApiPublicQaResetTestPasswordsRoute,
   QrThietBiIdRoute: QrThietBiIdRoute,
+  ApiPublicExtCongVanRoute: ApiPublicExtCongVanRoute,
   ApiPublicHooksBootstrapAdminRoute: ApiPublicHooksBootstrapAdminRoute,
   ApiPublicHooksCanhBaoHetHanRoute: ApiPublicHooksCanhBaoHetHanRoute,
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
