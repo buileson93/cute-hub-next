@@ -219,7 +219,16 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
       <div className="flex min-w-0 items-center gap-3">
         <FileText className="h-5 w-5 shrink-0 text-red-600" />
         <div className="min-w-0">
-          <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
+          <div className="flex items-center gap-2">
+            <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
+            {row.tai_lieu_ocr && (
+              <OcrStatusBadge 
+                status={row.tai_lieu_ocr.status as any} 
+                processedPages={row.tai_lieu_ocr.processed_pages}
+                totalPages={row.tai_lieu_ocr.page_count || undefined}
+              />
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <Badge variant="outline" className="text-[10px]">{row.mime_type ?? "PDF"}</Badge>
             <span>{fmtSize(row.kich_thuoc)}</span>
