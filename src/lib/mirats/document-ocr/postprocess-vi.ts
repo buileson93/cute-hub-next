@@ -28,9 +28,10 @@ const TECHNICAL_PATTERN = /\b(S\/N|P\/N|Serial|Model|Type|Unit|Qty|WGS84)\s*[:=]
  * Resets technical pattern regex for global state issues.
  */
 function testTechnicalPattern(text: string): boolean {
-  const regex = new RegExp(TECHNICAL_PATTERN.source, TECHNICAL_PATTERN.flags);
-  return regex.test(text);
+  // We avoid the global flag issues by using match or a fresh regex
+  return !!text.match(/\b(S\/N|P\/N|Serial|Model|Type|Unit|Qty|WGS84)\s*[:=]?\s*[A-Z0-9\-/.]+|\d+\s*(kW|MW|Hz|V|A|kVA|kg|m|cm|mm|°|')/i);
 }
+
 
 
 /**
