@@ -30,7 +30,7 @@ export function InfoHint({
             type="button"
             aria-label="Hướng dẫn"
             className={cn(
-              "inline-flex shrink-0 items-center justify-center rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+              "inline-flex shrink-0 items-center justify-center rounded-full p-1 text-[#0074e2] transition-colors hover:bg-[#0074e2]/10",
               className,
             )}
           >

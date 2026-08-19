@@ -128,7 +128,7 @@ function OverviewReport() {
               variant="outline" 
               size="sm" 
               onClick={handleExport}
-              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl border-primary/20 hover:bg-primary/5 transition-all"
+              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl !bg-white !text-[#0074e2] border-primary/20 hover:bg-primary/5 transition-all"
             >
               <Icon name="action.download" className="text-primary" />
               <span className="font-bold text-[11px] uppercase tracking-wider">Xuất PDF</span>
