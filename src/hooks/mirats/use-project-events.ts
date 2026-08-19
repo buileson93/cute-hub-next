@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 
 export type ProjectEventType = 
@@ -9,7 +9,6 @@ export type ProjectEventType =
   | 'document_uploaded' | 'document_linked'
   | 'correspondence_created'
   | 'delivery_update' | 'operations_update';
-
 
 export interface ProjectEvent {
   id: string;
