@@ -34,6 +34,7 @@ export function useOcrTask() {
     try {
       setProgress({ current: startPage - 1, total: 0, status: "Đang khởi tạo..." });
 
+      // Note: ocrPipeline.process now internally handles reuse and publishing
       const results = await ocrPipeline.process(sourceType, sourceId, file, {
         signal: abortControllerRef.current.signal,
         language,
