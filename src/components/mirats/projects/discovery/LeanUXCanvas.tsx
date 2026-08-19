@@ -12,14 +12,14 @@ import { Info } from "lucide-react";
 
 interface CanvasData {
   id?: string;
-  business_problem: string;
-  business_outcomes: string;
-  users_customers: string;
-  user_benefits: string;
-  solution_ideas: string;
-  hypotheses: string;
-  riskiest_assumptions: string;
-  first_steps_experiments: string;
+  business_problem: string | null;
+  business_outcomes: string | null;
+  users_customers: string | null;
+  user_benefits: string | null;
+  solution_ideas: string | null;
+  hypotheses: string | null;
+  riskiest_assumptions: string | null;
+  first_steps_experiments: string | null;
 }
 
 export function LeanUXCanvas({ project_id }: { project_id: string }) {
@@ -29,12 +29,12 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ["lean-ux-canvas", project_id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("lean_ux_canvases" as any)
+      const { data, error } = await supabase.from("lean_ux_canvases")
         .select("*")
         .eq("project_id", project_id)
         .maybeSingle();
       if (error) throw error;
-      return (data as any) as CanvasData;
+      return data;
     },
   });
 
@@ -50,7 +50,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
   });
 
   React.useEffect(() => {
-    if (data) setForm(data);
+    if (data) setForm(data as CanvasData);
   }, [data]);
 
   const handleSave = async () => {
@@ -58,11 +58,11 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
     try {
       const payload = { ...form, project_id };
       const { data: saved, error } = form.id 
-        ? await supabase.from("lean_ux_canvases" as any).update(payload).eq("id", form.id).select().single()
-        : await supabase.from("lean_ux_canvases" as any).insert(payload).select().single();
+        ? await supabase.from("lean_ux_canvases").update(payload).eq("id", form.id).select().single()
+        : await supabase.from("lean_ux_canvases").insert(payload).select().single();
       
       if (error) throw error;
-      setForm(saved as any);
+      setForm(saved as CanvasData);
       qc.invalidateQueries({ queryKey: ["lean-ux-canvas", project_id] });
       toast.success("Đã lưu Lean UX Canvas");
     } catch (e: any) {
@@ -147,7 +147,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
   );
 }
 
-function CanvasSection({ title, description, value, onChange, placeholder }: { title: string; description: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function CanvasSection({ title, description, value, onChange, placeholder }: { title: string; description: string; value: string | null; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <Card className="border-slate-200 shadow-none">
       <CardHeader className="pb-2">
@@ -156,7 +156,7 @@ function CanvasSection({ title, description, value, onChange, placeholder }: { t
       </CardHeader>
       <CardContent>
         <Textarea 
-          value={value} 
+          value={value || ""} 
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder || "Nhập nội dung..."}
           className="min-h-[120px] resize-none text-sm border-none bg-slate-50 focus-visible:ring-1 focus-visible:ring-indigo-500"

@@ -2340,6 +2340,59 @@ export type Database = {
           },
         ]
       }
+      dossier_documents: {
+        Row: {
+          abstract: string | null
+          copy_type: string | null
+          created_at: string | null
+          dossier_id: string
+          format: string | null
+          id: string
+          issuing_body: string | null
+          sign_date: string | null
+          status: string | null
+          submit_date: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          copy_type?: string | null
+          created_at?: string | null
+          dossier_id: string
+          format?: string | null
+          id?: string
+          issuing_body?: string | null
+          sign_date?: string | null
+          status?: string | null
+          submit_date?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          copy_type?: string | null
+          created_at?: string | null
+          dossier_id?: string
+          format?: string | null
+          id?: string
+          issuing_body?: string | null
+          sign_date?: string | null
+          status?: string | null
+          submit_date?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dossier_documents_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "project_dossiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dot_bao_duong: {
         Row: {
           created_at: string
@@ -5070,6 +5123,59 @@ export type Database = {
           },
         ]
       }
+      lean_ux_canvases: {
+        Row: {
+          business_outcomes: string | null
+          business_problem: string | null
+          created_at: string | null
+          first_steps_experiments: string | null
+          hypotheses: string | null
+          id: string
+          project_id: string
+          riskiest_assumptions: string | null
+          solution_ideas: string | null
+          updated_at: string | null
+          user_benefits: string | null
+          users_customers: string | null
+        }
+        Insert: {
+          business_outcomes?: string | null
+          business_problem?: string | null
+          created_at?: string | null
+          first_steps_experiments?: string | null
+          hypotheses?: string | null
+          id?: string
+          project_id: string
+          riskiest_assumptions?: string | null
+          solution_ideas?: string | null
+          updated_at?: string | null
+          user_benefits?: string | null
+          users_customers?: string | null
+        }
+        Update: {
+          business_outcomes?: string | null
+          business_problem?: string | null
+          created_at?: string | null
+          first_steps_experiments?: string | null
+          hypotheses?: string | null
+          id?: string
+          project_id?: string
+          riskiest_assumptions?: string | null
+          solution_ideas?: string | null
+          updated_at?: string | null
+          user_benefits?: string | null
+          users_customers?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lean_ux_canvases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lien_ket_he_thong: {
         Row: {
           created_at: string
@@ -5890,6 +5996,88 @@ export type Database = {
           },
         ]
       }
+      pitch_scopes: {
+        Row: {
+          created_at: string | null
+          hill_position: number | null
+          hill_status: string | null
+          id: string
+          name: string
+          pitch_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hill_position?: number | null
+          hill_status?: string | null
+          id?: string
+          name: string
+          pitch_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hill_position?: number | null
+          hill_status?: string | null
+          id?: string
+          name?: string
+          pitch_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pitch_scopes_pitch_id_fkey"
+            columns: ["pitch_id"]
+            isOneToOne: false
+            referencedRelation: "pitches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pitches: {
+        Row: {
+          created_at: string | null
+          id: string
+          no_gos: string | null
+          problem: string | null
+          project_id: string
+          rabbit_holes: string | null
+          solution: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          no_gos?: string | null
+          problem?: string | null
+          project_id: string
+          rabbit_holes?: string | null
+          solution?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          no_gos?: string | null
+          problem?: string | null
+          project_id?: string
+          rabbit_holes?: string | null
+          solution?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pitches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pm_cong_viec: {
         Row: {
           bao_tri_id: string | null
@@ -6011,6 +6199,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      project_dossiers: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_dossiers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       r2_access_log: {
         Row: {
