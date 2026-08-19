@@ -29,7 +29,7 @@ export function OcrStatusBadge({ status, processedPages, totalPages, artifact, c
   switch (status) {
     case "completed":
       return (
-        <AppTooltip content={isShared ? `Kết quả OCR dùng lại từ hệ thống (ID: ${artifact.id.slice(0, 8)})` : "Kết quả OCR mới trên thiết bị này"}>
+        <AppTooltip noiDung={isShared ? `Kết quả OCR dùng lại từ hệ thống (ID: ${artifact.id.slice(0, 8)})` : "Kết quả OCR mới trên thiết bị này"}>
           <Badge variant="outline" className={`bg-green-50 text-green-700 border-green-200 gap-1 ${className}`}>
             {isShared ? <Database className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />} 
             {isShared ? "OCR Sẵn có" : "Hoàn tất"}
