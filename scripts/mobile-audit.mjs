@@ -25,9 +25,11 @@ const tsxFiles = allFiles.filter(f => f.endsWith('.tsx'));
 function countPattern(pattern, files = allFiles) {
   let count = 0;
   files.forEach(f => {
-    const content = fs.readFileSync(f, 'utf8');
-    const matches = content.match(pattern);
-    if (matches) count += matches.length;
+    try {
+      const content = fs.readFileSync(f, 'utf8');
+      const matches = content.match(pattern);
+      if (matches) count += matches.length;
+    } catch (e) {}
   });
   return count;
 }
@@ -39,8 +41,10 @@ const lgCount = countPattern(/lg:/g);
 const xlCount = countPattern(/xl:/g);
 const xxlCount = countPattern(/2xl:/g);
 const filesWithNoPrefix = tsxFiles.filter(f => {
-  const content = fs.readFileSync(f, 'utf8');
-  return !/(sm|md|lg|xl|2xl):/.test(content);
+  try {
+    const content = fs.readFileSync(f, 'utf8');
+    return !/(sm|md|lg|xl|2xl):/.test(content);
+  } catch(e) { return false; }
 }).length;
 
 // 2. Hide/Show
@@ -51,8 +55,10 @@ const hiddenWithPrefix = countPattern(/hidden\s+(sm|md|lg|xl|2xl):block/g);
 
 // 3. useIsMobile / matchMedia
 const isMobileFiles = tsxFiles.filter(f => {
-  const content = fs.readFileSync(f, 'utf8');
-  return /useIsMobile|matchMedia/.test(content);
+  try {
+    const content = fs.readFileSync(f, 'utf8');
+    return /useIsMobile|matchMedia/.test(content);
+  } catch(e) { return false; }
 });
 
 // 4. Fixed widths > 300px and overflow-x-auto
@@ -61,16 +67,17 @@ const fixedWidthLarge = countPattern(/w-\[([3-9]\d{2}|\d{4,})px\]/g);
 const overflowXAuto = countPattern(/overflow-x-auto/g);
 
 const widthRiskFiles = tsxFiles.map(f => {
-  const content = fs.readFileSync(f, 'utf8');
-  const matches = (content.match(/min-w-\[\d{3,}px\]|w-\[[3-9]\d{2}px\]|overflow-x-auto/g) || []).length;
-  return { file: f, count: matches };
+  try {
+    const content = fs.readFileSync(f, 'utf8');
+    const matches = (content.match(/min-w-\[\d{3,}px\]|w-\[[3-9]\d{2}px\]|overflow-x-auto/g) || []).length;
+    return { file: f, count: matches };
+  } catch(e) { return { file: f, count: 0 }; }
 }).filter(x => x.count > 0).sort((a, b) => b.count - a.count).slice(0, 20);
 
 // 5. Grid columns without prefix
 const gridColsNoPrefix = countPattern(/(?<!(sm|md|lg|xl|2xl):)grid-cols-[2-9]/g);
 
 // 6. Interactive elements with small heights (Rough count)
-// Counting h-6, h-7, h-8 in tsx files as a proxy
 const smallHeightsRaw = countPattern(/\bh-[678]\b/g, tsxFiles);
 
 // 7. Safe area and fixed bottom
@@ -78,19 +85,29 @@ const safeAreaInset = countPattern(/env\(safe-area-inset/g);
 const fixedBottom = countPattern(/fixed\s+[^"]*bottom-/g);
 
 // 8. Large components (> 800 lines) with mobile mode
-const largeFiles = tsxFiles.map(f => ({
-  file: f,
-  lines: fs.readFileSync(f, 'utf8').split('\n').length
-})).filter(f => f.lines >= 800);
+const largeFiles = tsxFiles.map(f => {
+  try {
+    return {
+      file: f,
+      lines: fs.readFileSync(f, 'utf8').split('\n').length
+    };
+  } catch(e) { return null; }
+}).filter(f => f && f.lines >= 800);
 
 const largeCompMobileStatus = largeFiles.map(f => {
-  const content = fs.readFileSync(f.file, 'utf8');
-  const hasMobileMode = /isMobile|priority/.test(content);
-  return { file: f.file, lines: f.lines, hasMobileMode };
+  try {
+    const content = fs.readFileSync(f.file, 'utf8');
+    const hasMobileMode = /isMobile|priority/.test(content);
+    return { file: f.file, lines: f.lines, hasMobileMode };
+  } catch(e) { return { file: f.file, lines: f.lines, hasMobileMode: false }; }
 });
 
 // 9. Mobile tests
-const mobileTests = allFiles.filter(f => f.includes('.test.') && /mobile/i.test(fs.readFileSync(f, 'utf8'))).length;
+const mobileTests = allFiles.filter(f => {
+  try {
+    return f.includes('.test.') && /mobile/i.test(fs.readFileSync(f, 'utf8'));
+  } catch(e) { return false; }
+}).length;
 
 const result = {
   timestamp: new Date().toISOString(),
