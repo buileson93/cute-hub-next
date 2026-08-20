@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -198,16 +199,13 @@ export function ModelDacTinhIODialog({
   const canApply = canManage && !!plan && !!stats && (stats.ins + stats.del) > 0;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>Nhập / Xuất nhãn tài sản theo Mẫu</DialogTitle>
-          <DialogDescription>
-            CSV 2 cột: <code>model_ma,nhan_thiet_bi</code> (tương thích tên cũ <code>dac_tinh</code>). Nhiều mã nhãn tài sản tách bởi <code>;</code>.
-            Import <b>idempotent</b> — chạy lại cùng file không nhân đôi bản ghi.
-          </DialogDescription>
-
-        </DialogHeader>
+    <ResponsiveDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Nhập / Xuất nhãn tài sản theo Mẫu"
+      description="CSV 2 cột: model_ma,nhan_thiet_bi (tương thích tên cũ dac_tinh). Nhiều mã nhãn tài sản tách bởi ;. Import idempotent — chạy lại cùng file không nhân đôi bản ghi."
+      className="max-w-3xl"
+    >
 
         <div className="grid gap-4">
           {/* Export */}
@@ -310,7 +308,7 @@ export function ModelDacTinhIODialog({
           </section>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Đóng</Button>
           <Button
             disabled={!canApply || applyMut.isPending}
@@ -320,10 +318,9 @@ export function ModelDacTinhIODialog({
             Áp dụng
           </Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+      </ResponsiveDialog>
+    );
+  }
 
 // ------------ helpers ------------
 function csvCell(s: string) {

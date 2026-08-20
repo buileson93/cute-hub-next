@@ -33,6 +33,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { supabase } from "@/integrations/backend/client";
 import { fmtDowntime } from "@/lib/mirats/format";
 import { mttr as computeMttr, formatKpiValue } from "@/lib/mirats/reliability";
@@ -432,26 +433,25 @@ function SuCoPage() {
       </PageBody>
     </PageFrame>
 
-      <Dialog open={!!closing} onOpenChange={(o) => !o && setClosing(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Đóng sự cố</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Thời gian kết thúc</Label>
-              <Input type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>Nội dung xử lý</Label>
-              <Textarea value={tinhHinh} onChange={(e) => setTinhHinh(e.target.value)} />
-            </div>
+      <ResponsiveDialog
+        open={!!closing}
+        onOpenChange={(o) => !o && setClosing(null)}
+        title="Đóng sự cố"
+      >
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Thời gian kết thúc</Label>
+            <Input type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
-          <DialogFooter>
-            <Button onClick={() => closeM.mutate()}>Xác nhận</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <div className="space-y-2">
+            <Label>Nội dung xử lý</Label>
+            <Textarea value={tinhHinh} onChange={(e) => setTinhHinh(e.target.value)} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button className="w-full sm:w-auto" onClick={() => closeM.mutate()}>Xác nhận</Button>
+        </DialogFooter>
+      </ResponsiveDialog>
     </>
   );
 }

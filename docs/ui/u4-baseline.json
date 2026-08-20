@@ -1,36 +1,36 @@
 {
-  "date": "2026-08-20T13:41:48.824Z",
-  "commitHash": "f5b3f5dbb32afe22f78137b053a5e9873a6f4eeb",
+  "date": "2026-08-20T15:33:37.938Z",
+  "commitHash": "4b6207bb3b0a54d0e6a27a9d355c812b6e9aeb27",
   "summary": {
-    "textPxTotal": 906,
+    "textPxTotal": 904,
     "textPxByValue": {
-      "9px": 49,
+      "9px": 50,
       "10px": 409,
-      "11px": 389,
+      "11px": 385,
       "12px": 37,
       "15px": 1,
-      "13px": 15,
+      "13px": 16,
       "14px": 1,
       "8px": 3,
       "4px": 1,
       "3px": 1
     },
     "textPresets": {
-      "xs": 1226,
-      "sm": 809,
+      "xs": 1225,
+      "sm": 808,
       "base": 110
     },
-    "paletteColors": 1744,
-    "hexColors": 181,
+    "paletteColors": 1740,
+    "hexColors": 174,
     "buttonVariants": {
-      "outline": 349,
+      "outline": 344,
       "secondary": 20,
       "default": 6,
       "destructive": 16,
-      "ghost": 303,
+      "ghost": 301,
       "link": 2
     },
-    "iconNoLabel": 91,
+    "iconNoLabel": 92,
     "pageHeaderRatio": "58/132"
   },
   "top20Files": [
@@ -51,11 +51,11 @@
       "count": 58
     },
     {
-      "file": "src/components/mirats/ChecklistRenderer.tsx",
-      "count": 47
+      "file": "src/components/mirats/NetworkOverview.tsx",
+      "count": 51
     },
     {
-      "file": "src/components/mirats/StandardTable.tsx",
+      "file": "src/components/mirats/ChecklistRenderer.tsx",
       "count": 47
     },
     {
@@ -67,16 +67,16 @@
       "count": 44
     },
     {
-      "file": "src/components/mirats/NetworkOverview.tsx",
-      "count": 44
-    },
-    {
       "file": "src/components/mirats/AllInOneImport.tsx",
       "count": 43
     },
     {
       "file": "src/routes/_app.phan-mem-ban-quyen.tsx",
       "count": 42
+    },
+    {
+      "file": "src/components/mirats/StandardTable.tsx",
+      "count": 40
     },
     {
       "file": "src/routes/_app.admin.forms.$id.tsx",

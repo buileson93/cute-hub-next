@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -283,41 +284,38 @@ function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
   }
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Sửa hệ thống</DialogTitle>
-          <DialogDescription>
-            Chỉnh thông tin cơ bản. Cấu trúc cây (nhóm, lĩnh vực, tài sản) được quản lý tại Hệ Thống tài sản.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label>Tên hệ thống *</Label>
-            <Input value={ten} onChange={(e) => setTen(e.target.value)} autoFocus />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Số giấy phép</Label>
-            <Input value={gpSo} onChange={(e) => setGpSo(e.target.value)} className="font-mono" placeholder="VD: GP-123/…" />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Mô tả</Label>
-            <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} disabled={!loaded} placeholder={loaded ? "Ghi chú (không bắt buộc)…" : "Đang tải…"} />
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch checked={active} onCheckedChange={setActive} id="ht-active" disabled={!loaded} />
-            <Label htmlFor="ht-active" className="cursor-pointer">Đang sử dụng</Label>
-          </div>
+    <ResponsiveDialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title="Sửa hệ thống"
+      description="Chỉnh thông tin cơ bản. Cấu trúc cây (nhóm, lĩnh vực, tài sản) được quản lý tại Hệ Thống tài sản."
+      className="max-w-md"
+    >
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <Label>Tên hệ thống *</Label>
+          <Input value={ten} onChange={(e) => setTen(e.target.value)} autoFocus />
         </div>
+        <div className="space-y-1.5">
+          <Label>Số giấy phép</Label>
+          <Input value={gpSo} onChange={(e) => setGpSo(e.target.value)} className="font-mono" placeholder="VD: GP-123/…" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Mô tả</Label>
+          <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} disabled={!loaded} placeholder={loaded ? "Ghi chú (không bắt buộc)…" : "Đang tải…"} />
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={active} onCheckedChange={setActive} id="ht-active" disabled={!loaded} />
+          <Label htmlFor="ht-active" className="cursor-pointer">Đang sử dụng</Label>
+        </div>
+      </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={saving}>Huỷ</Button>
-          <Button onClick={save} disabled={saving} className="gap-1.5">
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />} Lưu
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <DialogFooter className="mt-4">
+        <Button variant="outline" onClick={onClose} disabled={saving}>Huỷ</Button>
+        <Button onClick={save} disabled={saving} className="gap-1.5">
+          {saving && <Loader2 className="h-4 w-4 animate-spin" />} Lưu
+        </Button>
+      </DialogFooter>
+    </ResponsiveDialog>
   );
 }
