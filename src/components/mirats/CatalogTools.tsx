@@ -857,7 +857,7 @@ function MergeDialog({
 
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Tìm ${config.labelSingular}, mã…`} />
 
-        <div className="max-h-[38vh] overflow-y-auto rounded-md border">
+        <div className="max-h-[38vh] overflow-x-auto rounded-md border">
           <RadioGroup value={targetId} onValueChange={(v) => { setTargetId(v); setSourceIds((p) => { const n = new Set(p); n.delete(v); return n; }); setConfirm(false); }}>
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-background">
