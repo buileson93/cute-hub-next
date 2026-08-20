@@ -9,6 +9,7 @@
 @import "./styles/astryx-static/tokens.css" layer(theme);
 @import "./styles/astryx-static/theme.css" layer(theme);
 @import "./styles/astryx-static/components.css" layer(astryx-base);
+@import "./styles/astryx-static/layout.css" layer(layout);
 
 /* 2. Brand Specific Skins & Overrides */
 @import "./styles/astryx-component-skins.css" layer(components);
