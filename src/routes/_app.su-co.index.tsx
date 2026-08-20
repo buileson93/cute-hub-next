@@ -486,7 +486,6 @@ function SuCoPage() {
           <Button className="w-full sm:w-auto" onClick={() => closeM.mutate()}>Xác nhận</Button>
         </DialogFooter>
       </ResponsiveDialog>
-    </>
       <MobileListControlsSheet
         open={mobileSheetOpen}
         onOpenChange={setMobileSheetOpen}
