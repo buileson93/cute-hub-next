@@ -112,7 +112,6 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@layer astryx-brand, astryx-skins;
 
 @layer astryx-brand {
   :root {
