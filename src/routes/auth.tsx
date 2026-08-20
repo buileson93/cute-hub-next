@@ -329,7 +329,6 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className={cn(className)}
         data-density="comfortable"
       />
     </div>
