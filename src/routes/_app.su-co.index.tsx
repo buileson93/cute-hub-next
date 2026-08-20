@@ -11,7 +11,7 @@ import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, FilePlus2, FileDown, AlertTriangle, Clock, Activity, Network, ChevronDown,
-  Flame, CheckCircle2, Loader2, HardDrive,
+  Flame, CheckCircle2, Loader2, HardDrive, Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,10 @@ import { statuses, normalizeLegacy } from "@/lib/mirats/trang-thai";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useListControls } from "@/lib/mirats/ui/use-list-controls";
+import { MobileListControlsSheet } from "@/components/mirats/ui/MobileListControlsSheet";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { locVaSapXep } from "@/lib/mirats/ui/list-controls";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { DataState } from "@/components/mirats/DataState";
@@ -100,6 +104,9 @@ function downloadCsv(name: string, content: string) {
 }
 
 function SuCoPage() {
+  const isMobile = useIsMobile();
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  
   const { suCo, loading: isLoading } = useScope();
   const error = null;
   const qc = useQueryClient();
@@ -108,9 +115,13 @@ function SuCoPage() {
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
 
-  const [query, setQuery] = useState("");
-  const [tt, setTt] = useState("all");
-  const [period, setPeriod] = useState<"all" | "week" | "month">("all");
+  const { state: controls, setQ, setFilter, setSort, reset } = useListControls({
+    kichThuoc: 1000, // Show all for now or large amount
+  });
+  
+  const query = controls.q;
+  const tt = (controls.filters.tt as string) || "all";
+  const period = (controls.filters.period as "all" | "week" | "month") || "all";
   const [showAll, setShowAll] = useState(false);
 
   const devByMa = useMemo(
@@ -135,23 +146,17 @@ function SuCoPage() {
     return d >= from;
   }
 
-  const isFiltering = query.trim() !== "" || tt !== "all" || period !== "all";
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return suCo.filter((s) => {
-      if (!inPeriod(s, period)) return false;
-      if (tt !== "all" && normalizeLegacy("su_co", s.trang_thai) !== tt) return false;
-      if (!q) return true;
-      const dev = devByMa.get(s.thiet_bi);
-      return (
-        s.ma_su_co.toLowerCase().includes(q) ||
-        s.hien_tuong.toLowerCase().includes(q) ||
-        s.thiet_bi.toLowerCase().includes(q) ||
-        (dev?.ten.toLowerCase().includes(q) ?? false) ||
-        htNameOf(s).toLowerCase().includes(q)
-      );
+    const { data } = locVaSapXep(suCo, controls, {
+      timKiem: (s) => 
+        s.ma_su_co + " " + s.hien_tuong + " " + s.thiet_bi + " " + (devByMa.get(s.thiet_bi)?.ten ?? "") + " " + htNameOf(s),
+      loc: {
+        tt: (s, v) => v === "all" ? true : normalizeLegacy("su_co", s.trang_thai) === v,
+        period: (s, v) => inPeriod(s, v as any),
+      },
     });
-  }, [suCo, query, tt, period, devByMa, htNameOf]);
+    return data;
+  }, [suCo, controls, devByMa, htNameOf]);
 
   const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
 
@@ -332,6 +337,8 @@ function SuCoPage() {
     },
   ], [devByMa, htNameOf]);
 
+  const [visibleKeys, setVisibleKeys] = useState<string[]>(logColumns.map(c => c.key));
+
   function exportList(list: SuCo[], label: string) {
     if (list.length === 0) return;
     const now = new Date();
@@ -376,15 +383,33 @@ function SuCoPage() {
             <Stat icon={AlertTriangle} label="SC" value={stats.total} />
             <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600" />
             <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600" />
+            
             <div className="ml-auto flex items-center gap-1">
-              <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
-                <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="week">Tuần này</SelectItem>
-                  <SelectItem value="month">Tháng này</SelectItem>
-                </SelectContent>
-              </Select>
+              {isMobile ? (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 gap-1.5"
+                  onClick={() => setMobileSheetOpen(true)}
+                >
+                  <Filter className="h-3.5 w-3.5" />
+                  Bộ lọc
+                  {Object.keys(controls.filters).length + (controls.q.trim() ? 1 : 0) > 0 && (
+                    <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
+                      {Object.keys(controls.filters).length + (controls.q.trim() ? 1 : 0)}
+                    </Badge>
+                  )}
+                </Button>
+              ) : (
+                <Select value={period} onValueChange={(v: any) => setFilter("period", v)}>
+                  <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="week">Tuần này</SelectItem>
+                    <SelectItem value="month">Tháng này</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           </div>
 
@@ -413,18 +438,29 @@ function SuCoPage() {
             <DataState state={state} onRetry={refetch}>
               <StandardTable<SuCo>
                 tableKey="su_co_nhat_ky"
-                columns={logColumns}
+                columns={logColumns.filter(c => visibleKeys.includes(c.key))}
                 rows={rows}
                 getRowId={(s) => s.ma_su_co}
                 toolbarLeft={
-                  <div className="flex items-center gap-2">
-                    <Input
-                      placeholder="Tìm sự cố..."
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      className="h-8 w-64"
-                    />
-                  </div>
+                  !isMobile && (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="Tìm sự cố..."
+                        value={query}
+                        onChange={(e) => setQ(e.target.value)}
+                        className="h-8 w-64"
+                      />
+                      <Select value={tt} onValueChange={(v) => setFilter("tt", v)}>
+                        <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Mọi trạng thái</SelectItem>
+                          <SelectItem value="Đang xử lý">Đang xử lý</SelectItem>
+                          <SelectItem value="Đã khắc phục">Đã khắc phục</SelectItem>
+                          <SelectItem value="Đóng">Đóng</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )
                 }
               />
             </DataState>
@@ -452,6 +488,43 @@ function SuCoPage() {
           <Button className="w-full sm:w-auto" onClick={() => closeM.mutate()}>Xác nhận</Button>
         </DialogFooter>
       </ResponsiveDialog>
+      <MobileListControlsSheet
+        open={mobileSheetOpen}
+        onOpenChange={setMobileSheetOpen}
+        state={controls}
+        setQ={setQ}
+        setFilter={setFilter}
+        setSort={setSort}
+        reset={reset}
+        filters={[
+          {
+            key: "tt",
+            label: "Trạng thái",
+            type: "select",
+            options: [
+              { value: "Đang xử lý", label: "Đang xử lý" },
+              { value: "Đã khắc phục", label: "Đã khắc phục" },
+              { value: "Đóng", label: "Đóng" },
+            ],
+          },
+          {
+            key: "period",
+            label: "Thời gian",
+            type: "select",
+            options: [
+              { value: "week", label: "Tuần này" },
+              { value: "month", label: "Tháng này" },
+            ],
+          },
+        ]}
+        sortOptions={[
+          { key: "ma_su_co", label: "Mã sự cố" },
+          { key: "ngay_phat_hien", label: "Thời điểm" },
+        ]}
+        columns={logColumns.map(c => ({ key: c.key, label: c.label || "" }))}
+        visibleColumns={visibleKeys}
+        onVisibleColumnsChange={setVisibleKeys}
+      />
     </>
   );
 }
