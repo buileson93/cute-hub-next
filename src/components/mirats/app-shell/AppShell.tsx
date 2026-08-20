@@ -157,7 +157,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TooltipProvider delayDuration={300}>
         <div 
           data-density={density}
-          className="flex min-h-dvh w-full bg-background text-foreground"
+          className="astryx-shell"
+          data-astryx-layout="shell"
         >
           {/* Desktop Navigation Container */}
           <div 
