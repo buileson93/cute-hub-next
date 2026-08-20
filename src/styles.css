@@ -1,4 +1,4 @@
-@layer reset, theme, base, astryx-base, components, utilities;
+@layer reset, theme, base, astryx-base, layout, components, utilities;
 
 @import "tailwindcss" source(none);
 @source "../src";
