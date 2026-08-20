@@ -15,7 +15,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { SavingIndicator } from "@/components/mirats/SavingIndicator";
 import { OfflineBanner } from "@/components/mirats/OfflineBanner";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
