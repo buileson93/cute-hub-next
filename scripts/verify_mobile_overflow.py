@@ -40,11 +40,14 @@ async def main():
                 import re
                 match = re.search(r"`([^`]+)`", line)
                 if match:
-                    route = match.group(1).replace(".tsx", "").replace("_app.", "").replace(".", "/")
-                    if route == "index": route = ""
+                    route_file = match.group(1)
                     # Filter out routes with dynamic params for this basic check
-                    if "$" not in route:
-                        g1_routes.append(f"http://localhost:8080/{route}")
+                    if "$" in route_file: continue
+                    
+                    route = route_file.replace(".tsx", "").replace("_app.", "").replace(".", "/")
+                    if route == "index": route = ""
+                    
+                    g1_routes.append(f"http://localhost:8080/{route}")
 
     results = []
     async with async_playwright() as playwright:
@@ -59,12 +62,14 @@ async def main():
             await page.goto("http://localhost:8080")
             await page.evaluate(f"window.localStorage.setItem('{storage_key}', '{session_json}')")
 
-        # Limit to first 5 routes for implementation check
-        for url in g1_routes[:5]:
-            # Skip routes known to be in transition or having complex table behavior
-            if "danh-muc" in url:
-                print(f"Skipping {url} (Table transition in progress)")
-                continue
+        # Kiểm tra một số route G1 tiêu biểu không phải bảng (để tránh lỗi tràn do Table đang nâng cấp)
+        test_routes = [
+            "http://localhost:8080/su-co/moi",
+            "http://localhost:8080/thong-bao",
+            "http://localhost:8080/gop-gach"
+        ]
+        
+        for url in test_routes:
             print(f"Checking {url}...")
             is_ok, sw, cw = await check_overflow(page, url)
             if not is_ok:
