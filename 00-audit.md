@@ -3,17 +3,16 @@
 ## Evidence-based Findings
 
 ### SSR/Hydration
-- **Duplicate React:** Verified. System is using React 19.2.5 (React 19) consistently across dependencies. No version mismatch found.
-- **Hydration Path:** TanStack Start v1 with `AstryxProvider` using a hydration guard (`hydrated` state).
-- **Critical Issue:** `AstryxProvider` renders a fragment during SSR but wraps children in `Theme` from `@astryxdesign/core/theme` on the client. This causes a DOM mismatch (wrapping `div` added on client).
-- **Secondary Issue:** `AstryxCompileProbe.tsx` and `AstryxProvider.tsx` import from `@astryxdesign/core` at module level, which may execute browser-only logic (e.g., `requestAnimationFrame`) during SSR.
+- **Duplicate React:** Verified. System is using React 19.2.5 (React 19) consistently. No version mismatch found.
+- **Hydration Path:** TanStack Start v1 with previously problematic `AstryxProvider` using a hydration guard. 
+- **Critical Issue:** `AstryxProvider` rendered a fragment during SSR but a wrapping `div` on the client, causing hydration mismatches. **FIXED**: Provider removed, theme moved to static CSS.
 
 ### Visual Architecture
-- **Cascade Order:** Tailwind v4 (CSS-in-JS style) -> Astryx Core (`layer(astryx-core)`) -> Astryx Theme (`layer(astryx-theme)`) -> Astryx Skins (`layer(astryx-skins)`).
-- **The Gray Button Bug:** Primary buttons turn gray because `src/styles/astryx-component-skins.css` or `df3-theme.ts` maps `--color-accent` to gray values (`#262626`), and some shadcn components or Astryx skins are overriding Tailwind's `--primary` with these tokens without proper priority.
-- **Layout:** High nested padding (`PageBody` -> `Card` -> `Table`). Hardcoded colors in `astryx-component-skins.css`.
+- **Cascade Order:** Tailwind v4 -> Astryx Core -> Astryx Theme -> MIRATS Brand Overrides.
+- **The Gray Button Bug:** Identified as `--color-accent` mapping in the theme layer overriding brand primary. **FIXED**: Accent re-bound to primary blue.
+- **Layout:** Excessive nested padding identified. **FIXED**: Refactored PageHeader and PageBody for standardized, responsive spacing.
 
 ## Architecture Decision
-- **Move to Pure Static CSS:** Remove all runtime React imports from `@astryxdesign/core`.
-- **CSS Variable Contract:** MIRATS components will consume CSS variables (`--color-accent`, etc.) defined in `src/styles.css` (Astryx layers) instead of depending on `AstryxProvider`.
-- **SSR Safety:** Eliminate the hydration guard by moving theme definitions to static CSS that applies on first paint.
+- **Move to Pure Static CSS:** Completed. All runtime React imports from `@astryxdesign/core` removed.
+- **CSS Variable Contract:** MIRATS components consume standardized CSS variables defined in `src/styles.css`.
+- **SSR Safety:** 100% SSR-safe layout. No hydration guards required.

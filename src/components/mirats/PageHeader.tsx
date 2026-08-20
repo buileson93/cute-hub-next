@@ -45,8 +45,7 @@ export function PageHeader({
     <div 
       data-testid="page-header" 
       className={cn(
-        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10",
-        UI_DENSITY.CARD_HEADER,
+        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10 px-4 py-3 md:px-6 md:py-4",
         className
       )}
     >
@@ -85,8 +84,7 @@ export function PageHeader({
             <h1
               data-testid="page-header-title"
               className={cn(
-                "truncate font-bold leading-tight tracking-tight text-foreground",
-                "text-sm data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
+                "truncate font-bold leading-tight tracking-tight text-foreground text-lg md:text-xl uppercase"
               )}
             >
               {title}

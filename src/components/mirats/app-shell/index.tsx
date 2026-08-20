@@ -155,53 +155,17 @@ export function UserMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {isInventoryMode ? (
-            <div className="px-2 py-1.5">
-              <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                Unified Anatomy & Responsive Frame
-              </div>
-              <ScrollArea className="h-[350px] w-full rounded-md border bg-muted/30 p-2 font-mono text-[10.5px] leading-relaxed">
-                <div className="whitespace-pre-wrap text-muted-foreground">
-                  Chuẩn hóa anatomy của mọi trang để giảm chiều cao và nested padding.{"\n\n"}
-                  PAGE FRAME:{"\n"}
-                  - Breadcrumb/supporting chỉ hiện khi có giá trị điều hướng thực sự.{"\n"}
-                  - Một hàng title + metadata quan trọng + primary action.{"\n"}
-                  - Secondary action đưa vào MoreMenu.{"\n"}
-                  - Filter/search là toolbar riêng nhưng không lặp card/surface.{"\n"}
-                  - Page content có container policy theo archetype.{"\n\n"}
-                  PAGEHEADER:{"\n"}
-                  - Dùng Heading/Breadcrumbs/metadata component Astryx.{"\n"}
-                  - Không sticky toàn bộ header nếu làm mất nhiều viewport mobile.{"\n"}
-                  - Trên mobile chỉ sticky top nav hoặc toolbar cần thiết.{"\n"}
-                  - Subtitle/help dài chuyển sang tooltip/inspector, không kéo header cao.{"\n"}
-                  - Action phải có thứ tự: primary, secondary, overflow.{"\n\n"}
-                  PAGEBODY:{"\n"}
-                  - Chỉ một padding boundary.{"\n"}
-                  - Loại bỏ pattern PageBody padding -&gt; wrapper space -&gt; Card padding -&gt; table padding.{"\n"}
-                  - `overflow: auto` chỉ ở region được thiết kế scroll.{"\n"}
-                  - `min-width: 0` cho flex/grid content.{"\n\n"}
-                  TOOLBAR RESPONSIVE:{"\n"}
-                  - Desktop: search + filter + actions cùng vùng có OverflowList/MoreMenu.{"\n"}
-                  - Tablet: filter có thể vào popover.{"\n"}
-                  - Mobile: search full-width hoặc mở qua action; filter mở sheet; primary action sticky bottom/floating theo workflow; secondary action vào MoreMenu.{"\n"}
-                  - Không để TabsList dài buộc horizontal scroll nếu có thể dùng primary tabs + overflow.{"\n\n"}
-                  Viết PageFrame/TrackerFrame/FormFrame/DetailFrame typed components thay vì mỗi route tự ghép class.
-                </div>
-              </ScrollArea>
-            </div>
-          ) : (
-            <DropdownMenuItem
-              onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
-              aria-label="thay đổi mật độ ở đây"
-            >
-              {density === "compact" ? (
-                <LayoutPanelTop className="mr-2 h-3.5 w-3.5" />
-              ) : (
-                <LayoutPanelLeft className="mr-2 h-3.5 w-3.5" />
-              )}
-              Mật độ: {density === "compact" ? "Gọn (Compact)" : "Rộng (Comfortable)"}
-            </DropdownMenuItem>
-          )}
+          <DropdownMenuItem
+            onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
+            aria-label="thay đổi mật độ ở đây"
+          >
+            {density === "compact" ? (
+              <LayoutPanelTop className="mr-2 h-3.5 w-3.5" />
+            ) : (
+              <LayoutPanelLeft className="mr-2 h-3.5 w-3.5" />
+            )}
+            Mật độ: {density === "compact" ? "Gọn (Compact)" : "Rộng (Comfortable)"}
+          </DropdownMenuItem>
 
 
           <DropdownMenuItem asChild>
