@@ -184,7 +184,7 @@ function AdminFormsPage() {
                 <TableHead>Mã</TableHead><TableHead>Tên</TableHead>
                 <TableHead>Loại</TableHead>
                 <TableHead>Tài sản</TableHead><TableHead>Chữ ký</TableHead>
-                <TableHead>Trạng thái</TableHead><TableHead className="text-right">Hành động</TableHead>
+                <TableHead className="text-center">Trạng thái</TableHead><TableHead className="text-right">Hành động</TableHead>
               </TableRow></TableHeader>
               <TableBody>
                 {(templates ?? []).map((t) => (
@@ -198,8 +198,10 @@ function AdminFormsPage() {
                     </TableCell>
                     <TableCell><Badge variant="outline">{t.thiet_bi_mode === "none" ? "—" : t.thiet_bi_mode === "single" ? "1 TB" : "Nhiều TB"}</Badge></TableCell>
                     <TableCell>{t.require_signature ? "Có" : "Không"}</TableCell>
-                    <TableCell>
-                      <Switch checked={t.active} onCheckedChange={(v) => toggleM.mutate({ id: t.id, active: v })} />
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <Switch checked={t.active} onCheckedChange={(v) => toggleM.mutate({ id: t.id, active: v })} />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">
