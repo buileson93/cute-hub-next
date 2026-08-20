@@ -137,7 +137,7 @@ function LienKetPage() {
               </Dialog>
             )}
             <AppTooltip noiDung="Chia sẻ sơ đồ">
-              <Button variant="outline" size="icon" className="h-8 w-8">
+              <Button variant="outline" size="icon" aria-label="Chia sẻ sơ đồ" className="h-8 w-8">
                 <Share2 className="h-4 w-4" />
               </Button>
             </AppTooltip>
@@ -282,7 +282,7 @@ function LienKetTable({ rows, canManage, onDelete, onSetTrangThai }: {
                       {active ? (
                         <AppTooltip noiDung="Tạm ngừng">
                           <Button
-                            size="icon" variant="ghost" className="h-7 w-7"
+                            size="icon" variant="ghost" aria-label="Tạm ngừng liên kết" className="h-7 w-7"
                             onClick={() => onSetTrangThai(r.id, "tam_ngung")}
                           >
                             <Ban className="h-3.5 w-3.5" />
@@ -291,7 +291,7 @@ function LienKetTable({ rows, canManage, onDelete, onSetTrangThai }: {
                       ) : (
                         <AppTooltip noiDung="Kích hoạt">
                           <Button
-                            size="icon" variant="ghost" className="h-7 w-7 text-primary"
+                            size="icon" variant="ghost" aria-label="Kích hoạt liên kết" className="h-7 w-7 text-primary"
                             onClick={() => onSetTrangThai(r.id, "hoat_dong")}
                           >
                             <Play className="h-3.5 w-3.5" />
@@ -300,7 +300,7 @@ function LienKetTable({ rows, canManage, onDelete, onSetTrangThai }: {
                       )}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
+                          <Button size="icon" variant="ghost" aria-label="Xoá liên kết" className="h-7 w-7 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="rounded-2xl">
                           <AlertDialogHeader>

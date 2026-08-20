@@ -35,6 +35,7 @@ function ViTriPage() {
           <Button
             size="icon"
             variant="ghost"
+            aria-label="Xem ảnh/3D vị trí"
             className="h-7 w-7"
             title="Xem ảnh / 360° / 3D vị trí"
             onClick={() => setMedia({ ma: r.ma ?? "", ten: r.ten })}

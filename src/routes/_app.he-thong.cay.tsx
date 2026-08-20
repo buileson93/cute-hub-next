@@ -429,7 +429,7 @@ function HeThongCayPage() {
             {canManage && (
               <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
                 <Button 
-                  size="icon" 
+                  size="icon" aria-label="Chỉnh sửa cây sơ đồ"
                   variant={editMode ? "default" : "outline"} 
                   className={cn(
                     "h-8 w-8 transition-all shadow-none"
@@ -445,7 +445,7 @@ function HeThongCayPage() {
               </AppTooltip>
             )}
             <AppTooltip noiDung="Cấu hình sơ đồ">
-              <Button variant="outline" size="icon" className="h-8 w-8 bg-transparent text-primary border-primary/20 hover:bg-primary/5 hover:border-primary/40 shadow-none" onClick={() => setReorgOpen(true)}>
+              <Button variant="outline" size="icon" aria-label="Cấu hình sơ đồ" className="h-8 w-8 bg-transparent text-primary border-primary/20 hover:bg-primary/5 hover:border-primary/40 shadow-none" onClick={() => setReorgOpen(true)}>
                 <Settings2 className="h-4 w-4" />
               </Button>
             </AppTooltip>

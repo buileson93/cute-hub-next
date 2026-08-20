@@ -191,8 +191,8 @@ function ChinhSachPage() {
                   {r.mo_ta && <div className="mt-1 text-muted-foreground">{r.mo_ta}</div>}
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => setForm(r)}><Pencil className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => del(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <Button variant="ghost" size="icon" aria-label="Chỉnh sửa chính sách" onClick={() => setForm(r)}><Pencil className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" aria-label="Xoá chính sách" onClick={() => del(r.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </div>
               </div>
             ))}

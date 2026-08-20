@@ -186,7 +186,7 @@ function ScopeEditor({ user, toChuc, donVi, onClose }: any) {
               {donVi.map((d: any) => <SelectItem key={d.id} value={d.id}>{d.ma}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button size="icon" variant="ghost" onClick={() => setScopes(scopes.filter((_, j) => j !== i))}>
+          <Button size="icon" variant="ghost" aria-label="Xoá phân quyền" onClick={() => setScopes(scopes.filter((_, j) => j !== i))}>
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>

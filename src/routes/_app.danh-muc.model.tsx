@@ -1450,6 +1450,7 @@ function ModelDialog({
                   type="button"
                   size="icon"
                   variant="outline"
+                  aria-label="Khai chủng loại mới"
                   className="shrink-0"
                   title="Khai chủng loại mới"
                   onClick={() => {

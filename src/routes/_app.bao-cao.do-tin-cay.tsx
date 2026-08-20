@@ -312,7 +312,7 @@ function DoTinCayPage() {
                           {f.from} → {f.to} · {f.bucket}
                         </div>
                       </button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => removeSaved(f.id)} title="Xoá">
+                      <Button variant="ghost" size="icon" aria-label="Xoá mục đã lưu" className="h-7 w-7 shrink-0" onClick={() => removeSaved(f.id)} title="Xoá">
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>

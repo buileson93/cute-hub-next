@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-20T13:20:06.729Z",
-  "commitHash": "39fd263f906354faf8ce176a1457b011764382c9",
+  "date": "2026-08-20T13:26:47.289Z",
+  "commitHash": "226e0e034033209da85bc6ea5dc5670501ee2840",
   "summary": {
     "textPxTotal": 906,
     "textPxByValue": {
@@ -30,13 +30,13 @@
       "ghost": 303,
       "link": 2
     },
-    "iconNoLabel": 113,
+    "iconNoLabel": 91,
     "pageHeaderRatio": "58/132"
   },
   "top20Files": [
     {
       "file": "src/routes/_app.he-thong.$id.tsx",
-      "count": 124
+      "count": 123
     },
     {
       "file": "src/routes/admin.schema.tsx",
@@ -44,7 +44,7 @@
     },
     {
       "file": "src/routes/_app.du-an.$id.tsx",
-      "count": 99
+      "count": 98
     },
     {
       "file": "src/routes/admin.audit.tsx",
@@ -79,10 +79,6 @@
       "count": 42
     },
     {
-      "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
-      "count": 41
-    },
-    {
       "file": "src/routes/_app.admin.forms.$id.tsx",
       "count": 39
     },
@@ -96,6 +92,10 @@
     },
     {
       "file": "src/components/mirats/he-thong-cay/types.ts",
+      "count": 36
+    },
+    {
+      "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
       "count": 36
     },
     {

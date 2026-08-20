@@ -53,6 +53,7 @@ function ThanhPhanListPage() {
                 <Button
                   variant={editMode ? "default" : "outline"}
                   size="icon"
+                  aria-label="Chỉnh sửa nhanh thành phần"
                   className="h-8 w-8"
                   onClick={() => setEditMode(!editMode)}
                 >

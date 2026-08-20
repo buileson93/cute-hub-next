@@ -505,7 +505,7 @@ function HeThongInner({
                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setNkOpen((v) => !v)} aria-label={nkOpen ? "Thu gọn nhật ký" : "Mở rộng nhật ký"} title={nkOpen ? "Thu gọn" : "Mở rộng"}>
                   {nkOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </Button>
-                <Button size="icon" variant="outline" className="h-7 w-7 text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100" onClick={() => setOpenTpId("sys-history")} title="Xem lý lịch hệ thống đầy đủ">
+                <Button size="icon" variant="outline" aria-label="Xem lý lịch hệ thống" className="h-7 w-7 text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100" onClick={() => setOpenTpId("sys-history")} title="Xem lý lịch hệ thống đầy đủ">
                   <HistoryIcon className="h-4 w-4" />
                 </Button>
               </div>

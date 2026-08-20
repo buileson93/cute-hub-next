@@ -130,7 +130,7 @@ function GopGachPage() {
             <Button variant="outline" className="flex-1" onClick={() => submit.mutate()} disabled={!value}>
               Gửi đề xuất
             </Button>
-            <Button variant="ghost" size="icon" title="Bỏ qua">
+            <Button variant="ghost" size="icon" aria-label="Bỏ qua đề xuất" title="Bỏ qua">
               <SkipForward className="size-4" />
             </Button>
           </CardFooter>
