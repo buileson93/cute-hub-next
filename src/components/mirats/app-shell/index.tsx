@@ -129,14 +129,6 @@ export function UserMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <DropdownMenuLabel className="px-2 py-2 text-[10px] font-medium text-muted-foreground/80 leading-relaxed border-t border-border/40 mt-1 uppercase tracking-wider">
-            Core Visual Families
-          </DropdownMenuLabel>
-          <div className="px-2 py-1.5 text-[11px] text-muted-foreground whitespace-pre-line leading-snug">
-            MIRATS Phase U4: Standards for Typography, Actions & Status
-          </div>
-          <DropdownMenuSeparator />
-
           <DropdownMenuItem
             onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
             aria-label="thay đổi mật độ ở đây"
