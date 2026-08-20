@@ -43,11 +43,9 @@ export function PageHeader({
 
   return (
     <div 
-      data-testid="page-header" 
-      className={cn(
-        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10 px-4 py-3 md:px-6 md:py-4",
-        className
-      )}
+      data-testid="page-header"
+      data-astryx-header="true"
+      className={className}
     >
       {/* 1. Breadcrumbs / Supporting */}
       {(breadcrumbs || supporting) && (
