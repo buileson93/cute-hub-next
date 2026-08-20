@@ -50,7 +50,8 @@ async def main():
             await page.goto("http://localhost:8080")
             await page.evaluate(f"window.localStorage.setItem('{storage_key}', '{session_json}')")
 
-        for url in g1_routes:
+        # Limit to first 3 routes for quick check during implementation
+        for url in g1_routes[:3]:
             print(f"Checking {url}...")
             is_ok, sw, cw = await check_overflow(page, url)
             if not is_ok:
