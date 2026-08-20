@@ -34,6 +34,15 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * Props cho component Button.
+ * 
+ * QUY TẮC PHÂN CẤP (MIRATS Hierarchy):
+ * - variant="default": Dùng DUY NHẤT MỘT lần mỗi màn hình cho hành động chính.
+ * - variant="outline": Dùng cho các hành động phụ hoặc nút "Hủy".
+ * - variant="ghost": Dùng cho các công cụ (toolbar), icon-only button.
+ * - variant="destructive": Chỉ dùng cho hành động xóa không thể hoàn tác + ConfirmDialog.
+ */
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
@@ -42,6 +51,7 @@ export interface ButtonProps
   /** Nội dung tooltip hiển thị khi hover (mặc định lấy từ aria-label / title cho nút icon-only). */
   tooltip?: React.ReactNode;
 }
+
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, loading = false, disabled, children, tooltip, title, ...props }, ref) => {
