@@ -1,5 +1,6 @@
+/** @vitest-environment jsdom */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook } from "@testing-library/react";
 import { useIsMobile, useBreakpoint } from "../use-mobile";
 import { MOBILE_BREAKPOINT_PX, TABLET_BREAKPOINT_PX } from "@/lib/mirats/ui/responsive-scope";
 
@@ -10,7 +11,6 @@ describe("use-mobile hooks", () => {
       configurable: true,
       value: width,
     });
-    // Trigger matchMedia update if necessary (setup.ts mock is simple, so we rely on updateBreakpoint call)
     window.dispatchEvent(new Event("resize"));
   };
 
