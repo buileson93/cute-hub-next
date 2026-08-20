@@ -53,7 +53,7 @@ export function PageHeader({
     >
       {/* 1. Breadcrumbs / Supporting */}
       {(breadcrumbs || supporting) && (
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
+        <div className={cn("flex items-center gap-1.5 text-muted-foreground mb-0.5", TYPO.LABEL)}>
           {breadcrumbs ? (
             <div className="flex items-center gap-1">
               {breadcrumbs.map((crumb, idx) => (
