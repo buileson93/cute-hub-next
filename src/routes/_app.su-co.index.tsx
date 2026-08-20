@@ -337,6 +337,8 @@ function SuCoPage() {
     },
   ], [devByMa, htNameOf]);
 
+  const [visibleKeys, setVisibleKeys] = useState<string[]>(logColumns.map(c => c.key));
+
   function exportList(list: SuCo[], label: string) {
     if (list.length === 0) return;
     const now = new Date();
