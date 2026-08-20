@@ -978,17 +978,13 @@ function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => 
   }, [data]);
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Boxes className="h-5 w-5 text-primary" /> Tài sản đang dùng mẫu
-          </DialogTitle>
-          <DialogDescription>
-            {model.ten}{model.p_n ? ` · ${model.p_n}` : ""} — {data?.length ?? 0} tài sản
-            {canEdit && (data?.length ?? 0) > 0 ? " · bấm một tài sản để sửa trường của tài sản đó" : ""}
-          </DialogDescription>
-        </DialogHeader>
+    <ResponsiveDialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={model.ten ? `Tài sản đang dùng mẫu ${model.ten}` : "Tài sản đang dùng mẫu"}
+      description={`${model.p_n ? `P/N: ${model.p_n} · ` : ""}${data?.length ?? 0} tài sản${canEdit && (data?.length ?? 0) > 0 ? " · bấm một tài sản để sửa trường của tài sản đó" : ""}`}
+      className="max-w-2xl"
+    >
 
         {isLoading && (
           <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
@@ -1114,17 +1110,16 @@ function MergeModelsDialog({
           </div>
         </ScrollArea>
 
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button variant="outline" onClick={onClose} disabled={pending}>Huỷ</Button>
           <Button onClick={() => target && onMerge(target)} disabled={pending || !target} className="gap-1.5">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitMerge className="h-4 w-4" />}
             Gộp vào mẫu này
           </Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+      </ResponsiveDialog>
+    );
+  }
 
 
 
