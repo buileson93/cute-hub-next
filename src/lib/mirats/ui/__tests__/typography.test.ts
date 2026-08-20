@@ -19,8 +19,11 @@ describe("MIRATS Typography Scale Integrity", () => {
       const pxMatches = classes.match(/text-\[(\d+)px\]/g);
       if (pxMatches) {
         pxMatches.forEach(match => {
-          const size = parseInt(match.match(/\d+/)[0]);
-          expect(size, `Level ${level} has size ${size}px which is < 11px`).toBeGreaterThanOrEqual(11);
+          const sizeMatch = match.match(/\d+/);
+          if (sizeMatch) {
+            const size = parseInt(sizeMatch[0]);
+            expect(size, `Level ${level} has size ${size}px which is < 11px`).toBeGreaterThanOrEqual(11);
+          }
         });
       }
     });
