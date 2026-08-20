@@ -9,10 +9,11 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, prefix, suffix, unit, ...props }, ref) => {
+    const density = (props as any)["data-density"];
     return (
       <div 
         data-astryx-control="input-wrapper"
-        data-astryx-size={props["data-density"] === "comfortable" ? "default" : "sm"}
+        data-astryx-size={density === "comfortable" ? "default" : "sm"}
         data-astryx-state={props["aria-invalid"] ? "invalid" : undefined}
         className={cn(className)}
       >
