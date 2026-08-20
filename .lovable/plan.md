@@ -1,34 +1,33 @@
 ---
 name: Switch Component Fix Plan
-description: Kế hoạch sửa lỗi hiển thị của thành phần Switch và cập nhật văn bản UI.
+description: Kế hoạch sửa lỗi hiển thị của thành phần Switch dựa trên hình ảnh tải lên.
 type: feature
 ---
-# Kế hoạch sửa lỗi Switch và cập nhật UI
+# Kế hoạch sửa lỗi Switch
 
-Người dùng báo cáo có vấn đề với UI của Switch (gạt) và yêu cầu thay đổi văn bản "language selector". Qua rà soát, "language selector" hiện không tồn tại trong code nhưng có trong lịch sử kế hoạch, có thể ám chỉ thành phần `TzClock` (chọn múi giờ) trên TopBar.
+Người dùng báo cáo có vấn đề với UI của Switch (gạt) thông qua hình ảnh đính kèm. Hình ảnh cho thấy nút gạt (thumb) bị lệch ra khỏi khung của Switch hoặc không hiển thị đúng vị trí khi ở trạng thái bật/tắt.
 
-## 1. Phân tích nguyên nhân lỗi Switch
-Dựa trên code hiện tại trong `src/components/ui/switch.tsx` và `src/styles/astryx-component-skins.css`:
-- **Xung đột Class**: Thành phần đang dùng cả các class Tailwind thô (`h-6 w-11`) và class Astryx (`astryx-switch`).
-- **Kích thước không khớp**: CSS Astryx định nghĩa `width: 2.25rem (36px)` và `height: 1.25rem (20px)`, trong khi Tailwind class là `h-6 (24px) w-11 (44px)`.
-- **Thumb (Nút gạt)**: CSS định vị thumb bằng `position: absolute`, nhưng Tailwind class trong `SwitchPrimitives.Thumb` lại dùng `transition-transform` với `translateX`. Nếu class `astryx-switch-thumb` có `position: absolute` mà cha không được thiết lập đúng `relative` hoặc kích thước bị đè, thumb sẽ bị lệch hoặc biến mất.
-- **Màu sắc**: Đang sử dụng `data-[state=checked]:bg-primary` nhưng có thể bị ghi đè bởi layer CSS Astryx.
+## 1. Phân tích nguyên nhân lỗi Switch (Dựa trên hình ảnh)
+Quan sát `user-uploads://CleanShot_2026-08-20_at_18.31.53.png`:
+- Nút gạt (màu trắng) đang nằm hoàn toàn bên ngoài khung màu xanh của Switch.
+- Điều này xảy ra do sự không khớp giữa hệ thống định vị `absolute` của CSS Astryx và `translateX` của Tailwind/Radix, hoặc khung Switch thiếu `relative`.
+- Code hiện tại trong `src/components/ui/switch.tsx` đang dùng `h-6 w-11` (Tailwind) đè lên CSS Astryx vốn nhỏ hơn.
 
 ## 2. Các bước sửa lỗi
 
 ### Giai đoạn 1: Chuẩn hóa thành phần Switch
-- Cập nhật `src/components/ui/switch.tsx` để loại bỏ các class Tailwind kích thước cứng, thay bằng các token từ `UI_DENSITY` hoặc để CSS Astryx quản lý hoàn toàn nhằm đảm bảo tính nhất quán.
-- Đảm bảo `SwitchPrimitives.Root` có `relative` để thumb `absolute` hoạt động chính xác.
+- Cập nhật `src/components/ui/switch.tsx`:
+  - Thêm `relative` vào class của `SwitchPrimitives.Root`.
+  - Loại bỏ các class Tailwind về kích thước (`h-6 w-11`) và thumb (`h-5 w-5`) để CSS Astryx (`.astryx-switch`, `.astryx-switch-thumb`) quản lý hoàn toàn, tránh xung đột.
+  - Sử dụng `UI_DENSITY.CONTROL_H` nếu cần thiết để đảm bảo đồng bộ với các control khác.
 
-### Giai đoạn 2: Đồng bộ CSS Skins
-- Kiểm tra lại `src/styles/astryx-component-skins.css` để đảm bảo `.astryx-switch` và `.astryx-switch-thumb` có tỷ lệ khớp nhau (ví dụ: switch cao 20px thì thumb nên 16px với margin 2px).
-
-### Giai đoạn 3: Cập nhật văn bản
-- Thay đổi văn bản hoặc nhãn liên quan đến "language selector" (nếu tìm thấy trong các file cấu hình hoặc tooltip) thành nội dung mới theo yêu cầu: "UI của switch này đang có vấn đề tìm hiểu nguyên nhân lên kế hoạch bằng tiếng việt cách sửa". *Lưu ý: Nếu không tìm thấy văn bản này, tôi sẽ áp dụng nó vào phần mô tả/tooltip của thành phần Switch trong UI Kit để làm mẫu.*
+### Giai đoạn 2: Tinh chỉnh CSS Skins
+- Kiểm tra `src/styles/astryx-component-skins.css`:
+  - Đảm bảo `.astryx-switch` có `overflow: visible` (nếu muốn hiệu ứng thumb trồi ra) hoặc đảm bảo kích thước thumb và container khớp nhau để thumb nằm trong.
+  - Cập nhật `left: 0.125rem` và `translateX` tương ứng với chiều rộng mới của Switch.
 
 ## 3. Chi tiết kỹ thuật
-- **File**: `src/components/ui/switch.tsx`
-- **Thay đổi**: 
-  - Root: Loại bỏ `h-6 w-11`, thêm `relative`.
-  - Thumb: Loại bỏ `h-5 w-5` nếu CSS Astryx đã định nghĩa.
-- **Kiểm tra**: Xem lại trang `/admin/ui-kit` để xác nhận Switch hiển thị đúng ở cả 2 trạng thái bật/tắt.
+- **File chính**: `src/components/ui/switch.tsx`
+- **File hỗ trợ**: `src/styles/astryx-component-skins.css`
+- **Mục tiêu**: Thumb trắng phải nằm gọn hoặc được căn chỉnh chính xác so với khung màu xanh khi ở trạng thái `checked`.
+
