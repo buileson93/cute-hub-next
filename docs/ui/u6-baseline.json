@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-08-20T15:19:23.955Z",
-  "commit": "2afbc386426f430530fabd899762eddf6985ff4d",
+  "timestamp": "2026-08-20T23:31:19.521Z",
+  "commit": "232f77727343ac7dd8873f5ef164982aa891e1ac",
   "metrics": {
     "responsivePrefixes": {
-      "sm": 226,
+      "sm": 228,
       "md": 205,
       "lg": 109,
       "xl": 25,
@@ -17,7 +17,7 @@
       "hiddenWithPrefix": 4
     },
     "mobileLogic": {
-      "count": 12,
+      "count": 13,
       "files": [
         "src/components/mirats/BulkActionBar.tsx",
         "src/components/mirats/DesktopOnly.tsx",
@@ -29,6 +29,7 @@
         "src/hooks/__tests__/use-mobile.test.tsx",
         "src/hooks/use-mobile.tsx",
         "src/routes/_app.so-do.$id.tsx",
+        "src/routes/_app.su-co.index.tsx",
         "src/routes/admin.schema.tsx",
         "src/routes/auth.tsx"
       ]
@@ -120,8 +121,8 @@
         }
       ]
     },
-    "gridNoPrefix": 89,
-    "smallTouchTargetsRaw": 651,
+    "gridNoPrefix": 91,
+    "smallTouchTargetsRaw": 653,
     "safeAreaAndFixed": {
       "safeAreaInset": 4,
       "fixedBottom": 7
@@ -169,7 +170,7 @@
       },
       {
         "file": "src/routes/_app.danh-muc.model.tsx",
-        "lines": 1581,
+        "lines": 1573,
         "hasMobileMode": true
       },
       {
