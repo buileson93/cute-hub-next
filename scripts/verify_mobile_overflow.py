@@ -8,17 +8,22 @@ SCREENSHOTS = Path("/tmp/browser/ui_audit/overflow")
 SCREENSHOTS.mkdir(parents=True, exist_ok=True)
 
 async def check_overflow(page, url):
-    await page.goto(url, wait_until="networkidle")
-    await page.wait_for_timeout(2000) # Wait for animations/dynamic content
-    
-    scroll_width = await page.evaluate("document.documentElement.scrollWidth")
-    client_width = await page.evaluate("document.documentElement.clientWidth")
-    
-    if scroll_width > client_width:
-        filename = url.replace("http://localhost:8080/", "").replace("/", "_") or "index"
-        await page.screenshot(path=str(SCREENSHOTS / f"overflow_{filename}.png"))
-        return False, scroll_width, client_width
-    return True, scroll_width, client_width
+    try:
+        await page.goto(url, wait_until="domcontentloaded")
+        await page.wait_for_load_state("networkidle", timeout=15000)
+        await page.wait_for_timeout(2000) 
+        
+        scroll_width = await page.evaluate("document.documentElement.scrollWidth")
+        client_width = await page.evaluate("document.documentElement.clientWidth")
+        
+        if scroll_width > client_width:
+            filename = url.replace("http://localhost:8080/", "").replace("/", "_") or "index"
+            await page.screenshot(path=str(SCREENSHOTS / f"overflow_{filename}.png"))
+            return False, scroll_width, client_width
+        return True, scroll_width, client_width
+    except Exception as e:
+        print(f"Error checking {url}: {e}")
+        return False, 0, 0
 
 async def main():
     # Extract G1 routes from markdown
