@@ -20,11 +20,16 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-8 data-[density=comfortable]:h-9 px-4 py-2 text-[12px] data-[density=comfortable]:text-[13px] [&_svg]:size-4",
-        sm: "h-7 data-[density=comfortable]:h-8 rounded-md px-3 text-[11px] data-[density=comfortable]:text-[12px] [&_svg]:size-3.5",
-        xs: "h-6 rounded px-2 text-[10px] [&_svg]:size-3",
-        lg: "h-10 data-[density=comfortable]:h-11 rounded-md px-8 text-base [&_svg]:size-5",
-        icon: "h-8 w-8 data-[density=comfortable]:h-9 data-[density=comfortable]:w-9 [&_svg]:size-4.5",
+        /** Mặc định: Mobile=44px (h-11), Desktop=32px/36px */
+        default: "h-11 md:h-8 md:data-[density=comfortable]:h-9 px-4 py-2 text-[14px] md:text-[12px] md:data-[density=comfortable]:text-[13px] [&_svg]:size-5 md:size-4",
+        /** Small: Mobile=44px (đảm bảo đích chạm), Desktop=28px/32px */
+        sm: "h-11 md:h-7 md:data-[density=comfortable]:h-8 rounded-md px-3 text-[14px] md:text-[11px] md:data-[density=comfortable]:text-[12px] [&_svg]:size-4.5 md:size-3.5",
+        /** Extra Small: Mobile=44px (đảm bảo đích chạm), Desktop=24px */
+        xs: "h-11 md:h-6 rounded px-2 text-[14px] md:text-[10px] [&_svg]:size-4 md:size-3",
+        /** Large: Mobile=48px+, Desktop=40px/44px */
+        lg: "h-12 md:h-10 md:data-[density=comfortable]:h-11 rounded-md px-8 text-base [&_svg]:size-6 md:size-5",
+        /** Icon-only: Mobile=44px (h-11), Desktop=32px/36px */
+        icon: "h-11 w-11 md:h-8 md:w-8 md:data-[density=comfortable]:h-9 md:data-[density=comfortable]:w-9 [&_svg]:size-5 md:size-4.5",
       },
     },
     defaultVariants: {
