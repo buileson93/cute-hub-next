@@ -106,11 +106,11 @@ export function PageHeader({
               <InfoHint>
                 <div className="space-y-1.5 p-1 max-w-xs">
                   {description && (
-                    <div className="text-sm font-normal text-foreground leading-snug">
+                    <div className={cn("font-normal text-foreground leading-snug", TYPO.BODY)}>
                       {description}
                     </div>
                   )}
-                  {help && <div className="text-xs text-muted-foreground">{help}</div>}
+                  {help && <div className={cn("text-muted-foreground", TYPO.BODY)}>{help}</div>}
                 </div>
               </InfoHint>
             )}
