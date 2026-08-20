@@ -438,7 +438,7 @@ function SuCoPage() {
             <DataState state={state} onRetry={refetch}>
               <StandardTable<SuCo>
                 tableKey="su_co_nhat_ky"
-                columns={logColumns}
+                columns={logColumns.filter(c => visibleKeys.includes(c.key))}
                 rows={rows}
                 getRowId={(s) => s.ma_su_co}
                 toolbarLeft={
