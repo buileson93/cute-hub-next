@@ -1,27 +1,20 @@
 {
   "version": "1.0.0",
   "baselineCommit": "05c9a8431967186066ed589b72edcfbacf279296",
-  "currentPhase": "1",
+  "currentPhase": "2",
   "status": "completed",
-  "completedPhases": ["0-audit", "1-foundation"],
+  "completedPhases": ["0-audit", "1-foundation", "2-button-parity"],
   "activePlan": null,
-  "last_updated": "2026-08-20T08:45:00Z",
+  "last_updated": "2026-08-20T08:51:29Z",
   "artifacts": [
     "docs/lovable/mirats-ui/state.json",
-    "docs/lovable/mirats-ui/00-audit.md",
-    "docs/lovable/mirats-ui/00-plan.md",
-    "docs/lovable/mirats-ui/00-inventory.json",
-    "docs/lovable/mirats-ui/00-ssr-baseline.json",
-    "docs/lovable/mirats-ui/00-css-cascade.md",
-    "docs/lovable/mirats-ui/00-route-matrix.md",
     "docs/lovable/mirats-ui/phases/1-plan.md",
     "docs/lovable/mirats-ui/phases/1-result.md",
-    "src/styles/astryx-static/manifest.json",
+    "docs/lovable/mirats-ui/phases/2-plan.md",
+    "docs/lovable/mirats-ui/phases/2-result.md",
     "src/styles/astryx-static/tokens.css",
-    "src/styles/astryx-static/reset.css",
-    "src/styles/astryx-static/theme.css",
     "src/styles/astryx-static/components.css",
-    "reports/astryx-ui/phases/1/"
+    "src/components/ui/button.tsx"
   ],
   "validation": {
     "ssr": "passed",

@@ -11,12 +11,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        default: "astryx-control-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+        destructive: "astryx-control-destructive bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-primary/20 bg-background shadow-sm hover:bg-primary/5 hover:text-primary hover:border-primary/40",
-        secondary: "astryx-control-skin bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "astryx-control-skin hover:bg-accent hover:text-accent-foreground",
+          "astryx-control-outline border border-primary/20 bg-background shadow-sm hover:bg-primary/5 hover:text-primary hover:border-primary/40",
+        secondary: "astryx-control-secondary bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "astryx-control-ghost hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -85,6 +85,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || (!asChild && loading)}
         aria-busy={loading || undefined}
         title={autoTip ? undefined : title}
+        data-astryx-control="true"
+        data-astryx-variant={variant || "default"}
+        data-astryx-size={size || "default"}
+        data-astryx-loading={loading ? "true" : undefined}
         {...props}
       >
         {renderContent()}

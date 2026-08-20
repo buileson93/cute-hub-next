@@ -388,7 +388,7 @@ function ModelCatalogPage() {
               <Button variant="outline" onClick={() => setDacTinhIOOpen(true)} className="gap-1.5">
                 <Tag className="h-4 w-4" /> Nhãn tài sản · Nhập/Xuất
               </Button>
-              <Button onClick={() => setEditing("new")} variant="default" className="gap-1.5 shadow-none">
+              <Button onClick={() => setEditing("new")} variant="default" className="gap-1.5 shadow-none" data-astryx-control="true">
                 <Plus className="h-4 w-4" /> Thêm mẫu
               </Button>
             </div>
