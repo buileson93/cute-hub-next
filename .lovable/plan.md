@@ -1,22 +1,22 @@
 ---
-name: Fix Switch Component Styling and Alignment
-description: Correct the visual alignment and color of the Switch component in the Admin Forms table to match the MIRATS green brand standard and fix layout shifts.
+name: Global Switch Component Alignment and Styling Fix
+description: Correct the visual alignment and color of all Switch components throughout the application, ensuring they are centered and use the correct brand colors.
 type: design
 ---
 
 ## Proposed Changes
 
 ### UI/UX Refinement
-- Fix the **Switch** component in `src/routes/_app.admin.forms.index.tsx` within the table cells.
-- **Color**: Ensure the active state uses the project's standard green color (typically `#22c55e` or equivalent semantic token) instead of the current grey/primary.
-- **Alignment**: Fix the vertical/horizontal alignment issue where the switch looks "off-center" or "shifted" (lệch) within the table row.
-- **Standardization**: Apply consistent padding and centering to the status column to prevent visual drift.
+- **Global Alignment**: Identify and fix all `Switch` components that are visually misaligned, particularly those inside tables or lists.
+- **Color Correction**: Ensure the active state of all `Switch` components uses the consistent brand green color.
+- **Specific Fixes**:
+  - `src/routes/_app.admin.forms.index.tsx`: Center and align the `Switch` in the "Trạng thái" column.
+  - Audit other views for similar `Switch` alignment issues.
 
 ### Rationale
-- The user pointed out that the Switch component in the "Trạng thái" column is visually misaligned and lacks the proper green color when active.
+- The user requested to fix "the switches" (plural), indicating a need for a broader check and fix for alignment and styling of Switch components across the UI.
 
 ## Technical Details
-- File: `src/routes/_app.admin.forms.index.tsx`
-- Targeted element: `<Switch>` inside the table body (line 202).
-- Styling: Add centering classes (`flex justify-center` or `text-center`) to the `<TableCell>` containing the switch.
-- Theme: Verify `index.css` or component props for green active state.
+- Files to Audit: `src/routes/_app.admin.forms.index.tsx` and any other view utilizing the `Switch` component.
+- Fix: Ensure the parent container of the `Switch` (e.g., `<TableCell>`) has appropriate alignment classes (`flex items-center`, `justify-center`, or `h-full`).
+- Styling: Update Tailwind classes or component variants to ensure the "green" state is consistent.
