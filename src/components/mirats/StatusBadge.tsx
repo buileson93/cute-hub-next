@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { getToken, type DomainKey } from "@/lib/mirats/ui/status-registry";
+import { getStatusToken } from "@/lib/mirats/ui/status-tokens";
+
 import { phaseOf, type Phase } from "@/lib/mirats/trang-thai";
 import { Icon } from "@/components/mirats/ui/Icon";
 
