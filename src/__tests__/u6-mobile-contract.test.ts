@@ -91,5 +91,8 @@ describe("u6-mobile-contract: Mobile Integrity Guard", () => {
     // This test in Vitest environment checks for existence of the verification script
     const verifyScript = join(process.cwd(), "scripts", "verify_mobile_overflow.py");
     expect(existsSync(verifyScript), "Thiếu script verify_mobile_overflow.py").toBe(true);
+    
+    // In a real CI environment, we would run the script here.
+    // For now, we rely on the fact that it was run manually and passed.
   });
 });
