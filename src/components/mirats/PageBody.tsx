@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { TYPO } from "@/lib/mirats/ui/typography";
 
 interface Props {
   children: ReactNode;
@@ -24,6 +25,7 @@ export function PageBody({ children, className, noPadding, density }: Props) {
       data-density={density}
       className={cn(
         "flex w-full flex-col flex-1 overflow-auto bg-background/50",
+        TYPO.BODY,
         !noPadding && UI_DENSITY.PAGE_PADDING,
         UI_DENSITY.SECTION_GAP,
         className

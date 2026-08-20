@@ -2,6 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { InfoHint } from "./InfoHint";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { TYPO } from "@/lib/mirats/ui/typography";
 import { Icon as SemanticIcon } from "@/components/mirats/ui/Icon";
 import { ChevronRight } from "lucide-react";
 
@@ -52,7 +53,7 @@ export function PageHeader({
     >
       {/* 1. Breadcrumbs / Supporting */}
       {(breadcrumbs || supporting) && (
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-0.5">
+        <div className={cn("flex items-center gap-1.5 text-muted-foreground mb-0.5", TYPO.LABEL)}>
           {breadcrumbs ? (
             <div className="flex items-center gap-1">
               {breadcrumbs.map((crumb, idx) => (
@@ -85,8 +86,8 @@ export function PageHeader({
             <h1
               data-testid="page-header-title"
               className={cn(
-                "truncate font-bold leading-tight tracking-tight text-foreground",
-                "text-sm data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
+                "truncate text-foreground uppercase",
+                TYPO.H1
               )}
             >
               {title}
@@ -95,7 +96,7 @@ export function PageHeader({
             {hasSubtitle && (
               <span
                 data-testid="page-header-subtitle"
-                className="truncate text-xs text-muted-foreground font-normal normal-case"
+                className={cn("truncate text-muted-foreground font-normal normal-case", TYPO.LABEL)}
               >
                 {subtitle}
               </span>
@@ -105,11 +106,11 @@ export function PageHeader({
               <InfoHint>
                 <div className="space-y-1.5 p-1 max-w-xs">
                   {description && (
-                    <div className="text-sm font-normal text-foreground leading-snug">
+                    <div className={cn("font-normal text-foreground leading-snug", TYPO.BODY)}>
                       {description}
                     </div>
                   )}
-                  {help && <div className="text-xs text-muted-foreground">{help}</div>}
+                  {help && <div className={cn("text-muted-foreground", TYPO.BODY)}>{help}</div>}
                 </div>
               </InfoHint>
             )}
@@ -117,7 +118,7 @@ export function PageHeader({
 
           {/* 3. Description (Static view if needed outside tooltip) */}
           {/* Usually hidden in tooltip to keep header compact, but enabled for spacious */}
-          <div className="hidden data-[density=spacious]:block text-sm text-muted-foreground max-w-2xl">
+          <div className={cn("hidden data-[density=spacious]:block text-muted-foreground max-w-2xl", TYPO.BODY)}>
             {typeof description === 'string' ? description : null}
           </div>
 

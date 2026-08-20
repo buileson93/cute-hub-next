@@ -1,6 +1,7 @@
 import { Inbox } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@/lib/utils";
+import { TYPO } from "@/lib/mirats/ui/typography";
 
 // Task 25 — Trạng thái rỗng dùng chung.
 interface Props {
@@ -38,9 +39,9 @@ export function EmptyState({
       <div className="p-4 rounded-full bg-muted/20 ring-1 ring-border/20">
         <Icon className="h-8 w-8 text-muted-foreground/40" aria-hidden />
       </div>
-      <div className="text-[15px] font-bold text-foreground/80">{title}</div>
+      <div className={cn("text-foreground/80", TYPO.H3)}>{title}</div>
       {description && (
-        <div id={descId} className="text-xs text-muted-foreground max-w-md">
+        <div id={descId} className={cn("text-muted-foreground max-w-md", TYPO.BODY)}>
           {description}
         </div>
       )}

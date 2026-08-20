@@ -3,6 +3,8 @@ import { LoadingState } from "./LoadingState";
 import { EmptyState } from "./EmptyState";
 import { ErrorState } from "./ErrorState";
 import { TableSkeleton, ListSkeleton, CardGridSkeleton, DrawerSkeleton } from "./Skeletons";
+import { TYPO } from "@/lib/mirats/ui/typography";
+import { cn } from "@/lib/utils";
 
 type SkeletonType = "table" | "list" | "card" | "drawer" | "none";
 
@@ -100,8 +102,8 @@ export function DataState({
   }
 
 
-  if (className) {
-    return <div className={className}>{children}</div>;
+  if (className || true) {
+    return <div className={cn(TYPO.BODY, className)}>{children}</div>;
   }
 
   return <>{children}</>;
