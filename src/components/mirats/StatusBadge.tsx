@@ -27,7 +27,11 @@ interface Props {
 }
 
 export function StatusBadge({ domain, code, className, label }: Props) {
-  const token = getToken(domain, code ?? "");
+  // Ưu tiên dùng getStatusToken trực tiếp cho domain thiet_bi để dùng hệ thống token mới
+  const token = domain === 'thiet_bi' 
+    ? getStatusToken(domain, code ?? "") 
+    : getToken(domain, code ?? "");
+    
   const phase = phaseOf(domain as any, code ?? "");
   
   if (!token && !phase) {
@@ -38,16 +42,22 @@ export function StatusBadge({ domain, code, className, label }: Props) {
     );
   }
 
-  // Ưu tiên class từ token (màu cụ thể), fallback sang màu theo phase.
-  const colorClass = token?.class || phaseColor(phase);
+  // Ưu tiên color (semantic) hoặc class (legacy), fallback sang màu theo phase.
+  const colorClass = token?.color || token?.class || phaseColor(phase);
 
   return (
-    <Badge variant="outline" className={cn("font-medium whitespace-nowrap gap-1.5 py-0.5", colorClass, className)}>
+    <Badge 
+      variant="outline" 
+      className={cn("font-medium whitespace-nowrap gap-1.5 py-0.5", colorClass, className)}
+      aria-label={label ?? token?.label ?? code ?? "Trạng thái"}
+    >
       {token?.icon && <Icon name={token.icon} size="tiny" />}
       {!token?.icon && token?.dot && <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", token.dot)} />}
       <span className="truncate">{label ?? token?.label ?? code}</span>
+      {token?.kyHieu && <span className="sr-only">({token.kyHieu})</span>}
     </Badge>
   );
 }
+
 
 
