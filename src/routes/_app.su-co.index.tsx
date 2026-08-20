@@ -381,15 +381,33 @@ function SuCoPage() {
             <Stat icon={AlertTriangle} label="SC" value={stats.total} />
             <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600" />
             <Stat icon={Clock} label="MTTR" value={formatKpiValue(stats.mttr, fmtDowntime)} tone="text-sky-600" />
+            
             <div className="ml-auto flex items-center gap-1">
-              <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
-                <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="week">Tuần này</SelectItem>
-                  <SelectItem value="month">Tháng này</SelectItem>
-                </SelectContent>
-              </Select>
+              {isMobile ? (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 gap-1.5"
+                  onClick={() => setMobileSheetOpen(true)}
+                >
+                  <Filter className="h-3.5 w-3.5" />
+                  Bộ lọc
+                  {Object.keys(controls.filters).length + (controls.q.trim() ? 1 : 0) > 0 && (
+                    <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
+                      {Object.keys(controls.filters).length + (controls.q.trim() ? 1 : 0)}
+                    </Badge>
+                  )}
+                </Button>
+              ) : (
+                <Select value={period} onValueChange={(v: any) => setFilter("period", v)}>
+                  <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="week">Tuần này</SelectItem>
+                    <SelectItem value="month">Tháng này</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           </div>
 
