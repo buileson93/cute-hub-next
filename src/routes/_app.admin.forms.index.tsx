@@ -159,8 +159,10 @@ function AdminFormsPage() {
                     <SelectItem value="multi">Nhiều tài sản</SelectItem>
                   </SelectContent>
                 </Select></div>
-              <div className="flex items-center gap-2">
-                <Switch checked={form.require_signature} onCheckedChange={(v) => setForm({ ...form, require_signature: v })} />
+              <div className="flex items-center gap-3">
+                <div className="flex justify-center">
+                  <Switch checked={form.require_signature} onCheckedChange={(v) => setForm({ ...form, require_signature: v })} />
+                </div>
                 <Label>Có phần chữ ký</Label>
               </div>
             </div>
