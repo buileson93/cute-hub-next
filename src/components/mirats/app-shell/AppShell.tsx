@@ -255,7 +255,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
 
                <div className="flex flex-1 items-center gap-4">
-                  <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
+                  <div className="md:hidden shrink-0"><SidebarLogoRail /></div>
                   <div className="hidden md:block"><TourButton /></div>
                   <TopBar 
                     renderMobileMenu={
