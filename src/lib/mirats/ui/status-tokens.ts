@@ -164,10 +164,12 @@ export function getStatusToken(domain: string, key: string | null): StatusToken 
 
 const FALLBACK_TOKEN: StatusToken = {
   color: "astryx-status-normal",
+  class: "astryx-status-normal",
   icon: "status.info",
   label: "Không xác định",
   kyHieu: "•",
 };
+
 
 export const MUC_DO_SU_CO_TOKEN = TYPO_STATUS;
 export const LOAI_BAO_TRI_TOKEN = TYPO_STATUS;
