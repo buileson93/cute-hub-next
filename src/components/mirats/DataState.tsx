@@ -3,6 +3,8 @@ import { LoadingState } from "./LoadingState";
 import { EmptyState } from "./EmptyState";
 import { ErrorState } from "./ErrorState";
 import { TableSkeleton, ListSkeleton, CardGridSkeleton, DrawerSkeleton } from "./Skeletons";
+import { TYPO } from "@/lib/mirats/ui/typography";
+import { cn } from "@/lib/utils";
 
 type SkeletonType = "table" | "list" | "card" | "drawer" | "none";
 
