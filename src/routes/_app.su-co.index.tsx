@@ -293,7 +293,6 @@ function SuCoPage() {
     return Array.from(m.values()).sort((a, b) => b.count - a.count || b.downtime - a.downtime).slice(0, 10);
   }, [filtered, devByMa, htNameOf]);
 
-  const [visibleKeys, setVisibleKeys] = useState<string[]>(logColumns.map(c => c.key));
   const rows = showAll ? filtered : filtered.slice(0, 40);
 
   const logColumns: StdColumn<SuCo>[] = useMemo(() => [
