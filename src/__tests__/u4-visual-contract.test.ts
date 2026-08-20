@@ -1,12 +1,30 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
+// @ts-expect-error - MJS file import
 import { runAuditLogic } from "../../scripts/ui-audit.mjs";
+
+interface Violation {
+  file: string;
+  count: number;
+}
+
+interface AuditStats {
+  textPx: { total: number; byValue: Record<string, number>; byFile: Record<string, number> };
+  textPresets: { xs: number; sm: number; base: number };
+  paletteColors: number;
+  hexColors: number;
+  buttonVariants: Record<string, number>;
+  iconNoLabel: number;
+  pageHeaderCount: number;
+  routeCount: number;
+  fileViolations: Violation[];
+}
 
 describe("u4-visual-contract: UI Regression Guard", () => {
   const baselinePath = join(process.cwd(), "docs", "ui", "u4-baseline.json");
   const baseline = JSON.parse(readFileSync(baselinePath, "utf8"));
-  const currentStats = runAuditLogic();
+  const currentStats = runAuditLogic() as AuditStats;
 
   it("không làm tăng tổng số lỗi text-[Npx]", () => {
     const diff = currentStats.textPx.total - baseline.summary.textPxTotal;
@@ -29,17 +47,15 @@ describe("u4-visual-contract: UI Regression Guard", () => {
   });
 
   it("xác minh chi tiết các file vi phạm mới (nếu có)", () => {
-    const baselineFiles = new Set(baseline.top20Files.map(f => f.file));
+    const baselineFiles = new Set(baseline.top20Files.map((f: { file: string }) => f.file));
     const currentViolations = currentStats.fileViolations
-      .filter(v => v.file.includes('src/routes') || v.file.includes('src/components/mirats'))
-      .sort((a, b) => b.count - a.count);
+      .filter((v: Violation) => v.file.includes('src/routes') || v.file.includes('src/components/mirats'))
+      .sort((a: Violation, b: Violation) => b.count - a.count);
 
-    const newOffenders = currentViolations.filter(v => !baselineFiles.has(v.file) && v.count > 0);
+    const newOffenders = currentViolations.filter((v: Violation) => !baselineFiles.has(v.file) && v.count > 0);
     
-    // Nếu tổng số lỗi không tăng nhưng có file mới xuất hiện (do chuyển lỗi từ file này sang file khác)
-    // chúng ta vẫn cảnh báo để đảm bảo tính minh bạch.
     if (newOffenders.length > 0 && (currentStats.textPx.total > baseline.summary.textPxTotal || currentStats.paletteColors > baseline.summary.paletteColors)) {
-      expect(newOffenders, `Phát hiện các file mới có vi phạm giao diện:\n${newOffenders.map(o => `- ${o.file}: ${o.count} lỗi`).join('\n')}`).toEqual([]);
+      expect(newOffenders, `Phát hiện các file mới có vi phạm giao diện:\n${newOffenders.map((o: Violation) => `- ${o.file}: ${o.count} lỗi`).join('\n')}`).toEqual([]);
     }
   });
 });
