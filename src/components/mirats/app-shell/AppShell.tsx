@@ -157,11 +157,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       <TooltipProvider delayDuration={300}>
         <div 
           data-density={density}
-          className="flex min-h-dvh w-full bg-background text-foreground"
+          className="astryx-shell"
+          data-astryx-layout="shell"
         >
           {/* Desktop Navigation Container */}
           <div 
-            className="hidden md:flex h-dvh sticky top-0 z-30"
+            className="astryx-nav-container hidden md:flex"
+            data-astryx-region="nav-container"
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => {
               setIsHovered(false);
@@ -169,10 +171,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className={cn(
-              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50 z-20",
-              UI_DENSITY.RAIL_W
-            )}>
+            <aside 
+              className="astryx-rail"
+              data-astryx-region="rail"
+            >
               <SidebarLogoRail />
               <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1 data-[density=compact]:gap-1 comfortable:gap-2">
                 {railWorkspaces.map((ws) => (
@@ -225,10 +227,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
             {/* Sub-sidebar (Desktop) */}
             <aside 
-              className={cn(
-                "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden border-r border-[#0074e2]/10 bg-background z-10",
-                (isCollapsed && !isHovered) ? "w-0 border-r-0 pointer-events-none" : UI_DENSITY.SIDEBAR_W
-              )}
+              className="astryx-sidebar"
+              data-astryx-region="sidebar"
+              data-collapsed={isCollapsed && !isHovered}
             >
               <div className={cn(
                 "flex items-center border-b px-3 data-[density=comfortable]:px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
@@ -247,11 +248,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
 
           {/* Main content area */}
-          <div className="flex min-w-0 flex-1 flex-col h-full">
-            <header className={cn(
-              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/80 backdrop-blur-md",
-              UI_DENSITY.APP_HEADER_H
-            )}>
+          <div className="astryx-main-wrapper" data-astryx-region="main-wrapper">
+            <header 
+              className="astryx-topbar"
+              data-astryx-region="topbar"
+            >
 
                <div className="flex flex-1 items-center gap-4">
                   <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
@@ -284,7 +285,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="astryx-user-menu-wrapper"><UserMenu /></div>
                </div>
             </header>
-            <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 [@container] relative h-full">{children}</main>
+            <main className="astryx-content" data-astryx-region="content">{children}</main>
           </div>
           
           <MobileNav activeWsId={activeWs.id} wsLastRoute={wsLastRoute} />
