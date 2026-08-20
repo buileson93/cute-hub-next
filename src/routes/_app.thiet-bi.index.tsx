@@ -422,7 +422,7 @@ function ThietBiPage() {
           {isMobile ? (
             <div className="grid grid-cols-1 gap-4 p-4">
               {mobileTps.map(n => (
-                <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
+                <Card key={n.key} variant="default" className="relative overflow-hidden border-l-4 border-l-primary">
                   <CardContent className="p-4 space-y-2">
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-sm">{n.label}</h3>

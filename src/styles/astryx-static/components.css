@@ -448,3 +448,184 @@
   height: 100%;
   width: 1px;
 }
+
+/* Surfaces & Containers - Astryx 0.4.5 Reference */
+
+/* Card */
+[data-astryx-control="card"] {
+  background-color: var(--color-background-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-container);
+  transition: transform var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+[data-astryx-variant="clickable"][data-astryx-control="card"] {
+  cursor: pointer;
+}
+
+[data-astryx-variant="clickable"][data-astryx-control="card"]:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--color-accent) 40%, var(--color-border));
+  box-shadow: 0 4px 12px var(--color-neutral);
+}
+
+[data-astryx-variant="clickable"][data-astryx-control="card"]:active {
+  transform: translateY(0) scale(0.98);
+}
+
+[data-astryx-variant="selectable"][data-astryx-control="card"][data-selected="true"] {
+  border-color: var(--color-accent);
+  background-color: color-mix(in oklab, var(--color-accent) 5%, var(--color-background-surface));
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+[data-astryx-variant="muted"][data-astryx-control="card"] {
+  background-color: color-mix(in oklab, var(--color-neutral) 30%, transparent);
+  border-color: transparent;
+}
+
+.astryx-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+}
+
+.astryx-card-content {
+  flex: 1;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.astryx-card-footer {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem 1rem 1rem;
+}
+
+/* Table */
+.astryx-table-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-container);
+  background-color: var(--color-background-surface);
+}
+
+[data-astryx-control="table"] {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8125rem; /* 13px */
+}
+
+[data-astryx-control="table-header"] {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: color-mix(in oklab, var(--color-background-surface) 95%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+[data-astryx-control="table-header-cell"] {
+  height: 2rem; /* 32px comfortable */
+  padding: 0 0.5rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.625rem; /* 10px */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid color-mix(in oklab, var(--color-border) 20%, transparent);
+  white-space: nowrap;
+}
+
+[data-astryx-control="table-header-cell"]:last-child {
+  border-right: none;
+}
+
+[data-astryx-control="table-row"] {
+  transition: background-color var(--duration-fast) var(--ease-standard);
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-astryx-control="table-row"]:last-child {
+  border-bottom: none;
+}
+
+[data-astryx-control="table-row"]:hover {
+  background-color: color-mix(in oklab, var(--color-neutral) 40%, transparent);
+}
+
+[data-astryx-control="table-row"][data-state="selected"] {
+  background-color: color-mix(in oklab, var(--color-accent) 5%, transparent);
+}
+
+[data-astryx-control="table-cell"] {
+  height: 2rem; /* 32px comfortable */
+  padding: 0 0.5rem;
+  vertical-align: middle;
+  border-right: 1px solid color-mix(in oklab, var(--color-border) 20%, transparent);
+  color: var(--color-text-primary);
+}
+
+[data-astryx-control="table-cell"]:last-child {
+  border-right: none;
+}
+
+[data-astryx-density="compact"] [data-astryx-control="table-header-cell"],
+[data-astryx-density="compact"] [data-astryx-control="table-cell"] {
+  height: 1.75rem; /* 28px compact */
+}
+
+/* Tabs - Astryx "Stone" variant */
+[data-astryx-control="tabs-list"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+  padding-bottom: 0;
+}
+
+[data-astryx-control="tabs-trigger"] {
+  position: relative;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-standard);
+  background: none;
+  border: none;
+  outline: none;
+  white-space: nowrap;
+}
+
+[data-astryx-control="tabs-trigger"]:hover {
+  color: var(--color-text-primary);
+}
+
+[data-astryx-control="tabs-trigger"][data-state="active"] {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+[data-astryx-control="tabs-trigger"][data-state="active"]::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-accent);
+  border-radius: 999px;
+}
+
