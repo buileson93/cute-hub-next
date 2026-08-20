@@ -1,34 +1,27 @@
 {
-  "date": "2026-08-20T12:47:31.068Z",
-  "commitHash": "027c3271dd2a22ab4cef5f813c7fcfe167e80b73",
+  "date": "2026-08-20T12:54:16.411Z",
+  "commitHash": "349e1fb0cff0e277db60d50f7f1a35e09e440c15",
   "summary": {
-    "textPxTotal": 960,
+    "textPxTotal": 906,
     "textPxByValue": {
-      "11px": 404,
       "9px": 49,
-      "10px": 415,
-      "12px": 45,
-      "15px": 2,
-      "13px": 23,
-      "14px": 6,
+      "10px": 409,
+      "11px": 389,
+      "12px": 37,
+      "15px": 1,
+      "13px": 15,
+      "14px": 1,
       "8px": 3,
       "4px": 1,
-      "3px": 1,
-      "20px": 1,
-      "24px": 1,
-      "28px": 1,
-      "16px": 2,
-      "18px": 3,
-      "22px": 2,
-      "26px": 1
+      "3px": 1
     },
     "textPresets": {
       "xs": 1226,
       "sm": 809,
       "base": 110
     },
-    "paletteColors": 2214,
-    "hexColors": 436,
+    "paletteColors": 1767,
+    "hexColors": 181,
     "buttonVariants": {
       "outline": 354,
       "secondary": 20,
@@ -37,18 +30,10 @@
       "ghost": 308,
       "link": 2
     },
-    "iconNoLabel": 115,
-    "pageHeaderRatio": "46/132"
+    "iconNoLabel": 113,
+    "pageHeaderRatio": "58/132"
   },
   "top20Files": [
-    {
-      "file": "src/lib/astryx-theme/df3-theme.ts",
-      "count": 208
-    },
-    {
-      "file": "src/lib/mirats/ui/status-tokens.ts",
-      "count": 201
-    },
     {
       "file": "src/routes/_app.he-thong.$id.tsx",
       "count": 124
@@ -60,10 +45,6 @@
     {
       "file": "src/routes/_app.du-an.$id.tsx",
       "count": 99
-    },
-    {
-      "file": "src/lib/mirats/mau-sac.ts",
-      "count": 72
     },
     {
       "file": "src/routes/admin.audit.tsx",
@@ -120,6 +101,18 @@
     {
       "file": "src/components/mirats/he-thong-cay/utils.ts",
       "count": 35
+    },
+    {
+      "file": "src/components/mirats/AtcTowerScene.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/components/mirats/GpktImportDialog.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/routes/admin.audit.lap-thao.tsx",
+      "count": 34
     }
   ]
 }
