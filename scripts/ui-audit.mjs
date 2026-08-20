@@ -29,7 +29,7 @@ function getFiles(dir) {
   return results;
 }
 
-function audit() {
+export function runAuditLogic() {
   const allFiles = TARGET_DIRS.flatMap(getFiles);
   const stats = {
     textPx: { total: 0, byValue: {}, byFile: {} },
@@ -44,12 +44,18 @@ function audit() {
   };
 
   allFiles.forEach(file => {
+    // Chỉ audit trong src/routes và src/components/mirats cho các chỉ số quan trọng
+    const isCriticalPath = file.includes('src/routes') || file.includes('src/components/mirats');
+    
     const content = fs.readFileSync(file, 'utf8');
     let fileViolationCount = 0;
 
     // 1. text-[Npx]
     let match;
+    // Reset regex state
+    REGEX_TEXT_PX.lastIndex = 0;
     while ((match = REGEX_TEXT_PX.exec(content)) !== null) {
+      if (!isCriticalPath) continue;
       const val = match[1] + 'px';
       stats.textPx.total++;
       stats.textPx.byValue[val] = (stats.textPx.byValue[val] || 0) + 1;
@@ -58,41 +64,50 @@ function audit() {
     }
 
     // 2. text-xs, text-sm, text-base (src/routes & src/components/mirats)
-    if (file.includes('src/routes') || file.includes('src/components/mirats')) {
+    if (isCriticalPath) {
+      REGEX_TEXT_PRESET.lastIndex = 0;
       while ((match = REGEX_TEXT_PRESET.exec(content)) !== null) {
         stats.textPresets[match[1]]++;
       }
     }
 
     // 3. Tailwind palette colors
+    REGEX_TW_PALETTE.lastIndex = 0;
     while ((match = REGEX_TW_PALETTE.exec(content)) !== null) {
+      if (!isCriticalPath) continue;
       stats.paletteColors++;
       fileViolationCount++;
     }
 
     // 4. HEX colors
-    // Tránh bắt nhầm các giá trị trong theme CSS nếu có nhúng, nhưng yêu cầu là trong .tsx và .ts
+    REGEX_HEX.lastIndex = 0;
     while ((match = REGEX_HEX.exec(content)) !== null) {
+      if (!isCriticalPath) continue;
+      if (file.includes('scripts/') || file.includes('src/lib/mirats/ui')) continue;
       stats.hexColors++;
       fileViolationCount++;
     }
 
     // 5. Button variants
+    REGEX_BUTTON_VARIANT.lastIndex = 0;
     while ((match = REGEX_BUTTON_VARIANT.exec(content)) !== null) {
       const variant = match[1];
       stats.buttonVariants[variant] = (stats.buttonVariants[variant] || 0) + 1;
     }
 
     // 6. size="icon" no label/tooltip
-    const iconMatches = content.match(REGEX_BUTTON_ICON_NO_LABEL);
-    if (iconMatches) {
-      stats.iconNoLabel += iconMatches.length;
-      fileViolationCount += iconMatches.length;
+    if (isCriticalPath) {
+      const iconMatches = content.match(REGEX_BUTTON_ICON_NO_LABEL);
+      if (iconMatches) {
+        stats.iconNoLabel += iconMatches.length;
+        fileViolationCount += iconMatches.length;
+      }
     }
 
     // 7. PageHeader in routes
     if (file.includes('src/routes')) {
       stats.routeCount++;
+      REGEX_PAGE_HEADER.lastIndex = 0;
       if (REGEX_PAGE_HEADER.test(content)) {
         stats.pageHeaderCount++;
       }
@@ -103,6 +118,12 @@ function audit() {
     }
   });
 
+  return stats;
+}
+
+function audit() {
+  const stats = runAuditLogic();
+  
   // Sort top 20 files
   stats.fileViolations.sort((a, b) => b.count - a.count);
   const top20 = stats.fileViolations.slice(0, 20);
@@ -155,4 +176,7 @@ function audit() {
   console.log(`\nResults written to docs/ui/u4-baseline.json`);
 }
 
-audit();
+// Only run audit if executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  audit();
+}

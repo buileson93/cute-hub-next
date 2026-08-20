@@ -46,7 +46,21 @@ export default tseslint.config(
           message:
             "Tránh select('*') cho bảng lớn — hãy liệt kê cột cụ thể để giảm payload và cho phép index-only scan.",
         },
+        // Hàng rào u4: Chặn các vi phạm giao diện trực tiếp
+        {
+          selector: "Literal[value=/text-\\[\\d+px\\]/]",
+          message: "Cấm dùng text-[Npx] trực tiếp. Hãy dùng thang chữ chuẩn TYPO (DISPLAY, H1, H2, H3, BODY, LABEL, MONO).",
+        },
+        {
+          selector: "Literal[value=/\\b(bg|text|border)-(blue|red|green|yellow|slate|gray|zinc|neutral|stone|orange|amber|lime|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose)-\\d+\\b/]",
+          message: "Cấm dùng màu Tailwind palette cứng. Hãy dùng các token màu thương hiệu (primary, secondary, accent, v.v.) hoặc các biến CSS --color-*.",
+        },
+        {
+          selector: "Literal[value=/#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\\b/]",
+          message: "Cấm dùng mã màu HEX trực tiếp trong TSX/TS. Hãy dùng các biến CSS theme hoặc token màu chuẩn của MIRATS.",
+        }
       ],
+
     },
   },
   eslintPluginPrettier,
