@@ -104,6 +104,9 @@ function downloadCsv(name: string, content: string) {
 }
 
 function SuCoPage() {
+  const isMobile = useIsMobile();
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  
   const { suCo, loading: isLoading } = useScope();
   const error = null;
   const qc = useQueryClient();
@@ -112,9 +115,13 @@ function SuCoPage() {
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
 
-  const [query, setQuery] = useState("");
-  const [tt, setTt] = useState("all");
-  const [period, setPeriod] = useState<"all" | "week" | "month">("all");
+  const { state: controls, setQ, setFilter, setSort, reset } = useListControls({
+    kichThuoc: 1000, // Show all for now or large amount
+  });
+  
+  const query = controls.q;
+  const tt = (controls.filters.tt as string) || "all";
+  const period = (controls.filters.period as "all" | "week" | "month") || "all";
   const [showAll, setShowAll] = useState(false);
 
   const devByMa = useMemo(
@@ -139,23 +146,17 @@ function SuCoPage() {
     return d >= from;
   }
 
-  const isFiltering = query.trim() !== "" || tt !== "all" || period !== "all";
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return suCo.filter((s) => {
-      if (!inPeriod(s, period)) return false;
-      if (tt !== "all" && normalizeLegacy("su_co", s.trang_thai) !== tt) return false;
-      if (!q) return true;
-      const dev = devByMa.get(s.thiet_bi);
-      return (
-        s.ma_su_co.toLowerCase().includes(q) ||
-        s.hien_tuong.toLowerCase().includes(q) ||
-        s.thiet_bi.toLowerCase().includes(q) ||
-        (dev?.ten.toLowerCase().includes(q) ?? false) ||
-        htNameOf(s).toLowerCase().includes(q)
-      );
+    const { data } = locVaSapXep(suCo, controls, {
+      timKiem: (s) => 
+        s.ma_su_co + " " + s.hien_tuong + " " + s.thiet_bi + " " + (devByMa.get(s.thiet_bi)?.ten ?? "") + " " + htNameOf(s),
+      loc: {
+        tt: (s, v) => v === "all" ? true : normalizeLegacy("su_co", s.trang_thai) === v,
+        period: (s, v) => inPeriod(s, v as any),
+      },
     });
-  }, [suCo, query, tt, period, devByMa, htNameOf]);
+    return data;
+  }, [suCo, controls, devByMa, htNameOf]);
 
   const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
 
