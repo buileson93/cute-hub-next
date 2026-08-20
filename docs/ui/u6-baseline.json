@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-20T14:30:39.714Z",
-  "commit": "13100a3983e0e44904f346896530006a72931613",
+  "timestamp": "2026-08-20T14:37:15.351Z",
+  "commit": "01083395f262bfb134ee86aa53350550c433d7bf",
   "metrics": {
     "responsivePrefixes": {
       "sm": 224,
@@ -8,7 +8,7 @@
       "lg": 109,
       "xl": 25,
       "2xl": 1,
-      "filesWithNoPrefix": 267
+      "filesWithNoPrefix": 268
     },
     "visibility": {
       "mdHidden": 5,
@@ -17,7 +17,7 @@
       "hiddenWithPrefix": 4
     },
     "mobileLogic": {
-      "count": 10,
+      "count": 11,
       "files": [
         "src/components/mirats/BulkActionBar.tsx",
         "src/components/mirats/DesktopOnly.tsx",
@@ -25,6 +25,7 @@
         "src/components/mirats/ViTriMediaViewer.tsx",
         "src/components/mirats/app-shell/__tests__/T17-sidebar-collapse.test.tsx",
         "src/components/ui/sidebar.tsx",
+        "src/hooks/__tests__/use-mobile.test.tsx",
         "src/hooks/use-mobile.tsx",
         "src/routes/_app.so-do.$id.tsx",
         "src/routes/admin.schema.tsx",
@@ -201,6 +202,6 @@
         "hasMobileMode": true
       }
     ],
-    "mobileTestsCount": 2
+    "mobileTestsCount": 3
   }
 }
