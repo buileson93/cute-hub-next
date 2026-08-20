@@ -98,10 +98,11 @@ export const TYPO_STATUS = {
     kyHieu: "✔",
   },
   // Health A/B/C/D mapping
-  A: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "status.success", label: "A", kyHieu: "A" },
-  B: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.info", label: "B", kyHieu: "B" },
-  C: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "status.warning", label: "C", kyHieu: "C" },
-  D: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "D", kyHieu: "D" },
+  A: { color: "astryx-status-attention", class: "astryx-status-attention", hex: "#10b981", icon: "status.success", label: "A", kyHieu: "A" },
+  B: { color: "astryx-status-info", class: "astryx-status-info", hex: "#3b82f6", icon: "status.info", label: "B", kyHieu: "B" },
+  C: { color: "astryx-status-warning", class: "astryx-status-warning", hex: "#f59e0b", icon: "status.warning", label: "C", kyHieu: "C" },
+  D: { color: "astryx-status-danger", class: "astryx-status-danger", hex: "#ef4444", icon: "status.danger", label: "D", kyHieu: "D" },
+
 
 } as const;
 
