@@ -1,21 +1,25 @@
 {
-  "date": "2026-08-20T12:32:30.773Z",
-  "commitHash": "cad87ac3b1de11f108b40aae2a28213497c5361c",
+  "date": "2026-08-20T12:39:53.069Z",
+  "commitHash": "9f5fd8dacc746b6fb57a1b126311bdc904b6976d",
   "summary": {
-    "textPxTotal": 951,
+    "textPxTotal": 962,
     "textPxByValue": {
       "11px": 405,
       "9px": 49,
       "10px": 415,
-      "12px": 44,
+      "12px": 45,
       "15px": 3,
-      "13px": 22,
-      "14px": 5,
+      "13px": 23,
+      "14px": 6,
       "8px": 3,
       "4px": 1,
       "3px": 1,
-      "18px": 1,
-      "22px": 1,
+      "20px": 1,
+      "24px": 1,
+      "28px": 1,
+      "16px": 2,
+      "18px": 3,
+      "22px": 2,
       "26px": 1
     },
     "textPresets": {
