@@ -487,6 +487,41 @@ function SuCoPage() {
         </DialogFooter>
       </ResponsiveDialog>
     </>
+      <MobileListControlsSheet
+        open={mobileSheetOpen}
+        onOpenChange={setMobileSheetOpen}
+        state={controls}
+        setQ={setQ}
+        setFilter={setFilter}
+        setSort={setSort}
+        reset={reset}
+        filters={[
+          {
+            key: "tt",
+            label: "Trạng thái",
+            type: "select",
+            options: [
+              { value: "Đang xử lý", label: "Đang xử lý" },
+              { value: "Đã khắc phục", label: "Đã khắc phục" },
+              { value: "Đóng", label: "Đóng" },
+            ],
+          },
+          {
+            key: "period",
+            label: "Thời gian",
+            type: "select",
+            options: [
+              { value: "week", label: "Tuần này" },
+              { value: "month", label: "Tháng này" },
+            ],
+          },
+        ]}
+        sortOptions={[
+          { key: "ma_su_co", label: "Mã sự cố" },
+          { key: "ngay_phat_hien", label: "Thời điểm" },
+        ]}
+      />
+    </>
   );
 }
 
