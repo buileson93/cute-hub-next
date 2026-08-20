@@ -9,6 +9,8 @@ export interface StatusToken {
   color: string;
   /** @deprecated Dùng color. Giữ lại để tương thích ngược. */
   class: string;
+  /** @deprecated Giữ lại cho tương thích ngược ở trang tuổi thọ. */
+  hex?: string;
   /** Tên Lucide icon (ví dụ: status.success, status.warning) */
   icon: string;
   /** Nhãn hiển thị tiếng Việt */
@@ -16,6 +18,7 @@ export interface StatusToken {
   /** Ký hiệu bổ trợ cho in đen trắng hoặc màn hình nhỏ */
   kyHieu: string;
 }
+
 
 
 let warningCount = 0;
