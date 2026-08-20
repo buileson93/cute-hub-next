@@ -536,24 +536,35 @@ function ModelCatalogPage() {
             </div>
           )}
           columns={[
-            { key: "anh", label: "Ảnh", minW: "min-w-[56px]", cell: (m) => <ModelThumb m={m} /> },
+            { key: "anh", label: "Ảnh", minW: "min-w-[56px]", priority: "detail" as const, cell: (m) => <ModelThumb m={m} /> },
             { key: "ten", label: "Tên mẫu", minW: "min-w-[200px]", filter: "text", value: (m) => m.ten,
-              cell: (m) => <span className="font-medium">{m.ten}</span> },
+              priority: "primary" as const,
+              cell: (m) => (
+                <div className="group/item flex flex-col gap-0.5 cursor-pointer" onClick={() => setInfoModel(m)}>
+                  <span className="font-bold leading-tight group-hover/item:text-primary">{m.ten}</span>
+                  {m.p_n && <code className="text-[10.5px] text-muted-foreground/70">{m.p_n}</code>}
+                </div>
+              ) },
             { key: "p_n", label: "P/N", minW: "min-w-[130px]", filter: "text", value: (m) => m.p_n ?? "",
+              priority: "detail" as const,
               cell: (m) => <span className="font-mono text-xs text-muted-foreground">{m.p_n || "—"}</span> },
             { key: "nhaSanXuat", label: "Nhà sản xuất", minW: "min-w-[160px]", filter: "cat", value: (m) => m.nhaSanXuat,
+              priority: "secondary" as const,
               cell: (m) => m.nhaSanXuat
                 ? <NsxLink name={m.nhaSanXuat} className="text-sm" />
                 : <span className="text-muted-foreground">—</span> },
             { key: "loaiThietBi", label: "Chủng loại", minW: "min-w-[150px]", filter: "cat", value: (m) => m.loaiThietBi,
+              priority: "secondary" as const,
               cell: (m) => m.loaiThietBi
                 ? <LtbLink name={m.loaiThietBi} className="text-sm" />
                 : <span className="text-muted-foreground">—</span> },
             { key: "soThietBi", label: "Số TB", align: "center", value: (m) => m.soThietBi,
+              priority: "primary" as const,
               cell: (m) => m.soThietBi > 0
                 ? <Badge variant="secondary" className="gap-1 text-[10px]"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
                 : <span className="text-muted-foreground">0</span> },
             { key: "info", label: "", align: "center" as const,
+              priority: "detail" as const,
               cell: (m: ModelRow) => (
                 <div className="flex items-center justify-center gap-0.5">
                   <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={(e) => showGoogleSearch(e, m)} title="Tạo link tìm sản phẩm trên Google" aria-label="Tìm trên Google">
@@ -574,6 +585,7 @@ function ModelCatalogPage() {
             },
             ...(canManage ? [{
               key: "actions", label: "", align: "right" as const,
+              priority: "detail" as const,
               cell: (m: ModelRow) => (
                 <div className="flex justify-end gap-1 whitespace-nowrap">
                   <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(m)} title="Sửa" aria-label="Sửa mẫu">
