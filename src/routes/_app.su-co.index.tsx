@@ -521,6 +521,9 @@ function SuCoPage() {
           { key: "ma_su_co", label: "Mã sự cố" },
           { key: "ngay_phat_hien", label: "Thời điểm" },
         ]}
+        columns={logColumns.map(c => ({ key: c.key, label: c.label }))}
+        visibleColumns={visibleKeys}
+        onVisibleColumnsChange={setVisibleKeys}
       />
     </>
   );
