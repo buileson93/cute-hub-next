@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-08-20T15:18:28.395Z",
-  "commit": "60bf6613a731a36e8ed8dacc6ab8066a9cf05e5c",
+  "timestamp": "2026-08-20T15:19:23.955Z",
+  "commit": "2afbc386426f430530fabd899762eddf6985ff4d",
   "metrics": {
     "responsivePrefixes": {
-      "sm": 225,
-      "md": 206,
+      "sm": 226,
+      "md": 205,
       "lg": 109,
       "xl": 25,
       "2xl": 1,
@@ -36,7 +36,7 @@
     "widthRisks": {
       "minWidthPx": 131,
       "fixedWidthLarge": 31,
-      "overflowXAuto": 31,
+      "overflowXAuto": 32,
       "topFiles": [
         {
           "file": "src/components/mirats/ThanhPhanTable.tsx",
