@@ -4,7 +4,16 @@ import { InfoHint } from "./InfoHint";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { TYPO } from "@/lib/mirats/ui/typography";
 import { Icon as SemanticIcon } from "@/components/mirats/ui/Icon";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MoreVertical } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+
 
 export interface PageHeaderProps {
   title: React.ReactNode;
@@ -40,20 +49,67 @@ export function PageHeader({
   breadcrumbs,
   className,
 }: PageHeaderProps) {
+  const isMobile = useIsMobile();
   const hasSubtitle = typeof subtitle === "string" && subtitle.trim().length > 0;
+
+  // Xử lý gom nhóm action cho Mobile
+  const renderActions = () => {
+    if (!actions) return null;
+
+    if (!isMobile) {
+      return (
+        <div
+          data-testid="page-header-actions"
+          className="flex shrink-0 items-center gap-2 self-center"
+        >
+          {actions}
+        </div>
+      );
+    }
+
+    // Trên Mobile: Chỉ hiển thị 1 action chính, còn lại cho vào menu
+    const actionArray = React.Children.toArray(actions);
+    if (actionArray.length <= 1) {
+      return <div className="flex shrink-0 items-center gap-2">{actions}</div>;
+    }
+
+    const primaryAction = actionArray[0];
+    const secondaryActions = actionArray.slice(1);
+
+    return (
+      <div className="flex shrink-0 items-center gap-1">
+        {primaryAction}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {secondaryActions.map((action, idx) => (
+              <DropdownMenuItem key={idx} asChild>
+                <div className="w-full cursor-pointer">{action}</div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  };
+
 
   return (
     <div 
       data-testid="page-header" 
       className={cn(
-        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10",
+        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20",
         UI_DENSITY.CARD_HEADER,
         className
       )}
     >
-      {/* 1. Breadcrumbs / Supporting */}
+      {/* 1. Breadcrumbs / Supporting - Ẩn trên Mobile để tiết kiệm chỗ */}
       {(breadcrumbs || supporting) && (
-        <div className={cn("flex items-center gap-1.5 text-muted-foreground mb-0.5", TYPO.LABEL)}>
+        <div className={cn("hidden md:flex items-center gap-1.5 text-muted-foreground mb-0.5", TYPO.LABEL)}>
           {breadcrumbs ? (
             <div className="flex items-center gap-1">
               {breadcrumbs.map((crumb, idx) => (
@@ -69,7 +125,7 @@ export function PageHeader({
         </div>
       )}
 
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3 md:gap-4">
         <div className="flex flex-col min-w-0 flex-1 gap-1">
           {/* 2. Title Row */}
           <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
@@ -86,7 +142,7 @@ export function PageHeader({
             <h1
               data-testid="page-header-title"
               className={cn(
-                "truncate text-foreground uppercase",
+                "truncate text-foreground uppercase flex-1 min-w-0",
                 TYPO.H1
               )}
             >
@@ -96,7 +152,7 @@ export function PageHeader({
             {hasSubtitle && (
               <span
                 data-testid="page-header-subtitle"
-                className={cn("truncate text-muted-foreground font-normal normal-case", TYPO.LABEL)}
+                className={cn("truncate text-muted-foreground font-normal normal-case hidden sm:inline-block", TYPO.LABEL)}
               >
                 {subtitle}
               </span>
@@ -117,30 +173,23 @@ export function PageHeader({
           </div>
 
           {/* 3. Description (Static view if needed outside tooltip) */}
-          {/* Usually hidden in tooltip to keep header compact, but enabled for spacious */}
           <div className={cn("hidden data-[density=spacious]:block text-muted-foreground max-w-2xl", TYPO.BODY)}>
             {typeof description === 'string' ? description : null}
           </div>
 
-          {/* 4. Metadata / Status */}
+          {/* 4. Metadata / Status / Chips (Sticky area on Mobile) */}
           {metadata && (
-            <div className="flex flex-wrap items-center gap-2 mt-0.5">
+            <div className="flex flex-wrap items-center gap-1.5 mt-0.5 overflow-x-auto pb-1 no-scrollbar">
               {metadata}
             </div>
           )}
         </div>
 
         {/* 5. Actions */}
-        {actions && (
-          <div
-            data-testid="page-header-actions"
-            className="flex shrink-0 items-center gap-2 self-center"
-          >
-            {actions}
-          </div>
-        )}
+        {renderActions()}
       </div>
     </div>
+
   );
 }
 
