@@ -244,11 +244,13 @@ function MatrixTab() {
                   const allowed = matrix.get(`${role}|${m.key}|${a}`) ?? false;
                   return (
                     <TableCell key={a} className="text-center">
-                      <Switch
-                        checked={allowed}
-                        disabled={role === "admin"}
-                        onCheckedChange={(v) => mut.mutate({ module: m.key, action: a, allowed: !!v })}
-                      />
+                      <div className="flex justify-center">
+                        <Switch
+                          checked={allowed}
+                          disabled={role === "admin"}
+                          onCheckedChange={(v) => mut.mutate({ module: m.key, action: a, allowed: !!v })}
+                        />
+                      </div>
                     </TableCell>
                   );
                 })}
