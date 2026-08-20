@@ -17,7 +17,8 @@
     "verify:grants": "node scripts/verify-grants.mjs",
     "postmigrate": "node scripts/apply-grants.mjs && node scripts/verify-grants.mjs",
     "test:gpkt": "tsx scripts/test-gpkt-parser.ts",
-    "ui:audit": "node scripts/ui-audit.mjs"
+    "ui:audit": "node scripts/ui-audit.mjs",
+    "code:audit": "node scripts/code-audit.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.5",

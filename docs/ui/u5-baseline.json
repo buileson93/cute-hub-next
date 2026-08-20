@@ -1,0 +1,274 @@
+{
+  "timestamp": "2026-08-20T14:18:23.962Z",
+  "commit": "484537c9e2ac94f46fb0a6e6698d116e99979ee1",
+  "overview": {
+    "totalLines": 314474,
+    "totalRoutes": 132,
+    "totalComponentsTsx": 419,
+    "totalLibMiratsFiles": 350
+  },
+  "top30LargeFiles": [
+    {
+      "file": "src/data/bao_tri_hang_muc.json",
+      "lines": 38513
+    },
+    {
+      "file": "src/data/thiet_bi.json",
+      "lines": 35666
+    },
+    {
+      "file": "src/data/su_kien_thiet_bi.json",
+      "lines": 32932
+    },
+    {
+      "file": "src/data/bao_tri.json",
+      "lines": 26747
+    },
+    {
+      "file": "src/data/xuat_nhap_kho.json",
+      "lines": 5535
+    },
+    {
+      "file": "src/data/ban_giao.json",
+      "lines": 5432
+    },
+    {
+      "file": "src/data/su_co.json",
+      "lines": 3903
+    },
+    {
+      "file": "src/assets/vatm-emblem.png",
+      "lines": 3434
+    },
+    {
+      "file": "src/data/hong_hoc_thay_the.json",
+      "lines": 3049
+    },
+    {
+      "file": "src/components/mirats/NetworkOverview.tsx",
+      "lines": 2340
+    },
+    {
+      "file": "src/routes/_app.he-thong.$id.tsx",
+      "lines": 1890
+    },
+    {
+      "file": "src/components/mirats/StandardTable.tsx",
+      "lines": 1786
+    },
+    {
+      "file": "src/routes/_app.so-do.$id.tsx",
+      "lines": 1690
+    },
+    {
+      "file": "src/routes/_app.danh-muc.model.tsx",
+      "lines": 1569
+    },
+    {
+      "file": "src/components/mirats/CatalogTable.tsx",
+      "lines": 1438
+    },
+    {
+      "file": "src/components/mirats/ThanhPhanTable.tsx",
+      "lines": 1408
+    },
+    {
+      "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
+      "lines": 1203
+    },
+    {
+      "file": "src/lib/mirats/he-thong-thanh-phan.ts",
+      "lines": 1165
+    },
+    {
+      "file": "src/routes/_app.admin.nhap-lieu.tsx",
+      "lines": 1088
+    },
+    {
+      "file": "src/lib/mirats/allinone-template.ts",
+      "lines": 1067
+    },
+    {
+      "file": "src/routes/_app.du-an.$id.tsx",
+      "lines": 1008
+    },
+    {
+      "file": "src/routes/admin.schema.tsx",
+      "lines": 992
+    },
+    {
+      "file": "src/routes/admin.audit.tsx",
+      "lines": 940
+    },
+    {
+      "file": "src/components/mirats/CatalogTools.tsx",
+      "lines": 925
+    },
+    {
+      "file": "src/routes/_app.bao-tri.dot.$id.tsx",
+      "lines": 877
+    },
+    {
+      "file": "src/components/mirats/ThanhPhanChiTietDialog.tsx",
+      "lines": 865
+    },
+    {
+      "file": "src/lib/supabase-ngoai.functions.ts",
+      "lines": 809
+    },
+    {
+      "file": "src/components/mirats/he-thong-cay/CayMindMap.tsx",
+      "lines": 774
+    },
+    {
+      "file": "src/routes/_app.admin.forms.$id.tsx",
+      "lines": 772
+    },
+    {
+      "file": "src/components/mirats/GraphCanvas.tsx",
+      "lines": 750
+    }
+  ],
+  "unusedExports": "Requires knip analysis",
+  "circularDependencies": "Requires madge analysis",
+  "duplicateComponents": [
+    {
+      "name": "index.tsx",
+      "paths": [
+        "src/components/mirats/app-shell/index.tsx",
+        "src/components/mirats/thiet-bi-detail/index.tsx"
+      ]
+    },
+    {
+      "name": "TreeView.tsx",
+      "paths": [
+        "src/components/mirats/he-thong-cay/TreeView.tsx",
+        "src/components/mirats/so-ly-lich/TreeView.tsx"
+      ]
+    }
+  ],
+  "fileThresholds": {
+    "over800": 27,
+    "over1200": 17
+  },
+  "directoryStats": {
+    "components": {
+      "astryx": {
+        "avg": 83,
+        "max": 83,
+        "count": 1
+      },
+      "astryx-pilot": {
+        "avg": 41,
+        "max": 50,
+        "count": 2
+      },
+      "mirats": {
+        "avg": 206,
+        "max": 2340,
+        "count": 254
+      },
+      "ui": {
+        "avg": 99,
+        "max": 745,
+        "count": 47
+      }
+    },
+    "libMirats": {
+      "__tests__": {
+        "avg": 101,
+        "max": 231,
+        "count": 106
+      },
+      "auth": {
+        "avg": 88,
+        "max": 230,
+        "count": 5
+      },
+      "bao-cao": {
+        "avg": 129,
+        "max": 222,
+        "count": 4
+      },
+      "custom-fields": {
+        "avg": 85,
+        "max": 121,
+        "count": 2
+      },
+      "dashboard": {
+        "avg": 77,
+        "max": 77,
+        "count": 1
+      },
+      "db": {
+        "avg": 93,
+        "max": 120,
+        "count": 2
+      },
+      "display": {
+        "avg": 194,
+        "max": 321,
+        "count": 2
+      },
+      "document-ocr": {
+        "avg": 74,
+        "max": 220,
+        "count": 33
+      },
+      "nav": {
+        "avg": 96,
+        "max": 96,
+        "count": 1
+      },
+      "quan-tri": {
+        "avg": 171,
+        "max": 171,
+        "count": 1
+      },
+      "search": {
+        "avg": 91,
+        "max": 161,
+        "count": 7
+      },
+      "ui": {
+        "avg": 84,
+        "max": 229,
+        "count": 24
+      }
+    }
+  },
+  "unusedDependencies": [
+    "@astryxdesign/theme-stone",
+    "@fontsource-variable/geist",
+    "@fontsource-variable/space-grotesk",
+    "@fontsource/ibm-plex-mono",
+    "@google/model-viewer",
+    "@lovable.dev/cloud-auth-js",
+    "@lovable.dev/webhooks-js",
+    "@noble/hashes",
+    "@photo-sphere-viewer/core",
+    "@react-email/components",
+    "@stylexjs/stylex",
+    "@tailwindcss/vite",
+    "@tanstack/router-plugin",
+    "@types/papaparse",
+    "@zxing/browser",
+    "@zxing/library",
+    "aws4fetch",
+    "docx",
+    "frappe-gantt",
+    "html-to-image",
+    "html2canvas",
+    "jspdf",
+    "jspdf-autotable",
+    "leaflet",
+    "motion",
+    "papaparse",
+    "react-force-graph-2d",
+    "tailwindcss",
+    "tesseract.js",
+    "tw-animate-css",
+    "vite-tsconfig-paths"
+  ],
+  "routeArchitectureViolationsCount": 62
+}
