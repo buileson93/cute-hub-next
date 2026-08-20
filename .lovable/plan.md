@@ -1,20 +1,22 @@
 ---
-name: Visual Text Edits - Admin Forms Table Header
-description: Update "Trạng thái" header to "lên kế hoạch khắc phục switch này nhìn bị lệch" in the admin forms management table.
+name: Fix Switch Component Styling and Alignment
+description: Correct the visual alignment and color of the Switch component in the Admin Forms table to match the MIRATS green brand standard and fix layout shifts.
 type: design
 ---
 
 ## Proposed Changes
 
-### UI Text Update
-- In `src/routes/_app.admin.forms.index.tsx`, change the table header text for the "Status" column.
-- **Old text**: "Trạng thái"
-- **New text**: "lên kế hoạch khắc phục switch này nhìn bị lệch"
+### UI/UX Refinement
+- Fix the **Switch** component in `src/routes/_app.admin.forms.index.tsx` within the table cells.
+- **Color**: Ensure the active state uses the project's standard green color (typically `#22c55e` or equivalent semantic token) instead of the current grey/primary.
+- **Alignment**: Fix the vertical/horizontal alignment issue where the switch looks "off-center" or "shifted" (lệch) within the table row.
+- **Standardization**: Apply consistent padding and centering to the status column to prevent visual drift.
 
 ### Rationale
-- Direct request from the user to apply a visual text edit on the specified element.
+- The user pointed out that the Switch component in the "Trạng thái" column is visually misaligned and lacks the proper green color when active.
 
 ## Technical Details
 - File: `src/routes/_app.admin.forms.index.tsx`
-- Component: `AdminFormsPage`
-- Targeted element: `<TableHead>` at line 187.
+- Targeted element: `<Switch>` inside the table body (line 202).
+- Styling: Add centering classes (`flex justify-center` or `text-center`) to the `<TableCell>` containing the switch.
+- Theme: Verify `index.css` or component props for green active state.
