@@ -183,13 +183,14 @@
   }
 
   .astryx-switch {
-    width: 2.25rem;
+    width: 2.5rem;
     height: 1.25rem;
     border-radius: 9999px;
     background-color: var(--color-muted);
     transition: background-color var(--duration-fast) var(--ease-standard);
     cursor: pointer;
     position: relative;
+    padding: 0;
   }
 
   .astryx-switch[data-state="checked"] {
@@ -202,13 +203,15 @@
     border-radius: 9999px;
     background-color: white;
     position: absolute;
-    top: 0.125rem;
+    top: 50%;
+    transform: translateY(-50%);
     left: 0.125rem;
-    transition: transform var(--duration-fast) var(--ease-standard);
+    transition: all var(--duration-fast) var(--ease-standard);
   }
 
   .astryx-switch[data-state="checked"] .astryx-switch-thumb {
-    transform: translateX(1rem);
+    left: calc(100% - 1.125rem);
+    transform: translateY(-50%);
   }
 
   /* Overlays & Elevated Surfaces */
