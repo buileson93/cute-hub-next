@@ -1,6 +1,7 @@
 import { Inbox } from "lucide-react";
 import { useId } from "react";
 import { cn } from "@/lib/utils";
+import { TYPO } from "@/lib/mirats/ui/typography";
 
 // Task 25 — Trạng thái rỗng dùng chung.
 interface Props {
