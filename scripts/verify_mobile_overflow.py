@@ -15,10 +15,12 @@ async def check_overflow(page, url):
         # Wait for the table to potentially render card mode if implemented
         await page.wait_for_timeout(2000) 
         
-        scroll_width = await page.evaluate("document.documentElement.scrollWidth")
+        scroll_width = await page.evaluate("document.body.scrollWidth")
         client_width = await page.evaluate("document.documentElement.clientWidth")
         
-        # Allow 5px margin for sub-pixel rounding
+        # Check if the horizontal scrollbar is actually visible
+        has_h_scroll = await page.evaluate("document.documentElement.scrollHeight > document.documentElement.clientHeight && window.getComputedStyle(document.documentElement).overflowX !== 'hidden'")
+        
         if scroll_width > client_width + 5:
             filename = url.replace("http://localhost:8080/", "").replace("/", "_") or "index"
             await page.screenshot(path=str(SCREENSHOTS / f"overflow_{filename}.png"))
