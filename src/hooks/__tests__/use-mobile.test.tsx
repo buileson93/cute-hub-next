@@ -4,6 +4,23 @@ import { renderHook } from "@testing-library/react";
 import { useIsMobile, useBreakpoint } from "../use-mobile";
 import { MOBILE_BREAKPOINT_PX, TABLET_BREAKPOINT_PX } from "@/lib/mirats/ui/responsive-scope";
 
+// Manual mock for matchMedia since setup.ts might not be loaded properly in this environment
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
+
 describe("use-mobile hooks", () => {
   const setWidth = (width: number) => {
     Object.defineProperty(window, "innerWidth", {
