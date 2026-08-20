@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { X, MoreHorizontal } from "lucide-react";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
