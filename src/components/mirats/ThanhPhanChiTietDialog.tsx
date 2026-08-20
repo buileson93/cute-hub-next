@@ -804,7 +804,7 @@ function SoLyLichThanhPhanSection({
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 @md:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="all">Tất cả</TabsTrigger>
           <TabsTrigger value="lap-thao">Tháo–lắp</TabsTrigger>
           <TabsTrigger value="su-co">Sự cố</TabsTrigger>
