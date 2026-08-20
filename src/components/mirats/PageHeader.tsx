@@ -96,7 +96,7 @@ export function PageHeader({
             {hasSubtitle && (
               <span
                 data-testid="page-header-subtitle"
-                className="truncate text-xs text-muted-foreground font-normal normal-case"
+                className={cn("truncate text-muted-foreground font-normal normal-case", TYPO.LABEL)}
               >
                 {subtitle}
               </span>
