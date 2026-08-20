@@ -692,7 +692,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
         )}
         <div className="absolute left-1.5 top-1.5 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <Button
-            size="icon" variant="secondary" aria-label="Tìm trên Google"
+            size="icon" variant="secondary"
             className="h-7 w-7"
             onClick={(e) => onGoogleSearch(e, m)}
             title="Tạo link tìm sản phẩm trên Google"
@@ -703,7 +703,7 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
           <HoverCard openDelay={120} closeDelay={60}>
             <HoverCardTrigger asChild>
               <Button
-                size="icon" variant="secondary" aria-label="Thông tin mẫu"
+                size="icon" variant="secondary"
                 className="h-7 w-7"
                 onClick={onInfo} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
                 <Info className="h-3.5 w-3.5" />
