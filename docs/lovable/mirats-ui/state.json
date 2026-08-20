@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "phase": "PLAN-0",
+  "last_updated": "2026-08-20T08:25:46Z",
+  "artifacts": {
+    "audit": "00-audit.md",
+    "plan": "00-plan.md",
+    "inventory": "00-inventory.json",
+    "ssr_baseline": "00-ssr-baseline.json",
+    "css_cascade": "00-css-cascade.md",
+    "route_matrix": "00-route-matrix.md"
+  }
+}
