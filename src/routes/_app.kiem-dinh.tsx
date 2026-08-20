@@ -14,7 +14,8 @@ import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable
 import { ListToolbar, type FilterDef } from "@/components/mirats/ListToolbar";
 import { useListControls } from "@/lib/mirats/ui/use-list-controls";
 import { locVaSapXep } from "@/lib/mirats/ui/list-controls";
-import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 import { fmtNgay } from "@/lib/mirats/format";
 import { useKdHcList, type KdHcRow } from "@/lib/mirats/db-chung-chi";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
@@ -194,7 +195,7 @@ function KiemDinhPage() {
       value: (r) => (r.soNgay ?? ""),
       cell: (r) =>
         r.cc?.ngay_het_han ? (
-          <ExpiringBadge soNgay={r.soNgay} />
+          <StatusBadge domain="expiry" code={getExpiryCode(r.soNgay)} label={getExpiryLabel(r.soNgay)} />
         ) : (
           <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200">
             —

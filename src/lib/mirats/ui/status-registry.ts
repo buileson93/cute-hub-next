@@ -4,7 +4,8 @@ import {
   LOAI_BAO_TRI_TOKEN, 
   PHUONG_AN_HONG_HOC_TOKEN, 
   LOAI_BAN_GIAO_TOKEN,
-  XEP_LOAI_HEALTH_TOKEN
+  XEP_LOAI_HEALTH_TOKEN,
+  TYPO_STATUS
 } from "./status-tokens";
 
 export const STATUS_REGISTRY = {
@@ -16,6 +17,9 @@ export const STATUS_REGISTRY = {
   van_de: MUC_DO_SU_CO_TOKEN,
   cong_viec: LOAI_BAO_TRI_TOKEN,
   health: XEP_LOAI_HEALTH_TOKEN,
+  ocr: TYPO_STATUS,
+  connectivity: TYPO_STATUS,
+  expiry: TYPO_STATUS,
 } as const;
 
 export type DomainKey = keyof typeof STATUS_REGISTRY;

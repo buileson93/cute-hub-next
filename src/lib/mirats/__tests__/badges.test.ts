@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { phaseColor } from "@/components/mirats/StatusBadge";
-import { expiringColor } from "@/components/mirats/ExpiringBadge";
+import { getStatusToken } from "@/lib/mirats/ui/status-tokens";
 
 describe("StatusBadge — phase → màu", () => {
   it("map đủ 4 phase, giá trị khác nhau", () => {
@@ -19,16 +19,11 @@ describe("StatusBadge — phase → màu", () => {
   });
 });
 
-describe("ExpiringBadge — số ngày → màu", () => {
-  it("30 đỏ · 60 cam · 90 vàng · khác xám · quá hạn đỏ đậm", () => {
-    expect(expiringColor(10)).toContain("error");
-    expect(expiringColor(30)).toContain("error");
-    expect(expiringColor(45)).toContain("warning");
-    expect(expiringColor(60)).toContain("warning");
-    expect(expiringColor(75)).toContain("warning");
-    expect(expiringColor(90)).toContain("warning");
-    expect(expiringColor(120)).toContain("muted");
-    expect(expiringColor(null)).toContain("muted");
-    expect(expiringColor(-3)).toContain("destructive");
+describe("StatusBadge Expiry Domain — token → màu", () => {
+  it("overdue/urgent đỏ · warning cam · normal xám", () => {
+    expect(getStatusToken("expiry", "overdue").color).toContain("danger");
+    expect(getStatusToken("expiry", "urgent").color).toContain("danger");
+    expect(getStatusToken("expiry", "warning").color).toContain("warning");
+    expect(getStatusToken("expiry", "normal").color).toContain("normal");
   });
 });

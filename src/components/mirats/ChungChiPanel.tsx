@@ -18,7 +18,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 import { fmtNgay } from "@/lib/mirats/format";
 import {
   validateChungChi, trangThaiHetHan,
@@ -112,7 +113,13 @@ export function ChungChiPanel({ thietBiId, cheDo, roles, compact }: Props) {
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    {c.ngay_het_han && <ExpiringBadge soNgay={tt.soNgay} />}
+                    {c.ngay_het_han && (
+                      <StatusBadge 
+                        domain="expiry" 
+                        code={getExpiryCode(tt.soNgay)} 
+                        label={getExpiryLabel(tt.soNgay)} 
+                      />
+                    )}
                     {writable && !compact && (
                       <>
                         <Button size="icon" variant="ghost" onClick={() => openEdit(c)} aria-label="Sửa">

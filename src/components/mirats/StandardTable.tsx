@@ -45,7 +45,7 @@ import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import { MauChip } from "@/components/mirats/MauChip";
 import { UserAvatar } from "@/components/mirats/UserAvatar";
-import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
+import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { fmtNgay, fmtVND, fmtSo, KHONG_CO } from "@/lib/mirats/format";
 import { Check, X as XIcon } from "lucide-react";
@@ -783,7 +783,7 @@ export function StandardTableInner<T>({
         );
 
       case "expiring":
-        return <ExpiringBadge soNgay={Number(val)} compact={isCompact} />;
+        return <StatusBadge domain="expiry" code={getExpiryCode(Number(val))} label={getExpiryLabel(Number(val), true)} />;
 
       case "boolean":
         return (

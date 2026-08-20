@@ -24,11 +24,13 @@ interface Props {
   code: string | null | undefined;
   className?: string;
   label?: string;
+  /** Chỉ hiển thị chấm màu, không có nhãn. */
+  dotOnly?: boolean;
 }
 
-export function StatusBadge({ domain, code, className, label }: Props) {
+export function StatusBadge({ domain, code, className, label, dotOnly }: Props) {
   // Ưu tiên dùng getStatusToken trực tiếp cho domain thiet_bi để dùng hệ thống token mới
-  const token = domain === 'thiet_bi' 
+  const token = (['thiet_bi', 'ocr', 'connectivity', 'expiry'].includes(domain))
     ? getStatusToken(domain, code ?? "") 
     : getToken(domain, code ?? "");
     
@@ -44,6 +46,25 @@ export function StatusBadge({ domain, code, className, label }: Props) {
 
   // Ưu tiên color (semantic) hoặc class (legacy), fallback sang màu theo phase.
   const colorClass = token?.color || token?.class || phaseColor(phase);
+
+  if (dotOnly) {
+    return (
+      <div className={cn("flex items-center gap-2", className)} title={label ?? token?.label ?? code ?? ""}>
+        <div 
+          className={cn(
+            "h-2 w-2 rounded-full shrink-0 transition-all",
+            colorClass
+          )} 
+          aria-hidden="true"
+        />
+        {label && (
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            {label}
+          </span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Badge 

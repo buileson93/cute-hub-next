@@ -1,11 +1,12 @@
 import { Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { TYPO } from "@/lib/mirats/ui/typography";
 
 /**
  * Nhãn "mã định danh" dùng chung — hiển thị mã tài sản / mã thành phần một cách
- * DỄ NHẬN BIẾT (monospace, có viền + nền + icon #) thay vì chữ mờ chìm.
- * Mã là định danh vật lý ổn định của tài sản nên cần nổi bật, không lẫn với tên.
+ * DỄ NHẬN BIẾT.
+ * Hợp nhất (Task 63): Chuẩn hóa typo và màu sắc.
  */
 export function CodeBadge({
   code,
@@ -22,11 +23,11 @@ export function CodeBadge({
   if (!c) return null;
   return (
     <Badge
-      variant="info"
-      size="sm"
+      variant="outline"
       title={title ?? `Mã: ${c}`}
       className={cn(
-        "font-mono text-[10px] gap-0.5 border-primary/20 bg-primary/5",
+        TYPO.MONO,
+        "text-[10px] gap-0.5 border-border bg-muted/30 font-medium",
         className,
       )}
     >

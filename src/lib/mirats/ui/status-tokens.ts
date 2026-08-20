@@ -1,8 +1,8 @@
 /**
  * @file status-tokens.ts
  * @description Nguồn sự thật duy nhất cho các token trạng thái trong MIRATS.
- * Sử dụng biến semantic từ astryx-component-skins.css.
  */
+import { nguongCho } from "@/lib/mirats/han-canh-bao";
 
 export interface StatusToken {
   /** Class CSS semantic (ví dụ: astryx-status-attention) */
@@ -17,9 +17,9 @@ export interface StatusToken {
   label: string;
   /** Ký hiệu bổ trợ cho in đen trắng hoặc màn hình nhỏ */
   kyHieu: string;
+  /** @deprecated Dùng dotOnly variant trong StatusBadge */
+  dot?: string;
 }
-
-
 
 let warningCount = 0;
 
@@ -103,7 +103,27 @@ export const TYPO_STATUS = {
   C: { color: "astryx-status-warning", class: "astryx-status-warning", hex: "#f59e0b", icon: "status.warning", label: "C", kyHieu: "C" },
   D: { color: "astryx-status-danger", class: "astryx-status-danger", hex: "#ef4444", icon: "status.danger", label: "D", kyHieu: "D" },
 
+  // --- OCR STATUS (Task 63) ---
+  completed: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "status.success", label: "Hoàn tất", kyHieu: "✔" },
+  ocr_ready: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "entity.history", label: "OCR Sẵn có", kyHieu: "🗄" },
+  partial: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "action.pause", label: "Một phần", kyHieu: "⏸" },
+  failed: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Thất bại", kyHieu: "✖" },
+  ocr_running: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.loading", label: "Đang xử lý", kyHieu: "⏳" },
+  extracting: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.loading", label: "Đang giải nén", kyHieu: "⏳" },
+  queued: { color: "astryx-status-normal", class: "astryx-status-normal", icon: "status.info", label: "Chờ xử lý", kyHieu: "○" },
+  cancelled: { color: "astryx-status-normal", class: "astryx-status-normal", icon: "action.pause", label: "Đã hủy", kyHieu: "⊘" },
 
+  // --- CONNECTIVITY / OFFLINE (Task 63) ---
+  offline: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "status.warning", label: "Offline", kyHieu: "📵" },
+  syncing: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.loading", label: "Đang đồng bộ", kyHieu: "🔄" },
+  conflict: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Cần xử lý", kyHieu: "⚠" },
+  online: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "status.success", label: "Online", kyHieu: "📶" },
+
+  // --- EXPIRY (Task 63) ---
+  overdue: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Quá hạn", kyHieu: "‼" },
+  urgent: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Khẩn cấp", kyHieu: "‼" },
+  warning: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "status.warning", label: "Sắp hết hạn", kyHieu: "⚠" },
+  normal: { color: "astryx-status-normal", class: "astryx-status-normal", icon: "status.info", label: "Bình thường", kyHieu: "○" },
 } as const;
 
 /**
@@ -156,7 +176,6 @@ export function getStatusToken(domain: string, key: string | null): StatusToken 
   // Log cảnh báo để test capture được và dev biết
   console.warn(`[MIRATS UI] Mã trạng thái lạ gặp phải: "${rawKey}" tại domain "${domain}"`);
 
-  
   return {
     ...FALLBACK_TOKEN,
     label: rawKey,
@@ -170,7 +189,6 @@ const FALLBACK_TOKEN: StatusToken = {
   label: "Không xác định",
   kyHieu: "•",
 };
-
 
 export const MUC_DO_SU_CO_TOKEN = TYPO_STATUS;
 export const LOAI_BAO_TRI_TOKEN = TYPO_STATUS;
@@ -187,3 +205,24 @@ export function getLoaiBaoTriToken(key: string | null) { return getStatusToken('
 export function getPhuongAnHongHocToken(key: string | null) { return getStatusToken('hong_hoc', key); }
 export function getLoaiBanGiaoToken(key: string | null) { return getStatusToken('ban_giao', key); }
 export function getXepLoaiHealthToken(key: string | null) { return getStatusToken('health', key); }
+
+/**
+ * Tính mã trạng thái từ số ngày còn lại (Task 63).
+ */
+export function getExpiryCode(soNgay: number | null | undefined): string {
+  if (soNgay == null || !Number.isFinite(soNgay)) return "normal";
+  if (soNgay < 0) return "overdue";
+  const n = nguongCho(soNgay);
+  if (n === 30) return "urgent";
+  if (n === 60 || n === 90) return "warning";
+  return "normal";
+}
+
+/**
+ * Tính nhãn từ số ngày còn lại (Task 63).
+ */
+export function getExpiryLabel(soNgay: number | null | undefined, compact = false): string {
+  if (soNgay == null || !Number.isFinite(soNgay)) return "—";
+  if (soNgay < 0) return compact ? `${Math.abs(soNgay)}` : `quá hạn ${Math.abs(soNgay)} ngày`;
+  return compact ? `${soNgay}` : `còn ${soNgay} ngày`;
+}
