@@ -24,8 +24,8 @@ export function PageBody({ children, className, noPadding, density }: Props) {
       data-density={density}
       className={cn(
         "flex w-full flex-col flex-1 overflow-auto bg-background/50",
-        !noPadding && UI_DENSITY.PAGE_PADDING,
-        UI_DENSITY.SECTION_GAP,
+        !noPadding && "p-4 md:p-6",
+        "gap-4 md:gap-6",
         className
       )}
     >

@@ -14,7 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { SavingIndicator } from "@/components/mirats/SavingIndicator";
 import { OfflineBanner } from "@/components/mirats/OfflineBanner";
-import { AstryxProvider } from "@/components/astryx-pilot/AstryxProvider";
+
 
 function NotFoundComponent() {
   return (
@@ -206,10 +206,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AstryxProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </AstryxProvider>
+      <Outlet />
       <Toaster />
       <SavingIndicator />
       <OfflineBanner />
