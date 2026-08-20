@@ -396,7 +396,7 @@ function KanbanView({
                 </Badge>
               </div>
               {canAdd && (
-                <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400" onClick={() => onAddIn(mocs[0]?.id)}>
+                <Button variant="ghost" size="icon" aria-label="Thêm task mới" className="h-6 w-6 text-slate-400" onClick={() => onAddIn(mocs[0]?.id)}>
                   <Plus className="h-3.5 w-3.5" />
                 </Button>
               )}

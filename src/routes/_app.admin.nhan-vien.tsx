@@ -158,6 +158,7 @@ function NhanVienAdminPage() {
           <Button 
             variant="ghost" 
             size="icon" 
+            aria-label="Xuất báo cáo cá nhân"
             title="Xuất báo cáo phần mềm"
             onClick={() => {
               // Logic xuất báo cáo cá nhân sẽ được thêm vào đây
@@ -169,15 +170,16 @@ function NhanVienAdminPage() {
           <Button 
             variant="ghost" 
             size="icon" 
+            aria-label="Xem phần mềm nhân viên"
             title="Xem phần mềm"
             onClick={() => setSoftwareSheet({ id: row.id, ten: row.ho_ten })}
           >
             <ShieldCheck className="h-4 w-4 text-primary" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setEditing(row)}>
+          <Button variant="ghost" size="icon" aria-label="Chỉnh sửa thông tin nhân viên" onClick={() => setEditing(row)}>
             <Pencil className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-destructive" onClick={() => {
+          <Button variant="ghost" size="icon" aria-label="Xoá nhân viên" className="text-destructive" onClick={() => {
             if (confirm(`Xoá nhân viên ${row.ho_ten}?`)) deleteMut.mutate(row.id);
           }}>
             <Trash2 className="h-4 w-4" />

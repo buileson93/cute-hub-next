@@ -663,11 +663,11 @@ function DanhMucThietBiPage() {
       key: "actions", header: "", group: "Thao tác", type: "actions" as const, width: 140, align: "right" as const,
       render: (d: DbDevice) => (
         <div className="flex items-center justify-end gap-0.5" onClick={(e) => e.stopPropagation()}>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} className="h-7 w-7" onClick={() => openDetail(d)} title="Chi tiết"><Info className="h-3.5 w-3.5" /></Button>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} className="h-7 w-7" onClick={() => openEdit(d)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} className="h-7 w-7" onClick={() => setAssignTargets([d])} title="Gán"><PackagePlus className="h-3.5 w-3.5" /></Button>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} className="h-7 w-7 text-amber-600" disabled={!d._htId} onClick={() => setRemoveTargets([d])} title="Gỡ"><PackageMinus className="h-3.5 w-3.5" /></Button>
-          {editOn && <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} className="h-7 w-7 text-destructive" onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }} title="Xoá"><Trash2 className="h-3.5 w-3.5" /></Button>}
+          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Xem chi tiết thiết bị" className="h-7 w-7" onClick={() => openDetail(d)} title="Chi tiết"><Info className="h-3.5 w-3.5" /></Button>
+          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Chỉnh sửa thiết bị" className="h-7 w-7" onClick={() => openEdit(d)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
+          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Gán thiết bị" className="h-7 w-7" onClick={() => setAssignTargets([d])} title="Gán"><PackagePlus className="h-3.5 w-3.5" /></Button>
+          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Gỡ thiết bị" className="h-7 w-7 text-amber-600" disabled={!d._htId} onClick={() => setRemoveTargets([d])} title="Gỡ"><PackageMinus className="h-3.5 w-3.5" /></Button>
+          {editOn && <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Xoá thiết bị" className="h-7 w-7 text-destructive" onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }} title="Xoá"><Trash2 className="h-3.5 w-3.5" /></Button>}
 
         </div>
       ),

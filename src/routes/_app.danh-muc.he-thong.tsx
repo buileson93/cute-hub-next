@@ -183,12 +183,12 @@ function HeThongPage() {
               key: "actions", label: "", align: "right" as const,
               cell: (r: Row) => (
                 <div className="flex items-center justify-end gap-0.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(r)} title="Sửa thông tin">
+                  <Button size="icon" variant="ghost" aria-label="Chỉnh sửa hệ thống" className="h-7 w-7" onClick={() => setEditing(r)} title="Sửa thông tin">
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   {editOn && (
                     <Button
-                      size="icon" variant="ghost"
+                      size="icon" variant="ghost" aria-label="Xoá hệ thống"
                       className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
                       onClick={() => setDelTargets([r])}
                       title={r.soTb > 0 ? `Còn ${r.soTb} tài sản — không thể xoá` : "Xoá hệ thống"}

@@ -218,6 +218,7 @@ function ApiKeysManagement() {
                               <Button
                                 variant="ghost"
                                 size="icon"
+                                aria-label="Thu hồi key"
                                 className="text-destructive hover:bg-destructive/10"
                                 onClick={() => {
                                   if (confirm("Bạn có chắc chắn muốn thu hồi key này? Mọi ứng dụng đang dùng key này sẽ bị ngắt kết nối.")) {
