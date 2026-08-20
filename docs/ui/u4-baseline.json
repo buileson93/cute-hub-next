@@ -1,0 +1,121 @@
+{
+  "date": "2026-08-20T12:32:30.773Z",
+  "commitHash": "cad87ac3b1de11f108b40aae2a28213497c5361c",
+  "summary": {
+    "textPxTotal": 951,
+    "textPxByValue": {
+      "11px": 405,
+      "9px": 49,
+      "10px": 415,
+      "12px": 44,
+      "15px": 3,
+      "13px": 22,
+      "14px": 5,
+      "8px": 3,
+      "4px": 1,
+      "3px": 1,
+      "18px": 1,
+      "22px": 1,
+      "26px": 1
+    },
+    "textPresets": {
+      "xs": 1229,
+      "sm": 812,
+      "base": 111
+    },
+    "paletteColors": 2214,
+    "hexColors": 436,
+    "buttonVariants": {
+      "outline": 354,
+      "secondary": 20,
+      "default": 6,
+      "destructive": 16,
+      "ghost": 308,
+      "link": 2
+    },
+    "iconNoLabel": 115,
+    "pageHeaderRatio": "46/132"
+  },
+  "top20Files": [
+    {
+      "file": "src/lib/astryx-theme/df3-theme.ts",
+      "count": 208
+    },
+    {
+      "file": "src/lib/mirats/ui/status-tokens.ts",
+      "count": 201
+    },
+    {
+      "file": "src/routes/_app.he-thong.$id.tsx",
+      "count": 124
+    },
+    {
+      "file": "src/routes/admin.schema.tsx",
+      "count": 111
+    },
+    {
+      "file": "src/routes/_app.du-an.$id.tsx",
+      "count": 99
+    },
+    {
+      "file": "src/lib/mirats/mau-sac.ts",
+      "count": 72
+    },
+    {
+      "file": "src/routes/admin.audit.tsx",
+      "count": 58
+    },
+    {
+      "file": "src/components/mirats/ChecklistRenderer.tsx",
+      "count": 47
+    },
+    {
+      "file": "src/components/mirats/StandardTable.tsx",
+      "count": 47
+    },
+    {
+      "file": "src/components/mirats/congvan/types.ts",
+      "count": 45
+    },
+    {
+      "file": "src/components/mirats/FormFieldRuntime.tsx",
+      "count": 44
+    },
+    {
+      "file": "src/components/mirats/NetworkOverview.tsx",
+      "count": 44
+    },
+    {
+      "file": "src/components/mirats/AllInOneImport.tsx",
+      "count": 43
+    },
+    {
+      "file": "src/routes/_app.phan-mem-ban-quyen.tsx",
+      "count": 42
+    },
+    {
+      "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
+      "count": 41
+    },
+    {
+      "file": "src/routes/_app.admin.forms.$id.tsx",
+      "count": 39
+    },
+    {
+      "file": "src/routes/_app.admin.ocr.tsx",
+      "count": 37
+    },
+    {
+      "file": "src/components/mirats/ThanhPhanTable.tsx",
+      "count": 36
+    },
+    {
+      "file": "src/components/mirats/he-thong-cay/types.ts",
+      "count": 36
+    },
+    {
+      "file": "src/components/mirats/he-thong-cay/utils.ts",
+      "count": 35
+    }
+  ]
+}
