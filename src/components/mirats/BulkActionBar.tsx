@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { X, MoreHorizontal } from "lucide-react";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +39,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
     const extraActions = actions.slice(2);
 
     return (
-      <div className="fixed inset-x-4 bottom-20 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className={cn("fixed inset-x-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300", UI_DENSITY.FLOATING_BOTTOM_MOBILE)}>
         <div className="bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-2xl flex items-center justify-between gap-3 border border-white/10">
           <div className="flex items-center gap-2">
             <Button 

@@ -14,9 +14,13 @@ export const UI_DENSITY = {
   SIDEBAR_W: "w-[208px] data-[density=comfortable]:w-64 data-[density=spacious]:w-72",
 
   // --- Mobile & Safe Area ---
-  MOBILE_NAV_H: "pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1", // Chiều cao padding cho MobileNav
+  MOBILE_NAV_H_RAW: "56px",
   SAFE_AREA_BOTTOM: "env(safe-area-inset-bottom)",
-  MOBILE_NAV_TOTAL_H: "calc(3.5rem + env(safe-area-inset-bottom))", // 56px + safe area
+  // Padding bottom for main content to avoid overlap with MobileNav
+  MAIN_PB_MOBILE: "pb-[calc(56px+env(safe-area-inset-bottom,0.5rem))]",
+  // Bottom position for floating actions (BulkActionBar) to sit above MobileNav
+  FLOATING_BOTTOM_MOBILE: "bottom-[calc(64px+env(safe-area-inset-bottom,0.5rem))]",
+
 
 
   // --- Container breakpoints for Responsive Tables ---
