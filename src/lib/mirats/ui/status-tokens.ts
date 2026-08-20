@@ -147,8 +147,15 @@ const FALLBACK_TOKEN: StatusToken = {
   kyHieu: "•",
 };
 
+export const MUC_DO_SU_CO_TOKEN = TYPO_STATUS;
+export const LOAI_BAO_TRI_TOKEN = TYPO_STATUS;
+export const PHUONG_AN_HONG_HOC_TOKEN = TYPO_STATUS;
+export const LOAI_BAN_GIAO_TOKEN = TYPO_STATUS;
+export const XEP_LOAI_HEALTH_TOKEN = TYPO_STATUS;
+
 // --- Khôi phục các hàm cũ để tránh lỗi import ở các file chưa migrate ---
 export const TRANG_THAI_TOKEN = TYPO_STATUS;
+
 export function getTrangThaiToken(key: string | null) { return getStatusToken('thiet_bi', key); }
 export function getMucDoSuCoToken(key: string | null) { return getStatusToken('su_co', key); }
 export function getLoaiBaoTriToken(key: string | null) { return getStatusToken('bao_tri', key); }
