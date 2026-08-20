@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-08-20T14:30:39.714Z",
+  "commit": "13100a3983e0e44904f346896530006a72931613",
+  "metrics": {
+    "responsivePrefixes": {
+      "sm": 224,
+      "md": 166,
+      "lg": 109,
+      "xl": 25,
+      "2xl": 1,
+      "filesWithNoPrefix": 267
+    },
+    "visibility": {
+      "mdHidden": 5,
+      "smHidden": 0,
+      "lgHidden": 0,
+      "hiddenWithPrefix": 4
+    },
+    "mobileLogic": {
+      "count": 10,
+      "files": [
+        "src/components/mirats/BulkActionBar.tsx",
+        "src/components/mirats/DesktopOnly.tsx",
+        "src/components/mirats/ResponsiveDialog.tsx",
+        "src/components/mirats/ViTriMediaViewer.tsx",
+        "src/components/mirats/app-shell/__tests__/T17-sidebar-collapse.test.tsx",
+        "src/components/ui/sidebar.tsx",
+        "src/hooks/use-mobile.tsx",
+        "src/routes/_app.so-do.$id.tsx",
+        "src/routes/admin.schema.tsx",
+        "src/routes/auth.tsx"
+      ]
+    },
+    "widthRisks": {
+      "minWidthPx": 131,
+      "fixedWidthLarge": 31,
+      "overflowXAuto": 30,
+      "topFiles": [
+        {
+          "file": "src/components/mirats/ThanhPhanTable.tsx",
+          "count": 54
+        },
+        {
+          "file": "src/routes/_app.admin.review.tsx",
+          "count": 9
+        },
+        {
+          "file": "src/components/mirats/CatalogTable.tsx",
+          "count": 7
+        },
+        {
+          "file": "src/components/mirats/thiet-bi-detail/Panels.tsx",
+          "count": 6
+        },
+        {
+          "file": "src/routes/_app.danh-muc.he-thong.tsx",
+          "count": 5
+        },
+        {
+          "file": "src/routes/_app.so-do.$id.tsx",
+          "count": 5
+        },
+        {
+          "file": "src/components/mirats/he-thong-cay/CayMindMap.tsx",
+          "count": 4
+        },
+        {
+          "file": "src/routes/_app.danh-muc.model.tsx",
+          "count": 4
+        },
+        {
+          "file": "src/routes/_app.du-an.$id.tsx",
+          "count": 4
+        },
+        {
+          "file": "src/routes/_app.tuoi-tho.tsx",
+          "count": 4
+        },
+        {
+          "file": "src/routes/_app.admin.luu-tru.tsx",
+          "count": 3
+        },
+        {
+          "file": "src/components/mirats/AiChatButton.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/components/mirats/ListToolbar.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/components/mirats/projects/timeline/ProjectTimeline.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/routes/_app.ban-giao.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/routes/_app.cho-duyet.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/routes/_app.he-thong.$id.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/routes/admin.schema.tsx",
+          "count": 2
+        },
+        {
+          "file": "src/routes/auth.tsx",
+          "count": 2
+        }
+      ]
+    },
+    "gridNoPrefix": 89,
+    "smallTouchTargetsRaw": 650,
+    "safeAreaAndFixed": {
+      "safeAreaInset": 1,
+      "fixedBottom": 7
+    },
+    "largeComponentsMobileMode": [
+      {
+        "file": "src/components/mirats/CatalogTable.tsx",
+        "lines": 1438,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/components/mirats/CatalogTools.tsx",
+        "lines": 925,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/components/mirats/NetworkOverview.tsx",
+        "lines": 2340,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/components/mirats/StandardTable.tsx",
+        "lines": 1786,
+        "hasMobileMode": true
+      },
+      {
+        "file": "src/components/mirats/ThanhPhanChiTietDialog.tsx",
+        "lines": 865,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/components/mirats/ThanhPhanTable.tsx",
+        "lines": 1408,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/_app.admin.nhap-lieu.tsx",
+        "lines": 1088,
+        "hasMobileMode": true
+      },
+      {
+        "file": "src/routes/_app.bao-tri.dot.$id.tsx",
+        "lines": 877,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/_app.danh-muc.model.tsx",
+        "lines": 1569,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
+        "lines": 1203,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/_app.du-an.$id.tsx",
+        "lines": 1008,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/_app.he-thong.$id.tsx",
+        "lines": 1890,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/_app.so-do.$id.tsx",
+        "lines": 1690,
+        "hasMobileMode": true
+      },
+      {
+        "file": "src/routes/admin.audit.tsx",
+        "lines": 940,
+        "hasMobileMode": false
+      },
+      {
+        "file": "src/routes/admin.schema.tsx",
+        "lines": 992,
+        "hasMobileMode": true
+      }
+    ],
+    "mobileTestsCount": 2
+  }
+}
