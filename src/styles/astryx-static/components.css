@@ -36,17 +36,23 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
     border-radius: var(--radius-element);
+    font-family: var(--font-family-sans);
     font-weight: 600;
     cursor: pointer;
     transition: all var(--duration-fast) var(--ease-standard);
     border: 1px solid transparent;
+    user-select: none;
+    white-space: nowrap;
+    position: relative;
+    outline: none;
   }
 
   /* Geometry & Density */
   [data-astryx-size="default"] {
     height: 2rem; /* 32px */
-    padding: 0 1rem;
+    padding: 0 0.875rem;
     font-size: 0.8125rem; /* 13px */
   }
 
@@ -58,8 +64,8 @@
 
   [data-astryx-size="lg"] {
     height: 2.5rem; /* 40px */
-    padding: 0 2rem;
-    font-size: 1rem;
+    padding: 0 1.5rem;
+    font-size: 0.9375rem; /* 15px */
   }
 
   [data-astryx-size="icon"] {
@@ -68,47 +74,101 @@
     padding: 0;
   }
 
-  /* Variant Skins */
-  .astryx-control-primary, [data-astryx-variant="default"] {
+  /* Variant Skins - Pinned to Astryx 0.4.5 Visuals */
+  
+  /* Primary */
+  [data-astryx-variant="default"] {
     background-color: var(--color-accent);
     color: var(--color-on-accent);
     border-color: transparent;
   }
-
-  .astryx-control-primary:hover, [data-astryx-variant="default"]:hover {
+  [data-astryx-variant="default"]:hover {
     background-color: color-mix(in oklab, var(--color-accent) 90%, black);
   }
+  [data-astryx-variant="default"]:active {
+    background-color: color-mix(in oklab, var(--color-accent) 80%, black);
+    transform: scale(0.97);
+  }
 
-  .astryx-control-secondary, [data-astryx-variant="secondary"] {
+  /* Secondary / Neutral */
+  [data-astryx-variant="secondary"] {
     background-color: var(--color-neutral);
     color: var(--color-text-primary);
     border-color: var(--color-border);
   }
+  [data-astryx-variant="secondary"]:hover {
+    background-color: color-mix(in oklab, var(--color-neutral) 95%, black);
+    border-color: color-mix(in oklab, var(--color-border) 80%, black);
+  }
 
-  .astryx-control-ghost, [data-astryx-variant="ghost"] {
+  /* Outline */
+  [data-astryx-variant="outline"] {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border-color: var(--color-border);
+  }
+  [data-astryx-variant="outline"]:hover {
+    background-color: var(--color-neutral);
+  }
+
+  /* Ghost */
+  [data-astryx-variant="ghost"] {
     background-color: transparent;
     color: var(--color-text-secondary);
     border-color: transparent;
   }
-
-  .astryx-control-ghost:hover, [data-astryx-variant="ghost"]:hover {
+  [data-astryx-variant="ghost"]:hover {
     background-color: var(--color-neutral);
     color: var(--color-text-primary);
   }
 
-  .astryx-control-outline, [data-astryx-variant="outline"] {
-    background-color: transparent;
-    color: var(--color-text-primary);
-    border-color: var(--color-border);
+  /* Destructive */
+  [data-astryx-variant="destructive"] {
+    background-color: var(--color-danger);
+    color: var(--color-on-danger);
+    border-color: transparent;
+  }
+  [data-astryx-variant="destructive"]:hover {
+    background-color: color-mix(in oklab, var(--color-danger) 90%, black);
   }
 
-  /* States */
-  .astryx-control:active, [data-astryx-control]:active {
-    transform: scale(0.98);
+  /* Global States */
+  .astryx-control:focus-visible, [data-astryx-control]:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-accent);
+  }
+
+  [data-astryx-control]:disabled, 
+  [data-astryx-control][data-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none !important;
   }
 
   [data-astryx-loading="true"] {
-    opacity: 0.7;
+    cursor: wait;
     pointer-events: none;
+  }
+
+  [data-astryx-loading="true"] > * {
+    opacity: 0;
+  }
+
+  [data-astryx-loading="true"]::after {
+    content: "";
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    top: calc(50% - 0.5rem);
+    left: calc(50% - 0.5rem);
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: astryx-spin 0.6s linear infinite;
+  }
+
+  @keyframes astryx-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 }
