@@ -284,7 +284,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="astryx-user-menu-wrapper"><UserMenu /></div>
                </div>
             </header>
-            <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 [@container] relative h-full">{children}</main>
+            <main className={cn("flex-1 min-w-0 overflow-y-auto md:pb-0 [@container] relative h-full", UI_DENSITY.MAIN_PB_MOBILE)}>{children}</main>
           </div>
           
           <MobileNav activeWsId={activeWs.id} wsLastRoute={wsLastRoute} />
