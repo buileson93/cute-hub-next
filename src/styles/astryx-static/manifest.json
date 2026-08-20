@@ -1,0 +1,16 @@
+{
+  "origin": "https://github.com/facebook/astryx",
+  "commit": "683015aa9b3f4ba258dc7e4c8f2cc274afce46a5",
+  "version": "0.4.5",
+  "license": "MIT",
+  "artifacts": {
+    "tokens.css": "MIRATS brand-synced semantic tokens",
+    "reset.css": "Astryx core reset",
+    "theme.css": "SSR-safe light/dark logic",
+    "components.css": "Static MIRATS-Astryx components"
+  },
+  "mirats_brand_sync": {
+    "primary": "#0074e2",
+    "layer": "astryx-base"
+  }
+}

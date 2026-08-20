@@ -1,0 +1,44 @@
+/* Static Astryx Component Contract for MIRATS */
+@layer astryx-base {
+  .astryx-surface {
+    background-color: var(--color-background-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+  }
+
+  .astryx-card {
+    background-color: var(--color-background-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    transition: transform var(--duration-fast) var(--ease-standard), 
+                box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  .astryx-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--color-neutral);
+  }
+
+  .astryx-heading-1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .astryx-text-body {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .astryx-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-element);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+  }
+}
