@@ -28,6 +28,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           key: "so_ct",
           label: "Số CT",
           filter: "text",
+          priority: "primary" as const,
           value: (g) => g.so_ct ?? "",
           cell: (g) => <span className="font-mono text-[11px]">{g.so_ct ?? "—"}</span>,
         },
@@ -36,6 +37,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           label: "Ngày",
           sortable: true,
           hideBelow: "xl",
+          priority: "secondary" as const,
           value: (g) => g.ngay,
           cell: (g) => <span className="text-sm">{new Date(g.ngay).toLocaleDateString("vi-VN")}</span>,
         },
@@ -43,6 +45,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           key: "vat_tu",
           label: "Vật tư",
           filter: "text",
+          priority: "primary" as const,
           value: (g) => g.vat_tu?.ten ?? "",
           cell: (g) => <span className="text-sm">{g.vat_tu?.ten ?? "—"}</span>,
         },
@@ -51,6 +54,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           label: "Kho",
           filter: "cat",
           hideBelow: "md",
+          priority: "secondary" as const,
           value: (g) => g.kho?.ten ?? "",
           cell: (g) => <span className="text-sm">{g.kho?.ten ?? "—"}</span>,
         },
@@ -59,6 +63,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           label: "Loại",
           filter: "cat",
           hideBelow: "sm",
+          priority: "secondary" as const,
           value: (g) => LOAI_GD_META[g.loai].label,
           cell: (g) => {
             const meta = LOAI_GD_META[g.loai];
@@ -74,6 +79,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           label: "Số lượng",
           align: "right",
           sortable: true,
+          priority: "primary" as const,
           value: (g) => g.so_luong,
           cell: (g) => {
             const meta = LOAI_GD_META[g.loai];

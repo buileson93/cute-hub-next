@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-08-20T14:37:15.351Z",
-  "commit": "01083395f262bfb134ee86aa53350550c433d7bf",
+  "timestamp": "2026-08-20T15:19:23.955Z",
+  "commit": "2afbc386426f430530fabd899762eddf6985ff4d",
   "metrics": {
     "responsivePrefixes": {
-      "sm": 224,
-      "md": 166,
+      "sm": 226,
+      "md": 205,
       "lg": 109,
       "xl": 25,
       "2xl": 1,
@@ -17,10 +17,11 @@
       "hiddenWithPrefix": 4
     },
     "mobileLogic": {
-      "count": 11,
+      "count": 12,
       "files": [
         "src/components/mirats/BulkActionBar.tsx",
         "src/components/mirats/DesktopOnly.tsx",
+        "src/components/mirats/PageHeader.tsx",
         "src/components/mirats/ResponsiveDialog.tsx",
         "src/components/mirats/ViTriMediaViewer.tsx",
         "src/components/mirats/app-shell/__tests__/T17-sidebar-collapse.test.tsx",
@@ -35,7 +36,7 @@
     "widthRisks": {
       "minWidthPx": 131,
       "fixedWidthLarge": 31,
-      "overflowXAuto": 30,
+      "overflowXAuto": 32,
       "topFiles": [
         {
           "file": "src/components/mirats/ThanhPhanTable.tsx",
@@ -120,16 +121,16 @@
       ]
     },
     "gridNoPrefix": 89,
-    "smallTouchTargetsRaw": 650,
+    "smallTouchTargetsRaw": 651,
     "safeAreaAndFixed": {
-      "safeAreaInset": 1,
+      "safeAreaInset": 4,
       "fixedBottom": 7
     },
     "largeComponentsMobileMode": [
       {
         "file": "src/components/mirats/CatalogTable.tsx",
-        "lines": 1438,
-        "hasMobileMode": false
+        "lines": 1444,
+        "hasMobileMode": true
       },
       {
         "file": "src/components/mirats/CatalogTools.tsx",
@@ -138,12 +139,12 @@
       },
       {
         "file": "src/components/mirats/NetworkOverview.tsx",
-        "lines": 2340,
+        "lines": 2361,
         "hasMobileMode": false
       },
       {
         "file": "src/components/mirats/StandardTable.tsx",
-        "lines": 1786,
+        "lines": 1697,
         "hasMobileMode": true
       },
       {
@@ -153,8 +154,8 @@
       },
       {
         "file": "src/components/mirats/ThanhPhanTable.tsx",
-        "lines": 1408,
-        "hasMobileMode": false
+        "lines": 1414,
+        "hasMobileMode": true
       },
       {
         "file": "src/routes/_app.admin.nhap-lieu.tsx",
@@ -168,13 +169,13 @@
       },
       {
         "file": "src/routes/_app.danh-muc.model.tsx",
-        "lines": 1569,
-        "hasMobileMode": false
+        "lines": 1581,
+        "hasMobileMode": true
       },
       {
         "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
-        "lines": 1203,
-        "hasMobileMode": false
+        "lines": 1209,
+        "hasMobileMode": true
       },
       {
         "file": "src/routes/_app.du-an.$id.tsx",
@@ -202,6 +203,6 @@
         "hasMobileMode": true
       }
     ],
-    "mobileTestsCount": 3
+    "mobileTestsCount": 4
   }
 }

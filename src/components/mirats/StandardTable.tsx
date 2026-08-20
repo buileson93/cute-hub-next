@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
+import { MobileRecordCard } from "@/components/mirats/ui/MobileRecordCard";
 import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 
@@ -1151,115 +1152,25 @@ export function StandardTableInner<T>({
       {isMobile ? (
         <div className="space-y-3">
           {renderGlobalState() || (
-            display.map((r) => {
+            display.map((r, idx) => {
               const rid = getRowIdInternal(r);
-              const isSel = selectable && selected?.has(rid);
-              
-              // Mobile lấy cột theo priority
-              const primaryCols = sortedColumns.filter(c => c.priority === "primary");
-              const secondaryCols = sortedColumns.filter(c => c.priority === "secondary");
-              const detailCols = sortedColumns.filter(c => c.priority === "detail");
-
-
               return (
-                <Card
+                <MobileRecordCard
                   key={rid}
-                  className={cn(
-                    "relative cursor-pointer transition-colors hover:bg-muted/50 overflow-hidden",
-                    isSel && "border-primary bg-primary/5 shadow-sm shadow-primary/10",
-                    rowClassName?.(r)
-                  )}
-                  onClick={() => onRowClick?.(r)}
-                >
-                  <CardContent className="p-0">
-                    <div className="flex flex-col">
-                      {/* Tiêu đề thẻ (Primary) */}
-                      <div className="flex items-start justify-between p-4 bg-muted/20 border-b border-border/40">
-                        <div className="flex-1 space-y-1 min-w-0 pr-6">
-                          {primaryCols.map((col, idx) => (
-                            <div key={col.key} className={idx === 0 ? "font-semibold text-sm truncate" : "text-[12px] text-muted-foreground truncate"}>
-                              {col.render ? col.render(r) : col.cell ? col.cell(r) : String(col.value?.(r) ?? "")}
-                            </div>
-                          ))}
-                        </div>
-                        {selectable && (
-                          <Checkbox
-                            checked={isSel}
-                            onCheckedChange={() => toggleRow(rid)}
-                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                            className="mt-1"
-                            aria-label={`Chọn dòng ${rid}`}
-                          />
-                        )}
-                      </div>
-
-                      {/* Nội dung thẻ (Secondary) */}
-                      <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
-                        {secondaryCols.map((col) => (
-                          <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
-                              {col.header || col.label}
-                            </span>
-                            <div className={cn("text-[12px] truncate", col.cellClassName)}>
-                              {renderCellContent(col, r)}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Dòng chi tiết (Detail) - Mobile Expandable */}
-                      {expandedRows.has(rid) && detailCols.length > 0 && (
-                        <div className="px-4 py-3 bg-muted/10 border-t border-border/20 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1">
-                          {detailCols.map((col) => (
-                            <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
-                                {col.header || col.label}
-                              </span>
-                              <div className={cn("text-[12px] break-words", col.cellClassName)}>
-                                {renderCellContent(col, r)}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Hành động (nếu có toolbar hoặc onRowClick) */}
-                      <div className="flex items-center justify-between p-2 bg-muted/5 border-t border-border/30 gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
-                          onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
-                        >
-                        {expandedRows.has(rid) ? (
-                            <>
-                              <Icon name="table.collapse" size="tiny" />
-                              <span>Thu gọn</span>
-                            </>
-                          ) : (
-                            <>
-                              <Icon name="table.expand" size="tiny" />
-                              <span>Xem thêm ({detailCols.length})</span>
-                            </>
-                          )}
-                        </Button>
-
-                        {(toolbarRight || onRowClick) && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-8 px-2 text-[12px] gap-1 text-primary"
-                            onClick={() => onRowClick?.(r)}
-                          >
-                            <span>Chi tiết</span>
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-
-                    </div>
-                  </CardContent>
-                </Card>
+                  row={r}
+                  rowIndex={idx}
+                  rowId={rid}
+                  columns={sortedColumns}
+                  selectable={selectable}
+                  isSelected={selectable && selected?.has(rid)}
+                  isExpanded={expandedRows.has(rid)}
+                  onSelect={toggleRow}
+                  onExpand={toggleExpand}
+                  onRowClick={onRowClick}
+                  rowClassName={rowClassName}
+                  renderCellContent={renderCellContent}
+                  toolbarRight={toolbarRight}
+                />
               );
             })
           )}

@@ -556,6 +556,7 @@ function DanhMucThietBiPage() {
     // ---- Nhóm Định danh (Gộp SN, Bravo, P/N) ----
     {
       key: "tb", header: "Tài sản", type: "id", group: "Định danh", width: 240, sticky: true,
+      priority: "primary" as const,
       value: (d) => tbName(d),
       render: (d) => (
         <div className="flex items-center gap-2">
@@ -571,11 +572,12 @@ function DanhMucThietBiPage() {
         </div>
       ),
     },
-    { key: "pn", header: "P/N", group: "Định danh", type: "longtext", width: 120, value: (d) => d.p_n, defaultHidden: true },
+    { key: "pn", header: "P/N", group: "Định danh", type: "longtext", width: 120, value: (d) => d.p_n, priority: "detail" as const, defaultHidden: true },
     
     // ---- Nhóm Mẫu & Loại (Gộp Chủng loại) ----
     {
       key: "mau", header: "Mẫu & Loại", group: "Phân loại", type: "taxonomy", width: 200,
+      priority: "secondary" as const,
       value: (d) => `${d._modelTen || ""} ${d._loaiTbTen || ""}`,
       render: (d) => (
         <div className="space-y-1">
@@ -593,6 +595,7 @@ function DanhMucThietBiPage() {
     },
     {
       key: "dacTinh", header: "Nhãn tài sản", group: "Phân loại", width: 200,
+      priority: "detail" as const,
       sortValue: (d) => (tagsByDevice.get(d.id) ?? []).length,
       value: (d) => (tagsByDevice.get(d.id) ?? []).map((tid) => dacTinhById.get(tid)?.ma).filter(Boolean).join(" "),
       render: (d) => {
@@ -615,6 +618,7 @@ function DanhMucThietBiPage() {
     // ---- Nhóm Không gian (Hệ thống + Vị trí) ----
     {
       key: "ht", header: "Hệ thống & Vị trí", group: "Không gian", width: 220,
+      priority: "secondary" as const,
       value: (d) => `${d._htId ? htName(d._htId, d._htTen) : "Độc lập"} ${d._viTriTen || d.vi_tri || ""}`,
       render: (d) => (
         <div className="space-y-0.5">
@@ -636,18 +640,20 @@ function DanhMucThietBiPage() {
         </div>
       ),
     },
-    { key: "dv", header: "Đơn vị", group: "Không gian", type: "taxonomy", width: 100, value: (d) => d.don_vi },
-    { key: "noiql", header: "Nơi QL", group: "Không gian", type: "longtext", width: 120, value: (d) => d._noiQuanLy, defaultHidden: true },
+    { key: "dv", header: "Đơn vị", group: "Không gian", type: "taxonomy", width: 100, priority: "detail" as const, value: (d) => d.don_vi },
+    { key: "noiql", header: "Nơi QL", group: "Không gian", type: "longtext", width: 120, priority: "detail" as const, value: (d) => d._noiQuanLy, defaultHidden: true },
 
     // ---- Trạng thái ----
-    { key: "tt", header: "Trạng thái", group: "Trạng thái", type: "status", width: 120, value: (d) => d.trang_thai },
-    { key: "nguoigiu", header: "Người giữ", group: "Trạng thái", type: "user", width: 140, value: (d) => d._nguoiGiu, defaultHidden: true },
+    { key: "tt", header: "Trạng thái", group: "Trạng thái", type: "status", width: 120, priority: "primary" as const, value: (d) => d.trang_thai },
+    { key: "nguoigiu", header: "Người giữ", group: "Trạng thái", type: "user", width: 140, priority: "detail" as const, value: (d) => d._nguoiGiu, defaultHidden: true },
 
     // ---- Vòng đời ----
     {
       key: "tuoitho", header: "Sức khoẻ", group: "Vòng đời", type: "percent", width: 100,
+      priority: "secondary" as const,
       value: (d) => d._tyLeTuoiTho,
       sortValue: (d) => d._tyLeTuoiTho ?? -1,
+
       render: (d) => {
         const pct = d._tyLeTuoiTho;
         if (pct == null) return <span className="text-muted-foreground">—</span>;

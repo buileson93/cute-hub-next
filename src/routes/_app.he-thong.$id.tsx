@@ -1828,9 +1828,9 @@ type TimelineKind = "bt" | "sc" | "hh" | "bg" | "bb";
 
 function SummaryStat({ label, value, tone, wide }: { label: string; value: string | number; tone?: string; wide?: boolean }) {
   return (
-    <div className={`rounded-md bg-background px-2 py-1.5 ${wide ? "col-span-2 sm:col-span-2" : ""}`}>
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`truncate text-sm font-semibold ${tone || ""}`}>{value}</div>
+    <div className={`rounded-md bg-background px-2 py-1.5 min-h-[44px] flex flex-col justify-center ${wide ? "col-span-2 sm:col-span-2" : ""}`}>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5">{label}</div>
+      <div className={`truncate text-sm font-semibold leading-tight ${tone || ""}`}>{value}</div>
     </div>
   );
 }

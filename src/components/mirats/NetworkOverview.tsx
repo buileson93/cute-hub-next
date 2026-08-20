@@ -2300,25 +2300,46 @@ function LinkList({ title, icon, rows, self, onEdit, canManage }: {
       {rows.length === 0 ? (
         <p className="text-xs text-muted-foreground">Không có.</p>
       ) : (
-        <div className="space-y-1">
+        <div className="space-y-2">
           {rows.map((r) => {
             const other = r.nguon_id === self ? r.dich_ten : r.nguon_ten;
             return (
               <button
                 key={r.id}
                 onClick={() => onEdit(r)}
-                className="flex w-full items-center justify-between gap-2 rounded border px-2 py-1 text-left text-xs hover:bg-muted"
+                className="group flex w-full flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3 text-left transition-all hover:border-primary/40 hover:bg-muted/40 active:scale-[0.98]"
               >
-                <div className="min-w-0">
-                  <div className="truncate font-medium">{other}</div>
-                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: r.mau_sac ?? LOAI_LIEN_KET_MAU[r.loai_ma as LoaiLienKetMa] }} />
-                    {r.loai_ten ?? r.loai_ma}
-                    {r.giao_dien_nguon || r.giao_dien_dich ? ` · ${[r.giao_dien_nguon, r.giao_dien_dich].filter(Boolean).join("→")}` : ""}
-                    {r.vai_tro_du_phong === "du_phong" ? " · dự phòng" : ""}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[13px] font-bold leading-tight group-hover:text-primary">
+                      {other}
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-1.5 rounded-full bg-background/80 px-2 py-0.5 text-[10px] font-medium shadow-sm border border-border/40">
+                        <span className="h-2 w-2 rounded-full shadow-inner" style={{ backgroundColor: r.mau_sac ?? LOAI_LIEN_KET_MAU[r.loai_ma as LoaiLienKetMa] }} />
+                        {r.loai_ten ?? r.loai_ma}
+                      </div>
+                      {r.vai_tro_du_phong === "du_phong" && (
+                        <Badge variant="outline" className="h-4 border-amber-500/30 bg-amber-500/5 px-1.5 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                          DỰ PHÒNG
+                        </Badge>
+                      )}
+                    </div>
                   </div>
+                  {canManage && (
+                    <div className="rounded-full bg-background/50 p-1.5 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:bg-primary/10 group-hover:text-primary">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </div>
+                  )}
                 </div>
-                {canManage && <Pencil className="h-3 w-3 shrink-0 text-muted-foreground" />}
+                
+                {(r.giao_dien_nguon || r.giao_dien_dich) && (
+                  <div className="flex items-center gap-1.5 rounded-lg bg-background/40 p-2 text-[11px] text-muted-foreground/80 border border-border/20">
+                    <div className="flex-1 truncate">
+                      <span className="font-semibold text-foreground/70">Cổng:</span> {[r.giao_dien_nguon, r.giao_dien_dich].filter(Boolean).join(" → ")}
+                    </div>
+                  </div>
+                )}
               </button>
             );
           })}
