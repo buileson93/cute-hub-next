@@ -440,14 +440,25 @@ function SuCoPage() {
                 rows={rows}
                 getRowId={(s) => s.ma_su_co}
                 toolbarLeft={
-                  <div className="flex items-center gap-2">
-                    <Input
-                      placeholder="Tìm sự cố..."
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      className="h-8 w-64"
-                    />
-                  </div>
+                  !isMobile && (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="Tìm sự cố..."
+                        value={query}
+                        onChange={(e) => setQ(e.target.value)}
+                        className="h-8 w-64"
+                      />
+                      <Select value={tt} onValueChange={(v) => setFilter("tt", v)}>
+                        <SelectTrigger className="h-8 w-[120px]"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Mọi trạng thái</SelectItem>
+                          <SelectItem value="Đang xử lý">Đang xử lý</SelectItem>
+                          <SelectItem value="Đã khắc phục">Đã khắc phục</SelectItem>
+                          <SelectItem value="Đóng">Đóng</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )
                 }
               />
             </DataState>
