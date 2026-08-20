@@ -152,9 +152,10 @@ export function getStatusToken(domain: string, key: string | null): StatusToken 
   
   // 3. Không nhận diện - Fallback + Cảnh báo
   warningCount++;
-  if (process.env.NODE_ENV === 'development') {
-    console.warn(`[MIRATS UI] Mã trạng thái lạ gặp phải: "${rawKey}" tại domain "${domain}"`);
-  }
+  
+  // Log cảnh báo để test capture được và dev biết
+  console.warn(`[MIRATS UI] Mã trạng thái lạ gặp phải: "${rawKey}" tại domain "${domain}"`);
+
   
   return {
     ...FALLBACK_TOKEN,
