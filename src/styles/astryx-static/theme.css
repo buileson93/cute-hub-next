@@ -1,0 +1,21 @@
+/* SSR-Safe Theme Logic */
+@layer theme {
+  :root {
+    color-scheme: light dark;
+  }
+
+  /* Global background and text color based on tokens */
+  body {
+    background-color: var(--color-background-body);
+    color: var(--color-text-primary);
+  }
+
+  .dark {
+    --color-neutral: #FFFFFF1A;
+    --color-background-surface: #262626;
+    --color-background-body: #1b1b1b;
+    --color-text-primary: #fafafa;
+    --color-text-secondary: #a3a3a3;
+    --color-border: #FFFFFF1A;
+  }
+}

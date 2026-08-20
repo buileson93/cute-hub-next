@@ -1,0 +1,37 @@
+/* Astryx Static Tokens — Brand-Synced for MIRATS */
+@layer theme {
+  :root {
+    /* Brand Colors */
+    --primary: #0074e2;
+    --primary-foreground: #ffffff;
+    
+    /* Astryx Semantic Tokens (MIRATS Optimized) */
+    --color-accent: var(--primary);
+    --color-accent-muted: light-dark(oklch(0.97 0.01 260), oklch(0.2 0.01 260));
+    --color-on-accent: var(--primary-foreground);
+    --color-neutral: light-dark(#0000000F, #FFFFFF1A);
+    --color-background-surface: light-dark(#ffffff, #262626);
+    --color-background-body: light-dark(#f1f1f1, #1b1b1b);
+    --color-text-primary: light-dark(#171717, #fafafa);
+    --color-text-secondary: light-dark(#525252, #a3a3a3);
+    --color-text-accent: var(--color-accent);
+    --color-icon-accent: var(--color-accent);
+    --color-icon-primary: var(--color-text-primary);
+    --color-border: light-dark(#00000014, #FFFFFF1A);
+    
+    /* Spacing & Sizing */
+    --radius-container: 0.75rem;
+    --radius-element: 0.625rem;
+    --radius-inner: 0.375rem;
+    
+    /* Typography */
+    --font-family-sans: "Geist Variable", "Inter", -apple-system, sans-serif;
+    --font-family-mono: "IBM Plex Mono", monospace;
+    
+    /* Motion */
+    --duration-fast: 125ms;
+    --duration-medium: 200ms;
+    --duration-slow: 320ms;
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}

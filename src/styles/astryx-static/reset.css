@@ -1,0 +1,25 @@
+/* Astryx Core Reset (Static Extract) */
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    font-family: var(--font-family-sans);
+    line-height: 1.5;
+  }
+  
+  body {
+    margin: 0;
+    line-height: inherit;
+  }
+  
+  button, input, optgroup, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    margin: 0;
+  }
+}
