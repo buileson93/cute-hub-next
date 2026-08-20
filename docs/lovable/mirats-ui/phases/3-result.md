@@ -1,16 +1,39 @@
+---
+name: Phase 3 - AppShell SSR-Safe Visual Migration
+description: Implementation of the region-based shell architecture and unified anatomy.
+type: feature
+phase: 3
+status: implemented
+---
+
 # Phase 3 Result: AppShell SSR-Safe Visual Migration
 
-Implemented the high-performance AppShell architecture following Astryx 0.4.5 standards.
+Implemented a static CSS-driven AppShell architecture that replaces legacy `UI_DENSITY` padding with a unified regional grid.
 
-## Accomplishments
-- **Layout Architecture:** Established `.astryx-layout` grid system in `src/styles/astryx-static/layout.css`.
-- **Region Control:** Defined budgets for Rail (56px), Sidebar (208px-256px), and TopBar (44px-56px).
-- **Component Refactor:** Updated `AppShell.tsx`, `PageHeader.tsx`, and `PageBody.tsx` to use `data-astryx-*` attributes.
-- **SSR Stability:** Ensured zero hydration mismatches by relying on static CSS for layout transitions.
-- **Density Scaling:** Integrated `data-density` with CSS variables for seamless switching.
+## Key Changes
+
+### 1. Static Layout Architecture (`src/styles/astryx-static/layout.css`)
+- Defined `@layer layout` to isolate structural styles.
+- Established region budgets: Rail (56-72px), Sidebar (208-288px), TopBar (44-64px).
+- Centralized scroll control to `.astryx-content`.
+- Implemented `data-density` scaling for all shell dimensions.
+
+### 2. AppShell Refactor (`src/components/mirats/app-shell/AppShell.tsx`)
+- Integrated `data-astryx-*` semantic attributes for CSS targeting.
+- Standardized the desktop navigation container (Rail + Sub-sidebar).
+- Unified the TopBar and Main content area relationship.
+- Removed hardcoded Tailwind padding and height classes in favor of layout tokens.
+
+### 3. Page Anatomy Standard (`PageHeader.tsx`, `PageBody.tsx`)
+- `PageHeader`: Now uses `position: sticky` and standardized padding via `data-astryx-header`.
+- `PageBody`: Removed nested padding in favor of `data-astryx-body` container logic.
+- Implemented `data-no-padding` support for full-width views (Dashboards, Map views).
+
+### 4. Responsive & Density
+- Mobile: Fixed bottom navigation (56px) and safe-area adjustments.
+- Density: Atomic scaling between `compact`, `comfortable`, and `spacious` via `state.json` sync.
 
 ## Verification
-- [x] Zero hydration warnings.
-- [x] Mobile (360px) viewport stability.
-- [x] Sidebar hardware-accelerated transitions.
-- [x] Single-scroll region enforcement.
+- **SSR/Hydration**: Verified identical server/client trees.
+- **Visuals**: Confirmed MIRATS Blue (#0074e2) consistency.
+- **Layout**: Verified sidebar collapse logic and main scroll region.
