@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
 import { useSession } from "@/hooks/use-session";
-import { OcrStatusBadge } from "./ocr/OcrStatusBadge";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { OcrSettings } from "./ocr/OcrSettings";
 import { OcrProgressDialog } from "./ocr/OcrProgressDialog";
 import { useOcrTask } from "./ocr/useOcrTask";
@@ -222,10 +222,10 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
           <div className="flex items-center gap-2">
             <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
             {row.tai_lieu_ocr && (
-              <OcrStatusBadge 
-                status={row.tai_lieu_ocr.status as any} 
-                processedPages={row.tai_lieu_ocr.processed_pages}
-                totalPages={row.tai_lieu_ocr.page_count || undefined}
+              <StatusBadge 
+                domain="ocr"
+                code={row.tai_lieu_ocr.status} 
+                label={row.tai_lieu_ocr.status === 'ocr_running' ? `Đang xử lý (${row.tai_lieu_ocr.processed_pages}/${row.tai_lieu_ocr.page_count || '?'})` : undefined}
               />
             )}
           </div>

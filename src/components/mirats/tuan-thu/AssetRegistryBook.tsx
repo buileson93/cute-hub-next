@@ -3,9 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil } from "lucide-react";
 import { type LicenseRow } from "@/lib/mirats/db-licenses";
-import { ExpiringBadge } from "@/components/mirats/ExpiringBadge";
-
 import { StatusBadge } from "@/components/mirats/StatusBadge";
+import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 
 
 interface AssetRegistryBookProps {
@@ -66,7 +65,12 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           cell: (r) => (
             <div className="space-y-1">
               <div className="text-[11px] font-mono">{r.ngayHetHan ? new Date(r.ngayHetHan).toLocaleDateString("vi-VN") : "—"}</div>
-              <ExpiringBadge soNgay={r.soNgayConLai} compact className="h-4 text-[9px] px-1" />
+              <StatusBadge 
+                domain="expiry" 
+                code={getExpiryCode(r.soNgayConLai)} 
+                label={getExpiryLabel(r.soNgayConLai, true)} 
+                className="h-4 text-[9px] px-1" 
+              />
             </div>
           ),
         },

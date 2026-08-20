@@ -8,7 +8,7 @@ import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Badge } from "@/components/ui/badge";
-import { OcrStatusBadge } from "./ocr/OcrStatusBadge";
+import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { OcrSettings } from "./ocr/OcrSettings";
 import { OcrProgressDialog } from "./ocr/OcrProgressDialog";
 import { useOcrTask } from "./ocr/useOcrTask";
@@ -171,10 +171,10 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
               <Tag className="h-3 w-3" /> {row.loai_tai_lieu}
             </Badge>
             {row.tai_lieu_ocr && (
-              <OcrStatusBadge 
-                status={row.tai_lieu_ocr.status as any} 
-                processedPages={row.tai_lieu_ocr.processed_pages}
-                totalPages={row.tai_lieu_ocr.page_count || undefined}
+              <StatusBadge 
+                domain="ocr"
+                code={row.tai_lieu_ocr.status} 
+                label={row.tai_lieu_ocr.status === 'ocr_running' ? `Đang xử lý (${row.tai_lieu_ocr.processed_pages}/${row.tai_lieu_ocr.page_count || '?'})` : undefined}
               />
             )}
           </div>

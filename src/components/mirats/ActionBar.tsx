@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import type { AppRole } from "@/hooks/use-session";
 import { canWrite, type Domain } from "@/lib/mirats/quyen";
 import { NHAN } from "@/lib/mirats/tu-vung";
-import { ReadOnlyBadge } from "@/components/mirats/ReadOnlyBadge";
+import { Badge } from "@/components/ui/badge";
+import { Lock } from "lucide-react";
 
 // Task 26 — Thanh hành động dùng chung.
 // - Chỉ render nút khi user có quyền GHI ở miền tương ứng (canWrite khớp RLS/RPC).
@@ -34,7 +35,10 @@ export function ActionBar({
   if (!allowed) {
     return (
       <div className={cn("flex items-center gap-1.5", className)}>
-        <ReadOnlyBadge />
+          <Badge variant="outline" className="gap-1.5 py-0.5 text-muted-foreground font-medium">
+            <Lock className="h-3 w-3" />
+            Chế độ chỉ đọc
+          </Badge>
         {extra}
       </div>
     );
