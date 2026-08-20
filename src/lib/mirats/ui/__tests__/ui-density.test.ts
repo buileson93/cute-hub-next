@@ -22,7 +22,7 @@ describe("UI_DENSITY", () => {
   it("giá trị gốc (comfortable) vẫn tồn tại trong chuỗi token", () => {
     // MIRATS uses compact-first or specific breakpoints; we check if the standard comfortable tokens exist
     expect(UI_DENSITY.PAGE_PADDING).toContain("data-[density=comfortable]:p-4");
-    expect(UI_DENSITY.SECTION_GAP).toContain("data-[density=comfortable]:gap-4");
+    expect(UI_DENSITY.SECTION_GAP).toContain("md:data-[density=comfortable]:gap-4");
     expect(UI_DENSITY.CARD_PADDING).toContain("data-[density=comfortable]:p-5");
   });
   
