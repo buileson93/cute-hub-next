@@ -30,37 +30,43 @@ export const getWarningCount = () => warningCount;
 export const TYPO_STATUS = {
   // --- THIẾT BỊ / TÀI SẢN ---
   DANG_KHAI_THAC: {
-    color: "astryx-status-attention", // Success-like in Astryx skins
+    color: "astryx-status-attention",
+    class: "astryx-status-attention",
     icon: "status.success",
     label: "Đang khai thác",
     kyHieu: "●",
   },
   DANG_SUA_CHUA: {
     color: "astryx-status-warning",
+    class: "astryx-status-warning",
     icon: "status.warning",
     label: "Đang sửa chữa",
     kyHieu: "⚠",
   },
   HONG: {
     color: "astryx-status-danger",
+    class: "astryx-status-danger",
     icon: "status.danger",
     label: "Hỏng",
     kyHieu: "✖",
   },
   CHO_XU_LY: {
     color: "astryx-status-info",
+    class: "astryx-status-info",
     icon: "entity.history",
     label: "Chờ xử lý",
     kyHieu: "◐",
   },
   NGUNG_KHAI_THAC: {
     color: "astryx-status-normal",
+    class: "astryx-status-normal",
     icon: "action.close",
     label: "Ngừng khai thác",
     kyHieu: "□",
   },
   THANH_LY: {
     color: "astryx-status-normal",
+    class: "astryx-status-normal",
     icon: "action.close",
     label: "Thanh lý",
     kyHieu: "⊘",
@@ -69,22 +75,31 @@ export const TYPO_STATUS = {
   // Các mã khác dùng cho domain khác hoặc alias
   DU_PHONG: {
     color: "astryx-status-info",
+    class: "astryx-status-info",
     icon: "entity.asset",
     label: "Dự phòng",
     kyHieu: "○",
   },
   KE_HOACH: {
     color: "astryx-status-info",
+    class: "astryx-status-info",
     icon: "entity.calendar",
     label: "Kế hoạch",
     kyHieu: "📅",
   },
   HOAN_THANH: {
     color: "astryx-status-attention",
+    class: "astryx-status-attention",
     icon: "status.success",
     label: "Hoàn thành",
     kyHieu: "✔",
   },
+  // Health A/B/C/D mapping
+  A: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "status.success", label: "A", kyHieu: "A" },
+  B: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.info", label: "B", kyHieu: "B" },
+  C: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "status.warning", label: "C", kyHieu: "C" },
+  D: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "D", kyHieu: "D" },
+
 } as const;
 
 /**
