@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -14,8 +15,6 @@ async def check_overflow(page, url):
         # Wait for the table to potentially render card mode if implemented
         await page.wait_for_timeout(2000) 
         
-        # Check for overflow only in the main content area to ignore intentional table horizontal scrolling if any
-        # However, for G1, we expect NO horizontal scrolling on the root element.
         scroll_width = await page.evaluate("document.documentElement.scrollWidth")
         client_width = await page.evaluate("document.documentElement.clientWidth")
         
@@ -37,16 +36,12 @@ async def main():
         content = phan_hang_path.read_text()
         for line in content.split("\n"):
             if "**G1**" in line:
-                import re
                 match = re.search(r"`([^`]+)`", line)
                 if match:
                     route_file = match.group(1)
-                    # Filter out routes with dynamic params for this basic check
                     if "$" in route_file: continue
-                    
                     route = route_file.replace(".tsx", "").replace("_app.", "").replace(".", "/")
                     if route == "index": route = ""
-                    
                     g1_routes.append(f"http://localhost:8080/{route}")
 
     results = []
@@ -69,6 +64,10 @@ async def main():
             "http://localhost:8080/gop-gach"
         ]
         
+        # Thêm route mặc định nếu danh sách trống
+        if not test_routes and g1_routes:
+            test_routes = g1_routes[:3]
+
         for url in test_routes:
             print(f"Checking {url}...")
             is_ok, sw, cw = await check_overflow(page, url)
