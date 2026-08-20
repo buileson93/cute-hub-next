@@ -63,6 +63,8 @@ import {
 import { MauChip } from "@/components/mirats/MauChip";
 import { storage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import { ACTION_PATTERNS } from "@/lib/mirats/ui/action-patterns";
+
 
 
 // Bộ lọc lưu trên URL để "quay lại trang" giữ nguyên trạng thái đã chọn.
@@ -811,10 +813,11 @@ function DanhMucThietBiPage() {
                 <Switch id="edit-mode" checked={editMode} onCheckedChange={setEditMode} />
               </div>
               {editOn && (
-                <Button size="sm" className="h-9 gap-1.5" onClick={openCreate}>
+                <Button size="sm" variant={ACTION_PATTERNS.PRIMARY} className="h-9 gap-1.5" onClick={openCreate}>
                   <Plus className="h-4 w-4" /> Thêm tài sản
                 </Button>
               )}
+
             </div>
           ) : null
         }
@@ -966,14 +969,14 @@ function DanhMucThietBiPage() {
             toolbarRight={({ filteredRows, visibleColumns }) => (
               <div className="flex items-center gap-2">
                 <Button
-                  variant="outline" size="sm" className="h-8 gap-1.5"
+                  variant={ACTION_PATTERNS.UTILITY} size="sm" className="h-8 gap-1.5"
                   onClick={() => setHistoryOpen(true)}
                   title="Xem lịch sử gán / chuyển / gỡ tài sản khỏi hệ thống"
                 >
                   <History className="h-3.5 w-3.5" /> Lịch sử
                 </Button>
                 <Button
-                  variant="outline" size="sm" className="h-8 gap-1.5"
+                  variant={ACTION_PATTERNS.UTILITY} size="sm" className="h-8 gap-1.5"
                   disabled={exporting || filteredRows.length === 0}
                   onClick={() => exportRows(filteredRows, visibleColumns)}
                   title="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
@@ -982,19 +985,20 @@ function DanhMucThietBiPage() {
                   Xuất .xlsx
                 </Button>
               </div>
+
             )}
             bulkActions={({ selectedRows, visibleColumns, clear }) => (
               <div className="flex flex-wrap items-center gap-2">
                 {canManage && (
                   <>
                     <Button
-                      size="sm" variant="outline" className="h-8 gap-1.5"
+                      size="sm" variant={ACTION_PATTERNS.BULK_ACTION} className="h-8 gap-1.5"
                       onClick={() => setAssignTargets(selectedRows)}
                     >
                       <PackagePlus className="h-3.5 w-3.5" /> Gán vào hệ thống
                     </Button>
                     <Button
-                      size="sm" variant="outline" className="h-8 gap-1.5 text-amber-600"
+                      size="sm" variant={ACTION_PATTERNS.BULK_ACTION} className="h-8 gap-1.5 text-amber-600"
                       disabled={!selectedRows.some((d) => d._htId)}
                       onClick={() => setRemoveTargets(selectedRows)}
                     >
@@ -1002,7 +1006,7 @@ function DanhMucThietBiPage() {
                     </Button>
                     {editOn && (
                       <Button
-                        size="sm" variant="outline"
+                        size="sm" variant={ACTION_PATTERNS.BULK_ACTION}
                         className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         onClick={() => { setDeleteTargets(selectedRows); setDeleteKind("retire"); }}
                       >
@@ -1012,12 +1016,13 @@ function DanhMucThietBiPage() {
                   </>
                 )}
                 <Button
-                  size="sm" className="h-8 gap-1.5"
+                  size="sm" variant={ACTION_PATTERNS.BULK_ACTION} className="h-8 gap-1.5"
                   disabled={exporting}
                   onClick={async () => { await exportRows(selectedRows, visibleColumns); clear(); }}
                 >
                   <Download className="h-3.5 w-3.5" /> Xuất {selectedRows.length} dòng
                 </Button>
+
               </div>
             )}
           />
