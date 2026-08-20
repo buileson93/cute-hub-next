@@ -314,3 +314,137 @@
   height: 0.75rem;
   stroke-width: 3.5;
 }
+
+/* Feedback & Status Primitives - Astryx 0.4.5 Reference */
+
+/* Badge */
+[data-astryx-control="badge"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.25rem; /* 20px */
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem; /* 10px */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+[data-astryx-control="badge"][data-astryx-variant="default"] {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+[data-astryx-control="badge"][data-astryx-variant="secondary"] {
+  background-color: var(--color-neutral);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+[data-astryx-control="badge"][data-astryx-variant="outline"] {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+[data-astryx-control="badge"][data-astryx-variant="destructive"] {
+  background-color: var(--color-danger);
+  color: var(--color-on-danger);
+}
+
+/* Status Badges */
+[data-astryx-control="badge"][data-astryx-variant="success"] {
+  background-color: color-mix(in oklab, var(--color-success) 10%, transparent);
+  color: var(--color-success);
+  border-color: color-mix(in oklab, var(--color-success) 20%, transparent);
+}
+
+[data-astryx-control="badge"][data-astryx-variant="warning"] {
+  background-color: color-mix(in oklab, var(--color-warning) 10%, transparent);
+  color: var(--color-warning);
+  border-color: color-mix(in oklab, var(--color-warning) 20%, transparent);
+}
+
+[data-astryx-control="badge"][data-astryx-variant="error"] {
+  background-color: color-mix(in oklab, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 20%, transparent);
+}
+
+[data-astryx-control="badge"][data-astryx-variant="info"] {
+  background-color: color-mix(in oklab, var(--color-info) 10%, transparent);
+  color: var(--color-info);
+  border-color: color-mix(in oklab, var(--color-info) 20%, transparent);
+}
+
+/* Skeleton */
+[data-astryx-control="skeleton"] {
+  background-color: var(--color-neutral);
+  border-radius: var(--radius-element);
+  animation: astryx-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes astryx-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Avatar */
+[data-astryx-control="avatar"] {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: var(--color-neutral);
+}
+
+[data-astryx-size="default"][data-astryx-control="avatar"] {
+  width: 2.5rem; /* 40px */
+  height: 2.5rem;
+}
+
+[data-astryx-size="sm"][data-astryx-control="avatar"] {
+  width: 2rem; /* 32px */
+  height: 2rem;
+}
+
+.astryx-avatar-image {
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.astryx-avatar-fallback {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background-color: var(--color-neutral);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Separator */
+[data-astryx-control="separator"] {
+  flex-shrink: 0;
+  background-color: var(--color-border);
+}
+
+[data-astryx-control="separator"][data-orientation="horizontal"] {
+  height: 1px;
+  width: 100%;
+}
+
+[data-astryx-control="separator"][data-orientation="vertical"] {
+  height: 100%;
+  width: 1px;
+}

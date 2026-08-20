@@ -19,9 +19,9 @@ export function UserAvatar({ name, email, url, className }: Props) {
     .toUpperCase()
     .slice(0, 2) || "?";
   return (
-    <Avatar className={cn("h-9 w-9", className)}>
+    <Avatar size="sm" className={className}>
       {url ? <AvatarImage src={url} alt={label} /> : null}
-      <AvatarFallback className="bg-[#0074e2]/10 text-[11px] font-semibold text-[#0074e2]">
+      <AvatarFallback>
         {initials}
       </AvatarFallback>
     </Avatar>
