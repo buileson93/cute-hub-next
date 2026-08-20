@@ -28,9 +28,9 @@ describe("UIKitLab Integration", () => {
   it("nên render các mã trạng thái từ TYPO_STATUS", async () => {
     render(<UIKitLab />);
     
-    // Tìm tab "Trạng thái" và click
-    const statusTab = screen.getByRole("tab", { name: /Trạng thái/i });
-    statusTab.click();
+    // Tìm tab "Trạng thái" và click (dùng getAll và lấy cái đầu tiên vì Shadcn có thể nhân bản trigger cho mobile/desktop)
+    const statusTabs = screen.getAllByRole("tab", { name: /Trạng thái/i });
+    statusTabs[0].click();
 
     // Kiểm tra một vài mã trạng thái tiêu biểu
     // Lưu ý: Dùng findByText vì TabsContent có thể render lazy hoặc cần async
