@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-20T12:54:16.411Z",
-  "commitHash": "349e1fb0cff0e277db60d50f7f1a35e09e440c15",
+  "date": "2026-08-20T13:20:06.729Z",
+  "commitHash": "39fd263f906354faf8ce176a1457b011764382c9",
   "summary": {
     "textPxTotal": 906,
     "textPxByValue": {
@@ -23,11 +23,11 @@
     "paletteColors": 1767,
     "hexColors": 181,
     "buttonVariants": {
-      "outline": 354,
+      "outline": 349,
       "secondary": 20,
       "default": 6,
       "destructive": 16,
-      "ghost": 308,
+      "ghost": 303,
       "link": 2
     },
     "iconNoLabel": 113,
