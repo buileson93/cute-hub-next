@@ -360,6 +360,9 @@ function SuCoPage() {
   return (
     <>
       <PageFrame density="compact">
+        {/* Test UI Overflow Regression */}
+        <div className="hidden min-w-[900px]" />
+
       <PageHeader
         icon={AlertTriangle}
         title="Sự cố kỹ thuật"

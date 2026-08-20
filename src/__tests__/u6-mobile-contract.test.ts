@@ -65,7 +65,8 @@ describe("u6-mobile-contract: Mobile Integrity Guard", () => {
       "_app.so-do.$id.tsx",
       "_app.admin.nhap-lieu.tsx",
       "_app.admin.tich-hop.tsx",
-      "_app.phan-quyen.tsx"
+      "_app.phan-quyen.tsx",
+      "_app.bao-cao.do-tin-cay.tsx"
     ];
 
     const violations: string[] = [];
