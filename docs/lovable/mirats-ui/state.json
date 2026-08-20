@@ -3,7 +3,7 @@
   "baselineCommit": "05c9a8431967186066ed589b72edcfbacf279296",
   "currentPhase": "4",
   "status": "ready",
-  "completedPhases": ["0-audit", "1-foundation", "2-button-parity", "3-appshell-migration"],
+  "completedPhases": ["0-audit", "1-foundation", "2-button-parity", "3-appshell-migration", "4-form-primitives"],
   "activePlan": null,
   "last_updated": "2026-08-20T09:10:00Z",
   "artifacts": [
