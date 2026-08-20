@@ -38,6 +38,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           key: "doi_tuong",
           label: "Đối tượng gán",
           filter: "text",
+          priority: "primary" as const,
           value: (r) => r.tenReal ?? "",
           cell: (r) => (
             <div>
@@ -51,6 +52,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           label: "Loại GP",
           filter: "cat",
           hideBelow: "lg",
+          priority: "secondary" as const,
           value: (r) => r.loai ?? "",
           cell: (r) => (
             <StatusBadge domain="bao_tri" code={r.loai || undefined} label={r.loai || undefined} />
@@ -61,6 +63,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           label: "Hạn dùng",
           sortable: true,
           hideBelow: "xl",
+          priority: "secondary" as const,
           value: (r) => r.ngayHetHan ?? "",
           cell: (r) => (
             <div className="space-y-1">
@@ -79,6 +82,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           label: "Trạng thái",
           filter: "cat",
           hideBelow: "sm",
+          priority: "secondary" as const,
           value: (r) => {
             const labels: any = { valid: 'Còn hiệu lực', expiring: 'Sắp hết hạn', expired: 'Đã hết hạn', none: 'Chưa có' };
             return labels[r.trangThai] ?? r.trangThai;
