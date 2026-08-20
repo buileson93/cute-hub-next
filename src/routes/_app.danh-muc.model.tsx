@@ -1113,7 +1113,7 @@ function MergeModelsDialog({
         <DialogFooter className="mt-4">
           <Button variant="outline" onClick={onClose} disabled={pending}>Huỷ</Button>
           <Button onClick={() => target && onMerge(target)} disabled={pending || !target} className="gap-1.5">
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitMerge className="h-4 w-4" />}
+            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitMerge className="h-4 w-4" aria-hidden="true" />}
             Gộp vào mẫu này
           </Button>
         </DialogFooter>
