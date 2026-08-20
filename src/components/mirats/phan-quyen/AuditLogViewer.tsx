@@ -78,11 +78,13 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
             columns={[
               {
                 key: "created_at", label: "Thời điểm", sortable: true,
+                priority: "secondary" as const,
                 value: (r) => r.created_at,
                 cell: (r) => <span className="font-mono text-[11px] text-muted-foreground">{fmtTs(r.created_at)}</span>,
               },
               {
                 key: "nguoi", label: "Người thực hiện", filter: "text",
+                priority: "primary" as const,
                 value: (r) => {
                   const p = r.user_id ? profileMap.get(r.user_id) : null;
                   return `${p?.ho_ten ?? ""} ${p?.don_vi ?? ""}`;
@@ -99,21 +101,25 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
               },
               {
                 key: "action", label: "Hành động", filter: "cat",
+                priority: "primary" as const,
                 value: (r) => describeAction(r.action).verb,
                 cell: (r) => <span className="text-xs">{describeAction(r.action).verb}</span>,
               },
               {
                 key: "entity", label: "Đối tượng", filter: "cat",
+                priority: "secondary" as const,
                 value: (r) => ENTITY_LABEL[r.entity ?? ""] ?? r.entity ?? "",
                 cell: (r) => <Badge variant="outline" className="text-[10.5px]">{ENTITY_LABEL[r.entity ?? ""] ?? r.entity ?? "—"}</Badge>,
               },
               {
                 key: "entity_id", label: "Mã bản ghi", filter: "text",
+                priority: "detail" as const,
                 value: (r) => r.entity_id ?? "",
                 cell: (r) => <span className="font-mono text-[11px] text-muted-foreground">{r.entity_id ?? "—"}</span>,
               },
               {
                 key: "kq", label: "KQ", align: "center",
+                priority: "secondary" as const,
                 value: (r) => describeAction(r.action).ok ? "OK" : "Lỗi",
                 cell: (r) => describeAction(r.action).ok
                   ? <Check className="mx-auto h-4 w-4 text-emerald-600" />

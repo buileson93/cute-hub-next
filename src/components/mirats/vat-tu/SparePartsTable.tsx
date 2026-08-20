@@ -28,6 +28,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           key: "vat_tu",
           label: "Vật tư",
           filter: "text",
+          priority: "primary" as const,
           value: (r) => r.ten_vat_tu,
           cell: (r) => (
             <div>
@@ -43,6 +44,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           label: "Loại",
           filter: "cat",
           hideBelow: "sm",
+          priority: "secondary" as const,
           value: (r) => LOAI_VAT_TU_META[r.loai].label,
           cell: (r) => {
             const m = LOAI_VAT_TU_META[r.loai];
@@ -58,6 +60,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           label: "Kho",
           filter: "cat",
           hideBelow: "md",
+          priority: "secondary" as const,
           value: (r) => r.ten_kho,
           cell: (r) => <span className="text-sm">{r.ten_kho}</span>,
         },
@@ -66,6 +69,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           label: "Tồn",
           align: "right",
           sortable: true,
+          priority: "primary" as const,
           value: (r) => r.ton_kho,
           sortValue: (r) => r.ton_kho,
           cell: (r) => {
@@ -82,6 +86,7 @@ export function SparePartsTable({ rows, isLoading }: SparePartsTableProps) {
           label: "Định mức",
           align: "right",
           sortable: true,
+          priority: "detail" as const,
           value: (r) => r.muc_ton_toi_thieu,
           cell: (r) => (
             <span className="text-right font-mono text-sm text-muted-foreground">
