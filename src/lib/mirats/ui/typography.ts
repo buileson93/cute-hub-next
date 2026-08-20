@@ -52,7 +52,7 @@ export const TYPO = {
    * Tái sử dụng TEXT_MONO từ UI_DENSITY.
    * Phải có font-mono và tabular-nums.
    */
-  MONO: UI_DENSITY.TEXT_MONO,
+  MONO: `${UI_DENSITY.TEXT_MONO} text-[12px] data-[density=comfortable]:text-[13px]`,
 } as const;
 
 export type TypoLevel = keyof typeof TYPO;
