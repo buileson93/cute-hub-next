@@ -86,8 +86,8 @@ export function PageHeader({
             <h1
               data-testid="page-header-title"
               className={cn(
-                "truncate font-bold leading-tight tracking-tight text-foreground",
-                "text-sm data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
+                "truncate text-foreground uppercase",
+                TYPO.H1
               )}
             >
               {title}
