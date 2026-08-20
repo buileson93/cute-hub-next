@@ -100,8 +100,8 @@ export function DataState({
   }
 
 
-  if (className) {
-    return <div className={className}>{children}</div>;
+  if (className || true) {
+    return <div className={cn(TYPO.BODY, className)}>{children}</div>;
   }
 
   return <>{children}</>;
