@@ -537,6 +537,7 @@ export function CatalogTable({
           columns={([
             ...(supportsLogo ? [{
               key: "logo", label: "Logo", minW: "min-w-[56px]", align: "center" as const,
+              priority: "detail" as const,
               cell: (r: Row) => {
                 const url = r.logo ? logoUrlMap?.get(r.logo) : undefined;
                 return (
@@ -555,47 +556,52 @@ export function CatalogTable({
               },
             }] : []),
             { key: "ma", label: "Mã", minW: "min-w-[100px]", filter: "text", value: (r) => r.ma ?? "",
-              defaultHidden: true,
+              defaultHidden: true, priority: "secondary" as const,
               cell: (r) => r.ma ? <CodeBadge code={r.ma} /> : <span className="text-muted-foreground">—</span> },
             { key: "ten", label: "Tên", minW: "min-w-[180px]", filter: "text", value: (r) => r.ten,
+              priority: "primary" as const,
               cell: (r) => supportsMau
                 ? <MauChip ten={r.ten} mau={r.mau} />
                 : nameBadge
                   ? <NameBadge name={r.ten} id={r.id || r.ten} />
                   : <span className="font-medium">{r.ten}</span> },
             { key: "mo_ta", label: "Mô tả", minW: "min-w-[200px]", filter: "text", value: (r) => r.mo_ta ?? "",
+              priority: "detail" as const,
               cell: (r) => <span className="block max-w-md truncate text-muted-foreground" title={r.mo_ta ?? ""}>{r.mo_ta ?? "—"}</span> },
             ...(supportsWebsite ? [{
               key: "trang_web", label: "Trang web", minW: "min-w-[160px]", filter: "text" as const,
-              value: (r: Row) => r.trang_web ?? "",
+              value: (r: Row) => r.trang_web ?? "", priority: "detail" as const,
               cell: (r: Row) => r.trang_web
                 ? <a href={/^https?:\/\//.test(r.trang_web) ? r.trang_web : `https://${r.trang_web}`} target="_blank" rel="noreferrer" className="block max-w-[220px] truncate text-primary hover:underline" onClick={(e) => e.stopPropagation()} title={r.trang_web}>{r.trang_web.replace(/^https?:\/\//, "")}</a>
                 : <span className="text-xs text-muted-foreground">—</span>,
             }] : []),
             ...(supportsXuatXu ? [{
               key: "xuat_xu", label: "Xuất xứ", minW: "min-w-[120px]", filter: "cat" as const,
-              value: (r: Row) => r.xuat_xu ?? "",
+              value: (r: Row) => r.xuat_xu ?? "", priority: "detail" as const,
               cell: (r: Row) => r.xuat_xu
                 ? <Badge variant="outline" className="text-[11px]">{r.xuat_xu}</Badge>
                 : <span className="text-xs text-muted-foreground">—</span>,
             }] : []),
             ...(supportsGhiChu ? [{
               key: "ghi_chu", label: "Ghi chú", minW: "min-w-[200px]", filter: "text" as const,
-              value: (r: Row) => r.ghi_chu ?? "",
+              value: (r: Row) => r.ghi_chu ?? "", priority: "detail" as const,
               cell: (r: Row) => <span className="block max-w-md truncate text-muted-foreground" title={r.ghi_chu ?? ""}>{r.ghi_chu ?? "—"}</span>,
             }] : []),
             ...(supportsParent ? [{
               key: "parent", label: "Trực thuộc", minW: "min-w-[160px]", filter: "cat" as const,
               value: (r: Row) => (r.parent_id ? parentNameMap.get(r.parent_id) ?? "—" : "—"),
+              priority: "detail" as const,
               cell: (r: Row) => r.parent_id
                 ? <Badge variant="outline" className="text-[11px]">{parentNameMap.get(r.parent_id) ?? "—"}</Badge>
                 : <span className="text-xs text-muted-foreground">—</span>,
             }] : []),
             { key: "soThietBi", label: "Tài sản", align: "center", value: (r) => r.soThietBi,
+              priority: "secondary" as const,
               cell: (r) => r.soThietBi > 0
                 ? <button type="button" onClick={() => setUsageRow(r)} title={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`} className="inline-flex"><Badge variant="secondary" className="gap-1 text-[11px] transition-colors hover:bg-primary/15"><Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}</Badge></button>
                 : <span className="text-xs text-muted-foreground">0</span> },
             { key: "active", label: "Trạng thái", align: "center", filter: "cat", value: (r) => (r.active ? "Đang dùng" : "Ẩn"),
+              priority: "secondary" as const,
               cell: (r) => r.active
                 ? <Badge variant="outline" className="text-[11px]">Đang dùng</Badge>
                 : <Badge variant="outline" className="text-[11px] text-muted-foreground">Ẩn</Badge> },
