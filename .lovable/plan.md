@@ -14,8 +14,6 @@ Người dùng báo cáo tính năng Command K bị lỗi (chỉ còn danh sách
 - Kiểm tra RPC `tim_kiem_toan_cuc` trong Database xem có bị mất hoặc thay đổi logic không.
 - Đảm bảo `PowerSearch` xử lý đúng trạng thái loading và lỗi.
 
-### 2. Cập nhật văn bản thông báo lỗi
-- Thay đổi văn bản từ "language selector" thành "tính năng command K sao lại biến mất chỉ còn danh sách tài sản và cấu trúc hệ thống tìm và khắc phục lỗi" tại các vị trí liên quan (như tooltip hoặc label trong TopBar).
 
 
 ### 3. Tối ưu trải nghiệm Command K
