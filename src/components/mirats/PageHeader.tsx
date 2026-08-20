@@ -2,6 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { InfoHint } from "./InfoHint";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { TYPO } from "@/lib/mirats/ui/typography";
 import { Icon as SemanticIcon } from "@/components/mirats/ui/Icon";
 import { ChevronRight } from "lucide-react";
 
