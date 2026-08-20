@@ -118,7 +118,7 @@ export function PageHeader({
 
           {/* 3. Description (Static view if needed outside tooltip) */}
           {/* Usually hidden in tooltip to keep header compact, but enabled for spacious */}
-          <div className="hidden data-[density=spacious]:block text-sm text-muted-foreground max-w-2xl">
+          <div className={cn("hidden data-[density=spacious]:block text-muted-foreground max-w-2xl", TYPO.BODY)}>
             {typeof description === 'string' ? description : null}
           </div>
 
