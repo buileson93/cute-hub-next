@@ -22,9 +22,12 @@ export function PageBody({ children, className, noPadding, density }: Props) {
   return (
     <div 
       data-density={density}
-      data-astryx-body="true"
-      data-no-padding={noPadding}
-      className={className}
+      className={cn(
+        "flex w-full flex-col flex-1 overflow-auto bg-background/50",
+        !noPadding && UI_DENSITY.PAGE_PADDING,
+        UI_DENSITY.SECTION_GAP,
+        className
+      )}
     >
       {children}
     </div>

@@ -85,19 +85,18 @@ function Dashboard() {
                  currentLayout={layout}
                  onAdd={handleAddWidget}
                  trigger={
-                    <Button size="default" variant="outline" className="astryx-control gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none" data-astryx-control="true">
+                    <Button size="default" variant="outline" className="astryx-control gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none">
                       <Icon name="action.add" size="tiny" className="text-primary" />
                       <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Thêm Widget</span>
                     </Button>
                  }
                />
-                <Button 
-                  size="default" 
-                  variant="ghost" 
-                  onClick={handleReset}
-                  className="astryx-control gap-2 text-muted-foreground hover:text-destructive"
-                  data-astryx-control="true"
-                >
+               <Button 
+                 size="default" 
+                 variant="ghost" 
+                 onClick={handleReset}
+                 className="astryx-control gap-2 text-muted-foreground hover:text-destructive"
+               >
                  <Icon name="action.undo" size="tiny" />
                  <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
                </Button>
@@ -110,7 +109,6 @@ function Dashboard() {
             className={cn(
               "astryx-control h-8 px-4 transition-all gap-2 shadow-none"
             )}
-            data-astryx-control="true"
           >
             <Icon 
               name={isEditing ? "status.success" : "action.settings"} 

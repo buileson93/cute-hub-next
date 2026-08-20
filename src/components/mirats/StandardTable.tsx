@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -18,7 +17,6 @@ import {
   GripVertical, 
   ChevronRight, ChevronDown, MoreVertical 
 } from "lucide-react";
-
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -1268,11 +1266,8 @@ export function StandardTableInner<T>({
         </div>
       ) : (
         <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll", maxHeightClass, className)}>
-          <Table 
-            density={density as "compact" | "comfortable"}
-            className={cn(
-              "border-separate border-spacing-0 caption-bottom min-w-full",
-
+          <Table className={cn(
+            "border-separate border-spacing-0 caption-bottom min-w-full",
             density === "compact" && "text-[12px]",
             density === "comfortable" && "text-[13px]",
             density === "spacious" && "text-[14px]",

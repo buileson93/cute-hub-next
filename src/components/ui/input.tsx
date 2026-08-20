@@ -9,13 +9,14 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, prefix, suffix, unit, ...props }, ref) => {
-    const density = (props as any)["data-density"];
     return (
       <div 
-        data-astryx-control="input-wrapper"
-        data-astryx-size={density === "comfortable" ? "default" : "sm"}
-        data-astryx-state={props["aria-invalid"] ? "invalid" : undefined}
-        className={cn(className)}
+        className={cn(
+          "astryx-input-wrapper group flex items-center w-full rounded-md border border-input bg-background shadow-none transition-all focus-within:ring-1 focus-within:ring-ring focus-within:border-ring disabled:cursor-not-allowed disabled:opacity-50",
+          "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
+          props["aria-invalid"] && "border-destructive focus-within:ring-destructive",
+          className
+        )}
       >
         {prefix && (
           <div className="flex items-center justify-center px-2 text-muted-foreground border-r bg-muted/30 h-full select-none">
@@ -24,9 +25,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           type={type}
-          data-astryx-control="input"
           className={cn(
-            type === "number" && "astryx-number"
+            "flex h-full w-full bg-transparent px-2 py-1 text-[11px] data-[density=comfortable]:text-[13px] placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed",
+            "file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground",
+            type === "number" && "font-mono tabular-nums"
           )}
           ref={ref}
           {...props}

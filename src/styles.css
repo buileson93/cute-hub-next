@@ -1,35 +1,446 @@
-@layer reset, theme, base, astryx-base, layout, components, utilities;
-
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
 
-/* 1. Static Astryx Reference Foundation */
-@import "./styles/astryx-static/reset.css" layer(reset);
-@import "./styles/astryx-static/tokens.css" layer(theme);
-@import "./styles/astryx-static/theme.css" layer(theme);
-@import "./styles/astryx-static/components.css" layer(astryx-base);
-@import "./styles/astryx-static/layout.css" layer(layout);
+/* Astryx Design System — Core Styles & Reset */
+@import "@astryxdesign/core/astryx.css" layer(astryx-core);
+@import "@astryxdesign/theme-stone/theme.css" layer(astryx-theme);
 
-/* 2. Brand Specific Skins & Overrides */
-@import "./styles/astryx-component-skins.css" layer(components);
+@layer astryx-brand, astryx-skins;
 
-@theme inline {
-  --font-sans: var(--font-family-sans);
-  --font-mono: var(--font-family-mono);
-  
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  
-  --radius-xl: var(--radius-container);
-  --radius-lg: var(--radius-element);
+/* MIRATS — Astryx Static Component Skins */
+@import "./styles/astryx-component-skins.css" layer(astryx-skins);
+
+/* MIRATS Brand Foundation — Astryx Overrides */
+@layer astryx-brand {
+
+  [data-astryx-theme="df3"] {
+    /* Core Tokens mapped from df3-theme.ts */
+    --color-accent: light-dark(#262626, #ebebeb);
+    --color-icon-accent: var(--color-accent);
+    --color-text-accent: var(--color-accent);
+    
+    /* Semantic Colors */
+    --color-success: light-dark(#007004, #9fe59b);
+    --color-error: light-dark(#a50c25, #ffc6c1);
+    --color-warning: light-dark(#745b00, #fdcf4f);
+    
+    /* Surfaces */
+    --color-background-body: light-dark(#f1f1f1, #1b1b1b);
+    --color-background-surface: light-dark(#ffffff, #262626);
+    --color-background-card: light-dark(#ffffff, #1b1b1b);
+    
+    /* Typography - Standardized to Figtree for DF3 style */
+    --font-family-body: "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-heading: "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-code: ui-monospace, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    
+    /* Spacing & Radius */
+    --radius-container: 0.75rem;
+    --radius-element: 0.625rem;
+    
+    /* Motion */
+    --duration-fast: 125ms;
+    --duration-medium: 200ms;
+    --duration-slow: 320ms;
+  }
 }
+
 
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
 
-@layer base {
-  * { border-color: var(--color-border); }
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant density-compact (&:is([data-density="compact"] *));
+
+
+/*
+ * MIRATS — VATM Middle Region ATC.
+ * Editorial aviation shell: off-white paper, brand blue #1D52E0 as the
+ * single accent, hairline slate borders, Space Grotesk display, IBM Plex
+ * Mono for every numeric readout.
+ */
+
+@theme inline {
+  --font-sans: "Geist Variable", "Inter", "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-#lovable-badge { display: none !important; }
+@layer astryx-brand, astryx-skins;
+
+@layer astryx-brand {
+  :root {
+    --radius: 0.75rem; /* 12px from DF3 */
+    --radius-control: 0.625rem; /* 10px from DF3 */
+    --border-contrast: 0.08;
+
+    /* Astryx Semantic Palette - Light Mode (OKLCH) */
+    --background: oklch(0.99 0.002 260);
+    --foreground: oklch(0.12 0.01 260);
+    
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.12 0.01 260);
+    
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.12 0.01 260);
+
+    --primary: #0074e2; /* MIRATS Blue chuẩn */
+    --primary-foreground: #ffffff; /* Trắng tuyệt đối cho tương phản */
+
+    --secondary: oklch(0.92 0.005 260);
+    --secondary-foreground: oklch(0.2 0.01 260);
+
+    --muted: oklch(0.92 0.005 260);
+    --muted-foreground: oklch(0.35 0.01 260);
+
+    --accent: oklch(0.55 0.2 260 / 0.1); /* 10% primary blue for hover states */
+    --accent-foreground: var(--primary);
+
+    --destructive: oklch(0.6 0.18 25);
+    --destructive-foreground: oklch(0.99 0 0);
+
+    --success: oklch(0.63 0.17 145);
+    --warning: oklch(0.79 0.15 75);
+    --info: oklch(0.65 0.15 240);
+
+    --border: oklch(0.12 0.01 260 / 0.08);
+    --input: oklch(0.12 0.01 260 / 0.06);
+    --ring: var(--primary);
+
+    /* Sidebar */
+    --sidebar: oklch(0.98 0.003 260);
+    --sidebar-foreground: oklch(0.2 0.01 260);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.94 0.02 260);
+    --sidebar-accent-foreground: oklch(0.12 0.01 260);
+    --sidebar-border: oklch(0.12 0.01 260 / 0.05);
+    --sidebar-ring: var(--primary);
+
+    /* Charts */
+    --chart-1: oklch(0.46 0.22 264);
+    --chart-2: oklch(0.63 0.17 145);
+    --chart-3: oklch(0.79 0.15 75);
+    --chart-4: oklch(0.6 0.18 25);
+    --chart-5: oklch(0.45 0.01 260);
+    --primary-opacity-5: color-mix(in srgb, var(--primary), transparent 95%);
+    --primary-opacity-10: color-mix(in srgb, var(--primary), transparent 90%);
+    --primary-opacity-20: color-mix(in srgb, var(--primary), transparent 80%);
+  }
+
+  .dark {
+    /* Astryx Semantic Palette - Dark Mode (OKLCH) */
+    --background: oklch(0.12 0.01 260);
+    --foreground: oklch(0.98 0.002 260);
+    
+    --card: oklch(0.16 0.01 260);
+    --card-foreground: oklch(0.98 0.002 260);
+    
+    --popover: oklch(0.16 0.01 260);
+    --popover-foreground: oklch(0.98 0.002 260);
+
+    --primary: oklch(0.65 0.18 260);
+    --primary-foreground: oklch(1 0 0);
+
+    --secondary: oklch(0.25 0.01 260);
+    --secondary-foreground: oklch(0.95 0.005 260);
+
+    --muted: oklch(0.25 0.01 260);
+    --muted-foreground: oklch(0.8 0.01 260);
+
+    --accent: oklch(0.65 0.18 260 / 0.15);
+    --accent-foreground: var(--primary);
+
+    --destructive: oklch(0.65 0.18 25);
+    --destructive-foreground: oklch(0.12 0.01 260);
+
+    --success: oklch(0.7 0.15 145);
+    --warning: oklch(0.85 0.12 75);
+    --info: oklch(0.75 0.12 240);
+
+    --border: oklch(0.98 0.002 260 / 0.1);
+    --input: oklch(0.98 0.002 260 / 0.08);
+    --ring: var(--primary);
+
+    --sidebar: oklch(0.08 0.005 260);
+    --sidebar-foreground: oklch(0.9 0.005 260);
+    --sidebar-border: oklch(1 0 0 / 0.08);
+  }
+}
+
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  --primary-opacity-5: color-mix(in srgb, var(--primary), transparent 95%);
+  --primary-opacity-10: color-mix(in srgb, var(--primary), transparent 90%);
+  --primary-opacity-20: color-mix(in srgb, var(--primary), transparent 80%);
+}
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    letter-spacing: -0.005em;
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.025em;
+  }
+
+  code, kbd, .font-mono, [class~="font-mono"] {
+    font-family: var(--font-mono);
+    font-feature-settings: "zero", "ss01";
+  }
+
+  /* Numeric readouts across the app default to Plex Mono */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@utility surface-elegant {
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
+}
+
+/* Thanh cuộn mảnh, luôn hiển thị rõ cho bảng nhiều cột & dialog dài */
+@utility mirats-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 35%, transparent) transparent;
+  &::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklab, var(--color-muted-foreground) 35%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--color-muted-foreground) 55%, transparent);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+
+/* Tiện ích chuyển động — GĐ1-06 */
+@utility transition-mirats-fast {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-standard);
+}
+
+@utility transition-mirats-base {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* GĐ1-05: Global focus-visible — ring hiển thị nhất quán cho a11y */
+:where(a, button, [role="button"], [role="link"], [role="menuitem"], [role="tab"], [role="option"], select, textarea, summary, [tabindex]):focus-visible,
+:where(input:not(.astryx-input-wrapper input)):focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 1px;
+}
+
+
+/* MIRATS-specific suppression: Never show outline on command palette input */
+[cmdk-input], [cmdk-input]:focus, [cmdk-input]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+
+/* React Flow: bỏ viền chọn/focus để sơ đồ tư duy gọn gàng */
+.react-flow__node {
+  transition: transform var(--duration-slow) var(--ease-emphasized), opacity var(--duration-base) var(--ease-standard), filter var(--duration-base) var(--ease-standard);
+}
+
+.react-flow__node.dragging {
+  transition: none;
+}
+
+.react-flow__node.selected,
+.react-flow__node:focus,
+.react-flow__node:focus-visible,
+.react-flow__node.selectable:focus,
+.react-flow__node.selectable:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Hoạt hoạ dòng chảy cho đường nối sơ đồ (cáp quang, sóng vô tuyến) */
+@keyframes sodo-dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* Thanh tiến độ vô hạn (dùng cho trạng thái đang tải lại dữ liệu) */
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(150%); }
+  100% { transform: translateX(400%); }
+}
+
+/* ============================================================
+   Nhãn QR thiết bị: lưới xem trước + tối ưu khi in
+   ============================================================ */
+.label-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+/* Vùng chỉ hiện khi in (lưới nhãn thực tế để in ra) */
+.print-only {
+  display: none;
+}
+
+@media print {
+  /* Ẩn mọi thứ ngoài vùng in: sidebar, header, thanh công cụ */
+  .no-print,
+  aside,
+  header {
+    display: none !important;
+  }
+  .print-only {
+    display: grid !important;
+  }
+  .label-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4mm;
+  }
+  .label-card {
+    break-inside: avoid;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+  @page {
+    margin: 10mm;
+  }
+}
+
+/* =========================================================
+   Chế độ mật độ gọn (Small mode)
+   Kích hoạt bằng data-density="compact" trên container.
+   Mục tiêu: thu nhỏ nút / input / icon / padding của bảng
+   để hiển thị được nhiều thông tin hơn.
+   ========================================================= */
+/* =========================================================
+   Hỗ trợ lớp trình diễn mật độ.
+   Mặc định hệ thống dùng bộ token UI_DENSITY.
+   ========================================================= */
+
+/* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút khi cần */
+.lucide:not([class*="h-"]) { transform: scale(0.9); transform-origin: center; }
+
+/* Bảng: nén padding các ô cho tất cả TableCell/TableHead của shadcn */
+table th,
+table td {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 13px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+table th { line-height: 1.2; font-weight: 700; font-size: 11px; text-transform: uppercase; tracking: 0.025em; }
+
+/* Ngăn văn bản bị tràn/cắt xấu trong ô bảng */
+table td {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+
+/* Badge / chip nhỏ hơn */
+.badge,
+[data-slot="badge"] {
+  padding: 0.05rem 0.4rem;
+  font-size: 11px;
+}
+
+/* Form controls chuẩn hoá gap giữa các trường */
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+.gap-4 { gap: 1rem; }
+.gap-3 { gap: 0.75rem; }
+
+#lovable-badge {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
+

@@ -43,9 +43,12 @@ export function PageHeader({
 
   return (
     <div 
-      data-testid="page-header"
-      data-astryx-header="true"
-      className={className}
+      data-testid="page-header" 
+      className={cn(
+        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10",
+        UI_DENSITY.CARD_HEADER,
+        className
+      )}
     >
       {/* 1. Breadcrumbs / Supporting */}
       {(breadcrumbs || supporting) && (
@@ -68,7 +71,7 @@ export function PageHeader({
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col min-w-0 flex-1 gap-1">
           {/* 2. Title Row */}
-          <div className="flex min-w-0 items-center gap-2 md:gap-3">
+          <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
             {Icon && (
               <div className="flex shrink-0 items-center justify-center">
                 {typeof Icon === "string" ? (
@@ -82,7 +85,8 @@ export function PageHeader({
             <h1
               data-testid="page-header-title"
               className={cn(
-                "truncate font-bold leading-tight tracking-tight text-foreground text-lg md:text-xl uppercase"
+                "truncate font-bold leading-tight tracking-tight text-foreground",
+                "text-sm data-[density=comfortable]:text-base data-[density=spacious]:text-lg uppercase"
               )}
             >
               {title}

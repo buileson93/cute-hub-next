@@ -1,8 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
-
 import { motion, useReducedMotion } from "motion/react";
 import {
   ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon, LayoutPanelLeft, LayoutPanelTop
@@ -31,26 +28,6 @@ import { UiDensityMode } from "@/lib/mirats/ui/ui-density";
 
 const vatmLogoFullSrc = vatmLogoFull.url;
 const vatmMarkSrc = vatmMark.url;
-
-export const TOUR_STEPS: TourStep[] = [
-  {
-    selector: '[data-tour="rail"]',
-    content: "Thanh điều hướng chính chứa các không gian làm việc (Workspace).",
-    title: "Không gian làm việc",
-  },
-  {
-    selector: '[data-tour="sidebar"]',
-    content: "Menu chi tiết của từng không gian, giúp bạn truy cập nhanh các tính năng.",
-    title: "Menu tính năng",
-  },
-  {
-    selector: '[data-tour="user"]',
-    content: "Quản lý tài khoản, cấu hình mật độ giao diện và đăng xuất.",
-    title: "Tài khoản & Cài đặt",
-  },
-];
-
-
 
 export function BrandMark({ className }: { className?: string }) {
   const { data } = useBranding();
@@ -94,9 +71,6 @@ export function UserMenu() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [density, setDensity] = useUserPref<UiDensityMode>("ui-density", "compact");
-  const isInventoryMode = useMemo(() => isFeatureEnabled("astryxInventoryMode"), []);
-
-
 
   async function handleSignOut() {
     try {
@@ -167,7 +141,6 @@ export function UserMenu() {
             Mật độ: {density === "compact" ? "Gọn (Compact)" : "Rộng (Comfortable)"}
           </DropdownMenuItem>
 
-
           <DropdownMenuItem asChild>
             <Link to="/cai-dat/tai-khoan">
               <UserIcon className="mr-2 h-3.5 w-3.5" />
@@ -227,24 +200,58 @@ export function UserMenu() {
 export function TourButton() {
   const { start } = useProductTour();
   const reduce = useReducedMotion();
-
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => start()}
-            className="rounded-full h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
-          >
-            <LifeBuoy className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" className="text-[11px] font-medium bg-popover/90 backdrop-blur-sm border-border/40">
-          Hướng dẫn hệ thống (Tour)
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <motion.button
+          type="button"
+          data-tour="help"
+          onClick={() => start({ force: true })}
+          whileHover={reduce ? undefined : { scale: 1.06 }}
+          whileTap={reduce ? undefined : { scale: 0.92 }}
+          transition={{ type: "spring", stiffness: 500, damping: 25 }}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[#0074e2]/10 hover:text-[#0074e2]"
+          aria-label="Hướng dẫn sử dụng"
+        >
+          <LifeBuoy className="h-[18px] w-[18px]" strokeWidth={1.8} />
+        </motion.button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">Hướng dẫn sử dụng</TooltipContent>
+    </Tooltip>
   );
 }
+
+export const TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="rail"]',
+    title: "Thanh không gian làm việc",
+    content: "Rê chuột để bung phân hệ, bấm để mở nhanh.",
+    placement: "right",
+    optional: true,
+  },
+  {
+    selector: '[data-tour="search"]',
+    title: "Tìm kiếm nhanh",
+    content: "Gõ để tìm khắp hệ thống. Mẹo: Ctrl/⌘ + K.",
+    placement: "bottom",
+    optional: true,
+  },
+  {
+    selector: '[data-tour="ai"]',
+    title: "Trợ lý MIRATS AI",
+    content: "Hỏi AI về dữ liệu và nhờ hỗ trợ nhập liệu.",
+    placement: "left",
+  },
+  {
+    selector: '[data-tour="notify"]',
+    title: "Thông báo thời gian thực",
+    content: "Nhận cảnh báo công việc, sự cố, tin nhắn liên quan.",
+    placement: "bottom",
+  },
+  {
+    selector: '[data-tour="help"]',
+    title: "Mở lại hướng dẫn",
+    content: "Bấm đây để xem lại tour bất cứ lúc nào.",
+    placement: "bottom",
+  },
+];

@@ -77,7 +77,7 @@ function OverviewReport() {
   }
 
   return (
-    <PageBody density="comfortable">
+    <PageBody>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <PageHeader
           title="Báo cáo Tổng quan KPI"

@@ -34,7 +34,7 @@ export function Sidebar({ onNavigate, collapsed, activeWsId }: {
   }, [groups, hasRole]);
 
   return (
-    <div data-tour="sidebar" className="flex flex-col gap-4 data-[density=compact]:gap-4 data-[density=comfortable]:gap-6 py-3 overflow-x-hidden min-w-[220px]">
+    <div className="flex flex-col gap-4 data-[density=compact]:gap-4 data-[density=comfortable]:gap-6 py-3 overflow-x-hidden min-w-[220px]">
       {filteredGroups.map((group) => {
         return (
           <div key={group.key} className={cn("px-3", collapsed && "px-2")}>

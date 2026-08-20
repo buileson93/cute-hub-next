@@ -1,20 +1,15 @@
 import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement> & { density?: "compact" | "comfortable" }
->(({ className, density = "comfortable", ...props }, ref) => (
-  <div className="astryx-table-container">
-    <table
-      ref={ref}
-      data-astryx-control="table"
-      data-astryx-density={density}
-      className={className}
-      {...props}
-    />
-  </div>
-));
+const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
+  ({ className, ...props }, ref) => (
+    <div className="relative w-full overflow-x-auto overflow-y-visible mirats-scroll astryx-table-container">
+      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
+    </div>
+  ),
+);
+
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<
@@ -23,23 +18,21 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    data-astryx-control="table-header"
-    className={className}
+    className={cn(
+      "mirats-table-header sticky top-0 z-10 bg-background/95 backdrop-blur-[4px] border-b shadow-sm",
+      className,
+    )}
     {...props}
   />
 ));
 TableHeader.displayName = "TableHeader";
 
+
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody
-    ref={ref}
-    data-astryx-control="table-body"
-    className={className}
-    {...props}
-  />
+  <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
 ));
 TableBody.displayName = "TableBody";
 
@@ -49,24 +42,24 @@ const TableFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
-    data-astryx-control="table-footer"
-    className={className}
+    className={cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)}
     {...props}
   />
 ));
 TableFooter.displayName = "TableFooter";
 
-const TableRow = React.forwardRef<
-  HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
-  <tr
-    ref={ref}
-    data-astryx-control="table-row"
-    className={className}
-    {...props}
-  />
-));
+const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
+  ({ className, ...props }, ref) => (
+    <tr
+      ref={ref}
+      className={cn(
+        "border-b transition-colors hover:bg-muted/30 data-[state=selected]:bg-primary/5 active:scale-[0.998] astryx-table-row",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
 TableRow.displayName = "TableRow";
 
 const TableHead = React.forwardRef<
@@ -75,8 +68,10 @@ const TableHead = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <th
     ref={ref}
-    data-astryx-control="table-header-cell"
-    className={className}
+    className={cn(
+      "h-7 px-2 text-left align-middle font-bold text-[10px] uppercase tracking-wider text-muted-foreground border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
+      className,
+    )}
     {...props}
   />
 ));
@@ -88,8 +83,10 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    data-astryx-control="table-cell"
-    className={className}
+    className={cn(
+      "p-1.5 align-middle border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell text-[12px] tabular-nums",
+      className,
+    )}
     {...props}
   />
 ));
@@ -99,13 +96,8 @@ const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption
-    ref={ref}
-    className={cn("mt-4 text-sm text-muted-foreground", className)}
-    {...props}
-  />
+  <caption ref={ref} className={cn("mt-4 text-sm text-muted-foreground", className)} {...props} />
 ));
 TableCaption.displayName = "TableCaption";
 
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };
-

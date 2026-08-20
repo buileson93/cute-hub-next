@@ -276,8 +276,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "su-co-trend":
         return (
-          <Card variant="default" className="h-full flex flex-col">
-
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
               <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.chart" size="tiny" className="text-primary" /> Xu hướng sự cố (12 tháng)
@@ -323,8 +322,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "asset-type-bar":
         return (
-          <Card variant="default" className="h-full flex flex-col">
-
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
               <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.system" size="tiny" className="text-primary" /> Phân loại hệ thống
@@ -363,8 +361,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "completeness-gauge":
         return (
-          <Card variant="default" className="h-full flex flex-col">
-
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
               <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
@@ -394,8 +391,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "live-timeline":
         return (
-          <Card variant="default" className="h-full flex flex-col">
-
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
               <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.history" size="tiny" className="text-primary" /> Nhật ký vận hành
@@ -409,7 +405,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "asset-status-pie":
         return (
-          <Card variant="default" className="h-full flex flex-col">
+          <Card className="astryx-card h-full flex flex-col">
             <CardHeader className="p-4 pb-0">
               <CardTitle className="astryx-text-label flex items-center gap-2">
                 <Icon name="entity.activity" size="tiny" className="text-primary" /> Trạng thái tài sản

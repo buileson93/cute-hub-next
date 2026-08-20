@@ -140,23 +140,26 @@ describe('AppShell Sidebar Layout (T17 - Revised)', () => {
     expect(screen.queryByRole('heading', { level: 3 })).toBeNull();
   });
 
-  it('AppShell: Desktop container phải có data-astryx-region="nav-container"', () => {
+  it('AppShell: Desktop container phải có class hidden md:flex và z-30', () => {
     const { container } = render(<AppShell>Content</AppShell>, { wrapper });
-    const navContainer = container.querySelector('[data-astryx-region="nav-container"]');
-    expect(navContainer).toBeDefined();
-    expect(navContainer?.className).toContain('astryx-nav-container');
+    // Tìm div bọc Rail và Sub-sidebar (có h-dvh và z-30)
+    const desktopNav = container.querySelector('div.h-dvh.z-30');
+    expect(desktopNav).toBeDefined();
+    expect(desktopNav?.className).toContain('hidden');
+    expect(desktopNav?.className).toContain('md:flex');
   });
 
-  it('AppShell: mặc định sub-sidebar phải thu gọn (data-collapsed="true")', () => {
+  it('AppShell: mặc định sub-sidebar phải thu gọn (w-0)', () => {
     const { container } = render(<AppShell>Content</AppShell>, { wrapper });
-    const subSidebar = container.querySelector('[data-astryx-region="sidebar"]');
-    expect(subSidebar?.getAttribute('data-collapsed')).toBe('true');
+    // Tìm aside Sub-sidebar (aside thứ 2 trong desktop container, có overflow-hidden)
+    const subSidebar = container.querySelector('aside.overflow-hidden');
+    expect(subSidebar?.className).toContain('w-0');
   });
 
-  it('AppShell: Rail phải có class astryx-rail', () => {
+  it('AppShell: Rail phải có width w-16', () => {
     const { container } = render(<AppShell>Content</AppShell>, { wrapper });
-    const rail = container.querySelector('[data-astryx-region="rail"]');
+    const rail = container.querySelector('aside.w-16');
     expect(rail).toBeDefined();
-    expect(rail?.className).toContain('astryx-rail');
+    expect(rail?.className).toContain('w-16');
   });
 });
