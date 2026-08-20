@@ -68,7 +68,7 @@ export function PageHeader({
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col min-w-0 flex-1 gap-1">
           {/* 2. Title Row */}
-          <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
+          <div className="flex min-w-0 items-center gap-2 md:gap-3">
             {Icon && (
               <div className="flex shrink-0 items-center justify-center">
                 {typeof Icon === "string" ? (
