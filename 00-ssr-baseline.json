@@ -1,0 +1,10 @@
+{
+  "status": "Warning",
+  "ssr_warnings": [
+    "Hydration failed because the initial UI does not match what was rendered on the server (AstryxProvider div wrapping)."
+  ],
+  "baseline_commands": [
+    "bun run build",
+    "bun run start"
+  ]
+}
