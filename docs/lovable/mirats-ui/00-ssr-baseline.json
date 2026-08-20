@@ -1,0 +1,9 @@
+{
+  "status": "Resolved",
+  "ssr_warnings": [],
+  "baseline_commands": [
+    "bun run build",
+    "bun run start"
+  ],
+  "hydration_status": "Clean"
+}
