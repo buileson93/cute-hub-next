@@ -84,7 +84,7 @@ const largeFiles = tsxFiles.map(f => ({
 })).filter(f => f.lines >= 800);
 
 const largeCompMobileStatus = largeFiles.map(f => {
-  const content = fs.readFileSync(f, 'utf8');
+  const content = fs.readFileSync(f.file, 'utf8');
   const hasMobileMode = /isMobile|priority/.test(content);
   return { file: f.file, lines: f.lines, hasMobileMode };
 });
