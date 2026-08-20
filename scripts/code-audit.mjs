@@ -27,7 +27,6 @@ function getFiles(dir, fileList = []) {
 const allFiles = getFiles(SRC_DIR);
 const filteredFiles = allFiles.filter(f => !EXCLUDE_FILES.some(ex => f.endsWith(ex)));
 
-// 1. Top 30 file lớn nhất
 const fileLines = filteredFiles.map(f => ({
   file: f,
   lines: fs.readFileSync(f, 'utf8').split('\n').length
@@ -35,7 +34,6 @@ const fileLines = filteredFiles.map(f => ({
 
 const top30LargeFiles = fileLines.slice(0, 30);
 
-// 4. Component trùng tên
 const componentsMap = {};
 const duplicateComponents = [];
 allFiles.filter(f => f.endsWith('.tsx')).forEach(f => {
@@ -49,11 +47,9 @@ for (const name in componentsMap) {
   }
 }
 
-// 5. Ngưỡng dòng file
 const filesOver800 = fileLines.filter(f => f.lines > 800).length;
-const filesOver 1200 = fileLines.filter(f => f.lines > 1200).length;
+const filesOver1200 = fileLines.filter(f => f.lines > 1200).length;
 
-// 6. Thống kê theo thư mục
 function getDirStats(parentDir) {
   if (!fs.existsSync(parentDir)) return {};
   const subDirs = fs.readdirSync(parentDir).filter(f => fs.statSync(path.join(parentDir, f)).isDirectory());
@@ -74,7 +70,6 @@ function getDirStats(parentDir) {
 const componentsStats = getDirStats(COMPONENTS_DIR);
 const libStats = getDirStats(LIB_DIR);
 
-// 7. Dependencies thừa
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const allDeps = Object.keys(pkg.dependencies || {});
 const unusedDeps = [];
@@ -87,16 +82,11 @@ allDeps.forEach(dep => {
   }
 });
 
-// 8. Vi phạm kiến trúc Route (useQuery / supabase trực tiếp)
 const routeFiles = getFiles(ROUTES_DIR).filter(f => f.endsWith('.tsx') || f.endsWith('.ts'));
 const routeArchitectureViolations = routeFiles.filter(f => {
   const content = fs.readFileSync(f, 'utf8');
   return /useQuery\(|supabase\./.test(content);
 }).length;
-
-// Mock for complex analysis tools
-const unusedExports = "Requires knip/ts-prune analysis";
-const circularDependencies = "Requires madge/dpdm analysis";
 
 const result = {
   timestamp: new Date().toISOString(),
@@ -108,8 +98,8 @@ const result = {
     totalLibMiratsFiles: getFiles(LIB_DIR).length
   },
   top30LargeFiles,
-  unusedExports,
-  circularDependencies,
+  unusedExports: "Requires knip analysis",
+  circularDependencies: "Requires madge analysis",
   duplicateComponents,
   fileThresholds: { over800: filesOver800, over1200: filesOver1200 },
   directoryStats: { components: componentsStats, libMirats: libStats },

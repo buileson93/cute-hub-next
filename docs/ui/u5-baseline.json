@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-08-20T14:14:57.663Z",
-  "commit": "a864d9442852384e9e5dd274280320d1d906719f",
-  "stats": {
+  "timestamp": "2026-08-20T14:18:23.962Z",
+  "commit": "484537c9e2ac94f46fb0a6e6698d116e99979ee1",
+  "overview": {
     "totalLines": 314474,
     "totalRoutes": 132,
     "totalComponentsTsx": 419,
@@ -129,8 +129,8 @@
       "lines": 750
     }
   ],
-  "unusedExports": [],
-  "circularDependencies": [],
+  "unusedExports": "Requires knip analysis",
+  "circularDependencies": "Requires madge analysis",
   "duplicateComponents": [
     {
       "name": "index.tsx",
@@ -155,69 +155,85 @@
     "components": {
       "astryx": {
         "avg": 83,
-        "max": 83
+        "max": 83,
+        "count": 1
       },
       "astryx-pilot": {
         "avg": 41,
-        "max": 50
+        "max": 50,
+        "count": 2
       },
       "mirats": {
         "avg": 206,
-        "max": 2340
+        "max": 2340,
+        "count": 254
       },
       "ui": {
         "avg": 99,
-        "max": 745
+        "max": 745,
+        "count": 47
       }
     },
     "libMirats": {
       "__tests__": {
         "avg": 101,
-        "max": 231
+        "max": 231,
+        "count": 106
       },
       "auth": {
         "avg": 88,
-        "max": 230
+        "max": 230,
+        "count": 5
       },
       "bao-cao": {
         "avg": 129,
-        "max": 222
+        "max": 222,
+        "count": 4
       },
       "custom-fields": {
         "avg": 85,
-        "max": 121
+        "max": 121,
+        "count": 2
       },
       "dashboard": {
         "avg": 77,
-        "max": 77
+        "max": 77,
+        "count": 1
       },
       "db": {
         "avg": 93,
-        "max": 120
+        "max": 120,
+        "count": 2
       },
       "display": {
         "avg": 194,
-        "max": 321
+        "max": 321,
+        "count": 2
       },
       "document-ocr": {
         "avg": 74,
-        "max": 220
+        "max": 220,
+        "count": 33
       },
       "nav": {
         "avg": 96,
-        "max": 96
+        "max": 96,
+        "count": 1
       },
       "quan-tri": {
         "avg": 171,
-        "max": 171
+        "max": 171,
+        "count": 1
       },
       "search": {
         "avg": 91,
-        "max": 161
+        "max": 161,
+        "count": 7
       },
       "ui": {
         "avg": 84,
-        "max": 229
+        "max": 229,
+        "count": 24
       }
     }
   },
@@ -254,5 +270,5 @@
     "tw-animate-css",
     "vite-tsconfig-paths"
   ],
-  "routeArchitectureViolations": 247
+  "routeArchitectureViolationsCount": 62
 }
