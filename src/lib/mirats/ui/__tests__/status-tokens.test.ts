@@ -18,13 +18,14 @@ describe('Hệ thống Trạng thái (Status System)', () => {
   });
 
   it('không còn tên màu palette nào trong file token (quét chuỗi)', () => {
-    // Test này sẽ kiểm tra gián tiếp qua việc color dùng các biến semantic
-    const validColors = ['success', 'warning', 'destructive', 'info', 'muted', 'primary'];
-    Object.values(TYPO_STATUS).forEach(token => {
-      const hasSemanticColor = validColors.some(c => token.color.includes(c));
+    // Các màu semantic hợp lệ trong Astryx skins
+    const validSemanticPrefixes = ['astryx-status-', 'bg-success', 'bg-warning', 'bg-info', 'bg-destructive', 'bg-muted'];
+    Object.values(TYPO_STATUS).forEach((token: any) => {
+      const hasSemanticColor = validSemanticPrefixes.some(p => token.color.includes(p));
       expect(hasSemanticColor).toBe(true);
     });
   });
+
 
   it('mã lạ làm tăng bộ đệm cảnh báo', () => {
     const initialCount = getWarningCount();
