@@ -1274,9 +1274,7 @@ function CatalogDialog({
             </div>
           )}
           <div className="flex items-center gap-2">
-            <div className="flex justify-center">
-              <Switch checked={active} onCheckedChange={setActive} id="cat-active" />
-            </div>
+            <Switch checked={active} onCheckedChange={setActive} id="cat-active" />
             <Label htmlFor="cat-active" className="cursor-pointer">Đang sử dụng</Label>
           </div>
         </div>

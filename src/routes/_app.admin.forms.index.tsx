@@ -159,10 +159,8 @@ function AdminFormsPage() {
                     <SelectItem value="multi">Nhiều tài sản</SelectItem>
                   </SelectContent>
                 </Select></div>
-              <div className="flex items-center gap-3">
-                <div className="flex justify-center">
-                  <Switch checked={form.require_signature} onCheckedChange={(v) => setForm({ ...form, require_signature: v })} />
-                </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={form.require_signature} onCheckedChange={(v) => setForm({ ...form, require_signature: v })} />
                 <Label>Có phần chữ ký</Label>
               </div>
             </div>
@@ -186,7 +184,7 @@ function AdminFormsPage() {
                 <TableHead>Mã</TableHead><TableHead>Tên</TableHead>
                 <TableHead>Loại</TableHead>
                 <TableHead>Tài sản</TableHead><TableHead>Chữ ký</TableHead>
-                <TableHead className="text-center">Trạng thái</TableHead><TableHead className="text-right">Hành động</TableHead>
+                <TableHead>Trạng thái</TableHead><TableHead className="text-right">Hành động</TableHead>
               </TableRow></TableHeader>
               <TableBody>
                 {(templates ?? []).map((t) => (
@@ -200,10 +198,8 @@ function AdminFormsPage() {
                     </TableCell>
                     <TableCell><Badge variant="outline">{t.thiet_bi_mode === "none" ? "—" : t.thiet_bi_mode === "single" ? "1 TB" : "Nhiều TB"}</Badge></TableCell>
                     <TableCell>{t.require_signature ? "Có" : "Không"}</TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
-                        <Switch checked={t.active} onCheckedChange={(v) => toggleM.mutate({ id: t.id, active: v })} />
-                      </div>
+                    <TableCell>
+                      <Switch checked={t.active} onCheckedChange={(v) => toggleM.mutate({ id: t.id, active: v })} />
                     </TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">

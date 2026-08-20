@@ -199,9 +199,7 @@ function Content() {
                         Khi tắt: kho đang chọn lỗi thì thao tác tải lên sẽ báo lỗi ngay.
                       </p>
                     </div>
-                    <div className="flex justify-center">
-                      <Switch id="autoFallback" checked={autoFallback} onCheckedChange={setAutoFallback} />
-                    </div>
+                    <Switch id="autoFallback" checked={autoFallback} onCheckedChange={setAutoFallback} />
                   </CardContent>
                 </Card>
 
@@ -389,9 +387,7 @@ function R2ParamsCard() {
                 <Label htmlFor="r2Enabled" className="text-sm font-medium">Kích hoạt R2</Label>
                 <p className="text-xs text-muted-foreground">Tắt sẽ bỏ qua mọi thao tác ghi/đọc trên R2.</p>
               </div>
-              <div className="flex justify-center">
-                <Switch id="r2Enabled" checked={form.enabled} onCheckedChange={(v) => set("enabled", v)} />
-              </div>
+              <Switch id="r2Enabled" checked={form.enabled} onCheckedChange={(v) => set("enabled", v)} />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
