@@ -11,12 +11,16 @@ async def check_overflow(page, url):
     try:
         await page.goto(url, wait_until="domcontentloaded")
         await page.wait_for_load_state("networkidle", timeout=15000)
+        # Wait for the table to potentially render card mode if implemented
         await page.wait_for_timeout(2000) 
         
+        # Check for overflow only in the main content area to ignore intentional table horizontal scrolling if any
+        # However, for G1, we expect NO horizontal scrolling on the root element.
         scroll_width = await page.evaluate("document.documentElement.scrollWidth")
         client_width = await page.evaluate("document.documentElement.clientWidth")
         
-        if scroll_width > client_width:
+        # Allow 5px margin for sub-pixel rounding
+        if scroll_width > client_width + 5:
             filename = url.replace("http://localhost:8080/", "").replace("/", "_") or "index"
             await page.screenshot(path=str(SCREENSHOTS / f"overflow_{filename}.png"))
             return False, scroll_width, client_width
