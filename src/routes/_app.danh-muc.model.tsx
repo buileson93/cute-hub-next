@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import { StandardTable } from "@/components/mirats/StandardTable";
 import { CardGridSkeleton } from "@/components/mirats/Skeletons";
@@ -1051,13 +1052,12 @@ function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => 
           </ScrollArea>
         )}
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Đóng</Button>
+        <DialogFooter className="mt-4">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={onClose}>Đóng</Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+      </ResponsiveDialog>
+    );
+  }
 
 // ---------------------------------------------------------------------------
 // Hộp thoại: Gộp nhiều mẫu đã chọn thành một mẫu đích.
@@ -1078,16 +1078,13 @@ function MergeModelsDialog({
   const totalTb = models.reduce((s, m) => s + m.soThietBi, 0);
 
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <GitMerge className="h-5 w-5 text-primary" /> Gộp {models.length} model
-          </DialogTitle>
-          <DialogDescription>
-            Chọn mẫu <b>giữ lại</b>. Toàn bộ {totalTb} tài sản của các mẫu còn lại sẽ được chuyển sang mẫu này, sau đó các mẫu trùng sẽ bị xoá.
-          </DialogDescription>
-        </DialogHeader>
+    <ResponsiveDialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={`Gộp ${models.length} model`}
+      description={`Chọn mẫu giữ lại. Toàn bộ ${totalTb} tài sản của các mẫu còn lại sẽ được chuyển sang mẫu này, sau đó các mẫu trùng sẽ bị xoá.`}
+      className="max-w-lg"
+    >
 
         <ScrollArea className="max-h-[50vh] pr-3">
           <div className="space-y-1.5">
