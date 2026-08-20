@@ -14,7 +14,8 @@ interface DesktopOnlyProps {
 
 /**
  * Hạng G3 — CÔNG CỤ CHUYÊN SÂU
- * Hiển thị thông báo khi tính năng chỉ hoạt động tốt trên Desktop
+ * Hàng rào bảo vệ: Hiển thị thông báo khi tính năng chỉ hoạt động tốt trên Desktop.
+ * Quy định U6: Mọi route hạng G3 phải được bao bọc bởi component này.
  */
 export function DesktopOnly({ 
   children, 

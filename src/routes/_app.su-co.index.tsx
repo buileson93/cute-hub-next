@@ -360,6 +360,7 @@ function SuCoPage() {
   return (
     <>
       <PageFrame density="compact">
+
       <PageHeader
         icon={AlertTriangle}
         title="Sự cố kỹ thuật"
