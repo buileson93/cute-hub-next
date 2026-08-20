@@ -206,10 +206,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AstryxProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </AstryxProvider>
+      <Outlet />
       <Toaster />
       <SavingIndicator />
       <OfflineBanner />
