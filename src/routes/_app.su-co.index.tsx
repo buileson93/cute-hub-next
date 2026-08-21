@@ -375,9 +375,14 @@ function SuCoPage() {
               <RotateCcw className="h-4 w-4" />
               <span className="truncate max-w-[100px]">KHÔI PHỤC</span>
             </Button>
-            <Button size="sm" className="hidden md:flex flex justify-center gap-2 h-8" tooltip="Cá nhân hóa bảng điều khiển">
-              <LayoutGrid className="h-4 w-4" />
-              <span className="truncate max-w-[120px]">CÁ NHÂN HÓA</span>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="hidden md:flex flex justify-center gap-2 h-8 border-[#0074e2]/20 text-[#0074e2] hover:bg-[#0074e2]/5" 
+              tooltip="Cá nhân hóa bảng điều khiển"
+            >
+              <LayoutGrid className="h-4 w-4 text-[#0074e2]" />
+              <span className="truncate max-w-[120px] text-[10px] font-bold uppercase tracking-wider">CÁ NHÂN HÓA</span>
             </Button>
             <Button asChild size="sm" className="gap-2 h-8">
               <Link to="/su-co/moi">
