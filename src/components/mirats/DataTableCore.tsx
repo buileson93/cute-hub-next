@@ -48,6 +48,7 @@ interface DataTableCoreProps<T> {
   onRowClick?: (row: T) => void;
   className?: string;
   maxHeight?: string | number;
+  fitViewport?: boolean; // Tự động tính toán chiều cao để thanh cuộn ngang luôn hiển thị
 }
 
 /**
@@ -63,9 +64,32 @@ export function DataTableCore<T>({
   onSelect,
   onRowClick,
   className,
-  maxHeight,
+  maxHeight: initialMaxHeight,
+  fitViewport = false,
 }: DataTableCoreProps<T>) {
   const [density] = useDensity();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [calculatedMaxHeight, setCalculatedMaxHeight] = React.useState<string | number | undefined>(initialMaxHeight);
+
+  React.useLayoutEffect(() => {
+    if (!fitViewport || !containerRef.current) return;
+
+    const calculate = () => {
+      const rect = containerRef.current!.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      // Chừa khoảng trống cho margin/footer (khoảng 40px)
+      const available = windowHeight - rect.top - 40;
+      if (available > 200) {
+        setCalculatedMaxHeight(`${available}px`);
+      }
+    };
+
+    calculate();
+    window.addEventListener('resize', calculate);
+    return () => window.removeEventListener('resize', calculate);
+  }, [fitViewport, initialMaxHeight]);
+
+  const maxHeight = fitViewport ? calculatedMaxHeight : initialMaxHeight;
 
   const renderCellContent = (col: DataTableColumn<T>, row: T) => {
     if (col.render) return col.render(row);
@@ -97,6 +121,7 @@ export function DataTableCore<T>({
 
   return (
     <div 
+      ref={containerRef}
       className={cn("relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core", className)}
       style={{ maxHeight }}
     >
