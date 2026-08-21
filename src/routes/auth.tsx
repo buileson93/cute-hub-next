@@ -230,17 +230,37 @@ function AuthPage() {
                           Quên mật khẩu?
                         </a>
                       } />
-                    <Button
+                    <button
                       type="submit"
-                      variant="default"
-                      style={{ display: 'flex', height: '56px', width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                      className="group !rounded-2xl bg-[#0074e2] text-white text-[17px] font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98]"
                       disabled={busy}
-                      loading={loading}
+                      style={{ 
+                        display: 'flex', 
+                        height: '56px', 
+                        width: '100%', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        backgroundColor: '#0074e2',
+                        color: 'white',
+                        fontSize: '17px',
+                        fontWeight: 'bold',
+                        borderRadius: '16px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: '0 20px 25px -5px rgba(0, 116, 226, 0.2), 0 8px 10px -6px rgba(0, 116, 226, 0.2)'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0066c7'}
+                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#0074e2'}
+                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                      <LogIn className="mr-3 h-5.5 w-5.5 text-white transition-transform group-hover:translate-x-1" />
+                      {loading ? (
+                        <Loader2 className="mr-3 h-5.5 w-5.5 animate-spin" />
+                      ) : (
+                        <LogIn className="mr-3 h-5.5 w-5.5 transition-transform group-hover:translate-x-1" />
+                      )}
                       Đăng nhập
-                    </Button>
+                    </button>
                   </div>
                 </motion.form>
               ) : (
@@ -259,17 +279,37 @@ function AuthPage() {
                       value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
                     <Field id="password" label="Mật khẩu" type="password" autoComplete="new-password"
                       value={password} onChange={setPassword} disabled={busy} placeholder="Tối thiểu 8 ký tự" />
-                    <Button
+                    <button
                       type="submit"
-                      variant="default"
-                      style={{ display: 'flex', height: '56px', width: '100%', alignItems: 'center', justifyContent: 'center' }}
-                      className="group !rounded-2xl bg-[#0074e2] text-white text-[17px] font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98]"
                       disabled={busy}
-                      loading={loading}
+                      style={{ 
+                        display: 'flex', 
+                        height: '56px', 
+                        width: '100%', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        backgroundColor: '#0074e2',
+                        color: 'white',
+                        fontSize: '17px',
+                        fontWeight: 'bold',
+                        borderRadius: '16px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: '0 20px 25px -5px rgba(0, 116, 226, 0.2), 0 8px 10px -6px rgba(0, 116, 226, 0.2)'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0066c7'}
+                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#0074e2'}
+                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                      <UserPlus className="mr-3 h-5.5 w-5.5 text-white transition-transform group-hover:scale-110" />
+                      {loading ? (
+                        <Loader2 className="mr-3 h-5.5 w-5.5 animate-spin" />
+                      ) : (
+                        <UserPlus className="mr-3 h-5.5 w-5.5 transition-transform group-hover:scale-110" />
+                      )}
                       Đăng ký
-                    </Button>
+                    </button>
                     <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
                       Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>. Quản trị viên sẽ kích hoạt và gán vai trò.
                     </p>
