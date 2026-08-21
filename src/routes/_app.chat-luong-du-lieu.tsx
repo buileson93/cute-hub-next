@@ -7,6 +7,7 @@ import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/comp
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { CompletenessRing } from '@/components/mirats/CompletenessRing';
+import { CompletenessStats } from '@/components/mirats/CompletenessStats';
 import { Database, AlertTriangle, ClipboardList, Trophy, Flame } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/chat-luong-du-lieu')({
