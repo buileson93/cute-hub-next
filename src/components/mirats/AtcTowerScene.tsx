@@ -129,7 +129,7 @@ export function AtcTowerScene() {
   return (
     <div
       ref={ref}
-      className="relative h-full w-full overflow-hidden bg-[#050914]"
+      className="relative h-full w-full overflow-hidden bg-[#050914] lg:rounded-r-[32px]"
       aria-hidden
     >
       {/* Base photograph with Ken-Burns parallax + subtle hover zoom */}
@@ -147,7 +147,7 @@ export function AtcTowerScene() {
             src={towerPhoto}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "35% 45%" }}
+            style={{ objectPosition: "45% 45%" }}
           />
         </motion.div>
       </motion.div>
