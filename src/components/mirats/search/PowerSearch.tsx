@@ -15,7 +15,9 @@ import {
   User,
   Moon,
   Sun,
-  LayoutGrid
+  LayoutGrid,
+  ClipboardCheck,
+  FolderKanban
 } from "lucide-react";
 import { useTimKiemToanCuc, nhanLoai } from "@/lib/mirats/search/tim-kiem";
 import { useOcrSearch } from "@/lib/mirats/search/ocr-index/use-ocr-search";
