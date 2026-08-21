@@ -373,7 +373,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="!h-13 !rounded-2xl border-slate-200 bg-slate-50/30 px-5 text-[15px] transition-all focus-within:!ring-4 focus-within:!ring-[#0074e2]/10 focus-within:!border-[#0074e2]/40 focus-within:!bg-white focus-within:!outline-none"
+        className="!h-14 !rounded-2xl border-slate-200 bg-slate-50/30 px-5 !text-[16px] font-medium transition-all focus-within:!ring-4 focus-within:!ring-[#0074e2]/10 focus-within:!border-[#0074e2]/40 focus-within:!bg-white focus-within:!outline-none"
       />
     </div>
   );
