@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-08-20T23:31:19.521Z",
-  "commit": "232f77727343ac7dd8873f5ef164982aa891e1ac",
+  "timestamp": "2026-08-21T10:05:22.636Z",
+  "commit": "268d0789bd38047b2302d9493b408fc93d529122",
   "metrics": {
     "responsivePrefixes": {
-      "sm": 228,
+      "sm": 230,
       "md": 205,
-      "lg": 109,
+      "lg": 110,
       "xl": 25,
       "2xl": 1,
-      "filesWithNoPrefix": 268
+      "filesWithNoPrefix": 267
     },
     "visibility": {
       "mdHidden": 5,
@@ -36,7 +36,7 @@
     },
     "widthRisks": {
       "minWidthPx": 131,
-      "fixedWidthLarge": 31,
+      "fixedWidthLarge": 32,
       "overflowXAuto": 32,
       "topFiles": [
         {
@@ -204,6 +204,6 @@
         "hasMobileMode": true
       }
     ],
-    "mobileTestsCount": 4
+    "mobileTestsCount": 5
   }
 }

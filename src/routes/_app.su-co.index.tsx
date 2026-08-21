@@ -359,7 +359,7 @@ function SuCoPage() {
 
   return (
     <>
-      <PageFrame density="compact">
+      <PageFrame density="compact" className="max-w-full overflow-hidden">
 
       <PageHeader
         icon={AlertTriangle}
