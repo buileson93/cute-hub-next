@@ -11,7 +11,7 @@ import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, FilePlus2, FileDown, AlertTriangle, Clock, Activity, Network, ChevronDown,
-  Flame, CheckCircle2, Loader2, HardDrive, Filter,
+  Flame, CheckCircle2, Loader2, HardDrive, Filter, RotateCcw, LayoutGrid, Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -368,11 +368,22 @@ function SuCoPage() {
         actions={
           <div className="flex gap-1 items-center">
             <WeeklyReportImportDialog />
-            <Button asChild size="icon" variant="outline" className="h-8 w-8">
+            <Button asChild size="icon" variant="outline" className="h-8 w-8" tooltip="Lịch sử nhập báo cáo">
               <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="icon" className="h-8 w-8">
-              <Link to="/su-co/moi"><FilePlus2 className="h-4 w-4" /></Link>
+            <Button variant="outline" size="sm" className="hidden md:flex gap-2 h-8" tooltip="Khôi phục trạng thái ban đầu">
+              <RotateCcw className="h-4 w-4" />
+              <span className="truncate max-w-[100px]">KHÔI PHỤC</span>
+            </Button>
+            <Button size="sm" className="hidden md:flex gap-2 h-8" tooltip="Cá nhân hóa bảng điều khiển">
+              <LayoutGrid className="h-4 w-4" />
+              <span className="truncate max-w-[120px]">CÁ NHÂN HÓA</span>
+            </Button>
+            <Button asChild size="sm" className="gap-2 h-8">
+              <Link to="/su-co/moi">
+                <Plus className="h-4 w-4" />
+                <span>BÁO CÁO MỚI</span>
+              </Link>
             </Button>
           </div>
         }
