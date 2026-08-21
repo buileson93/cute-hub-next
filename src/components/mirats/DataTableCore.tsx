@@ -168,11 +168,11 @@ export function DataTableCore<T>({
                       key={col.key}
                       className={cn(
                         col.cellClassName,
-                        col.sticky && "sticky left-0 z-10 bg-card group-hover:bg-muted/50",
+                        col.sticky && "sticky left-0 z-10 bg-card group-hover:bg-muted/50 border-r border-border/10",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" && "sticky right-0 z-10 bg-card/80 backdrop-blur-[2px]"
+                        col.type === "actions" && "sticky right-0 z-10 bg-card/80 backdrop-blur-[2px] border-l border-border/10"
                       )}
                       style={{
                         width: col.width,
