@@ -3,7 +3,8 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useRe
 import towerAsset from "@/assets/atc-tower-phucat.jpg.asset.json";
 import jetAsset from "@/assets/fighter-jet.png.asset.json";
 import twrInteriorAsset from "@/assets/twr-interior.jpg.asset.json";
-
+import { TYPO } from "@/lib/mirats/ui/typography";
+import { cn } from "@/lib/utils";
 
 const towerPhoto = towerAsset.url;
 const jetPhoto = jetAsset.url;
