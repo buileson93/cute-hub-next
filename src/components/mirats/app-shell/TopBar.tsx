@@ -53,7 +53,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             onClick={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
           >
-            <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden pointer-events-none">
+            <div className="flex items-center gap-2 px-3 min-w-0 flex-1 overflow-hidden pointer-events-none">
               <Search className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
               <span className="truncate text-left min-w-0">Tìm tài sản, hệ thống, biên bản...</span>
             </div>

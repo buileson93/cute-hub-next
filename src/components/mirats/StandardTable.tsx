@@ -780,7 +780,7 @@ export function StandardTableInner<T>({
         );
 
       case "completeness":
-        const pct = typeof val === "number" ? val : calculateCompleteness("thiet_bi", row as any);
+        const pct = typeof val === "number" ? val : calculateCompleteness("thiet_bi", r as any);
         return (
           <div className="flex items-center justify-center w-full">
             <CompletenessRing value={pct} size={24} strokeWidth={3} showText />
