@@ -23,7 +23,6 @@ import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminUiKitRouteImport } from './routes/admin.ui-kit'
 import { Route as AdminSupabaseNgoaiRouteImport } from './routes/admin.supabase-ngoai'
 import { Route as AdminSchemaRouteImport } from './routes/admin.schema'
 import { Route as AdminBackupRouteImport } from './routes/admin.backup'
@@ -120,9 +119,6 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AppBaoTriDotIndexRouteImport } from './routes/_app.bao-tri.dot.index'
 import { Route as AppAdminFormsIndexRouteImport } from './routes/_app.admin.forms.index'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksTestEmailAlertsRouteImport } from './routes/api/public/hooks/test-email-alerts'
 import { Route as ApiPublicHooksTelegramAlertsRouteImport } from './routes/api/public/hooks/telegram-alerts'
 import { Route as ApiPublicHooksScanCanhBaoRouteImport } from './routes/api/public/hooks/scan-canh-bao'
@@ -207,11 +203,6 @@ const ApiBackupRunRoute = ApiBackupRunRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUiKitRoute = AdminUiKitRouteImport.update({
-  id: '/ui-kit',
-  path: '/ui-kit',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSupabaseNgoaiRoute = AdminSupabaseNgoaiRouteImport.update({
@@ -698,22 +689,6 @@ const AppAdminFormsIndexRoute = AppAdminFormsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppAdminFormsRoute,
 } as any)
-const LovableEmailTransactionalPreviewRoute =
-  LovableEmailTransactionalPreviewRouteImport.update({
-    id: '/lovable/email/transactional/preview',
-    path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
-  id: '/lovable/email/auth/preview',
-  path: '/lovable/email/auth/preview',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicHooksTestEmailAlertsRoute =
   ApiPublicHooksTestEmailAlertsRouteImport.update({
     id: '/api/public/hooks/test-email-alerts',
@@ -846,7 +821,6 @@ export interface FileRoutesByFullPath {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -927,9 +901,6 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
   '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms/': typeof AppAdminFormsIndexRoute
   '/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
@@ -971,7 +942,6 @@ export interface FileRoutesByTo {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -1051,9 +1021,6 @@ export interface FileRoutesByTo {
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
   '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms': typeof AppAdminFormsIndexRoute
   '/bao-tri/dot': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
@@ -1102,7 +1069,6 @@ export interface FileRoutesById {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
@@ -1184,9 +1150,6 @@ export interface FileRoutesById {
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
   '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/admin/forms/': typeof AppAdminFormsIndexRoute
   '/_app/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/_app/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
@@ -1236,7 +1199,6 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1317,9 +1279,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
     | '/api/public/hooks/test-email-alerts'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/transactional/preview'
     | '/admin/forms/'
     | '/bao-tri/dot/'
     | '/admin/forms/$id/history'
@@ -1361,7 +1320,6 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1441,9 +1399,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
     | '/api/public/hooks/test-email-alerts'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/transactional/preview'
     | '/admin/forms'
     | '/bao-tri/dot'
     | '/admin/forms/$id/history'
@@ -1491,7 +1446,6 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
@@ -1573,9 +1527,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
     | '/api/public/hooks/test-email-alerts'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/transactional/preview'
     | '/_app/admin/forms/'
     | '/_app/bao-tri/dot/'
     | '/_app/admin/forms/$id/history'
@@ -1611,9 +1562,6 @@ export interface RootRouteChildren {
   ApiPublicHooksScanCanhBaoRoute: typeof ApiPublicHooksScanCanhBaoRoute
   ApiPublicHooksTelegramAlertsRoute: typeof ApiPublicHooksTelegramAlertsRoute
   ApiPublicHooksTestEmailAlertsRoute: typeof ApiPublicHooksTestEmailAlertsRoute
-  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
-  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
-  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1714,13 +1662,6 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/ui-kit': {
-      id: '/admin/ui-kit'
-      path: '/ui-kit'
-      fullPath: '/admin/ui-kit'
-      preLoaderRoute: typeof AdminUiKitRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/supabase-ngoai': {
@@ -2395,27 +2336,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminFormsIndexRouteImport
       parentRoute: typeof AppAdminFormsRoute
     }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/auth/webhook': {
-      id: '/lovable/email/auth/webhook'
-      path: '/lovable/email/auth/webhook'
-      fullPath: '/lovable/email/auth/webhook'
-      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/auth/preview': {
-      id: '/lovable/email/auth/preview'
-      path: '/lovable/email/auth/preview'
-      fullPath: '/lovable/email/auth/preview'
-      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hooks/test-email-alerts': {
       id: '/api/public/hooks/test-email-alerts'
       path: '/api/public/hooks/test-email-alerts'
@@ -2868,7 +2788,6 @@ interface AdminRouteChildren {
   AdminBackupRoute: typeof AdminBackupRoute
   AdminSchemaRoute: typeof AdminSchemaRoute
   AdminSupabaseNgoaiRoute: typeof AdminSupabaseNgoaiRoute
-  AdminUiKitRoute: typeof AdminUiKitRoute
   AdminUsersRoute: typeof AdminUsersRoute
 }
 
@@ -2877,7 +2796,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBackupRoute: AdminBackupRoute,
   AdminSchemaRoute: AdminSchemaRoute,
   AdminSupabaseNgoaiRoute: AdminSupabaseNgoaiRoute,
-  AdminUiKitRoute: AdminUiKitRoute,
   AdminUsersRoute: AdminUsersRoute,
 }
 
@@ -2913,9 +2831,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksScanCanhBaoRoute: ApiPublicHooksScanCanhBaoRoute,
   ApiPublicHooksTelegramAlertsRoute: ApiPublicHooksTelegramAlertsRoute,
   ApiPublicHooksTestEmailAlertsRoute: ApiPublicHooksTestEmailAlertsRoute,
-  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
-  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
-  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
