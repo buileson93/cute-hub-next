@@ -20,7 +20,6 @@ import { Route as QIndexRouteImport } from './routes/q.index'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as VerifyIdRouteImport } from './routes/verify.$id'
 import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
-import { Route as LovableUiKitRouteImport } from './routes/lovable/ui-kit'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -66,7 +65,6 @@ import { Route as AppFormsIndexRouteImport } from './routes/_app.forms.index'
 import { Route as AppDuAnIndexRouteImport } from './routes/_app.du-an.index'
 import { Route as AppBaoTriIndexRouteImport } from './routes/_app.bao-tri.index'
 import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
-import { Route as ApiPublicUiKitRouteImport } from './routes/api/public/ui-kit'
 import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
@@ -121,9 +119,6 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AppBaoTriDotIndexRouteImport } from './routes/_app.bao-tri.dot.index'
 import { Route as AppAdminFormsIndexRouteImport } from './routes/_app.admin.forms.index'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksTestEmailAlertsRouteImport } from './routes/api/public/hooks/test-email-alerts'
 import { Route as ApiPublicHooksTelegramAlertsRouteImport } from './routes/api/public/hooks/telegram-alerts'
 import { Route as ApiPublicHooksScanCanhBaoRouteImport } from './routes/api/public/hooks/scan-canh-bao'
@@ -193,11 +188,6 @@ const VerifyIdRoute = VerifyIdRouteImport.update({
 const QMaThietBiRoute = QMaThietBiRouteImport.update({
   id: '/q/$maThietBi',
   path: '/q/$maThietBi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LovableUiKitRoute = LovableUiKitRouteImport.update({
-  id: '/lovable/ui-kit',
-  path: '/lovable/ui-kit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -425,11 +415,6 @@ const AppBaoTriIndexRoute = AppBaoTriIndexRouteImport.update({
 const QrThietBiIdRoute = QrThietBiIdRouteImport.update({
   id: '/qr/thiet-bi/$id',
   path: '/qr/thiet-bi/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicUiKitRoute = ApiPublicUiKitRouteImport.update({
-  id: '/api/public/ui-kit',
-  path: '/api/public/ui-kit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicQaResetTestPasswordsRoute =
@@ -704,22 +689,6 @@ const AppAdminFormsIndexRoute = AppAdminFormsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppAdminFormsRoute,
 } as any)
-const LovableEmailTransactionalPreviewRoute =
-  LovableEmailTransactionalPreviewRouteImport.update({
-    id: '/lovable/email/transactional/preview',
-    path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
-  id: '/lovable/email/auth/preview',
-  path: '/lovable/email/auth/preview',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicHooksTestEmailAlertsRoute =
   ApiPublicHooksTestEmailAlertsRouteImport.update({
     id: '/api/public/hooks/test-email-alerts',
@@ -855,7 +824,6 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
-  '/lovable/ui-kit': typeof LovableUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/q/': typeof QIndexRoute
@@ -911,7 +879,6 @@ export interface FileRoutesByFullPath {
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
-  '/api/public/ui-kit': typeof ApiPublicUiKitRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri/': typeof AppBaoTriIndexRoute
   '/du-an/': typeof AppDuAnIndexRoute
@@ -934,9 +901,6 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
   '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms/': typeof AppAdminFormsIndexRoute
   '/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
@@ -981,7 +945,6 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
-  '/lovable/ui-kit': typeof LovableUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/': typeof AppIndexRoute
@@ -1036,7 +999,6 @@ export interface FileRoutesByTo {
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
-  '/api/public/ui-kit': typeof ApiPublicUiKitRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri': typeof AppBaoTriIndexRoute
   '/du-an': typeof AppDuAnIndexRoute
@@ -1059,9 +1021,6 @@ export interface FileRoutesByTo {
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
   '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/forms': typeof AppAdminFormsIndexRoute
   '/bao-tri/dot': typeof AppBaoTriDotIndexRoute
   '/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
@@ -1113,7 +1072,6 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
-  '/lovable/ui-kit': typeof LovableUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/_app/': typeof AppIndexRoute
@@ -1170,7 +1128,6 @@ export interface FileRoutesById {
   '/_app/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
-  '/api/public/ui-kit': typeof ApiPublicUiKitRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/_app/bao-tri/': typeof AppBaoTriIndexRoute
   '/_app/du-an/': typeof AppDuAnIndexRoute
@@ -1193,9 +1150,6 @@ export interface FileRoutesById {
   '/api/public/hooks/scan-canh-bao': typeof ApiPublicHooksScanCanhBaoRoute
   '/api/public/hooks/telegram-alerts': typeof ApiPublicHooksTelegramAlertsRoute
   '/api/public/hooks/test-email-alerts': typeof ApiPublicHooksTestEmailAlertsRoute
-  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
-  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
-  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/admin/forms/': typeof AppAdminFormsIndexRoute
   '/_app/bao-tri/dot/': typeof AppBaoTriDotIndexRoute
   '/_app/admin/forms/$id/history': typeof AppAdminFormsIdHistoryRoute
@@ -1248,7 +1202,6 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
-    | '/lovable/ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/q/'
@@ -1304,7 +1257,6 @@ export interface FileRouteTypes {
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
     | '/api/public/qa-reset-test-passwords'
-    | '/api/public/ui-kit'
     | '/qr/thiet-bi/$id'
     | '/bao-tri/'
     | '/du-an/'
@@ -1327,9 +1279,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
     | '/api/public/hooks/test-email-alerts'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/transactional/preview'
     | '/admin/forms/'
     | '/bao-tri/dot/'
     | '/admin/forms/$id/history'
@@ -1374,7 +1323,6 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
-    | '/lovable/ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/'
@@ -1429,7 +1377,6 @@ export interface FileRouteTypes {
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
     | '/api/public/qa-reset-test-passwords'
-    | '/api/public/ui-kit'
     | '/qr/thiet-bi/$id'
     | '/bao-tri'
     | '/du-an'
@@ -1452,9 +1399,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
     | '/api/public/hooks/test-email-alerts'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/transactional/preview'
     | '/admin/forms'
     | '/bao-tri/dot'
     | '/admin/forms/$id/history'
@@ -1505,7 +1449,6 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
-    | '/lovable/ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/_app/'
@@ -1562,7 +1505,6 @@ export interface FileRouteTypes {
     | '/_app/tickets/$id'
     | '/admin/audit/lap-thao'
     | '/api/public/qa-reset-test-passwords'
-    | '/api/public/ui-kit'
     | '/qr/thiet-bi/$id'
     | '/_app/bao-tri/'
     | '/_app/du-an/'
@@ -1585,9 +1527,6 @@ export interface FileRouteTypes {
     | '/api/public/hooks/scan-canh-bao'
     | '/api/public/hooks/telegram-alerts'
     | '/api/public/hooks/test-email-alerts'
-    | '/lovable/email/auth/preview'
-    | '/lovable/email/auth/webhook'
-    | '/lovable/email/transactional/preview'
     | '/_app/admin/forms/'
     | '/_app/bao-tri/dot/'
     | '/_app/admin/forms/$id/history'
@@ -1606,14 +1545,12 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiBackupRunRoute: typeof ApiBackupRunRoute
   ApiChatRoute: typeof ApiChatRoute
-  LovableUiKitRoute: typeof LovableUiKitRoute
   QMaThietBiRoute: typeof QMaThietBiRoute
   VerifyIdRoute: typeof VerifyIdRoute
   QIndexRoute: typeof QIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicQaResetTestPasswordsRoute: typeof ApiPublicQaResetTestPasswordsRoute
-  ApiPublicUiKitRoute: typeof ApiPublicUiKitRoute
   QrThietBiIdRoute: typeof QrThietBiIdRoute
   ApiPublicExtCongVanRoute: typeof ApiPublicExtCongVanRoute
   ApiPublicHooksBootstrapAdminRoute: typeof ApiPublicHooksBootstrapAdminRoute
@@ -1625,9 +1562,6 @@ export interface RootRouteChildren {
   ApiPublicHooksScanCanhBaoRoute: typeof ApiPublicHooksScanCanhBaoRoute
   ApiPublicHooksTelegramAlertsRoute: typeof ApiPublicHooksTelegramAlertsRoute
   ApiPublicHooksTestEmailAlertsRoute: typeof ApiPublicHooksTestEmailAlertsRoute
-  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
-  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
-  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1707,13 +1641,6 @@ declare module '@tanstack/react-router' {
       path: '/q/$maThietBi'
       fullPath: '/q/$maThietBi'
       preLoaderRoute: typeof QMaThietBiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/ui-kit': {
-      id: '/lovable/ui-kit'
-      path: '/lovable/ui-kit'
-      fullPath: '/lovable/ui-kit'
-      preLoaderRoute: typeof LovableUiKitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -2029,13 +1956,6 @@ declare module '@tanstack/react-router' {
       path: '/qr/thiet-bi/$id'
       fullPath: '/qr/thiet-bi/$id'
       preLoaderRoute: typeof QrThietBiIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/ui-kit': {
-      id: '/api/public/ui-kit'
-      path: '/api/public/ui-kit'
-      fullPath: '/api/public/ui-kit'
-      preLoaderRoute: typeof ApiPublicUiKitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/qa-reset-test-passwords': {
@@ -2415,27 +2335,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/forms/'
       preLoaderRoute: typeof AppAdminFormsIndexRouteImport
       parentRoute: typeof AppAdminFormsRoute
-    }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/auth/webhook': {
-      id: '/lovable/email/auth/webhook'
-      path: '/lovable/email/auth/webhook'
-      fullPath: '/lovable/email/auth/webhook'
-      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/auth/preview': {
-      id: '/lovable/email/auth/preview'
-      path: '/lovable/email/auth/preview'
-      fullPath: '/lovable/email/auth/preview'
-      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/test-email-alerts': {
       id: '/api/public/hooks/test-email-alerts'
@@ -2915,14 +2814,12 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiBackupRunRoute: ApiBackupRunRoute,
   ApiChatRoute: ApiChatRoute,
-  LovableUiKitRoute: LovableUiKitRoute,
   QMaThietBiRoute: QMaThietBiRoute,
   VerifyIdRoute: VerifyIdRoute,
   QIndexRoute: QIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicQaResetTestPasswordsRoute: ApiPublicQaResetTestPasswordsRoute,
-  ApiPublicUiKitRoute: ApiPublicUiKitRoute,
   QrThietBiIdRoute: QrThietBiIdRoute,
   ApiPublicExtCongVanRoute: ApiPublicExtCongVanRoute,
   ApiPublicHooksBootstrapAdminRoute: ApiPublicHooksBootstrapAdminRoute,
@@ -2934,9 +2831,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksScanCanhBaoRoute: ApiPublicHooksScanCanhBaoRoute,
   ApiPublicHooksTelegramAlertsRoute: ApiPublicHooksTelegramAlertsRoute,
   ApiPublicHooksTestEmailAlertsRoute: ApiPublicHooksTestEmailAlertsRoute,
-  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
-  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
-  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
