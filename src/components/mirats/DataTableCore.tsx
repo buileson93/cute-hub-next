@@ -97,7 +97,7 @@ export function DataTableCore<T>({
 
   return (
     <div 
-      className={cn("relative overflow-auto mirats-scroll border rounded-xl bg-card mirats-data-table-core", className)}
+      className={cn("relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core", className)}
       style={{ maxHeight }}
     >
       <Table className={cn(tableClasses, "mirats-data-table-core-element")}>
