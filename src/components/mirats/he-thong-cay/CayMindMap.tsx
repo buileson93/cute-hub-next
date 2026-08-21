@@ -11,9 +11,8 @@ import {
   ChevronRight, ChevronDown, Network, Layers, Cpu, Search, Building2, ListTree, GitFork,
   Pencil, Check, X, Save, Loader2, Eye, MapPin, Plus, Minus, Table2, Boxes, Puzzle,
   Download, Upload, ExternalLink, FolderTree, ArrowRightLeft, ArrowUp, ArrowDown, Palette,
-  History, Wrench, AlertTriangle, Package, Users, FileText, ClipboardList, BookMarked, Trash2, Info, Plug, Tags, Activity
+  History, Wrench, AlertTriangle, Package, Users, FileText, ClipboardList, BookMarked, Trash2, Info, Plug, Tags,
 } from "lucide-react";
-import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -218,15 +217,6 @@ function MindNode({ data }: { data: MindData }) {
         </div>
         
         {data.count !== undefined && <Badge variant="secondary" className="text-[9px] opacity-70 shrink-0">{data.count}</Badge>}
-        
-        {data.kind === "tb" && (data as any).completeness !== undefined && (
-          <CompletenessRing 
-            value={(data as any).completeness} 
-            size={18} 
-            strokeWidth={2} 
-            className="shrink-0" 
-          />
-        )}
         
         <div className="flex shrink-0 items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
            {data.onOpenEditor && (
@@ -491,7 +481,6 @@ export function CayMindMap({
             id: tbId, kind: "tb",
             data: {
               kind: "tb", ma: d.tb.ma_thiet_bi, label: tbMind(d.tb), code: d.tb.ma_thiet_bi,
-              completeness: (d.tb as any)._completeness,
               count: hasKids ? d.children.length : undefined,
               collapsible: hasKids, expanded: expanded.has(tbId), canManage,
               toggle: () => toggle(tbId), onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t), onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),

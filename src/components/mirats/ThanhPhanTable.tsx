@@ -87,7 +87,7 @@ export function useTaiSanRows() {
           .range(from, from + pageSize - 1);
         if (error) throw error;
         const rows = (data ?? []) as TaiSanRow[];
-        all.push(...rows.map(r => ({ ...r, completeness: Math.floor(Math.random() * 101) })));
+        all.push(...rows);
         if (rows.length < pageSize) break;
         from += pageSize;
       }
@@ -137,7 +137,6 @@ export type ThanhPhanRow = {
   taiSanViTri: string;
   taiSanDonViQuanLy: string;
   anomalyScore: number | null;
-  completeness: number;
 };
 
 
@@ -157,7 +156,7 @@ export function useThanhPhanRows() {
           .range(from, from + pageSize - 1);
         if (error) throw error;
         const rows = (data ?? []) as ThanhPhanRow[];
-        all.push(...rows.map(r => ({ ...r, completeness: Math.floor(Math.random() * 101) })));
+        all.push(...rows);
         if (rows.length < pageSize) break;
         from += pageSize;
       }

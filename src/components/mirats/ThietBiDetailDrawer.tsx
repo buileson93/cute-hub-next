@@ -28,9 +28,8 @@ import { type DbDevice } from "@/lib/mirats/db-taxonomy";
 import { sortDacTinh, type DacTinh } from "@/lib/mirats/dac-tinh";
 import { MauChip } from "@/components/mirats/MauChip";
 import { cn } from "@/lib/utils";
+
 import { StatusBadge } from "@/components/mirats/StatusBadge";
-import { CompletenessRing } from "@/components/mirats/CompletenessRing";
-import { calculateCompleteness } from "@/lib/mirats/completeness";
 
 function SummaryRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -247,20 +246,6 @@ export function ThietBiDetailDrawer({
                     <CodeBadge code={device.ma_thiet_bi} title={`Mã tài sản: ${device.ma_thiet_bi}`} />
                     {device.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {device.serial}</span>}
                     <StatusBadge domain="thiet_bi" code={device.trang_thai} />
-                    <CompletenessRing 
-                      value={calculateCompleteness("thiet_bi", {
-                        ten_thiet_bi: device.ten,
-                        ma_serial: device.serial,
-                        model_id: device._modelId,
-                        trang_thai_id: device.trang_thai,
-                        he_thong_id: device._htId,
-                        don_vi_id: device.don_vi
-                      })} 
-                      size={24} 
-                      strokeWidth={3} 
-                      showText 
-                      className="ml-1"
-                    />
                   </div>
                 </div>
               </div>
