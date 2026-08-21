@@ -50,9 +50,6 @@ export function WidgetContainer({
           >
             <Icon name="action.remove" size="tiny" />
           </Button>
-          <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center cursor-move shadow-lg">
-            <Icon name="action.move" size="tiny" className="text-white" />
-          </div>
         </div>
       )}
       <div className={cn("h-full", isEditing && "opacity-80 scale-[0.99] transition-transform")}>
