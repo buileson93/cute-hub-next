@@ -79,13 +79,21 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Optimized loading logic for non-asChild
     const renderContent = () => {
        if (asChild) return children;
+       
+       // Handle size="icon" specifically to ensure center alignment
+       const isIconOnly = size === "icon";
+       
        return (
          <span className={cn(
-           "relative flex items-center gap-2 w-full h-full min-w-0",
-           // Only apply justify-center if no other justify class is present in the parent button variants/className
+           "relative flex items-center w-full h-full min-w-0",
+           // Standard gap for text+icon, no gap for icon-only
+           !isIconOnly && "gap-2",
+           // Only apply justify-center if no other justify class is present
            !className?.includes("justify-") && "justify-center"
          )}>
-           <span className={cn("flex items-center gap-2 transition-opacity min-w-0 flex-1", 
+           <span className={cn(
+             "flex items-center transition-opacity min-w-0", 
+             !isIconOnly && "gap-2 flex-1",
              !className?.includes("justify-") && "justify-center",
              loading ? "opacity-0" : "opacity-100"
            )}>
