@@ -779,6 +779,14 @@ export function StandardTableInner<T>({
           </div>
         );
 
+      case "completeness":
+        const pct = typeof val === "number" ? val : calculateCompleteness("thiet_bi", row as any);
+        return (
+          <div className="flex items-center justify-center w-full">
+            <CompletenessRing value={pct} size={24} strokeWidth={3} showText />
+          </div>
+        );
+
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
