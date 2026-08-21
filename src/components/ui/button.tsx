@@ -80,21 +80,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const renderContent = () => {
        if (asChild) return children;
        
-       // Handle size="icon" specifically to ensure center alignment
        const isIconOnly = size === "icon";
        
        return (
-         <span className={cn(
-           "relative flex items-center w-full h-full min-w-0",
-           // Standard gap for text+icon, no gap for icon-only
-           !isIconOnly && "gap-2",
-           // Only apply justify-center if no other justify class is present
-           !className?.includes("justify-") && "justify-center"
-         )}>
+         <>
            <span className={cn(
-             "flex items-center transition-opacity min-w-0", 
-             !isIconOnly && "gap-2 flex-1",
-             !className?.includes("justify-") && "justify-center",
+             "relative flex items-center justify-center w-full h-full min-w-0 transition-opacity",
+             !isIconOnly && "gap-2",
              loading ? "opacity-0" : "opacity-100"
            )}>
              {children}
@@ -104,7 +96,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 <Loader2 className="animate-spin shrink-0 h-4 w-4" aria-hidden="true" />
              </span>
            )}
-         </span>
+         </>
        );
     };
 

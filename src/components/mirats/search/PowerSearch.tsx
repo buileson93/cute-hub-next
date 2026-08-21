@@ -195,17 +195,15 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
       )}
 
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex items-center border-b px-3 bg-muted/20">
-          <div className="flex items-center justify-center h-11 w-8 opacity-60">
-            <Search className="h-4 w-4 shrink-0" />
-          </div>
+        <div className="flex items-center border-b px-4 bg-muted/20 gap-3">
+          <Search className="h-4 w-4 shrink-0 text-primary" />
           <CommandInput 
             placeholder="Tìm tài sản, sự cố, nội dung tài liệu..." 
             value={query}
             onValueChange={setQuery}
-            className="flex h-11 w-full bg-transparent py-3 text-[14px] outline-none border-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 w-full bg-transparent py-3 text-[14px] outline-none border-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
           />
-          {ocrSyncing && <Loader2 className="h-4 w-4 animate-spin opacity-50 ml-2" />}
+          {ocrSyncing && <Loader2 className="h-4 w-4 animate-spin opacity-50 shrink-0" />}
         </div>
         <CommandList className="max-h-[42rem] overflow-y-auto overflow-x-hidden">
           <CommandEmpty>Không tìm thấy kết quả nào.</CommandEmpty>
