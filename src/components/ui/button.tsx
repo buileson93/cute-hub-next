@@ -80,10 +80,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const renderContent = () => {
        if (asChild) return children;
        
+       const isIconOnly = size === "icon";
+       
        return (
          <>
            <span className={cn(
-             "flex items-center justify-center gap-2 transition-opacity",
+             "flex items-center justify-center w-full h-full min-w-0 transition-opacity",
+             !isIconOnly && "gap-2",
              loading ? "opacity-0" : "opacity-100"
            )}>
              {children}
