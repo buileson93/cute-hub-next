@@ -100,7 +100,7 @@ export function DataTableCore<T>({
       className={cn("relative overflow-auto mirats-scroll border rounded-xl bg-card mirats-data-table-core", className)}
       style={{ maxHeight }}
     >
-      <Table className={tableClasses}>
+      <Table className={cn(tableClasses, "mirats-data-table-core-element")}>
         <TableHeader className="sticky top-0 z-40">
           <TableRow className="hover:bg-transparent border-b">
             {selectable && (
