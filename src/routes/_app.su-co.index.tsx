@@ -371,9 +371,9 @@ function SuCoPage() {
             <Button asChild size="icon" variant="outline" className="h-8 w-8" tooltip="Lịch sử nhập báo cáo">
               <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
             </Button>
-            <Button variant="outline" size="sm" className="hidden md:flex flex justify-center gap-2 h-8" tooltip="Khôi phục trạng thái ban đầu">
-              <RotateCcw className="h-4 w-4" />
-              <span className="truncate max-w-[100px]">KHÔI PHỤC</span>
+            <Button variant="outline" size="sm" className="hidden md:flex flex justify-center gap-2 h-8 border-[#0074e2]/20 text-[#0074e2] hover:bg-[#0074e2]/5" tooltip="Khôi phục trạng thái ban đầu">
+              <RotateCcw className="h-4 w-4 text-[#0074e2]" />
+              <span className="truncate max-w-[100px] text-[10px] font-bold uppercase tracking-wider">KHÔI PHỤC</span>
             </Button>
             <Button 
               size="sm" 
