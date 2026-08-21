@@ -50,6 +50,8 @@ import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { fmtNgay, fmtVND, fmtSo, KHONG_CO } from "@/lib/mirats/format";
 import { Check, X as XIcon } from "lucide-react";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
+import { calculateCompleteness } from "@/lib/mirats/completeness";
 
 
 
@@ -61,6 +63,7 @@ export type ColumnType =
   | "number" 
   | "currency" 
   | "percent" 
+  | "completeness"
   | "date" 
   | "expiring" 
   | "boolean" 
