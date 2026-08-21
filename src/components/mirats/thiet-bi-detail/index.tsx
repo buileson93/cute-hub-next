@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
