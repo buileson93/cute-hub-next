@@ -1,68 +1,30 @@
-# Kế hoạch: Tái cấu trúc Kiến trúc Bảng MIRATS (Phase U9 - Nâng cao)
+# Kế hoạch Tái cấu trúc Bảng & Scrollbar (Phase U9)
 
-Dựa trên yêu cầu tối ưu hóa trải nghiệm người dùng, đặc biệt là hệ thống bảng dữ liệu và thanh cuộn ngang, kế hoạch này tập trung vào việc tạo ra một `DataTableCore` mạnh mẽ, linh hoạt và có thẩm mỹ cao.
+Mục tiêu: Thống nhất kiến trúc render bảng, giải quyết triệt để lỗi mất border khi sticky header, và tối ưu hóa thanh cuộn ngang (4px, tinh tế) để fit với màn hình hiển thị.
 
-## Mục tiêu chính
-- **Thanh cuộn ngang tinh tế:** Thiết kế mỏng, mượt, luôn hiển thị trong vùng nhìn thấy (viewport) mà không cần cuộn xuống cuối trang.
-- **Thống nhất kiến trúc:** Loại bỏ sự chồng chéo giữa `StandardTable`, `ui/table` và `RawTableWrapper`.
-- **Hiệu năng & Mobile:** Đảm bảo khả năng cuộn mượt mà và hiển thị tốt trên thiết bị di động.
+## 1. DataTableCore - Nền tảng Bảng Mới (Đã triển khai)
+- [x] Sử dụng `border-separate` và `border-spacing-0` thay vì `border-collapse` để giữ nguyên border khi dùng `sticky header`.
+- [x] Cơ chế `fitViewport`: Tự động tính toán `maxHeight` để thanh cuộn ngang luôn nằm trong tầm mắt người dùng mà không cần kéo xuống cuối trang.
+- [x] Phân tách rõ ràng z-index: Header (40), Sticky Column (50) để tránh chồng lấn.
+- [x] Scrollbar 4px: Tinh tế, mỏng, tự động ẩn hiện theo phong cách Apple.
 
-## Các giai đoạn triển khai
+## 2. Đồng bộ hóa CSS & Token (Đang thực hiện)
+- [x] Cập nhật `@utility mirats-scroll` trong `src/styles.css`.
+- [x] Chuẩn hóa `.mirats-table-cell-base` và `.mirats-table-header-base` trong `src/styles.css`.
+- [ ] Xóa bỏ các style `table th/td` global còn sót lại gây xung đột border.
 
-### Giai đoạn 0: Tối ưu hóa Trải nghiệm Cuộn (Scroll Experience)
-- **Thiết kế Scrollbar:** Cập nhật `mirats-scroll` trong `src/styles.css` để thanh cuộn ngang mỏng hơn (thin), màu sắc tinh tế (subtle) và có độ bo góc mượt mà.
-- **Viewport Constraints:** Điều chỉnh `DataTableCore` để tự động tính toán `max-height` dựa trên vị trí của nó trong trang (hoặc nhận prop `fitViewport`), đảm bảo thanh cuộn ngang luôn nằm ở đáy vùng nhìn thấy.
+## 3. Di chuyển Pilot (U9.3)
+- [x] **Thư viện tài liệu** (`/tai-lieu`): Chuyển sang `DataTableCore`.
+- [ ] **Danh sách thiết bị** (`/thiet-bi/danh-sach`): Hoàn thiện pilot thứ 2 với đầy đủ dữ liệu từ `useDbTaxonomy`.
 
-### Giai đoạn 1: Audit & Phân loại (Audit & Classification)
-- Rà soát 3 đường render hiện tại: `StandardTable`, `components/ui/table`, `RawTableWrapper`.
-- Phân nhóm Use case: 
-  - **Simple:** Danh sách ngắn, ít tương tác.
-  - **Data-heavy:** Nhiều cột, cần sticky columns/header.
-  - **Editable:** Cho phép sửa trực tiếp trên cell.
-  - **Matrix/Report:** Bảng tổng hợp phức tạp.
-
-### Giai đoạn 2: Hoàn thiện DataTableCore Architecture
-- **Core Engine:** Củng cố `DataTableCore` với các hooks quản lý trạng thái (sort, filter, pagination).
-- **Cell Registry:** Hệ thống render cell linh hoạt dựa trên `ColumnDef`.
-- **Mobile Renderer:** Tự động chuyển đổi sang dạng `Card List` hoặc `Horizontal Scroll` tùy theo cấu hình trên mobile.
-- **Adapter Layer:** Đảm bảo tương thích 100% với `ColumnDef` cũ của TanStack Table.
-
-### Giai đoạn 3: Triển khai Pilot & Kiểm định (Pilot & Validation)
-- **Chọn Pilot:** Trang **Thiết bị** (`/thiet-bi`) - màn hình có lượng dữ liệu lớn và nhiều lỗi UI nhất.
-- **Kiểm tra (RED/GREEN):**
-  - Nested scroll (cuộn trong cuộn).
-  - Sticky header & Sticky columns (đặc biệt là cột ID và Thao tác).
-  - Keyboard navigation (điều hướng phím).
-  - Tốc độ render & Bundle impact.
-
-### Giai đoạn 4: Di chuyển diện rộng (Full Migration)
-- Sau khi Pilot thành công, lập backlog di chuyển các màn hình còn lại.
-- Mỗi task di chuyển được chia nhỏ 2-5 phút, kèm theo lệnh verify cụ thể.
+## 4. Kiểm toán & Mở rộng (U9.4)
+- [ ] Rà soát `StandardTable.tsx` hiện tại để chuyển đổi các bảng còn lại sang `DataTableCore` mà không làm mất logic nghiệp vụ (RLS, Actions).
+- [ ] Đảm bảo tính tương thích Mobile: `DataTableCore` sẽ tự động chuyển sang chế độ `overflow-x-auto` mượt mà.
 
 ## Chi tiết kỹ thuật
-
-### 1. Thanh cuộn ngang (Horizontal Scrollbar)
-Cập nhật CSS để thanh cuộn trông "tinh tế" hơn:
-```css
-.mirats-scroll::-webkit-scrollbar {
-  height: 4px; /* Rất mỏng cho thanh ngang */
-}
-.mirats-scroll::-webkit-scrollbar-thumb {
-  background: var(--muted-foreground);
-  opacity: 0.3;
-  border-radius: 10px;
-}
-```
-
-### 2. Viewport Fitting Logic
-Trong `DataTableCore.tsx`, sử dụng `useWindowSize` hoặc `ResizeObserver` để đảm bảo:
-`maxHeight = window.innerHeight - topOffset - footerHeight`.
-
-## Kế hoạch Task (Task Breakdown)
-1. **Task U9.A:** Refactor `src/styles.css` cho thanh cuộn "tinh tế". (3 min)
-2. **Task U9.B:** Cập nhật `DataTableCore.tsx` hỗ trợ `fitViewport` mode. (5 min)
-3. **Task U9.C:** Audit `src/routes/_app.thiet-bi.index.tsx` và chuẩn bị dữ liệu mock cho test. (4 min)
-4. **Task U9.D:** Di chuyển `/thiet-bi` sang `DataTableCore` và verify sticky columns. (5 min)
-
----
-*Dừng lại để chờ duyệt kế hoạch trước khi thực hiện.*
+- **Z-Index Map:**
+  - `Header`: 40 (sticky)
+  - `Sticky Columns`: 50
+  - `Action Column`: 50 (sticky right)
+- **Viewport Fitting:** `window.innerHeight - rect.top - margin` (thanh cuộn luôn ở đáy màn hình).
+- **Border Stability:** Ép border vào từng ô `th/td` thay vì dùng collapse để tránh bị che bởi header sticky.
