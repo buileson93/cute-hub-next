@@ -50,6 +50,8 @@ import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { fmtNgay, fmtVND, fmtSo, KHONG_CO } from "@/lib/mirats/format";
 import { Check, X as XIcon } from "lucide-react";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
+import { calculateCompleteness } from "@/lib/mirats/completeness";
 
 
 
@@ -61,6 +63,7 @@ export type ColumnType =
   | "number" 
   | "currency" 
   | "percent" 
+  | "completeness"
   | "date" 
   | "expiring" 
   | "boolean" 
@@ -773,6 +776,14 @@ export function StandardTableInner<T>({
           <div className="flex items-center gap-2 w-full pr-1">
             <span className="w-8 tabular-nums text-[10px] font-mono text-right">{p}%</span>
             <Progress value={p} className="h-1 flex-1" />
+          </div>
+        );
+
+      case "completeness":
+        const pct = typeof val === "number" ? val : calculateCompleteness("thiet_bi", r as any);
+        return (
+          <div className="flex items-center justify-center w-full">
+            <CompletenessRing value={pct} size={24} strokeWidth={3} showText />
           </div>
         );
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -72,6 +73,19 @@ export function ThietBiDetail({
           <PageHeader
             title={asset.ten}
             icon="entity.system"
+            metadata={
+              <div className="flex items-center gap-2 mt-1">
+                <CompletenessRing 
+                  value={(asset as any).completeness_pct || 0} 
+                  size={24} 
+                  strokeWidth={3} 
+                  showText 
+                />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                  Độ hoàn thiện dữ liệu
+                </span>
+              </div>
+            }
           />
           <div className="flex items-center gap-2">
             <VoiceQuickLog maThietBi={asset.ma_thiet_bi} />
