@@ -49,12 +49,12 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         <div className="relative w-full sm:max-w-sm group" data-tour="search">
           <button
             type="button"
-            className="h-9 w-full flex justify-between items-center rounded-xl bg-muted/40 px-3 text-[13px] font-normal text-muted-foreground border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
+            className="h-8 w-full flex justify-between items-center rounded-full bg-muted/40 px-3 text-[13px] font-normal text-muted-foreground border border-transparent hover:bg-[#0074e2]/10 hover:text-primary transition-all active:scale-[0.98] cursor-pointer group/search"
             onClick={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
           >
             <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden pointer-events-none">
-              <Search className="h-4 w-4 text-primary shrink-0 transition-transform" />
+              <Search className="h-4 w-4 text-primary shrink-0 transition-transform group-hover/search:scale-110" />
               <span className="truncate text-left min-w-0">Tìm tài sản, hệ thống, biên bản...</span>
             </div>
             
