@@ -84,11 +84,11 @@ function Dashboard() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-8 gap-1.5 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0"
+                      className="h-8 gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0 px-3"
                       aria-label="Thêm Widget mới"
                     >
                       <Icon name="action.add" size="tiny" className="text-primary shrink-0" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Thêm Widget</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-primary whitespace-nowrap">Thêm Widget</span>
                     </Button>
                   }
                 />
@@ -96,11 +96,11 @@ function Dashboard() {
                   size="sm"
                   variant="ghost"
                   onClick={handleReset}
-                  className="h-8 gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0"
+                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0 px-3"
                   aria-label="Khôi phục bố cục mặc định"
                 >
                   <Icon name="action.undo" size="tiny" className="shrink-0" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide whitespace-nowrap">Khôi phục</span>
                 </Button>
               </div>
             )}
@@ -109,7 +109,7 @@ function Dashboard() {
               variant={isEditing ? "default" : "outline"}
               onClick={() => setIsEditing(!isEditing)}
               className={cn(
-                "h-8 px-4 transition-all gap-1.5 shadow-sm border-primary/20 shrink-0",
+                "h-8 px-4 transition-all gap-2 shadow-sm border-primary/20 shrink-0",
                 isEditing ? "bg-primary text-primary-foreground" : "bg-background text-primary"
               )}
               aria-label={isEditing ? "Hoàn tất chỉnh sửa" : "Cá nhân hóa bảng điều khiển"}
@@ -119,7 +119,7 @@ function Dashboard() {
                 size="tiny"
                 className="shrink-0"
               />
-              <span className="text-[10px] font-bold uppercase tracking-wider">
+              <span className="text-[11px] font-bold uppercase tracking-wide whitespace-nowrap">
                 {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
               </span>
             </Button>

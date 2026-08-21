@@ -908,8 +908,9 @@ export function StandardTableInner<T>({
                       <div className="p-2 space-y-4">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold">Bộ lọc & Sắp xếp</span>
-                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-7 px-2 text-[10px] uppercase font-bold text-destructive">
-                            Xoá hết
+                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-8 px-3 text-[11px] uppercase font-bold text-destructive gap-2">
+                            <Icon name="action.close" size="tiny" />
+                            <span>Xoá hết</span>
                           </Button>
                         </div>
                         
@@ -1153,9 +1154,10 @@ export function StandardTableInner<T>({
             variant="ghost" 
             size="sm" 
             onClick={clearAllFilters}
-            className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 hover:text-destructive"
+            className="h-7 px-3 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/60 hover:text-destructive gap-2"
           >
-            Xoá tất cả bộ lọc
+            <Icon name="action.close" size="tiny" />
+            <span>Xoá tất cả bộ lọc</span>
           </Button>
         </div>
       )}
