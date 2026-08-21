@@ -104,7 +104,7 @@ export function DataTableCore<T>({
         <TableHeader className="sticky top-0 z-40">
           <TableRow className="hover:bg-transparent border-b">
             {selectable && (
-              <TableHead className="w-10 px-2 text-center sticky left-0 z-30 bg-muted/95 backdrop-blur-[4px]">
+              <TableHead className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px]">
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
               </TableHead>
             )}
