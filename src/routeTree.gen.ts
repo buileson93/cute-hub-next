@@ -20,7 +20,7 @@ import { Route as QIndexRouteImport } from './routes/q.index'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as VerifyIdRouteImport } from './routes/verify.$id'
 import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
-import { Route as LovableAdminUiKitRouteImport } from './routes/lovable.admin-ui-kit'
+import { Route as LovableUiKitRouteImport } from './routes/lovable/ui-kit'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -194,9 +194,9 @@ const QMaThietBiRoute = QMaThietBiRouteImport.update({
   path: '/q/$maThietBi',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableAdminUiKitRoute = LovableAdminUiKitRouteImport.update({
-  id: '/lovable/admin-ui-kit',
-  path: '/lovable/admin-ui-kit',
+const LovableUiKitRoute = LovableUiKitRouteImport.update({
+  id: '/lovable/ui-kit',
+  path: '/lovable/ui-kit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -849,7 +849,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
-  '/lovable/admin-ui-kit': typeof LovableAdminUiKitRoute
+  '/lovable/ui-kit': typeof LovableUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/q/': typeof QIndexRoute
@@ -974,7 +974,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
-  '/lovable/admin-ui-kit': typeof LovableAdminUiKitRoute
+  '/lovable/ui-kit': typeof LovableUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/': typeof AppIndexRoute
@@ -1105,7 +1105,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
-  '/lovable/admin-ui-kit': typeof LovableAdminUiKitRoute
+  '/lovable/ui-kit': typeof LovableUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/_app/': typeof AppIndexRoute
@@ -1239,7 +1239,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
-    | '/lovable/admin-ui-kit'
+    | '/lovable/ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/q/'
@@ -1364,7 +1364,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
-    | '/lovable/admin-ui-kit'
+    | '/lovable/ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/'
@@ -1494,7 +1494,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
-    | '/lovable/admin-ui-kit'
+    | '/lovable/ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/_app/'
@@ -1594,7 +1594,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiBackupRunRoute: typeof ApiBackupRunRoute
   ApiChatRoute: typeof ApiChatRoute
-  LovableAdminUiKitRoute: typeof LovableAdminUiKitRoute
+  LovableUiKitRoute: typeof LovableUiKitRoute
   QMaThietBiRoute: typeof QMaThietBiRoute
   VerifyIdRoute: typeof VerifyIdRoute
   QIndexRoute: typeof QIndexRoute
@@ -1696,11 +1696,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QMaThietBiRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/admin-ui-kit': {
-      id: '/lovable/admin-ui-kit'
-      path: '/lovable/admin-ui-kit'
-      fullPath: '/lovable/admin-ui-kit'
-      preLoaderRoute: typeof LovableAdminUiKitRouteImport
+    '/lovable/ui-kit': {
+      id: '/lovable/ui-kit'
+      path: '/lovable/ui-kit'
+      fullPath: '/lovable/ui-kit'
+      preLoaderRoute: typeof LovableUiKitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -2895,7 +2895,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiBackupRunRoute: ApiBackupRunRoute,
   ApiChatRoute: ApiChatRoute,
-  LovableAdminUiKitRoute: LovableAdminUiKitRoute,
+  LovableUiKitRoute: LovableUiKitRoute,
   QMaThietBiRoute: QMaThietBiRoute,
   VerifyIdRoute: VerifyIdRoute,
   QIndexRoute: QIndexRoute,

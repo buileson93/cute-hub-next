@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
-export const Route = createFileRoute('/lovable/admin-ui-kit')({
+export const Route = createFileRoute('/lovable/ui-kit')({
   component: UIKitPage,
 })
 
@@ -64,17 +64,6 @@ function UIKitPage() {
           </section>
         ))}
       </div>
-      
-      <section className="space-y-4">
-        <h2 className={TYPO.H2}>Computed Style Audit Scope</h2>
-        <Card className="p-4 bg-muted/30">
-          <ul className="list-disc list-inside text-sm space-y-1 opacity-80">
-            <li>Selector: <code className="bg-muted px-1">.astryx-control</code> (Astryx Core/Skin)</li>
-            <li>Selector: <code className="bg-muted px-1">.bg-primary</code>, <code className="bg-muted px-1">.rounded-lg</code> (Tailwind/CVA)</li>
-            <li>Tokens: <code className="bg-muted px-1">--primary</code>, <code className="bg-muted px-1">--radius</code>, <code className="bg-muted px-1">--duration-fast</code></li>
-          </ul>
-        </Card>
-      </section>
     </div>
   )
 }
