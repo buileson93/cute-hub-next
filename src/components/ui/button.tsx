@@ -21,15 +21,15 @@ const buttonVariants = cva(
       },
       size: {
         /** Mặc định: Mobile=44px (h-11), Desktop=32px/36px */
-        default: "min-h-[2.75rem] md:min-h-[2rem] md:data-[density=comfortable]:min-h-[2.25rem] px-4 py-2 text-[14px] md:text-[12px] md:data-[density=comfortable]:text-[13px] [&_svg]:size-5 md:size-4 min-w-[2.5rem] flex-shrink-0",
+        default: cn(UI_DENSITY.CONTROL_H, "px-4 py-2 text-[14px] md:text-[12px] md:data-[density=comfortable]:text-[13px] [&_svg]:size-5 md:size-4 min-w-[2.5rem] flex-shrink-0"),
         /** Small: Mobile=44px (đảm bảo đích chạm), Desktop=32px */
-        sm: "min-h-[2.75rem] md:min-h-[2rem] rounded-md px-3 text-[14px] md:text-[12px] [&_svg]:size-4.5 md:size-4 min-w-[2rem] flex-shrink-0",
+        sm: cn(UI_DENSITY.CONTROL_H, "rounded-md px-3 text-[14px] md:text-[12px] [&_svg]:size-4.5 md:size-4 min-w-[2rem] flex-shrink-0"),
         /** Extra Small: Mobile=44px (đảm bảo đích chạm), Desktop=28px */
         xs: "min-h-[2.75rem] md:min-h-[1.75rem] rounded px-2 text-[14px] md:text-[11px] [&_svg]:size-4 md:size-3.5 min-w-[1.75rem]",
         /** Large: Mobile=48px+, Desktop=40px/44px */
         lg: "min-h-[3rem] md:min-h-[2.5rem] md:data-[density=comfortable]:min-h-[2.75rem] rounded-md px-8 text-base [&_svg]:size-6 md:size-5",
         /** Icon-only: Mobile=44px (h-11), Desktop=32px/36px */
-        icon: "min-h-[2.75rem] min-w-[2.75rem] md:min-h-[2rem] md:min-w-[2rem] md:data-[density=comfortable]:min-h-[2.25rem] md:data-[density=comfortable]:min-w-[2.25rem] [&_svg]:size-5 md:size-4.5",
+        icon: cn(UI_DENSITY.CONTROL_H, "min-w-[2.75rem] md:min-w-[2rem] md:data-[density=comfortable]:min-w-[2.25rem] [&_svg]:size-5 md:size-4.5"),
       },
     },
     defaultVariants: {
