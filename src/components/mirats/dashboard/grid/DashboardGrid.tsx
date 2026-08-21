@@ -404,7 +404,7 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                   variant="ghost" 
                   size="sm" 
                   className="w-full text-[10px] font-bold uppercase text-primary hover:bg-primary/5 mt-2"
-                  onClick={() => navigate({ to: "/thiet-bi" })}
+                  onClick={() => navigate({ to: "/thiet-bi", search: (prev: any) => prev } as any)}
                 >
                   Xem tất cả
                 </Button>
