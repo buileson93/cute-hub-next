@@ -127,9 +127,9 @@ export function DataTableCore<T>({
     >
       <Table className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}>
         <TableHeader className="sticky top-0 z-40">
-          <TableRow className="hover:bg-transparent border-b">
+          <TableRow className="hover:bg-transparent border-b-0">
             {selectable && (
-              <TableHead className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px]">
+              <TableHead className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r">
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
               </TableHead>
             )}
@@ -141,6 +141,7 @@ export function DataTableCore<T>({
                   minWidth: col.minWidth || (col.width ? undefined : 100),
                 }}
                 className={cn(
+                  "mirats-table-header-base border-t border-b",
                   col.sticky && "sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-r border-border/10",
                   selectable && col.sticky && "left-10",
                   col.align === "center" && "text-center",

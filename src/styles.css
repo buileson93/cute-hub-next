@@ -407,10 +407,16 @@
   overflow-wrap: break-word;
 }
 
+.mirats-data-table-core-element {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
 .mirats-data-table-core-element th,
 .mirats-data-table-core-element td {
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  padding: 0.5rem;
 }
 
 .mirats-data-table-core-element thead tr:first-child th {
@@ -422,17 +428,13 @@
   border-left: 1px solid var(--border);
 }
 
-.mirats-data-table-core-element th:last-child,
-.mirats-data-table-core-element td:last-child {
-  border-right: 1px solid var(--border);
-}
-
 .mirats-table-header-base {
   line-height: 1.2;
   font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  background-color: var(--color-muted);
 }
 
 
