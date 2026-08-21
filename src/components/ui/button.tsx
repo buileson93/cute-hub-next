@@ -59,27 +59,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     
     // Stable loading width: we preserve the layout even when loading
-    const content =
-      !asChild && loading ? (
-        <>
-          <Loader2 className="animate-spin" aria-hidden="true" />
-          <span className="opacity-0">{children}</span>
-          <span className="absolute inset-0 flex items-center justify-center">
-             <Loader2 className="animate-spin" aria-hidden="true" />
-          </span>
-        </>
-      ) : (
-        children
-      );
-
-    // Optimized loading logic for non-asChild
     const renderContent = () => {
       if (asChild) return children;
       
       return (
-        <span className="relative flex items-center justify-center gap-2 w-full h-full min-w-0">
+        <>
           <span className={cn(
-            "flex items-center justify-center gap-2 w-full h-full min-w-0 transition-opacity",
+            "flex items-center justify-center gap-2 transition-opacity",
             loading ? "opacity-0" : "opacity-100"
           )}>
             {children}
@@ -89,7 +75,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                <Loader2 className="animate-spin shrink-0 h-4 w-4 text-current" aria-hidden="true" />
             </span>
           )}
-        </span>
+        </>
       );
     };
 
