@@ -108,7 +108,6 @@ export type MindData = {
   onMaint?: () => void;
   moveTargets?: MoveTarget[];
   onMove?: (toNhomId: string, toLvId: string | undefined, toNhKey: string | undefined, toNhTen: string | undefined) => void;
-  completeness?: number;
 };
 
 export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string }> = {

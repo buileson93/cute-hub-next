@@ -24,8 +24,6 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
-import { CompletenessRing } from "@/components/mirats/CompletenessRing";
-import { calculateCompleteness } from "@/lib/mirats/completeness";
 
 export const Route = createFileRoute("/_app/thiet-bi/")({
   validateSearch: (search: Record<string, unknown>) => ({
