@@ -1,8 +1,10 @@
 import { useState, useCallback } from "react";
 import {
   ChevronRight, ChevronDown, Network, Cpu, Building2,
-  History, Boxes, Puzzle, FolderTree, Layers
+  History, Boxes, Puzzle, FolderTree, Layers, Info
 } from "lucide-react";
+import { calculateCompleteness } from "@/lib/mirats/completeness";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -110,7 +112,18 @@ export function TreeView({ tree, total }: { tree: TreeNode[]; total: number }) {
                 style={{ paddingLeft: `${12 + (level + 1) * 20}px` }}
               >
                 <div className="flex w-5 items-center justify-center shrink-0">
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground/20 group-hover/item:bg-primary/40 transition-colors" />
+                  <CompletenessRing 
+                    value={calculateCompleteness("thiet_bi", {
+                      ten_thiet_bi: d.ten,
+                      ma_serial: d.serial,
+                      model_id: d._modelId,
+                      trang_thai_id: d.trang_thai,
+                      he_thong_id: d._htId,
+                      don_vi_id: d.don_vi
+                    })} 
+                    size={18} 
+                    strokeWidth={2} 
+                  />
                 </div>
                 <div className="flex w-5 items-center justify-center shrink-0">
                   <Cpu className="h-4 w-4 text-muted-foreground/40 group-hover/item:text-primary/60 transition-colors" />

@@ -2,7 +2,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon, LayoutPanelLeft, LayoutPanelTop
+  ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon, LayoutPanelLeft, LayoutPanelTop, Trophy, Flame
 } from "lucide-react";
 import {
   ProductTourProvider, useProductTour, type TourStep,
@@ -113,20 +113,30 @@ export function UserMenu() {
             <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel>
-            <div className="text-xs font-medium">{profile.email}</div>
-            <div className="text-[10.5px] font-normal text-muted-foreground">
-              {typeof profile.ho_ten === 'string' ? profile.ho_ten : "—"}
+        <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl shadow-2xl border-border/40 bg-popover/95 backdrop-blur-xl animate-in fade-in zoom-in duration-200" sideOffset={8}>
+          <div className="flex items-center gap-3 px-3 py-3 mb-1 bg-muted/30 rounded-xl">
+            <UserAvatar name={profile.ho_ten} email={profile.email} className="h-10 w-10 ring-2 ring-primary/10" />
+            <div className="flex flex-col min-w-0">
+              <span className="text-[13px] font-bold truncate tracking-tight text-foreground leading-none mb-1">{profile.ho_ten || 'Người dùng MIRATS'}</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-[10px] text-amber-600 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded-full">
+                  <Trophy className="h-2.5 w-2.5" />
+                  <span>{(profile as any).score || 0}</span>
+                </div>
+                <div className="flex items-center gap-1 text-[10px] text-orange-500 font-bold bg-orange-500/10 px-1.5 py-0.5 rounded-full">
+                  <Flame className="h-2.5 w-2.5" />
+                  <span>3</span>
+                </div>
+              </div>
             </div>
-            <div className="mt-2 flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full font-mono text-[10px] tracking-wider">
+          </div>
+          <div className="px-3 py-1 mb-2">
+             <Badge variant="outline" className="w-full justify-center rounded-lg font-mono text-[9px] tracking-wider opacity-60">
                 {hasRole("admin") || hasRole("phong_kt")
-                  ? "TOÀN HỆ THỐNG"
-                  : `ĐV: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? String(profile.don_vi ?? "—")}`}
-              </Badge>
-            </div>
-          </DropdownMenuLabel>
+                  ? "QUẢN TRỊ TOÀN CỤC"
+                  : `ĐƠN VỊ: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? String(profile.don_vi ?? "—")}`}
+             </Badge>
+          </div>
           <DropdownMenuSeparator />
 
           <DropdownMenuItem

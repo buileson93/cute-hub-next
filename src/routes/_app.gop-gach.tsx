@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Camera, Check, X, SkipForward, Trophy } from "lucide-react";
+import { Camera, Check, X, SkipForward, Trophy, Flame } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 import { Progress } from "@/components/ui/progress";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 
 export const Route = createFileRoute("/_app/gop-gach")({
   component: GopGachPage,
@@ -86,12 +87,21 @@ function GopGachPage() {
           <h1 className="text-2xl font-bold">Góp gạch</h1>
           <p className="text-sm text-muted-foreground">Mỗi ngày 1 việc nhỏ, dữ liệu thêm sạch.</p>
         </div>
-        <div className="text-right">
-          <div className="flex items-center gap-1 text-amber-600 font-bold">
-            <Trophy className="size-4" />
-            {userScore || 0}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="flex items-center gap-1 text-amber-600 font-bold">
+              <Trophy className="size-4" />
+              {userScore || 0}
+            </div>
+            <p className="text-[10px] uppercase text-muted-foreground">Điểm tích luỹ</p>
           </div>
-          <p className="text-[10px] uppercase text-muted-foreground">Điểm tích luỹ</p>
+          <div className="text-right">
+            <div className="flex items-center gap-1 text-orange-500 font-bold">
+              <Flame className="size-4 animate-pulse" />
+              3 ngày
+            </div>
+            <p className="text-[10px] uppercase text-muted-foreground">Chuỗi (Streak)</p>
+          </div>
         </div>
       </div>
 
@@ -137,12 +147,16 @@ function GopGachPage() {
         </Card>
       )}
 
-      <div className="space-y-2">
-        <div className="flex justify-between text-xs">
-          <span>Tiến độ đơn vị</span>
-          <span>68%</span>
+      <div className="flex items-center gap-4 p-4 rounded-xl border bg-muted/20">
+        <CompletenessRing value={68} size={48} strokeWidth={4} showText />
+        <div className="flex-1 space-y-1">
+          <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <span>Tiến độ dữ liệu đơn vị</span>
+            <span>68%</span>
+          </div>
+          <Progress value={68} className="h-1.5" />
+          <p className="text-[10px] text-muted-foreground italic">Còn 320 trường dữ liệu cần xác thực để đạt 100%</p>
         </div>
-        <Progress value={68} className="h-1" />
       </div>
     </PageBody>
   );

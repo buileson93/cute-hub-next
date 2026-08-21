@@ -66,6 +66,7 @@ export type ColumnType =
   | "boolean" 
   | "path" 
   | "longtext" 
+  | "completeness"
   | "actions";
 
 export interface ColumnDef<T> {
@@ -818,6 +819,17 @@ export function StandardTableInner<T>({
               {String(val)}
             </div>
           </AppTooltip>
+        );
+      
+      case "completeness":
+        const cp = Number(val);
+        const cpColor = cp >= 80 ? "text-emerald-500" : cp >= 50 ? "text-amber-500" : "text-rose-500";
+        const bgTone = cp >= 80 ? "bg-emerald-500/20" : cp >= 50 ? "bg-amber-500/20" : "bg-rose-500/20";
+        return (
+          <div className="flex items-center gap-2 w-full pr-1">
+            <span className={cn("w-8 tabular-nums text-[10px] font-mono text-right font-bold", cpColor)}>{cp}%</span>
+            <Progress value={cp} className={cn("h-1 flex-1", bgTone)} />
+          </div>
         );
 
       case "actions":

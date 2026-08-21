@@ -11,7 +11,7 @@ export const THANH_PHAN_PRESETS: ViewPreset[] = [
     id: "co-ban",
     ten: "Cơ bản",
     moTa: "Các thông tin nhận diện, hệ thống và trạng thái lắp",
-    columns: ["ten", "nhomHeThong", "phanLoai", "heThong", "trangThai", "thietBi"]
+    columns: ["ten", "completeness", "nhomHeThong", "phanLoai", "heThong", "trangThai", "thietBi"]
   },
   {
     id: "ky-thuat",

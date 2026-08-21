@@ -37,6 +37,7 @@ import { buildTree, filterTreeByBadge, badgeFilterActive, okey, NONE_HT, isRealS
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { ThietBiDetailDrawer } from "@/components/mirats/ThietBiDetailDrawer";
+import { calculateCompleteness } from "@/lib/mirats/completeness";
 import type { 
   EditKind, OverrideMap, SearchItem, MoveTarget 
 } from "@/components/mirats/he-thong-cay/types";
@@ -262,9 +263,17 @@ function HeThongCayPage() {
         _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
         _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
         _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
-        _loaiTbTen: d._loaiTbTen?.ten,
-        _loaiTbOrder: d._loaiTbOrder?.thu_tu
-      }));
+          _loaiTbTen: d._loaiTbTen?.ten,
+          _loaiTbOrder: d._loaiTbOrder?.thu_tu,
+          _completeness: calculateCompleteness("thiet_bi", {
+            ten_thiet_bi: d.ten,
+            ma_serial: d.serial,
+            model_id: d.model_id,
+            trang_thai_id: d.trang_thai,
+            he_thong_id: d.he_thong_id,
+            don_vi_id: d.don_vi
+          })
+        }));
     }
   });
 
