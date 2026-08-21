@@ -125,7 +125,7 @@ export function PageHeader({
         </div>
       )}
 
-      <div className="flex items-start justify-between gap-3 md:gap-4">
+      <div className="flex items-center justify-between gap-3 md:gap-4 w-full">
         <div className="flex flex-col min-w-0 flex-1 gap-1">
           {/* 2. Title Row */}
           <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>
