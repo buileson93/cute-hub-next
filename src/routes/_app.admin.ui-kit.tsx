@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { TYPO } from '@/lib/mirats/ui/typography'
 import { Card } from '@/components/ui/card'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/_app/admin/ui-kit')({
   component: UIKitPage,
@@ -19,12 +20,13 @@ function UIKitPage() {
       <header className="flex justify-between items-center">
         <div>
           <h1 className={TYPO.H1}>UI Test Fixture: Buttons</h1>
-          <p className="text-muted-foreground mt-2">Dùng để xác minh style ownership & regression.</p>
+          <p className="text-muted-foreground mt-2 text-sm">Dùng để xác minh style ownership & regression.</p>
         </div>
         <div className="flex gap-2 bg-muted p-1 rounded-lg">
           {(['compact', 'comfortable', 'spacious'] as const).map(d => (
             <button
               key={d}
+              type="button"
               onClick={() => setDensity(d)}
               className={cn(
                 "px-3 py-1 rounded text-xs font-medium transition-colors",
@@ -75,8 +77,4 @@ function UIKitPage() {
       </section>
     </div>
   )
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ')
 }
