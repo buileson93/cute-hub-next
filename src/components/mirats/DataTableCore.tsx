@@ -101,7 +101,7 @@ export function DataTableCore<T>({
       style={{ maxHeight }}
     >
       <Table className={tableClasses}>
-        <TableHeader className="sticky top-0 z-20">
+        <TableHeader className="sticky top-0 z-40">
           <TableRow className="hover:bg-transparent border-b">
             {selectable && (
               <TableHead className="w-10 px-2 text-center sticky left-0 z-30 bg-muted/95 backdrop-blur-[4px]">
