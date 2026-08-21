@@ -167,33 +167,33 @@ function AuthPage() {
   const showPasskey = passkeySupported && isMobile;
 
   return (
-    <div className="min-h-dvh bg-background p-4 lg:p-6">
-      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl overflow-hidden rounded-3xl bg-card shadow-xl ring-1 ring-border lg:grid-cols-[1fr_1.1fr]">
+    <div className="min-h-dvh bg-[#f8fafc] p-4 lg:p-10 flex items-center justify-center">
+      <div className="w-full max-w-[1280px] grid min-h-[800px] overflow-hidden rounded-[32px] bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] ring-1 ring-black/5 lg:grid-cols-2">
         {/* Left: form */}
-        <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14">
+        <div className="flex flex-col justify-center p-8 sm:p-16 lg:p-20">
           <motion.div
             {...enter}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto w-full max-w-[560px]"
+            className="mx-auto w-full max-w-[420px]"
           >
             <motion.div
               {...enter}
               transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-8"
+              className="mb-12"
             >
               <img
                 src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
-                className="h-auto w-full max-w-[560px] object-contain"
+                className="h-16 w-auto object-contain"
               />
             </motion.div>
 
             {/* Tabs */}
-            <div className="relative mb-6 grid grid-cols-2 rounded-xl bg-muted/60 p-1">
+            <div className="relative mb-10 grid grid-cols-2 rounded-2xl bg-[#f1f5f9] p-1.5">
               <motion.div
                 aria-hidden
-                className="absolute inset-y-1 w-1/2 rounded-lg bg-[#0074e2]/10 shadow-sm ring-1 ring-[#0074e2]/20"
-                animate={{ x: mode === "signin" ? "0%" : "100%" }}
+                className="absolute inset-y-1.5 w-[calc(50%-6px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5"
+                animate={{ x: mode === "signin" ? "6px" : "calc(100% + 0px)" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
               {(["signin", "signup"] as const).map((m) => (
@@ -201,8 +201,8 @@ function AuthPage() {
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={`relative z-10 rounded-lg py-2.5 text-sm font-semibold transition-colors ${
-                    mode === m ? "text-[#0074e2]" : "text-muted-foreground hover:text-[#0074e2]"
+                  className={`relative z-10 rounded-xl py-3 text-[15px] font-semibold transition-colors ${
+                    mode === m ? "text-[#0074e2]" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {m === "signin" ? "Đăng nhập" : "Đăng ký"}
@@ -315,9 +315,9 @@ function Field({
   placeholder?: string; autoComplete?: string; rightSlot?: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={id} className="text-sm font-semibold">{label}</Label>
+    <div className="space-y-2.5">
+      <div className="flex items-center justify-between px-0.5">
+        <Label htmlFor={id} className="text-[15px] font-bold text-foreground/90">{label}</Label>
         {rightSlot}
       </div>
       <Input
@@ -329,7 +329,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="h-12 !rounded-xl transition-all focus-within:!ring-2 focus-within:!ring-[#0074e2]/40 focus-within:!border-[#0074e2]/50 focus-within:!outline-none"
+        className="!h-13 !rounded-2xl border-slate-200 bg-slate-50/30 px-5 text-[15px] transition-all focus-within:!ring-4 focus-within:!ring-[#0074e2]/10 focus-within:!border-[#0074e2]/40 focus-within:!bg-white focus-within:!outline-none"
       />
     </div>
   );
