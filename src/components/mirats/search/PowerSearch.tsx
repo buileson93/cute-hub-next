@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { 
   Search, 
   FileText, 
@@ -8,7 +8,14 @@ import {
   History, 
   AlertCircle,
   Database,
-  Type
+  Type,
+  Plus,
+  QrCode,
+  LogOut,
+  User,
+  Moon,
+  Sun,
+  LayoutGrid
 } from "lucide-react";
 import { useTimKiemToanCuc, nhanLoai } from "@/lib/mirats/search/tim-kiem";
 import { useOcrSearch } from "@/lib/mirats/search/ocr-index/use-ocr-search";
@@ -19,6 +26,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { DocViewerDialog } from "../DocViewerDialog";
 import { storage } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
+import { workspaces, type NavItem } from "@/lib/mirats/nav-contract";
+import { useSession } from "@/hooks/use-session";
+import { toast } from "sonner";
 
 function SnippetHighlight({ text }: { text: string }) {
   if (!text) return null;
@@ -52,6 +62,38 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
 
   const { ket_qua: globalResults, dang_tai: globalLoading } = useTimKiemToanCuc(query);
   const { search: searchOcr, isReady: ocrReady, isSyncing: ocrSyncing } = useOcrSearch();
+  const { hasRole, logout } = useSession();
+
+  // 1. Phẳng hoá toàn bộ danh mục từ nav-contract để tìm kiếm điều hướng
+  const allNavItems = useMemo(() => {
+    const items: Array<{ to: string; label: string; icon: any; workspace: string }> = [];
+    workspaces.forEach(ws => {
+      if (ws.roles && !ws.roles.some(r => hasRole(r))) return;
+      ws.groups.forEach(group => {
+        group.items.forEach(item => {
+          if (item.divider) return;
+          if (item.roles && !item.roles.some(r => hasRole(r))) return;
+          items.push({ to: item.to, label: item.label, icon: item.icon, workspace: ws.label });
+          item.children?.forEach(child => {
+            if (child.divider) return;
+            if (child.roles && !child.roles.some(r => hasRole(r))) return;
+            items.push({ to: child.to, label: child.label, icon: child.icon, workspace: ws.label });
+          });
+        });
+      });
+    });
+    return items;
+  }, [hasRole]);
+
+  // 2. Lọc danh mục theo query
+  const filteredNavItems = useMemo(() => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return allNavItems.filter(item => 
+      item.label.toLowerCase().includes(q) || 
+      item.workspace.toLowerCase().includes(q)
+    ).slice(0, 5);
+  }, [query, allNavItems]);
 
   const ocrResults = React.useMemo(() => {
     if (!query.trim()) return [];
@@ -76,9 +118,17 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, [setIsOpen]);
+  }, [setIsOpen, isOpen]);
 
   const handleSelect = useCallback(async (res: any) => {
+    // Nếu truyền chuỗi trực tiếp (vd: route)
+    if (typeof res === 'string') {
+      setIsOpen(false);
+      navigate({ to: res as any });
+      return;
+    }
+
+    // Xử lý tài liệu OCR
     if (res.page !== undefined) {
       try {
         const table = res.sourceType === 'thiet_bi' ? 'thiet_bi_tep_dinh_kem' : 'model_tai_lieu';
@@ -96,11 +146,34 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
         }
       } catch (err) {
         console.error("Failed to open document", err);
+        toast.error("Không thể mở tài liệu");
       }
     }
-    setIsOpen(false);
-    navigate({ to: res.route as any });
+
+    // Xử lý kết quả từ timKiemToanCuc hoặc NavItem
+    const route = res.route || res.to;
+    if (route) {
+      setIsOpen(false);
+      navigate({ to: route as any });
+    }
   }, [navigate, setIsOpen]);
+
+  const handleAction = (action: string) => {
+    setIsOpen(false);
+    switch (action) {
+      case 'qr-scan':
+        window.dispatchEvent(new CustomEvent("mirats:open-qr-scanner"));
+        break;
+      case 'logout':
+        logout();
+        break;
+      case 'profile':
+        navigate({ to: "/cai-dat/tai-khoan" as any });
+        break;
+      default:
+        toast.info("Tính năng đang được phát triển");
+    }
+  };
 
   return (
     <>
@@ -131,56 +204,108 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
         <CommandList className="max-h-[42rem] overflow-y-auto overflow-x-hidden">
           <CommandEmpty>Không tìm thấy kết quả nào.</CommandEmpty>
           
-          {query.trim() === "" && (
-            <CommandGroup heading="Gợi ý">
-              <CommandItem onSelect={() => handleSelect("/thiet-bi")}>
-                <Database className="mr-2 h-4 w-4" />
-                <span>Danh sách tài sản</span>
-              </CommandItem>
-              <CommandItem onSelect={() => handleSelect("/he-thong/cay")}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Cấu trúc hệ thống</span>
-              </CommandItem>
-            </CommandGroup>
-          )}
-
-          {ocrResults.length > 0 && (
-            <CommandGroup heading="Nội dung tài liệu (OCR)">
-              {ocrResults.slice(0, 10).map((res) => (
-                <CommandItem
-                  key={res.id}
-                  onSelect={() => handleSelect(res)}
-                  className="flex flex-col items-start gap-1 py-3"
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <FileText className="h-4 w-4 text-blue-500" />
-                    <span className="font-medium truncate flex-1">{res.fileName}</span>
-                    <Badge variant="outline" className="text-[10px] shrink-0 border-blue-200 bg-blue-50 text-blue-700">Trang {res.page}</Badge>
-                  </div>
-                  <div className="text-xs text-muted-foreground line-clamp-2 italic w-full">
-                    <SnippetHighlight text={res.snippet} />
-                  </div>
+          {query.trim() === "" ? (
+            <>
+              <CommandGroup heading="Hành động nhanh">
+                <CommandItem onSelect={() => handleSelect("/su-co/moi")}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  <span>Báo cáo sự cố mới</span>
                 </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-
-          {globalResults.length > 0 && (
-            <CommandGroup heading="Hệ thống">
-              {globalResults.map((res) => (
-                <CommandItem
-                  key={res.id}
-                  onSelect={() => handleSelect(res)}
-                  className="flex items-center gap-2"
-                >
-                  <ChevronRight className="h-4 w-4 opacity-50" />
-                  <div className="flex flex-col">
-                    <span>{res.tieuDe}</span>
-                    <span className="text-xs text-muted-foreground">{nhanLoai(res.loai)}</span>
-                  </div>
+                <CommandItem onSelect={() => handleAction("qr-scan")}>
+                  <QrCode className="mr-2 h-4 w-4" />
+                  <span>Quét mã QR thiết bị</span>
                 </CommandItem>
-              ))}
-            </CommandGroup>
+                <CommandItem onSelect={() => handleSelect("/kiem-ke")}>
+                  <ClipboardCheck className="mr-2 h-4 w-4" />
+                  <span>Kiểm kê tài sản</span>
+                </CommandItem>
+              </CommandGroup>
+              
+              <CommandSeparator />
+
+              <CommandGroup heading="Gợi ý điều hướng">
+                <CommandItem onSelect={() => handleSelect("/thiet-bi")}>
+                  <Database className="mr-2 h-4 w-4" />
+                  <span>Sổ lý lịch thiết bị</span>
+                </CommandItem>
+                <CommandItem onSelect={() => handleSelect("/he-thong/cay")}>
+                  <LayoutGrid className="mr-2 h-4 w-4" />
+                  <span>Cấu trúc hệ thống</span>
+                </CommandItem>
+                <CommandItem onSelect={() => handleSelect("/du-an")}>
+                  <FolderKanban className="mr-2 h-4 w-4" />
+                  <span>Danh sách dự án</span>
+                </CommandItem>
+              </CommandGroup>
+
+              <CommandSeparator />
+
+              <CommandGroup heading="Hệ thống">
+                <CommandItem onSelect={() => handleAction("profile")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Cài đặt tài khoản</span>
+                </CommandItem>
+                <CommandItem onSelect={() => handleAction("logout")}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Đăng xuất</span>
+                </CommandItem>
+              </CommandGroup>
+            </>
+          ) : (
+            <>
+              {filteredNavItems.length > 0 && (
+                <CommandGroup heading="Điều hướng">
+                  {filteredNavItems.map((item, idx) => (
+                    <CommandItem key={`nav-${idx}`} onSelect={() => handleSelect(item.to)}>
+                      <item.icon className="mr-2 h-4 w-4 opacity-70" />
+                      <div className="flex flex-col">
+                        <span>{item.label}</span>
+                        <span className="text-[10px] text-muted-foreground">{item.workspace}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+
+              {ocrResults.length > 0 && (
+                <CommandGroup heading="Nội dung tài liệu (OCR)">
+                  {ocrResults.slice(0, 10).map((res) => (
+                    <CommandItem
+                      key={res.id}
+                      onSelect={() => handleSelect(res)}
+                      className="flex flex-col items-start gap-1 py-3"
+                    >
+                      <div className="flex w-full items-center gap-2">
+                        <FileText className="h-4 w-4 text-blue-500" />
+                        <span className="font-medium truncate flex-1">{res.fileName}</span>
+                        <Badge variant="outline" className="text-[10px] shrink-0 border-blue-200 bg-blue-50 text-blue-700">Trang {res.page}</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground line-clamp-2 italic w-full">
+                        <SnippetHighlight text={res.snippet} />
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+
+              {globalResults.length > 0 && (
+                <CommandGroup heading="Dữ liệu hệ thống">
+                  {globalResults.map((res) => (
+                    <CommandItem
+                      key={res.id}
+                      onSelect={() => handleSelect(res)}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronRight className="h-4 w-4 opacity-50" />
+                      <div className="flex flex-col">
+                        <span>{res.tieuDe}</span>
+                        <span className="text-xs text-muted-foreground">{nhanLoai(res.loai)}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </>
           )}
         </CommandList>
       </CommandDialog>
