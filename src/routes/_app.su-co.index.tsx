@@ -366,23 +366,28 @@ function SuCoPage() {
         title="Sự cố kỹ thuật"
         help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng."
         actions={
-          <div className="flex gap-1 items-center">
+          <div className="flex gap-2 items-center">
             <WeeklyReportImportDialog />
-            <Button asChild size="icon" variant="outline" className="h-8 w-8" tooltip="Lịch sử nhập báo cáo">
+            <Button asChild size="icon" variant="outline" className="h-8 w-8 border-[#0074e2]/20 text-[#0074e2] hover:bg-[#0074e2]/5" tooltip="Lịch sử nhập báo cáo">
               <Link to="/su-co/import-history"><Clock className="h-4 w-4" /></Link>
             </Button>
-            <Button variant="outline" size="sm" className="hidden md:flex flex justify-center gap-2 h-8" tooltip="Khôi phục trạng thái ban đầu">
-              <RotateCcw className="h-4 w-4" />
-              <span className="truncate max-w-[100px]">KHÔI PHỤC</span>
+            <Button variant="outline" size="sm" className="hidden md:flex items-center justify-center gap-2 h-8 border-[#0074e2]/20 text-[#0074e2] hover:bg-[#0074e2]/5" tooltip="Khôi phục trạng thái ban đầu">
+              <RotateCcw className="h-4 w-4 shrink-0" />
+              <span className="truncate max-w-[100px] text-[10px] font-bold uppercase tracking-wider">KHÔI PHỤC</span>
             </Button>
-            <Button size="sm" className="hidden md:flex flex justify-center gap-2 h-8" tooltip="Cá nhân hóa bảng điều khiển">
-              <LayoutGrid className="h-4 w-4" />
-              <span className="truncate max-w-[120px]">CÁ NHÂN HÓA</span>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="hidden md:flex items-center justify-center gap-2 h-8 border-[#0074e2]/20 text-[#0074e2] hover:bg-[#0074e2]/5" 
+              tooltip="Cá nhân hóa bảng điều khiển"
+            >
+              <LayoutGrid className="h-4 w-4 shrink-0" />
+              <span className="truncate max-w-[120px] text-[10px] font-bold uppercase tracking-wider">CÁ NHÂN HÓA</span>
             </Button>
-            <Button asChild size="sm" className="gap-2 h-8">
+            <Button asChild size="sm" className="gap-2 h-8 bg-[#0074e2] hover:bg-[#0074e2]/90 border-none shadow-none">
               <Link to="/su-co/moi">
-                <Plus className="h-4 w-4" />
-                <span>BÁO CÁO MỚI</span>
+                <Plus className="h-4 w-4 shrink-0" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">BÁO CÁO MỚI</span>
               </Link>
             </Button>
           </div>
