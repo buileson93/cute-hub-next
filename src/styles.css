@@ -253,19 +253,19 @@
 /* Thanh cuộn mảnh, luôn hiển thị rõ cho bảng nhiều cột & dialog dài */
 @utility mirats-scroll {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 35%, transparent) transparent;
+  scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 20%, transparent) transparent;
   &::-webkit-scrollbar {
-    height: 10px;
-    width: 10px;
+    height: 4px; /* Mỏng tinh tế cho cuộn ngang */
+    width: 6px;
   }
   &::-webkit-scrollbar-thumb {
-    background-color: color-mix(in oklab, var(--color-muted-foreground) 35%, transparent);
+    background-color: color-mix(in oklab, var(--color-muted-foreground) 20%, transparent);
     border-radius: 999px;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     background-clip: padding-box;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background-color: color-mix(in oklab, var(--color-muted-foreground) 55%, transparent);
+    background-color: color-mix(in oklab, var(--color-muted-foreground) 40%, transparent);
   }
   &::-webkit-scrollbar-track {
     background: transparent;
