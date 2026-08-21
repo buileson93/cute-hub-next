@@ -70,6 +70,7 @@ import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
 import { Route as AppThongKeLaptopRouteImport } from './routes/_app.thong-ke.laptop'
+import { Route as AppThietBiDanhSachRouteImport } from './routes/_app.thiet-bi.danh-sach'
 import { Route as AppThietBiMaThietBiRouteImport } from './routes/_app.thiet-bi.$maThietBi'
 import { Route as AppSuCoMoiRouteImport } from './routes/_app.su-co.moi'
 import { Route as AppSuCoImportHistoryRouteImport } from './routes/_app.su-co.import-history'
@@ -443,6 +444,11 @@ const AppThongKeLaptopRoute = AppThongKeLaptopRouteImport.update({
   id: '/thong-ke/laptop',
   path: '/thong-ke/laptop',
   getParentRoute: () => AppRoute,
+} as any)
+const AppThietBiDanhSachRoute = AppThietBiDanhSachRouteImport.update({
+  id: '/danh-sach',
+  path: '/danh-sach',
+  getParentRoute: () => AppThietBiRoute,
 } as any)
 const AppThietBiMaThietBiRoute = AppThietBiMaThietBiRouteImport.update({
   id: '/$maThietBi',
@@ -882,6 +888,7 @@ export interface FileRoutesByFullPath {
   '/su-co/import-history': typeof AppSuCoImportHistoryRoute
   '/su-co/moi': typeof AppSuCoMoiRoute
   '/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
+  '/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
@@ -1003,6 +1010,7 @@ export interface FileRoutesByTo {
   '/su-co/import-history': typeof AppSuCoImportHistoryRoute
   '/su-co/moi': typeof AppSuCoMoiRoute
   '/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
+  '/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
@@ -1133,6 +1141,7 @@ export interface FileRoutesById {
   '/_app/su-co/import-history': typeof AppSuCoImportHistoryRoute
   '/_app/su-co/moi': typeof AppSuCoMoiRoute
   '/_app/thiet-bi/$maThietBi': typeof AppThietBiMaThietBiRoute
+  '/_app/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/_app/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/_app/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
@@ -1263,6 +1272,7 @@ export interface FileRouteTypes {
     | '/su-co/import-history'
     | '/su-co/moi'
     | '/thiet-bi/$maThietBi'
+    | '/thiet-bi/danh-sach'
     | '/thong-ke/laptop'
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
@@ -1384,6 +1394,7 @@ export interface FileRouteTypes {
     | '/su-co/import-history'
     | '/su-co/moi'
     | '/thiet-bi/$maThietBi'
+    | '/thiet-bi/danh-sach'
     | '/thong-ke/laptop'
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
@@ -1513,6 +1524,7 @@ export interface FileRouteTypes {
     | '/_app/su-co/import-history'
     | '/_app/su-co/moi'
     | '/_app/thiet-bi/$maThietBi'
+    | '/_app/thiet-bi/danh-sach'
     | '/_app/thong-ke/laptop'
     | '/_app/tickets/$id'
     | '/admin/audit/lap-thao'
@@ -2005,6 +2017,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/thong-ke/laptop'
       preLoaderRoute: typeof AppThongKeLaptopRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/thiet-bi/danh-sach': {
+      id: '/_app/thiet-bi/danh-sach'
+      path: '/danh-sach'
+      fullPath: '/thiet-bi/danh-sach'
+      preLoaderRoute: typeof AppThietBiDanhSachRouteImport
+      parentRoute: typeof AppThietBiRoute
     }
     '/_app/thiet-bi/$maThietBi': {
       id: '/_app/thiet-bi/$maThietBi'
@@ -2593,11 +2612,13 @@ const AppSuCoRouteWithChildren =
 
 interface AppThietBiRouteChildren {
   AppThietBiMaThietBiRoute: typeof AppThietBiMaThietBiRoute
+  AppThietBiDanhSachRoute: typeof AppThietBiDanhSachRoute
   AppThietBiIndexRoute: typeof AppThietBiIndexRoute
 }
 
 const AppThietBiRouteChildren: AppThietBiRouteChildren = {
   AppThietBiMaThietBiRoute: AppThietBiMaThietBiRoute,
+  AppThietBiDanhSachRoute: AppThietBiDanhSachRoute,
   AppThietBiIndexRoute: AppThietBiIndexRoute,
 }
 
