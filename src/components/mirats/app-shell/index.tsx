@@ -115,9 +115,9 @@ export function UserMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl shadow-2xl border-border/40 bg-popover/95 backdrop-blur-xl animate-in fade-in zoom-in duration-200" sideOffset={8}>
           <div className="flex items-center gap-3 px-3 py-3 mb-1 bg-muted/30 rounded-xl">
-            <UserAvatar profile={profile} className="h-10 w-10 ring-2 ring-primary/10" />
+            <UserAvatar name={profile.ho_ten} email={profile.email} className="h-10 w-10 ring-2 ring-primary/10" />
             <div className="flex flex-col min-w-0">
-              <span className="text-[13px] font-bold truncate tracking-tight text-foreground leading-none mb-1">{profile.full_name || profile.ho_ten || 'Người dùng MIRATS'}</span>
+              <span className="text-[13px] font-bold truncate tracking-tight text-foreground leading-none mb-1">{profile.ho_ten || 'Người dùng MIRATS'}</span>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 text-[10px] text-amber-600 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded-full">
                   <Trophy className="h-2.5 w-2.5" />
