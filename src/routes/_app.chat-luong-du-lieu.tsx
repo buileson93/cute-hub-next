@@ -6,8 +6,8 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CompletenessStats } from '@/components/mirats/CompletenessStats';
-import { Database, AlertTriangle, ClipboardList } from 'lucide-react';
+import { CompletenessRing } from '@/components/mirats/CompletenessRing';
+import { Database, AlertTriangle, ClipboardList, Trophy, Flame } from 'lucide-react';
 
 export const Route = createFileRoute('/_app/chat-luong-du-lieu')({
   component: ChatLuongDuLieu,
@@ -73,16 +73,19 @@ function ChatLuongDuLieu() {
             <CardContent>
               <div className="space-y-4">
                 {lowCompleteness.map((item: any) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
-                    <div className="space-y-1">
-                      <p className="font-medium text-sm">{item.ten_thiet_bi}</p>
-                      <p className="text-xs text-muted-foreground">{item.dm_he_thong?.ten || 'Hệ thống chưa xác định'}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-24">
-                        <Progress value={item.completeness_pct} className="h-2" />
+                  <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <CompletenessRing value={item.completeness_pct} size={32} strokeWidth={3} showText />
+                      <div className="space-y-0.5 truncate">
+                        <p className="font-medium text-sm truncate">{item.ten_thiet_bi}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{item.dm_he_thong?.ten || 'Hệ thống chưa xác định'}</p>
                       </div>
-                      <span className="text-xs font-mono w-8 text-right">{item.completeness_pct}%</span>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="w-20 hidden sm:block">
+                        <Progress value={item.completeness_pct} className="h-1.5" />
+                      </div>
+                      <Badge variant="outline" className="text-[10px] font-mono">+{Math.max(5, 100 - item.completeness_pct)} đ</Badge>
                     </div>
                   </div>
                 ))}
