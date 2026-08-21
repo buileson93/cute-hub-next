@@ -201,7 +201,7 @@ function AuthPage() {
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={`relative z-10 rounded-xl py-3 text-[15px] font-semibold transition-colors ${
+                  className={`relative z-10 flex items-center justify-center rounded-xl py-3 text-[15px] font-semibold transition-colors ${
                     mode === m ? "text-[#0074e2]" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
