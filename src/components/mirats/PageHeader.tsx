@@ -60,7 +60,7 @@ export function PageHeader({
       return (
         <div
           data-testid="page-header-actions"
-          className="flex shrink-0 items-center gap-2 self-center md:max-w-none"
+          className="flex shrink-0 items-center gap-2 self-stretch min-h-[32px] md:max-w-none"
         >
           {actions}
         </div>
@@ -125,7 +125,7 @@ export function PageHeader({
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-3 md:gap-4 w-full">
+      <div className="flex items-center justify-between gap-3 md:gap-4 w-full min-h-[40px]">
         <div className="flex flex-col min-w-0 flex-1 gap-1">
           {/* 2. Title Row */}
           <div className={cn("flex min-w-0 items-center", UI_DENSITY.HEADER_GAP)}>

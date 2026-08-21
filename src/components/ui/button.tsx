@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 const buttonVariants = cva(
   "astryx-control relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium cursor-pointer transition-mirats-fast active:scale-[var(--scale-active)] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -21,15 +22,15 @@ const buttonVariants = cva(
       },
       size: {
         /** Mặc định: Mobile=44px (h-11), Desktop=32px/36px */
-        default: "h-11 md:h-8 md:data-[density=comfortable]:h-9 px-4 py-2 text-[14px] md:text-[12px] md:data-[density=comfortable]:text-[13px] [&_svg]:size-5 md:size-4 min-w-[2.5rem]",
+        default: cn(UI_DENSITY.CONTROL_H, "px-4 py-2 text-[14px] md:text-[12px] md:data-[density=comfortable]:text-[13px] [&_svg]:size-5 md:size-4 min-w-[2.5rem] flex-shrink-0"),
         /** Small: Mobile=44px (đảm bảo đích chạm), Desktop=32px */
-        sm: "h-11 md:h-8 rounded-md px-3 text-[14px] md:text-[12px] [&_svg]:size-4.5 md:size-4 min-w-[2rem]",
+        sm: cn(UI_DENSITY.CONTROL_H, "rounded-md px-3 text-[14px] md:text-[12px] [&_svg]:size-4.5 md:size-4 min-w-[2rem] flex-shrink-0"),
         /** Extra Small: Mobile=44px (đảm bảo đích chạm), Desktop=28px */
-        xs: "h-11 md:h-7 rounded px-2 text-[14px] md:text-[11px] [&_svg]:size-4 md:size-3.5 min-w-[1.75rem]",
+        xs: "min-h-[2.75rem] md:min-h-[1.75rem] rounded px-2 text-[14px] md:text-[11px] [&_svg]:size-4 md:size-3.5 min-w-[1.75rem]",
         /** Large: Mobile=48px+, Desktop=40px/44px */
-        lg: "h-12 md:h-10 md:data-[density=comfortable]:h-11 rounded-md px-8 text-base [&_svg]:size-6 md:size-5",
+        lg: "min-h-[3rem] md:min-h-[2.5rem] md:data-[density=comfortable]:min-h-[2.75rem] rounded-md px-8 text-base [&_svg]:size-6 md:size-5",
         /** Icon-only: Mobile=44px (h-11), Desktop=32px/36px */
-        icon: "h-11 w-11 md:h-8 md:w-8 md:data-[density=comfortable]:h-9 md:data-[density=comfortable]:w-9 [&_svg]:size-5 md:size-4.5",
+        icon: cn(UI_DENSITY.CONTROL_H, "min-w-[2.75rem] md:min-w-[2rem] md:data-[density=comfortable]:min-w-[2.25rem] [&_svg]:size-5 md:size-4.5"),
       },
     },
     defaultVariants: {
@@ -78,26 +79,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // Optimized loading logic for non-asChild
     const renderContent = () => {
-       if (asChild) return children;
-       
-       const isIconOnly = size === "icon";
-       
-       return (
-         <>
-           <span className={cn(
-             "flex items-center justify-center w-full h-full min-w-0 transition-opacity",
-             !isIconOnly && "gap-2",
-             loading ? "opacity-0" : "opacity-100"
-           )}>
-             {children}
-           </span>
-           {loading && (
-             <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <Loader2 className="animate-spin shrink-0 h-4 w-4" aria-hidden="true" />
-             </span>
-           )}
-         </>
-       );
+      if (asChild) return children;
+      
+      return (
+        <>
+          <span className={cn(
+            "flex items-center justify-center gap-2 w-full h-full min-w-0 transition-opacity pointer-events-none",
+            loading ? "opacity-0" : "opacity-100"
+          )}>
+            {children}
+          </span>
+          {loading && (
+            <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+               <Loader2 className="animate-spin shrink-0 h-4 w-4" aria-hidden="true" />
+            </span>
+          )}
+        </>
+      );
     };
 
     const ariaLabel = (props as { "aria-label"?: string })["aria-label"];

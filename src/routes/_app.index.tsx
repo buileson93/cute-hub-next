@@ -45,6 +45,7 @@ function Dashboard() {
   const { profile } = useSession();
   const { scope } = useUnifiedDashboardStats();
   const [isEditing, setIsEditing] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>("dashboard:layout:home", DEFAULT_HOME_LAYOUT);
 
   const handleAddWidget = (type: WidgetType) => {
@@ -59,9 +60,15 @@ function Dashboard() {
     toast.success(`Đã thêm widget ${info.title}`);
   };
 
-  const handleReset = () => {
-    setLayout(DEFAULT_HOME_LAYOUT);
-    toast.success("Đã khôi phục bố cục mặc định");
+  const handleReset = async () => {
+    setIsResetting(true);
+    const t = toast.loading("Đang khôi phục bố cục mặc định...");
+    try {
+      setLayout(DEFAULT_HOME_LAYOUT);
+      toast.success("Đã khôi phục bố cục mặc định", { id: t });
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   if (scope.loading) {
@@ -84,7 +91,7 @@ function Dashboard() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-8 gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0 px-3"
+                      className="gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0 px-3 min-w-[120px]"
                       aria-label="Thêm Widget mới"
                     >
                       <Icon name="action.add" size="tiny" className="text-primary shrink-0" />
@@ -96,7 +103,8 @@ function Dashboard() {
                   size="sm"
                   variant="ghost"
                   onClick={handleReset}
-                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0 px-3"
+                  loading={isResetting}
+                  className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0 px-3 min-w-[100px]"
                   aria-label="Khôi phục bố cục mặc định"
                 >
                   <Icon name="action.undo" size="tiny" className="shrink-0" />
@@ -109,7 +117,7 @@ function Dashboard() {
               variant={isEditing ? "default" : "outline"}
               onClick={() => setIsEditing(!isEditing)}
               className={cn(
-                "h-8 px-4 transition-all gap-2 shadow-sm border-primary/20 shrink-0",
+                "px-4 transition-all gap-2 shadow-sm border-primary/20 shrink-0 min-w-[120px]",
                 isEditing ? "bg-primary text-primary-foreground" : "bg-background text-primary"
               )}
               aria-label={isEditing ? "Hoàn tất chỉnh sửa" : "Cá nhân hóa bảng điều khiển"}
