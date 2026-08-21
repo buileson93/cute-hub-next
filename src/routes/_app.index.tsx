@@ -91,7 +91,7 @@ function Dashboard() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-8 gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0 px-3"
+                      className="h-8 gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0 px-3 min-w-[120px]"
                       aria-label="Thêm Widget mới"
                     >
                       <Icon name="action.add" size="tiny" className="text-primary shrink-0" />
@@ -117,7 +117,7 @@ function Dashboard() {
               variant={isEditing ? "default" : "outline"}
               onClick={() => setIsEditing(!isEditing)}
               className={cn(
-                "h-8 px-4 transition-all gap-2 shadow-sm border-primary/20 shrink-0",
+                "h-8 px-4 transition-all gap-2 shadow-sm border-primary/20 shrink-0 min-w-[120px]",
                 isEditing ? "bg-primary text-primary-foreground" : "bg-background text-primary"
               )}
               aria-label={isEditing ? "Hoàn tất chỉnh sửa" : "Cá nhân hóa bảng điều khiển"}
