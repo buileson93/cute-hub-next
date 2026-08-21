@@ -180,7 +180,7 @@ export function DataTableCore<T>({
                 >
                   {selectable && (
                     <TableCell 
-                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50"
+                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
@@ -193,13 +193,13 @@ export function DataTableCore<T>({
                     <TableCell
                       key={col.key}
                       className={cn(
-                        "mirats-table-cell-base",
+                        "mirats-table-cell-base border-b border-r border-border/20",
                         col.cellClassName,
-                        col.sticky && "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/10",
+                        col.sticky && "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" && "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/10"
+                        col.type === "actions" && "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20"
                       )}
                       style={{
                         width: col.width,

@@ -405,17 +405,11 @@
   vertical-align: middle;
   word-break: break-word;
   overflow-wrap: break-word;
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
 }
 
 .mirats-data-table-core-element {
   border-collapse: separate !important;
   border-spacing: 0 !important;
-}
-
-.mirats-data-table-core-element th:first-child,
-.mirats-data-table-core-element td:first-child {
   border-left: 1px solid var(--border);
 }
 
