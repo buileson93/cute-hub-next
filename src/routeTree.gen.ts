@@ -66,6 +66,7 @@ import { Route as AppFormsIndexRouteImport } from './routes/_app.forms.index'
 import { Route as AppDuAnIndexRouteImport } from './routes/_app.du-an.index'
 import { Route as AppBaoTriIndexRouteImport } from './routes/_app.bao-tri.index'
 import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
+import { Route as ApiPublicUiKitRouteImport } from './routes/api/public/ui-kit'
 import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
@@ -424,6 +425,11 @@ const AppBaoTriIndexRoute = AppBaoTriIndexRouteImport.update({
 const QrThietBiIdRoute = QrThietBiIdRouteImport.update({
   id: '/qr/thiet-bi/$id',
   path: '/qr/thiet-bi/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicUiKitRoute = ApiPublicUiKitRouteImport.update({
+  id: '/api/public/ui-kit',
+  path: '/api/public/ui-kit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicQaResetTestPasswordsRoute =
@@ -905,6 +911,7 @@ export interface FileRoutesByFullPath {
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
+  '/api/public/ui-kit': typeof ApiPublicUiKitRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri/': typeof AppBaoTriIndexRoute
   '/du-an/': typeof AppDuAnIndexRoute
@@ -1029,6 +1036,7 @@ export interface FileRoutesByTo {
   '/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
+  '/api/public/ui-kit': typeof ApiPublicUiKitRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/bao-tri': typeof AppBaoTriIndexRoute
   '/du-an': typeof AppDuAnIndexRoute
@@ -1162,6 +1170,7 @@ export interface FileRoutesById {
   '/_app/tickets/$id': typeof AppTicketsIdRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
+  '/api/public/ui-kit': typeof ApiPublicUiKitRoute
   '/qr/thiet-bi/$id': typeof QrThietBiIdRoute
   '/_app/bao-tri/': typeof AppBaoTriIndexRoute
   '/_app/du-an/': typeof AppDuAnIndexRoute
@@ -1295,6 +1304,7 @@ export interface FileRouteTypes {
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
     | '/api/public/qa-reset-test-passwords'
+    | '/api/public/ui-kit'
     | '/qr/thiet-bi/$id'
     | '/bao-tri/'
     | '/du-an/'
@@ -1419,6 +1429,7 @@ export interface FileRouteTypes {
     | '/tickets/$id'
     | '/admin/audit/lap-thao'
     | '/api/public/qa-reset-test-passwords'
+    | '/api/public/ui-kit'
     | '/qr/thiet-bi/$id'
     | '/bao-tri'
     | '/du-an'
@@ -1551,6 +1562,7 @@ export interface FileRouteTypes {
     | '/_app/tickets/$id'
     | '/admin/audit/lap-thao'
     | '/api/public/qa-reset-test-passwords'
+    | '/api/public/ui-kit'
     | '/qr/thiet-bi/$id'
     | '/_app/bao-tri/'
     | '/_app/du-an/'
@@ -1601,6 +1613,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicQaResetTestPasswordsRoute: typeof ApiPublicQaResetTestPasswordsRoute
+  ApiPublicUiKitRoute: typeof ApiPublicUiKitRoute
   QrThietBiIdRoute: typeof QrThietBiIdRoute
   ApiPublicExtCongVanRoute: typeof ApiPublicExtCongVanRoute
   ApiPublicHooksBootstrapAdminRoute: typeof ApiPublicHooksBootstrapAdminRoute
@@ -2016,6 +2029,13 @@ declare module '@tanstack/react-router' {
       path: '/qr/thiet-bi/$id'
       fullPath: '/qr/thiet-bi/$id'
       preLoaderRoute: typeof QrThietBiIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/ui-kit': {
+      id: '/api/public/ui-kit'
+      path: '/api/public/ui-kit'
+      fullPath: '/api/public/ui-kit'
+      preLoaderRoute: typeof ApiPublicUiKitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/qa-reset-test-passwords': {
@@ -2902,6 +2922,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicQaResetTestPasswordsRoute: ApiPublicQaResetTestPasswordsRoute,
+  ApiPublicUiKitRoute: ApiPublicUiKitRoute,
   QrThietBiIdRoute: QrThietBiIdRoute,
   ApiPublicExtCongVanRoute: ApiPublicExtCongVanRoute,
   ApiPublicHooksBootstrapAdminRoute: ApiPublicHooksBootstrapAdminRoute,
