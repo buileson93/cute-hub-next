@@ -91,13 +91,13 @@ export function DataTableCore<T>({
   };
 
   const tableClasses = cn(
-    "relative w-full border-collapse",
+    "relative w-full border-separate border-spacing-0",
     density === "compact" ? "text-[12px]" : "text-[13px]"
   );
 
   return (
     <div 
-      className={cn("relative overflow-auto mirats-scroll border rounded-xl bg-card", className)}
+      className={cn("relative overflow-auto mirats-scroll border rounded-xl bg-card mirats-data-table-core", className)}
       style={{ maxHeight }}
     >
       <Table className={tableClasses}>
