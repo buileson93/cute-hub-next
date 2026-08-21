@@ -60,7 +60,7 @@ export function PageHeader({
       return (
         <div
           data-testid="page-header-actions"
-          className="flex shrink-0 items-center gap-2 self-center"
+          className="flex shrink-0 items-center gap-2 self-center max-w-[50%] md:max-w-none overflow-hidden"
         >
           {actions}
         </div>
