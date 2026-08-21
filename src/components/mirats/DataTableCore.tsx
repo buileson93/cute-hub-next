@@ -116,7 +116,7 @@ export function DataTableCore<T>({
                   minWidth: col.minWidth || (col.width ? undefined : 100),
                 }}
                 className={cn(
-                  col.sticky && "sticky left-0 z-30 bg-muted/95 backdrop-blur-[4px]",
+                  col.sticky && "sticky left-0 z-30 bg-muted/95 backdrop-blur-[4px] border-r border-border/10",
                   selectable && col.sticky && "left-10",
                   col.align === "center" && "text-center",
                   col.align === "right" && "text-right"
