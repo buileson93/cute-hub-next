@@ -193,7 +193,7 @@ function AuthPage() {
               <motion.div
                 aria-hidden
                 className="absolute inset-y-1.5 left-1.5 w-[calc(50%-1.5px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5"
-                animate={{ x: mode === "signin" ? "0%" : "calc(100% - 1.5px)" }}
+                animate={{ x: mode === "signin" ? "0%" : "calc(100% + 1.5px)" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
               {(["signin", "signup"] as const).map((m) => (
