@@ -17,7 +17,7 @@ const Switch = React.forwardRef<
   >
     <SwitchPrimitives.Thumb
       className={cn(
-        "astryx-switch-thumb pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-transform",
+        "astryx-switch-thumb pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-all",
       )}
     />
   </SwitchPrimitives.Root>
