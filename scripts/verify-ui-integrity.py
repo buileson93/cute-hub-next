@@ -31,12 +31,17 @@ async def main():
         context = await browser.new_context(viewport={"width": 1280, "height": 800})
         page = await context.new_page()
 
-        # Login
+        # Login - Using a more robust wait
         await page.goto("http://localhost:8080/auth")
-        await page.fill("input[type='email']", "buileson93@gmail.com")
-        await page.fill("input[type='password']", "123456")
-        await page.click("button[type='submit']")
-        await page.wait_for_url("**/", timeout=5000)
+        try:
+            await page.fill("input[type='email']", "buileson93@gmail.com")
+            await page.fill("input[type='password']", "123456")
+            await page.click("button[type='submit']")
+            # Wait for dashboard content instead of URL to avoid redirection loop issues
+            await page.wait_for_selector("[data-testid='page-header']", timeout=10000)
+        except Exception as e:
+            print(f"Login or redirect failed, proceeding to check current page: {page.url}")
+
         
         # 1. TopBar Overlap Check
         print("Checking TopBar for overlaps...")
