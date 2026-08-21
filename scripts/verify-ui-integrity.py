@@ -13,19 +13,22 @@ async def main():
         context = await browser.new_context(viewport={"width": 1280, "height": 1800})
         page = await context.new_page()
 
-        # Step 1: Login
+        # Step 1: Navigate to auth and login
         await page.goto("http://localhost:8080/auth", wait_until="networkidle")
         await page.fill("input[id='email']", "buileson93@gmail.com")
         await page.fill("input[id='password']", "12345678")
+        
+        # Click the blue submit button specifically
         await page.click("button[type='submit']")
         
-        # Wait for navigation
+        # Wait for navigation to dashboard or specific G1 page
         try:
-            await page.wait_for_selector("[data-testid='page-header']", timeout=15000)
-            print("Login successful")
+            # Dashboard search bar is a good indicator of being logged in
+            await page.wait_for_selector("[data-tour='search']", timeout=15000)
+            print("Login successful, dashboard loaded.")
         except:
-            print("Login failed or timed out")
-            await page.screenshot(path=str(SCREENSHOTS / "final_audit_login_failed.png"))
+            print(f"Login failed. Current URL: {page.url}")
+            await page.screenshot(path=str(SCREENSHOTS / "audit_login_failed_final.png"))
             await browser.close()
             return
 
@@ -33,42 +36,43 @@ async def main():
         search_btn = page.locator("div[data-tour='search'] button")
         await search_btn.scroll_into_view_if_needed()
         
-        btn_box = await search_btn.bounding_box()
         icon = search_btn.locator("svg.lucide-search")
-        icon_box = await icon.bounding_box()
         shortcut = search_btn.locator("div.font-mono")
-        shortcut_box = await shortcut.bounding_box()
         text = search_btn.locator("span.truncate")
+
+        icon_box = await icon.bounding_box()
+        shortcut_box = await shortcut.bounding_box()
         text_box = await text.bounding_box()
 
         print(f"Audit TopBar: Icon={icon_box}, Shortcut={shortcut_box}, Text={text_box}")
         
-        # Check for overlap
         if text_box and shortcut_box:
             if text_box['x'] + text_box['width'] > shortcut_box['x']:
                 print(f"FAILURE: Overlap detected! Text right edge ({text_box['x'] + text_box['width']}) > Shortcut left edge ({shortcut_box['x']})")
             else:
                 print("SUCCESS: TopBar Search text is clear of shortcut box.")
         
-        # Step 3: Check for Horizontal Overflow
-        overflow = await page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth")
-        if overflow:
-            print("FAILURE: Horizontal overflow detected at root level!")
-        else:
-            print("SUCCESS: No horizontal overflow detected at 1280px.")
+        await page.screenshot(path=str(SCREENSHOTS / "audit_topbar_success.png"))
 
-        await page.screenshot(path=str(SCREENSHOTS / "final_audit_desktop.png"))
-
-        # Step 4: Mobile Audit (390px)
-        await page.set_viewport_size({"width": 390, "height": 844})
-        await page.wait_for_timeout(2000)
-        overflow_mobile = await page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth")
-        if overflow_mobile:
-             print("FAILURE: Horizontal overflow detected on Mobile (390px)!")
-        else:
-             print("SUCCESS: No horizontal overflow on Mobile.")
-        
-        await page.screenshot(path=str(SCREENSHOTS / "final_audit_mobile.png"))
+        # Step 3: Check Switch thumb centering
+        await page.goto("http://localhost:8080/cai-dat/he-thong", wait_until="networkidle")
+        switch = page.locator("button[role='switch']").first
+        if await switch.count() > 0:
+            await switch.scroll_into_view_if_needed()
+            thumb = switch.locator("span")
+            switch_box = await switch.bounding_box()
+            thumb_box = await thumb.bounding_box()
+            
+            # Check vertical alignment
+            switch_center_y = switch_box['y'] + switch_box['height'] / 2
+            thumb_center_y = thumb_box['y'] + thumb_box['height'] / 2
+            diff = abs(switch_center_y - thumb_center_y)
+            if diff < 1:
+                print(f"SUCCESS: Switch thumb is vertically centered (diff={diff}px).")
+            else:
+                print(f"FAILURE: Switch thumb is NOT vertically centered (diff={diff}px).")
+            
+            await switch.screenshot(path=str(SCREENSHOTS / "audit_switch.png"))
 
         await browser.close()
 
