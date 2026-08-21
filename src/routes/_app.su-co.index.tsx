@@ -11,7 +11,7 @@ import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, FilePlus2, FileDown, AlertTriangle, Clock, Activity, Network, ChevronDown,
-  Flame, CheckCircle2, Loader2, HardDrive, Filter, RotateCcw, LayoutGrid
+  Flame, CheckCircle2, Loader2, HardDrive, Filter, RotateCcw, LayoutGrid, Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
