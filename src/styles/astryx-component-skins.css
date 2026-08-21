@@ -106,7 +106,6 @@
   .astryx-control {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     border-radius: var(--radius-element);
     font-weight: 600;
     transition: all var(--duration-fast) var(--ease-standard);
