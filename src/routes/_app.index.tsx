@@ -70,57 +70,62 @@ function Dashboard() {
 
   return (
     <PageBody className="bg-background min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="space-y-1">
-          <h1 className="astryx-heading-1">
-            {`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? ""}`.trim()}
-          </h1>
-          <p className="astryx-text-muted">MIRATS — Hệ thống quản lý tài sản kỹ thuật.</p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {isEditing && (
-             <>
-               <WidgetPicker 
-                 currentLayout={layout}
-                 onAdd={handleAddWidget}
-                 trigger={
-                    <Button size="default" variant="outline" className="astryx-control gap-2 hover:bg-primary/5 hover:border-primary/40 shadow-none">
-                      <Icon name="action.add" size="tiny" className="text-primary" />
+      <PageHeader
+        title={`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? "Bui Le Son"}`.trim()}
+        subtitle={`MIRATS — Hệ thống quản lý tài sản kỹ thuật.`}
+        actions={
+          <div className="flex flex-wrap items-center justify-end gap-2 md:gap-3">
+            {isEditing && (
+              <div className="flex items-center gap-2">
+                <WidgetPicker
+                  currentLayout={layout}
+                  onAdd={handleAddWidget}
+                  trigger={
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1.5 hover:bg-primary/5 hover:border-primary/40 shadow-none border-primary/20 bg-background shrink-0"
+                      aria-label="Thêm Widget mới"
+                    >
+                      <Icon name="action.add" size="tiny" className="text-primary shrink-0" />
                       <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Thêm Widget</span>
                     </Button>
-                 }
-               />
-               <Button 
-                 size="default" 
-                 variant="ghost" 
-                 onClick={handleReset}
-                 className="astryx-control gap-2 text-muted-foreground hover:text-destructive"
-               >
-                 <Icon name="action.undo" size="tiny" />
-                 <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
-               </Button>
-             </>
-          )}
-          <Button 
-            size="sm" 
-            variant={isEditing ? "default" : "outline"}
-            onClick={() => setIsEditing(!isEditing)}
-            className={cn(
-              "astryx-control h-8 px-4 transition-all gap-2 shadow-none"
+                  }
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleReset}
+                  className="h-8 gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0"
+                  aria-label="Khôi phục bố cục mặc định"
+                >
+                  <Icon name="action.undo" size="tiny" className="shrink-0" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Khôi phục</span>
+                </Button>
+              </div>
             )}
-          >
-            <Icon 
-              name={isEditing ? "status.success" : "action.settings"} 
-              size="tiny" 
-              className={cn(isEditing ? "text-primary-foreground" : "text-primary")} 
-            />
-            <span className="text-[10px] font-bold uppercase tracking-wider">
-              {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
-            </span>
-          </Button>
-        </div>
-      </div>
+            <Button
+              size="sm"
+              variant={isEditing ? "default" : "outline"}
+              onClick={() => setIsEditing(!isEditing)}
+              className={cn(
+                "h-8 px-4 transition-all gap-1.5 shadow-sm border-primary/20 shrink-0",
+                isEditing ? "bg-primary text-primary-foreground" : "bg-background text-primary"
+              )}
+              aria-label={isEditing ? "Hoàn tất chỉnh sửa" : "Cá nhân hóa bảng điều khiển"}
+            >
+              <Icon
+                name={isEditing ? "status.success" : "action.settings"}
+                size="tiny"
+                className="shrink-0"
+              />
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
+              </span>
+            </Button>
+          </div>
+        }
+      />
 
       <div className="mb-8 p-1 astryx-surface overflow-hidden">
         <HeartBeatStrip />
