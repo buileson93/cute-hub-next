@@ -219,27 +219,29 @@ function AuthPage() {
                   exit={{ opacity: 0, x: -12 }}
                   transition={{ duration: 0.25 }}
                   onSubmit={handleSignIn}
-                  className="space-y-4"
                 >
-                  <Field id="email" label="Email" type="email" autoComplete="email"
-                    value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
-                  <Field id="password" label="Mật khẩu" type="password" autoComplete="current-password"
-                    value={password} onChange={setPassword} disabled={busy}
-                    rightSlot={
-                      <a href="/forgot-password" className="text-xs font-medium text-muted-foreground hover:text-[#0074e2]">
-                        Quên mật khẩu?
-                      </a>
-                    } />
-                  <Button
-                    type="submit"
-                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0 !bg-[#0074e2] !text-white"
-                    disabled={busy}
-                  >
-                    {loading
-                      ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      : <LogIn className="mr-2 h-4 w-4 text-white transition-transform group-hover:translate-x-0.5" />}
-                    Đăng nhập
-                  </Button>
+                  <div className="space-y-6">
+                    <Field id="email" label="Email" type="email" autoComplete="email"
+                      value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
+                    <Field id="password" label="Mật khẩu" type="password" autoComplete="current-password"
+                      value={password} onChange={setPassword} disabled={busy}
+                      rightSlot={
+                        <a href="/forgot-password" data-command-ignore className="text-xs font-medium text-muted-foreground hover:text-[#0074e2]">
+                          Quên mật khẩu?
+                        </a>
+                      } />
+                    <Button
+                      type="submit"
+                      variant="default"
+                      size="lg"
+                      className="group w-full !h-14 !rounded-2xl bg-[#0074e2] text-white text-base font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98] !flex items-center justify-center"
+                      disabled={busy}
+                      loading={loading}
+                    >
+                      <LogIn className="mr-2.5 h-5 w-5 text-white transition-transform group-hover:translate-x-1" />
+                      Đăng nhập
+                    </Button>
+                  </div>
                 </motion.form>
               ) : (
                 <motion.form
@@ -249,27 +251,29 @@ function AuthPage() {
                   exit={{ opacity: 0, x: 12 }}
                   transition={{ duration: 0.25 }}
                   onSubmit={handleSignUp}
-                  className="space-y-4"
                 >
-                  <Field id="fullName" label="Họ và tên" type="text" autoComplete="name"
-                    value={fullName} onChange={setFullName} disabled={busy} placeholder="Nguyễn Văn A" />
-                  <Field id="email" label="Email" type="email" autoComplete="email"
-                    value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
-                  <Field id="password" label="Mật khẩu" type="password" autoComplete="new-password"
-                    value={password} onChange={setPassword} disabled={busy} placeholder="Tối thiểu 8 ký tự" />
-                  <Button
-                    type="submit"
-                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0 !bg-[#0074e2] !text-white"
-                    disabled={busy}
-                  >
-                    {loading
-                      ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      : <UserPlus className="mr-2 h-4 w-4 text-white transition-transform group-hover:scale-110" />}
-                    Đăng ký
-                  </Button>
-                  <p className="text-center text-[11.5px] leading-relaxed text-muted-foreground">
-                    Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>. Quản trị viên sẽ kích hoạt và gán vai trò.
-                  </p>
+                  <div className="space-y-6">
+                    <Field id="fullName" label="Họ và tên" type="text" autoComplete="name"
+                      value={fullName} onChange={setFullName} disabled={busy} placeholder="Nguyễn Văn A" />
+                    <Field id="email" label="Email" type="email" autoComplete="email"
+                      value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
+                    <Field id="password" label="Mật khẩu" type="password" autoComplete="new-password"
+                      value={password} onChange={setPassword} disabled={busy} placeholder="Tối thiểu 8 ký tự" />
+                    <Button
+                      type="submit"
+                      variant="default"
+                      size="lg"
+                      className="group w-full !h-14 !rounded-2xl bg-[#0074e2] text-white text-base font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98] !flex items-center justify-center"
+                      disabled={busy}
+                      loading={loading}
+                    >
+                      <UserPlus className="mr-2.5 h-5 w-5 text-white transition-transform group-hover:scale-110" />
+                      Đăng ký
+                    </Button>
+                    <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
+                      Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>. Quản trị viên sẽ kích hoạt và gán vai trò.
+                    </p>
+                  </div>
                 </motion.form>
               )}
             </AnimatePresence>
