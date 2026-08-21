@@ -112,19 +112,19 @@ function TableAuditFixture() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-bold flex items-center gap-2">
-          <Badge>Case 4</Badge> CatalogTable (Simple)
+          <Badge>Case 4</Badge> CatalogTable (Domain-Specific)
         </h2>
-        <CatalogTable
-          title="Bảng Danh Mục Pilot"
-          columns={[
-            { header: "Mã", key: "code" },
-            { header: "Tên", key: "name" }
-          ]}
-          data={[
-            { code: "CAT01", name: "Danh mục A" },
-            { code: "CAT02", name: "Danh mục B" }
-          ]}
-        />
+        <div className="border rounded-xl overflow-hidden bg-card">
+          <CatalogTable
+            table="dm_loai_thiet_bi"
+            usageColumn="loai_thiet_bi_id"
+            title="Loại thiết bị"
+            singular="loại thiết bị"
+            description="Quản lý danh mục chủng loại tài sản"
+            icon={Badge}
+            namePlaceholder="Ví dụ: Laptop, Máy in..."
+          />
+        </div>
       </section>
     </PageBody>
   );
