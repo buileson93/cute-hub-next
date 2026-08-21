@@ -131,7 +131,7 @@ export function UserMenu() {
 
           <DropdownMenuItem
             onSelect={() => setDensity(density === "compact" ? "comfortable" : "compact")}
-            aria-label="thay đổi mật độ ở đây"
+            aria-label="không phỉa các bước để không bị chống lấn các nút với nhau"
           >
             {density === "compact" ? (
               <LayoutPanelTop className="mr-2 h-3.5 w-3.5" />
