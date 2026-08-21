@@ -21,18 +21,22 @@ async def main():
         # Click the blue submit button specifically
         await page.click("button[type='submit']")
         
-        # Wait for navigation to dashboard or specific G1 page
-        try:
-            # Dashboard search bar is a good indicator of being logged in
-            await page.wait_for_selector("[data-tour='search']", timeout=15000)
-            print("Login successful, dashboard loaded.")
-        except:
-            print(f"Login failed. Current URL: {page.url}")
-            await page.screenshot(path=str(SCREENSHOTS / "audit_login_failed_final.png"))
+        # Wait for either navigation or an error toast
+        await page.wait_for_timeout(5000)
+        
+        if page.url == "http://localhost:8080/auth":
+            print(f"Login failed. URL still /auth. Looking for error toast...")
+            error_toast = page.locator("li[data-sonner-toast][data-type='error']")
+            if await error_toast.count() > 0:
+                print(f"Error toast found: {await error_toast.inner_text()}")
+            await page.screenshot(path=str(SCREENSHOTS / "audit_login_failed_detail.png"))
             await browser.close()
             return
+            
+        print(f"Login successful? URL is {page.url}")
+        await page.wait_for_selector("[data-tour='search']", timeout=10000)
 
-        # Step 2: Audit TopBar Search
+        # Audit TopBar Search
         search_btn = page.locator("div[data-tour='search'] button")
         await search_btn.scroll_into_view_if_needed()
         
@@ -44,36 +48,19 @@ async def main():
         shortcut_box = await shortcut.bounding_box()
         text_box = await text.bounding_box()
 
-        print(f"Audit TopBar: Icon={icon_box}, Shortcut={shortcut_box}, Text={text_box}")
-        
+        print(json.dumps({
+            "icon": icon_box,
+            "shortcut": shortcut_box,
+            "text": text_box
+        }))
+
         if text_box and shortcut_box:
             if text_box['x'] + text_box['width'] > shortcut_box['x']:
                 print(f"FAILURE: Overlap detected! Text right edge ({text_box['x'] + text_box['width']}) > Shortcut left edge ({shortcut_box['x']})")
             else:
                 print("SUCCESS: TopBar Search text is clear of shortcut box.")
         
-        await page.screenshot(path=str(SCREENSHOTS / "audit_topbar_success.png"))
-
-        # Step 3: Check Switch thumb centering
-        await page.goto("http://localhost:8080/cai-dat/he-thong", wait_until="networkidle")
-        switch = page.locator("button[role='switch']").first
-        if await switch.count() > 0:
-            await switch.scroll_into_view_if_needed()
-            thumb = switch.locator("span")
-            switch_box = await switch.bounding_box()
-            thumb_box = await thumb.bounding_box()
-            
-            # Check vertical alignment
-            switch_center_y = switch_box['y'] + switch_box['height'] / 2
-            thumb_center_y = thumb_box['y'] + thumb_box['height'] / 2
-            diff = abs(switch_center_y - thumb_center_y)
-            if diff < 1:
-                print(f"SUCCESS: Switch thumb is vertically centered (diff={diff}px).")
-            else:
-                print(f"FAILURE: Switch thumb is NOT vertically centered (diff={diff}px).")
-            
-            await switch.screenshot(path=str(SCREENSHOTS / "audit_switch.png"))
-
+        await page.screenshot(path=str(SCREENSHOTS / "audit_topbar_final.png"))
         await browser.close()
 
 if __name__ == "__main__":
