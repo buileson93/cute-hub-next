@@ -405,22 +405,13 @@
   vertical-align: middle;
   word-break: break-word;
   overflow-wrap: break-word;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .mirats-data-table-core-element {
   border-collapse: separate;
   border-spacing: 0;
-}
-
-.mirats-data-table-core-element th,
-.mirats-data-table-core-element td {
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 0.5rem;
-}
-
-.mirats-data-table-core-element thead tr:first-child th {
-  border-top: 1px solid var(--border);
 }
 
 .mirats-data-table-core-element th:first-child,
@@ -435,6 +426,9 @@
   text-transform: uppercase;
   letter-spacing: 0.025em;
   background-color: var(--color-muted);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 
