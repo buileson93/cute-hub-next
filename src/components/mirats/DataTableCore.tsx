@@ -172,7 +172,7 @@ export function DataTableCore<T>({
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" && "sticky right-0 z-10 bg-card/80 backdrop-blur-[2px] border-l border-border/10"
+                        col.type === "actions" && "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/10"
                       )}
                       style={{
                         width: col.width,
