@@ -65,7 +65,7 @@ export function DataTableCore<T>({
   className,
   maxHeight,
 }: DataTableCoreProps<T>) {
-  const { density } = useDensity();
+  const [density] = useDensity();
 
   const renderCellContent = (col: DataTableColumn<T>, row: T) => {
     if (col.render) return col.render(row);
@@ -75,7 +75,8 @@ export function DataTableCore<T>({
 
     switch (col.type) {
       case "status":
-        return <StatusBadge status={val} />;
+        // DataTableCore mặc định dùng domain generic nếu không có hint
+        return <StatusBadge domain="thiet_bi" code={val} />;
       case "currency":
         return fmtVND(val);
       case "date":
