@@ -14,8 +14,6 @@ const vatmLogoFullSrc = vatmLogoFull.url;
 import { getAuthenticationOptions, verifyAuthentication } from "@/lib/passkey.functions";
 import { AtcTowerScene } from "@/components/mirats/AtcTowerScene";
 import { markActivityNow } from "@/lib/mirats/auth/activity";
-import { cn } from "@/lib/utils";
-import { TYPO } from "@/lib/mirats/ui/typography";
 
 const searchSchema = z.object({ next: z.string().optional() });
 
@@ -169,43 +167,32 @@ function AuthPage() {
   const showPasskey = passkeySupported && isMobile;
 
   return (
-    <div className="min-h-dvh bg-background p-4 lg:p-6 flex items-center justify-center">
-      <div className="mx-auto grid w-full max-w-7xl overflow-hidden rounded-[var(--radius-container)] bg-card shadow-xl ring-1 ring-border lg:grid-cols-[1fr_1.1fr] min-h-[600px] lg:h-[800px]">
+    <div className="min-h-dvh bg-background p-4 lg:p-6">
+      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl overflow-hidden rounded-3xl bg-card shadow-xl ring-1 ring-border lg:grid-cols-[1fr_1.1fr]">
         {/* Left: form */}
-        <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14 bg-card relative z-10">
+        <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14">
           <motion.div
             {...enter}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto w-full max-w-[400px]"
+            className="mx-auto w-full max-w-[560px]"
           >
             <motion.div
               {...enter}
               transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-10 flex justify-center lg:justify-start"
+              className="mb-8"
             >
               <img
                 src={vatmLogoFullSrc}
                 alt="VATM MIRATS"
-                className="h-10 w-auto object-contain"
+                className="h-auto w-full max-w-[560px] object-contain"
               />
             </motion.div>
 
-            <div className="mb-8">
-              <h1 className={cn(TYPO.H1, "mb-2")}>
-                {mode === "signin" ? "Chào mừng trở lại" : "Tạo tài khoản mới"}
-              </h1>
-              <p className={cn(TYPO.BODY, "text-muted-foreground")}>
-                {mode === "signin" 
-                  ? "Đăng nhập để quản lý tài sản kỹ thuật hàng không." 
-                  : "Đăng ký để tham gia hệ thống quản lý MIRATS."}
-              </p>
-            </div>
-
             {/* Tabs */}
-            <div className="relative mb-8 grid grid-cols-2 rounded-xl bg-muted/60 p-1">
+            <div className="relative mb-6 grid grid-cols-2 rounded-xl bg-muted/60 p-1">
               <motion.div
                 aria-hidden
-                className="absolute inset-y-1 w-1/2 rounded-lg bg-background shadow-sm ring-1 ring-border"
+                className="absolute inset-y-1 w-1/2 rounded-lg bg-[#0074e2]/10 shadow-sm ring-1 ring-[#0074e2]/20"
                 animate={{ x: mode === "signin" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
@@ -214,11 +201,9 @@ function AuthPage() {
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={cn(
-                    "relative z-10 rounded-lg py-2 text-sm font-semibold transition-colors",
-                    mode === m ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  )}
-                  aria-label={m === "signin" ? "Chế độ Đăng nhập" : "Chế độ Đăng ký"}
+                  className={`relative z-10 rounded-lg py-2.5 text-sm font-semibold transition-colors ${
+                    mode === m ? "text-[#0074e2]" : "text-muted-foreground hover:text-[#0074e2]"
+                  }`}
                 >
                   {m === "signin" ? "Đăng nhập" : "Đăng ký"}
                 </button>
@@ -237,23 +222,22 @@ function AuthPage() {
                   className="space-y-4"
                 >
                   <Field id="email" label="Email" type="email" autoComplete="email"
-                    value={email} onChange={setEmail} disabled={busy} placeholder="ten@vatm.vn" />
+                    value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
                   <Field id="password" label="Mật khẩu" type="password" autoComplete="current-password"
                     value={password} onChange={setPassword} disabled={busy}
                     rightSlot={
-                      <a href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+                      <a href="/forgot-password" className="text-xs font-medium text-muted-foreground hover:text-[#0074e2]">
                         Quên mật khẩu?
                       </a>
                     } />
                   <Button
                     type="submit"
-                    variant="default"
-                    size="lg"
-                    className="w-full mt-2"
-                    loading={loading}
+                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0 !bg-[#0074e2] !text-white"
                     disabled={busy}
                   >
-                    {!loading && <LogIn className="mr-2 h-4 w-4" />}
+                    {loading
+                      ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      : <LogIn className="mr-2 h-4 w-4 text-white transition-transform group-hover:translate-x-0.5" />}
                     Đăng nhập
                   </Button>
                 </motion.form>
@@ -270,21 +254,20 @@ function AuthPage() {
                   <Field id="fullName" label="Họ và tên" type="text" autoComplete="name"
                     value={fullName} onChange={setFullName} disabled={busy} placeholder="Nguyễn Văn A" />
                   <Field id="email" label="Email" type="email" autoComplete="email"
-                    value={email} onChange={setEmail} disabled={busy} placeholder="ten@vatm.vn" />
+                    value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
                   <Field id="password" label="Mật khẩu" type="password" autoComplete="new-password"
                     value={password} onChange={setPassword} disabled={busy} placeholder="Tối thiểu 8 ký tự" />
                   <Button
                     type="submit"
-                    variant="default"
-                    size="lg"
-                    className="w-full mt-2"
-                    loading={loading}
+                    className="group mt-2 h-12 w-full overflow-hidden rounded-2xl bg-[#0074e2] text-white text-base font-semibold shadow-md shadow-[#0074e2]/25 transition-all hover:bg-[#0074e2]/90 hover:shadow-lg hover:shadow-[#0074e2]/40 hover:-translate-y-0.5 active:translate-y-0 !bg-[#0074e2] !text-white"
                     disabled={busy}
                   >
-                    {!loading && <UserPlus className="mr-2 h-4 w-4" />}
+                    {loading
+                      ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      : <UserPlus className="mr-2 h-4 w-4 text-white transition-transform group-hover:scale-110" />}
                     Đăng ký
                   </Button>
-                  <p className="text-center text-[11px] leading-relaxed text-muted-foreground mt-4">
+                  <p className="text-center text-[11.5px] leading-relaxed text-muted-foreground">
                     Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>. Quản trị viên sẽ kích hoạt và gán vai trò.
                   </p>
                 </motion.form>
@@ -293,22 +276,22 @@ function AuthPage() {
 
             {showPasskey && mode === "signin" && (
               <>
-                <div className="my-8 flex items-center gap-3">
-                  <div className="h-px flex-1 bg-border/60" />
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 font-bold">Hoặc tiếp tục với</span>
-                  <div className="h-px flex-1 bg-border/60" />
+                <div className="my-6 flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">HOẶC</span>
+                  <div className="h-px flex-1 bg-border" />
                 </div>
                 <Button
                   type="button"
                   variant="outline"
-                  size="lg"
-                  className="w-full"
+                  className="group h-12 w-full rounded-xl border-border transition-all hover:border-primary/50 hover:bg-primary/5"
                   onClick={handlePasskey}
-                  loading={passkeyLoading}
                   disabled={busy}
                 >
-                  {!passkeyLoading && <ScanFace className="mr-2 h-5 w-5 text-primary" />}
-                  FaceID / Vân tay
+                  {passkeyLoading
+                    ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    : <ScanFace className="mr-2 h-5 w-5 text-[#0074e2] transition-transform group-hover:scale-110" />}
+                  Đăng nhập bằng FaceID / Vân tay
                 </Button>
               </>
             )}
@@ -316,7 +299,7 @@ function AuthPage() {
         </div>
 
         {/* Right: animated ATC scene */}
-        <div className="relative hidden overflow-hidden lg:block bg-muted">
+        <div className="relative hidden overflow-hidden lg:block">
           <AtcTowerScene />
         </div>
       </div>
@@ -346,7 +329,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="h-12 !rounded-xl transition-all focus-within:!ring-2 focus-within:!ring-primary/40 focus-within:!border-primary/50 focus-within:!outline-none"
+        className="h-12 !rounded-xl transition-all focus-within:!ring-2 focus-within:!ring-[#0074e2]/40 focus-within:!border-[#0074e2]/50 focus-within:!outline-none"
       />
     </div>
   );
