@@ -1,37 +1,36 @@
 # Kế hoạch Rà soát và Tối ưu hóa Hệ thống Nút bấm (Buttons)
 
-Người dùng báo cáo tình trạng các nút bấm trên giao diện đang bị "cụt", thiếu nội dung văn bản và có kích thước quá nhỏ, gây khó khăn cho việc tương tác. Kế hoạch này tập trung vào việc chuẩn hóa lại component `Button` và các token mật độ (UI Density) để đảm bảo tính dễ đọc và khả năng truy cập (Accessibility).
+Người dùng báo cáo tình trạng các nút bấm có văn bản (như "Cá nhân hóa", "Thêm Widget") đang gặp vấn đề: bị "cụt", thiếu nội dung text và kích cỡ quá bé. Trong khi đó, các nút chỉ có icon (icon-only) được đánh giá là bình thường. Kế hoạch này tập trung vào việc sửa đổi logic hiển thị văn bản và kích thước của các nút có nhãn (labeled buttons) để đảm bảo không gian hiển thị đầy đủ và dễ đọc.
 
 ## Các vấn đề cần giải quyết
-- Nút bấm có kích thước desktop quá nhỏ (24px-28px) dẫn đến việc cắt văn bản (cụt).
-- Mật độ `compact` đang ép font chữ xuống quá thấp (10px-11px).
-- Thiếu padding ngang (horizontal padding) khiến văn bản sát vào mép nút hoặc icon.
+- Nút bấm có văn bản bị cắt (cụt) hoặc quá hẹp, không đủ không gian cho text.
+- Kích thước font chữ của text bên trong nút quá nhỏ ở một số chế độ mật độ.
+- Sự khác biệt về cảm quan giữa nút icon-only (ổn) và nút có text (lỗi).
 
 ## Chi tiết kỹ thuật
 
-### 1. Cập nhật `src/lib/mirats/ui/ui-density.ts`
-- Nâng kích thước `CONTROL_H` cho Desktop:
-    - Compact: Từ `h-7` (28px) lên `h-8` (32px).
-    - Comfortable: Từ `h-8` (32px) lên `h-9` (36px).
-- Điều chỉnh `CONTROL_FS` (Font Size):
-    - Compact: Đảm bảo tối thiểu `12px` (thay vì 11px).
+### 1. Cấu trúc lại Component Button (`src/components/ui/button.tsx`)
+- Điều chỉnh `renderContent` để ưu tiên không gian cho `children` (text) khi không phải là `size="icon"`.
+- Cập nhật `buttonVariants` cho các size `default`, `sm`, `xs`:
+    - Tăng `min-width` hoặc `padding-x` cho các nút có text để tránh cảm giác bị "cụt".
+    - Điều chỉnh font-size desktop cho các nút có text: `default` (13-14px), `sm` (12px), `xs` (11px).
+- Đảm bảo `gap` giữa icon và text đủ lớn (`gap-2`) và không bị bóp nghẹt.
 
-### 2. Cập nhật `src/components/ui/button.tsx`
-- Sửa lại `buttonVariants` trong `size`:
-    - `default`: Nâng padding ngang `px-4` và font size `13px` cho desktop.
-    - `sm`: Nâng `h-8` cho desktop, font size `12px`.
-    - `xs`: Nâng `h-7` cho desktop, font size `11px` (giới hạn tối thiểu).
-- Đảm bảo `gap-2` giữa icon và text không bị thu nhỏ quá mức ở chế độ compact.
+### 2. Tinh chỉnh Token Mật độ (`src/lib/mirats/ui/ui-density.ts`)
+- Tăng nhẹ `CONTROL_PX` (padding ngang) cho các nút có text ở chế độ Desktop.
+- Đảm bảo `CONTROL_FS` (font size) cho text trong control không thấp hơn 12px trừ khi ở size siêu nhỏ.
 
-### 3. Rà soát Typography (`src/lib/mirats/ui/typography.ts`)
-- Đảm bảo các nhãn (`LABEL`) sử dụng trong nút bấm có `tracking-normal` thay vì `tracking-wider` nếu không gian hẹp.
+### 3. Sửa lỗi cụ thể trên Dashboard Toolbar (`src/routes/_app.index.tsx`)
+- Kiểm tra lại các nút "Thêm Widget", "Khôi phục", "Cá nhân hóa".
+- Loại bỏ các giới hạn chiều rộng cứng (nếu có) hoặc `overflow-hidden` gây cắt chữ.
+- Sử dụng `whitespace-nowrap` một cách cẩn thận để đảm bảo text không bị xuống dòng nhưng vẫn đủ chỗ hiển thị.
 
-### 4. Kiểm tra các trang chính
-- Rà soát Dashboard Toolbar (Thêm Widget, Khôi phục).
-- Rà soát Table Toolbar (Nút Export, Filter).
-- Rà soát chi tiết thiết bị (Các tab và nút hành động).
+### 4. Rà soát Table Toolbar và Action Buttons
+- Kiểm tra các nút hành động trong bảng và thanh công cụ của các trang danh sách.
+- Đảm bảo các nút "Lưu", "Hủy", "Xuất file" hiển thị đầy đủ nhãn.
 
 ## Kế hoạch xác minh
-- **Visual Check**: Sử dụng Playwright để chụp ảnh các trạng thái nút bấm ở 3 mật độ: Compact, Comfortable, Spacious.
-- **Accessibility Check**: Kiểm tra đích chạm (touch target) trên mobile đảm bảo luôn >= 44px (đã có logic trong component nhưng cần xác nhận không bị ghi đè bởi CSS local).
-- **Text Wrap Check**: Kiểm tra các nút có văn bản dài (như "Cá nhân hóa bảng điều khiển") xem có bị cắt hay không.
+- **Visual Audit**: So sánh trực quan giữa nút icon-only và nút labeled để đảm bảo sự cân đối.
+- **Density Scaling**: Kiểm tra khả năng co giãn của text khi chuyển đổi giữa Compact/Comfortable/Spacious.
+- **Edge Case Check**: Kiểm tra các nút có văn bản tiếng Việt dài (như "Khôi phục mặc định") xem có bị tràn hay cắt không.
+
