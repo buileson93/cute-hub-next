@@ -193,6 +193,7 @@ export function DataTableCore<T>({
                     <TableCell
                       key={col.key}
                       className={cn(
+                        "mirats-table-cell-base",
                         col.cellClassName,
                         col.sticky && "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/10",
                         selectable && col.sticky && "left-10",
