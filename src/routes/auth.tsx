@@ -233,7 +233,7 @@ function AuthPage() {
                     <Button
                       type="submit"
                       variant="default"
-                      className="group w-full !h-14 !rounded-2xl bg-[#0074e2] text-white text-[17px] font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98] flex items-center justify-center"
+                      className="group w-full !h-14 !rounded-2xl bg-[#0074e2] text-white text-[17px] font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98] !inline-flex items-center justify-center"
                       disabled={busy}
                       loading={loading}
                     >
@@ -261,7 +261,7 @@ function AuthPage() {
                     <Button
                       type="submit"
                       variant="default"
-                      className="group w-full !h-14 !rounded-2xl bg-[#0074e2] text-white text-[17px] font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98] flex items-center justify-center"
+                      className="group w-full !h-14 !rounded-2xl bg-[#0074e2] text-white text-[17px] font-bold shadow-xl shadow-[#0074e2]/20 transition-all hover:bg-[#0074e2]/90 hover:shadow-[#0074e2]/30 active:scale-[0.98] !inline-flex items-center justify-center"
                       disabled={busy}
                       loading={loading}
                     >
