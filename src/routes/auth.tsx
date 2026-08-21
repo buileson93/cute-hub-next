@@ -364,21 +364,17 @@ function Field({
         <Label htmlFor={id} className="text-[15px] font-bold text-foreground/90">{label}</Label>
         {rightSlot}
       </div>
-      <div 
-        className="!h-14 !rounded-2xl border border-slate-200 bg-slate-50/30 px-5 flex items-center transition-all focus-within:!ring-4 focus-within:!ring-[#0074e2]/10 focus-within:!border-[#0074e2]/40 focus-within:!bg-white"
-      >
-        <input
-          id={id}
-          type={type}
-          autoComplete={autoComplete}
-          required
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-          className="w-full h-full bg-transparent border-none outline-none font-medium !text-[16px] text-foreground placeholder:text-muted-foreground/60"
-        />
-      </div>
+      <input
+        id={id}
+        type={type}
+        autoComplete={autoComplete}
+        required
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="!h-14 w-full !rounded-2xl border border-slate-200 bg-slate-50/30 px-5 font-medium !text-[16px] text-foreground placeholder:text-muted-foreground/60 transition-all outline-none focus:!ring-4 focus:!ring-[#0074e2]/10 focus:!border-[#0074e2]/40 focus:!bg-white"
+      />
     </div>
   );
 }
