@@ -129,6 +129,11 @@
     outline-offset: 1px;
   }
   
+  /* Overlap fix for buttons with borders */
+  .astryx-control.border {
+    box-sizing: border-box;
+  }
+  
   /* Numeric Readouts (Plex Mono) */
   .astryx-number {
     font-family: var(--font-family-code);

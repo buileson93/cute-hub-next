@@ -49,16 +49,16 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         <div className="relative w-full sm:max-w-sm group" data-tour="search">
           <Button
             variant="ghost"
-            className="h-9 w-full justify-start rounded-xl bg-muted/40 px-3 pl-10 text-[13px] font-normal text-muted-foreground border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm relative overflow-hidden active:scale-[0.98]"
+            className="h-9 w-full justify-between items-center rounded-xl bg-muted/40 px-0 text-[13px] font-normal text-muted-foreground border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm relative overflow-hidden active:scale-[0.98]"
             onClick={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
           >
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-20">
-              <Search className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+            <div className="flex items-center gap-2 pl-3 min-w-0 flex-1">
+              <Search className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+              <span className="truncate text-left">Tìm tài sản, hệ thống, biên bản...</span>
             </div>
-            <span className="truncate pr-12 w-full text-left">Tìm tài sản, hệ thống, biên bản...</span>
             
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden items-center gap-1.5 rounded-md border border-border/40 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-muted-foreground/60 sm:flex z-20 pointer-events-none">
+            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-border/40 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-muted-foreground/60 mr-2 shrink-0">
               <CommandIcon className="h-2.5 w-2.5" />
               <span>K</span>
             </div>
