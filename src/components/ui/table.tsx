@@ -4,9 +4,7 @@ import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-x-auto overflow-y-visible mirats-scroll astryx-table-container">
-      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
-    </div>
+    <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
   ),
 );
 
@@ -69,7 +67,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-7 px-2 text-left align-middle font-bold text-[10px] uppercase tracking-wider text-muted-foreground border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
+      "mirats-table-header-base h-7 px-2 text-left align-middle text-muted-foreground border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
       className,
     )}
     {...props}
@@ -84,7 +82,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-1.5 align-middle border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell text-[12px] tabular-nums",
+      "mirats-table-cell-base p-1.5 align-middle border-r border-border/5 last:border-r-0 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell tabular-nums",
       className,
     )}
     {...props}

@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { StandardTable, ColumnDef } from "@/components/mirats/StandardTable";
+import { DataTableCore, DataTableColumn } from "@/components/mirats/DataTableCore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
@@ -167,10 +167,12 @@ function TaiLieuLibraryPage() {
     [allDocs, selectedDocData]
   );
 
-  const columns: ColumnDef<TaiLieuRow>[] = [
+  const columns: DataTableColumn<TaiLieuRow>[] = [
     {
       header: "Tên tài liệu",
       key: "file_name",
+      sticky: true,
+      minWidth: 300,
       render: (row: any) => (
         <div className="flex flex-col py-1 gap-1">
           <div className="flex items-center gap-2">
@@ -215,7 +217,8 @@ function TaiLieuLibraryPage() {
     {
       header: "Nguồn gốc",
       key: "sourceName",
-      render: (row) => (
+      width: 200,
+      render: (row: TaiLieuRow) => (
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5">
             {row.sourceType === "thiet_bi" ? (
@@ -234,7 +237,9 @@ function TaiLieuLibraryPage() {
     {
       header: "Kích thước",
       key: "kich_thuoc",
-      render: (row) => (
+      width: 100,
+      align: "right",
+      render: (row: TaiLieuRow) => (
         <span className="text-[11px] text-muted-foreground">
           {row.kich_thuoc ? (row.kich_thuoc / 1024).toFixed(1) + " KB" : "-"}
         </span>
@@ -243,7 +248,9 @@ function TaiLieuLibraryPage() {
     {
       header: "Ngày tải",
       key: "created_at",
-      render: (row) => (
+      width: 120,
+      align: "center",
+      render: (row: TaiLieuRow) => (
         <span className="text-[11px] text-muted-foreground">
           {new Date(row.created_at).toLocaleDateString("vi-VN")}
         </span>
@@ -251,8 +258,11 @@ function TaiLieuLibraryPage() {
     },
     {
       key: "actions",
-      header: "",
-      render: (row) => (
+      header: "Thao tác",
+      type: "actions",
+      width: 120,
+      align: "center",
+      render: (row: TaiLieuRow) => (
         <DocActions row={row} onOpenViewer={() => {
           setSelectedDocData({ id: row.id });
           setViewerOpen(true);
@@ -290,10 +300,11 @@ function TaiLieuLibraryPage() {
       />
       
       <PageBody>
-        <StandardTable
+        <DataTableCore
           rows={filteredDocs}
-          trangThai={{ dangTai: isLoading }}
-          columns={columns as ColumnDef<unknown>[]}
+          columns={columns}
+          getRowId={(row) => row.id}
+          maxHeight="calc(100vh - 12rem)"
         />
       </PageBody>
 

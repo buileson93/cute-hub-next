@@ -395,9 +395,8 @@
 /* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút khi cần */
 .lucide:not([class*="h-"]) { transform: scale(0.9); transform-origin: center; }
 
-/* Bảng: nén padding các ô cho tất cả TableCell/TableHead của shadcn */
-table th,
-table td {
+/* Bảng: Chuẩn hóa styles ô bảng thông qua các utility và skin, tránh ghi đè global bừa bãi */
+.mirats-table-cell-base {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
@@ -405,13 +404,36 @@ table td {
   font-size: 13px;
   font-weight: 500;
   vertical-align: middle;
-}
-table th { line-height: 1.2; font-weight: 700; font-size: 11px; text-transform: uppercase; tracking: 0.025em; }
-
-/* Ngăn văn bản bị tràn/cắt xấu trong ô bảng */
-table td {
   word-break: break-word;
   overflow-wrap: break-word;
+}
+
+.mirats-data-table-core-element th,
+.mirats-data-table-core-element td {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.mirats-data-table-core-element thead tr:first-child th {
+  border-top: 1px solid var(--border);
+}
+
+.mirats-data-table-core-element th:first-child,
+.mirats-data-table-core-element td:first-child {
+  border-left: 1px solid var(--border);
+}
+
+.mirats-data-table-core-element th:last-child,
+.mirats-data-table-core-element td:last-child {
+  border-right: 1px solid var(--border);
+}
+
+.mirats-table-header-base {
+  line-height: 1.2;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 
