@@ -410,8 +410,8 @@
 }
 
 .mirats-data-table-core-element {
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
 }
 
 .mirats-data-table-core-element th:first-child,
@@ -426,9 +426,9 @@
   text-transform: uppercase;
   letter-spacing: 0.025em;
   background-color: var(--color-muted);
-  border-top: 1px solid var(--border);
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border) !important;
+  border-right: 1px solid var(--border) !important;
+  border-bottom: 1px solid var(--border) !important;
 }
 
 
