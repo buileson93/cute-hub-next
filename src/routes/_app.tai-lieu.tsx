@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
-import { StandardTable, ColumnDef } from "@/components/mirats/StandardTable";
+import { DataTableCore, DataTableColumn } from "@/components/mirats/DataTableCore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
