@@ -13,6 +13,7 @@ import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
 import { StatusDonutChart } from "@/components/mirats/dashboard/StatusDonutChart";
 import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
 import { LiveTimeline } from "@/components/mirats/dashboard/LiveTimeline";
+import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
 import { useDashboardBrief } from "@/lib/mirats/dashboard.functions";
 import { getCompletenessStats, getCompletenessOverview } from '@/lib/mirats/completeness.functions';
@@ -361,30 +362,52 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
         );
       case "completeness-gauge":
         return (
-          <Card className="astryx-card h-full flex flex-col">
+          <Card className="astryx-card h-full flex flex-col border-none shadow-sm bg-gradient-to-br from-background to-muted/20">
             <CardHeader className="p-4 pb-0">
-              <CardTitle className="astryx-text-label flex items-center gap-2">
-                <Icon name="status.sparkle" size="tiny" className="text-primary" /> Chất lượng hồ sơ
+              <CardTitle className="astryx-text-label flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Icon name="status.sparkle" size="tiny" className="text-primary" /> 
+                  Chất lượng hồ sơ
+                </div>
+                <CompletenessRing 
+                  value={completeness.avg_thiet_bi || 0} 
+                  size={32} 
+                  strokeWidth={3} 
+                  showText 
+                />
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-4 pt-6">
               <div className="flex flex-col gap-4">
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Trung bình toàn hệ</span>
-                  <span className="text-2xl font-black text-primary tabular-nums">{completeness.avg_thiet_bi || 0}%</span>
-                </div>
-                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${completeness.avg_thiet_bi || 0}%` }} />
-                </div>
-                <div className="space-y-2 mt-2">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 px-1">
+                    <span>Tài sản cần cập nhật</span>
+                    <span>% Xong</span>
+                  </div>
                   {lowCompleteness.slice(0, 3).map((tb: any) => (
-                    <Link key={tb.id} to="/qr/thiet-bi/$id" params={{ id: tb.id } as any} className="flex justify-between items-center text-[11px] hover:text-primary transition-colors bg-muted/30 p-2 rounded-lg">
-                      <span className="truncate pr-2 font-medium">{tb.ten_thiet_bi}</span>
-                      <span className="font-black text-red-500 tabular-nums">{tb.completeness_pct}%</span>
+                    <Link 
+                      key={tb.id} 
+                      to="/qr/thiet-bi/$id" 
+                      params={{ id: tb.id } as any} 
+                      className="group flex justify-between items-center text-[12px] hover:bg-primary/5 p-2 rounded-xl border border-transparent hover:border-primary/10 transition-all"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+                        <span className="truncate font-medium group-hover:text-primary transition-colors">{tb.ten_thiet_bi}</span>
+                      </div>
+                      <span className="font-mono font-bold text-red-500 tabular-nums bg-red-50 px-1.5 py-0.5 rounded-md">{tb.completeness_pct}%</span>
                     </Link>
                   ))}
                 </div>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full text-[10px] font-bold uppercase text-primary hover:bg-primary/5 mt-2"
+                  onClick={() => navigate({ to: "/thiet-bi" })}
+                >
+                  Xem tất cả
+                </Button>
               </div>
             </CardContent>
           </Card>
