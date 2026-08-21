@@ -64,7 +64,7 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
 
   const { ket_qua: globalResults, dang_tai: globalLoading } = useTimKiemToanCuc(query);
   const { search: searchOcr, isReady: ocrReady, isSyncing: ocrSyncing } = useOcrSearch();
-  const { hasRole, logout } = useSession();
+  const { hasRole } = useSession();
 
   // 1. Phẳng hoá toàn bộ danh mục từ nav-contract để tìm kiếm điều hướng
   const allNavItems = useMemo(() => {
@@ -167,7 +167,9 @@ export function PowerSearch({ open, onOpenChange }: { open?: boolean; onOpenChan
         window.dispatchEvent(new CustomEvent("mirats:open-qr-scanner"));
         break;
       case 'logout':
-        logout();
+        supabase.auth.signOut().then(() => {
+          navigate({ to: "/auth" as any });
+        });
         break;
       case 'profile':
         navigate({ to: "/cai-dat/tai-khoan" as any });
