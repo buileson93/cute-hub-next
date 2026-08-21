@@ -218,7 +218,7 @@ function AuthPage() {
                     "relative z-10 rounded-lg py-2 text-sm font-semibold transition-colors",
                     mode === m ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   )}
-                  aria-label={m === "signin" ? "Chuyển sang đăng nhập" : "Chuyển sang đăng ký"}
+                  aria-label={m === "signin" ? "Chế độ Đăng nhập" : "Chế độ Đăng ký"}
                 >
                   {m === "signin" ? "Đăng nhập" : "Đăng ký"}
                 </button>
