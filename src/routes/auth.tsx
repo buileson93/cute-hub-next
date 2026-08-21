@@ -192,8 +192,8 @@ function AuthPage() {
             <div className="relative mb-10 grid grid-cols-2 rounded-2xl bg-[#f1f5f9] p-1.5">
               <motion.div
                 aria-hidden
-                className="absolute inset-y-1.5 w-[calc(50%-6px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5"
-                animate={{ x: mode === "signin" ? "6px" : "calc(100% + 0px)" }}
+                className="absolute inset-y-1.5 w-[calc(50%-9px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5"
+                animate={{ x: mode === "signin" ? "6px" : "calc(100% - 3px)" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
               {(["signin", "signup"] as const).map((m) => (
