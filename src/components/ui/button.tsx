@@ -81,11 +81,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
        if (asChild) return children;
        return (
          <span className={cn(
-           "relative flex items-center gap-2 w-full h-full",
+           "relative flex items-center gap-2 w-full h-full min-w-0",
            // Only apply justify-center if no other justify class is present in the parent button variants/className
            !className?.includes("justify-") && "justify-center"
          )}>
-           <span className={cn("flex items-center gap-2 transition-opacity", loading ? "opacity-0" : "opacity-100")}>
+           <span className={cn("flex items-center gap-2 transition-opacity min-w-0 flex-1", 
+             !className?.includes("justify-") && "justify-center",
+             loading ? "opacity-0" : "opacity-100"
+           )}>
              {children}
            </span>
            {loading && (
