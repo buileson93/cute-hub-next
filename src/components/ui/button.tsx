@@ -78,26 +78,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // Optimized loading logic for non-asChild
     const renderContent = () => {
-       if (asChild) return children;
-       
-       const isIconOnly = size === "icon";
-       
-       return (
-         <>
-           <span className={cn(
-             "flex items-center justify-center w-full h-full min-w-0 transition-opacity",
-             !isIconOnly && "gap-2",
-             loading ? "opacity-0" : "opacity-100"
-           )}>
-             {children}
-           </span>
-           {loading && (
-             <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <Loader2 className="animate-spin shrink-0 h-4 w-4" aria-hidden="true" />
-             </span>
-           )}
-         </>
-       );
+      if (asChild) return children;
+      
+      return (
+        <>
+          <span className={cn(
+            "flex items-center justify-center gap-2 w-full h-full min-w-0 transition-opacity pointer-events-none",
+            loading ? "opacity-0" : "opacity-100"
+          )}>
+            {children}
+          </span>
+          {loading && (
+            <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+               <Loader2 className="animate-spin shrink-0 h-4 w-4" aria-hidden="true" />
+            </span>
+          )}
+        </>
+      );
     };
 
     const ariaLabel = (props as { "aria-label"?: string })["aria-label"];

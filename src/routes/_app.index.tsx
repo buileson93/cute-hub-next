@@ -45,6 +45,7 @@ function Dashboard() {
   const { profile } = useSession();
   const { scope } = useUnifiedDashboardStats();
   const [isEditing, setIsEditing] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>("dashboard:layout:home", DEFAULT_HOME_LAYOUT);
 
   const handleAddWidget = (type: WidgetType) => {
@@ -59,9 +60,15 @@ function Dashboard() {
     toast.success(`Đã thêm widget ${info.title}`);
   };
 
-  const handleReset = () => {
-    setLayout(DEFAULT_HOME_LAYOUT);
-    toast.success("Đã khôi phục bố cục mặc định");
+  const handleReset = async () => {
+    setIsResetting(true);
+    const t = toast.loading("Đang khôi phục bố cục mặc định...");
+    try {
+      setLayout(DEFAULT_HOME_LAYOUT);
+      toast.success("Đã khôi phục bố cục mặc định", { id: t });
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   if (scope.loading) {
@@ -96,7 +103,8 @@ function Dashboard() {
                   size="sm"
                   variant="ghost"
                   onClick={handleReset}
-                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0 px-3"
+                  loading={isResetting}
+                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/5 shrink-0 px-3 min-w-[100px]"
                   aria-label="Khôi phục bố cục mặc định"
                 >
                   <Icon name="action.undo" size="tiny" className="shrink-0" />
