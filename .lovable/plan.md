@@ -27,4 +27,5 @@ Người dùng phản hồi nút "Đăng nhập" vẫn chưa đúng thiết kế
 ## User Review Required
 
 > [!IMPORTANT]
-> Nút Đăng nhập trong hình mẫu có độ cao lớn và bo góc mạnh. Tôi sẽ ép chiều cao 56px và bo góc 16px. Bạn có muốn tăng thêm kích thước font chữ của nút không? (Hiện tại là 16px).
+> Nút Đăng nhập trong hình mẫu có độ cao lớn và bo góc mạnh. Tôi sẽ ép chiều cao 56px và bo góc 16px. Bạn đã phản hồi "có bạn cân đối cho đẹp là được", tôi sẽ tự điều chỉnh font chữ và khoảng cách để đạt thẩm mỹ cao nhất.
+
