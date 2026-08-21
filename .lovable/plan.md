@@ -1,41 +1,41 @@
-# Plan: Fix UI Overlaps and Search Icon Visibility (Phase U7.3)
+# Kế hoạch: Khắc phục lỗi chồng lấn UI và hiển thị Icon Tìm kiếm (Phase U7.3)
 
-The user reports persistent UI issues: buttons overlapping in the dashboard toolbar and the search icon missing in the Header. Analysis shows that the `Button` component lacks `relative` positioning, causing its absolute children (like the loading spinner) to misalign. Additionally, the dashboard buttons need to be standardized to match the robust Header button pattern.
+Người dùng báo cáo các lỗi UI dai dẳng: các nút trong thanh công cụ dashboard bị chồng lấn và biểu tượng kính lúp bị mất trên Header. Phân tích cho thấy component `Button` đang thiếu thuộc tính `relative`, khiến các phần tử con định vị tuyệt đối (như spinner tải) bị sai lệch. Ngoài ra, các nút trên dashboard cần được chuẩn hóa để khớp với mô hình nút trên Header vốn đã ổn định hơn.
 
-## User Review Required
+## Yêu cầu người dùng xem xét
 
 > [!IMPORTANT]
-> I will simplify the `Button` component and refactor the dashboard toolbar to use the same logic as the Header buttons, which have proven to be more stable.
+> Tôi sẽ đơn giản hóa component `Button` và cấu trúc lại thanh công cụ dashboard để sử dụng cùng một logic với các nút trên Header.
 
-- Do you prefer the dashboard buttons to have a background color (like "Cá nhân hóa") or be ghost/outline as they currently are? (I will keep current variants but fix the layout).
+- Bạn có muốn các nút trên dashboard có màu nền (như nút "Cá nhân hóa") hay giữ nguyên dạng ghost/outline như hiện tại? (Tôi sẽ giữ nguyên các variant hiện có nhưng sửa lại bố cục).
 
-## Technical Details
+## Chi tiết kỹ thuật
 
-### 1. Button Component Stabilization
-- Modify `src/components/ui/button.tsx`:
-    - Add `relative` to `buttonVariants` to ensure absolute-positioned children (like the loading spinner) are anchored correctly.
-    - Standardize `renderContent` to prevent internal layout shifts.
+### 1. Ổn định Component Button
+- Sửa đổi `src/components/ui/button.tsx`:
+    - Thêm `relative` vào `buttonVariants` để đảm bảo các phần tử con `absolute` được neo đúng vị trí.
+    - Chuẩn hóa `renderContent` để ngăn chặn việc thay đổi bố cục bên trong khi trạng thái thay đổi.
 
-### 2. TopBar Search Icon Visibility
-- Modify `src/components/mirats/app-shell/TopBar.tsx`:
-    - Ensure the `Search` icon has `flex-shrink: 0` and explicit size.
-    - Verify color contrast for the search icon against the `bg-[#0074e2]/5` background.
+### 2. Hiển thị Icon Tìm kiếm trên TopBar
+- Sửa đổi `src/components/mirats/app-shell/TopBar.tsx`:
+    - Đảm bảo icon `Search` có `flex-shrink: 0` và kích thước rõ ràng.
+    - Kiểm tra độ tương phản màu sắc của icon search trên nền `bg-[#0074e2]/5`.
 
-### 3. Dashboard Toolbar Refactor
-- Modify `src/routes/_app.index.tsx`:
-    - Refactor the `flex` container holding "Thêm Widget", "Khôi phục", and "Cá nhân hóa".
-    - Ensure `gap-2` is respected and items don't overlap by removing any conflicting absolute positioning or negative margins.
-    - Add `aria-label` to all buttons.
+### 3. Cấu trúc lại Thanh công cụ Dashboard
+- Sửa đổi `src/routes/_app.index.tsx`:
+    - Cấu trúc lại container `flex` chứa "Thêm Widget", "Khôi phục", và "Cá nhân hóa".
+    - Đảm bảo khoảng cách `gap-2` được duy trì và các mục không bị chồng lấn bằng cách loại bỏ các thuộc tính `absolute` hoặc margin âm gây xung đột.
+    - Thêm `aria-label` cho tất cả các nút để tăng khả năng truy cập.
 
-### 4. Style Synchronization
-- Check `src/styles/astryx-component-skins.css` for any `astryx-control` styles that might be forcing fixed widths or absolute positioning.
+### 4. Đồng bộ hóa Style
+- Kiểm tra `src/styles/astryx-component-skins.css` xem có class `astryx-control` nào đang ép chiều rộng cố định hoặc định vị tuyệt đối gây lỗi không.
 
-## Verification Plan
+## Kế hoạch xác minh
 
-### Automated Tests
-- Run `lovable-exec "bunx playwright test tests/ui/structural-integrity.test.ts"` to check for general layout stability.
-- Use a custom script to verify the visibility and position of the search icon.
+### Kiểm tra tự động
+- Chạy `lovable-exec "bunx playwright test tests/ui/structural-integrity.test.ts"` để kiểm tra tính ổn định của bố cục chung.
+- Sử dụng script tùy chỉnh để xác minh khả năng hiển thị và vị trí của icon search.
 
-### Manual Verification
-- Inspect the preview at `http://localhost:8080/` to ensure the buttons in the dashboard toolbar are correctly spaced and not overlapping.
-- Verify the magnifying glass icon is visible in the TopBar.
+### Xác minh thủ công
+- Kiểm tra preview tại `http://localhost:8080/` để đảm bảo các nút trong thanh công cụ dashboard được giãn cách đúng và không chồng lấn.
+- Xác nhận biểu tượng kính lúp đã hiển thị rõ ràng trong TopBar.
