@@ -20,10 +20,10 @@ import { Route as QIndexRouteImport } from './routes/q.index'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as VerifyIdRouteImport } from './routes/verify.$id'
 import { Route as QMaThietBiRouteImport } from './routes/q.$maThietBi'
+import { Route as LovableAdminUiKitRouteImport } from './routes/lovable.admin-ui-kit'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiBackupRunRouteImport } from './routes/api/backup-run'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminUiKitRouteImport } from './routes/admin.ui-kit'
 import { Route as AdminSupabaseNgoaiRouteImport } from './routes/admin.supabase-ngoai'
 import { Route as AdminSchemaRouteImport } from './routes/admin.schema'
 import { Route as AdminBackupRouteImport } from './routes/admin.backup'
@@ -194,6 +194,11 @@ const QMaThietBiRoute = QMaThietBiRouteImport.update({
   path: '/q/$maThietBi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableAdminUiKitRoute = LovableAdminUiKitRouteImport.update({
+  id: '/lovable/admin-ui-kit',
+  path: '/lovable/admin-ui-kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -207,11 +212,6 @@ const ApiBackupRunRoute = ApiBackupRunRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUiKitRoute = AdminUiKitRouteImport.update({
-  id: '/ui-kit',
-  path: '/ui-kit',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSupabaseNgoaiRoute = AdminSupabaseNgoaiRouteImport.update({
@@ -846,10 +846,10 @@ export interface FileRoutesByFullPath {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
+  '/lovable/admin-ui-kit': typeof LovableAdminUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/q/': typeof QIndexRoute
@@ -971,10 +971,10 @@ export interface FileRoutesByTo {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
+  '/lovable/admin-ui-kit': typeof LovableAdminUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/': typeof AppIndexRoute
@@ -1102,10 +1102,10 @@ export interface FileRoutesById {
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
-  '/admin/ui-kit': typeof AdminUiKitRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/backup-run': typeof ApiBackupRunRoute
   '/api/chat': typeof ApiChatRoute
+  '/lovable/admin-ui-kit': typeof LovableAdminUiKitRoute
   '/q/$maThietBi': typeof QMaThietBiRoute
   '/verify/$id': typeof VerifyIdRoute
   '/_app/': typeof AppIndexRoute
@@ -1236,10 +1236,10 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
+    | '/lovable/admin-ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/q/'
@@ -1361,10 +1361,10 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
+    | '/lovable/admin-ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/'
@@ -1491,10 +1491,10 @@ export interface FileRouteTypes {
     | '/admin/backup'
     | '/admin/schema'
     | '/admin/supabase-ngoai'
-    | '/admin/ui-kit'
     | '/admin/users'
     | '/api/backup-run'
     | '/api/chat'
+    | '/lovable/admin-ui-kit'
     | '/q/$maThietBi'
     | '/verify/$id'
     | '/_app/'
@@ -1594,6 +1594,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiBackupRunRoute: typeof ApiBackupRunRoute
   ApiChatRoute: typeof ApiChatRoute
+  LovableAdminUiKitRoute: typeof LovableAdminUiKitRoute
   QMaThietBiRoute: typeof QMaThietBiRoute
   VerifyIdRoute: typeof VerifyIdRoute
   QIndexRoute: typeof QIndexRoute
@@ -1695,6 +1696,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QMaThietBiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/admin-ui-kit': {
+      id: '/lovable/admin-ui-kit'
+      path: '/lovable/admin-ui-kit'
+      fullPath: '/lovable/admin-ui-kit'
+      preLoaderRoute: typeof LovableAdminUiKitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -1714,13 +1722,6 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/ui-kit': {
-      id: '/admin/ui-kit'
-      path: '/ui-kit'
-      fullPath: '/admin/ui-kit'
-      preLoaderRoute: typeof AdminUiKitRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/supabase-ngoai': {
@@ -2868,7 +2869,6 @@ interface AdminRouteChildren {
   AdminBackupRoute: typeof AdminBackupRoute
   AdminSchemaRoute: typeof AdminSchemaRoute
   AdminSupabaseNgoaiRoute: typeof AdminSupabaseNgoaiRoute
-  AdminUiKitRoute: typeof AdminUiKitRoute
   AdminUsersRoute: typeof AdminUsersRoute
 }
 
@@ -2877,7 +2877,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBackupRoute: AdminBackupRoute,
   AdminSchemaRoute: AdminSchemaRoute,
   AdminSupabaseNgoaiRoute: AdminSupabaseNgoaiRoute,
-  AdminUiKitRoute: AdminUiKitRoute,
   AdminUsersRoute: AdminUsersRoute,
 }
 
@@ -2896,6 +2895,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiBackupRunRoute: ApiBackupRunRoute,
   ApiChatRoute: ApiChatRoute,
+  LovableAdminUiKitRoute: LovableAdminUiKitRoute,
   QMaThietBiRoute: QMaThietBiRoute,
   VerifyIdRoute: VerifyIdRoute,
   QIndexRoute: QIndexRoute,

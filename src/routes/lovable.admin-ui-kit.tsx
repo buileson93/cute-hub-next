@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
-export const Route = createFileRoute('/admin/ui-kit')({
+export const Route = createFileRoute('/lovable/admin-ui-kit')({
   component: UIKitPage,
 })
 
