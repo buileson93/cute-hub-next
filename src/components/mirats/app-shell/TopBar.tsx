@@ -50,16 +50,16 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <button
             id="powersearch-trigger"
             type="button"
-            className="h-8 w-full flex justify-between items-center rounded-full bg-primary/5 px-3 text-[13px] font-normal text-muted-foreground border border-primary/10 hover:bg-primary/10 hover:text-primary transition-all active:scale-[0.98] cursor-pointer group/search shadow-sm"
+            className="h-8 w-full flex items-center justify-between rounded-full bg-[#0074e2]/5 px-3 text-[13px] font-normal text-muted-foreground border border-[#0074e2]/10 hover:bg-[#0074e2]/10 hover:text-[#0074e2] transition-all active:scale-[0.98] cursor-pointer group/search shadow-sm"
             onClick={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
           >
             <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden pointer-events-none">
-              <Search className="h-4 w-4 text-primary shrink-0 transition-transform group-hover/search:scale-110" />
+              <Search className="h-4 w-4 text-[#0074e2] shrink-0 transition-transform group-hover/search:scale-110" />
               <span className="truncate text-left min-w-0 font-medium">Tìm tài sản, hệ thống, biên bản...</span>
             </div>
             
-            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-primary/20 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-primary/60 shrink-0 self-center">
+            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-[#0074e2]/20 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#0074e2]/60 shrink-0 self-center ml-2">
               <CommandIcon className="h-2.5 w-2.5" />
               <span>K</span>
             </div>

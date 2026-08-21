@@ -81,9 +81,9 @@ function Dashboard() {
         title={`Chào mừng, ${typeof profile?.ho_ten === 'string' ? profile.ho_ten : profile?.email?.split('@')[0] ?? "Bui Le Son"}`.trim()}
         subtitle={`MIRATS — Hệ thống quản lý tài sản kỹ thuật.`}
         actions={
-          <div className="flex flex-wrap items-center justify-end gap-2 md:gap-3">
+          <div className="flex items-center justify-end gap-2 md:gap-3 flex-nowrap">
             {isEditing && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-nowrap shrink-0">
                 <WidgetPicker
                   currentLayout={layout}
                   onAdd={handleAddWidget}
