@@ -154,7 +154,7 @@ export function DataTableCore<T>({
                 >
                   {selectable && (
                     <TableCell 
-                      className="w-10 px-2 text-center sticky left-0 z-10 bg-card group-hover:bg-muted/50"
+                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
