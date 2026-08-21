@@ -70,19 +70,23 @@ export function ThietBiDetail({
     <PageBody>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <PageHeader
-              title={asset.ten}
-              icon="entity.system"
-            />
-            <CompletenessRing 
-              value={(asset as any).completeness_pct || 0} 
-              size={44} 
-              strokeWidth={4} 
-              showText 
-              className="mt-1"
-            />
-          </div>
+          <PageHeader
+            title={asset.ten}
+            icon="entity.system"
+            metadata={
+              <div className="flex items-center gap-2 mt-1">
+                <CompletenessRing 
+                  value={(asset as any).completeness_pct || 0} 
+                  size={24} 
+                  strokeWidth={3} 
+                  showText 
+                />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                  Độ hoàn thiện dữ liệu
+                </span>
+              </div>
+            }
+          />
           <div className="flex items-center gap-2">
             <VoiceQuickLog maThietBi={asset.ma_thiet_bi} />
             <AppTooltip noiDung="Chia sẻ tài sản">
