@@ -45,7 +45,7 @@ function ThietBiListPage() {
           <DataTableCore
             rows={taxo?.devices || []}
             columns={columns}
-            getRowId={(row) => row.id}
+            getRowId={(row) => row.ma_thiet_bi || row.id}
             fitViewport
             className="border shadow-sm"
           />
