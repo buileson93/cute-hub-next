@@ -49,7 +49,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         <div className="relative w-full sm:max-w-sm group" data-tour="search">
           <Button
             variant="ghost"
-            className="h-9 w-full justify-between items-center rounded-xl bg-muted/40 px-0 text-[13px] font-normal text-muted-foreground border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm relative overflow-hidden active:scale-[0.98]"
+            className="h-9 w-full flex justify-between items-center rounded-xl bg-muted/40 px-0 text-[13px] font-normal text-muted-foreground border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-all shadow-sm relative overflow-hidden active:scale-[0.98]"
             onClick={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
           >
