@@ -250,7 +250,6 @@
   box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
 }
 
-/* Thanh cuộn mảnh, luôn hiển thị rõ cho bảng nhiều cột & dialog dài */
 @utility mirats-scroll {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 20%, transparent) transparent;
@@ -408,24 +407,10 @@
   overflow-wrap: break-word;
 }
 
-.mirats-data-table-core-element th,
-.mirats-data-table-core-element td {
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.mirats-data-table-core-element thead tr:first-child th {
-  border-top: 1px solid var(--border);
-}
-
-.mirats-data-table-core-element th:first-child,
-.mirats-data-table-core-element td:first-child {
+.mirats-data-table-core-element {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
   border-left: 1px solid var(--border);
-}
-
-.mirats-data-table-core-element th:last-child,
-.mirats-data-table-core-element td:last-child {
-  border-right: 1px solid var(--border);
 }
 
 .mirats-table-header-base {
@@ -434,6 +419,10 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  background-color: var(--color-muted);
+  border-top: 1px solid var(--border) !important;
+  border-right: 1px solid var(--border) !important;
+  border-bottom: 1px solid var(--border) !important;
 }
 
 

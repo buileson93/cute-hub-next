@@ -304,7 +304,7 @@ function TaiLieuLibraryPage() {
           rows={filteredDocs}
           columns={columns}
           getRowId={(row) => row.id}
-          maxHeight="calc(100vh - 12rem)"
+          fitViewport
         />
       </PageBody>
 
