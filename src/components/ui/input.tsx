@@ -26,7 +26,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            "flex h-full w-full bg-transparent px-2 py-1 text-[13px] placeholder:text-muted-foreground/40 focus-visible:outline-none disabled:cursor-not-allowed",
+            "flex h-full w-full bg-transparent px-2 py-1 text-[13px] placeholder:text-muted-foreground/50 focus-visible:outline-none disabled:cursor-not-allowed",
             "file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground",
             type === "number" && "font-mono tabular-nums"
           )}

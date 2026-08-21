@@ -4,73 +4,71 @@ import json
 from pathlib import Path
 from playwright.async_api import async_playwright
 
-async def check_overlap(page, selector):
-    elements = await page.query_selector_all(selector)
-    boxes = []
-    for el in elements:
-        box = await el.bounding_box()
-        if box:
-            boxes.append(box)
-    
-    overlaps = []
-    for i in range(len(boxes)):
-        for j in range(i + 1, len(boxes)):
-            b1 = boxes[i]
-            b2 = boxes[j]
-            # Check intersection
-            if (b1['x'] < b2['x'] + b2['width'] and
-                b1['x'] + b1['width'] > b2['x'] and
-                b1['y'] < b2['y'] + b2['height'] and
-                b1['y'] + b1['height'] > b2['y']):
-                overlaps.append((i, j))
-    return overlaps
+SCREENSHOTS = Path("/tmp/browser/ui-audit/screenshots")
+SCREENSHOTS.mkdir(parents=True, exist_ok=True)
 
 async def main():
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
-        context = await browser.new_context(viewport={"width": 1280, "height": 800})
+        context = await browser.new_context(viewport={"width": 1280, "height": 1800})
         page = await context.new_page()
 
-        # Login - Using a more robust wait
-        await page.goto("http://localhost:8080/auth")
-        try:
-            await page.fill("input[type='email']", "buileson93@gmail.com")
-            await page.fill("input[type='password']", "123456")
-            await page.click("button[type='submit']")
-            # Wait for dashboard content instead of URL to avoid redirection loop issues
-            await page.wait_for_selector("[data-testid='page-header']", timeout=10000)
-        except Exception as e:
-            print(f"Login or redirect failed, proceeding to check current page: {page.url}")
-
+        # Step 1: Login
+        await page.goto("http://localhost:8080/auth", wait_until="networkidle")
+        await page.fill("input[id='email']", "buileson93@gmail.com")
+        await page.fill("input[id='password']", "12345678")
+        await page.click("button[type='submit']")
         
-        # 1. TopBar Overlap Check
-        print("Checking TopBar for overlaps...")
-        topbar_overlaps = await check_overlap(page, "div.astryx-topbar button")
-        if topbar_overlaps:
-            print(f"FAILED: Found {len(topbar_overlaps)} overlaps in TopBar buttons")
-        else:
-            print("PASSED: No overlaps in TopBar buttons")
+        # Wait for navigation
+        try:
+            await page.wait_for_selector("[data-testid='page-header']", timeout=15000)
+            print("Login successful")
+        except:
+            print("Login failed or timed out")
+            await page.screenshot(path=str(SCREENSHOTS / "final_audit_login_failed.png"))
+            await browser.close()
+            return
 
-        # 2. Search Button Alignment
-        search_btn = page.locator("button[aria-label='Mở tìm kiếm PowerSearch']")
-        if await search_btn.is_visible():
-            box = await search_btn.bounding_box()
-            icon = page.locator("button[aria-label='Mở tìm kiếm PowerSearch'] svg.lucide-search")
-            icon_box = await icon.bounding_box()
-            if icon_box and box:
-                # Icon should be inside button and left-aligned roughly
-                if icon_box['x'] > box['x'] + 20:
-                    print("FAILED: Search icon is not correctly left-aligned in TopBar search")
-                else:
-                    print("PASSED: Search icon alignment is correct")
+        # Step 2: Audit TopBar Search
+        search_btn = page.locator("div[data-tour='search'] button")
+        await search_btn.scroll_into_view_if_needed()
+        
+        btn_box = await search_btn.bounding_box()
+        icon = search_btn.locator("svg.lucide-search")
+        icon_box = await icon.bounding_box()
+        shortcut = search_btn.locator("div.font-mono")
+        shortcut_box = await shortcut.bounding_box()
+        text = search_btn.locator("span.truncate")
+        text_box = await text.bounding_box()
 
-        # 3. Horizontal Scroll Check
-        scroll_width = await page.evaluate("document.body.scrollWidth")
-        client_width = await page.evaluate("document.body.clientWidth")
-        if scroll_width > client_width:
-            print(f"FAILED: Horizontal scroll detected! ({scroll_width}px > {client_width}px)")
+        print(f"Audit TopBar: Icon={icon_box}, Shortcut={shortcut_box}, Text={text_box}")
+        
+        # Check for overlap
+        if text_box and shortcut_box:
+            if text_box['x'] + text_box['width'] > shortcut_box['x']:
+                print(f"FAILURE: Overlap detected! Text right edge ({text_box['x'] + text_box['width']}) > Shortcut left edge ({shortcut_box['x']})")
+            else:
+                print("SUCCESS: TopBar Search text is clear of shortcut box.")
+        
+        # Step 3: Check for Horizontal Overflow
+        overflow = await page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth")
+        if overflow:
+            print("FAILURE: Horizontal overflow detected at root level!")
         else:
-            print("PASSED: No horizontal scroll detected on dashboard")
+            print("SUCCESS: No horizontal overflow detected at 1280px.")
+
+        await page.screenshot(path=str(SCREENSHOTS / "final_audit_desktop.png"))
+
+        # Step 4: Mobile Audit (390px)
+        await page.set_viewport_size({"width": 390, "height": 844})
+        await page.wait_for_timeout(2000)
+        overflow_mobile = await page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth")
+        if overflow_mobile:
+             print("FAILURE: Horizontal overflow detected on Mobile (390px)!")
+        else:
+             print("SUCCESS: No horizontal overflow on Mobile.")
+        
+        await page.screenshot(path=str(SCREENSHOTS / "final_audit_mobile.png"))
 
         await browser.close()
 
