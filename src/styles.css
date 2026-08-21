@@ -408,6 +408,17 @@
   overflow-wrap: break-word;
 }
 
+.mirats-data-table-core-element th,
+.mirats-data-table-core-element td {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.mirats-data-table-core-element th:last-child,
+.mirats-data-table-core-element td:last-child {
+  border-right: none;
+}
+
 .mirats-table-header-base {
   line-height: 1.2;
   font-weight: 700;
