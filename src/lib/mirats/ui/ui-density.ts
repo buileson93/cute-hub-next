@@ -46,9 +46,9 @@ export const UI_DENSITY = {
   TABLE_MAX_H: "max-h-[calc(100vh-8rem)] data-[density=comfortable]:max-h-[calc(100vh-10rem)]",
 
   // --- Controls & Icons ---
-  CONTROL_H: "h-11 md:h-7 md:data-[density=comfortable]:h-8 md:data-[density=spacious]:h-9",
-  CONTROL_PX: "px-4 md:px-2 md:data-[density=comfortable]:px-3 md:data-[density=spacious]:px-4",
-  CONTROL_FS: "text-[11px] data-[density=comfortable]:text-[13px] data-[density=spacious]:text-[14px]",
+  CONTROL_H: "h-11 md:h-8 md:data-[density=comfortable]:h-9 md:data-[density=spacious]:h-11",
+  CONTROL_PX: "px-4 md:px-3 md:data-[density=comfortable]:px-4 md:data-[density=spacious]:px-6",
+  CONTROL_FS: "text-[12px] md:text-[12px] md:data-[density=comfortable]:text-[13px] md:data-[density=spacious]:text-[14px]",
   ICON_SM: "h-3 w-3 data-[density=comfortable]:h-4 data-[density=comfortable]:w-4",
   ICON_MD: "h-3.5 w-3.5 data-[density=comfortable]:h-4.5 data-[density=comfortable]:w-4.5 data-[density=spacious]:h-5 data-[density=spacious]:w-5",
 
