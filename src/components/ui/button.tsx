@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 const buttonVariants = cva(
-  "astryx-control relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium cursor-pointer transition-mirats-fast active:scale-[var(--scale-active)] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium cursor-pointer transition-mirats-fast active:scale-[var(--scale-active,0.98)] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -16,21 +16,16 @@ const buttonVariants = cva(
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-primary/20 bg-background shadow-sm hover:bg-primary/5 hover:text-primary hover:border-primary/40",
-        secondary: "astryx-control-skin bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "astryx-control-skin hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        /** Mặc định: Mobile=44px (h-11), Desktop=32px/36px */
-        default: cn(UI_DENSITY.CONTROL_H, "px-4 py-2 text-[14px] md:text-[12px] md:data-[density=comfortable]:text-[13px] [&_svg]:size-5 md:size-4 min-w-[2.5rem] flex-shrink-0"),
-        /** Small: Mobile=44px (đảm bảo đích chạm), Desktop=32px */
-        sm: cn(UI_DENSITY.CONTROL_H, "rounded-md px-3 text-[14px] md:text-[12px] [&_svg]:size-4.5 md:size-4 min-w-[2rem] flex-shrink-0"),
-        /** Extra Small: Mobile=44px (đảm bảo đích chạm), Desktop=28px */
-        xs: "min-h-[2.75rem] md:min-h-[1.75rem] rounded px-2 text-[14px] md:text-[11px] [&_svg]:size-4 md:size-3.5 min-w-[1.75rem]",
-        /** Large: Mobile=48px+, Desktop=40px/44px */
-        lg: "min-h-[3rem] md:min-h-[2.5rem] md:data-[density=comfortable]:min-h-[2.75rem] rounded-md px-8 text-base [&_svg]:size-6 md:size-5",
-        /** Icon-only: Mobile=44px (h-11), Desktop=32px/36px */
-        icon: cn(UI_DENSITY.CONTROL_H, "min-w-[2.75rem] md:min-w-[2rem] md:data-[density=comfortable]:min-w-[2.25rem] [&_svg]:size-5 md:size-4.5"),
+        default: cn("min-h-9 md:min-h-8 px-4 py-2 text-[14px] md:text-[13px] [&_svg]:size-4"),
+        sm: "min-h-8 md:min-h-7.5 rounded-md px-3 text-[13px] md:text-[12px] [&_svg]:size-3.5",
+        xs: "min-h-7 md:min-h-6.5 rounded px-2 text-[12px] md:text-[11px] [&_svg]:size-3",
+        lg: "min-h-11 md:min-h-10 rounded-md px-8 text-base [&_svg]:size-5",
+        icon: "size-9 md:size-8 [&_svg]:size-4.5",
       },
     },
     defaultVariants: {
