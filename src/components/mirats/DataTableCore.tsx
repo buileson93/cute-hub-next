@@ -168,7 +168,7 @@ export function DataTableCore<T>({
                       key={col.key}
                       className={cn(
                         col.cellClassName,
-                        col.sticky && "sticky left-0 z-10 bg-card group-hover:bg-muted/50 border-r border-border/10",
+                        col.sticky && "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/10",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
