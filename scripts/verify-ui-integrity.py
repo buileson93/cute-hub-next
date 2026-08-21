@@ -10,51 +10,54 @@ async def verify_ui_integrity():
         context = await browser.new_context(viewport={"width": 1280, "height": 800})
         page = await context.new_page()
 
+        print("Starting UI Integrity Check...")
+
         # Login process
         await page.goto("http://localhost:8080/auth")
-        await page.fill('input[type="email"]', "buileson93@gmail.com")
-        await page.fill('input[type="password"]', "12345")
+        await page.fill('input[id="email"]', "buileson93@gmail.com")
+        await page.fill('input[id="password"]', "12345")
         await page.click('button[type="submit"]')
         
-        # Wait for navigation to dashboard
-        await page.wait_for_url("**/", timeout=10000)
+        # Wait for potential redirect or toast
+        await page.wait_for_timeout(3000)
+        print(f"Post-login URL: {page.url}")
+
+        # Navigate to su-co page where we added buttons
+        await page.goto("http://localhost:8080/su-co")
         await page.wait_for_load_state("networkidle")
+        print(f"Navigated to: {page.url}")
 
-        print(f"Logged in successfully. Current URL: {page.url}")
-
-        # Check TopBar Search Overlap
+        # 1. Check TopBar Search Overlap
         search_btn = page.locator('[data-tour="search"] button')
         if await search_btn.count() > 0:
-            box = await search_btn.bounding_box()
-            print(f"Search button box: {box}")
+            s_btn = search_btn.first
+            await s_btn.screenshot(path="/tmp/browser/search_overlap_fix.png")
             
-            # Screenshot for manual check
-            await search_btn.screenshot(path="/tmp/browser/search_overlap_before.png")
-            
-            # Check for specific overlapping elements if possible
-            icon = search_btn.locator('svg').first
-            text = search_btn.locator('span').first
-            shortcut = search_btn.locator('div.sm\\:flex').first
+            icon = s_btn.locator('svg').first
+            text = s_btn.locator('span').first
             
             if await icon.count() > 0 and await text.count() > 0:
                 ibox = await icon.bounding_box()
                 tbox = await text.bounding_box()
-                print(f"Icon box: {ibox}")
-                print(f"Text box: {tbox}")
+                print(f"Search Icon box: {ibox}")
+                print(f"Search Text box: {tbox}")
                 
-                # If text x is less than icon x + width, they overlap
                 if tbox['x'] < ibox['x'] + ibox['width']:
-                    print("⚠️ DETECTED: Search icon overlaps text!")
+                    print("❌ FAIL: Search icon STILL overlaps text!")
+                else:
+                    print("✅ PASS: Search icon and text are correctly separated.")
 
-        # Check other buttons (Personalization, etc.)
-        # We'll look for buttons containing specific text
-        kpi_btns = page.locator('button:has-text("CÁ NHÂN HÓA"), button:has-text("THÊM MẪU")')
-        count = await kpi_btns.count()
-        print(f"Found {count} targeted buttons for overlap check.")
-        for i in range(count):
-            btn = kpi_btns.nth(i)
-            await btn.screenshot(path=f"/tmp/browser/btn_check_{i}.png")
-            
+        # 2. Check "KHÔI PHỤC" and "CÁ NHÂN HÓA" buttons
+        btns = ["KHÔI PHỤC", "CÁ NHÂN HÓA", "BÁO CÁO MỚI"]
+        for label in btns:
+            btn = page.locator(f'button:has-text("{label}")')
+            if await btn.count() > 0:
+                b = btn.first
+                await b.screenshot(path=f"/tmp/browser/btn_{label.replace(' ', '_')}.png")
+                print(f"Captured screenshot for button: {label}")
+            else:
+                print(f"Could not find button with label: {label}")
+
         await browser.close()
 
 if __name__ == "__main__":
