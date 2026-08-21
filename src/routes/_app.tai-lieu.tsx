@@ -300,10 +300,11 @@ function TaiLieuLibraryPage() {
       />
       
       <PageBody>
-        <StandardTable
+        <DataTableCore
           rows={filteredDocs}
-          trangThai={{ dangTai: isLoading }}
-          columns={columns as ColumnDef<unknown>[]}
+          columns={columns}
+          getRowId={(row) => row.id}
+          maxHeight="calc(100vh - 12rem)"
         />
       </PageBody>
 
