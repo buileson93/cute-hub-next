@@ -1176,7 +1176,7 @@ export function StandardTableInner<T>({
           )}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll", maxHeightClass, className)}>
+        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto", maxHeightClass, className)}>
           <Table className={cn(
             "border-separate border-spacing-0 caption-bottom min-w-full",
             density === "compact" && "text-[12px]",
