@@ -9,6 +9,12 @@ const TABLE_MAP: Record<
   pl: { table: "dm_phan_loai", keyCol: "id", nameCol: "ten", proposeLoai: "dm.propose_new" },
   nh: { table: "dm_nhom_he_thong", keyCol: "id", nameCol: "ten", proposeLoai: "dm.propose_new" },
   ht: { table: "dm_he_thong", keyCol: "id", nameCol: "ten", proposeLoai: "he_thong.propose_field" },
+  tp: {
+    table: "he_thong_thanh_phan",
+    keyCol: "id",
+    nameCol: "ten",
+    proposeLoai: "he_thong.propose_field",
+  },
   tb: {
     table: "thiet_bi",
     keyCol: "ma_thiet_bi",

@@ -393,7 +393,7 @@ export function ThanhPhanTable({
       if (field === "ten") {
         const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
         const res = await saveEntityFieldSecurely({
-          kind: "tb", // Bảng này hiển thị thiết bị (thành phần)
+          kind: "tp", // Bảng này hiển thị thành phần hệ thống (he_thong_thanh_phan)
           id: id,
           field: "ten",
           value: value,
