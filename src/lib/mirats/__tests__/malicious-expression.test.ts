@@ -38,9 +38,15 @@ test('Edge cases', () => {
   
   // Divide by zero
   const divZero = evalFormula('{a} / {b}', values);
-  expect(divZero === null || !Number.isFinite(divZero)).toBe(true);
+  expect(divZero).toBe(null);
   
   // Missing fields
   expect(evalFormula('{missing} + 1', values)).toBe(null);
   expect(evalPredicate('{missing} == null', values)).toBe(null);
+});
+
+test('Complex valid expressions', () => {
+  const values = { x: 5, y: 10, z: 2 };
+  expect(evalFormula('{x} * ({y} + {z}) - 5', values)).toBe(55);
+  expect(evalPredicate('({x} + {y}) > 10 && !({z} == 0)', values)).toBe(true);
 });
