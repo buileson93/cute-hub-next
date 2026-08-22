@@ -584,6 +584,7 @@ function ResetPwDialog({
   submitting: boolean;
 }) {
   const [pw, setPw] = useState("");
+  const [showPw, setShowPw] = useState(false);
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-sm">
