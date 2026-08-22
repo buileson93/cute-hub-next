@@ -486,12 +486,29 @@ function UserForm({
           {mode === "create" && (
             <div className="space-y-1.5">
               <Label>Mật khẩu ban đầu</Label>
-              <Input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="text"
-                placeholder="Ít nhất 6 ký tự"
-              />
+              <div className="relative">
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPw ? "text" : "password"}
+                  placeholder="Ít nhất 8 ký tự"
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPw(!showPw)}
+                  aria-label={showPw ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showPw ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
             </div>
           )}
           <div className="space-y-1.5">
