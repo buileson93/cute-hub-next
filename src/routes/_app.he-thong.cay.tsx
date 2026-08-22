@@ -219,8 +219,9 @@ function useTbMind(overrides: OverrideMap | undefined) {
 function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
-  const canManage = useCan("he-thong-cay", "manage");
+  const canManageNodes = useCan("he-thong-cay", "manage");
   const canShare = useCan("he-thong-cay", "share");
+
 
 
 
@@ -708,7 +709,7 @@ function HeThongCayPage() {
                   tree={viewTree as any}
                   posByHt={posByHt || new Map()}
                   scopeText="Cấu trúc CNS/ATM"
-                   canManage={canManage}
+                   canManage={canManageNodes}
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
@@ -717,7 +718,8 @@ function HeThongCayPage() {
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
-                  canManageNodes={canManage}
+                  canManageNodes={canManageNodes}
+
 
 
                   onMoveSystem={(req) =>
