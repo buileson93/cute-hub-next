@@ -256,7 +256,7 @@ function ThietBiPage() {
 
     const dvIdByMa = new Map(taxo.donViList.map((d) => [d.ma, d.id]));
     const htDvFallback = new Map<string, string>();
-    for (const d of taxo.devices) {
+    for (const d of pagedData?.rows || []) {
       if (!d._htId || !d.don_vi) continue;
       const dvId = dvIdByMa.get(d.don_vi);
       if (dvId && !htDvFallback.has(d._htId)) htDvFallback.set(d._htId, dvId);
