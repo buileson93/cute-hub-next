@@ -359,7 +359,7 @@ function DuAnDetailPage() {
             className="w-full lg:w-auto overflow-hidden"
           >
             <TabsList
-              className="bg-muted p-1 border border-border w-full lg:w-auto overflow-x-auto overflow-y-hidden"
+              className="bg-muted/50 p-1 border border-border/50 w-full lg:w-auto overflow-x-auto overflow-y-hidden"
               data-density="comfortable"
             >
               {PROJECT_VIEWS.map((view) => (

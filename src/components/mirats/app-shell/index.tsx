@@ -150,7 +150,7 @@ export function UserMenu() {
             </div>
             <div className="mt-2 flex items-center gap-2">
               <Badge
-                variant="outline"
+                variant="mirats-outline"
                 className="rounded-full font-mono text-[10px] tracking-wider"
               >
                 {hasRole("admin") || hasRole("phong_kt")
