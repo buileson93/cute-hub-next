@@ -732,9 +732,10 @@ function OcrBenchmarkTab() {
                   })(),
                   {
                     loading: "Đang chạy benchmark hệ thống...",
-                    success: (p) => `Benchmark hoàn tất: ${Math.round(p.benchmarkScore)}ms`,
+                    success: (p) => `Benchmark hoàn tất: ${Math.round(p?.benchmarkScore || 0)}ms`,
                     error: "Lỗi khi chạy benchmark",
                   },
+
                 );
               }}
             >
