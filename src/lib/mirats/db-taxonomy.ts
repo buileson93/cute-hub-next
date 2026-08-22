@@ -69,6 +69,7 @@ export interface DbDevice extends ThietBi {
 }
 
 export interface DbTaxonomy {
+  devices: DbDevice[];
   /** Danh sách phân loại theo đúng thứ tự CSDL (id → tên/tone/thứ tự). */
   plList: Array<{ id: string; ten: string; tone: string; thu_tu: number }>;
   plNameMap: Map<string, string>;
