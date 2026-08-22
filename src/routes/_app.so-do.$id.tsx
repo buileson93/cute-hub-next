@@ -141,7 +141,17 @@ export const Route = createFileRoute("/_app/so-do/$id")({
  */
 function SoDoEditorPage() {
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+  useEffect(() => {
+    setIsClient(true);
+    return () => {
+      // Cleanup for any remaining XYFlow or DOM elements
+      const canvases = document.querySelectorAll("canvas");
+      canvases.forEach((c) => {
+        c.width = 0;
+        c.height = 0;
+      });
+    };
+  }, []);
 
   if (!isClient) {
     return (
