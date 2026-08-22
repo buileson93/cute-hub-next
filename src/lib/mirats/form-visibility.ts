@@ -3,6 +3,7 @@
 // Module thuần, không phụ thuộc React/DB — dễ test.
 // ============================================================================
 import type { CompiledField, VisibleIfRule } from "./form-schema";
+import { safeEvaluate } from "./expression-parser";
 
 export type FormValues = Record<string, unknown>;
 
@@ -66,24 +67,20 @@ export function evalVisible(rule: VisibleIfRule, values: FormValues): boolean {
  */
 export function evalFormula(formula: string, values: FormValues): number | null {
   if (!formula || !formula.trim()) return null;
+  
+  // Kiểm tra xem tất cả các tham chiếu có tồn tại và là số không
   let missing = false;
-  const substituted = formula.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key: string) => {
+  formula.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key: string) => {
     const n = toNum(values[key]);
     if (n == null) {
       missing = true;
-      return "0";
     }
-    return String(n);
+    return "";
   });
   if (missing) return null;
-  if (!/^[\d+\-*/().\s]+$/.test(substituted)) return null;
-  try {
-    const fn = new Function(`"use strict"; return (${substituted});`);
-    const r = fn();
-    return typeof r === "number" && Number.isFinite(r) ? r : null;
-  } catch {
-    return null;
-  }
+
+  const result = safeEvaluate(formula, values);
+  return typeof result === "number" && Number.isFinite(result) ? result : null;
 }
 
 /**
@@ -93,30 +90,19 @@ export function evalFormula(formula: string, values: FormValues): number | null 
  */
 export function evalPredicate(expr: string, values: FormValues): boolean | null {
   if (!expr || !expr.trim()) return null;
+
   let missing = false;
-  const substituted = expr.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key: string) => {
+  expr.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key: string) => {
     const v = values[key];
     if (v == null || v === "") {
       missing = true;
-      return "null";
     }
-    const n = toNum(v);
-    if (n != null) return String(n);
-    if (typeof v === "boolean") return v ? "true" : "false";
-    // string → gói trong quotes an toàn (chỉ chữ/số/dấu gạch dưới).
-    const s = String(v).replace(/[^\w.\-:@\s]/g, "");
-    return JSON.stringify(s);
+    return "";
   });
   if (missing) return null;
-  // Cho phép: chữ số, phép toán, so sánh, logic, quote đơn giản.
-  if (!/^[\w\s+\-*/().<>=!&|"',:.@]+$/.test(substituted)) return null;
-  try {
-    const fn = new Function(`"use strict"; return (${substituted});`);
-    const r = fn();
-    return typeof r === "boolean" ? r : Boolean(r);
-  } catch {
-    return null;
-  }
+
+  const result = safeEvaluate(expr, values);
+  return result === null ? null : Boolean(result);
 }
 
 /**
