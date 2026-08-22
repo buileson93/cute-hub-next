@@ -1532,8 +1532,10 @@ function DanhMucThietBiPage() {
                         variant={ACTION_PATTERNS.BULK_ACTION}
                         className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         aria-label="Xoá hoặc ngừng khai thác các tài sản đã chọn"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setDeleteTargets(selectedRows);
+                        }}
                           setDeleteKind("retire");
                         }}
                       >
