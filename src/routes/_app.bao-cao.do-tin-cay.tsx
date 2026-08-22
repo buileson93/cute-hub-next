@@ -40,11 +40,14 @@ import { AnnotationManager, LOAI_META } from "@/components/mirats/AnnotationMana
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
+  ResponsiveContainer,
   ComposedChart,
   Bar,
   Line,
   XAxis,
   YAxis,
+  Tooltip,
+  Legend,
   CartesianGrid,
   PieChart,
   Pie,
