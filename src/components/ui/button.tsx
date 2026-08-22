@@ -85,9 +85,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {children}
           </span>
           {loading && (
-            <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <Loader2 className="animate-spin shrink-0 h-4 w-4 text-current" aria-hidden="true" />
-            </span>
+            </div>
           )}
         </>
       );

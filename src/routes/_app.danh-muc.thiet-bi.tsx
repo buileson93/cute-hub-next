@@ -1257,7 +1257,7 @@ function DanhMucThietBiPage() {
               />
             </div>
             <Select value={filterLoai} onValueChange={setFilterLoai}>
-              <SelectTrigger className="h-9 w-[190px]">
+              <SelectTrigger className="h-9 w-[190px]" aria-label="Lọc theo chủng loại">
                 <SelectValue placeholder="Chủng loại" />
               </SelectTrigger>
               <SelectContent>
@@ -1270,7 +1270,7 @@ function DanhMucThietBiPage() {
               </SelectContent>
             </Select>
             <Select value={filterTt} onValueChange={setFilterTt}>
-              <SelectTrigger className="h-9 w-[180px]">
+              <SelectTrigger className="h-9 w-[180px]" aria-label="Lọc theo trạng thái">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
@@ -1286,7 +1286,7 @@ function DanhMucThietBiPage() {
               value={sp.compatibleSystem || "all"}
               onValueChange={(v) => patchSearch({ compatibleSystem: v === "all" ? undefined : v })}
             >
-              <SelectTrigger className="h-9 w-[220px]">
+              <SelectTrigger className="h-9 w-[220px]" aria-label="Lọc theo vật tư tương thích">
                 <ShieldCheck className="mr-2 h-4 w-4 text-emerald-600" />
                 <SelectValue placeholder="Vật tư tương thích hệ thống" />
               </SelectTrigger>

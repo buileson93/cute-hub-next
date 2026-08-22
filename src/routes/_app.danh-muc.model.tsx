@@ -587,27 +587,32 @@ function ModelCatalogPage() {
             {filterParam === "thieu-loai" && <X className="ml-1 h-3 w-3" />}
           </Button>
         )}
-        <div className="ml-auto inline-flex overflow-hidden rounded-md border">
-          <button
+        <div className="ml-auto inline-flex overflow-hidden rounded-md border bg-background shadow-sm">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setViewMode("table")}
             className={cn(
-              "flex items-center gap-1 px-2.5 py-1 text-xs transition-colors",
-              viewMode === "table" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+              "h-8 rounded-none px-3 text-xs gap-1.5",
+              viewMode === "table" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
             )}
-            title="Dạng bảng"
+            aria-label="Xem dạng bảng"
           >
-            <ListIcon className="h-3.5 w-3.5" /> Bảng
-          </button>
-          <button
+            <ListIcon className="h-3.5 w-3.5" /> <span>Bảng</span>
+          </Button>
+          <div className="w-[1px] bg-border" />
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setViewMode("grid")}
             className={cn(
-              "flex items-center gap-1 px-2.5 py-1 text-xs transition-colors",
-              viewMode === "grid" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+              "h-8 rounded-none px-3 text-xs gap-1.5",
+              viewMode === "grid" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
             )}
-            title="Dạng lưới"
+            aria-label="Xem dạng lưới"
           >
-            <LayoutGrid className="h-3.5 w-3.5" /> Lưới
-          </button>
+            <LayoutGrid className="h-3.5 w-3.5" /> <span>Lưới</span>
+          </Button>
         </div>
       </div>
 
