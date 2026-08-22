@@ -65,19 +65,26 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { LeanUXCanvas } from "@/components/mirats/projects/discovery/LeanUXCanvas";
-import { HillChart } from "@/components/mirats/projects/delivery/HillChart";
+// Experimental features hidden for production
+// import { LeanUXCanvas } from "@/components/mirats/projects/discovery/LeanUXCanvas";
+// import { HillChart } from "@/components/mirats/projects/delivery/HillChart";
+// import { PitchEditor } from "@/components/mirats/projects/delivery/PitchEditor";
+// import { OperationsLane } from "@/components/mirats/projects/operations/OperationsLane";
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
-import { PitchEditor } from "@/components/mirats/projects/delivery/PitchEditor";
-import { OperationsLane } from "@/components/mirats/projects/operations/OperationsLane";
 import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
 
+const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
+type ProjectView = (typeof SUPPORTED_VIEWS)[number];
+
 export const Route = createFileRoute("/_app/du-an/$id")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    view: (search.view as string) || "kanban",
-    q: (search.q as string) || "",
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const view = search.view as string;
+    return {
+      view: (SUPPORTED_VIEWS.includes(view as any) ? view : "kanban") as ProjectView,
+      q: (search.q as string) || "",
+    };
+  },
   head: ({ params }) => ({
     meta: [
       { title: `Dự án ${params.id.slice(0, 8)} — MIRATS` },
@@ -347,15 +354,6 @@ function DuAnDetailPage() {
               <TabsTrigger value="timeline" className="px-3 h-7 text-xs font-medium">
                 Timeline
               </TabsTrigger>
-              <TabsTrigger value="discovery" className="px-3 h-7 text-xs font-medium">
-                Discovery
-              </TabsTrigger>
-              <TabsTrigger value="delivery" className="px-3 h-7 text-xs font-medium">
-                Delivery
-              </TabsTrigger>
-              <TabsTrigger value="operations" className="px-3 h-7 text-xs font-medium">
-                Operations
-              </TabsTrigger>
               <TabsTrigger value="hoso" className="px-3 h-7 text-xs font-medium">
                 Hồ sơ
               </TabsTrigger>
@@ -433,6 +431,8 @@ function DuAnDetailPage() {
             />
           </TabsContent>
 
+          {/* Discovery, Delivery, and Operations tabs hidden for production */}
+          {/* 
           <TabsContent value="discovery" className="mt-3">
             <LeanUXCanvas project_id={id} />
           </TabsContent>
@@ -465,6 +465,7 @@ function DuAnDetailPage() {
           <TabsContent value="operations" className="mt-3">
             <OperationsLane wipLimit={2} incidents={[]} />
           </TabsContent>
+          */}
 
           <TabsContent value="hoso" className="mt-3">
             <DossierRegister project_id={id} />
