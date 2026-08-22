@@ -57,6 +57,7 @@ import {
   type VatTuRow,
   type KhoRow,
   type TonKhoRow,
+  type CanhBaoRow,
 } from "@/lib/mirats/kho";
 import { DetailDrawer } from "@/components/mirats/DetailDrawer";
 import { useDetailPanel } from "@/lib/mirats/ui/detail-panel";
