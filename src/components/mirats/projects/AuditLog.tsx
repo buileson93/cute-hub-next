@@ -36,12 +36,16 @@ interface AuditLogProps {
 }
 
 export function AuditLog({ entityType, entityId }: AuditLogProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [actionFilter, setActionFilter] = useState("all");
+  const [userFilter, setUserFilter] = useState("all");
+
   const exportLogs = () => {
-    if (!logs || logs.length === 0) return;
+    if (!filteredLogs || filteredLogs.length === 0) return;
     
     try {
       const headers = ["Thời gian", "Hành động", "Chi tiết", "Người thực hiện"];
-      const rows = logs.map(log => [
+      const rows = filteredLogs.map(log => [
         format(new Date(log.created_at), "yyyy-MM-dd HH:mm:ss"),
         getActionLabel(log.action),
         formatDetail(log).replace(/,/g, ';'),
