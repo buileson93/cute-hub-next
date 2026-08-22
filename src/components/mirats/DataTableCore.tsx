@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -41,7 +40,6 @@ export interface DataTableColumn<T> {
 }
 
 const MemoizedTableRow = memo(TableRow);
-const MemoizedTableCell = memo(TableCell);
 
 interface DataTableCoreProps<T> {
   rows: T[];
@@ -183,15 +181,11 @@ export function DataTableCore<T>({
       >
         <TableHeader className="sticky top-0 z-40 bg-muted/95 backdrop-blur-[4px]">
           <TableRow className="bg-transparent border-b-0 border-t-0 astryx-table-row hover:bg-transparent">
-
             {selectable && (
               <TableHead 
                 style={{ width: 40, minWidth: 40 }}
-
                 className="w-10 px-3 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-b border-border/20 astryx-table-header-cell"
-              >
-                {/* Checkbox "Select All" có thể được thêm ở đây */}
-              </TableHead>
+              />
             )}
             {columns.map((col) => (
               <TableHead
@@ -200,7 +194,6 @@ export function DataTableCore<T>({
                   width: col.width,
                   minWidth: col.minWidth || (col.width ? undefined : 100),
                 }}
-
                 className={cn(
                   "astryx-table-header-cell",
                   col.sticky &&
@@ -219,12 +212,11 @@ export function DataTableCore<T>({
           height: virtualize ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
           position: 'relative',
         }}>
-
           {rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={columns.length + (selectable ? 1 : 0)} className="h-32 text-center text-muted-foreground italic">
+              <OptimizedCell colKey="empty" colSpan={columns.length + (selectable ? 1 : 0)} className="h-32 text-center text-muted-foreground italic">
                 Không có dữ liệu hiển thị
-              </TableCell>
+              </OptimizedCell>
             </TableRow>
           ) : virtualize ? (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -242,55 +234,48 @@ export function DataTableCore<T>({
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
-
                   style={{
-                    transform: `translateY(${virtualRow.start}px)`,
-                    position: virtualize ? 'absolute' : 'relative',
+                    transform: `translate3d(0, ${virtualRow.start}px, 0)`,
+                    position: 'absolute',
                     top: 0,
                     left: 0,
-                    width: '100%'
-
+                    width: '100%',
+                    willChange: 'transform',
                   }}
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <MemoizedTableCell
+                    <OptimizedCell
+                      colKey="selection"
                       style={{ width: 40, minWidth: 40 }}
-
-                       className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20 astryx-table-cell"
-
-                      onClick={(e) => {
+                      className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20"
+                      onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         onSelect?.(id);
                       }}
                     >
                       <Checkbox checked={isSelected} />
-                    </MemoizedTableCell>
+                    </OptimizedCell>
                   )}
                   {columns.map((col) => (
-                    <MemoizedTableCell
+                    <OptimizedCell
                       key={col.key}
+                      colKey={col.key}
                       style={{
                         width: col.width,
                         minWidth: col.minWidth || (col.width ? undefined : 100),
                       }}
-
                       className={cn(
-                        "astryx-table-cell",
                         col.cellClassName,
-                        col.sticky &&
-                          "sticky left-0 z-20 bg-inherit border-r border-border/20",
-
+                        col.sticky && "sticky left-0 z-20 bg-inherit border-r border-border/20",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" &&
-                          "sticky right-0 z-20 bg-inherit border-l border-border/20",
-
+                        col.type === "actions" && "sticky right-0 z-20 bg-inherit border-l border-border/20",
                       )}
                     >
                       {renderCellContent(col, row)}
-                    </MemoizedTableCell>
+                    </OptimizedCell>
                   ))}
                 </MemoizedTableRow>
               );
@@ -308,43 +293,41 @@ export function DataTableCore<T>({
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
-
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <MemoizedTableCell
+                    <OptimizedCell
+                      colKey="selection"
                       style={{ flex: '0 0 40px', width: 40 }}
-                      className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20 astryx-table-cell"
-                      onClick={(e) => {
+                      className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20"
+                      onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         onSelect?.(id);
                       }}
                     >
                       <Checkbox checked={isSelected} />
-                    </MemoizedTableCell>
+                    </OptimizedCell>
                   )}
                   {columns.map((col) => (
-                    <MemoizedTableCell
+                    <OptimizedCell
                       key={col.key}
+                      colKey={col.key}
                       style={{
                         width: col.width,
                         minWidth: col.minWidth || (col.width ? undefined : 100),
                         flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                       }}
                       className={cn(
-                        "astryx-table-cell",
                         col.cellClassName,
-                        col.sticky &&
-                          "sticky left-0 z-20 bg-inherit border-r border-border/20",
+                        col.sticky && "sticky left-0 z-20 bg-inherit border-r border-border/20",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" &&
-                          "sticky right-0 z-20 bg-inherit border-l border-border/20",
+                        col.type === "actions" && "sticky right-0 z-20 bg-inherit border-l border-border/20",
                       )}
                     >
                       {renderCellContent(col, row)}
-                    </MemoizedTableCell>
+                    </OptimizedCell>
                   ))}
                 </MemoizedTableRow>
               );
