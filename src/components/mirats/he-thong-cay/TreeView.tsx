@@ -56,6 +56,7 @@ export function TreeView({
   htMind,
   tbLabel,
   canManage,
+  canManageNodes,
   onOpenEditor,
   onHistory,
   onIncident,
@@ -66,6 +67,7 @@ export function TreeView({
   onMoveGroup,
   onMoveDevice,
   posByHt,
+
 }: {
   tree: PlGroup[];
   plLabel: (id: string) => string;
