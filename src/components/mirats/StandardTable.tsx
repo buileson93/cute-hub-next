@@ -1572,7 +1572,7 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group astryx-table-row active:scale-100",
+                            "group astryx-table-row",
                             (onRowClick || selectable) && "cursor-pointer",
                             isSel && "selected",
                             expandedRows.has(rid) && "expanded",
