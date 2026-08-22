@@ -25,6 +25,9 @@ import {
   Info,
   ShieldAlert,
   FolderArchive,
+  Circle,
+  Lock,
+  FolderOpen,
   type LucideIcon,
 } from "lucide-react";
 import "@/vendor/frappe-gantt.css";
