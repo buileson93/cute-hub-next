@@ -182,7 +182,10 @@ export function DataTableCore<T>({
       )}
       style={{
         overflowX: 'auto',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        // Tối ưu hóa layout isolation: contain giúp trình duyệt không phải tính toán lại toàn trang khi bảng thay đổi
+        contain: 'content', 
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       <Table
