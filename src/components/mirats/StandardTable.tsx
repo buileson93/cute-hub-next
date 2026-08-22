@@ -567,7 +567,7 @@ export function StandardTableInner<T>({
     estimateSize: () => estimateRowHeight,
     overscan: isTest ? 100 : 15,
     initialOffset: isTest ? 0 : undefined,
-    initialRect: { width: 1000, height: 100000 }, // Force initial rect to render rows in JSDOM/Node environment
+    initialRect: isTest ? { width: 1000, height: 100000 } : undefined,
 
     ...virtualizerOptions,
   });

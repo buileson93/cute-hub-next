@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup, fireEvent, within } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { StandardTable, type ColumnDef } from "../StandardTable";
 import React from "react";
 
@@ -28,17 +28,17 @@ const rows: Row[] = [
 ];
 
 const columns: ColumnDef<Row>[] = [
-  { key: "name", header: "Name", value: (r) => r.name },
+  { key: "name", header: "Name", value: (r) => r.name, sortable: true },
 ];
 
-describe("StandardTable Virtualization Integrity (RED Test)", () => {
+describe("StandardTable Virtualization Integrity", () => {
   it("should render correct rows after sorting in virtual mode", async () => {
     const getRowId = (r: Row) => r.id;
     
-    // Lưu ý: Trong StandardTable.tsx, virtualization được bật nếu virtualizerOptions?.enabled === true
-    // VÀ nó sẽ dùng visibleRows[virtualRow.index] (đã sửa ở lượt trước) hoặc rows[virtualRow.index] (nếu chưa sửa).
+    // In JSDOM, virtualization relies on measurements that are often 0.
+    // StandardTable has special isTest logic for overscan and initialRect.
     
-    const { container } = render(
+    render(
       <StandardTable<Row>
         rows={rows}
         columns={columns}
@@ -48,23 +48,23 @@ describe("StandardTable Virtualization Integrity (RED Test)", () => {
       />
     );
 
-    // Kiểm tra render hàng
-    // Vì virtualization trong test có initialRect lớn, nó sẽ render các dòng.
-    // Nếu vẫn không thấy cell, có thể do gated hoặc requireFilterToShow.
-    
+    // Initial order: A, B, C. 
+    // Since overscan is 100 in test mode, it should render even if measurement is tricky.
     const cells = screen.getAllByRole("cell");
     expect(cells[0].textContent).toBe("Alpha");
 
-    // Click sort Name -> desc (Alpha, Bravo, Charlie -> Charlie, Bravo, Alpha)
+    // Click sort Name -> desc
     const nameHeader = screen.getByText("Name");
     fireEvent.click(nameHeader); // asc
     fireEvent.click(nameHeader); // desc
     
+    // Re-query cells
     const cellsAfterSort = screen.getAllByRole("cell");
     
-    // Nếu bug chưa sửa, nó sẽ lấy rows[virtualRow.index] -> vẫn là "Alpha" ở index 0
-    // Nếu bug đã sửa, nó lấy sortedRows[virtualRow.index] -> "Charlie"
+    // If the fix works, index 0 is C (Charlie). 
+    // If bug exists (using rows[index]), it would stay A (Alpha).
     expect(cellsAfterSort[0].textContent).toBe("Charlie");
   });
 });
+
 
