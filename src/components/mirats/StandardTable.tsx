@@ -1438,10 +1438,10 @@ export function StandardTableInner<T>({
                                   ? "justify-end w-full text-right"
                                   : "justify-start text-left w-full",
                             )}
-                            title={`Sắp xếp theo ${c.label}`}
-                            aria-label={`Sắp xếp theo ${c.label}`}
+                            title={`Sắp xếp theo ${label}`}
+                            aria-label={`Sắp xếp theo ${label}`}
                           >
-                            <span className="truncate">{c.label}</span>
+                            <span className="truncate">{label}</span>
                             {sortActive ? (
                               sort!.dir === "asc" ? (
                                 <Icon name="table.sortAsc" size="tiny" className="text-primary" />
