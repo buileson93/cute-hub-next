@@ -1433,7 +1433,33 @@ function DanhMucThietBiPage() {
             </div>
           )}
 
-          <StandardTable
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {devices.map(d => (
+                <Card key={d.ma_thiet_bi} className="overflow-hidden hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer" onClick={() => openDetail(d)}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="font-bold text-sm truncate">{d.ten_thiet_bi}</div>
+                      <StatusBadge status={d.trang_thai} />
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-3 font-mono">{d.ma_thiet_bi}</div>
+                    <div className="grid grid-cols-2 gap-y-2 text-[11px]">
+                      <div className="text-muted-foreground">Chủng loại:</div>
+                      <div>{d.loai_thiet_bi}</div>
+                      <div className="text-muted-foreground">S/N:</div>
+                      <div className="font-mono">{d.serial_number || "—"}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {devices.length === 0 && (
+                <div className="col-span-full py-12 text-center text-muted-foreground text-sm border border-dashed rounded-lg">
+                  {pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
+                </div>
+              )}
+            </div>
+          ) : (
+            <StandardTable
             tableKey="danh-muc-thiet-bi"
             columns={columns}
             rows={devices}
