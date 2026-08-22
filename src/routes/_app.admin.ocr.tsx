@@ -132,7 +132,7 @@ function OcrAdminPage() {
 
   const handleStartBatch = () => {
     if (selectedIds.size === 0) {
-      toast.error("Vui lòng chọn ít nhất một tài liệu.");
+      toast.error("Vui lòng chọn ít nhất một tài liệu để xử lý.");
       return;
     }
 

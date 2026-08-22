@@ -459,7 +459,8 @@ function NhapLieuPage() {
             : "Đã tải mẫu all-in-one trống",
       );
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error("Xuất Excel thất bại: " + (e as Error).message);
+
     } finally {
       setBusy(false);
     }

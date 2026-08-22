@@ -66,7 +66,7 @@ function AdminAiPage() {
       qc.invalidateQueries({ queryKey: ["ai-admin-config"] });
       qc.invalidateQueries({ queryKey: ["ai-public-config"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Lưu cấu hình AI thất bại: " + e.message),
   });
 
   if (loading || isLoading || !form) {
