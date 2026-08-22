@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ThietBiDetail } from "@/components/mirats/thiet-bi-detail";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
