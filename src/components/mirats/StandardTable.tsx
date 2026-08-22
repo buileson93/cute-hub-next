@@ -428,12 +428,14 @@ export function StandardTableInner<T>({
         if (c.key === exceptKey) continue;
         if (c.filter === "cat") {
           const sel = catFilters[c.key];
-          if (sel && sel.size > 0 && !sel.has(colText(c, r))) return false;
+          const text = colText(c, r);
+          if (sel && sel.size > 0 && !sel.has(text)) return false;
         } else if (c.filter === "text") {
           const val = textFilters[c.key];
           if (val) {
             const t = normalize(val).trim();
-            if (t && !normalize(colText(c, r)).includes(t)) return false;
+            const text = colText(c, r);
+            if (t && !normalize(text).includes(t)) return false;
           }
         }
       }
