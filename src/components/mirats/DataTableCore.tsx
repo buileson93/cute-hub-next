@@ -190,6 +190,7 @@ export function DataTableCore<T>({
                 style={{
                   width: col.width,
                   minWidth: col.minWidth || (col.width ? undefined : 100),
+                  flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                 }}
                 className={cn(
                   "mirats-table-header-base",
