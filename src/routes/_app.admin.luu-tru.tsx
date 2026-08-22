@@ -130,12 +130,11 @@ function Content() {
   async function onSave() {
     try {
       await save.mutateAsync(fromMode(mode, autoFallback));
-      // success toast is handled by save mutation onSuccess hook
     } catch (e: any) {
-      // error toast is handled by save mutation onError hook if added, 
-      // but let's check useSaveStorageConfig
+      // toast is handled by mutation hooks in useSaveStorageConfig
     }
   }
+
 
 
   return (
