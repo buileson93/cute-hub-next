@@ -98,7 +98,7 @@ export function DataTableCore<T>({
     enabled: virtualize,
     getItemKey: useCallback((index: number) => {
       const row = rows[index];
-      return row ? getRowId(row) : index;
+      return row ? getRowId(row) : `row-${index}`;
     }, [rows, getRowId]),
   });
 
