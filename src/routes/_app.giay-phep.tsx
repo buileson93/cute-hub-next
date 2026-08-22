@@ -279,29 +279,46 @@ function GiayPhepPage() {
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <CalendarClock className="h-4 w-4" />
-              Lịch hết hạn 12 tháng tới
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-64">
-            {isLoading ? (
-              <div className="w-full h-full animate-pulse bg-muted/30 rounded-md" />
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={byMonth}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="thang" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "var(--muted)" }} />
-                  <Bar dataKey="so_gp" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-2">
+          <ERPChartFrame
+            title="Lịch hết hạn 12 tháng tới"
+            icon="entity.chart"
+            loading={isLoading}
+            empty={!byMonth.length}
+            className="h-[320px]"
+          >
+            <ChartContainer
+              config={{
+                so_gp: {
+                  label: "Số giấy phép",
+                  color: "var(--chart-1)",
+                },
+              }}
+            >
+              <BarChart data={byMonth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis 
+                  dataKey="thang" 
+                  tickLine={false} 
+                  axisLine={false}
+                  tickFormatter={(v) => v.split("-").reverse().join("/")}
+                />
+                <YAxis 
+                  tickLine={false} 
+                  axisLine={false} 
+                  allowDecimals={false} 
+                />
+                <ChartTooltip content={<ChartTooltipContent unit="giấy phép" />} />
+                <Bar 
+                  dataKey="so_gp" 
+                  fill="var(--color-so_gp)" 
+                  radius={[4, 4, 0, 0]} 
+                  barSize={32}
+                />
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        </div>
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Phân bổ theo đơn vị</CardTitle>
