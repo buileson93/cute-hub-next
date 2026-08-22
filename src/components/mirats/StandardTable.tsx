@@ -372,11 +372,13 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: 10,
+    overscan: 8,
     getItemKey: (index) => {
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;
     },
+    paddingStart: 0,
+    paddingEnd: 0,
   });
 
   useEffect(() => {
