@@ -1167,15 +1167,13 @@ export function ThanhPhanTable({
                 value: (r) => r.taiSanTrangThai,
                 cell: (r) => {
                   if (r.taiSanTrangThai) {
-                    const badge = (
+                    return (
                       <Badge variant="outline" className="text-[10px]">
                         {r.taiSanTrangThai}
                       </Badge>
                     );
-                    return badge;
                   }
-                  const fallback = <span className="text-xs text-muted-foreground">—</span>;
-                  return fallback;
+                  return <span className="text-xs text-muted-foreground">—</span>;
                 },
               },
               {

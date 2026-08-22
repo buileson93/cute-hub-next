@@ -691,7 +691,8 @@ export function StandardTableInner<T>({
   const renderGlobalState = () => {
     if (trangThai.loi) {
       const err = trangThai.loi;
-      const content = errorContent || (
+      if (errorContent) return errorContent;
+      return (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">{String(err)}</div>
           {err.retry && (
@@ -701,7 +702,6 @@ export function StandardTableInner<T>({
           )}
         </div>
       );
-      return content;
     }
 
     if (trangThai.dangTai) {
