@@ -31,6 +31,7 @@ import {
   Timer,
   HeartPulse,
   MapPin,
+  Filter,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -1260,6 +1261,18 @@ function DanhMucThietBiPage() {
                 placeholder="Tìm theo tên, mã, S/N, loại, trạng thái…"
                 className="h-9 pl-8"
               />
+            </div>
+            <div className="flex items-center gap-2">
+              <AppTooltip noiDung="Lọc nâng cao">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-primary"
+                  aria-label="Lọc nâng cao"
+                >
+                  <Filter className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
             </div>
             <Select value={filterLoai} onValueChange={setFilterLoai}>
               <SelectTrigger className="h-9 w-[190px]" aria-label="Lọc theo chủng loại">
