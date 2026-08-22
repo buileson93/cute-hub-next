@@ -145,14 +145,9 @@ export function TreeView({
           </div>
           <Cpu className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="truncate text-sm font-medium cursor-help">{tbLabel(d.tb)}</span>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <div className="text-xs font-mono">Mã: {d.tb.ma_thiet_bi}</div>
-              </TooltipContent>
-            </Tooltip>
+            <TruncatedNodeLabel label={tbLabel(d.tb)} code={d.tb.ma_thiet_bi} />
+            {chips.map((c, i) => (
+
             {chips.map((c, i) => (
               <Badge
                 key={i}
