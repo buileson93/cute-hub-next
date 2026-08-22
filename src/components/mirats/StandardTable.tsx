@@ -186,7 +186,7 @@ export function StandardTableInner<T>({
   setSelected: setSelectedProp,
   selection,
   setSelection,
-  maxHeightClass = "max-h-[min(800px,calc(100vh-280px))]",
+  maxHeightClass = "h-full",
   emptyText = "Không có dữ liệu",
   emptyContent,
   errorContent,
