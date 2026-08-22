@@ -293,6 +293,7 @@ function HeThongCayPage() {
       if (error) return 0;
       return count || 0;
     },
+    staleTime: 5 * 60_000,
   });
 
   const {

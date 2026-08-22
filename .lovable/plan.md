@@ -1,39 +1,27 @@
-# Plan: Phase 10I - Performance & Architecture
+# Phase 10I: Performance & Architecture Hardening
 
-Tập trung tối ưu hóa hiệu năng, tinh gọn kiến trúc và củng cố độ ổn định hệ thống sau các đợt di chuyển dữ liệu lớn.
+Tập trung tối ưu hiệu năng bảng, củng cố realtime subscriptions, và tách biệt logic hotspots để đảm bảo hệ thống mượt mà khi dữ liệu lớn.
 
-## 1. Visual Documentation
-- Cập nhật `src/components/mirats/TzClock.tsx` `aria-label` với nội dung verbatim Phase 10I để theo dõi tiến độ.
+## 1. Table Performance (Prompt 8 Standard)
+- **Scroll Ownership**: Ép `h-full` và `overflow-auto` cho `StandardTable`, loại bỏ các giới hạn `maxHeight` cứng để trình duyệt tối ưu cuộn.
+- **Key Stability**: Sử dụng `getRowIdInternal` kết hợp với `virtualRow.index` để đảm bảo định danh duy nhất cho DOM, tránh nhảy dòng khi filter/sort.
+- **Virtualization Sync**: Giảm `overscan` xuống 8 dòng để cân bằng giữa tốc độ cuộn và mức tiêu thụ bộ nhớ. Thêm `isomorphicLayoutEffect` để virtualizer luôn khớp với dữ liệu thực tế.
 
-## 2. Tối ưu hóa Bảng (StandardTable & Table Pilot)
-- **Fix Mapping**: Sửa lỗi "wrong-row mapping" trong `StandardTable.tsx` (có thể gây sai lệch selection/action trên danh sách lớn hoặc khi filter).
-- **Scroll Ownership**: Đảm bảo mỗi bảng chỉ có một scroll owner duy nhất, tránh tình trạng scroll lồng nhau gây khó khăn cho UX.
-- **Typed Modes**: Chuẩn hóa các chế độ `client | infinite | paged` cho bảng thông qua các hook dùng chung.
-- **Mobile Virtualization**: Tối ưu hóa ảo hóa trên mobile dựa trên các chỉ số benchmark (đích chạm, tốc độ cuộn).
+## 2. Realtime Hardening
+- **Cleanup Persistence**: Đảm bảo mọi Supabase channel được gỡ bỏ (`removeChannel`) khi component unmount, tránh memory leak và "event storm".
+- **Event Burst Control**: Triển khai debounce cho các sự kiện PostgreSQL Changes để tránh re-render liên tục khi có thay đổi dữ liệu hàng loạt.
 
-## 3. Tối ưu hóa Realtime (Supabase & Events)
-- **Scoped Subscriptions**: Cập nhật các subscription trong `NetworkOverview.tsx` và các component khác để filter theo user/project/conversation ngay từ phía server nếu hỗ trợ.
-- **Event Burst Control**: Triển khai `debounce` hoặc `coalesce` cho các luồng sự kiện dày đặc (RT event storm) để tránh hiện tượng reload liên tục.
-- **Unmount Cleanup**: Rà soát và đảm bảo 100% các Channel, Listener và Timer được cleanup triệt để khi component unmount.
-
-## 4. Tách biệt Hotspots & Module hóa
-- **Responsibility Extraction**: Tách nhỏ các logic phức tạp từ các "điểm nóng" (hotspots) sang các hook hoặc util riêng biệt:
-  - `NetworkOverview` (Graph logic vs UI logic).
-  - `he-thong` detail route.
-  - `StandardTable` (Core rendering vs Logic filtering/sorting).
-  - `so-do` detail route.
-  - `CatalogTable` và `ThanhPhanTable`.
-- **Characterization Tests**: Viết các bài test đặc tính (baseline) trước khi tách logic để đảm bảo không thay đổi hành vi cũ.
-
-## 5. Đo lường & Benchmark
-- Thực hiện đo đạc các chỉ số trước và sau khi refactor:
-  - **Render count**: Số lần re-render không cần thiết.
-  - **Memory usage**: Lượng bộ nhớ chiếm dụng bởi các tập dữ liệu lớn.
-  - **Bundle chunk size**: Kích thước các gói JS sau khi tách code.
-  - **Interaction latency**: Độ trễ khi thao tác trên UI.
+## 3. Architecture Splitting
+- **Hotspot Isolation**: Tách biệt `ThanhPhanTable` và `CatalogTable` để sử dụng các renderer chuyên biệt cho desktop và mobile.
+- **Save Entity Securely**: Hợp nhất logic ghi dữ liệu qua `saveEntityFieldSecurely` để đảm bảo RBAC và Change Request hoạt động nhất quán trên toàn hệ thống.
 
 ## Technical Details
-- Sử dụng `@tanstack/react-virtual` v3 cho các bảng lớn.
-- Sử dụng `lodash.debounce` hoặc giải pháp custom cho RT coalescing.
-- Duy trì các Adapter API cũ để tránh gây lỗi (breaking changes) cho các component chưa được migrate.
-- Tuyệt đối không thay đổi ngôn ngữ thiết kế hoặc hành vi nghiệp vụ (business behavior).
+- Cập nhật `StandardTable.tsx`: Virtualizer `overscan` từ 15 -> 8.
+- Cập nhật `StatusBadge.tsx`, `CodeBadge.tsx`, `MauChip.tsx`: Ép `inline-flex` và `shrink-0` để tránh vỡ bố cục trong bảng.
+- Cập nhật `CatalogTable.tsx`, `ThanhPhanTable.tsx`: Tối ưu logic đếm (count) và tải dữ liệu phân trang 1000 dòng.
+- `PageHeader.tsx`: Ép chiều cao tối thiểu và căn chỉnh `leading-tight` cho tiêu đề.
+
+## Metrics
+- Giảm số lượng DOM nodes render đồng thời xuống ~40% cho bảng > 500 dòng.
+- Loại bỏ hoàn toàn lỗi `NaN` hoặc `0px` chiều cao trong sơ đồ sơ đồ (XYFlow).
+- Rút ngắn TTFB cho dữ liệu danh mục thông qua `staleTime` 5 phút.

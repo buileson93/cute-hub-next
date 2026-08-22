@@ -27,7 +27,7 @@ export function MauChip({ ten, mau, className, title }: MauChipProps) {
       data-mau-token={preset.token}
       title={title ?? ten}
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium shrink-0",
         preset.lop,
         className,
       )}

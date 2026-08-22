@@ -114,15 +114,20 @@ export function useTaiSanRows() {
       const pageSize = 1000;
       let from = 0;
       const all: TaiSanRow[] = [];
-      for (;;) {
-        const { data, error } = await supabase
-          .rpc("rpc_tai_san_toan_cuc")
-          .range(from, from + pageSize - 1);
-        if (error) throw error;
-        const rows = (data ?? []) as TaiSanRow[];
-        all.push(...rows);
-        if (rows.length < pageSize) break;
-        from += pageSize;
+      const controller = new AbortController();
+      try {
+        for (;;) {
+          const { data, error } = await supabase
+            .rpc("rpc_tai_san_toan_cuc")
+            .range(from, from + pageSize - 1);
+          if (error) throw error;
+          const rows = (data ?? []) as TaiSanRow[];
+          all.push(...rows);
+          if (rows.length < pageSize) break;
+          from += pageSize;
+        }
+      } finally {
+        controller.abort();
       }
       return all;
     },
@@ -182,15 +187,20 @@ export function useThanhPhanRows() {
       const pageSize = 1000;
       let from = 0;
       const all: ThanhPhanRow[] = [];
-      for (;;) {
-        const { data, error } = await supabase
-          .rpc("rpc_thanh_phan_toan_cuc")
-          .range(from, from + pageSize - 1);
-        if (error) throw error;
-        const rows = (data ?? []) as ThanhPhanRow[];
-        all.push(...rows);
-        if (rows.length < pageSize) break;
-        from += pageSize;
+      try {
+        for (;;) {
+          const { data, error } = await supabase
+            .rpc("rpc_thanh_phan_toan_cuc")
+            .range(from, from + pageSize - 1);
+          if (error) throw error;
+          const rows = (data ?? []) as ThanhPhanRow[];
+          all.push(...rows);
+          if (rows.length < pageSize) break;
+          from += pageSize;
+        }
+      } catch (err) {
+        console.error("rpc_thanh_phan_toan_cuc error:", err);
+        throw err;
       }
       return all;
     },
@@ -383,7 +393,7 @@ export function ThanhPhanTable({
       if (field === "ten") {
         const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
         const res = await saveEntityFieldSecurely({
-          kind: "tb", // Bảng này hiển thị thiết bị (thành phần)
+          kind: "tp", // Bảng này hiển thị thành phần hệ thống (he_thong_thanh_phan)
           id: id,
           field: "ten",
           value: value,

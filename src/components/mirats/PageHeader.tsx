@@ -100,7 +100,7 @@ export function PageHeader({
     <div
       data-testid="page-header"
       className={cn(
-        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20",
+        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20 min-h-[44px]",
         UI_DENSITY.CARD_HEADER,
         className,
       )}
@@ -152,7 +152,7 @@ export function PageHeader({
 
             <h1
               data-testid="page-header-title"
-              className={cn("truncate text-foreground uppercase flex-1 min-w-0", TYPO.H1)}
+              className={cn("truncate text-foreground uppercase flex-1 min-w-0 leading-tight", TYPO.H1)}
             >
               {title}
             </h1>

@@ -186,7 +186,7 @@ export function StandardTableInner<T>({
   setSelected: setSelectedProp,
   selection,
   setSelection,
-  maxHeightClass = "max-h-[min(800px,calc(100vh-280px))]",
+  maxHeightClass = "h-full",
   emptyText = "Không có dữ liệu",
   emptyContent,
   errorContent,
@@ -565,7 +565,7 @@ export function StandardTableInner<T>({
     count: gated ? 0 : display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateRowHeight,
-    overscan: isTest ? 100 : 15,
+    overscan: isTest ? 100 : 8,
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 10000 } : undefined,
     ...virtualizerOptions,
@@ -765,14 +765,14 @@ export function StandardTableInner<T>({
 
       case "number":
         return (
-          <span className="tabular-nums font-mono text-right w-full block pr-1">
+          <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">
             {fmtSo(Number(val))}
           </span>
         );
 
       case "currency":
         return (
-          <span className="tabular-nums font-mono text-right w-full block pr-1">
+          <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">
             {fmtVND(Number(val))}
           </span>
         );
@@ -797,7 +797,7 @@ export function StandardTableInner<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-[11px] tabular-nums font-mono text-right w-full block pr-1 opacity-80">
+            <span className="text-[11px] tabular-nums font-mono text-right w-full inline-block pr-1 opacity-80 truncate">
               {fmtNgay(val)}
             </span>
           </AppTooltip>
@@ -1249,7 +1249,7 @@ export function StandardTableInner<T>({
               const rid = getRowIdInternal(r);
               return (
                 <MobileRecordCard
-                  key={rid}
+                  key={`mobile-row-${rid}-${idx}`}
                   row={r}
                   rowIndex={idx}
                   rowId={rid}
@@ -1271,8 +1271,7 @@ export function StandardTableInner<T>({
         <Card
           ref={parentRef}
           className={cn(
-            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto",
-            maxHeightClass,
+            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto h-full",
             className,
           )}
         >
@@ -1307,10 +1306,10 @@ export function StandardTableInner<T>({
               })}
             </colgroup>
 
-            <TableHeader className="bg-muted/30 sticky top-0 z-20 shadow-sm shadow-border/50">
+            <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
-                  "hover:bg-transparent border-b border-border/60",
+                  "hover:bg-transparent border-b border-border/60 align-middle",
                   UI_DENSITY.TABLE_ROW_H,
                   "astryx-table-header",
                 )}
@@ -1529,19 +1528,20 @@ export function StandardTableInner<T>({
                           shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
                         }
                         style={{ height: `${paddingTop}px` }}
-                        className="p-0 border-0 pointer-events-none"
+                        className="p-0 border-0 pointer-events-none bg-transparent"
                       />
                     </TableRow>
                   )}
 
-                  {(isTest && display.length > 0 ? display.map((_, i) => ({ index: i })) : displayItems).map((virtualRow: any) => {
+                  {displayItems.map((virtualRow: any) => {
                     const r = display[virtualRow.index];
+                    if (!r) return null;
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
                     /** Tự động render ô dựa trên `type` */
 
                     return (
-                      <React.Fragment key={rid}>
+                      <React.Fragment key={`row-${rid}-${virtualRow.index}`}>
                         <TableRow
                           data-index={virtualRow.index}
                           ref={(el) => {
@@ -1549,9 +1549,9 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60",
+                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60 bg-card",
                             (onRowClick || selectable) && "cursor-pointer",
-                            isSel && "bg-[#0074e2]/5",
+                            isSel && "bg-[#0074e2]/5 !bg-[#0074e2]/5",
                             expandedRows.has(rid) && "bg-muted/40",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
@@ -1576,7 +1576,7 @@ export function StandardTableInner<T>({
                                 e.stopPropagation();
                                 toggleExpand(rid);
                               }}
-                              className="sticky left-0 z-10 bg-card border-r border-border/30 p-0 text-center"
+                              className="sticky left-0 z-10 bg-inherit border-r border-border/30 p-0 text-center"
                             >
                               <div className="flex h-full w-full items-center justify-center">
                                 <Button
@@ -1597,7 +1597,7 @@ export function StandardTableInner<T>({
                             <TableCell
                               onClick={(e) => e.stopPropagation()}
                               className={cn(
-                                "sticky left-0 z-10 bg-card border-r border-border/30 p-0",
+                                "sticky left-0 z-10 bg-inherit border-r border-border/30 p-0",
                                 viewMode === "tablet" && "left-10",
                               )}
                             >
@@ -1630,7 +1630,7 @@ export function StandardTableInner<T>({
                                       ? "px-1.5 py-0.5"
                                       : "px-3 py-1.5",
                                   c.sticky &&
-                                    "sticky left-0 z-10 bg-card border-r border-border/30",
+                                    "sticky left-0 z-10 bg-inherit border-r border-border/30",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
                                   c.align === "right" && "text-right tabular-nums",
@@ -1653,7 +1653,7 @@ export function StandardTableInner<T>({
                                       : undefined,
                                 }}
                               >
-                                <div className="truncate w-full max-w-full">
+                                <div className="truncate w-full max-w-full flex items-center">
                                   {renderCellContent(c, r)}
                                 </div>
                               </TableCell>

@@ -227,11 +227,17 @@ export function CatalogTable({
       const counts = new Map<string, number>();
       const PAGE = 1000;
       for (let from = 0; ; from += PAGE) {
-        const { data: tb } = await supabase
+        const { data: tb, error: countErr } = await supabase
           .from("thiet_bi")
           .select(usageColumn)
           .not(usageColumn, "is", null)
           .range(from, from + PAGE - 1);
+        
+        if (countErr) {
+          console.error("Failed to fetch usage counts:", countErr);
+          break;
+        }
+        
         const batch = (tb ?? []) as Record<string, string>[];
         for (const t of batch) {
           const id = t[usageColumn];

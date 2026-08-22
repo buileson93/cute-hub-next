@@ -127,9 +127,15 @@ function useForceGraphComponent(): FGType | null {
   const [Comp, setComp] = useState<FGType | null>(null);
   useEffect(() => {
     let alive = true;
-    import("react-force-graph-2d").then((m) => {
-      if (alive) setComp(() => m.default);
-    });
+    const load = async () => {
+      try {
+        const m = await import("react-force-graph-2d");
+        if (alive) setComp(() => m.default);
+      } catch (err) {
+        console.error("Failed to load react-force-graph-2d:", err);
+      }
+    };
+    load();
     return () => {
       alive = false;
     };
@@ -271,7 +277,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
       })
       .subscribe();
     return () => {
-      supabase.removeChannel(ch);
+      if (ch) supabase.removeChannel(ch);
     };
   }, [qc]);
 

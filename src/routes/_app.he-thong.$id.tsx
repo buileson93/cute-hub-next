@@ -340,16 +340,20 @@ function HeThongInner({
   const qcHt = useQueryClient();
   useEffect(() => {
     if (!id) return;
-    const ch = supabase
-      .channel(`he-thong-submissions-${id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "form_submission", filter: `he_thong_id=eq.${id}` },
-        () => qcHt.invalidateQueries({ queryKey: ["he-thong-submissions", id] }),
-      )
-      .subscribe();
+    let ch: any = null;
+    const setup = async () => {
+      ch = supabase
+        .channel(`he-thong-submissions-${id}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "form_submission", filter: `he_thong_id=eq.${id}` },
+          () => qcHt.invalidateQueries({ queryKey: ["he-thong-submissions", id] }),
+        )
+        .subscribe();
+    };
+    setup();
     return () => {
-      supabase.removeChannel(ch);
+      if (ch) supabase.removeChannel(ch);
     };
   }, [id, qcHt]);
 
