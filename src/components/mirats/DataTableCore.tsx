@@ -273,14 +273,17 @@ export function DataTableCore<T>({
                       style={{
                         width: col.width,
                         minWidth: col.minWidth || (col.width ? undefined : 100),
+                        position: col.sticky ? 'sticky' : 'relative',
+                        left: col.sticky ? (selectable ? 40 : 0) : undefined,
+                        zIndex: col.sticky ? 20 : 1,
+                        background: 'inherit'
                       }}
                       className={cn(
                         col.cellClassName,
-                        col.sticky && "sticky left-0 z-20 bg-inherit border-r border-border/20",
-                        selectable && col.sticky && "left-10",
+                        col.sticky && "border-r border-border/20",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" && "sticky right-0 z-20 bg-inherit border-l border-border/20",
+                        col.type === "actions" && "sticky right-0 z-20 border-l border-border/20",
                       )}
                     >
                       {renderCellContent(col, row)}
