@@ -765,14 +765,14 @@ export function StandardTableInner<T>({
 
       case "number":
         return (
-          <span className="tabular-nums font-mono text-right w-full block pr-1">
+          <span className="tabular-nums font-mono text-right w-full inline-block pr-1">
             {fmtSo(Number(val))}
           </span>
         );
 
       case "currency":
         return (
-          <span className="tabular-nums font-mono text-right w-full block pr-1">
+          <span className="tabular-nums font-mono text-right w-full inline-block pr-1">
             {fmtVND(Number(val))}
           </span>
         );
@@ -797,7 +797,7 @@ export function StandardTableInner<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-[11px] tabular-nums font-mono text-right w-full block pr-1 opacity-80">
+            <span className="text-[11px] tabular-nums font-mono text-right w-full inline-block pr-1 opacity-80">
               {fmtNgay(val)}
             </span>
           </AppTooltip>
