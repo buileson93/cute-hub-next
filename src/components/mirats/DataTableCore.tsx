@@ -209,7 +209,7 @@ export function DataTableCore<T>({
                 }}
                 className={cn(
                   "astryx-table-header-cell",
-                  col.sticky && "border-r border-border/20 bg-muted/95 backdrop-blur-[4px]",
+                  col.sticky && "border-r border-border/20",
                   col.align === "center" && "text-center",
                   col.align === "right" && "text-right",
                 )}
