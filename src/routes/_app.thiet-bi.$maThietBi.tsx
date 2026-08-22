@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ThietBiDetail } from "@/components/mirats/thiet-bi-detail";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 
 export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
@@ -17,7 +18,9 @@ function ThietBiDetailRoute() {
   const { tab, doc: initialDocId } = Route.useSearch();
 
   const { data: taxonomy } = useDbTaxonomy();
-  const asset = taxonomy?.devices.find((d) => d.ma_thiet_bi === ma);
+  const { data: pagedData } = useThietBiList(0, 100); 
+  const asset = pagedData?.rows.find((d) => d.ma_thiet_bi === ma);
+
 
   const { ops, isLoading } = useOperationsData();
   const { suCo, baoTri, hongHoc } = ops;

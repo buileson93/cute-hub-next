@@ -3,8 +3,10 @@ import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { DataTableCore, type DataTableColumn } from "@/components/mirats/DataTableCore";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { DataState } from "@/components/mirats/DataState";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+
 
 export const Route = createFileRoute("/_app/thiet-bi/danh-sach")({
   head: () => ({
@@ -17,7 +19,11 @@ export const Route = createFileRoute("/_app/thiet-bi/danh-sach")({
 });
 
 function ThietBiListPage() {
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
+  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
+  const [page, setPage] = useState(0);
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(page, 100);
+  const isLoading = taxoLoading || pagedLoading;
+
 
   const columns = useMemo<DataTableColumn<any>[]>(
     () => [
@@ -38,9 +44,10 @@ function ThietBiListPage() {
     ? "loading"
     : error
       ? "error"
-      : !taxo?.devices.length
+      : !(pagedData?.rows.length)
         ? "empty"
         : "success";
+
 
   return (
     <PageBody className="flex flex-col">
@@ -52,7 +59,7 @@ function ThietBiListPage() {
       <div className="flex-1 min-h-0 p-4">
         <DataState state={state}>
           <DataTableCore
-            rows={taxo?.devices || []}
+            rows={pagedData?.rows || []}
             columns={columns}
             getRowId={(row) => row.ma_thiet_bi || row.id}
             fitViewport

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import type { ThietBi } from "@/lib/mirats/types";
+import type { DbDevice } from "./db-taxonomy";
 
 // Standard columns for ThietBi to avoid SELECT * hotspots
 export const TB_COLS =
@@ -14,21 +15,20 @@ export async function fetchThietBi(from: number, to: number, donViCode?: string 
     .range(from, to);
 
   if (donViCode) {
-    // Assuming don_vi_id matches the code passed in (which is usually true in MIRATS RLS)
     q = q.eq("don_vi_id", donViCode); 
   }
 
   const { data, count, error } = await q;
   if (error) throw error;
 
-  // Simple mapping to satisfy ThietBi type requirements for the UI
   const rows = (data ?? []).map((r: any) => ({
+    ...r,
     ma_thiet_bi: r.ma_thiet_bi || r.id,
     ten: r.ten_thiet_bi || "(Không tên)",
     serial: r.ma_serial || "",
     p_n: r.p_n || "",
     model: r.model || "",
-    don_vi: r.don_vi_id || "", // Mapping don_vi_id to don_vi string
+    don_vi: r.don_vi_id || "", 
     he_thong: r.he_thong_id || "",
     nhom_he_thong: r.nhom_he_thong_id || "",
     loai: "",
@@ -46,7 +46,12 @@ export async function fetchThietBi(from: number, to: number, donViCode?: string 
     tinh_trang_ky_thuat: "",
     thiet_bi_cha: null,
     ghi_chu: r.ghi_chu || null,
-  })) as ThietBi[];
+    // Add _ prefix fields to satisfy DbDevice/legacy UI
+    _htId: r.he_thong_id,
+    _viTriTen: r.vi_tri,
+    _loaiTbTen: r.phan_loai,
+    _maBravo: r.ma_tai_san_bravo
+  })) as DbDevice[];
 
   return { rows, total: count ?? 0 };
 }

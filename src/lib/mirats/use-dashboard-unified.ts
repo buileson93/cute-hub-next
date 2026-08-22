@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useScope } from "@/lib/mirats/scope";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { availability, mttr, mtbf } from "@/lib/mirats/reliability";
 import { healthDetail } from "@/lib/mirats/metrics";
 import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
@@ -11,9 +12,13 @@ import { usePmOnTimeKpi } from "@/lib/mirats/bao-tri-kpi";
 export function useUnifiedDashboardStats() {
   const scope = useScope();
   const pmKpi = usePmOnTimeKpi();
+  
+  // TỐI ƯU 10H: Fetch data paged cho Dashboard thay vì dùng scope.thietBi (deprecated)
+  const { data: pagedData, isLoading: devicesLoading } = useThietBiList(0, 1000, scope.donViCode);
 
   const stats = useMemo(() => {
-    const devices = scope.thietBi;
+    const devices = pagedData?.rows ?? [];
+
     const incidents = scope.suCo;
 
     // 1. Độ tin cậy (Reliability)
@@ -58,9 +63,10 @@ export function useUnifiedDashboardStats() {
       assetTypeStats,
       pmKpi,
       scope,
-      assetCount: devices.length,
+      assetCount: pagedData?.total ?? devices.length,
+      loading: scope.loading || devicesLoading
     };
-  }, [scope, pmKpi]);
+  }, [scope, pmKpi, pagedData, devicesLoading]);
 
   return stats;
 }

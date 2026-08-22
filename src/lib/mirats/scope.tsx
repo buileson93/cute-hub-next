@@ -1,8 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { AppRole } from "@/hooks/use-session";
-import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
-import { useLicensesData, type LicenseRow } from "@/lib/mirats/db-licenses";
 import type {
   ThietBi,
   GiayPhep,
@@ -22,17 +20,17 @@ import type {
  * - Tài khoản admin / phòng kỹ thuật: xem toàn hệ thống.
  * - Tài khoản khác: chỉ thấy dữ liệu thuộc đơn vị của mình (theo mã đơn vị trên hồ sơ).
  *
- * TẤT CẢ dữ liệu (tài sản, giấy phép, đơn vị, hệ thống, vị trí, vận hành) được
- * đọc THẬT từ CSDL — không còn dùng dữ liệu mẫu tĩnh.
+ * TỐI ƯU 10H: Loại bỏ nạp toàn bộ Devices/Operations tại root.
+ * Các component cần dữ liệu lớn phải dùng route-level paged queries.
  */
 
 const SUPER_ROLES: AppRole[] = ["admin", "phong_kt"];
 
 export interface ScopeData {
-  /** true khi đang tải dữ liệu thật từ CSDL. */
   loading: boolean;
   scopeAll: boolean;
   donViCode: string | null;
+  /** @deprecated Dùng useThietBiList cho dữ liệu lớn */
   thietBi: ThietBi[];
   giayPhep: GiayPhep[];
   suCo: SuCo[];
@@ -44,7 +42,6 @@ export interface ScopeData {
   nhomHeThong: NhomHeThong[];
   viTri: ViTri[];
   donVi: DonVi[];
-  /** true nếu bản ghi thuộc phạm vi của người dùng hiện tại (dùng cho trang chi tiết). */
   inScope: (donViMa: string | null | undefined) => boolean;
 }
 
@@ -61,10 +58,8 @@ export function ScopeProvider({
 }) {
   const scopeAll = roles.some((r) => SUPER_ROLES.includes(r));
 
-  // Toàn bộ dữ liệu THẬT từ CSDL.
+  // CHỈ nạp taxonomy cơ bản (Đơn vị, Hệ thống, Nhóm HT, Vị trí)
   const { data: tax, isLoading: taxLoading } = useDbTaxonomy();
-  const { licenses, isLoading: licLoading } = useLicensesData();
-  const { ops, isLoading: opsLoading } = useOperationsData();
 
   const value = useMemo<ScopeData>(() => {
     const inScope = (ma: string | null | undefined) =>
@@ -72,7 +67,6 @@ export function ScopeProvider({
 
     const dvMaById = new Map((tax?.donViList ?? []).map((d) => [d.id, d.ma]));
 
-    const allThietBi = (tax?.devices ?? []) as ThietBi[];
     const allDonVi: DonVi[] = (tax?.donViList ?? []).map((d) => ({
       ma: d.ma,
       ten: d.ten,
@@ -99,61 +93,28 @@ export function ScopeProvider({
       don_vi: "",
       loai_vi_tri: "",
     }));
-    const allGiayPhep = licenses as GiayPhep[];
 
-    const loading = taxLoading || licLoading || opsLoading;
+    const loading = taxLoading;
 
-    if (scopeAll) {
-      return {
-        loading,
-        scopeAll: true,
-        donViCode,
-        thietBi: allThietBi,
-        giayPhep: allGiayPhep,
-        suCo: ops.suCo,
-        baoTri: ops.baoTri,
-        hongHoc: ops.hongHoc,
-        banGiao: ops.banGiao,
-        suKien: [],
-        heThong: allHeThong,
-        nhomHeThong: allNhomHeThong,
-        viTri: allViTri,
-        donVi: allDonVi,
-        inScope,
-      };
-    }
-
-    const u = donViCode;
-    const unitTen = allDonVi.find((d) => d.ma === u)?.ten ?? "";
-    const thietBi = allThietBi.filter((t) => !!u && t.don_vi === u);
-    const deviceSet = new Set(thietBi.map((t) => t.ma_thiet_bi));
-    const matchUnitLicense = (g: LicenseRow) => {
-      // Strict code match aligns license scope with asset scope (BUG-B-DASHBOARD).
-      // Chỉ dùng match theo tên đơn vị làm dự phòng khi hàng dữ liệu chưa có mã đơn vị.
-      if (g.donViReal) return g.donViReal === u;
-      return !!unitTen && !!g.donViTen && g.donViTen.includes(unitTen);
-    };
-
+    // Trả về mảng rỗng cho các tập dữ liệu lớn để tránh nạp vào bộ nhớ root
     return {
       loading,
-      scopeAll: false,
+      scopeAll,
       donViCode,
-      thietBi,
-      giayPhep: allGiayPhep.filter((g) => matchUnitLicense(g as LicenseRow)),
-      suCo: ops.suCo.filter((s) => !!u && s.don_vi === u),
-      baoTri: ops.baoTri.filter((b) => !!u && b.don_vi === u),
-      hongHoc: ops.hongHoc.filter(
-        (h) => deviceSet.has(h.thiet_bi_hong) || (!!u && h.don_vi_thuc_hien === u),
-      ),
-      banGiao: ops.banGiao.filter((b) => deviceSet.has(b.thiet_bi) || (!!u && b.don_vi_nhan === u)),
+      thietBi: [],
+      giayPhep: [],
+      suCo: [],
+      baoTri: [],
+      hongHoc: [],
+      banGiao: [],
       suKien: [],
-      heThong: allHeThong.filter((h) => !!u && h.don_vi === u),
+      heThong: scopeAll ? allHeThong : allHeThong.filter((h) => !!donViCode && h.don_vi === donViCode),
       nhomHeThong: allNhomHeThong,
       viTri: allViTri,
-      donVi: allDonVi.filter((d) => !!u && d.ma === u),
+      donVi: scopeAll ? allDonVi : allDonVi.filter((d) => !!donViCode && d.ma === donViCode),
       inScope,
     };
-  }, [scopeAll, donViCode, tax, licenses, ops, taxLoading, licLoading, opsLoading]);
+  }, [scopeAll, donViCode, tax, taxLoading]);
 
   return <ScopeContext.Provider value={value}>{children}</ScopeContext.Provider>;
 }

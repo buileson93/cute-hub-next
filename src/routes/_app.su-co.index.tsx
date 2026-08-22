@@ -75,6 +75,7 @@ import { fmtDowntime } from "@/lib/mirats/format";
 import { mttr as computeMttr, formatKpiValue } from "@/lib/mirats/reliability";
 import { useScope } from "@/lib/mirats/scope";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import type { SuCo } from "@/lib/mirats/types";
 import {
   OPEN_STATES,
@@ -158,6 +159,9 @@ function SuCoPage() {
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
+  // TỐI ƯU 10H: Fetch data paged thay cho eager full taxonomy
+  const { data: pagedData } = useThietBiList(0, 1000); 
+
 
   const {
     state: controls,
@@ -175,8 +179,8 @@ function SuCoPage() {
   const [showAll, setShowAll] = useState(false);
 
   const devByMa = useMemo(
-    () => new Map((taxo?.devices ?? []).map((d) => [d.ma_thiet_bi, d])),
-    [taxo],
+    () => new Map((pagedData?.rows ?? []).map((d) => [d.ma_thiet_bi, d])),
+    [pagedData],
   );
   const htNameOf = useCallback(
     (s: SuCo) =>

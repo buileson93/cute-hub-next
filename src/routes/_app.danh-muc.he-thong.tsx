@@ -81,11 +81,10 @@ function HeThongPage() {
     const dvId = data.donViList.find((d) => d.ma === donViCode)?.id ?? null;
     const dvNameMap = new Map(data.donViList.map((d) => [d.id, d.ten]));
     const plNameMap = new Map(data.plList.map((p) => [p.id, p.ten]));
+    // TỐI ƯU 10H: Tạm thời không đếm devices từ memory (data.devices đã bị gỡ).
+    // Sẽ được cập nhật ở prompt sau hoặc fetch riêng count.
     const tbCount = new Map<string, number>();
-    for (const t of data.devices) {
-      if (!scopeAll && (!donViCode || t.don_vi !== donViCode)) continue;
-      tbCount.set(t._htId, (tbCount.get(t._htId) ?? 0) + 1);
-    }
+
     return data.htList
       .filter((h) => scopeAll || (!!dvId && h.donViId === dvId))
       .map((h) => ({

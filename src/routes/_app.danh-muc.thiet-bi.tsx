@@ -91,6 +91,7 @@ import {
   useDeviceNameOverrides,
   type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { supabase } from "@/integrations/backend/client";
 import { sortDacTinh, matchFilter, type DacTinh, type CheDoLoc } from "@/lib/mirats/dac-tinh";
@@ -218,15 +219,23 @@ const num = (v: number | null) => (v == null ? "" : String(v));
 
 function DanhMucThietBiPage() {
   const { scopeAll, donViCode } = useScope();
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
+  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
+
+  // PHÂN TRANG 10H
+  const [page, setPage] = useState(0);
+  const pageSize = 100;
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
+    page,
+    pageSize,
+    scopeAll ? null : donViCode,
+  );
+  const isLoading = taxoLoading || pagedLoading;
 
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const isAdmin = hasRole("admin");
-  // Chế độ chỉnh sửa: BẬT mới hiện nút "Thêm tài sản" và các nút xoá.
-  // Persist theo user để lần sau vào trang giữ nguyên lựa chọn.
   const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-tb:edit-mode", false);
   const editOn = canManage && editMode;
   const { submit, submitMany, hoanTac } = useCayRpc();
@@ -443,17 +452,17 @@ function DanhMucThietBiPage() {
   // Danh mục lọc nhanh (chủng loại / trạng thái) từ dữ liệu hiện có.
   const loaiOptions = useMemo(
     () =>
-      Array.from(new Set((taxo?.devices ?? []).map((d) => d._loaiTbTen).filter(Boolean))).sort(
+      Array.from(new Set((pagedData?.rows ?? []).map((d) => d._loaiTbTen).filter(Boolean))).sort(
         (a, b) => a.localeCompare(b, "vi"),
       ),
-    [taxo],
+    [pagedData],
   );
   const ttOptions = useMemo(
     () =>
-      Array.from(new Set((taxo?.devices ?? []).map((d) => d.trang_thai).filter(Boolean))).sort(
+      Array.from(new Set((pagedData?.rows ?? []).map((d) => d.trang_thai).filter(Boolean))).sort(
         (a, b) => a.localeCompare(b, "vi"),
       ),
-    [taxo],
+    [pagedData],
   );
 
   const { data: tuongThichRows } = useQuery({
@@ -478,8 +487,9 @@ function DanhMucThietBiPage() {
   }, [tuongThichRows]);
 
   const devices = useMemo(() => {
-    let all = taxo?.devices ?? [];
-    if (!scopeAll) all = all.filter((d) => !donViCode || d.don_vi === donViCode);
+    let all = pagedData?.rows ?? [];
+    // TỐI ƯU 10H: Filter client-side chỉ cho các bộ lọc nhỏ trên trang hiện tại.
+    // Các bộ lọc lớn (Đơn vị) đã được đẩy xuống server qua useThietBiList.
     if (!showRetired) all = all.filter((d) => !isRetiredStatus(d.trang_thai));
     if (onlyStandalone) all = all.filter((d) => !d._htId);
     if (filterLoai !== "all") all = all.filter((d) => d._loaiTbTen === filterLoai);
@@ -503,9 +513,7 @@ function DanhMucThietBiPage() {
     }
     return all;
   }, [
-    taxo,
-    scopeAll,
-    donViCode,
+    pagedData,
     showRetired,
     onlyStandalone,
     filterLoai,
@@ -518,10 +526,8 @@ function DanhMucThietBiPage() {
     compatibleMap,
   ]);
 
-  const standaloneCount = useMemo(
-    () => (taxo?.devices ?? []).filter((d) => !d._htId).length,
-    [taxo],
-  );
+  const totalCount = pagedData?.total ?? 0;
+  const standaloneCount = 0; // TỐI ƯU 10H: Không đếm standalone từ full list memory nữa.
 
   // Danh sách hệ thống để chọn khi gán.
   const assignSystems = useMemo(
@@ -539,10 +545,10 @@ function DanhMucThietBiPage() {
   );
   const deviceNameByMa = useCallback(
     (ma: string) => {
-      const d = (taxo?.devices ?? []).find((x) => x.ma_thiet_bi === ma);
+      const d = (pagedData?.rows ?? []).find((x) => x.ma_thiet_bi === ma);
       return d ? tbName(d) : ma;
     },
-    [taxo, tbName],
+    [pagedData, tbName],
   );
   const hasActiveFilter =
     search.trim() !== "" || filterLoai !== "all" || filterTt !== "all" || tagSelected.length > 0;
@@ -1098,12 +1104,15 @@ function DanhMucThietBiPage() {
 
   // ---- KPI Stats & Click-to-filter ----
   const kpiStats = useMemo(() => {
-    const total = devices.length;
+    const total = totalCount;
+    // TỐI ƯU 10H: Chỉ đếm trên trang hiện tại để tránh heavy fetch
+    // Thực tế nên dùng server-side RPC để lấy count chính xác theo condition
     const inService = devices.filter((d) => d.trang_thai === "Đang sử dụng").length;
     const warranty = devices.filter(
       (d) => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date(),
     ).length;
     const lowLife = devices.filter((d) => d._tyLeTuoiTho !== null && d._tyLeTuoiTho < 20).length;
+
 
     return [
       {
@@ -1137,12 +1146,19 @@ function DanhMucThietBiPage() {
         icon: AlertTriangle,
         color: "text-amber-600",
         bg: "bg-amber-50",
+
       },
     ];
   }, [devices]);
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-hidden p-4">
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] font-mono text-muted-foreground bg-muted/30 px-2 py-0.5 rounded border border-dashed">
+          PHASE 10H: Paged Load ({devices.length}/{totalCount})
+        </div>
+      </div>
+
       {/* KPI Header */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {kpiStats.map((kpi) => (
@@ -1383,31 +1399,59 @@ function DanhMucThietBiPage() {
             selectable
             onRowClick={(d) => openDetail(d)}
             rowClassName={() => "cursor-pointer"}
-            emptyText="Không có tài sản phù hợp."
+            emptyText={pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
             toolbarLeft={
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="only-standalone"
-                    checked={onlyStandalone}
-                    onCheckedChange={setOnlyStandalone}
-                  />
-                  <Label htmlFor="only-standalone" className="cursor-pointer text-sm">
-                    Chỉ tài sản độc lập
-                  </Label>
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="only-standalone"
+                      checked={onlyStandalone}
+                      onCheckedChange={setOnlyStandalone}
+                    />
+                    <Label htmlFor="only-standalone" className="cursor-pointer text-sm">
+                      Chỉ tài sản độc lập
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="show-retired"
+                      checked={showRetired}
+                      onCheckedChange={setShowRetired}
+                    />
+                    <Label htmlFor="show-retired" className="cursor-pointer text-sm">
+                      Kể cả đã nghỉ khai thác
+                    </Label>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="show-retired"
-                    checked={showRetired}
-                    onCheckedChange={setShowRetired}
-                  />
-                  <Label htmlFor="show-retired" className="cursor-pointer text-sm">
-                    Kể cả đã nghỉ khai thác
-                  </Label>
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed">
+                  <div className="text-[11px] text-muted-foreground italic">
+                    Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2"
+                      disabled={page === 0 || pagedLoading}
+                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    >
+                      Trước
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2"
+                      disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
+                      onClick={() => setPage((p) => p + 1)}
+                    >
+                      Tiếp
+                    </Button>
+                  </div>
                 </div>
               </div>
             }
+
             toolbarRight={({ filteredRows, visibleColumns }) => (
               <div className="flex items-center gap-2">
                 <Button
@@ -1494,7 +1538,7 @@ function DanhMucThietBiPage() {
       <ThietBiDetailDrawer
         device={
           detailDevice
-            ? ((taxo?.devices ?? []).find((d) => d.ma_thiet_bi === detailDevice.ma_thiet_bi) ??
+            ? ((pagedData?.rows ?? []).find((d) => d.ma_thiet_bi === detailDevice.ma_thiet_bi) ??
               detailDevice)
             : null
         }

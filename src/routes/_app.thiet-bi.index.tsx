@@ -39,6 +39,7 @@ import {
   type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
@@ -83,7 +84,11 @@ interface TreeNode {
 
 function ThietBiPage() {
   const { scopeAll, donViCode } = useScope();
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
+  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
+  // TỐI ƯU 10H: Thay thế eager loading devices
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(0, 1000);
+  const isLoading = taxoLoading || pagedLoading;
+
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
   const { ops } = useOperationsData();
@@ -112,9 +117,9 @@ function ThietBiPage() {
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const devices = useMemo(() => {
-    const all = taxo?.devices ?? [];
+    const all = pagedData?.rows ?? [];
     return scopeAll ? all : all.filter((d) => !donViCode || d.don_vi === donViCode);
-  }, [taxo, scopeAll, donViCode]);
+  }, [pagedData, scopeAll, donViCode]);
 
   const histMap = useMemo(() => {
     const m = new Map<string, Hist>();
@@ -251,7 +256,7 @@ function ThietBiPage() {
 
     const dvIdByMa = new Map(taxo.donViList.map((d) => [d.ma, d.id]));
     const htDvFallback = new Map<string, string>();
-    for (const d of taxo.devices) {
+    for (const d of pagedData?.rows || []) {
       if (!d._htId || !d.don_vi) continue;
       const dvId = dvIdByMa.get(d.don_vi);
       if (dvId && !htDvFallback.has(d._htId)) htDvFallback.set(d._htId, dvId);

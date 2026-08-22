@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -25,7 +26,9 @@ function ThietBiQuickViewRoute() {
   const { maThietBi: ma } = Route.useParams();
   const navigate = useNavigate();
   const { data: taxonomy, isLoading: taxLoading } = useDbTaxonomy();
-  const asset = taxonomy?.devices.find((d) => d.ma_thiet_bi === ma);
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(0, 100);
+  const asset = pagedData?.rows.find((d) => d.ma_thiet_bi === ma);
+
 
   const { ops, isLoading: opsLoading } = useOperationsData();
   const { suCo, baoTri, hongHoc } = ops;
