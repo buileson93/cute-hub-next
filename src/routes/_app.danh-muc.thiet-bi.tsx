@@ -1480,6 +1480,7 @@ function DanhMucThietBiPage() {
                   size="sm"
                   className="h-8 gap-1.5"
                   onClick={() => setHistoryOpen(true)}
+                  aria-label="Xem lịch sử gán / chuyển / gỡ tài sản khỏi hệ thống"
                   title="Xem lịch sử gán / chuyển / gỡ tài sản khỏi hệ thống"
                 >
                   <History className="h-3.5 w-3.5" /> Lịch sử
