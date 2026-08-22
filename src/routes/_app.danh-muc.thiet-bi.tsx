@@ -1615,8 +1615,8 @@ function DanhMucThietBiPage() {
                 </Button>
               </div>
             )}
-          )}
           />
+          )}
         </CardContent>
       </Card>
 
