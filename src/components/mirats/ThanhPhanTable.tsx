@@ -1167,9 +1167,11 @@ export function ThanhPhanTable({
                 value: (r) => r.taiSanTrangThai,
                 cell: (r) => {
                   if (r.taiSanTrangThai) {
-                    return <Badge variant="outline" className="text-[10px]">{r.taiSanTrangThai}</Badge>;
+                    const badge = <Badge variant="outline" className="text-[10px]">{r.taiSanTrangThai}</Badge>;
+                    return badge;
                   }
-                  return <span className="text-xs text-muted-foreground">—</span>;
+                  const dash = <span className="text-xs text-muted-foreground">—</span>;
+                  return dash;
                 },
               },
               {

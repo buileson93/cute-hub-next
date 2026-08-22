@@ -434,7 +434,7 @@ export function StandardTable<T>({
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
-      return (
+      const errorInner = (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">{String(err)}</div>
           {err.retry && (
@@ -444,15 +444,17 @@ export function StandardTable<T>({
           )}
         </div>
       );
+      return errorInner;
     }
 
     if (trangThai.dangTai) {
       if (loadingContent) return loadingContent;
-      return (
+      const loadingInner = (
         <div className="p-4 border rounded-lg bg-card">
           <TableSkeleton cols={columns.length} rows={6} />
         </div>
       );
+      return loadingInner;
     }
 
     if (fullDisplay.length === 0) {
@@ -462,14 +464,15 @@ export function StandardTable<T>({
         </div>
       );
       
-      return (
+      const emptyContainer = (
         <div className="py-20 border rounded-lg bg-card text-center">
           {emptyInner}
         </div>
       );
+      return emptyContainer;
     }
 
-    return React.createElement("div", { className: "hidden", "aria-hidden": "true" });
+    return <div className="hidden" aria-hidden="true" />;
   }, [trangThai.loi, trangThai.dangTai, errorContent, loadingContent, columns.length, fullDisplay.length, emptyContent, hasFilter, emptyText]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
@@ -615,7 +618,9 @@ export function StandardTable<T>({
               ) : (
                 <Fragment>
                   {paddingTop > 0 && (
-                    <TableRow style={{ height: `${paddingTop}px` }} className="hover:bg-transparent border-0"><TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" /></TableRow>
+                    <TableRow style={{ height: `${paddingTop}px` }} className="hover:bg-transparent border-0">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
+                    </TableRow>
                   )}
                   {virtualRows.map(v => {
                     const r = display[v.index];
@@ -636,7 +641,9 @@ export function StandardTable<T>({
                     );
                   })}
                   {paddingBottom > 0 && (
-                    <TableRow style={{ height: `${paddingBottom}px` }} className="hover:bg-transparent border-0"><TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" /></TableRow>
+                    <TableRow style={{ height: `${paddingBottom}px` }} className="hover:bg-transparent border-0">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
+                    </TableRow>
                   )}
                 </Fragment>
               )}
