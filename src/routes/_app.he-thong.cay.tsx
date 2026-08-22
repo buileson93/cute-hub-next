@@ -660,6 +660,7 @@ function HeThongCayPage() {
                   onRecord={onRecord}
                   canManageNodes={canManage}
 
+
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
@@ -686,7 +687,7 @@ function HeThongCayPage() {
                   tree={viewTree as any}
                   posByHt={posByHt || new Map()}
                   scopeText="Cấu trúc CNS/ATM"
-                  canManage={canManage}
+                   canManage={canManage}
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
@@ -696,6 +697,7 @@ function HeThongCayPage() {
                   onMaint={onMaint}
                   onRecord={onRecord}
                   canManageNodes={canManage}
+
 
                   onMoveSystem={(req) =>
                     nav({
