@@ -607,7 +607,9 @@ export function StandardTable<T>({
           ref={scrollContainerRef}
           style={{
             overflowX: 'auto',
-            overflowY: 'auto'
+            overflowY: 'auto',
+            contain: 'content',
+            WebkitOverflowScrolling: 'touch'
           }}
         >
           <Table 
