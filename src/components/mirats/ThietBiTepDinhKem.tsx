@@ -78,6 +78,7 @@ export function ThietBiTepDinhKem({
   initialDocId?: string | null;
 }) {
   const qc = useQueryClient();
+
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
 
