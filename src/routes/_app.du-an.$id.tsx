@@ -76,6 +76,7 @@ import { cn } from "@/lib/utils";
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
 import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
@@ -374,7 +375,7 @@ function DuAnDetailPage() {
             </TabsList>
           </Tabs>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto w-full lg:w-auto">
             {WORK_VIEWS.includes(activeTab) && (
               <>
                 <div className="relative flex-1 lg:flex-none">
@@ -642,7 +643,7 @@ function KanbanView({
               {list.map((t) => (
                 <Card
                   key={t.id}
-                  className="group cursor-pointer border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-200"
+                  className="group cursor-pointer border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200"
                   onClick={() => onEdit(t)}
                 >
                   <CardContent className="p-3 space-y-3">
