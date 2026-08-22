@@ -162,13 +162,16 @@ export function TreeView({
           </div>
 
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
-            <button
-              onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
-              className="rounded p-1 hover:bg-muted"
-              title="Sửa"
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </button>
+            {canManageNodes && (
+              <button
+                onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
+                className="rounded p-1 hover:bg-muted"
+                title="Sửa"
+              >
+                <Eye className="h-3.5 w-3.5" />
+              </button>
+            )}
+
             <button
               onClick={() => onIncident(htMa)}
               className="rounded p-1 hover:bg-muted"
