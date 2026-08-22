@@ -194,7 +194,7 @@ export function useKhoList() {
 
 /** vat_tu — phân trang range 200/trang, sắp xếp theo tên. */
 export function useVatTuList() {
-  return useInfiniteQuery({
+  const q = useInfiniteQuery({
     queryKey: ["vat_tu"] as const,
     initialPageParam: 0,
     staleTime: 30_000,
@@ -213,6 +213,7 @@ export function useVatTuList() {
     },
     getNextPageParam: (last) => last.nextFrom,
   });
+  return flattenInfinite<VatTuRow>(q);
 }
 
 /** v_ton_kho — phân trang range 500/trang. */
