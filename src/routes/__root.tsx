@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        tìm kiếm lỗi và cách khắc phục bước nào tôi sửa code đã làm cho bị lỗi đọc lại lịch sử promt Lỗi tải dữ liệu: Could not find the table 'public.rpc_thanh_phan_toan_cuc' in the schema cache khắc phục nhưng không làm mất dữ liệu , có vẻ do tối ưu bảng
+        thêm vào đó bị cuộn bảng vô tận ảo hoá chưa tối ưu , khi kéo xuống nhiều data website bằng đầu giật lag các animation tệ bạn coi hướng khắc phục , các nút tính năng cột hiển thị cũng biến mất
       */}
       <head>
         <HeadContent />
