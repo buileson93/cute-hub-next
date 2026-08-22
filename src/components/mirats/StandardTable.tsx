@@ -1341,6 +1341,7 @@ export function StandardTableInner<T>({
 
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
+                  const label = c.header || c.label || "";
                   const minWVal = c.minW
                     ? c.minW.includes("[")
                       ? c.minW.match(/\[(.*?)\]/)?.[1]
