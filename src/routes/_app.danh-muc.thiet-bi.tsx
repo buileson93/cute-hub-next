@@ -487,8 +487,9 @@ function DanhMucThietBiPage() {
   }, [tuongThichRows]);
 
   const devices = useMemo(() => {
-    let all = taxo?.devices ?? [];
-    if (!scopeAll) all = all.filter((d) => !donViCode || d.don_vi === donViCode);
+    let all = pagedData?.rows ?? [];
+    // TỐI ƯU 10H: Filter client-side chỉ cho các bộ lọc nhỏ trên trang hiện tại.
+    // Các bộ lọc lớn (Đơn vị) đã được đẩy xuống server qua useThietBiList.
     if (!showRetired) all = all.filter((d) => !isRetiredStatus(d.trang_thai));
     if (onlyStandalone) all = all.filter((d) => !d._htId);
     if (filterLoai !== "all") all = all.filter((d) => d._loaiTbTen === filterLoai);
@@ -512,9 +513,7 @@ function DanhMucThietBiPage() {
     }
     return all;
   }, [
-    taxo,
-    scopeAll,
-    donViCode,
+    pagedData,
     showRetired,
     onlyStandalone,
     filterLoai,
@@ -527,10 +526,8 @@ function DanhMucThietBiPage() {
     compatibleMap,
   ]);
 
-  const standaloneCount = useMemo(
-    () => (taxo?.devices ?? []).filter((d) => !d._htId).length,
-    [taxo],
-  );
+  const totalCount = pagedData?.total ?? 0;
+  const standaloneCount = 0; // TỐI ƯU 10H: Không đếm standalone từ full list memory nữa.
 
   // Danh sách hệ thống để chọn khi gán.
   const assignSystems = useMemo(
