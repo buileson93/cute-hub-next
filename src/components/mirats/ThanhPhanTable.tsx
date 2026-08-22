@@ -546,35 +546,38 @@ export function ThanhPhanTable({
 
 
   const ModeToggle = (
-    <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5 shrink-0">
-      <AppTooltip noiDung={`Theo thành phần (${rows.length.toLocaleString("vi-VN")})`}>
-        <Button
-          size="sm"
-          variant={viewMode === "component" ? "default" : "ghost"}
-          className="h-7 w-7 p-0"
-          onClick={() => {
-            setViewMode("component");
-            setSelectedIds(new Set());
-          }}
-        >
-          <LayoutGrid className="h-4 w-4" />
-          <span className="sr-only">Theo thành phần</span>
-        </Button>
-      </AppTooltip>
-      <AppTooltip noiDung={`Theo tài sản (${taiSanRows.length.toLocaleString("vi-VN")})`}>
-        <Button
-          size="sm"
-          variant={viewMode === "asset" ? "default" : "ghost"}
-          className="h-7 w-7 p-0"
-          onClick={() => {
-            setViewMode("asset");
-            setSelectedIds(new Set());
-          }}
-        >
-          <Package className="h-4 w-4" />
-          <span className="sr-only">Theo tài sản</span>
-        </Button>
-      </AppTooltip>
+    <div className="flex items-center gap-1.5 p-0.5 bg-muted/30 border rounded-md shrink-0">
+      <Button
+        size="sm"
+        variant={viewMode === "component" ? "default" : "ghost"}
+        className={cn(
+          "h-7 gap-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-tight transition-all",
+          viewMode === "component" && "bg-background shadow-sm text-primary"
+        )}
+        onClick={() => {
+          setViewMode("component");
+          setSelectedIds(new Set());
+        }}
+      >
+        <LayoutGrid className="h-3.5 w-3.5" />
+        <span>Theo thành phần</span>
+      </Button>
+      
+      <Button
+        size="sm"
+        variant={viewMode === "asset" ? "default" : "ghost"}
+        className={cn(
+          "h-7 gap-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-tight transition-all",
+          viewMode === "asset" && "bg-background shadow-sm text-primary"
+        )}
+        onClick={() => {
+          setViewMode("asset");
+          setSelectedIds(new Set());
+        }}
+      >
+        <Package className="h-3.5 w-3.5" />
+        <span>Theo tài sản</span>
+      </Button>
     </div>
   );
 
