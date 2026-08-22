@@ -1566,20 +1566,19 @@ export function StandardTableInner<T>({
                         <TableRow
                           key={virtualRow.key}
                           data-index={virtualRow.index}
-                          className="active:scale-100"
-
                           ref={(el) => {
                             rowVirtualizer.measureElement(el);
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group astryx-table-row",
+                            "group astryx-table-row active:scale-100",
                             (onRowClick || selectable) && "cursor-pointer",
                             isSel && "selected",
                             expandedRows.has(rid) && "expanded",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
                           )}
+
 
                           onClick={() => onRowClick?.(r)}
                           onKeyDown={(e) => {
