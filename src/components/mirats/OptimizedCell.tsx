@@ -3,7 +3,7 @@ import { TableCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 interface OptimizedCellProps extends React.HTMLAttributes<HTMLTableCellElement> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   colKey?: string;
