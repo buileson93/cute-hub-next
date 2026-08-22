@@ -273,7 +273,7 @@ function DeltaTable({
 }) {
   return (
     <div className="max-h-[520px] overflow-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm mirats-data-table-legacy">
         <thead className="sticky top-0 z-10 bg-muted/70 backdrop-blur">
           <tr className="text-left">
             <th className="px-4 py-2 font-medium">{colLabel}</th>

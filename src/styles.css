@@ -438,8 +438,8 @@
 
 .mirats-data-table-core .mirats-data-table-core-element,
 .mirats-data-table-legacy {
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
+  border-collapse: separate;
+  border-spacing: 0;
   border-left: 1px solid var(--border);
 }
 
@@ -450,9 +450,9 @@
   text-transform: uppercase;
   letter-spacing: 0.025em;
   background-color: var(--color-muted);
-  border-top: 1px solid var(--border) !important;
-  border-right: 1px solid var(--border) !important;
-  border-bottom: 1px solid var(--border) !important;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 /* Badge / chip nhỏ hơn */

@@ -181,11 +181,11 @@ export function DataTableCore<T>({
         className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full table-fixed block")}
       >
         <TableHeader className="sticky top-0 z-40 block">
-          <TableRow className="hover:bg-transparent border-b-0 border-t-0 flex">
+          <TableRow className="hover:bg-transparent border-b-0 border-t-0 flex astryx-table-row">
             {selectable && (
               <TableHead 
                 style={{ flex: '0 0 40px', width: 40 }}
-                className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20"
+                className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20 astryx-table-header-cell"
               >
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
               </TableHead>
@@ -199,7 +199,7 @@ export function DataTableCore<T>({
                   flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                 }}
                 className={cn(
-                  "mirats-table-header-base",
+                  "mirats-table-header-base astryx-table-header-cell",
                   col.sticky &&
                     "sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-r border-border/20",
                   selectable && col.sticky && "left-10",
@@ -233,7 +233,7 @@ export function DataTableCore<T>({
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full flex",
+                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full flex astryx-table-row items-center",
                     onRowClick && "cursor-pointer",
                     isSelected && "bg-primary/5",
                   )}
@@ -245,7 +245,7 @@ export function DataTableCore<T>({
                   {selectable && (
                     <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
-                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
+                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20 astryx-table-cell"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
@@ -263,7 +263,7 @@ export function DataTableCore<T>({
                         flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                       }}
                       className={cn(
-                        "mirats-table-cell-base border-b border-r border-border/20",
+                        "mirats-table-cell-base border-b border-r border-border/20 astryx-table-cell",
                         col.cellClassName,
                         col.sticky &&
                           "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",

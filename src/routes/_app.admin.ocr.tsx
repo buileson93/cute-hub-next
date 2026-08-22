@@ -375,7 +375,7 @@ function OcrAdminPage() {
 
             <div className="flex-1 border rounded-md overflow-hidden bg-card">
               <ScrollArea className="h-full">
-                <table className="w-full text-xs text-left">
+                <table className="w-full text-xs text-left mirats-data-table-legacy">
                   <thead className="sticky top-0 bg-muted z-10 border-b">
                     <tr>
                       <th className="p-3 w-10">
@@ -695,7 +695,7 @@ function OcrBenchmarkTab() {
         </CardHeader>
         <CardContent>
           <div className="border rounded-md">
-            <table className="w-full text-[11px] text-left">
+            <table className="w-full text-[11px] text-left mirats-data-table-legacy">
               <thead className="bg-muted border-b">
                 <tr>
                   <th className="p-2 font-medium">Fixture</th>

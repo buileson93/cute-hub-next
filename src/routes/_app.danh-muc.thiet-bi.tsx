@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   LayoutGrid,
+  List as ListIcon,
   Timer,
   HeartPulse,
   MapPin,
@@ -247,6 +248,7 @@ function DanhMucThietBiPage() {
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const isAdmin = hasRole("admin");
   const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-tb:edit-mode", false);
+  const [viewMode, setViewMode] = useUserPref<"table" | "grid">("danh-muc-tb:view-mode", "table");
   const editOn = canManage && editMode;
   const { submit, submitMany, hoanTac } = useCayRpc();
   const qc = useQueryClient();
@@ -1318,7 +1320,7 @@ function DanhMucThietBiPage() {
                 <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
                   <span className="text-xs font-semibold">Chế độ</span>
                   <Select value={tagMode} onValueChange={(v) => setTagMode(v as CheDoLoc)}>
-                    <SelectTrigger className="h-7 w-[150px] text-xs">
+                    <SelectTrigger className="h-7 w-[150px] text-xs" aria-label="Chọn chế độ lọc nhãn">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1382,12 +1384,43 @@ function DanhMucThietBiPage() {
               <Button
                 variant="ghost"
                 size="sm"
+                aria-label="Xoá tất cả bộ lọc"
                 className="h-9 gap-1.5 text-muted-foreground"
                 onClick={clearFilters}
               >
                 <X className="h-3.5 w-3.5" /> Xoá lọc
               </Button>
             )}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Hiển thị</span>
+              <div className="flex overflow-hidden rounded-md border bg-background shadow-sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                  className={cn(
+                    "h-8 rounded-none px-3 text-xs gap-1.5",
+                    viewMode === "table" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
+                  )}
+                  aria-label="Xem dạng bảng"
+                >
+                  <ListIcon className="h-3.5 w-3.5" /> <span>Bảng</span>
+                </Button>
+                <div className="w-[1px] bg-border" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "h-8 rounded-none px-3 text-xs gap-1.5",
+                    viewMode === "grid" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
+                  )}
+                  aria-label="Xem dạng lưới"
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" /> <span>Lưới</span>
+                </Button>
+              </div>
+            </div>
           </div>
           {tagSelected.length > 0 && (
             <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-[11px] text-muted-foreground">
@@ -1400,7 +1433,33 @@ function DanhMucThietBiPage() {
             </div>
           )}
 
-          <StandardTable
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {devices.map(d => (
+                <Card key={d.ma_thiet_bi} className="overflow-hidden hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer" onClick={() => openDetail(d)}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="font-bold text-sm truncate">{d.ten}</div>
+                      <StatusBadge domain="thiet_bi" code={d.trang_thai} />
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-3 font-mono">{d.ma_thiet_bi}</div>
+                    <div className="grid grid-cols-2 gap-y-2 text-[11px]">
+                      <div className="text-muted-foreground">Chủng loại:</div>
+                      <div>{d.loai}</div>
+                      <div className="text-muted-foreground">S/N:</div>
+                      <div className="font-mono">{d.serial || "—"}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {devices.length === 0 && (
+                <div className="col-span-full py-12 text-center text-muted-foreground text-sm border border-dashed rounded-lg">
+                  {pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
+                </div>
+              )}
+            </div>
+          ) : (
+            <StandardTable
             tableKey="danh-muc-thiet-bi"
             columns={columns}
             rows={devices}
@@ -1444,6 +1503,7 @@ function DanhMucThietBiPage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label="Trang trước"
                       className="h-7 text-[10px] px-2"
                       disabled={page === 0 || pagedLoading}
                       onClick={(e) => {
@@ -1456,6 +1516,7 @@ function DanhMucThietBiPage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label="Trang sau"
                       className="h-7 text-[10px] px-2"
                       disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
                       onClick={(e) => {
@@ -1477,6 +1538,7 @@ function DanhMucThietBiPage() {
                   size="sm"
                   className="h-8 gap-1.5"
                   onClick={() => setHistoryOpen(true)}
+                  aria-label="Xem lịch sử gán / chuyển / gỡ tài sản khỏi hệ thống"
                   title="Xem lịch sử gán / chuyển / gỡ tài sản khỏi hệ thống"
                 >
                   <History className="h-3.5 w-3.5" /> Lịch sử
@@ -1487,6 +1549,7 @@ function DanhMucThietBiPage() {
                   className="h-8 gap-1.5"
                   disabled={exporting || filteredRows.length === 0}
                   onClick={() => exportRows(filteredRows, visibleColumns)}
+                  aria-label="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
                   title="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
                 >
                   {exporting ? (
@@ -1506,6 +1569,7 @@ function DanhMucThietBiPage() {
                       size="sm"
                       variant={ACTION_PATTERNS.BULK_ACTION}
                       className="h-8 gap-1.5"
+                      aria-label="Gán các tài sản đã chọn vào hệ thống"
                       onClick={() => setAssignTargets(selectedRows)}
                     >
                       <PackagePlus className="h-3.5 w-3.5" /> Gán vào hệ thống
@@ -1515,6 +1579,7 @@ function DanhMucThietBiPage() {
                       variant={ACTION_PATTERNS.BULK_ACTION}
                       className="h-8 gap-1.5 text-amber-600"
                       disabled={!selectedRows.some((d) => d._htId)}
+                      aria-label="Gỡ các tài sản đã chọn khỏi hệ thống"
                       onClick={() => setRemoveTargets(selectedRows)}
                     >
                       <PackageMinus className="h-3.5 w-3.5" /> Gỡ khỏi hệ thống
@@ -1524,7 +1589,9 @@ function DanhMucThietBiPage() {
                         size="sm"
                         variant={ACTION_PATTERNS.BULK_ACTION}
                         className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => {
+                        aria-label="Xoá hoặc ngừng khai thác các tài sản đã chọn"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setDeleteTargets(selectedRows);
                           setDeleteKind("retire");
                         }}
@@ -1549,6 +1616,7 @@ function DanhMucThietBiPage() {
               </div>
             )}
           />
+          )}
         </CardContent>
       </Card>
 

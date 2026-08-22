@@ -1958,21 +1958,20 @@ function ModelDialog({
                       const id = (d as { id: string }).id;
                       const on = dacTinhIds.includes(id);
                       return (
-                        <button
-                          type="button"
+                        <Button
+                          variant={on ? "default" : "outline"}
+                          size="xs"
                           key={id}
                           disabled={!canManage}
                           onClick={() => toggleDacTinh(id)}
                           className={cn(
-                            "rounded-full border px-2.5 py-0.5 text-xs transition-colors",
-                            on
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "bg-background hover:bg-muted",
-                            !canManage && "cursor-not-allowed opacity-60",
+                            "rounded-full h-6 px-3",
+                            on && "hover:bg-primary/90"
                           )}
+                          aria-label={`${on ? 'Bỏ chọn' : 'Chọn'} nhãn ${d.ten}`}
                         >
-                          {d.ten} <span className="opacity-60">({d.ma})</span>
-                        </button>
+                          {d.ten} <span className="opacity-60 text-[10px] ml-1">({d.ma})</span>
+                        </Button>
                       );
                     })}
                   </div>
