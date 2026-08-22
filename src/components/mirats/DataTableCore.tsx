@@ -242,7 +242,7 @@ export function DataTableCore<T>({
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group astryx-table-row",
+                    "group astryx-table-row flex items-stretch",
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
