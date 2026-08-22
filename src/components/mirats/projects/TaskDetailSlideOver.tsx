@@ -309,14 +309,11 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
 
             <TabsContent value="audit" className="p-6 m-0">
                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-bold flex items-center gap-2">
                       <History className="h-4 w-4 text-primary" />
-                      Lịch sử hoạt động
+                      Lịch sử hoạt động & Audit Log
                     </h4>
-                    <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold">
-                      Xuất báo cáo
-                    </Button>
                   </div>
                   <AuditLog entityType="du_an_cong_viec" entityId={taskId} />
                </div>

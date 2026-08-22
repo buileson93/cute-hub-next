@@ -11,11 +11,14 @@ import {
   MessageSquare, 
   FileEdit, 
   CheckCircle2, 
-  AlertCircle 
+  AlertCircle,
+  Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface AuditLogProps {
   entityType: string;
@@ -23,6 +26,38 @@ interface AuditLogProps {
 }
 
 export function AuditLog({ entityType, entityId }: AuditLogProps) {
+  const exportLogs = () => {
+    if (!logs || logs.length === 0) return;
+    
+    try {
+      const headers = ["Thời gian", "Hành động", "Chi tiết", "Người thực hiện"];
+      const rows = logs.map(log => [
+        format(new Date(log.created_at), "yyyy-MM-dd HH:mm:ss"),
+        getActionLabel(log.action),
+        formatDetail(log).replace(/,/g, ';'),
+        log.user_id || "Hệ thống"
+      ]);
+      
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.join(","))
+      ].join("\n");
+      
+      const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `audit-log-${entityType}-${entityId}-${format(new Date(), "yyyyMMdd")}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Đã xuất báo cáo nhật ký thành công");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Lỗi khi xuất báo cáo");
+    }
+  };
+
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ["audit-logs", entityType, entityId],
     queryFn: async () => {
@@ -83,6 +118,18 @@ export function AuditLog({ entityType, entityId }: AuditLogProps) {
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-4 pt-4 border-t flex justify-end">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 text-xs font-bold gap-2"
+          onClick={exportLogs}
+          disabled={logs.length === 0}
+        >
+          <Download className="h-3.5 w-3.5" />
+          Xuất báo cáo hoạt động
+        </Button>
       </div>
     </ScrollArea>
   );
