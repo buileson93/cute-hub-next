@@ -54,10 +54,10 @@ export function MobileRecordCard<T>({
         <div className="flex flex-col">
           {/* Tiêu đề thẻ (Primary) */}
           <div className="flex items-start justify-between p-4 bg-muted/20 border-b border-border/40">
-            <div className="flex-1 space-y-1 min-w-0 pr-6">
+            <div className="flex-1 space-y-1 min-w-0 pr-6 overflow-hidden">
               {primaryCols.map((col, idx) => (
                 <div
-                  key={col.key}
+                  key={`${rowId}-${col.key || idx}`}
                   className={
                     idx === 0
                       ? "font-semibold text-sm truncate"
@@ -88,8 +88,8 @@ export function MobileRecordCard<T>({
 
           {/* Nội dung thẻ (Secondary) */}
           <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
-            {secondaryCols.map((col) => (
-              <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
+            {secondaryCols.map((col, idx) => (
+              <div key={`${rowId}-${col.key || idx}`} className="flex flex-col gap-0.5 min-w-0">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                   {col.header || col.label}
                 </span>
@@ -103,8 +103,8 @@ export function MobileRecordCard<T>({
           {/* Dòng chi tiết (Detail) - Mobile Expandable */}
           {isExpanded && detailCols.length > 0 && (
             <div className="px-4 py-3 bg-muted/10 border-t border-border/20 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1">
-              {detailCols.map((col) => (
-                <div key={col.key} className="flex flex-col gap-0.5 min-w-0">
+              {detailCols.map((col, idx) => (
+                <div key={`${rowId}-${col.key || idx}`} className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                     {col.header || col.label}
                   </span>

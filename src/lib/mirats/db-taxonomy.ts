@@ -194,7 +194,7 @@ export function useDbTaxonomy() {
   return useQuery({
     queryKey: ["db_taxonomy"],
     queryFn: loadBaseTaxonomy,
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
   });
 }
 

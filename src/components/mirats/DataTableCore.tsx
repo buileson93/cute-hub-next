@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useLayoutEffect, useEffect } from "react";
+import React, { useMemo, useRef, useState, useLayoutEffect, useEffect, useCallback, memo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "@/lib/utils";
 import {
@@ -38,6 +38,9 @@ export interface DataTableColumn<T> {
   cellClassName?: string;
   priority?: "primary" | "secondary" | "detail";
 }
+
+const MemoizedTableRow = memo(TableRow);
+const MemoizedTableCell = memo(TableCell);
 
 interface DataTableCoreProps<T> {
   rows: T[];
@@ -85,12 +88,18 @@ export function DataTableCore<T>({
     return 32;
   }, [density]);
 
+  const getScrollElement = useCallback(() => containerRef.current, []);
+
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => containerRef.current,
-    estimateSize: () => estimateRowHeight,
-    overscan: 10,
+    getScrollElement,
+    estimateSize: useCallback(() => estimateRowHeight, [estimateRowHeight]),
+    overscan: 8,
     enabled: virtualize,
+    getItemKey: useCallback((index: number) => {
+      const row = rows[index];
+      return row ? getRowId(row) : index;
+    }, [rows, getRowId]),
   });
 
   // Infinite Scroll Trigger
@@ -110,7 +119,7 @@ export function DataTableCore<T>({
     hasMore,
     virtualize,
     rows.length,
-  ]);
+  ]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
     if (!fitViewport || !containerRef.current) return;
@@ -164,18 +173,20 @@ export function DataTableCore<T>({
     <div
       ref={containerRef}
       className={cn(
-        "relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core",
+        "relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core h-full",
         className,
       )}
-      style={{ maxHeight }}
     >
       <Table
-        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}
+        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full table-fixed block")}
       >
-        <TableHeader className="sticky top-0 z-40">
-          <TableRow className="hover:bg-transparent border-b-0 border-t-0">
+        <TableHeader className="sticky top-0 z-40 block">
+          <TableRow className="hover:bg-transparent border-b-0 border-t-0 flex">
             {selectable && (
-              <TableHead className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20">
+              <TableHead 
+                style={{ flex: '0 0 40px', width: 40 }}
+                className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20"
+              >
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
               </TableHead>
             )}
@@ -185,6 +196,7 @@ export function DataTableCore<T>({
                 style={{
                   width: col.width,
                   minWidth: col.minWidth || (col.width ? undefined : 100),
+                  flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                 }}
                 className={cn(
                   "mirats-table-header-base",
@@ -202,17 +214,13 @@ export function DataTableCore<T>({
         </TableHeader>
         <TableBody style={{ 
           height: virtualize ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
-          position: 'relative'
+          position: 'relative',
+          display: 'block'
         }}>
           {rows.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length + (selectable ? 1 : 0)}
-                className="h-32 text-center text-muted-foreground italic"
-              >
-                Không có dữ liệu hiển thị
-              </TableCell>
-            </TableRow>
+            <div className="flex h-32 items-center justify-center text-center text-muted-foreground italic w-full">
+              Không có dữ liệu hiển thị
+            </div>
           ) : virtualize ? (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];
@@ -220,12 +228,12 @@ export function DataTableCore<T>({
               const isSelected = selected?.has(id);
 
               return (
-                <TableRow
-                  key={id}
+                <MemoizedTableRow
+                  key={virtualRow.key || virtualRow.index}
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50 absolute w-full",
+                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full flex",
                     onRowClick && "cursor-pointer",
                     isSelected && "bg-primary/5",
                   )}
@@ -235,7 +243,8 @@ export function DataTableCore<T>({
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <TableCell
+                    <MemoizedTableCell
+                      style={{ flex: '0 0 40px', width: 40 }}
                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -243,11 +252,16 @@ export function DataTableCore<T>({
                       }}
                     >
                       <Checkbox checked={isSelected} />
-                    </TableCell>
+                    </MemoizedTableCell>
                   )}
                   {columns.map((col) => (
-                    <TableCell
+                    <MemoizedTableCell
                       key={col.key}
+                      style={{
+                        width: col.width,
+                        minWidth: col.minWidth || (col.width ? undefined : 100),
+                        flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
+                      }}
                       className={cn(
                         "mirats-table-cell-base border-b border-r border-border/20",
                         col.cellClassName,
@@ -259,15 +273,11 @@ export function DataTableCore<T>({
                         col.type === "actions" &&
                           "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
                       )}
-                      style={{
-                        width: col.width,
-                        minWidth: col.minWidth || (col.width ? undefined : 100),
-                      }}
                     >
                       {renderCellContent(col, row)}
-                    </TableCell>
+                    </MemoizedTableCell>
                   ))}
-                </TableRow>
+                </MemoizedTableRow>
               );
             })
           ) : (
@@ -276,17 +286,18 @@ export function DataTableCore<T>({
               const isSelected = selected?.has(id);
 
               return (
-                <TableRow
-                  key={id}
+                <MemoizedTableRow
+                  key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50",
+                    "group transition-mirats-fast hover:bg-muted/50 flex",
                     onRowClick && "cursor-pointer",
                     isSelected && "bg-primary/5",
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <TableCell
+                    <MemoizedTableCell
+                      style={{ flex: '0 0 40px', width: 40 }}
                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -294,11 +305,16 @@ export function DataTableCore<T>({
                       }}
                     >
                       <Checkbox checked={isSelected} />
-                    </TableCell>
+                    </MemoizedTableCell>
                   )}
                   {columns.map((col) => (
-                    <TableCell
+                    <MemoizedTableCell
                       key={col.key}
+                      style={{
+                        width: col.width,
+                        minWidth: col.minWidth || (col.width ? undefined : 100),
+                        flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
+                      }}
                       className={cn(
                         "mirats-table-cell-base border-b border-r border-border/20",
                         col.cellClassName,
@@ -310,15 +326,11 @@ export function DataTableCore<T>({
                         col.type === "actions" &&
                           "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
                       )}
-                      style={{
-                        width: col.width,
-                        minWidth: col.minWidth || (col.width ? undefined : 100),
-                      }}
                     >
                       {renderCellContent(col, row)}
-                    </TableCell>
+                    </MemoizedTableCell>
                   ))}
-                </TableRow>
+                </MemoizedTableRow>
               );
             })
           )}

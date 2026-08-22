@@ -122,9 +122,14 @@ export function useTaiSanRows() {
             .range(from, from + pageSize - 1);
           if (error) throw error;
           const rows = (data ?? []) as TaiSanRow[];
+          if (!rows || rows.length === 0) break;
           all.push(...rows);
           if (rows.length < pageSize) break;
           from += pageSize;
+          if (from > 10000) {
+            console.warn("Too many asset rows, truncating to 10k to prevent crash");
+            break;
+          }
         }
       } finally {
         controller.abort();
@@ -194,9 +199,14 @@ export function useThanhPhanRows() {
             .range(from, from + pageSize - 1);
           if (error) throw error;
           const rows = (data ?? []) as ThanhPhanRow[];
+          if (!rows || rows.length === 0) break;
           all.push(...rows);
           if (rows.length < pageSize) break;
           from += pageSize;
+          if (from > 10000) {
+            console.warn("Too many component rows, truncating to 10k to prevent crash");
+            break;
+          }
         }
       } catch (err) {
         console.error("rpc_thanh_phan_toan_cuc error:", err);

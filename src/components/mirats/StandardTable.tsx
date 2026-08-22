@@ -1541,8 +1541,9 @@ export function StandardTableInner<T>({
                     /** Tự động render ô dựa trên `type` */
 
                     return (
-                      <React.Fragment key={`row-${rid}-${virtualRow.index}`}>
+                      <React.Fragment key={`row-${rid}-${virtualRow.key}`}>
                         <TableRow
+                          key={virtualRow.key}
                           data-index={virtualRow.index}
                           ref={(el) => {
                             rowVirtualizer.measureElement(el);

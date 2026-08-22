@@ -340,6 +340,7 @@ function HeThongInner({
   const qcHt = useQueryClient();
   useEffect(() => {
     if (!id) return;
+    let isMounted = true;
     let ch: any = null;
     const setup = async () => {
       ch = supabase
@@ -347,12 +348,15 @@ function HeThongInner({
         .on(
           "postgres_changes",
           { event: "*", schema: "public", table: "form_submission", filter: `he_thong_id=eq.${id}` },
-          () => qcHt.invalidateQueries({ queryKey: ["he-thong-submissions", id] }),
+          () => {
+            if (isMounted) qcHt.invalidateQueries({ queryKey: ["he-thong-submissions", id] });
+          },
         )
         .subscribe();
     };
     setup();
     return () => {
+      isMounted = false;
       if (ch) supabase.removeChannel(ch);
     };
   }, [id, qcHt]);

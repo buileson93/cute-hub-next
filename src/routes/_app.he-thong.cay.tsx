@@ -286,6 +286,7 @@ function HeThongCayPage() {
 
   const { data: tpCount = 0 } = useQuery({
     queryKey: ["he_thong_thanh_phan_count"],
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { count, error } = await supabase
         .from("he_thong_thanh_phan")
@@ -293,7 +294,6 @@ function HeThongCayPage() {
       if (error) return 0;
       return count || 0;
     },
-    staleTime: 5 * 60_000,
   });
 
   const {
@@ -302,6 +302,7 @@ function HeThongCayPage() {
     refetch: refetchDevices,
   } = useQuery({
     queryKey: ["thiet_bi_cay"],
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const pageSize = 1000;
       let from = 0;
@@ -329,6 +330,10 @@ function HeThongCayPage() {
         allData.push(...rows);
         if (rows.length < pageSize) break;
         from += pageSize;
+        if (from > 10000) {
+          console.warn("Too many devices in tree, truncating to 10k");
+          break;
+        }
       }
 
       return allData.map((d: any) => ({

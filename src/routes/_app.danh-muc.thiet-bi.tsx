@@ -223,9 +223,19 @@ function DanhMucThietBiPage() {
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
 
+  const sp = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
   // PHÂN TRANG 10H
   const [page, setPage] = useState(0);
   const pageSize = 100;
+  
+  // Clear search/filters when they change, reset page
+  const spMemo = JSON.stringify(sp);
+  useEffect(() => {
+    setPage(0);
+  }, [spMemo]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
     page,
     pageSize,
@@ -244,8 +254,6 @@ function DanhMucThietBiPage() {
   const [exporting, setExporting] = useState(false);
 
   // ---- Bộ lọc lưu trên URL: rời trang & quay lại vẫn giữ đúng lựa chọn ----
-  const sp = Route.useSearch();
-  const navigate = useNavigate({ from: Route.fullPath });
   const patchSearch = useCallback(
     (patch: Partial<TbSearch> | ((prev: TbSearch) => Partial<TbSearch>)) => {
       navigate({
@@ -1237,7 +1245,10 @@ function DanhMucThietBiPage() {
           {/* Thanh tìm kiếm & lọc nhanh */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[240px] flex-1 sm:max-w-sm">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search 
+                aria-label="Tìm kiếm tài sản"
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" 
+              />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -1292,7 +1303,7 @@ function DanhMucThietBiPage() {
             {/* Lọc theo Nhãn tài sản (đa trị) — song song với "Chủng loại" (đơn trị). */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-1.5">
+                <Button variant="outline" size="sm" className="h-9 gap-1.5" aria-label="Lọc theo nhãn tài sản">
                   <Tag className="h-3.5 w-3.5" />
                   Nhãn tài sản
                   {tagSelected.length > 0 && (
@@ -1358,6 +1369,7 @@ function DanhMucThietBiPage() {
                       variant="ghost"
                       size="sm"
                       className="h-7 text-xs"
+                      aria-label="Bỏ chọn tất cả nhãn"
                       onClick={() => setTagSelected([])}
                     >
                       Bỏ chọn tất cả
@@ -1424,7 +1436,7 @@ function DanhMucThietBiPage() {
                     </Label>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed">
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed w-full">
                   <div className="text-[11px] text-muted-foreground italic">
                     Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
                   </div>
@@ -1434,7 +1446,10 @@ function DanhMucThietBiPage() {
                       size="sm"
                       className="h-7 text-[10px] px-2"
                       disabled={page === 0 || pagedLoading}
-                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPage((p) => Math.max(0, p - 1));
+                      }}
                     >
                       Trước
                     </Button>
@@ -1443,7 +1458,10 @@ function DanhMucThietBiPage() {
                       size="sm"
                       className="h-7 text-[10px] px-2"
                       disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
-                      onClick={() => setPage((p) => p + 1)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPage((p) => p + 1);
+                      }}
                     >
                       Tiếp
                     </Button>

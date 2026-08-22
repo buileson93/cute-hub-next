@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { forceCollide, forceX, forceY, forceRadial } from "d3-force";
+import { debounce } from "lodash-es";
 import { NodeNoteDrawer } from "./NodeNoteDrawer";
 import { listNotedNodeIds } from "@/lib/node-notes.functions";
 import {
@@ -248,35 +249,48 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
 
   // ---- Realtime: đồng bộ tức thì khi hệ thống / liên kết thay đổi ----
   useEffect(() => {
-    const ch = supabase
-      .channel("net-overview-rt")
-      .on("postgres_changes", { event: "*", schema: "public", table: "lien_ket_he_thong" }, () => {
+    let isMounted = true;
+    const debouncedRefresh = debounce(() => {
+      if (isMounted) {
         qc.invalidateQueries({ queryKey: ["v_do_thi_he_thong"] });
         qc.invalidateQueries({ queryKey: ["lien_ket_he_thong_cua"] });
         qc.invalidateQueries({ queryKey: ["v_do_thi_toan_canh"] });
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "dm_he_thong" }, () => {
-        qc.invalidateQueries({ queryKey: ["v_do_thi_toan_canh"] });
-        qc.invalidateQueries({ queryKey: ["v_do_thi_he_thong"] });
-      })
+      }
+    }, 500);
+
+    const ch = supabase
+      .channel("net-overview-rt")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "lien_ket_he_thong" },
+        debouncedRefresh,
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "dm_he_thong" },
+        debouncedRefresh,
+      )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "he_thong_thanh_phan" },
-        () => {
-          qc.invalidateQueries({ queryKey: ["v_do_thi_toan_canh"] });
-          qc.invalidateQueries({ queryKey: ["thanh_phan_cua_he_thong"] });
-        },
+        debouncedRefresh,
       )
-      .on("postgres_changes", { event: "*", schema: "public", table: "lien_ket_khe" }, () => {
-        qc.invalidateQueries({ queryKey: ["v_do_thi_toan_canh"] });
-        qc.invalidateQueries({ queryKey: ["lien_ket_khe"] });
-      })
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "lien_ket_khe" },
+        debouncedRefresh,
+      )
       .on("postgres_changes", { event: "*", schema: "public", table: "node_note" }, () => {
-        qc.invalidateQueries({ queryKey: ["node_note"] });
-        qc.invalidateQueries({ queryKey: ["node_note_search"] });
+        if (isMounted) {
+          qc.invalidateQueries({ queryKey: ["node_note"] });
+          qc.invalidateQueries({ queryKey: ["node_note_search"] });
+        }
       })
       .subscribe();
+
     return () => {
+      isMounted = false;
+      debouncedRefresh.cancel();
       if (ch) supabase.removeChannel(ch);
     };
   }, [qc]);

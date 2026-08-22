@@ -63,6 +63,6 @@ export function useThietBiList(page: number, pageSize: number, donViCode?: strin
   return useQuery({
     queryKey: ["thiet_bi_paged", { page, pageSize, donViCode }],
     queryFn: () => fetchThietBi(from, to, donViCode),
-    staleTime: 60_000,
+    staleTime: 5 * 60_000, // 5m cache for table data
   });
 }
