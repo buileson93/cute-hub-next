@@ -58,7 +58,7 @@ import {
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { ThietBiDetailDrawer } from "@/components/mirats/ThietBiDetailDrawer";
-import { useCan } from "@/hooks/use-permissions";
+
 
 import type {
   EditKind,
