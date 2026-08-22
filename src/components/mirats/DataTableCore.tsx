@@ -49,7 +49,10 @@ interface DataTableCoreProps<T> {
   onRowClick?: (row: T) => void;
   className?: string;
   maxHeight?: string | number;
-  fitViewport?: boolean; // Tự động tính toán chiều cao để thanh cuộn ngang luôn hiển thị
+  fitViewport?: boolean;
+  virtualize?: boolean;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
 }
 
 /**
