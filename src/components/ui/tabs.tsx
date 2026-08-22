@@ -19,9 +19,9 @@ const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, T
       <TabsPrimitive.List
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-start overflow-x-auto no-scrollbar transition-all",
-          variant === "segmented" && "h-9 rounded-lg bg-muted p-1 text-muted-foreground",
-          variant === "underline" && "h-10 border-b bg-transparent p-0 gap-2",
+          "inline-flex items-center justify-start overflow-x-auto overflow-y-hidden no-scrollbar transition-all max-w-full",
+          variant === "segmented" && "min-h-9 rounded-lg bg-muted p-1 text-muted-foreground",
+          variant === "underline" && "min-h-10 border-b bg-transparent p-0 gap-2",
           className,
         )}
         {...props}
@@ -41,7 +41,7 @@ const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap px-3 py-1 text-sm font-medium ring-offset-background cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center whitespace-nowrap px-3 py-1 text-sm font-medium ring-offset-background cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed shrink-0",
         variant === "segmented" &&
           "rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow",
         variant === "underline" &&
