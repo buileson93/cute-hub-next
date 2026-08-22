@@ -1043,6 +1043,13 @@ export type Database = {
             foreignKeyName: "chung_chi_thiet_bi_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chung_chi_thiet_bi_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -1187,6 +1194,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cong_viec_bao_tri_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -3842,6 +3856,13 @@ export type Database = {
             foreignKeyName: "form_submission_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_submission_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -3965,6 +3986,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fsir_thanh_phan_fk"
+            columns: ["thanh_phan_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fsir_thiet_bi_fk"
             columns: ["thiet_bi_id"]
             isOneToOne: false
@@ -3976,6 +4004,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -4086,6 +4121,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_submission_thiet_bi_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -4330,6 +4372,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "gan_chuc_nang_thanh_phan_id_fkey"
+            columns: ["thanh_phan_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "gan_chuc_nang_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
@@ -4341,6 +4390,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gan_chuc_nang_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -4422,6 +4478,13 @@ export type Database = {
             columns: ["linh_kien_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gan_linh_kien_linh_kien_id_fkey"
+            columns: ["linh_kien_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -4512,6 +4575,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "giay_phep_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -4728,6 +4798,13 @@ export type Database = {
             columns: ["thanh_phan_cha"]
             isOneToOne: false
             referencedRelation: "he_thong_thanh_phan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "he_thong_thanh_phan_thanh_phan_cha_fkey"
+            columns: ["thanh_phan_cha"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -5303,6 +5380,13 @@ export type Database = {
             foreignKeyName: "kiem_ke_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kiem_ke_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -5527,10 +5611,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "lien_ket_khe_khe_dich_id_fkey"
+            columns: ["khe_dich_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "lien_ket_khe_khe_nguon_id_fkey"
             columns: ["khe_nguon_id"]
             isOneToOne: false
             referencedRelation: "he_thong_thanh_phan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lien_ket_khe_khe_nguon_id_fkey"
+            columns: ["khe_nguon_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -6120,6 +6218,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phan_mem_ban_quyen_cap_phat_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -7672,6 +7777,13 @@ export type Database = {
             foreignKeyName: "thiet_bi_cap_phat_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_cap_phat_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -7727,6 +7839,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_do_dac_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -7793,6 +7912,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_he_thong_tuong_thich_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -7866,6 +7992,13 @@ export type Database = {
             foreignKeyName: "thiet_bi_ket_noi_den_thiet_bi_id_fkey"
             columns: ["den_thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_ket_noi_den_thiet_bi_id_fkey"
+            columns: ["den_thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -7881,6 +8014,13 @@ export type Database = {
             columns: ["tu_thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_ket_noi_tu_thiet_bi_id_fkey"
+            columns: ["tu_thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -7980,6 +8120,13 @@ export type Database = {
             foreignKeyName: "thiet_bi_khe_linh_kien_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_khe_linh_kien_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -8050,6 +8197,13 @@ export type Database = {
             foreignKeyName: "thiet_bi_tep_dinh_kem_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_tep_dinh_kem_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -8106,6 +8260,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_vong_doi_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -8425,6 +8586,13 @@ export type Database = {
             foreignKeyName: "tickets_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -8638,6 +8806,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "van_de_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -9161,10 +9336,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "lien_ket_khe_khe_dich_id_fkey"
+            columns: ["khe_dich_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "lien_ket_khe_khe_nguon_id_fkey"
             columns: ["khe_nguon_id"]
             isOneToOne: false
             referencedRelation: "he_thong_thanh_phan"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lien_ket_khe_khe_nguon_id_fkey"
+            columns: ["khe_nguon_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -9241,6 +9430,13 @@ export type Database = {
             foreignKeyName: "gan_linh_kien_linh_kien_id_fkey"
             columns: ["linh_kien_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gan_linh_kien_linh_kien_id_fkey"
+            columns: ["linh_kien_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -9256,6 +9452,13 @@ export type Database = {
             columns: ["thiet_bi_cha_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_khe_linh_kien_thiet_bi_id_fkey"
+            columns: ["thiet_bi_cha_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -9327,6 +9530,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "gan_chuc_nang_thanh_phan_id_fkey"
+            columns: ["thanh_phan_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "gan_chuc_nang_thiet_bi_id_fkey"
             columns: ["thiet_bi_id"]
             isOneToOne: false
@@ -9338,6 +9548,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gan_chuc_nang_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -9429,6 +9646,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fsir_thanh_phan_fk"
+            columns: ["thanh_phan_id"]
+            isOneToOne: false
+            referencedRelation: "v_thanh_phan_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fsir_thiet_bi_fk"
             columns: ["thiet_bi_id"]
             isOneToOne: false
@@ -9440,6 +9664,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fsir_thiet_bi_fk"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -9470,6 +9701,131 @@ export type Database = {
           thiet_bi_id: string | null
         }
         Relationships: []
+      }
+      v_tai_san_toan_cuc: {
+        Row: {
+          anomalyScore: number | null
+          cheDoKdHc: string | null
+          chungLoai: string | null
+          danhSachHeThong: string | null
+          danhSachThanhPhan: string | null
+          donViQuanLy: string | null
+          hanBaoHanh: string | null
+          id: string | null
+          ma: string | null
+          maTaiSanBravo: string | null
+          model: string | null
+          modelId: string | null
+          namKhaiThac: number | null
+          namSanXuat: number | null
+          ngayBaoTriGanNhat: string | null
+          ngayBaoTriKeTiep: string | null
+          ngayMua: string | null
+          nhaCungCap: string | null
+          nhaSanXuat: string | null
+          pN: string | null
+          serial: string | null
+          soSuCo90n: number | null
+          soThanhPhanDangGan: number | null
+          ten: string | null
+          tinhTrangKyThuat: string | null
+          trangThai: string | null
+          tyLeTuoiTho: number | null
+          viTri: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "dm_model"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+        ]
+      }
+      v_thanh_phan_toan_cuc: {
+        Row: {
+          anomalyScore: number | null
+          cheDoKdHc: string | null
+          chungLoai: string | null
+          daLap: boolean | null
+          hanBaoHanh: string | null
+          heThong: string | null
+          heThongId: string | null
+          id: string | null
+          loaiYeuCau: string | null
+          ma: string | null
+          maTaiSanBravo: string | null
+          model: string | null
+          modelId: string | null
+          namKhaiThac: number | null
+          namSanXuat: number | null
+          ngayBaoTriGanNhat: string | null
+          ngayBaoTriKeTiep: string | null
+          ngayMua: string | null
+          nhaCungCap: string | null
+          nhaSanXuat: string | null
+          nhomHeThong: string | null
+          phanLoai: string | null
+          pN: string | null
+          soThanhPhanCuaTaiSan: number | null
+          taiSanDonViQuanLy: string | null
+          taiSanTrangThai: string | null
+          taiSanViTri: string | null
+          ten: string | null
+          thietBiMa: string | null
+          thietBiSerial: string | null
+          thietBiTen: string | null
+          tinhTrangKyThuat: string | null
+          trangThai: string | null
+          tyLeTuoiTho: number | null
+          viTri: string | null
+          viTriId: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
+            columns: ["heThongId"]
+            isOneToOne: false
+            referencedRelation: "dm_he_thong"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "he_thong_thanh_phan_he_thong_id_fkey"
+            columns: ["heThongId"]
+            isOneToOne: false
+            referencedRelation: "v_do_thi_toan_canh"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "he_thong_thanh_phan_vi_tri_id_fkey"
+            columns: ["viTriId"]
+            isOneToOne: false
+            referencedRelation: "dm_vi_tri"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "dm_model"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+        ]
       }
       v_thiet_bi_dac_tinh: {
         Row: {
@@ -9526,6 +9882,13 @@ export type Database = {
             foreignKeyName: "thiet_bi_ket_noi_den_thiet_bi_id_fkey"
             columns: ["den_thiet_bi_id"]
             isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_ket_noi_den_thiet_bi_id_fkey"
+            columns: ["den_thiet_bi_id"]
+            isOneToOne: false
             referencedRelation: "v_thiet_bi_dac_tinh"
             referencedColumns: ["thiet_bi_id"]
           },
@@ -9541,6 +9904,13 @@ export type Database = {
             columns: ["tu_thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_ket_noi_tu_thiet_bi_id_fkey"
+            columns: ["tu_thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -9660,6 +10030,13 @@ export type Database = {
             columns: ["thiet_bi_id"]
             isOneToOne: false
             referencedRelation: "thiet_bi"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "van_de_thiet_bi_id_fkey"
+            columns: ["thiet_bi_id"]
+            isOneToOne: false
+            referencedRelation: "v_tai_san_toan_cuc"
             referencedColumns: ["id"]
           },
           {
@@ -10632,8 +11009,6 @@ export type Database = {
           so_su_co: number
         }[]
       }
-      rpc_tai_san_toan_cuc: { Args: never; Returns: Json[] }
-      rpc_thanh_phan_toan_cuc: { Args: never; Returns: Json[] }
       run_audit_daily_digest: { Args: never; Returns: number }
       run_audit_retention: { Args: never; Returns: number }
       sinh_canh_bao_het_han: { Args: never; Returns: Json }

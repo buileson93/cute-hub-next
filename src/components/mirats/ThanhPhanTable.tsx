@@ -117,7 +117,7 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
     queryFn: async ({ pageParam }) => {
       const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
       const res = await fetchKeyset<TaiSanRow>(supabase, {
-        bang: "rpc_tai_san_toan_cuc",
+        bang: "v_tai_san_toan_cuc",
         cot: [
           "id", "ma", "ten", "serial", "model", "modelId", "chungLoai", "nhaSanXuat",
           "nhaCungCap", "donViQuanLy", "trangThai", "viTri", "soThanhPhanDangGan",
@@ -198,7 +198,7 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
     queryFn: async ({ pageParam }) => {
       const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
       const res = await fetchKeyset<ThanhPhanRow>(supabase, {
-        bang: "rpc_thanh_phan_toan_cuc",
+        bang: "v_thanh_phan_toan_cuc",
         cot: [
           "id", "ma", "ten", "nhomHeThong", "phanLoai", "heThong", "heThongId",
           "viTriId", "loaiYeuCau", "viTri", "trangThai", "thietBiMa", "thietBiTen",
