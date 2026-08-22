@@ -727,8 +727,10 @@ function OcrBenchmarkTab() {
                   (async () => {
                     // Gọi logic profiler thật thay vì mock hoàn toàn
                     const profile = await deviceProfiler.getProfile();
+                    // Cập nhật trạng thái fixture demo (nếu cần)
                     await new Promise((resolve) => setTimeout(resolve, 1500));
                     return profile;
+
 
                   })(),
                   {

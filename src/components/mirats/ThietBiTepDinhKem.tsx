@@ -296,16 +296,18 @@ function DocRow({
   const canDownload = useCanDownloadAttachments();
 
   async function handleRetry() {
+    if (!url) return;
     try {
-      const res = await fetch(url!);
+      const res = await fetch(url);
       if (!res.ok) throw new Error("Không thể tải tệp");
       const blob = await res.blob();
       await startOcr(blob, "thiet_bi_tep_dinh_kem", row.id);
-      // Success will trigger toast from useOcrTask
+      qc.invalidateQueries({ queryKey: ["thiet_bi_tep", row.thiet_bi_id] });
     } catch (e: any) {
       toast.error("Lỗi: " + e.message);
     }
   }
+
 
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">
