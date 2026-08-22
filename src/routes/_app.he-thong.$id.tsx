@@ -144,9 +144,12 @@ function HeThongDetail() {
   const { data: nameOv } = useSystemNameOverrides();
 
   const sys = useMemo(() => taxo?.htList.find((h) => h.id === id), [taxo, id]);
+  // PHÂN TRANG 10H: Thay thế taxo.devices cho hệ thống cụ thể
+  // Sẽ tối ưu server-side filter trong tương lai, hiện tại dùng pilot paged list
+  const { data: pagedRes } = useThietBiList(0, 500, null);
   const devices = useMemo<DbDevice[]>(
-    () => (taxo?.devices ?? []).filter((d) => d._htId === id),
-    [taxo, id],
+    () => (pagedRes?.rows ?? []).filter((d) => d._htId === id),
+    [pagedRes, id],
   );
   const sysDonVi = useMemo(() => {
     const dv = taxo?.donViList.find((v) => v.id === sys?.donViId);
