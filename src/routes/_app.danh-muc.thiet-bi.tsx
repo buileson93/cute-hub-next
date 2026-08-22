@@ -91,6 +91,7 @@ import {
   useDeviceNameOverrides,
   type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { supabase } from "@/integrations/backend/client";
 import { sortDacTinh, matchFilter, type DacTinh, type CheDoLoc } from "@/lib/mirats/dac-tinh";
