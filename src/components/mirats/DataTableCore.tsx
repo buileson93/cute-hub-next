@@ -175,9 +175,18 @@ export function DataTableCore<T>({
         "relative overflow-auto mirats-scroll rounded-md bg-card mirats-data-table-core h-full flex-1 min-h-0",
         className,
       )}
+      style={{
+        overflowX: 'auto',
+        overflowY: 'auto'
+      }}
     >
       <Table
         className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full border-separate border-spacing-0")}
+        style={{
+          tableLayout: 'fixed',
+          width: 'max-content',
+          minWidth: '100%'
+        }}
       >
         <TableHeader className="sticky top-0 z-40 bg-muted/95 backdrop-blur-[4px]">
           <TableRow className="bg-transparent border-b-0 border-t-0 astryx-table-row hover:bg-transparent">

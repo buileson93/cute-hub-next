@@ -600,17 +600,44 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        <div className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto" ref={scrollContainerRef}>
-          <Table className="border-collapse table-fixed w-full">
+        <div 
+          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto mirats-scroll" 
+          ref={scrollContainerRef}
+          style={{
+            overflowX: 'auto',
+            overflowY: 'auto'
+          }}
+        >
+          <Table 
+            className="border-collapse border-separate border-spacing-0 w-full"
+            style={{
+              tableLayout: 'fixed',
+              width: 'max-content',
+              minWidth: '100%'
+            }}
+          >
             <TableHeader className="sticky top-0 z-20 bg-muted/80 backdrop-blur-md">
               <TableRow className="hover:bg-transparent border-b">
                 {selectable && (
-                  <TableHead className="w-[40px] px-2 text-center">
+                  <TableHead className="w-[40px] px-2 text-center sticky left-0 z-30 bg-muted/80">
                     <Checkbox checked={selected?.size === rows.length && rows.length > 0} onCheckedChange={toggleAll} />
                   </TableHead>
                 )}
                 {shownCols.map(c => (
-                  <TableHead key={c.key} style={{ width: prefs.widths[c.key] || 150 }} className="relative px-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground">
+                  <TableHead 
+                    key={c.key} 
+                    style={{ 
+                      width: prefs.widths[c.key] || 150,
+                      position: c.sticky ? 'sticky' : 'relative',
+                      left: c.sticky ? (selectable ? 40 : 0) : undefined,
+                      zIndex: c.sticky ? 30 : 20,
+                      background: 'inherit'
+                    }} 
+                    className={cn(
+                      "px-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground",
+                      c.sticky && "border-r border-border/20"
+                    )}
+                  >
                     <div className="flex items-center justify-between gap-2 overflow-hidden">
                       <span className="truncate">{c.header || c.label}</span>
                     </div>
@@ -649,7 +676,11 @@ export function StandardTable<T>({
                         }}
                       >
                         {selectable && (
-                          <OptimizedCell colKey="selection" className="px-2 text-center w-[40px]" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                          <OptimizedCell 
+                            colKey="selection" 
+                            className="px-2 text-center w-[40px] sticky left-0 z-10 bg-inherit" 
+                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                          >
                             <Checkbox checked={selected?.has(rid)} onCheckedChange={() => toggleRow(rid)} />
                           </OptimizedCell>
                         )}
@@ -658,7 +689,13 @@ export function StandardTable<T>({
                             key={c.key} 
                             colKey={c.key}
                             className={cn("px-3 py-2 text-[13px] truncate", c.cellClassName)} 
-                            style={{ width: prefs.widths[c.key] || 150 }}
+                            style={{ 
+                              width: prefs.widths[c.key] || 150,
+                              position: c.sticky ? 'sticky' : 'relative',
+                              left: c.sticky ? (selectable ? 40 : 0) : undefined,
+                              zIndex: c.sticky ? 10 : 1,
+                              background: 'inherit'
+                            }}
                           >
                             {renderCellContent(c, r)}
                           </OptimizedCell>
