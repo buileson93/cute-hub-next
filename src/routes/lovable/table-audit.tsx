@@ -22,7 +22,7 @@ export const Route = createFileRoute("/lovable/table-audit")({
 
 type SampleData = { id: number; name: string; status: string; date: string; value: number };
 
-const SAMPLE_ROWS: SampleData[] = Array.from({ length: 50 }, (_, i) => ({
+const SAMPLE_ROWS: SampleData[] = Array.from({ length: 1000 }, (_, i) => ({
   id: i + 1,
   name: `Thực thể dữ liệu số ${i + 1}`,
   status: i % 3 === 0 ? "active" : i % 3 === 1 ? "maintenance" : "error",
@@ -71,6 +71,7 @@ function TableAuditFixture() {
           columns={COLUMNS_CORE}
           getRowId={(r) => r.id.toString()}
           maxHeight={400}
+          virtualize
         />
       </section>
 

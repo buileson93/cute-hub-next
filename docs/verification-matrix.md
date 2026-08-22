@@ -16,7 +16,7 @@ Cập nhật: 22/08/2026
 - [x] **Focus**: `focus-visible` hiển thị rõ ràng với viền MIRATS Blue.
 - [x] **Thoát**: Escape đóng các Dialog/PowerSearch.
 
-## 3. DataTableCore (U9)
+## 3. DataTableCore & StandardTable (U9 - U10.2)
 
 | Kịch bản          | Trạng thái | Minh chứng                           |
 | :---------------- | :--------- | :----------------------------------- |
@@ -26,6 +26,8 @@ Cập nhật: 22/08/2026
 | Sticky Header     | ✅         | Không mất border (border-separate)   |
 | Sticky Column     | ✅         | Hoạt động mượt mà                    |
 | Horizontal Scroll | ✅         | Thanh cuộn mỏng (mirats-scroll)      |
+| Virtualization    | ✅         | Render < 100 <tr> cho 1000+ rows    |
+| Infinite Scroll   | ✅         | Trigger onLoadMore khi cuộn cuối     |
 
 ## 4. Guardrails (U10)
 

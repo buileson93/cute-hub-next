@@ -507,12 +507,15 @@ export function StandardTableInner<T>({
   }, [fullDisplay.length, notifyFilteredTotal, hasFilter, countUnit]);
 
   const display = useMemo(() => {
-    if (!clientPagination) return fullDisplay;
+    // Nếu có clientPagination NHƯNG virtualizerOptions.enabled=true (hoặc infinite scroll)
+    // thì KHÔNG cắt dữ liệu ở đây, để virtualizer quản lý toàn bộ fullDisplay
+    if (!clientPagination || virtualizerOptions?.enabled === true) return fullDisplay;
+    
     const { page, pageSize } = clientPagination;
     if (pageSize >= fullDisplay.length) return fullDisplay;
     const start = Math.max(0, (page - 1) * pageSize);
     return fullDisplay.slice(start, start + pageSize);
-  }, [fullDisplay, clientPagination]);
+  }, [fullDisplay, clientPagination, virtualizerOptions?.enabled]);
 
   const toggleCat = (key: string, val: string) => {
     setCatFilters((prev) => {
@@ -559,7 +562,7 @@ export function StandardTableInner<T>({
   }, [density]);
 
   const rowVirtualizer = useVirtualizer({
-    count: display.length,
+    count: gated ? 0 : display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateRowHeight,
     overscan: isTest ? 100 : 15,
@@ -580,17 +583,7 @@ export function StandardTableInner<T>({
 
   const virtualRows = rowVirtualizer.getVirtualItems();
 
-  // Force render all items in JSDOM tests since scrolling/sizing is broken
-  const displayItems = isTest
-    ? display.map((d, index) => ({
-        index,
-        start: index * estimateRowHeight,
-        size: estimateRowHeight,
-        end: (index + 1) * estimateRowHeight,
-        lane: 0,
-        key: index,
-      }))
-    : virtualRows;
+  const displayItems = virtualRows;
 
   const totalSize = rowVirtualizer.getTotalSize();
   const paddingTop = displayItems.length > 0 ? displayItems[0]?.start || 0 : 0;
@@ -1533,7 +1526,7 @@ export function StandardTableInner<T>({
                   )}
 
                   {displayItems.map((virtualRow) => {
-                    const r = rows[virtualRow.index];
+                    const r = display[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
                     /** Tự động render ô dựa trên `type` */
