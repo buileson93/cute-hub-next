@@ -106,12 +106,13 @@ export const Route = createFileRoute("/api/public/ext/cong-van")({
             });
           }
 
-          // Idempotency check
+          // Idempotency check scoped to user/project
           if (data.idempotency_key) {
             const { data: existing } = await supabaseAdmin
               .from("du_an_cong_van" as any)
               .select("id")
               .eq("idempotency_key", data.idempotency_key)
+              .eq("du_an_id", data.project_id)
               .maybeSingle();
 
             if (existing) {
@@ -173,15 +174,18 @@ export const Route = createFileRoute("/api/public/ext/cong-van")({
             }
           }
 
-          // Task Linking & Notification
+          // Task Linking & Notification: Verify task belongs to project
           if (data.assigned_task_id) {
             const { data: task } = await supabaseAdmin
               .from("du_an_cong_viec")
               .select("nguoi_xu_ly_chinh, ten")
               .eq("id", data.assigned_task_id)
-              .single();
+              .eq("du_an_id", data.project_id) // Task must belong to the project
+              .maybeSingle();
 
-            if (task?.nguoi_xu_ly_chinh) {
+            if (!task) {
+              console.warn(`[ext-api] Task ${data.assigned_task_id} not found in project ${data.project_id}`);
+            } else if (task.nguoi_xu_ly_chinh) {
               // Create In-App Notification using the correct column names from the schema
               await supabaseAdmin.from("notifications").insert({
                 user_id: task.nguoi_xu_ly_chinh,
