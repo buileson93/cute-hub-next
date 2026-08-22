@@ -20,12 +20,13 @@ Người dùng báo cáo bảng vẫn không thể cuộn ngang được, thanh 
     - Kiểm tra logic tính toán chiều rộng cột để bảng thực sự rộng hơn container khi cần.
     - Sửa lỗi `TableBody` khi dùng ảo hóa: đảm bảo nó không làm mất đi khả năng cuộn ngang tự nhiên của thẻ `table`.
 
-### 2. Hệ thống giám sát hiệu năng (Instrumentation)
-- Tạo `src/components/mirats/debug/PerformanceMonitor.tsx`:
-    - Theo dõi FPS bằng `requestAnimationFrame`.
-    - Đếm số lần render của `StandardTable`.
-    - Đo thời gian từ lúc gọi `fetchNextPage` đến khi dữ liệu được merge vào cache.
-- Tích hợp vào `src/routes/__root.tsx` (chỉ hiển thị trong môi trường dev hoặc qua phím tắt).
+### 2. Tối ưu FPS triệt để (Deep Optimization)
+- Cập nhật `StandardTable.tsx` & `DataTableCore.tsx`:
+    - Sử dụng `transform: translate3d(0, ${start}px, 0)` để kích hoạt hardware acceleration (GPU).
+    - Thêm `will-change: transform` vào các row đang được ảo hóa.
+    - Memoize `TableCell` và nội dung render bên trong để tránh re-render khi cuộn (scroll-only re-renders).
+    - Tinh gọn DOM: Loại bỏ các thẻ `div` bọc không cần thiết trong `StandardTable`.
+- Giảm `overscan` xuống mức tối thiểu (ví dụ: 5) nếu CPU máy yếu bị quá tải khi render quá nhiều row ẩn.
 
 ### 3. Cải thiện trải nghiệm tải dữ liệu (Loading/Empty State)
 - Cập nhật `StandardTable.tsx`:
