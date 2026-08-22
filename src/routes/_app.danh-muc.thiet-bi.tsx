@@ -31,6 +31,7 @@ import {
   Timer,
   HeartPulse,
   MapPin,
+  Filter,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -69,6 +70,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
@@ -1247,16 +1249,30 @@ function DanhMucThietBiPage() {
           {/* Thanh tìm kiếm & lọc nhanh */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[240px] flex-1 sm:max-w-sm">
-              <Search 
-                aria-label="Tìm kiếm tài sản"
-                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" 
+              <label htmlFor="search-thiet-bi" className="sr-only">Tìm kiếm tài sản</label>
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
               />
               <Input
+                id="search-thiet-bi"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tìm theo tên, mã, S/N, loại, trạng thái…"
                 className="h-9 pl-8"
               />
+            </div>
+            <div className="flex items-center gap-2">
+              <AppTooltip noiDung="Lọc nâng cao">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-primary"
+                  aria-label="Lọc nâng cao"
+                >
+                  <Filter className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
             </div>
             <Select value={filterLoai} onValueChange={setFilterLoai}>
               <SelectTrigger className="h-9 w-[190px]" aria-label="Lọc theo chủng loại">
@@ -1367,58 +1383,66 @@ function DanhMucThietBiPage() {
                     <span className="text-[11px] text-muted-foreground">
                       Đã chọn {tagSelected.length}
                     </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs"
-                      aria-label="Bỏ chọn tất cả nhãn"
-                      onClick={() => setTagSelected([])}
-                    >
-                      Bỏ chọn tất cả
-                    </Button>
+                    <AppTooltip noiDung="Bỏ chọn tất cả nhãn">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs"
+                        aria-label="Bỏ chọn tất cả nhãn"
+                        onClick={() => setTagSelected([])}
+                      >
+                        Bỏ chọn tất cả
+                      </Button>
+                    </AppTooltip>
                   </div>
                 )}
               </PopoverContent>
             </Popover>
             {hasActiveFilter && (
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="Xoá tất cả bộ lọc"
-                className="h-9 gap-1.5 text-muted-foreground"
-                onClick={clearFilters}
-              >
-                <X className="h-3.5 w-3.5" /> Xoá lọc
-              </Button>
+              <AppTooltip noiDung="Xoá tất cả bộ lọc hiện tại">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Xoá tất cả bộ lọc"
+                  className="h-9 gap-1.5 text-muted-foreground"
+                  onClick={clearFilters}
+                >
+                  <X className="h-3.5 w-3.5" /> Xoá lọc
+                </Button>
+              </AppTooltip>
             )}
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Hiển thị</span>
               <div className="flex overflow-hidden rounded-md border bg-background shadow-sm">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewMode("table")}
-                  className={cn(
-                    "h-8 rounded-none px-3 text-xs gap-1.5",
-                    viewMode === "table" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
-                  )}
-                  aria-label="Xem dạng bảng"
-                >
-                  <ListIcon className="h-3.5 w-3.5" /> <span>Bảng</span>
-                </Button>
+                <AppTooltip noiDung="Xem dạng bảng (Tab)">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewMode("table")}
+                    className={cn(
+                      "h-8 rounded-none px-3 text-xs gap-1.5",
+                      viewMode === "table" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
+                    )}
+                    aria-label="Xem dạng bảng"
+                  >
+                    <ListIcon className="h-3.5 w-3.5" /> <span>Bảng</span>
+                  </Button>
+                </AppTooltip>
                 <div className="w-[1px] bg-border" />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "h-8 rounded-none px-3 text-xs gap-1.5",
-                    viewMode === "grid" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
-                  )}
-                  aria-label="Xem dạng lưới"
-                >
-                  <LayoutGrid className="h-3.5 w-3.5" /> <span>Lưới</span>
-                </Button>
+                <AppTooltip noiDung="Xem dạng lưới (Grid)">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className={cn(
+                      "h-8 rounded-none px-3 text-xs gap-1.5",
+                      viewMode === "grid" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
+                    )}
+                    aria-label="Xem dạng lưới"
+                  >
+                    <LayoutGrid className="h-3.5 w-3.5" /> <span>Lưới</span>
+                  </Button>
+                </AppTooltip>
               </div>
             </div>
           </div>
@@ -1434,15 +1458,19 @@ function DanhMucThietBiPage() {
           )}
 
           {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {devices.map(d => (
-                <Card key={d.ma_thiet_bi} className="overflow-hidden hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer" onClick={() => openDetail(d)}>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {devices.map((d) => (
+                <Card
+                  key={d.ma_thiet_bi}
+                  className="cursor-pointer overflow-hidden transition-all hover:ring-1 hover:ring-primary/20"
+                  onClick={() => openDetail(d)}
+                >
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-bold text-sm truncate">{d.ten}</div>
+                    <div className="mb-2 flex items-start justify-between">
+                      <div className="truncate text-sm font-bold">{d.ten}</div>
                       <StatusBadge domain="thiet_bi" code={d.trang_thai} />
                     </div>
-                    <div className="text-xs text-muted-foreground mb-3 font-mono">{d.ma_thiet_bi}</div>
+                    <div className="text-muted-foreground mb-3 font-mono text-xs">{d.ma_thiet_bi}</div>
                     <div className="grid grid-cols-2 gap-y-2 text-[11px]">
                       <div className="text-muted-foreground">Chủng loại:</div>
                       <div>{d.loai}</div>
@@ -1616,7 +1644,7 @@ function DanhMucThietBiPage() {
               </div>
             )}
           />
-          )}
+        )}
         </CardContent>
       </Card>
 

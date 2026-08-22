@@ -1277,7 +1277,7 @@ export function StandardTableInner<T>({
         >
           <Table
             className={cn(
-              "border-separate border-spacing-0 caption-bottom min-w-full",
+              "caption-bottom min-w-full astryx-table",
               density === "compact" && "text-[12px]",
               density === "comfortable" && "text-[13px]",
               density === "spacious" && "text-[14px]",
@@ -1366,7 +1366,7 @@ export function StandardTableInner<T>({
                         sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"
                       }
                       className={cn(
-                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0 p-0",
+                        "group relative astryx-table-header-cell p-0",
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
@@ -1550,9 +1550,9 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60 bg-card",
+                            "group transition-mirats-fast hover:bg-muted/60 astryx-table-row",
                             (onRowClick || selectable) && "cursor-pointer",
-                            isSel && "bg-[#0074e2]/5 !bg-[#0074e2]/5",
+                            isSel && "bg-[#0074e2]/5",
                             expandedRows.has(rid) && "bg-muted/40",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
@@ -1577,7 +1577,7 @@ export function StandardTableInner<T>({
                                 e.stopPropagation();
                                 toggleExpand(rid);
                               }}
-                              className="sticky left-0 z-10 bg-inherit border-r border-border/30 p-0 text-center"
+                              className="astryx-table-cell sticky left-0 z-10 bg-inherit p-0 text-center"
                             >
                               <div className="flex h-full w-full items-center justify-center">
                                 <Button
@@ -1598,7 +1598,7 @@ export function StandardTableInner<T>({
                             <TableCell
                               onClick={(e) => e.stopPropagation()}
                               className={cn(
-                                "sticky left-0 z-10 bg-inherit border-r border-border/30 p-0",
+                                "astryx-table-cell sticky left-0 z-10 bg-inherit p-0",
                                 viewMode === "tablet" && "left-10",
                               )}
                             >
@@ -1625,13 +1625,8 @@ export function StandardTableInner<T>({
                                     c.type === "currency" ||
                                     c.type === "percent") &&
                                     "astryx-table-cell-numeric",
-                                  density === "compact"
-                                    ? "px-1 py-0.5"
-                                    : density === "comfortable"
-                                      ? "px-1.5 py-0.5"
-                                      : "px-3 py-1.5",
                                   c.sticky &&
-                                    "sticky left-0 z-10 bg-inherit border-r border-border/30",
+                                    "sticky left-0 z-10 bg-inherit",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
                                   c.align === "right" && "text-right tabular-nums",

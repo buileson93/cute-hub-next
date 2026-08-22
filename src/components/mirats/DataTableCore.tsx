@@ -165,7 +165,7 @@ export function DataTableCore<T>({
   };
 
   const tableClasses = cn(
-    "relative w-full border-separate border-spacing-0",
+    "relative w-full astryx-table",
     density === "compact" ? "text-[12px]" : "text-[13px]",
   );
 
@@ -199,7 +199,7 @@ export function DataTableCore<T>({
                   flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                 }}
                 className={cn(
-                  "mirats-table-header-base astryx-table-header-cell",
+                  "astryx-table-header-cell",
                   col.sticky &&
                     "sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-r border-border/20",
                   selectable && col.sticky && "left-10",
@@ -263,7 +263,7 @@ export function DataTableCore<T>({
                         flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                       }}
                       className={cn(
-                        "mirats-table-cell-base border-b border-r border-border/20 astryx-table-cell",
+                        "astryx-table-cell",
                         col.cellClassName,
                         col.sticky &&
                           "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
@@ -298,7 +298,7 @@ export function DataTableCore<T>({
                   {selectable && (
                     <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
-                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
+                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20 astryx-table-cell"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
@@ -316,7 +316,7 @@ export function DataTableCore<T>({
                         flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                       }}
                       className={cn(
-                        "mirats-table-cell-base border-b border-r border-border/20",
+                        "astryx-table-cell",
                         col.cellClassName,
                         col.sticky &&
                           "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",

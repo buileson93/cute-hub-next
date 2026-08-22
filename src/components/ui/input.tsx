@@ -13,7 +13,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div
         className={cn(
           "astryx-input-wrapper group flex items-center w-full rounded-md border border-input bg-background shadow-none transition-all focus-within:ring-1 focus-within:ring-ring focus-within:border-ring disabled:cursor-not-allowed disabled:opacity-50",
-          "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
+          "h-9 px-0",
           props["aria-invalid"] && "border-destructive focus-within:ring-destructive",
           className,
         )}

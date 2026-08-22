@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium cursor-pointer transition-mirats-fast active:scale-[var(--scale-active,0.98)] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium cursor-pointer transition-mirats-fast active:scale-[var(--scale-active,0.98)] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -76,19 +76,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       return (
         <>
-          <span
-            className={cn(
-              "flex items-center justify-center gap-2 transition-opacity pointer-events-none",
-              loading ? "opacity-0" : "opacity-100",
-            )}
-          >
-            {children}
-          </span>
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <Loader2 className="animate-spin shrink-0 h-4 w-4 text-current" aria-hidden="true" />
-            </div>
+            <Loader2 className="animate-spin shrink-0 h-4 w-4 text-current" aria-hidden="true" />
           )}
+          {children}
         </>
       );
     };
