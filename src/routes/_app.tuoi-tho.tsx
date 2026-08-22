@@ -31,20 +31,26 @@ import {
 import { Combobox } from "@/components/mirats/Combobox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  ResponsiveContainer,
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   CartesianGrid,
   LineChart,
   Line,
-  Legend,
   PieChart,
   Pie,
   Cell,
 } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  ERPChartFrame,
+} from "@/components/ui/chart";
+import { chartNumberFormatter, chartCurrencyFormatter } from "@/lib/mirats/chart-formatters";
 import { healthDetail, tuoiThoConLai, namThayThe } from "@/lib/mirats/metrics";
 import { fmtDowntime, fmtVND } from "@/lib/mirats/format";
 import { useScope } from "@/lib/mirats/scope";
