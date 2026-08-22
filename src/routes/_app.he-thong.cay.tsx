@@ -566,6 +566,22 @@ function HeThongCayPage() {
                 </Button>
               </AppTooltip>
             )}
+            {canShare && (
+              <AppTooltip noiDung="Chia sẻ sơ đồ">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Đã sao chép liên kết sơ đồ");
+                  }}
+                  aria-label="Chia sẻ sơ đồ"
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
+            )}
             <AppTooltip noiDung="Cấu hình sơ đồ">
               <Button
                 variant="outline"
@@ -578,6 +594,7 @@ function HeThongCayPage() {
               </Button>
             </AppTooltip>
           </div>
+
         }
       />
 
