@@ -23,10 +23,8 @@ export async function verifyApiSecret(
   secretEnvName: string = "CRON_SECRET",
   headerName: string = "x-cron-secret"
 ): Promise<{ authorized: boolean; errorStatus: 401 | 404 | null }> {
-  // Ưu tiên đọc từ biến môi trường của Sandbox nếu có
   const expected = process.env[secretEnvName];
   
-  // Nếu secret không được cấu hình, fail closed bằng 404 để giấu endpoint
   if (!expected || expected.trim() === "") {
     console.warn(`[API Security] Secret ${secretEnvName} is not configured.`);
     return { authorized: false, errorStatus: 404 };
@@ -51,22 +49,18 @@ export async function auditPublicApiCall(
 ) {
   try {
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    // Đảm bảo request ID luôn có
     const detail = {
       outcome,
       timestamp: new Date().toISOString(),
       ...metadata,
     };
     
-    // Thực hiện insert nhưng không quan tâm kết quả trả về trong handler chính
-    // để tránh làm chậm hoặc crash endpoint do lỗi DB
+    // Thực hiện insert không block luồng chính
     supabaseAdmin.from("audit_log").insert({
       action: `api.public.hook.${endpoint}`,
       detail,
-    }).then(({ error }) => {
+    }).then(({ error }: { error: any }) => {
       if (error) console.error(`[Audit Log DB Error] ${endpoint}:`, error.message);
-    }).catch(err => {
-      console.error(`[Audit Log Promise Error] ${endpoint}:`, err);
     });
   } catch (err: any) {
     console.error(`[API Security Audit Failed] ${endpoint}:`, err?.message || String(err));
