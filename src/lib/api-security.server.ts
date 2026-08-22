@@ -26,11 +26,10 @@ export async function verifyApiSecret(
   // Ưu tiên đọc từ biến môi trường của Sandbox
   const expected = process.env[secretEnvName];
   
-  console.log(`[API Security Debug] Checking ${secretEnvName}. Configured: ${!!expected}`);
+  // LOG CHO DEBUG - Sẽ xóa sau khi fix xong
+  console.log(`[API Security Debug] ${secretEnvName}: ${expected ? 'SET' : 'MISSING'}`);
 
-  // Nếu secret không được cấu hình, fail closed bằng 404 để giấu endpoint
   if (!expected || expected.trim() === "") {
-    console.warn(`[API Security] Secret ${secretEnvName} is not configured.`);
     return { authorized: false, errorStatus: 404 };
   }
 
