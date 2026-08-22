@@ -83,12 +83,12 @@ const PROJECT_VIEWS: ReadonlyArray<{
   label: string;
   icon: LucideIcon;
 }> = [
-  { value: "kanban", label: "Board", icon: KanbanSquare },
-  { value: "gantt", label: "Gantt", icon: GanttChart },
-  { value: "list", label: "Danh sách", icon: ListTree },
-  { value: "timeline", label: "Timeline", icon: CalendarClock },
-  { value: "hoso", label: "Hồ sơ", icon: FolderArchive },
-  { value: "cong-van", label: "Công văn", icon: Mails },
+  { value: "kanban", label: "Bảng Kanban", icon: KanbanSquare },
+  { value: "gantt", label: "Biểu đồ Gantt", icon: GanttChart },
+  { value: "list", label: "Danh sách công việc", icon: ListTree },
+  { value: "timeline", label: "Dòng thời gian", icon: CalendarClock },
+  { value: "hoso", label: "Danh mục Hồ sơ", icon: FolderArchive },
+  { value: "cong-van", label: "Sổ Công văn", icon: Mails },
   { value: "phase-gate", label: "Ma trận Hồ sơ", icon: ShieldAlert },
 ];
 
