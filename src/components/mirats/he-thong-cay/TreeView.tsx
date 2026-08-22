@@ -306,9 +306,10 @@ export function TreeView({
             )}
           </button>
           <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
-          <span className="flex-1 truncate text-[13px] font-semibold leading-tight">
-            {nhLabel(nh.ma)}
-          </span>
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+            <TruncatedNodeLabel label={nhLabel(nh.ma)} code={nh.ma} />
+          </div>
+
           <Badge
             variant="secondary"
             className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center"
