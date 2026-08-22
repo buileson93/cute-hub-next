@@ -44,89 +44,53 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`IMPLEMENTATION MODE — TABLE COLOR STATES ONLY.
+          aria-label={`VERIFICATION MODE — MINDMAP/TABLE ONLY.
 
-Không sửa data loading, virtualization hoặc horizontal scroll trong prompt này.
+Không thêm feature và không sửa ngoài phạm vi nếu chưa tạo bug ticket mới.
 
-Phạm vi:
+1. Chạy app với dữ liệu có tên, mã, UUID, orphan reference và text dài.
 
-- src/styles.css
+2. Chụp screenshot trước/sau tại 390/768/1024/1440px, light/dark.
 
-- src/styles/astryx-component-skins.css
+3. Kiểm tra cả:
 
-- src/components/ui/table.tsx
+- Cây phân cấp;
 
-- StandardTable/DataTableCore/RawTableWrapper chỉ khi cần bỏ class trùng.
+- Sơ đồ tổng thể/mindmap;
 
-Nguyên nhân đã xác nhận:
+- StandardTable;
 
-- [data-astryx-theme="df3"] --color-accent light = #262626;
+- DataTableCore;
 
-- .astryx-table-row:hover dùng var(--color-accent) !important;
+- ít nhất hai raw table;
 
-- rule này thắng hover muted/primary tint của component và làm row gần đen.
+- bảng có sticky selection + action columns;
 
-Các bước:
+- bảng virtualized 1.000+ rows.
 
-1. Viết visual/DOM test RED cho light và dark:
+4. Với mindmap: xác minh primary label là tên; code chỉ là metadata; search/rename/expand hoạt động.
 
-- default;
+5. Với table: đo computed background/text contrast của default/hover/selected/focus.
 
-- hover;
+6. Xác minh scrollWidth, clientWidth, thay đổi scrollLeft bằng mouse/trackpad/keyboard/touch.
 
-- selected;
+7. Chạy test, typecheck, lint, build, ui:audit và Playwright visual tests bằng output fresh.
 
-- selected + hover;
+8. Nếu không có runtime/browser hoặc DB fixture, báo BLOCKED; không kết luận pass từ source inspection.
 
-- keyboard focus;
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10O
 
-- expanded;
+- Không còn UUID/mã làm primary label khi entity có tên.
 
-- disabled/non-clickable.
+- Không còn hover row màu đen hoặc mất tương phản.
 
-2. Không dùng semantic --color-accent của Astryx làm nền row. Tạo token table riêng, ví dụ:
+- Bảng rộng cuộn ngang được ở desktop/tablet và chỉ có một scroll owner.
 
-- --table-row-hover;
+- Không regression mobile, sticky header, virtualization, selection, resize hoặc action đúng record.
 
-- --table-row-selected;
+- Có screenshot, computed-style evidence và test output exit 0 cho từng acceptance criterion.
 
-- --table-row-selected-hover;
-
-- --table-row-focus-ring.
-
-Các token phải map tới muted/primary tint phù hợp light/dark.
-
-3. Xóa !important khỏi hover row. Chỉ một layer sở hữu row background; không định nghĩa cùng state ở styles.css, skin và component.
-
-4. Đảm bảo text/cell/badge/link/icon giữ contrast tối thiểu WCAG AA ở hover và selected.
-
-5. Sticky cells dùng cùng background state với row; không tạo mảng màu trắng/đen tách khỏi row.
-
-6. Row không clickable không dùng cursor pointer hoặc active scale. Clickable row có focus-visible rõ nhưng không đổi layout.
-
-7. Hover chỉ là enhancement; selected không phụ thuộc hover để nhận biết.
-
-8. Kiểm tra raw table, StandardTable và DataTableCore để không có implementation nào quay lại nền đen.
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10M
-
-- Light mode hover là tint nhẹ, chữ vẫn tối và dễ đọc; không còn nền đen.
-
-- Dark mode hover sáng hơn nền vừa đủ, không lóa và không mất chữ.
-
-- Selected, selected-hover, focus và expanded phân biệt rõ ràng.
-
-- Sticky cells đồng màu với toàn row.
-
-- Không còn .astryx-table-row:hover sử dụng var(--color-accent) !important.
-
-- Contrast tests và visual regression GREEN tại 390/768/1024/1440px.
-
-Commit:
-
-- test(ui): reproduce black table row hover
-
-- fix(ui): define accessible table row states`}
+- Mọi lỗi còn lại được ghi thành ticket riêng; không ghi “10K hoàn tất” nếu thiếu runtime evidence.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
