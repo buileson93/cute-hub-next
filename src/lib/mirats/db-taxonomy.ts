@@ -309,9 +309,10 @@ export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxon
   }
 
   const label = taxonomy?.htNameMap.get(sysId) || taxonomy?.htMaMap.get(sysId) || sysId;
-  const canonicalMa = taxonomy?.htList.find(h => h.id === sysId)?.ma || sysId;
+  const canonicalMa = taxonomy?.htList.find(h => h.id === sysId || h.ma === sysId)?.ma || sysId;
   
   return { id: sysId, ma: canonicalMa, label };
+
 }
 
 export function resolveThietBi(d: DbDevice, overrides?: Map<string, any>): TaxonomyResolved {
