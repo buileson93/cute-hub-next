@@ -626,8 +626,8 @@ function ResetPwDialog({
           </Button>
           <Button
             onClick={() => {
-              if (pw.length < 6) {
-                toast.error("Ít nhất 6 ký tự");
+              if (pw.length < 8) {
+                toast.error("Ít nhất 8 ký tự");
                 return;
               }
               onSubmit(pw);
