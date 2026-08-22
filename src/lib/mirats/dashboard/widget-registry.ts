@@ -17,6 +17,8 @@ export type WidgetType =
   | "su-co-heatmap"
   | "top-he-thong-su-co"
   | "top-thiet-bi-hong-lap"
+  | "project-health-bar"
+  | "dossier-compliance-heatmap"
   | "expiry-timeline";
 
 export interface DashboardWidgetConfig {
@@ -56,6 +58,16 @@ export const AVAILABLE_WIDGETS: Record<
     icon: "entity.asset",
   },
   "expiry-timeline": { title: "Lộ trình hết hạn", defaultWidth: 12, icon: "entity.history" },
+  "project-health-bar": {
+    title: "Sức khỏe dự án (Work Health)",
+    defaultWidth: 6,
+    icon: "entity.chart",
+  },
+  "dossier-compliance-heatmap": {
+    title: "Tuân thủ Hồ sơ (Dossier Compliance)",
+    defaultWidth: 6,
+    icon: "entity.security",
+  },
 };
 
 export const DEFAULT_HOME_LAYOUT: DashboardWidgetConfig[] = [
