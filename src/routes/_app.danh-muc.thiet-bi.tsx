@@ -1535,7 +1535,6 @@ function DanhMucThietBiPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           setDeleteTargets(selectedRows);
-                        }}
                           setDeleteKind("retire");
                         }}
                       >
