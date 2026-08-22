@@ -1,11 +1,24 @@
----
-name: Visual Text Update (Hierarchical Tree & Diagrams)
-description: Verbatim text update for Phase 10L documentation in TzClock.
-type: feature
----
+# Plan - Phase 10L: Visual Text Update
 
-Update `src/components/mirats/TzClock.tsx` `aria-label` to reflect the fixed status of the hierarchical tree and master diagrams.
+Update the visual status text in the application to reflect the completion of fixes for the hierarchical tree and master diagrams.
 
-Technical details:
-- Replace existing Phase 10K text in `aria-label` of `TzClock` with the new status text.
-- Text: "sửa xong cây phân cấp và sơ đồ tổng thể bị gì dữ liệu có vấn đề h toàn thành mã"
+## User Review Required
+
+> [!IMPORTANT]
+> This update replaces the previous Phase 10K verification text with a new status message.
+
+- **Target Component**: `src/components/mirats/TzClock.tsx`
+- **Attribute**: `aria-label`
+- **New Text**: `sửa xong cây phân cấp và sơ đồ tổng thể bị gì dữ liệu có vấn đề h toàn thành mã`
+
+## Technical Details
+
+### 1. Visual Text Update
+- Update `src/components/mirats/TzClock.tsx`.
+- Replace the long `aria-label` string (Phase 10K text) with the verbatim Vietnamese string provided by the user.
+- Ensure the `aria-label` remains correctly quoted within the JSX.
+
+### 2. Verification
+- Verify the build passes after the string replacement.
+- Check the `aria-label` is correctly rendered in the DOM via a quick browser check (if approved).
+
