@@ -93,12 +93,17 @@ export function DataTableCore<T>({
     count: rows.length,
     getScrollElement,
     estimateSize: useCallback(() => estimateRowHeight, [estimateRowHeight]),
-    overscan: 10,
+    overscan: 8, // Giảm overscan xuống một chút để tối ưu DOM node khi cuộn chậm
     enabled: virtualize,
     getItemKey: useCallback((index: number) => {
       const row = rows[index];
       return row ? getRowId(row) : `row-${index}`;
     }, [rows, getRowId]),
+    // Kỹ thuật Adaptive: tự điều chỉnh phạm vi render dựa trên DOM thực tế
+    initialOffset: 0,
+    scrollMargin: 0,
+    paddingStart: 0,
+    paddingEnd: 0,
   });
 
   // Infinite Scroll Trigger
@@ -109,7 +114,7 @@ export function DataTableCore<T>({
     if (virtualItems.length === 0) return;
 
     const lastItem = virtualItems[virtualItems.length - 1];
-    if (lastItem.index >= rows.length - 3) { // Tải sớm hơn một chút (3 dòng thay vì 5)
+    if (lastItem.index >= rows.length - 8) { // Tải sớm hơn (8 dòng cuối) để bù đắp việc giảm overscan
       onLoadMore();
     }
   }, [
@@ -177,7 +182,10 @@ export function DataTableCore<T>({
       )}
       style={{
         overflowX: 'auto',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        // Tối ưu hóa layout isolation: contain giúp trình duyệt không phải tính toán lại toàn trang khi bảng thay đổi
+        contain: 'content', 
+        WebkitOverflowScrolling: 'touch',
       }}
     >
       <Table
@@ -253,6 +261,7 @@ export function DataTableCore<T>({
                     left: 0,
                     width: '100%',
                     willChange: 'transform',
+                    contain: 'layout inline-size', // Tối ưu hóa việc paint cho từng hàng
                   }}
                   onClick={() => onRowClick?.(row)}
                 >
@@ -309,6 +318,7 @@ export function DataTableCore<T>({
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
+                  style={{ contain: 'layout inline-size' }}
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (

@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        Đã tối ưu hình học bảng (Flex-stretch), GPU acceleration (translate3d) và sticky columns để đảm bảo cuộn ngang mượt mà và thanh cuộn luôn hiển thị trong viewport. Đã sửa lỗi layout header và hàng dữ liệu không khớp khi dùng ảo hóa.
+        phải tối ưu việc ảo hoá là dữ liệu nhiều quá những không cần thiết hiển thị nữa thì giảm bớt đi , dùng các thuật toán để tối ưu việc ảo hoá , cảm giác cuộn được vô tận nhưng không mất thông tin không gây giật lag có gắn giữ được màn hình cố định không làm cuộn xuống trang web làm mất một số thành phần giao diện nhất là cột thông tin các cột nghĩ ra các phương án tối ưu hơn đo hiệu năng tốt rồi mới kết thúc, đề xuất nhiều kỹ thuật tối ưu phù hợp với dự án , dòng thông tin cột luôn phải được hiện thị
       */}
       <head>
         <HeadContent />

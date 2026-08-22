@@ -372,11 +372,13 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: 10,
+    overscan: 8,
     getItemKey: (index) => {
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;
     },
+    paddingStart: 0,
+    paddingEnd: 0,
   });
 
   useEffect(() => {
@@ -605,7 +607,9 @@ export function StandardTable<T>({
           ref={scrollContainerRef}
           style={{
             overflowX: 'auto',
-            overflowY: 'auto'
+            overflowY: 'auto',
+            contain: 'content',
+            WebkitOverflowScrolling: 'touch'
           }}
         >
           <Table 
@@ -672,7 +676,8 @@ export function StandardTable<T>({
                         className={cn("group transition-colors border-b", rowClassName?.(r))} 
                         onClick={() => onRowClick?.(r)}
                         style={{
-                          willChange: 'transform'
+                          willChange: 'transform',
+                          contain: 'layout inline-size'
                         }}
                       >
                         {selectable && (
