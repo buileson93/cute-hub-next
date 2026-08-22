@@ -438,8 +438,8 @@
 
 .mirats-data-table-core .mirats-data-table-core-element,
 .mirats-data-table-legacy {
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
+  border-collapse: separate;
+  border-spacing: 0;
   border-left: 1px solid var(--border);
 }
 
