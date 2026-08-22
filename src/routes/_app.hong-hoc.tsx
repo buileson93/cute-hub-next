@@ -432,10 +432,11 @@ function EditDialog({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Đã cập nhật phiếu");
+      toast.success("Đã cập nhật phiếu hỏng hóc");
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Cập nhật phiếu thất bại: " + e.message),
+
   });
 
   const complete = useMutation({
@@ -457,10 +458,11 @@ function EditDialog({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Đã hoàn thành phiếu hỏng hóc");
+      toast.success("Đã hoàn thành phiếu hỏng hóc thành công");
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Hoàn thành phiếu thất bại: " + e.message),
+
   });
 
   const canComplete = canCompleteHongHoc({

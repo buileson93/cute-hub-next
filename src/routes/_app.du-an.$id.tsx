@@ -489,9 +489,10 @@ function DuAnDetailPage() {
               isManager={isManager}
               onDeleteMoc={async (m) => {
                 const { error } = await supabase.from("du_an_moc").delete().eq("id", m.id);
-                if (error) toast.error(error.message);
+                if (error) toast.error("Xoá mốc thất bại: " + error.message);
                 else {
-                  toast.success("Đã xoá mốc");
+                  toast.success("Đã xoá mốc thành công");
+
                   qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
                   qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
                 }
@@ -990,12 +991,13 @@ function CreateMocDialog({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Đã thêm mốc chính");
+      toast.success("Đã thêm mốc chính thành công");
       onOpenChange(false);
       setForm({ ten: "", mo_ta: "", ngay_bat_dau: "", ngay_ket_thuc_du_kien: "" });
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Thêm mốc thất bại: " + e.message),
+
   });
 
   return (
@@ -1196,11 +1198,12 @@ function EditCongViecDialog({
       }
     },
     onSuccess: () => {
-      toast.success(isEdit ? "Đã cập nhật" : "Đã thêm công việc");
+      toast.success(isEdit ? "Đã cập nhật công việc thành công" : "Đã thêm công việc thành công");
       onOpenChange(false);
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error((isEdit ? "Cập nhật" : "Thêm") + " công việc thất bại: " + e.message),
+
   });
 
   const del = useMutation({
@@ -1210,11 +1213,12 @@ function EditCongViecDialog({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Đã xoá");
+      toast.success("Đã xoá công việc thành công");
       onOpenChange(false);
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Xoá công việc thất bại: " + e.message),
+
   });
 
   const toggleCollab = useMutation({

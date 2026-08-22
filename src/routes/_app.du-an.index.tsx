@@ -260,7 +260,7 @@ function CreateDuAnDialog({
       return data;
     },
     onSuccess: () => {
-      toast.success("Đã tạo dự án");
+      toast.success("Đã tạo dự án thành công");
       onOpenChange(false);
       setForm({
         ma: "",
@@ -272,7 +272,8 @@ function CreateDuAnDialog({
       });
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Tạo dự án thất bại: " + e.message),
+
   });
 
   return (
