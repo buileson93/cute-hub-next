@@ -514,7 +514,8 @@ function NhapLieuPage() {
       download(`${table}_export.csv`, toCsv(headers, rows));
       toast.success(`Đã xuất ${rows.length} dòng (đã giải mã liên kết về mã)`);
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error("Xuất dữ liệu thất bại: " + (e as Error).message);
+
     } finally {
       setBusy(false);
     }
@@ -580,7 +581,7 @@ function NhapLieuPage() {
         );
       }
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error("Nhập dữ liệu thất bại: " + (e as Error).message);
     } finally {
       setBusy(false);
     }
