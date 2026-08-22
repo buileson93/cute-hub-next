@@ -658,6 +658,8 @@ function HeThongCayPage() {
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
+                  canManageNodes={canManage}
+
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
