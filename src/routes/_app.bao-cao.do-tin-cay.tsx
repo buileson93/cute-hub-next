@@ -40,20 +40,25 @@ import { AnnotationManager, LOAI_META } from "@/components/mirats/AnnotationMana
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
-  ResponsiveContainer,
   ComposedChart,
   Bar,
   Line,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
   CartesianGrid,
   PieChart,
   Pie,
   Cell,
   ReferenceLine,
 } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  ERPChartFrame,
+} from "@/components/ui/chart";
 
 import {
   DeltaBadge,
@@ -126,112 +131,97 @@ function TrendCard({
   setTrendDrill: (v: any) => void;
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-col items-start justify-between gap-3 space-y-0 sm:flex-row">
-        <div>
-          <CardTitle className="text-base">Xu hướng sự cố theo thời gian</CardTitle>
-          <CardDescription>
-            Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng {bucketLabel}.
-          </CardDescription>
-        </div>
-        <div className="flex items-center gap-2">
+    <ERPChartFrame
+      title="Xu hướng sự cố theo thời gian"
+      subtitle={`Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng ${bucketLabel}.`}
+      loading={trendQ.isLoading}
+      empty={!trendData.length}
+      className="h-[400px]"
+      actions={
+        <div className="flex items-center gap-2" data-print-hide>
           <AnnotationManager
             items={annotationsQ.data ?? []}
             isLoading={annotationsQ.isLoading}
             onChanged={() => annotationsQ.refetch()}
           />
-          <TabsList>
-            <TabsTrigger value="day">Ngày</TabsTrigger>
-            <TabsTrigger value="week">Tuần</TabsTrigger>
-            <TabsTrigger value="month">Tháng</TabsTrigger>
+          <TabsList className="h-8">
+            <TabsTrigger value="day" className="text-[10px] px-2 h-7">Ngày</TabsTrigger>
+            <TabsTrigger value="week" className="text-[10px] px-2 h-7">Tuần</TabsTrigger>
+            <TabsTrigger value="month" className="text-[10px] px-2 h-7">Tháng</TabsTrigger>
           </TabsList>
         </div>
-      </CardHeader>
-      <CardContent>
-        {trendQ.isLoading ? (
-          <Skeleton className="h-72 w-full" />
-        ) : !trendData.length ? (
-          <EmptyState
-            title="Chưa có dữ liệu"
-            description="Không có sự cố trong khoảng thời gian đã chọn."
+      }
+    >
+      <ChartContainer
+        config={{
+          so_su_co: { label: "Sự cố", color: "var(--chart-1)" },
+          so_dong: { label: "Đã đóng", color: "var(--chart-6)" },
+          mttr_gio: { label: "MTTR (giờ)", color: "var(--chart-4)" },
+        }}
+      >
+        <ComposedChart data={trendData} margin={{ top: 8, right: 0, left: -20, bottom: 0 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="label" axisLine={false} tickLine={false} />
+          <YAxis yAxisId="left" axisLine={false} tickLine={false} allowDecimals={false} />
+          <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartLegend content={<ChartLegendContent />} />
+          <Bar
+            yAxisId="left"
+            dataKey="so_su_co"
+            fill="var(--color-so_su_co)"
+            radius={[3, 3, 0, 0]}
+            barSize={20}
+            onClick={(p) => {
+              const start = p?.payload?.bucket_start;
+              if (!start) return;
+              const s = new Date(start);
+              const e = new Date(s);
+              if (bucket === "day") e.setDate(e.getDate() + 1);
+              else if (bucket === "week") e.setDate(e.getDate() + 7);
+              else e.setMonth(e.getMonth() + 1);
+              setTrendDrill({
+                from: s.toISOString(),
+                to: e.toISOString(),
+                label: p.payload?.label ?? "",
+              });
+            }}
           />
-        ) : (
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={trendData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
-                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                  formatter={(value: number | string, name: string) => [value ?? "—", name]}
-                />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar
-                  yAxisId="left"
-                  dataKey="so_su_co"
-                  name="Sự cố"
-                  fill="var(--primary)"
-                  radius={[3, 3, 0, 0]}
-                  cursor="pointer"
-                  onClick={(payloadItem) => {
-                    const p = payloadItem as unknown as {
-                      payload?: { bucket_start?: string; label?: string };
-                    };
-                    const start = p?.payload?.bucket_start;
-                    if (!start) return;
-                    const s = new Date(start);
-                    const e = new Date(s);
-                    if (bucket === "day") e.setDate(e.getDate() + 1);
-                    else if (bucket === "week") e.setDate(e.getDate() + 7);
-                    else e.setMonth(e.getMonth() + 1);
-                    setTrendDrill({
-                      from: s.toISOString(),
-                      to: e.toISOString(),
-                      label: p.payload?.label ?? "",
-                    });
-                  }}
-                />
-                <Bar
-                  yAxisId="left"
-                  dataKey="so_dong"
-                  name="Đã đóng"
-                  fill="var(--muted-foreground)"
-                  radius={[3, 3, 0, 0]}
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="mttr_gio"
-                  name="MTTR (giờ)"
-                  stroke="var(--destructive)"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                />
-                {annotationsMapped.map((a) => (
-                  <ReferenceLine
-                    key={a.id}
-                    yAxisId="left"
-                    x={a.label}
-                    stroke={a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc")}
-                    strokeDasharray="4 3"
-                    strokeWidth={1.5}
-                    ifOverflow="extendDomain"
-                    label={{
-                      value: `${(LOAI_META[a.loai as keyof typeof LOAI_META]?.label || "X").charAt(0)}·${a.tieu_de.slice(0, 24)}`,
-                      position: "top",
-                      fill: a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc"),
-                      fontSize: 10,
-                    }}
-                  />
-                ))}
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          <Bar
+            yAxisId="left"
+            dataKey="so_dong"
+            fill="var(--color-so_dong)"
+            opacity={0.3}
+            radius={[3, 3, 0, 0]}
+            barSize={20}
+          />
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="mttr_gio"
+            stroke="var(--color-mttr_gio)"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+          />
+          {annotationsMapped.map((a) => (
+            <ReferenceLine
+              key={a.id}
+              yAxisId="left"
+              x={a.label}
+              stroke={a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc")}
+              strokeDasharray="4 3"
+              strokeWidth={1.5}
+              label={{
+                value: `${(LOAI_META[a.loai as keyof typeof LOAI_META]?.label || "X").charAt(0)}·${a.tieu_de.slice(0, 16)}`,
+                position: "top",
+                fill: a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc"),
+                fontSize: 9,
+              }}
+            />
+          ))}
+        </ComposedChart>
+      </ChartContainer>
+    </ERPChartFrame>
   );
 }
 
