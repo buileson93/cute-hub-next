@@ -12,19 +12,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ColumnDef } from "./StandardTable";
 
-interface ColumnVisibilityProps<T> {
-  columns: ColumnDef<T>[];
+interface ColumnVisibilityProps {
+  columns: ColumnDef<any>[];
   hidden: Set<string>;
   toggle: (key: string) => void;
   reset: () => void;
 }
 
-export const ColumnVisibilityMenu = memo(function ColumnVisibilityMenu<T>({
+export const ColumnVisibilityMenu = memo(function ColumnVisibilityMenu({
   columns,
   hidden,
   toggle,
   reset,
-}: ColumnVisibilityProps<T>) {
+}: ColumnVisibilityProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
