@@ -270,10 +270,6 @@ export function DataTableCore<T>({
                         col.type === "actions" &&
                           "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
                       )}
-                      style={{
-                        width: col.width,
-                        minWidth: col.minWidth || (col.width ? undefined : 100),
-                      }}
                     >
                       {renderCellContent(col, row)}
                     </TableCell>
