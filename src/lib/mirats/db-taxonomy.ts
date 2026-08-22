@@ -183,26 +183,7 @@ type CatRow = { id: string; ma: string; ten: string; thu_tu: number | null };
 const TB_COLS =
   "id, ma_thiet_bi, ma_tai_san_bravo, ten_thiet_bi, ma_serial, p_n, model, model_id, nha_san_xuat, nha_cung_cap, vi_tri, vi_tri_id, ngay_mua, han_bao_hanh, ghi_chu, he_thong_id, phan_loai_id, nhom_he_thong_id, don_vi_id, trang_thai_id, loai_thiet_bi_id, phan_loai, nam_san_xuat, nam_dua_vao_khai_thac, ty_le_tuoi_tho, noi_quan_ly, thanh_phan, nguoi_giu, don_vi_giu_id, ngay_cap_phat, trang_thai_cap_phat, gan_chuc_nang(id, he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten))";
 
-async function fetchAllThietBi(): Promise<Record<string, unknown>[]> {
-  const page = 1000;
-  let from = 0;
-  const out: Record<string, unknown>[] = [];
-  for (;;) {
-    const { data, error } = await supabase
-      .from("thiet_bi")
-      .select(TB_COLS)
-      .order("ma_thiet_bi", { ascending: true })
-      .range(from, from + page - 1);
-    if (error) throw error;
-    const rows = (data ?? []) as unknown as Record<string, unknown>[];
-    out.push(...rows);
-    if (rows.length < page) break;
-    from += page;
-  }
-  return out;
-}
-
-async function loadTaxonomy(): Promise<DbTaxonomy> {
+async function loadBaseTaxonomy(): Promise<DbTaxonomy> {
   const [plRes, nhomRes, htRes, dvRes, ttRes, vtRes, ltRes, mdRes, nsxRes, editRes, tbRows] =
     await Promise.all([
       supabase.from("dm_phan_loai").select("id, ma, ten, thu_tu").order("thu_tu"),
