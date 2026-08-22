@@ -294,6 +294,7 @@ export function DataTableCore<T>({
                 >
                   {selectable && (
                     <TableCell
+                      style={{ flex: '0 0 40px', width: 40 }}
                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
                         e.stopPropagation();
