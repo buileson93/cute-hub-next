@@ -559,7 +559,7 @@ export function StandardTableInner<T>({
   }, [density]);
 
   const rowVirtualizer = useVirtualizer({
-    count: display.length,
+    count: gated ? 0 : display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateRowHeight,
     overscan: isTest ? 100 : 15,
