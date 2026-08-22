@@ -1550,13 +1550,14 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group transition-mirats-fast hover:bg-muted/60 astryx-table-row",
+                            "group astryx-table-row",
                             (onRowClick || selectable) && "cursor-pointer",
-                            isSel && "bg-[#0074e2]/5",
-                            expandedRows.has(rid) && "bg-muted/40",
+                            isSel && "selected",
+                            expandedRows.has(rid) && "expanded",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
                           )}
+
                           onClick={() => onRowClick?.(r)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
