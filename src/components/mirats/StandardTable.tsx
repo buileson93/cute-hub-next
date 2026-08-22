@@ -151,7 +151,7 @@ export function StandardTable<T>({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const density = useDensity();
-  const prefs = useColumnPrefs(prefKey || "standard-table", columns);
+  const prefs = useColumnPrefs(prefKey || "standard-table", columns.map(c => c.key));
 
   const getRowIdInternal = useCallback(
     (r: T) => {
@@ -495,7 +495,7 @@ export function StandardTable<T>({
                   onSelect={toggleRow}
                   onExpand={toggleExpand}
                   onRowClick={onRowClick}
-                  rowClassName={rowClassName ? rowClassName(r) : ""}
+                  rowClassName={rowClassName}
                   renderCellContent={renderCellContent}
                   toolbarRight={toolbarRight}
                 />

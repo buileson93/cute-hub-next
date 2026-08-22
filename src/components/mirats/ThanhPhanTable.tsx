@@ -33,7 +33,7 @@ import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { useUserPref } from "@/hooks/use-user-pref";
-import { StandardTable } from "@/components/mirats/StandardTable";
+import { StandardTable, type ColumnDef as StdColumn } from "@/components/mirats/StandardTable";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Badge } from "@/components/ui/badge";
