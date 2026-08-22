@@ -147,8 +147,12 @@ function SoDoEditorPage() {
       // Cleanup for any remaining XYFlow or DOM elements
       const canvases = document.querySelectorAll("canvas");
       canvases.forEach((c) => {
-        c.width = 0;
-        c.height = 0;
+        try {
+          c.width = 0;
+          c.height = 0;
+        } catch (e) {
+          /* canvas might be already detached */
+        }
       });
     };
   }, []);

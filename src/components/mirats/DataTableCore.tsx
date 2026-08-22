@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useLayoutEffect, useEffect } from "react";
+import React, { useMemo, useRef, useState, useLayoutEffect, useEffect, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "@/lib/utils";
 import {
@@ -85,12 +85,18 @@ export function DataTableCore<T>({
     return 32;
   }, [density]);
 
+  const getScrollElement = useCallback(() => containerRef.current, []);
+
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => containerRef.current,
-    estimateSize: () => estimateRowHeight,
-    overscan: 10,
+    getScrollElement,
+    estimateSize: useCallback(() => estimateRowHeight, [estimateRowHeight]),
+    overscan: 8,
     enabled: virtualize,
+    getItemKey: useCallback((index: number) => {
+      const row = rows[index];
+      return row ? getRowId(row) : index;
+    }, [rows, getRowId]),
   });
 
   // Infinite Scroll Trigger
@@ -164,13 +170,12 @@ export function DataTableCore<T>({
     <div
       ref={containerRef}
       className={cn(
-        "relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core",
+        "relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core h-full",
         className,
       )}
-      style={{ maxHeight }}
     >
       <Table
-        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}
+        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full table-fixed")}
       >
         <TableHeader className="sticky top-0 z-40">
           <TableRow className="hover:bg-transparent border-b-0 border-t-0">
@@ -202,7 +207,8 @@ export function DataTableCore<T>({
         </TableHeader>
         <TableBody style={{ 
           height: virtualize ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
-          position: 'relative'
+          position: 'relative',
+          display: 'block'
         }}>
           {rows.length === 0 ? (
             <TableRow>
@@ -221,11 +227,11 @@ export function DataTableCore<T>({
 
               return (
                 <TableRow
-                  key={id}
+                  key={virtualRow.key || virtualRow.index}
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50 absolute w-full",
+                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full",
                     onRowClick && "cursor-pointer",
                     isSelected && "bg-primary/5",
                   )}
@@ -277,7 +283,7 @@ export function DataTableCore<T>({
 
               return (
                 <TableRow
-                  key={id}
+                  key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
                     "group transition-mirats-fast hover:bg-muted/50",
                     onRowClick && "cursor-pointer",

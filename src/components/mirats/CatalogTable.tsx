@@ -226,24 +226,28 @@ export function CatalogTable({
       // `thiet_bi` đã vượt/tiệm cận 1000 dòng, mặc định PostgREST sẽ cắt.
       const counts = new Map<string, number>();
       const PAGE = 1000;
-      for (let from = 0; ; from += PAGE) {
-        const { data: tb, error: countErr } = await supabase
-          .from("thiet_bi")
-          .select(usageColumn)
-          .not(usageColumn, "is", null)
-          .range(from, from + PAGE - 1);
-        
-        if (countErr) {
-          console.error("Failed to fetch usage counts:", countErr);
-          break;
+      try {
+        for (let from = 0; ; from += PAGE) {
+          const { data: tb, error: countErr } = await supabase
+            .from("thiet_bi")
+            .select(usageColumn)
+            .not(usageColumn, "is", null)
+            .range(from, from + PAGE - 1);
+          
+          if (countErr) {
+            console.error("Failed to fetch usage counts:", countErr);
+            break;
+          }
+          
+          const batch = (tb ?? []) as Record<string, string>[];
+          for (const t of batch) {
+            const id = t[usageColumn];
+            if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+          }
+          if (batch.length < PAGE) break;
         }
-        
-        const batch = (tb ?? []) as Record<string, string>[];
-        for (const t of batch) {
-          const id = t[usageColumn];
-          if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
-        }
-        if (batch.length < PAGE) break;
+      } catch (e) {
+        console.error("Critical error in usage counting loop:", e);
       }
 
       return ((data ?? []) as unknown as Record<string, unknown>[]).map((r) => ({

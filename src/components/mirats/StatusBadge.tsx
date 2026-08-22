@@ -69,7 +69,7 @@ export function StatusBadge({ domain, code, className, label, dotOnly }: Props) 
   return (
     <Badge
       variant="outline"
-      className={cn("font-medium whitespace-nowrap gap-1.5 py-0.5 inline-flex", colorClass, className)}
+      className={cn("font-medium whitespace-nowrap gap-1.5 py-0.5 inline-flex shrink-0", colorClass, className)}
       aria-label={label ?? token?.label ?? code ?? "Trạng thái"}
     >
       {token?.icon && <Icon name={token.icon} size="tiny" />}

@@ -48,7 +48,7 @@ export const UI_DENSITY = {
     "text-[11px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider font-bold",
   TABLE_CELL_PX: "px-1.5 data-[density=comfortable]:px-3.5 data-[density=spacious]:px-4",
   TABLE_CELL_PY: "py-0.5 data-[density=comfortable]:py-1.5 data-[density=spacious]:py-2",
-  TABLE_MAX_H: "max-h-[calc(100vh-8rem)] data-[density=comfortable]:max-h-[calc(100vh-10rem)]",
+  TABLE_MAX_H: "max-h-full",
 
   // --- Controls & Icons ---
   CONTROL_H:
