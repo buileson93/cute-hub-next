@@ -752,7 +752,7 @@ function DoTinCayPage() {
                   if (key) setSevDrill(key);
                 }}
               >
-                {severityQ.data.map((_: any, i: number) => (
+                {severityQ.data?.map((_: any, i: number) => (
                   <Cell key={i} fill={SEVERITY_COLORS[i % SEVERITY_COLORS.length]} />
                 ))}
               </Pie>
