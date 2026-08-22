@@ -419,8 +419,8 @@
 
 /* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút khi cần */
 .lucide:not([class*="h-"]) {
-  transform: scale(0.9);
-  transform-origin: center;
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 /* Bảng: Chuẩn hóa styles ô bảng thông qua các utility và skin, tránh ghi đè global bừa bãi */
