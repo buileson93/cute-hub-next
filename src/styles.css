@@ -424,7 +424,7 @@
 }
 
 /* Bảng: Chuẩn hóa styles ô bảng thông qua các utility và skin, tránh ghi đè global bừa bãi */
-.mirats-table-cell-base {
+.astryx-table-cell {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
@@ -436,14 +436,13 @@
   overflow-wrap: break-word;
 }
 
-.mirats-data-table-core .mirats-data-table-core-element,
-.mirats-data-table-legacy {
+.astryx-table {
   border-collapse: separate;
   border-spacing: 0;
   border-left: 1px solid var(--border);
 }
 
-.mirats-table-header-base {
+.astryx-table-header-cell {
   line-height: 1.2;
   font-weight: 700;
   font-size: 11px;
