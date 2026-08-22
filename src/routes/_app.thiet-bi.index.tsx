@@ -39,6 +39,7 @@ import {
   type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { TreeView } from "@/components/mirats/so-ly-lich/TreeView";
