@@ -134,8 +134,10 @@ export function LienKetGroups({ heThongId, rows }: { heThongId: string; rows: Do
 
 export function HeThongLienKetTab({ heThongId }: { heThongId: string }) {
   const { rows, isLoading } = useLienKetCuaHeThong(heThongId);
+  const canManage = useCan("he-thong-cay", "manage");
   const [showImpact, setShowImpact] = useState(false);
   const { impact, isFetching } = usePhanTichTacDong(showImpact ? heThongId : undefined);
+
 
   const tenMap = useMemo(() => {
     const m = new Map<string, string>();
@@ -160,10 +162,13 @@ export function HeThongLienKetTab({ heThongId }: { heThongId: string }) {
         <div className="flex items-center gap-2 text-sm font-medium">
           <Link2 className="h-4 w-4 text-primary" /> {rows.length} liên kết đi/đến
         </div>
-        <Button size="sm" variant="outline" onClick={() => setShowImpact((v) => !v)}>
-          <AlertTriangle className="mr-1 h-4 w-4" />{" "}
-          {showImpact ? "Ẩn phân tích" : "Phân tích tác động"}
-        </Button>
+        {canManage && (
+          <Button size="sm" variant="outline" onClick={() => setShowImpact((v) => !v)}>
+            <AlertTriangle className="mr-1 h-4 w-4" />{" "}
+            {showImpact ? "Ẩn phân tích" : "Phân tích tác động"}
+          </Button>
+        )}
+
       </div>
 
       <LienKetGroups heThongId={heThongId} rows={rows} />
