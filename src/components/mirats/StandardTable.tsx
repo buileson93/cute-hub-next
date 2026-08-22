@@ -551,7 +551,7 @@ export function StandardTableInner<T>({
     });
   };
 
-  const isTest = typeof window !== "undefined" && (window as any).process?.env?.NODE_ENV === "test";
+  const isTest = typeof process !== "undefined" && process.env.NODE_ENV === "test";
   const [density] = useDensity();
 
   const estimateRowHeight = useMemo(() => {
