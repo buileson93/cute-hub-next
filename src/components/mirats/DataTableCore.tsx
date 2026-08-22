@@ -224,8 +224,8 @@ export function DataTableCore<T>({
           position: 'relative',
         }}>
           {rows.length === 0 ? (
-            <TableRow>
-              <OptimizedCell colKey="empty" colSpan={columns.length + (selectable ? 1 : 0)} className="h-32 text-center text-muted-foreground italic">
+            <TableRow className="border-0">
+              <OptimizedCell colKey="empty" colSpan={columns.length + (selectable ? 1 : 0)} className="h-32 text-center text-muted-foreground italic border-0">
                 Không có dữ liệu hiển thị
               </OptimizedCell>
             </TableRow>
