@@ -159,6 +159,20 @@ export async function updateEntityRow(input: UpdateRowInput): Promise<void> {
     .update(patch as never)
     .eq(target.keyCol, id);
   if (error) throw error;
+
+  // Invariant check for bulk update
+  if (target.nameCol in patch) {
+    const { data: verified, error: verErr } = await supabase
+      .from(target.table as never)
+      .select(target.nameCol)
+      .eq(target.keyCol, id)
+      .maybeSingle();
+
+    if (verErr || !verified || (verified as any)[target.nameCol] !== patch[target.nameCol]) {
+      throw new Error("Cập nhật thất bại: Dữ liệu chưa được lưu chính xác (vui lòng thử lại)");
+    }
+  }
+
 }
 
 // ---------------------------------------------------------------------------
