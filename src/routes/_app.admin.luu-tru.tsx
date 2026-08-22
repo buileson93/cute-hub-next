@@ -130,11 +130,13 @@ function Content() {
   async function onSave() {
     try {
       await save.mutateAsync(fromMode(mode, autoFallback));
-      toast.success("Đã lưu cấu hình lưu trữ. Áp dụng cho các lượt upload tiếp theo.");
+      // success toast is handled by save mutation onSuccess hook
     } catch (e: any) {
-      toast.error("Lưu thất bại: " + e.message);
+      // error toast is handled by save mutation onError hook if added, 
+      // but let's check useSaveStorageConfig
     }
   }
+
 
   return (
     <PageFrame density="comfortable">

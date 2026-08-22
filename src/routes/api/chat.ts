@@ -88,17 +88,35 @@ export const Route = createFileRoute("/api/chat")({
 
         const systemPrompt = (cfg.system_prompt ?? "") + schemaBlock + writeBlock;
 
-        // Persist the LAST user message immediately (so history remains even if stream aborts)
+        // 1. Kiểm tra quyền sở hữu conversation
         if (conversationId) {
+          const { data: conv, error: convErr } = await supabase
+            .from("ai_conversation")
+            .select("user_id")
+            .eq("id", conversationId)
+            .maybeSingle();
+
+          if (convErr) return new Response(convErr.message, { status: 500 });
+          if (!conv || conv.user_id !== userId) {
+            return new Response("Bạn không có quyền truy cập hội thoại này", { status: 403 });
+          }
+
+          // 2. Persist the LAST user message idempotently
           const last = messages[messages.length - 1];
           if (last && last.role === "user") {
-            await supabase.from("ai_message").insert({
-              conversation_id: conversationId,
-              role: "user",
-              content: last as unknown as Record<string, unknown>,
-            });
+            const { error: insErr } = await supabase.from("ai_message").upsert(
+              {
+                id: last.id, // Dùng ID từ client để idempotent
+                conversation_id: conversationId,
+                role: "user",
+                content: last as unknown as Record<string, unknown>,
+              },
+              { onConflict: "id" },
+            );
+            if (insErr) console.error("[Chat API] User message persist error:", insErr.message);
           }
         }
+
 
         const modelMessages = await convertToModelMessages(messages);
         const result = streamText({
@@ -112,24 +130,34 @@ export const Route = createFileRoute("/api/chat")({
 
         return result.toUIMessageStreamResponse({
           originalMessages: messages,
-          // Lưu trong onFinish của UIMessage stream: `messages` ở đây là UIMessage[]
-          // (đã có `.parts`) nên UI đọc lại đúng shape sau khi reload.
           onFinish: async ({ messages: uiMessages }) => {
             if (!conversationId) return;
+
+            // Chỉ lưu tin nhắn mới của assistant (hoặc các tin nhắn chưa có trong DB)
+            // Lọc ra các tin nhắn chưa được lưu (dựa trên ID)
             const assistantMsgs = uiMessages.filter((m) => m.role === "assistant");
             for (const m of assistantMsgs) {
-              await supabase.from("ai_message").insert({
-                conversation_id: conversationId,
-                role: "assistant",
-                content: m as unknown as Record<string, unknown>,
-              });
+              const { error: insErr } = await supabase.from("ai_message").upsert(
+                {
+                  id: m.id,
+                  conversation_id: conversationId,
+                  role: "assistant",
+                  content: m as unknown as Record<string, unknown>,
+                },
+                { onConflict: "id" },
+              );
+              if (insErr) console.error("[Chat API] Assistant message persist error:", insErr.message);
             }
-            await supabase
+
+            const { error: updErr } = await supabase
               .from("ai_conversation")
               .update({ updated_at: new Date().toISOString() })
               .eq("id", conversationId);
+
+            if (updErr) console.error("[Chat API] Conversation update error:", updErr.message);
           },
         });
+
       },
     },
   },

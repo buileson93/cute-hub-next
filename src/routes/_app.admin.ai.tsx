@@ -77,18 +77,24 @@ function AdminAiPage() {
     );
   }
 
-  const submit = () => {
-    save.mutate({
-      enabled: form.enabled,
-      provider: form.provider,
-      model: form.model,
-      base_url: form.base_url || null,
-      api_key_secret_name: form.api_key_secret_name || null,
-      system_prompt: form.system_prompt,
-      max_tokens: Number(form.max_tokens),
-      beta_label: form.beta_label,
-    });
+  const submit = async () => {
+    try {
+      await save.mutateAsync({
+        enabled: form.enabled,
+        provider: form.provider,
+        model: form.model,
+        base_url: form.base_url || null,
+        api_key_secret_name: form.api_key_secret_name || null,
+        system_prompt: form.system_prompt,
+        max_tokens: Number(form.max_tokens),
+        beta_label: form.beta_label,
+      });
+      // toast.success được gọi trong onSuccess của useMutation
+    } catch (e) {
+      // toast.error được gọi trong onError của useMutation
+    }
   };
+
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6 lg:p-8">
