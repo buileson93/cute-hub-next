@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        Implement server-side pagination hoặc keyset pagination để giới hạn dữ liệu trả về khi cuộn vô tận, giảm lag khi kéo xuống sâu.\n\nTune cấu hình virtualization (ước lượng chiều cao hàng, overscan, windowing) để giảm giật lag và giữ animation mượt khi có nhiều dữ liệu.\n\nAdd lại phần điều khiển tính năng cột (column visibility/menus) sao cho không biến mất khi cuộn hoặc đổi tab Theo tài sản/Thành phần.\n\nRun Playwright regression test cho các tab và hành vi cuộn vô tận để đảm bảo header, nút tính năng cột và hiệu năng không bị lỗi lại.
+        không cần thêm bảng điều khiển theo dõi FPS tôi muốn tối ưu để hiển thị bảng ko bị tụt FPS nữa kiểm tra lại test lại rồi tối ưu tôi không cần hệ thống giám sát gì hết trải nghiệm mượt dù máy yếu cũng phải đạt không nghĩ cách khác chứ như này không ổn
       */}
       <head>
         <HeadContent />
