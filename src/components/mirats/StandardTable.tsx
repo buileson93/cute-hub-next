@@ -1249,7 +1249,7 @@ export function StandardTableInner<T>({
               const rid = getRowIdInternal(r);
               return (
                 <MobileRecordCard
-                  key={rid}
+                  key={`mobile-row-${rid}-${idx}`}
                   row={r}
                   rowIndex={idx}
                   rowId={rid}
