@@ -126,6 +126,10 @@ interface StandardTableProps<T> {
   prefKey?: string;
   gated?: boolean;
   emptyText?: string;
+  tableKey?: string;
+  className?: string;
+  requireFilterToShow?: boolean;
+  setSelected?: (ids: Set<string>) => void;
 }
 
 export function StandardTable<T>({
@@ -147,6 +151,10 @@ export function StandardTable<T>({
   prefKey,
   gated,
   emptyText,
+  tableKey,
+  className,
+  requireFilterToShow,
+  setSelected,
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
@@ -155,7 +163,7 @@ export function StandardTable<T>({
 
   const densityData = useDensity();
   const density = typeof densityData === "string" ? densityData : densityData[0];
-  const prefs = useColumnPrefs(prefKey || "standard-table", columns.map(c => c.key));
+  const prefs = useColumnPrefs(tableKey || prefKey || "standard-table", columns.map(c => c.key));
 
   const getRowIdInternal = useCallback(
     (r: T) => {
@@ -172,7 +180,8 @@ export function StandardTable<T>({
       const next = new Set(selected);
       if (next.has(id)) next.delete(id);
       else next.add(id);
-      onSelect(next);
+      onSelect?.(next);
+      setSelected?.(next);
     },
     [onSelect, selected],
   );
@@ -182,7 +191,9 @@ export function StandardTable<T>({
     if (selected.size === rows.length) {
       onSelect(new Set());
     } else {
-      onSelect(new Set(rows.map(getRowIdInternal)));
+      const next = new Set(rows.map(getRowIdInternal));
+      onSelect?.(next);
+      setSelected?.(next);
     }
   }, [onSelect, selected, rows, getRowIdInternal]);
 
@@ -455,7 +466,7 @@ export function StandardTable<T>({
   const sortedColumns = shownCols;
 
   return (
-    <div className="flex flex-col gap-3 min-h-0 w-full overflow-hidden">
+    <div className={cn("flex flex-col gap-3 min-h-0 w-full overflow-hidden", className)}>
       {(toolbar || toolbarRight) && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
