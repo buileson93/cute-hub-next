@@ -305,7 +305,7 @@ export function DataTableCore<T>({
                 <MemoizedTableRow
                   key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
-                    "group astryx-table-row",
+                    "group astryx-table-row flex items-stretch",
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
