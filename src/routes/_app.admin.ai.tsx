@@ -89,11 +89,11 @@ function AdminAiPage() {
         max_tokens: Number(form.max_tokens),
         beta_label: form.beta_label,
       });
-      // toast.success được gọi trong onSuccess của useMutation
     } catch (e) {
-      // toast.error được gọi trong onError của useMutation
+      // toast.error is handled by mutation onError
     }
   };
+
 
 
   return (
