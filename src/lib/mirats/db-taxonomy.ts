@@ -150,6 +150,7 @@ async function loadBaseTaxonomy(): Promise<DbTaxonomy> {
   const vt = (vtRes.data ?? []) as Array<CatRow & { mo_ta: string | null }>;
 
   return {
+    devices: [], // TỐI ƯU 10H: Trả về mảng rỗng để buộc các route dùng paged query
     plList: pl.map((r) => ({
       id: r.id,
       ten: r.ten,
