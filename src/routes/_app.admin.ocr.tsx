@@ -144,10 +144,16 @@ function OcrAdminPage() {
         fileName: doc.file_name,
       }));
 
-    processor.setQueue(itemsToProcess);
-    processor.start();
-    setActiveTab("processing");
+    try {
+      processor.setQueue(itemsToProcess);
+      processor.start();
+      toast.success(`Đã bắt đầu xử lý hàng loạt ${itemsToProcess.length} tài liệu`);
+      setActiveTab("processing");
+    } catch (e) {
+      toast.error("Khởi tạo tiến trình xử lý thất bại: " + (e as Error).message);
+    }
   };
+
 
   const toggleSelectAll = () => {
     if (selectedIds.size === filteredDocs.length) {
