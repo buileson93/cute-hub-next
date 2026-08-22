@@ -215,8 +215,13 @@ function DotDetailPage() {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["dot-bao-duong", id] }),
+    onSuccess: () => {
+      toast.success("Đã lưu thay đổi đợt bảo dưỡng");
+      qc.invalidateQueries({ queryKey: ["dot-bao-duong", id] });
+    },
+    onError: (e: Error) => toast.error("Lỗi cập nhật đợt: " + e.message),
   });
+
 
   const selectedHM = hangMuc?.find((h) => h.id === selHM) ?? null;
 
