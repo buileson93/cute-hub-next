@@ -47,13 +47,28 @@ export const listUsers = createServerFn({ method: "GET" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
-    const [{ data: profiles }, { data: roles }, { data: authList }] = await Promise.all([
+    // Fetch full list from Auth Admin (handling pagination if needed, though listUsers perPage=1000 is usually enough for most projects)
+    // For extreme case, we loop.
+    let allAuthUsers: any[] = [];
+    let page = 1;
+    let hasMore = true;
+    while (hasMore) {
+      const { data: authList, error: authListErr } = await supabaseAdmin.auth.admin.listUsers({ 
+        page, 
+        perPage: 1000 
+      });
+      if (authListErr) throw authListErr;
+      allAuthUsers = [...allAuthUsers, ...authList.users];
+      hasMore = authList.users.length === 1000;
+      page++;
+    }
+
+    const [{ data: profiles }, { data: roles }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
         .select("id,email,ho_ten,don_vi,active,created_at")
         .order("created_at", { ascending: false }),
       supabaseAdmin.from("user_roles").select("user_id, role"),
-      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 }),
     ]);
 
     const rolesByUser = new Map<string, string[]>();
@@ -62,16 +77,22 @@ export const listUsers = createServerFn({ method: "GET" })
       list.push(r.role);
       rolesByUser.set(r.user_id, list);
     }
-    const banByUser = new Map<string, string | null>();
-    for (const u of authList?.users ?? []) {
-      banByUser.set(u.id, (u as any).banned_until ?? null);
+    
+    const authDataByUser = new Map<string, { banned_until: string | null }>();
+    for (const u of allAuthUsers) {
+      authDataByUser.set(u.id, {
+        banned_until: (u as any).banned_until ?? null,
+      });
     }
 
-    return (profiles ?? []).map((p) => ({
-      ...p,
-      roles: rolesByUser.get(p.id) ?? [],
-      banned_until: banByUser.get(p.id) ?? null,
-    }));
+    return (profiles ?? []).map((p) => {
+      const auth = authDataByUser.get(p.id);
+      return {
+        ...p,
+        roles: rolesByUser.get(p.id) ?? [],
+        banned_until: auth?.banned_until ?? null,
+      };
+    });
   });
 
 // ==================== CREATE USER ====================
