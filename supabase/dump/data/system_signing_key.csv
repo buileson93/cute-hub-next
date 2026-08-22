@@ -1,2 +1,0 @@
-id,alg,public_key_b64,private_key_b64,active,note,created_at,rotated_at
-c14c1ebb-fa2b-43b6-bcf5-9ac5450c3c9a,Ed25519,UygSlji5Xme4ixLgSdrxH9ocP6V/AzamUJVR65NgDzg=,6vIDP5FnraumKyjZnX3/PLh/7zQfgPmwQKiOn4YY9u8=,t,placeholder — sẽ được thay khi ensureSigningKey() chạy lần đầu,2026-07-23 09:46:52.504348+00,

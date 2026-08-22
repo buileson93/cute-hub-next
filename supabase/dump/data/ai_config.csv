@@ -1,2 +1,0 @@
-id,enabled,provider,model,base_url,api_key_secret_name,system_prompt,max_tokens,beta_label,updated_by,created_at,updated_at
-1,t,lovable,google/gemini-2.5-flash,,,"Bạn là trợ lý MIRATS. LUÔN trả lời tiếng Việt, ngắn gọn, chuyên nghiệp. Chỉ dùng dữ liệu từ các tool được cung cấp — không đoán số liệu. Nếu không tìm thấy hoặc cần thêm thông tin, hỏi lại người dùng. Khi hiển thị mã/tên thiết bị, giấy phép, biểu mẫu, trích nguyên văn từ tool.",2048,Beta,201c530d-d2f1-4683-a888-5e42b77a95c6,2026-07-08 07:04:52.710248+00,2026-07-16 04:19:19.278265+00
