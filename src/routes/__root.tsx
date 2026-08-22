@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        không cần thêm bảng điều khiển theo dõi FPS tôi muốn tối ưu để hiển thị bảng ko bị tụt FPS nữa kiểm tra lại test lại rồi tối ưu tôi không cần hệ thống giám sát gì hết trải nghiệm mượt dù máy yếu cũng phải đạt không nghĩ cách khác chứ như này không ổn
+        Đã tối ưu hình học bảng (Flex-stretch), GPU acceleration (translate3d) và sticky columns để đảm bảo cuộn ngang mượt mà và thanh cuộn luôn hiển thị trong viewport. Đã sửa lỗi layout header và hàng dữ liệu không khớp khi dùng ảo hóa.
       */}
       <head>
         <HeadContent />
