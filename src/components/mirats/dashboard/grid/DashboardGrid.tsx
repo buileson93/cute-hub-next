@@ -26,16 +26,20 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
+  CartesianGrid,
   PieChart,
   Pie,
   Cell,
-  Legend,
   ScatterChart,
   Scatter,
   ZAxis,
 } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ERPChartFrame,
+} from "@/components/ui/chart";
 import { supabase } from "@/integrations/backend/client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -328,46 +332,40 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
           />
         );
       case "su-co-trend":
+        const suCoConfig: Record<string, { label: string; color: string }> = {};
+        mucDoKeys.forEach((k, idx) => {
+          suCoConfig[k] = { 
+            label: k, 
+            color: MUC_DO_COLORS[Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"] 
+          };
+        });
+
         return (
-          <Card className="astryx-card h-full flex flex-col">
-            <CardHeader className="p-4 pb-0">
-              <CardTitle className="astryx-text-label flex items-center gap-2">
-                <Icon name="entity.chart" size="tiny" className="text-primary" /> Xu hướng sự cố (12
-                tháng)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-4 h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trendData}>
-                  <XAxis dataKey="thangHT" fontSize={10} axisLine={false} tickLine={false} />
-                  <YAxis fontSize={10} axisLine={false} tickLine={false} allowDecimals={false} />
-                  <Tooltip
-                    cursor={{ fill: "rgba(0,0,0,0.05)" }}
-                    contentStyle={{
-                      backgroundColor: "var(--popover)",
-                      borderColor: "var(--border)",
-                      fontSize: "11px",
-                      borderRadius: "10px",
-                    }}
+          <ERPChartFrame
+            title="Xu hướng sự cố (12 tháng)"
+            icon="entity.chart"
+            loading={trendQ.isLoading}
+            empty={!trendData.length}
+          >
+            <ChartContainer config={suCoConfig}>
+              <BarChart data={trendData} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="thangHT" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent unit="vụ" />} />
+                {mucDoKeys.map((k) => (
+                  <Bar
+                    key={k}
+                    dataKey={k}
+                    stackId="s"
+                    fill={`var(--color-${k})`}
+                    radius={[2, 2, 0, 0]}
+                    barSize={20}
                   />
-                  {mucDoKeys.map((k) => (
-                    <Bar
-                      key={k}
-                      dataKey={k}
-                      stackId="s"
-                      fill={
-                        MUC_DO_COLORS[
-                          Object.keys(MUC_DO_LABEL).find((c) => MUC_DO_LABEL[c] === k) ?? "khac"
-                        ]
-                      }
-                      radius={[2, 2, 0, 0]}
-                      barSize={20}
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+                ))}
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
         );
       case "health-donut":
         return (
@@ -384,55 +382,42 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
           />
         );
       case "asset-type-bar":
+        const assetData = Object.entries(assetTypeStats)
+          .map(([name, value]) => ({ name, value }))
+          .sort((a, b) => (b.value as number) - (a.value as number))
+          .slice(0, 5);
+
         return (
-          <Card className="astryx-card h-full flex flex-col">
-            <CardHeader className="p-4 pb-0">
-              <CardTitle className="astryx-text-label flex items-center gap-2">
-                <Icon name="entity.system" size="tiny" className="text-primary" /> Phân loại hệ
-                thống
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-4 overflow-hidden">
-              <div className="h-[200px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    layout="vertical"
-                    data={Object.entries(assetTypeStats)
-                      .map(([name, value]) => ({ name, value }))
-                      .sort((a, b) => (b.value as number) - (a.value as number))
-                      .slice(0, 5)}
-                    margin={{ left: 10, right: 20 }}
-                  >
-                    <XAxis type="number" hide />
-                    <YAxis
-                      dataKey="name"
-                      type="category"
-                      fontSize={10}
-                      width={120}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "currentColor" }}
-                    />
-                    <Tooltip
-                      cursor={{ fill: "rgba(0,0,0,0.05)" }}
-                      contentStyle={{
-                        backgroundColor: "var(--popover)",
-                        borderColor: "var(--border)",
-                        fontSize: "11px",
-                        borderRadius: "10px",
-                      }}
-                    />
-                    <Bar
-                      dataKey="value"
-                      fill="var(--primary)"
-                      radius={[0, 4, 4, 0]}
-                      barSize={12}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          <ERPChartFrame
+            title="Phân loại hệ thống"
+            icon="entity.system"
+            empty={!assetData.length}
+          >
+            <ChartContainer config={{ value: { label: "Số lượng", color: "var(--chart-1)" } }}>
+              <BarChart
+                layout="vertical"
+                data={assetData}
+                margin={{ left: 10, right: 20, top: 0, bottom: 0 }}
+              >
+                <XAxis type="number" hide />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  fontSize={10}
+                  width={100}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <ChartTooltip content={<ChartTooltipContent hideIndicator unit="tài sản" />} />
+                <Bar
+                  dataKey="value"
+                  fill="var(--color-value)"
+                  radius={[0, 4, 4, 0]}
+                  barSize={12}
+                />
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
         );
       case "completeness-gauge":
         return (
