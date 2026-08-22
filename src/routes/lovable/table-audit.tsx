@@ -71,6 +71,7 @@ function TableAuditFixture() {
           columns={COLUMNS_CORE}
           getRowId={(r) => r.id.toString()}
           maxHeight={400}
+          virtualize
         />
       </section>
 
