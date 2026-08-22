@@ -37,7 +37,7 @@ const buttonVariants = cva(
 
 /**
  * Props cho component Button.
- * 
+ *
  * QUY TẮC PHÂN CẤP (MIRATS Hierarchy):
  * - variant="default": Dùng DUY NHẤT MỘT lần mỗi màn hình cho hành động chính.
  * - variant="outline": Dùng cho các hành động phụ hoặc nút "Hủy".
@@ -53,25 +53,40 @@ export interface ButtonProps
   tooltip?: React.ReactNode;
 }
 
-
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, disabled, children, tooltip, title, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      disabled,
+      children,
+      tooltip,
+      title,
+      ...props
+    },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
-    
+
     const renderContent = () => {
       if (asChild) return children;
-      
+
       return (
         <>
-          <span className={cn(
-            "flex items-center justify-center gap-2 transition-opacity pointer-events-none",
-            loading ? "opacity-0" : "opacity-100"
-          )}>
+          <span
+            className={cn(
+              "flex items-center justify-center gap-2 transition-opacity pointer-events-none",
+              loading ? "opacity-0" : "opacity-100",
+            )}
+          >
             {children}
           </span>
           {loading && (
             <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-               <Loader2 className="animate-spin shrink-0 h-4 w-4 text-current" aria-hidden="true" />
+              <Loader2 className="animate-spin shrink-0 h-4 w-4 text-current" aria-hidden="true" />
             </span>
           )}
         </>
@@ -79,8 +94,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const ariaLabel = (props as { "aria-label"?: string })["aria-label"];
-    const autoTip = tooltip ?? (size === "icon" ? ariaLabel ?? title : undefined);
-    
+    const autoTip = tooltip ?? (size === "icon" ? (ariaLabel ?? title) : undefined);
+
     const button = (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}

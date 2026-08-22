@@ -6,16 +6,33 @@
 
 import { Fragment, useId, useMemo, useState } from "react";
 import {
-  Loader2, Database, X, FileDown, CheckCircle2, Circle, AlertTriangle, GitCompare,
+  Loader2,
+  Database,
+  X,
+  FileDown,
+  CheckCircle2,
+  Circle,
+  AlertTriangle,
+  GitCompare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
 
@@ -65,7 +82,10 @@ export type ImportPreviewProps = {
   onClose: () => void;
 };
 
-const ACTION_BADGE: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
+const ACTION_BADGE: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "outline" | "destructive" }
+> = {
   create: { label: "Tạo", variant: "default" },
   update: { label: "Cập nhật", variant: "secondary" },
   error: { label: "Lỗi", variant: "destructive" },
@@ -84,7 +104,18 @@ function toDisplay(v: unknown): string {
   return String(v);
 }
 
-export function ImportPreviewDialog({ title, headers, rows, statuses, note, fileWarnings, steps, onDownloadErrors, onCommit, onClose }: ImportPreviewProps) {
+export function ImportPreviewDialog({
+  title,
+  headers,
+  rows,
+  statuses,
+  note,
+  fileWarnings,
+  steps,
+  onDownloadErrors,
+  onCommit,
+  onClose,
+}: ImportPreviewProps) {
   const [saving, setSaving] = useState(false);
   const [diffMode, setDiffMode] = useState(false);
   const uid = useId();
@@ -152,12 +183,28 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                   className="flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-primary"
                   tabIndex={0}
                 >
-                  {s.status === "done" && <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" />}
-                  {s.status === "active" && <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin text-primary" />}
-                  {s.status === "pending" && <Circle aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />}
-                  {s.status === "error" && <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5 text-destructive" />}
-                  <span className={isActive ? "font-medium text-foreground" : "text-muted-foreground"}>{s.label}</span>
-                  {i < steps.length - 1 && <span aria-hidden="true" className="text-muted-foreground/50">›</span>}
+                  {s.status === "done" && (
+                    <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" />
+                  )}
+                  {s.status === "active" && (
+                    <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin text-primary" />
+                  )}
+                  {s.status === "pending" && (
+                    <Circle aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
+                  )}
+                  {s.status === "error" && (
+                    <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5 text-destructive" />
+                  )}
+                  <span
+                    className={isActive ? "font-medium text-foreground" : "text-muted-foreground"}
+                  >
+                    {s.label}
+                  </span>
+                  {i < steps.length - 1 && (
+                    <span aria-hidden="true" className="text-muted-foreground/50">
+                      ›
+                    </span>
+                  )}
                 </li>
               );
             })}
@@ -172,7 +219,9 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
             <div className="mb-1 flex items-center gap-1.5 font-medium">
               <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" /> Cảnh báo định dạng mẫu
             </div>
-            {fileWarnings.map((w, i) => <div key={i}>• {w}</div>)}
+            {fileWarnings.map((w, i) => (
+              <div key={i}>• {w}</div>
+            ))}
           </div>
         )}
 
@@ -202,10 +251,18 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
             <Table>
               <TableHeader className="sticky top-0 z-10 bg-muted">
                 <TableRow>
-                  <TableHead scope="col" className="w-10 text-center">#</TableHead>
-                  {hasStatus && <TableHead scope="col" className="w-24">Hành động</TableHead>}
+                  <TableHead scope="col" className="w-10 text-center">
+                    #
+                  </TableHead>
+                  {hasStatus && (
+                    <TableHead scope="col" className="w-24">
+                      Hành động
+                    </TableHead>
+                  )}
                   {headers.map((h) => (
-                    <TableHead scope="col" key={h} className="whitespace-nowrap font-mono text-xs">{h}</TableHead>
+                    <TableHead scope="col" key={h} className="whitespace-nowrap font-mono text-xs">
+                      {h}
+                    </TableHead>
                   ))}
                 </TableRow>
               </TableHeader>
@@ -213,11 +270,12 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                 {shown.map((r, i) => {
                   const st = statuses?.[i];
                   const badge = st?.action ? ACTION_BADGE[st.action] : undefined;
-                  const rowClass = st?.action === "error"
-                    ? "bg-destructive/5"
-                    : st?.warnings?.length
-                      ? "bg-amber-500/5"
-                      : "";
+                  const rowClass =
+                    st?.action === "error"
+                      ? "bg-destructive/5"
+                      : st?.warnings?.length
+                        ? "bg-amber-500/5"
+                        : "";
                   // Ánh xạ cột → chi tiết vi phạm để tô ô + tooltip cụ thể.
                   const fieldIssues = new Map<string, ImportPreviewIssue[]>();
                   for (const iss of st?.issues ?? []) {
@@ -234,10 +292,16 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                   return (
                     <Fragment key={i}>
                       <TableRow className={rowClass}>
-                        <TableCell className="text-center text-xs text-muted-foreground">{i + 1}</TableCell>
+                        <TableCell className="text-center text-xs text-muted-foreground">
+                          {i + 1}
+                        </TableCell>
                         {hasStatus && (
                           <TableCell>
-                            {badge ? <Badge variant={badge.variant}>{badge.label}</Badge> : <span className="text-xs text-muted-foreground">—</span>}
+                            {badge ? (
+                              <Badge variant={badge.variant}>{badge.label}</Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
                           </TableCell>
                         )}
                         {headers.map((h) => {
@@ -245,7 +309,9 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                           const hasError = cellIssues?.some((x) => x.level === "error");
                           const hasWarn = cellIssues?.some((x) => x.level === "warning");
                           const afterVal = toDisplay(r[h]);
-                          const beforeVal = showDiff ? toDisplay((st!.before as Record<string, unknown>)[h]) : "";
+                          const beforeVal = showDiff
+                            ? toDisplay((st!.before as Record<string, unknown>)[h])
+                            : "";
                           const changed = showDiff && beforeVal !== afterVal;
                           const cellClass = hasError
                             ? "max-w-[220px] truncate text-sm ring-1 ring-inset ring-destructive/60 bg-destructive/10"
@@ -266,7 +332,9 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                               className={cellClass}
                               title={tooltip}
                               aria-invalid={hasError ? true : undefined}
-                              aria-describedby={hasIssuesBlock && (hasError || hasWarn) ? issuesId : undefined}
+                              aria-describedby={
+                                hasIssuesBlock && (hasError || hasWarn) ? issuesId : undefined
+                              }
                               data-invalid={hasError ? "error" : hasWarn ? "warning" : undefined}
                               data-changed={changed || undefined}
                               data-field={h}
@@ -276,9 +344,15 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                                   <span className="text-muted-foreground line-through decoration-destructive/50">
                                     {beforeVal || "—"}
                                   </span>
-                                  <span aria-hidden="true" className="text-muted-foreground">→</span>
-                                  <span className="font-medium text-foreground">{afterVal || "—"}</span>
-                                  <span className="sr-only">Trước: {beforeVal || "trống"}. Sau: {afterVal || "trống"}.</span>
+                                  <span aria-hidden="true" className="text-muted-foreground">
+                                    →
+                                  </span>
+                                  <span className="font-medium text-foreground">
+                                    {afterVal || "—"}
+                                  </span>
+                                  <span className="sr-only">
+                                    Trước: {beforeVal || "trống"}. Sau: {afterVal || "trống"}.
+                                  </span>
                                 </span>
                               ) : afterVal === "" ? (
                                 <span className="text-muted-foreground">—</span>
@@ -292,40 +366,69 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
                       {hasIssuesBlock ? (
                         <TableRow className={rowClass} data-testid={`row-issues-${i}`}>
                           <TableCell />
-                          <TableCell colSpan={headers.length + (hasStatus ? 1 : 0)} className="py-1">
-                            <ul id={issuesId} aria-label={`Chi tiết vấn đề dòng ${i + 1}`} className="space-y-0.5">
+                          <TableCell
+                            colSpan={headers.length + (hasStatus ? 1 : 0)}
+                            className="py-1"
+                          >
+                            <ul
+                              id={issuesId}
+                              aria-label={`Chi tiết vấn đề dòng ${i + 1}`}
+                              className="space-y-0.5"
+                            >
                               {st?.issues?.map((x, k) => (
                                 <li
                                   key={`iss-${k}`}
                                   role={x.level === "error" ? "alert" : undefined}
-                                  className={x.level === "error" ? "text-[11px] text-destructive" : "text-[11px] text-amber-700 dark:text-amber-400"}
+                                  className={
+                                    x.level === "error"
+                                      ? "text-[11px] text-destructive"
+                                      : "text-[11px] text-amber-700 dark:text-amber-400"
+                                  }
                                 >
-                                  <span aria-hidden="true">{x.level === "error" ? "• " : "! "}</span>
-                                  <span className="sr-only">{x.level === "error" ? "Lỗi: " : "Cảnh báo: "}</span>
+                                  <span aria-hidden="true">
+                                    {x.level === "error" ? "• " : "! "}
+                                  </span>
+                                  <span className="sr-only">
+                                    {x.level === "error" ? "Lỗi: " : "Cảnh báo: "}
+                                  </span>
                                   {x.field && (
                                     <>
                                       cột <span className="font-mono">{x.field}</span>
                                       {x.value !== undefined && x.value !== "" ? (
-                                        <> = <span className="font-mono">"{x.value}"</span></>
+                                        <>
+                                          {" "}
+                                          = <span className="font-mono">"{x.value}"</span>
+                                        </>
                                       ) : null}
-                                      : {" "}
+                                      :{" "}
                                     </>
                                   )}
                                   {x.message}
                                 </li>
                               ))}
-                              {!st?.issues?.length && st?.messages?.map((m, k) => (
-                                <li key={`e-${k}`} role="alert" className="text-[11px] text-destructive">
-                                  <span aria-hidden="true">• </span>
-                                  <span className="sr-only">Lỗi: </span>{m}
-                                </li>
-                              ))}
-                              {!st?.issues?.length && st?.warnings?.map((w, k) => (
-                                <li key={`w-${k}`} className="text-[11px] text-amber-700 dark:text-amber-400">
-                                  <span aria-hidden="true">! </span>
-                                  <span className="sr-only">Cảnh báo: </span>{w}
-                                </li>
-                              ))}
+                              {!st?.issues?.length &&
+                                st?.messages?.map((m, k) => (
+                                  <li
+                                    key={`e-${k}`}
+                                    role="alert"
+                                    className="text-[11px] text-destructive"
+                                  >
+                                    <span aria-hidden="true">• </span>
+                                    <span className="sr-only">Lỗi: </span>
+                                    {m}
+                                  </li>
+                                ))}
+                              {!st?.issues?.length &&
+                                st?.warnings?.map((w, k) => (
+                                  <li
+                                    key={`w-${k}`}
+                                    className="text-[11px] text-amber-700 dark:text-amber-400"
+                                  >
+                                    <span aria-hidden="true">! </span>
+                                    <span className="sr-only">Cảnh báo: </span>
+                                    {w}
+                                  </li>
+                                ))}
                             </ul>
                           </TableCell>
                         </TableRow>
@@ -338,7 +441,9 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
           </div>
         )}
         {rows.length > shown.length && (
-          <p className="text-xs text-muted-foreground">Hiển thị {shown.length} dòng đầu · tổng {rows.length} dòng sẽ được ghi.</p>
+          <p className="text-xs text-muted-foreground">
+            Hiển thị {shown.length} dòng đầu · tổng {rows.length} dòng sẽ được ghi.
+          </p>
         )}
 
         <DialogFooter>
@@ -348,19 +453,30 @@ export function ImportPreviewDialog({ title, headers, rows, statuses, note, file
               <span className="sr-only">Huỷ</span>
             </Button>
           </AppTooltip>
-          
+
           {onDownloadErrors && errorCount > 0 && (
             <AppTooltip noiDung="Tải file CSV chứa các dòng bị lỗi để kiểm tra">
-              <Button variant="outline" onClick={onDownloadErrors} disabled={saving} className="h-8 w-8 p-0">
+              <Button
+                variant="outline"
+                onClick={onDownloadErrors}
+                disabled={saving}
+                className="h-8 w-8 p-0"
+              >
                 <FileDown aria-hidden="true" className="h-4 w-4" />
                 <span className="sr-only">Tải báo cáo lỗi</span>
               </Button>
             </AppTooltip>
           )}
 
-          <AppTooltip noiDung={commitDisabled ? "Khắc phục lỗi trước khi ghi" : "Ghi dữ liệu hợp lệ vào CSDL"}>
+          <AppTooltip
+            noiDung={commitDisabled ? "Khắc phục lỗi trước khi ghi" : "Ghi dữ liệu hợp lệ vào CSDL"}
+          >
             <Button onClick={commit} disabled={commitDisabled} className="h-8 w-8 p-0">
-              {saving ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Database aria-hidden="true" className="h-4 w-4" />}
+              {saving ? (
+                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+              ) : (
+                <Database aria-hidden="true" className="h-4 w-4" />
+              )}
               <span className="sr-only">Ghi vào CSDL</span>
             </Button>
           </AppTooltip>

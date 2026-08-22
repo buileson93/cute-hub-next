@@ -2,9 +2,27 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
-  ArrowLeft, Plus, Loader2, Calendar as CalendarIcon, GanttChart, KanbanSquare,
-  ListTree, Users, User as UserIcon, CheckCircle2, Clock, AlertTriangle, Mails,
-  Pencil, Trash2, Save, FileText, Search as SearchIcon, TrendingUp, Info, ShieldAlert
+  ArrowLeft,
+  Plus,
+  Loader2,
+  Calendar as CalendarIcon,
+  GanttChart,
+  KanbanSquare,
+  ListTree,
+  Users,
+  User as UserIcon,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Mails,
+  Pencil,
+  Trash2,
+  Save,
+  FileText,
+  Search as SearchIcon,
+  TrendingUp,
+  Info,
+  ShieldAlert,
 } from "lucide-react";
 import "@/vendor/frappe-gantt.css";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,15 +33,33 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { CongVanPanel } from "@/components/mirats/congvan/CongVanPanel";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
@@ -54,43 +90,85 @@ export const Route = createFileRoute("/_app/du-an/$id")({
       <CardContent className="p-6 space-y-3">
         <div className="text-rose-600 font-medium">Không tải được dự án</div>
         <div className="text-xs text-slate-500">{(error as Error).message}</div>
-        <Button size="sm" onClick={reset}>Thử lại</Button>
+        <Button size="sm" onClick={reset}>
+          Thử lại
+        </Button>
       </CardContent>
     </Card>
   ),
   notFoundComponent: () => (
-    <Card><CardContent className="p-6">Không tìm thấy dự án.</CardContent></Card>
+    <Card>
+      <CardContent className="p-6">Không tìm thấy dự án.</CardContent>
+    </Card>
   ),
 });
 
 const CV_TRANG_THAI: Record<string, { label: string; tone: string; column: string }> = {
-  chua_bat_dau: { label: "Chưa bắt đầu", tone: "bg-slate-100 text-slate-700 border-slate-200", column: "Chưa bắt đầu" },
-  dang_lam:     { label: "Đang làm",     tone: "bg-sky-100 text-sky-700 border-sky-200",       column: "Đang làm" },
-  cho_duyet:    { label: "Chờ duyệt",    tone: "bg-amber-100 text-amber-700 border-amber-200", column: "Chờ duyệt" },
-  hoan_thanh:   { label: "Hoàn thành",   tone: "bg-success/10 text-success border-success/20", column: "Hoàn thành" },
-  qua_han:      { label: "Quá hạn",      tone: "bg-rose-100 text-rose-700 border-rose-200",    column: "Quá hạn" },
+  chua_bat_dau: {
+    label: "Chưa bắt đầu",
+    tone: "bg-slate-100 text-slate-700 border-slate-200",
+    column: "Chưa bắt đầu",
+  },
+  dang_lam: {
+    label: "Đang làm",
+    tone: "bg-sky-100 text-sky-700 border-sky-200",
+    column: "Đang làm",
+  },
+  cho_duyet: {
+    label: "Chờ duyệt",
+    tone: "bg-amber-100 text-amber-700 border-amber-200",
+    column: "Chờ duyệt",
+  },
+  hoan_thanh: {
+    label: "Hoàn thành",
+    tone: "bg-success/10 text-success border-success/20",
+    column: "Hoàn thành",
+  },
+  qua_han: {
+    label: "Quá hạn",
+    tone: "bg-rose-100 text-rose-700 border-rose-200",
+    column: "Quá hạn",
+  },
 };
 const CV_STATUSES = ["chua_bat_dau", "dang_lam", "cho_duyet", "hoan_thanh", "qua_han"] as const;
 
 type DuAn = {
-  id: string; ma: string | null; ten: string; mo_ta: string | null;
-  don_vi_id: string | null; nguoi_tao_id: string; quan_ly_id: string;
-  ngay_bat_dau: string | null; ngay_ket_thuc_du_kien: string | null;
-  trang_thai: string; tien_do: number;
+  id: string;
+  ma: string | null;
+  ten: string;
+  mo_ta: string | null;
+  don_vi_id: string | null;
+  nguoi_tao_id: string;
+  quan_ly_id: string;
+  ngay_bat_dau: string | null;
+  ngay_ket_thuc_du_kien: string | null;
+  trang_thai: string;
+  tien_do: number;
 };
 type Moc = {
-  id: string; du_an_id: string; ten: string; mo_ta: string | null; thu_tu: number;
-  ngay_bat_dau: string | null; ngay_ket_thuc_du_kien: string | null;
-  trang_thai: string; tien_do: number;
+  id: string;
+  du_an_id: string;
+  ten: string;
+  mo_ta: string | null;
+  thu_tu: number;
+  ngay_bat_dau: string | null;
+  ngay_ket_thuc_du_kien: string | null;
+  trang_thai: string;
+  tien_do: number;
 };
 type CongViec = {
-  id: string; du_an_id: string; moc_id: string;
-  ten: string; mo_ta: string | null;
+  id: string;
+  du_an_id: string;
+  moc_id: string;
+  ten: string;
+  mo_ta: string | null;
   nguoi_xu_ly_chinh: string | null;
-  ngay_bat_dau: string | null; ngay_ket_thuc_du_kien: string | null;
+  ngay_bat_dau: string | null;
+  ngay_ket_thuc_du_kien: string | null;
   ngay_hoan_thanh_thuc_te: string | null;
-  trang_thai: typeof CV_STATUSES[number];
-  tien_do: number; ket_qua: string | null;
+  trang_thai: (typeof CV_STATUSES)[number];
+  tien_do: number;
+  ket_qua: string | null;
   created_by: string | null;
 };
 type Profile = { id: string; ho_ten: string | null; email: string };
@@ -114,7 +192,11 @@ function DuAnDetailPage() {
   const { data: mocs } = useQuery({
     queryKey: ["du-an-moc", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("du_an_moc").select("*").eq("du_an_id", id).order("thu_tu");
+      const { data, error } = await supabase
+        .from("du_an_moc")
+        .select("*")
+        .eq("du_an_id", id)
+        .order("thu_tu");
       if (error) throw error;
       return (data ?? []) as Moc[];
     },
@@ -122,8 +204,11 @@ function DuAnDetailPage() {
   const { data: congViecs } = useQuery({
     queryKey: ["du-an-cv", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("du_an_cong_viec").select("*")
-        .eq("du_an_id", id).order("created_at");
+      const { data, error } = await supabase
+        .from("du_an_cong_viec")
+        .select("*")
+        .eq("du_an_id", id)
+        .order("created_at");
       if (error) throw error;
       return (data ?? []) as CongViec[];
     },
@@ -131,7 +216,10 @@ function DuAnDetailPage() {
 
   const userIds = useMemo(() => {
     const s = new Set<string>();
-    if (duAn) { s.add(duAn.quan_ly_id); s.add(duAn.nguoi_tao_id); }
+    if (duAn) {
+      s.add(duAn.quan_ly_id);
+      s.add(duAn.nguoi_tao_id);
+    }
     (congViecs ?? []).forEach((c) => c.nguoi_xu_ly_chinh && s.add(c.nguoi_xu_ly_chinh));
     return Array.from(s);
   }, [duAn, congViecs]);
@@ -145,9 +233,15 @@ function DuAnDetailPage() {
     },
     enabled: userIds.length > 0,
   });
-  const profileMap = useMemo(() => Object.fromEntries((profiles ?? []).map((p) => [p.id, p])), [profiles]);
-  const nameOf = useCallback((uid: string | null) =>
-    uid ? profileMap[uid]?.ho_ten ?? profileMap[uid]?.email ?? uid.slice(0, 8) : "—", [profileMap]);
+  const profileMap = useMemo(
+    () => Object.fromEntries((profiles ?? []).map((p) => [p.id, p])),
+    [profiles],
+  );
+  const nameOf = useCallback(
+    (uid: string | null) =>
+      uid ? (profileMap[uid]?.ho_ten ?? profileMap[uid]?.email ?? uid.slice(0, 8)) : "—",
+    [profileMap],
+  );
 
   const uid = session?.user?.id;
   const isManager = !!duAn && !!uid && (hasRole("admin") || duAn.quan_ly_id === uid);
@@ -159,179 +253,261 @@ function DuAnDetailPage() {
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
 
   if (loadingDA) {
-    return <div className="p-8 text-slate-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Đang tải…</div>;
+    return (
+      <div className="p-8 text-slate-500 flex items-center gap-2">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Đang tải…
+      </div>
+    );
   }
   if (!duAn) {
-    return <Card><CardContent className="p-6">Không tìm thấy dự án.</CardContent></Card>;
+    return (
+      <Card>
+        <CardContent className="p-6">Không tìm thấy dự án.</CardContent>
+      </Card>
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-        {/* Astryx Page Header */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Link to="/du-an" className="hover:text-indigo-600 transition-colors">Dự án</Link>
-            <span className="text-slate-300">/</span>
-            <span className="font-medium text-slate-900 truncate max-w-[200px]">{duAn.ten}</span>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-col">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900">{duAn.ten}</h1>
-              {duAn.ma && <span className="text-xs font-mono text-slate-400 mt-0.5">{duAn.ma}</span>}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-none capitalize px-2.5 py-0.5">
-                {duAn.trang_thai.replace("_", " ")}
-              </Badge>
-              {isManager && (
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
-                  <Pencil className="h-4 w-4 mr-2" /> Thiết lập
-                </Button>
-              )}
-            </div>
-          </div>
+      {/* Astryx Page Header */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <Link to="/du-an" className="hover:text-indigo-600 transition-colors">
+            Dự án
+          </Link>
+          <span className="text-slate-300">/</span>
+          <span className="font-medium text-slate-900 truncate max-w-[200px]">{duAn.ten}</span>
         </div>
 
-        {/* Project Metadata Toolbar */}
-        <div className="flex flex-wrap items-center gap-6 px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm">
-          <Stat label="Quản lý" value={nameOf(duAn.quan_ly_id)} icon={UserIcon} />
-          <Stat label="Ngày bắt đầu" value={duAn.ngay_bat_dau ?? "—"} icon={CalendarIcon} />
-          <Stat label="Kết thúc dự kiến" value={duAn.ngay_ket_thuc_du_kien ?? "—"} icon={CalendarIcon} />
-          <div className="min-w-[140px] flex-1 max-w-[200px]">
-            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
-              <span>Tiến độ</span>
-              <span className="text-slate-900">{duAn.tien_do}%</span>
-            </div>
-            <Progress value={duAn.tien_do} className="h-1.5 bg-slate-100" />
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">{duAn.ten}</h1>
+            {duAn.ma && <span className="text-xs font-mono text-slate-400 mt-0.5">{duAn.ma}</span>}
           </div>
-        </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Tabs 
-              value={activeTab} 
-              onValueChange={(v) => nav({ search: { view: v, q: currentSearch.q } as any, replace: true })}
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="bg-primary/10 text-primary border-none capitalize px-2.5 py-0.5"
             >
-              <TabsList className="bg-slate-100 p-1 border border-slate-200" data-density="comfortable">
-                <TabsTrigger value="kanban" className="px-3 h-7 text-xs font-medium">Board</TabsTrigger>
-                <TabsTrigger value="gantt" className="px-3 h-7 text-xs font-medium">Gantt</TabsTrigger>
-                <TabsTrigger value="list" className="px-3 h-7 text-xs font-medium">Danh sách</TabsTrigger>
-                <TabsTrigger value="timeline" className="px-3 h-7 text-xs font-medium">Timeline</TabsTrigger>
-                <TabsTrigger value="discovery" className="px-3 h-7 text-xs font-medium">Discovery</TabsTrigger>
-                <TabsTrigger value="delivery" className="px-3 h-7 text-xs font-medium">Delivery</TabsTrigger>
-                <TabsTrigger value="operations" className="px-3 h-7 text-xs font-medium">Operations</TabsTrigger>
-                <TabsTrigger value="hoso" className="px-3 h-7 text-xs font-medium">Hồ sơ</TabsTrigger>
-                <TabsTrigger value="cong-van" className="px-3 h-7 text-xs font-medium">Công văn</TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-                <Input 
-                  placeholder="Tìm công việc..." 
-                  className="h-8 pl-8 text-xs w-[180px] bg-white border-slate-200"
-                  value={currentSearch.q}
-                  onChange={(e) => nav({ search: { ...currentSearch, q: e.target.value } as any, replace: true })}
-                />
-              </div>
-              {canAddTask && (
-                <Button size="sm" className="h-8 px-3 text-xs bg-slate-900 hover:bg-slate-800" onClick={() => { setDefaultMocId(mocs?.[0]?.id ?? null); setEditingCV(null); setOpenCV(true); }}>
-                  <Plus className="h-3.5 w-3.5 mr-1.5" /> Thêm việc
-                </Button>
-              )}
-            </div>
+              {duAn.trang_thai.replace("_", " ")}
+            </Badge>
+            {isManager && (
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+              >
+                <Pencil className="h-4 w-4 mr-2" /> Thiết lập
+              </Button>
+            )}
           </div>
-
-          <Tabs value={activeTab}>
-            <TabsContent value="kanban" className="mt-0">
-              <KanbanView
-                mocs={mocs ?? []}
-                tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []}
-                nameOf={nameOf}
-                onEdit={(t) => { setEditingCV(t); setDefaultMocId(t.moc_id); setOpenCV(true); }}
-                canAdd={canAddTask}
-                onAddIn={(mocId) => { setDefaultMocId(mocId); setEditingCV(null); setOpenCV(true); }}
-                density="comfortable"
-              />
-            </TabsContent>
-
-            <TabsContent value="gantt" className="mt-3">
-              <GanttView 
-                mocs={mocs ?? []} 
-                tasks={congViecs?.filter(t => !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase())) ?? []} 
-                projectStart={duAn.ngay_bat_dau} 
-                density="comfortable"
-              />
-            </TabsContent>
-
-            <TabsContent value="discovery" className="mt-3">
-              <LeanUXCanvas project_id={id} />
-            </TabsContent>
-
-            <TabsContent value="delivery" className="mt-3 space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div className="lg:col-span-3">
-                  <HillChart project_id={id} />
-                </div>
-                <div className="space-y-4">
-                  <Card className="border-slate-200 shadow-none bg-slate-50/50">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-xs uppercase text-slate-500 font-bold">Current Cycle</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
-                      <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
-                      <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
-                    </CardContent>
-                  </Card>
-                  <Button className="w-full justify-start text-xs font-semibold" variant="outline">
-                    <Plus className="h-3.5 w-3.5 mr-2" /> New Pitch
-                  </Button>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="operations" className="mt-3">
-              <OperationsLane 
-                wipLimit={2}
-                incidents={[]} 
-              />
-            </TabsContent>
-
-            <TabsContent value="hoso" className="mt-3">
-              <DossierRegister project_id={id} />
-            </TabsContent>
-
-            <TabsContent value="list" className="mt-3">
-              <ListView
-                mocs={mocs ?? []}
-                tasks={congViecs ?? []}
-                nameOf={nameOf}
-                onEdit={(t) => { setEditingCV(t); setDefaultMocId(t.moc_id); setOpenCV(true); }}
-                canAdd={canAddTask}
-                onAddIn={(mocId) => { setDefaultMocId(mocId); setEditingCV(null); setOpenCV(true); }}
-                isManager={isManager}
-                onDeleteMoc={async (m) => {
-                  const { error } = await supabase.from("du_an_moc").delete().eq("id", m.id);
-                  if (error) toast.error(error.message);
-                  else { toast.success("Đã xoá mốc"); qc.invalidateQueries({ queryKey: ["du-an-moc", id] }); qc.invalidateQueries({ queryKey: ["du-an-cv", id] }); }
-                }}
-              />
-            </TabsContent>
-
-            <TabsContent value="cong-van" className="mt-3">
-              <CongVanPanel duAnId={id} canEdit={isManager} />
-            </TabsContent>
-
-            <TabsContent value="timeline" className="mt-3">
-              <ProjectTimeline projectId={id} />
-            </TabsContent>
-
-          </Tabs>
         </div>
+      </div>
+
+      {/* Project Metadata Toolbar */}
+      <div className="flex flex-wrap items-center gap-6 px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <Stat label="Quản lý" value={nameOf(duAn.quan_ly_id)} icon={UserIcon} />
+        <Stat label="Ngày bắt đầu" value={duAn.ngay_bat_dau ?? "—"} icon={CalendarIcon} />
+        <Stat
+          label="Kết thúc dự kiến"
+          value={duAn.ngay_ket_thuc_du_kien ?? "—"}
+          icon={CalendarIcon}
+        />
+        <div className="min-w-[140px] flex-1 max-w-[200px]">
+          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
+            <span>Tiến độ</span>
+            <span className="text-slate-900">{duAn.tien_do}%</span>
+          </div>
+          <Progress value={duAn.tien_do} className="h-1.5 bg-slate-100" />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) =>
+              nav({ search: { view: v, q: currentSearch.q } as any, replace: true })
+            }
+          >
+            <TabsList
+              className="bg-slate-100 p-1 border border-slate-200"
+              data-density="comfortable"
+            >
+              <TabsTrigger value="kanban" className="px-3 h-7 text-xs font-medium">
+                Board
+              </TabsTrigger>
+              <TabsTrigger value="gantt" className="px-3 h-7 text-xs font-medium">
+                Gantt
+              </TabsTrigger>
+              <TabsTrigger value="list" className="px-3 h-7 text-xs font-medium">
+                Danh sách
+              </TabsTrigger>
+              <TabsTrigger value="timeline" className="px-3 h-7 text-xs font-medium">
+                Timeline
+              </TabsTrigger>
+              <TabsTrigger value="discovery" className="px-3 h-7 text-xs font-medium">
+                Discovery
+              </TabsTrigger>
+              <TabsTrigger value="delivery" className="px-3 h-7 text-xs font-medium">
+                Delivery
+              </TabsTrigger>
+              <TabsTrigger value="operations" className="px-3 h-7 text-xs font-medium">
+                Operations
+              </TabsTrigger>
+              <TabsTrigger value="hoso" className="px-3 h-7 text-xs font-medium">
+                Hồ sơ
+              </TabsTrigger>
+              <TabsTrigger value="cong-van" className="px-3 h-7 text-xs font-medium">
+                Công văn
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <Input
+                placeholder="Tìm công việc..."
+                className="h-8 pl-8 text-xs w-[180px] bg-white border-slate-200"
+                value={currentSearch.q}
+                onChange={(e) =>
+                  nav({ search: { ...currentSearch, q: e.target.value } as any, replace: true })
+                }
+              />
+            </div>
+            {canAddTask && (
+              <Button
+                size="sm"
+                className="h-8 px-3 text-xs bg-slate-900 hover:bg-slate-800"
+                onClick={() => {
+                  setDefaultMocId(mocs?.[0]?.id ?? null);
+                  setEditingCV(null);
+                  setOpenCV(true);
+                }}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1.5" /> Thêm việc
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <Tabs value={activeTab}>
+          <TabsContent value="kanban" className="mt-0">
+            <KanbanView
+              mocs={mocs ?? []}
+              tasks={
+                congViecs?.filter(
+                  (t) =>
+                    !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase()),
+                ) ?? []
+              }
+              nameOf={nameOf}
+              onEdit={(t) => {
+                setEditingCV(t);
+                setDefaultMocId(t.moc_id);
+                setOpenCV(true);
+              }}
+              canAdd={canAddTask}
+              onAddIn={(mocId) => {
+                setDefaultMocId(mocId);
+                setEditingCV(null);
+                setOpenCV(true);
+              }}
+              density="comfortable"
+            />
+          </TabsContent>
+
+          <TabsContent value="gantt" className="mt-3">
+            <GanttView
+              mocs={mocs ?? []}
+              tasks={
+                congViecs?.filter(
+                  (t) =>
+                    !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase()),
+                ) ?? []
+              }
+              projectStart={duAn.ngay_bat_dau}
+              density="comfortable"
+            />
+          </TabsContent>
+
+          <TabsContent value="discovery" className="mt-3">
+            <LeanUXCanvas project_id={id} />
+          </TabsContent>
+
+          <TabsContent value="delivery" className="mt-3 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-3">
+                <HillChart project_id={id} />
+              </div>
+              <div className="space-y-4">
+                <Card className="border-slate-200 shadow-none bg-slate-50/50">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs uppercase text-slate-500 font-bold">
+                      Current Cycle
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
+                    <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
+                    <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
+                  </CardContent>
+                </Card>
+                <Button className="w-full justify-start text-xs font-semibold" variant="outline">
+                  <Plus className="h-3.5 w-3.5 mr-2" /> New Pitch
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="operations" className="mt-3">
+            <OperationsLane wipLimit={2} incidents={[]} />
+          </TabsContent>
+
+          <TabsContent value="hoso" className="mt-3">
+            <DossierRegister project_id={id} />
+          </TabsContent>
+
+          <TabsContent value="list" className="mt-3">
+            <ListView
+              mocs={mocs ?? []}
+              tasks={congViecs ?? []}
+              nameOf={nameOf}
+              onEdit={(t) => {
+                setEditingCV(t);
+                setDefaultMocId(t.moc_id);
+                setOpenCV(true);
+              }}
+              canAdd={canAddTask}
+              onAddIn={(mocId) => {
+                setDefaultMocId(mocId);
+                setEditingCV(null);
+                setOpenCV(true);
+              }}
+              isManager={isManager}
+              onDeleteMoc={async (m) => {
+                const { error } = await supabase.from("du_an_moc").delete().eq("id", m.id);
+                if (error) toast.error(error.message);
+                else {
+                  toast.success("Đã xoá mốc");
+                  qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
+                  qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+                }
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="cong-van" className="mt-3">
+            <CongVanPanel duAnId={id} canEdit={isManager} />
+          </TabsContent>
+
+          <TabsContent value="timeline" className="mt-3">
+            <ProjectTimeline projectId={id} />
+          </TabsContent>
+        </Tabs>
+      </div>
 
       <CreateMocDialog
         open={openMoc}
@@ -359,10 +535,21 @@ function DuAnDetailPage() {
   );
 }
 
-function Stat({ label, value, icon: Icon }: { label: string; value: string; icon: typeof CalendarIcon }) {
+function Stat({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: typeof CalendarIcon;
+}) {
   return (
     <div>
-      <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1.5"><Icon className="h-3 w-3" />{label}</div>
+      <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1.5">
+        <Icon className="h-3 w-3" />
+        {label}
+      </div>
       <div className="text-sm font-medium truncate">{value}</div>
     </div>
   );
@@ -372,16 +559,28 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
 // KANBAN
 // =====================================================
 function KanbanView({
-  mocs, tasks, nameOf, onEdit, canAdd, onAddIn, density = "default"
+  mocs,
+  tasks,
+  nameOf,
+  onEdit,
+  canAdd,
+  onAddIn,
+  density = "default",
 }: {
-  mocs: Moc[]; tasks: CongViec[]; nameOf: (u: string | null) => string;
+  mocs: Moc[];
+  tasks: CongViec[];
+  nameOf: (u: string | null) => string;
   onEdit: (t: CongViec) => void;
-  canAdd: boolean; onAddIn: (mocId: string) => void;
+  canAdd: boolean;
+  onAddIn: (mocId: string) => void;
   density?: "default" | "comfortable" | "compact";
 }) {
   const mocMap = useMemo(() => Object.fromEntries(mocs.map((m) => [m.id, m])), [mocs]);
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]" data-density={density}>
+    <div
+      className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]"
+      data-density={density}
+    >
       {CV_STATUSES.map((st) => {
         const col = CV_TRANG_THAI[st];
         const list = tasks.filter((t) => t.trang_thai === st);
@@ -389,14 +588,38 @@ function KanbanView({
           <div key={st} className="flex-shrink-0 w-[300px] flex flex-col gap-3">
             <div className="flex items-center justify-between px-2 py-1">
               <div className="flex items-center gap-2">
-                <div className={cn("w-2 h-2 rounded-full", st === 'hoan_thanh' ? 'bg-emerald-500' : st === 'dang_lam' ? 'bg-sky-500' : st === 'cho_duyet' ? 'bg-amber-500' : st === 'qua_han' ? 'bg-rose-500' : 'bg-slate-300')} />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{col.label}</span>
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-slate-100 text-slate-600 border-none rounded-full">
+                <div
+                  className={cn(
+                    "w-2 h-2 rounded-full",
+                    st === "hoan_thanh"
+                      ? "bg-emerald-500"
+                      : st === "dang_lam"
+                        ? "bg-sky-500"
+                        : st === "cho_duyet"
+                          ? "bg-amber-500"
+                          : st === "qua_han"
+                            ? "bg-rose-500"
+                            : "bg-slate-300",
+                  )}
+                />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  {col.label}
+                </span>
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0 bg-slate-100 text-slate-600 border-none rounded-full"
+                >
                   {list.length}
                 </Badge>
               </div>
               {canAdd && (
-                <Button variant="ghost" size="icon" aria-label="Thêm task mới" className="h-6 w-6 text-slate-400" onClick={() => onAddIn(mocs[0]?.id)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Thêm task mới"
+                  className="h-6 w-6 text-slate-400"
+                  onClick={() => onAddIn(mocs[0]?.id)}
+                >
                   <Plus className="h-3.5 w-3.5" />
                 </Button>
               )}
@@ -404,17 +627,26 @@ function KanbanView({
 
             <div className="flex-1 space-y-3 p-1 rounded-lg bg-slate-50/50 border border-slate-100/50 min-h-[150px]">
               {list.map((t) => (
-                <Card 
-                  key={t.id} 
+                <Card
+                  key={t.id}
                   className="group cursor-pointer border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-200"
                   onClick={() => onEdit(t)}
                 >
                   <CardContent className="p-3 space-y-3">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="text-[10px] font-mono text-slate-400 tracking-tight">#{t.id.slice(0, 6).toUpperCase()}</div>
-                      {t.tien_do > 0 && <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4 bg-indigo-50 text-indigo-600 border-none">{t.tien_do}%</Badge>}
+                      <div className="text-[10px] font-mono text-slate-400 tracking-tight">
+                        #{t.id.slice(0, 6).toUpperCase()}
+                      </div>
+                      {t.tien_do > 0 && (
+                        <Badge
+                          variant="secondary"
+                          className="text-[9px] px-1 py-0 h-4 bg-indigo-50 text-indigo-600 border-none"
+                        >
+                          {t.tien_do}%
+                        </Badge>
+                      )}
                     </div>
-                    
+
                     <div className="text-sm font-semibold leading-tight text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
                       {t.ten}
                     </div>
@@ -431,7 +663,14 @@ function KanbanView({
                         <span className="max-w-[80px] truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
                       </div>
                       {t.ngay_ket_thuc_du_kien && (
-                        <div className={cn("flex items-center gap-1.5 text-[10px]", t.trang_thai === 'qua_han' ? 'text-rose-600 font-medium' : 'text-slate-500')}>
+                        <div
+                          className={cn(
+                            "flex items-center gap-1.5 text-[10px]",
+                            t.trang_thai === "qua_han"
+                              ? "text-rose-600 font-medium"
+                              : "text-slate-500",
+                          )}
+                        >
                           <CalendarIcon className="h-3 w-3 text-slate-400" />
                           <span>{t.ngay_ket_thuc_du_kien}</span>
                         </div>
@@ -442,7 +681,9 @@ function KanbanView({
               ))}
               {list.length === 0 && (
                 <div className="h-24 flex items-center justify-center border-2 border-dashed border-slate-100 rounded-lg">
-                  <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">No Tasks</span>
+                  <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+                    No Tasks
+                  </span>
                 </div>
               )}
             </div>
@@ -456,7 +697,17 @@ function KanbanView({
 // =====================================================
 // GANTT (frappe-gantt)
 // =====================================================
-function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: Moc[]; tasks: CongViec[]; projectStart: string | null; density?: string }) {
+function GanttView({
+  mocs,
+  tasks,
+  projectStart,
+  density = "default",
+}: {
+  mocs: Moc[];
+  tasks: CongViec[];
+  projectStart: string | null;
+  density?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<"Day" | "Week" | "Month">("Week");
 
@@ -469,8 +720,12 @@ function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: M
     const today = getTodayDateString();
     const fallbackStart = projectStart ?? today;
     const items: {
-      id: string; name: string; start: string; end: string;
-      progress: number; custom_class?: string;
+      id: string;
+      name: string;
+      start: string;
+      end: string;
+      progress: number;
+      custom_class?: string;
     }[] = [];
 
     for (const m of mocs) {
@@ -487,7 +742,8 @@ function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: M
           id: `t_${t.id}`,
           name: `   ${t.ten}`,
           start: t.ngay_bat_dau ?? m.ngay_bat_dau ?? fallbackStart,
-          end: t.ngay_ket_thuc_du_kien ?? t.ngay_bat_dau ?? m.ngay_ket_thuc_du_kien ?? fallbackStart,
+          end:
+            t.ngay_ket_thuc_du_kien ?? t.ngay_bat_dau ?? m.ngay_ket_thuc_du_kien ?? fallbackStart,
           progress: t.tien_do,
           custom_class: `gantt-${t.trang_thai}`,
         });
@@ -515,9 +771,10 @@ function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: M
       })
       .catch((e) => console.error("Gantt load error", e));
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [mocs, tasks, projectStart, viewMode]);
-
 
   return (
     <Card data-density={density}>
@@ -526,7 +783,12 @@ function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: M
           <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>
           <div className="flex gap-1">
             {(["Day", "Week", "Month"] as const).map((v) => (
-              <Button key={v} size="sm" variant={viewMode === v ? "default" : "outline"} onClick={() => setViewMode(v)}>
+              <Button
+                key={v}
+                size="sm"
+                variant={viewMode === v ? "default" : "outline"}
+                onClick={() => setViewMode(v)}
+              >
                 {v === "Day" ? "Ngày" : v === "Week" ? "Tuần" : "Tháng"}
               </Button>
             ))}
@@ -535,7 +797,9 @@ function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: M
       </CardHeader>
       <CardContent>
         {mocs.length === 0 ? (
-          <div className="text-sm text-slate-500 py-8 text-center">Chưa có mốc/công việc để hiển thị Gantt.</div>
+          <div className="text-sm text-slate-500 py-8 text-center">
+            Chưa có mốc/công việc để hiển thị Gantt.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <div ref={ref} className="frappe-gantt-wrapper" />
@@ -550,16 +814,32 @@ function GanttView({ mocs, tasks, projectStart, density = "default" }: { mocs: M
 // LIST
 // =====================================================
 function ListView({
-  mocs, tasks, nameOf, onEdit, canAdd, onAddIn, isManager, onDeleteMoc,
+  mocs,
+  tasks,
+  nameOf,
+  onEdit,
+  canAdd,
+  onAddIn,
+  isManager,
+  onDeleteMoc,
 }: {
-  mocs: Moc[]; tasks: CongViec[]; nameOf: (u: string | null) => string;
+  mocs: Moc[];
+  tasks: CongViec[];
+  nameOf: (u: string | null) => string;
   onEdit: (t: CongViec) => void;
-  canAdd: boolean; onAddIn: (mocId: string) => void;
+  canAdd: boolean;
+  onAddIn: (mocId: string) => void;
   isManager: boolean;
   onDeleteMoc: (m: Moc) => void;
 }) {
   if (mocs.length === 0) {
-    return <Card><CardContent className="py-8 text-center text-slate-500 text-sm">Chưa có mốc nào. Người quản lý hãy thêm mốc chính đầu tiên.</CardContent></Card>;
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-slate-500 text-sm">
+          Chưa có mốc nào. Người quản lý hãy thêm mốc chính đầu tiên.
+        </CardContent>
+      </Card>
+    );
   }
   return (
     <div className="space-y-3">
@@ -574,31 +854,45 @@ function ListView({
                   <CardTitle className="text-base">{m.ten}</CardTitle>
                   {m.mo_ta && <CardDescription>{m.mo_ta}</CardDescription>}
                   <div className="text-[11px] text-slate-500 mt-1">
-                    {m.ngay_bat_dau ?? "—"} → {m.ngay_ket_thuc_du_kien ?? "—"} · {list.length} công việc
+                    {m.ngay_bat_dau ?? "—"} → {m.ngay_ket_thuc_du_kien ?? "—"} · {list.length} công
+                    việc
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Badge variant="outline" className={tt.tone}>{tt.label}</Badge>
+                  <Badge variant="outline" className={tt.tone}>
+                    {tt.label}
+                  </Badge>
                   {canAdd && (
                     <Button size="sm" variant="outline" onClick={() => onAddIn(m.id)}>
-                      <Plus className="h-4 w-4 mr-1" />CV con
+                      <Plus className="h-4 w-4 mr-1" />
+                      CV con
                     </Button>
                   )}
                   {isManager && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-500" aria-label="Xoá">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-rose-500"
+                          aria-label="Xoá"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Xoá mốc "{m.ten}"?</AlertDialogTitle>
-                          <AlertDialogDescription>Toàn bộ công việc con thuộc mốc sẽ bị xoá.</AlertDialogDescription>
+                          <AlertDialogDescription>
+                            Toàn bộ công việc con thuộc mốc sẽ bị xoá.
+                          </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Huỷ</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => onDeleteMoc(m)} className="bg-rose-600 hover:bg-rose-700">
+                          <AlertDialogAction
+                            onClick={() => onDeleteMoc(m)}
+                            className="bg-rose-600 hover:bg-rose-700"
+                          >
                             Xoá
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -623,20 +917,28 @@ function ListView({
                       >
                         <div className="col-span-5 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
-                          {t.mo_ta && <div className="text-[11px] text-slate-500 truncate">{t.mo_ta}</div>}
+                          {t.mo_ta && (
+                            <div className="text-[11px] text-slate-500 truncate">{t.mo_ta}</div>
+                          )}
                         </div>
                         <div className="col-span-2 text-xs text-slate-600 truncate flex items-center gap-1">
-                          <UserIcon className="h-3 w-3 shrink-0" />{nameOf(t.nguoi_xu_ly_chinh)}
+                          <UserIcon className="h-3 w-3 shrink-0" />
+                          {nameOf(t.nguoi_xu_ly_chinh)}
                         </div>
                         <div className="col-span-2 text-xs text-slate-500 flex items-center gap-1">
-                          <CalendarIcon className="h-3 w-3" />{t.ngay_ket_thuc_du_kien ?? "—"}
+                          <CalendarIcon className="h-3 w-3" />
+                          {t.ngay_ket_thuc_du_kien ?? "—"}
                         </div>
                         <div className="col-span-2 flex items-center gap-2">
                           <Progress value={t.tien_do} className="h-1.5 flex-1" />
-                          <span className="text-[11px] text-slate-500 tabular-nums">{t.tien_do}%</span>
+                          <span className="text-[11px] text-slate-500 tabular-nums">
+                            {t.tien_do}%
+                          </span>
                         </div>
                         <div className="col-span-1 text-right">
-                          <Badge variant="outline" className={cn(c.tone, "text-[10px]")}>{c.label}</Badge>
+                          <Badge variant="outline" className={cn(c.tone, "text-[10px]")}>
+                            {c.label}
+                          </Badge>
                         </div>
                       </button>
                     );
@@ -655,12 +957,24 @@ function ListView({
 // DIALOGS
 // =====================================================
 function CreateMocDialog({
-  open, onOpenChange, duAnId, currentUserId, onDone,
+  open,
+  onOpenChange,
+  duAnId,
+  currentUserId,
+  onDone,
 }: {
-  open: boolean; onOpenChange: (v: boolean) => void;
-  duAnId: string; currentUserId: string; onDone: () => void;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  duAnId: string;
+  currentUserId: string;
+  onDone: () => void;
 }) {
-  const [form, setForm] = useState({ ten: "", mo_ta: "", ngay_bat_dau: "", ngay_ket_thuc_du_kien: "" });
+  const [form, setForm] = useState({
+    ten: "",
+    mo_ta: "",
+    ngay_bat_dau: "",
+    ngay_ket_thuc_du_kien: "",
+  });
 
   const create = useMutation({
     mutationFn: async () => {
@@ -698,21 +1012,35 @@ function CreateMocDialog({
           </div>
           <div>
             <Label>Mô tả</Label>
-            <Textarea rows={2} value={form.mo_ta} onChange={(e) => setForm({ ...form, mo_ta: e.target.value })} />
+            <Textarea
+              rows={2}
+              value={form.mo_ta}
+              onChange={(e) => setForm({ ...form, mo_ta: e.target.value })}
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Bắt đầu</Label>
-              <Input type="date" value={form.ngay_bat_dau} onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngay_bat_dau}
+                onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })}
+              />
             </div>
             <div>
               <Label>Kết thúc dự kiến</Label>
-              <Input type="date" value={form.ngay_ket_thuc_du_kien} onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngay_ket_thuc_du_kien}
+                onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })}
+              />
             </div>
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Huỷ
+          </Button>
           <Button onClick={() => create.mutate()} disabled={create.isPending}>
             {create.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Thêm
           </Button>
@@ -723,20 +1051,35 @@ function CreateMocDialog({
 }
 
 function EditCongViecDialog({
-  open, onOpenChange, duAnId, mocs, defaultMocId, editing, currentUserId, onDone, isManager,
+  open,
+  onOpenChange,
+  duAnId,
+  mocs,
+  defaultMocId,
+  editing,
+  currentUserId,
+  onDone,
+  isManager,
 }: {
-  open: boolean; onOpenChange: (v: boolean) => void;
-  duAnId: string; mocs: Moc[]; defaultMocId: string | null;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  duAnId: string;
+  mocs: Moc[];
+  defaultMocId: string | null;
   editing: CongViec | null;
-  currentUserId: string; onDone: () => void;
+  currentUserId: string;
+  onDone: () => void;
   isManager: boolean;
 }) {
   const isEdit = !!editing;
   const [form, setForm] = useState({
-    moc_id: "", ten: "", mo_ta: "",
+    moc_id: "",
+    ten: "",
+    mo_ta: "",
     nguoi_xu_ly_chinh: "",
-    ngay_bat_dau: "", ngay_ket_thuc_du_kien: "",
-    trang_thai: "chua_bat_dau" as typeof CV_STATUSES[number],
+    ngay_bat_dau: "",
+    ngay_ket_thuc_du_kien: "",
+    trang_thai: "chua_bat_dau" as (typeof CV_STATUSES)[number],
     tien_do: 0,
     ket_qua: "",
   });
@@ -758,11 +1101,14 @@ function EditCongViecDialog({
     } else {
       setForm({
         moc_id: defaultMocId ?? "",
-        ten: "", mo_ta: "",
+        ten: "",
+        mo_ta: "",
         nguoi_xu_ly_chinh: "",
-        ngay_bat_dau: "", ngay_ket_thuc_du_kien: "",
+        ngay_bat_dau: "",
+        ngay_ket_thuc_du_kien: "",
         trang_thai: "chua_bat_dau",
-        tien_do: 0, ket_qua: "",
+        tien_do: 0,
+        ket_qua: "",
       });
     }
   }, [editing, defaultMocId, open]);
@@ -771,7 +1117,11 @@ function EditCongViecDialog({
   const { data: users } = useQuery({
     queryKey: ["all-profiles"],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("id,ho_ten,email").eq("active", true).order("ho_ten");
+      const { data } = await supabase
+        .from("profiles")
+        .select("id,ho_ten,email")
+        .eq("active", true)
+        .order("ho_ten");
       return (data ?? []) as Profile[];
     },
   });
@@ -781,7 +1131,10 @@ function EditCongViecDialog({
     queryKey: ["cv-phoi-hop", editing?.id],
     queryFn: async () => {
       if (!editing) return [] as { user_id: string }[];
-      const { data } = await supabase.from("du_an_cong_viec_phoi_hop").select("user_id").eq("cong_viec_id", editing.id);
+      const { data } = await supabase
+        .from("du_an_cong_viec_phoi_hop")
+        .select("user_id")
+        .eq("cong_viec_id", editing.id);
       return data ?? [];
     },
     enabled: !!editing,
@@ -792,7 +1145,10 @@ function EditCongViecDialog({
     queryKey: ["cv-capabilities", editing?.id],
     queryFn: async () => {
       if (!editing) return { can_edit: true, can_delete: true };
-      const { data, error } = await supabase.rpc("can_edit_cong_viec", { _cv_id: editing.id, _user: currentUserId });
+      const { data, error } = await supabase.rpc("can_edit_cong_viec", {
+        _cv_id: editing.id,
+        _user: currentUserId,
+      });
       if (error) return { can_edit: false, can_delete: false };
       return { can_edit: !!data, can_delete: isManager }; // Simplified for now, real RPC might return object
     },
@@ -823,12 +1179,18 @@ function EditCongViecDialog({
             : null,
       };
       if (isEdit && editing) {
-        const { error } = await supabase.from("du_an_cong_viec").update(payload).eq("id", editing.id);
+        const { error } = await supabase
+          .from("du_an_cong_viec")
+          .update(payload)
+          .eq("id", editing.id);
         if (error) throw error;
         return editing.id;
       } else {
-        const { data, error } = await supabase.from("du_an_cong_viec")
-          .insert({ ...payload, created_by: currentUserId }).select("id").single();
+        const { data, error } = await supabase
+          .from("du_an_cong_viec")
+          .insert({ ...payload, created_by: currentUserId })
+          .select("id")
+          .single();
         if (error) throw error;
         return data.id as string;
       }
@@ -847,7 +1209,11 @@ function EditCongViecDialog({
       const { error } = await supabase.from("du_an_cong_viec").delete().eq("id", editing.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã xoá"); onOpenChange(false); onDone(); },
+    onSuccess: () => {
+      toast.success("Đã xoá");
+      onOpenChange(false);
+      onDone();
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -855,12 +1221,17 @@ function EditCongViecDialog({
     mutationFn: async (userId: string) => {
       if (!editing) return;
       if (collabIds.has(userId)) {
-        const { error } = await supabase.from("du_an_cong_viec_phoi_hop").delete()
-          .eq("cong_viec_id", editing.id).eq("user_id", userId);
+        const { error } = await supabase
+          .from("du_an_cong_viec_phoi_hop")
+          .delete()
+          .eq("cong_viec_id", editing.id)
+          .eq("user_id", userId);
         if (error) throw error;
       } else {
         const { error } = await supabase.from("du_an_cong_viec_phoi_hop").insert({
-          cong_viec_id: editing.id, user_id: userId, added_by: currentUserId,
+          cong_viec_id: editing.id,
+          user_id: userId,
+          added_by: currentUserId,
         });
         if (error) throw error;
       }
@@ -881,7 +1252,9 @@ function EditCongViecDialog({
         <DialogHeader>
           <DialogTitle>{isEdit ? "Cập nhật công việc" : "Thêm công việc con"}</DialogTitle>
           <DialogDescription>
-            {isEdit ? "Cập nhật tiến độ, kết quả thực hiện và người phối hợp." : "VD: Khảo sát và lập báo cáo khảo sát, Lập BCKTKT…"}
+            {isEdit
+              ? "Cập nhật tiến độ, kết quả thực hiện và người phối hợp."
+              : "VD: Khảo sát và lập báo cáo khảo sát, Lập BCKTKT…"}
           </DialogDescription>
         </DialogHeader>
 
@@ -905,7 +1278,11 @@ function EditCongViecDialog({
 
           <div>
             <Label>Mô tả</Label>
-            <Textarea rows={2} value={form.mo_ta} onChange={(e) => setForm({ ...form, mo_ta: e.target.value })} />
+            <Textarea
+              rows={2}
+              value={form.mo_ta}
+              onChange={(e) => setForm({ ...form, mo_ta: e.target.value })}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -916,15 +1293,32 @@ function EditCongViecDialog({
                 onChange={(v) => setForm({ ...form, nguoi_xu_ly_chinh: v === "__none__" ? "" : v })}
                 placeholder="— chọn —"
                 searchPlaceholder="Tìm người…"
-                options={[{ value: "__none__", label: "— chưa gán —" }, ...(users ?? []).map((u) => ({ value: u.id, label: u.ho_ten ?? u.email ?? u.id }))]}
+                options={[
+                  { value: "__none__", label: "— chưa gán —" },
+                  ...(users ?? []).map((u) => ({
+                    value: u.id,
+                    label: u.ho_ten ?? u.email ?? u.id,
+                  })),
+                ]}
               />
             </div>
             <div>
               <Label>Trạng thái</Label>
-              <Select value={form.trang_thai} onValueChange={(v) => setForm({ ...form, trang_thai: v as typeof CV_STATUSES[number] })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={form.trang_thai}
+                onValueChange={(v) =>
+                  setForm({ ...form, trang_thai: v as (typeof CV_STATUSES)[number] })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {CV_STATUSES.map((s) => <SelectItem key={s} value={s}>{CV_TRANG_THAI[s].label}</SelectItem>)}
+                  {CV_STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {CV_TRANG_THAI[s].label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -933,43 +1327,68 @@ function EditCongViecDialog({
           <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
             <div>
               <Label>Bắt đầu</Label>
-              <Input type="date" value={form.ngay_bat_dau} onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngay_bat_dau}
+                onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })}
+              />
             </div>
             <div>
               <Label>Hạn hoàn thành</Label>
-              <Input type="date" value={form.ngay_ket_thuc_du_kien} onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngay_ket_thuc_du_kien}
+                onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })}
+              />
             </div>
             <div>
               <Label>Tiến độ (%)</Label>
-              <Input type="number" min={0} max={100} value={form.tien_do} onChange={(e) => setForm({ ...form, tien_do: Number(e.target.value) })} />
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={form.tien_do}
+                onChange={(e) => setForm({ ...form, tien_do: Number(e.target.value) })}
+              />
             </div>
           </div>
 
           <div>
             <Label>Kết quả thực hiện</Label>
-            <Textarea rows={3} value={form.ket_qua} onChange={(e) => setForm({ ...form, ket_qua: e.target.value })}
-              placeholder="Ghi chú kết quả, tài liệu, liên kết…" />
+            <Textarea
+              rows={3}
+              value={form.ket_qua}
+              onChange={(e) => setForm({ ...form, ket_qua: e.target.value })}
+              placeholder="Ghi chú kết quả, tài liệu, liên kết…"
+            />
           </div>
 
           {isEdit && (
             <div>
-              <Label className="flex items-center gap-1.5"><Users className="h-4 w-4" />Người phối hợp</Label>
+              <Label className="flex items-center gap-1.5">
+                <Users className="h-4 w-4" />
+                Người phối hợp
+              </Label>
               <div className="mt-2 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2 rounded border bg-slate-50">
-                {(users ?? []).filter((u) => u.id !== form.nguoi_xu_ly_chinh).map((u) => {
-                  const on = collabIds.has(u.id);
-                  return (
-                    <button
-                      key={u.id}
-                      onClick={() => toggleCollab.mutate(u.id)}
-                      className={cn(
-                        "text-xs px-2 py-1 rounded-full border transition",
-                        on ? "bg-indigo-600 text-white border-indigo-600" : "bg-white hover:border-indigo-300",
-                      )}
-                    >
-                      {u.ho_ten ?? u.email}
-                    </button>
-                  );
-                })}
+                {(users ?? [])
+                  .filter((u) => u.id !== form.nguoi_xu_ly_chinh)
+                  .map((u) => {
+                    const on = collabIds.has(u.id);
+                    return (
+                      <button
+                        key={u.id}
+                        onClick={() => toggleCollab.mutate(u.id)}
+                        className={cn(
+                          "text-xs px-2 py-1 rounded-full border transition",
+                          on
+                            ? "bg-indigo-600 text-white border-indigo-600"
+                            : "bg-white hover:border-indigo-300",
+                        )}
+                      >
+                        {u.ho_ten ?? u.email}
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           )}
@@ -990,14 +1409,25 @@ function EditCongViecDialog({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Huỷ</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => del.mutate()} className="bg-rose-600 hover:bg-rose-700">Xoá</AlertDialogAction>
+                  <AlertDialogAction
+                    onClick={() => del.mutate()}
+                    className="bg-rose-600 hover:bg-rose-700"
+                  >
+                    Xoá
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           )}
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Huỷ
+          </Button>
           <Button onClick={() => save.mutate()} disabled={save.isPending}>
-            {save.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            {save.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
             {isEdit ? "Lưu" : "Thêm"}
           </Button>
         </DialogFooter>

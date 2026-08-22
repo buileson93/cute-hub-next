@@ -7,15 +7,15 @@ Ngữ cảnh: repo đã có nền tảng `import-engine.ts`, `import-config.ts`,
 
 Mỗi loại nhập tương ứng một **schema** cố định trong `import-config.ts`:
 
-| Mã schema | Bảng đích | Ghi chú |
-|---|---|---|
-| `thiet_bi` | `thiet_bi` | Có ánh xạ Model/Đơn vị/Vị trí/Loại/Trạng thái |
-| `dm_model` | `dm_model` | Kèm `nha_san_xuat_ten`, `loai_thiet_bi_ma` |
-| `dm_don_vi` / `dm_vi_tri` / `dm_he_thong` / `dm_loai_thiet_bi` / `dm_nha_san_xuat` / `dm_nha_cung_cap` | tương ứng | Có scope cha (đơn vị/nhóm) |
-| `chung_chi_thiet_bi` | `chung_chi_thiet_bi` | Cần tra `thiet_bi` qua `ma` |
-| `ton_kho_dau_ky` | `kho_giao_dich` | Import số dư đầu kỳ |
-| `vat_tu` | `vat_tu` | Danh mục vật tư |
-| `bao_tri_lich_su` (mới) | `bao_tri` | Bảo trì đã thực hiện trước khi lên hệ thống |
+| Mã schema                                                                                              | Bảng đích            | Ghi chú                                       |
+| ------------------------------------------------------------------------------------------------------ | -------------------- | --------------------------------------------- |
+| `thiet_bi`                                                                                             | `thiet_bi`           | Có ánh xạ Model/Đơn vị/Vị trí/Loại/Trạng thái |
+| `dm_model`                                                                                             | `dm_model`           | Kèm `nha_san_xuat_ten`, `loai_thiet_bi_ma`    |
+| `dm_don_vi` / `dm_vi_tri` / `dm_he_thong` / `dm_loai_thiet_bi` / `dm_nha_san_xuat` / `dm_nha_cung_cap` | tương ứng            | Có scope cha (đơn vị/nhóm)                    |
+| `chung_chi_thiet_bi`                                                                                   | `chung_chi_thiet_bi` | Cần tra `thiet_bi` qua `ma`                   |
+| `ton_kho_dau_ky`                                                                                       | `kho_giao_dich`      | Import số dư đầu kỳ                           |
+| `vat_tu`                                                                                               | `vat_tu`             | Danh mục vật tư                               |
+| `bao_tri_lich_su` (mới)                                                                                | `bao_tri`            | Bảo trì đã thực hiện trước khi lên hệ thống   |
 
 Định dạng file: **`.xlsx`** (mặc định) và **`.csv`** (UTF-8, phân tách `,`, quote `"`). Kích thước tối đa 20MB / ≤ 50 000 dòng/lô. File > ngưỡng ⇒ yêu cầu chia lô, không stream ngầm.
 
@@ -25,8 +25,8 @@ Mỗi schema khai báo danh sách trường: `{ key, label, required, type, alia
 
 1. Đọc header hàng 1; hiển thị bảng "Cột file → Trường hệ thống".
 2. Auto-map ưu tiên: (1) khớp `key` chính xác → (2) khớp bất kỳ `alias[]` (đã chuẩn hoá bỏ dấu/lowercase, hàm `normalizeName` từ N1) → (3) fuzzy (Levenshtein ≥ 0.86).
-4. User có thể override; lưu **preset mapping** theo `schema` và `file_signature` (hash 8 header đầu) để lần sau tự chọn.
-5. Cột không map ⇒ bị bỏ qua (không lỗi), nhưng cột **bắt buộc chưa map** ⇒ chặn Preview.
+3. User có thể override; lưu **preset mapping** theo `schema` và `file_signature` (hash 8 header đầu) để lần sau tự chọn.
+4. Cột không map ⇒ bị bỏ qua (không lỗi), nhưng cột **bắt buộc chưa map** ⇒ chặn Preview.
 
 ## 3. Kiểu dữ liệu & Coercion
 
@@ -60,20 +60,20 @@ Quy tắc:
 
 Mỗi dòng tạo ra một `ImportItemResult` với danh sách issue:
 
-| Mã | Mức | Ví dụ |
-|---|---|---|
-| `MISSING_REQUIRED` | error | Trường bắt buộc trống |
-| `TYPE_MISMATCH` | error | "abc" ở cột số |
-| `ENUM_INVALID` | error | Trạng thái "xyz" không có trong enum |
-| `REF_NOT_FOUND` | error | Model "SU-27B/M2" không có trong danh mục |
-| `REF_AMBIGUOUS` | error | Khớp 2+ bản ghi |
-| `DUPLICATE_IN_FILE` | error | Cùng `ma` xuất hiện nhiều dòng trong file |
-| `DUPLICATE_IN_DB` | warning (mặc định) hoặc error (nếu `unique_strict`) | `ma` đã có trong DB |
-| `SCOPE_MISMATCH` | error | Model không thuộc nhà sản xuất đã chỉ định |
-| `RANGE_INVALID` | error | `ngay_het_han < ngay_cap` |
-| `LENGTH_EXCEEDED` | warning | Vượt max length → sẽ cắt khi ghi |
-| `INHERITED_OVERRIDE_IGNORED` | warning | Trường kế thừa từ Model bị bỏ qua |
-| `ALIAS_APPLIED` | info | Áp dụng alias `X → Y` |
+| Mã                           | Mức                                                 | Ví dụ                                      |
+| ---------------------------- | --------------------------------------------------- | ------------------------------------------ |
+| `MISSING_REQUIRED`           | error                                               | Trường bắt buộc trống                      |
+| `TYPE_MISMATCH`              | error                                               | "abc" ở cột số                             |
+| `ENUM_INVALID`               | error                                               | Trạng thái "xyz" không có trong enum       |
+| `REF_NOT_FOUND`              | error                                               | Model "SU-27B/M2" không có trong danh mục  |
+| `REF_AMBIGUOUS`              | error                                               | Khớp 2+ bản ghi                            |
+| `DUPLICATE_IN_FILE`          | error                                               | Cùng `ma` xuất hiện nhiều dòng trong file  |
+| `DUPLICATE_IN_DB`            | warning (mặc định) hoặc error (nếu `unique_strict`) | `ma` đã có trong DB                        |
+| `SCOPE_MISMATCH`             | error                                               | Model không thuộc nhà sản xuất đã chỉ định |
+| `RANGE_INVALID`              | error                                               | `ngay_het_han < ngay_cap`                  |
+| `LENGTH_EXCEEDED`            | warning                                             | Vượt max length → sẽ cắt khi ghi           |
+| `INHERITED_OVERRIDE_IGNORED` | warning                                             | Trường kế thừa từ Model bị bỏ qua          |
+| `ALIAS_APPLIED`              | info                                                | Áp dụng alias `X → Y`                      |
 
 Rule: **có ≥ 1 error trên dòng** ⇒ dòng đó bị loại; **có ≥ 1 error trong file & user không tick "bỏ qua dòng lỗi"** ⇒ chặn ghi cả lô.
 
@@ -95,7 +95,7 @@ Upload → Parse & Map cột → Validate (bảng preview) → Xác nhận → A
 7. **Undo cả lô**: RPC `import_undo_batch(p_batch_id uuid)` trong 24h (cấu hình `import.undo_window_h`, mặc định 24). Undo dùng `audit_log` để rollback từng bản ghi:
    - `insert` ⇒ soft delete (không xoá cứng nếu đã có FK phụ thuộc; báo lỗi "không thể undo dòng N do có <n> tham chiếu, cần Change Request").
    - `update` ⇒ khôi phục `gia_tri_cu`.
-   Sau undo ⇒ `import_batch.trang_thai='undone'`, ghi `undone_at`, `undone_by`.
+     Sau undo ⇒ `import_batch.trang_thai='undone'`, ghi `undone_at`, `undone_by`.
 
 Không có "auto-apply". Luôn cần bước xác nhận rõ ràng.
 

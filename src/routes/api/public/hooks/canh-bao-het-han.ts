@@ -19,18 +19,12 @@ export const Route = createFileRoute("/api/public/hooks/canh-bao-het-han")({
           // vì key này nhúng trong bundle client → bất kỳ ai cũng có.
           const expected = process.env.CRON_SECRET;
           const provided =
-            request.headers.get("x-cron-secret") ??
-            request.headers.get("X-Cron-Secret") ??
-            "";
+            request.headers.get("x-cron-secret") ?? request.headers.get("X-Cron-Secret") ?? "";
           if (!expected || provided !== expected) {
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
-          const { supabaseAdmin } = await import(
-            "@/integrations/backend/admin.server"
-          );
-          const { data, error } = await supabaseAdmin.rpc(
-            "sinh_canh_bao_het_han",
-          );
+          const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
+          const { data, error } = await supabaseAdmin.rpc("sinh_canh_bao_het_han");
           if (error) {
             console.error("[canh-bao-het-han] rpc error", error);
             return Response.json({ error: error.message }, { status: 500 });

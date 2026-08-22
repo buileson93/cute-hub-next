@@ -22,23 +22,33 @@ function extractJson(raw: string): Record<string, unknown> | null {
   let s = raw.trim();
   const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
   if (fence) s = fence[1].trim();
-  const start = s.indexOf("{"); const end = s.lastIndexOf("}");
+  const start = s.indexOf("{");
+  const end = s.lastIndexOf("}");
   if (start === -1 || end <= start) return null;
-  try { return JSON.parse(s.slice(start, end + 1)); } catch { return null; }
+  try {
+    return JSON.parse(s.slice(start, end + 1));
+  } catch {
+    return null;
+  }
 }
 
 export const parseIntentWithAi = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => inputSchema.parse(d))
   .handler(async ({ data, context }): Promise<Intent> => {
-    const { data: cfgRow } = await context.supabase.from("ai_config").select("*").eq("id", 1).maybeSingle();
+    const { data: cfgRow } = await context.supabase
+      .from("ai_config")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
     const cfg = cfgRow as unknown as AiRuntimeConfig | null;
     if (!cfg || !cfg.enabled) {
       return { kind: "jump-to", query: data.input, confidence: 0.3 };
     }
     const model = buildAiModel(cfg);
     const { text } = await generateText({
-      model, system: SYSTEM,
+      model,
+      system: SYSTEM,
       prompt: `Câu: """${data.input}"""`,
       maxOutputTokens: 200,
     });
@@ -46,13 +56,24 @@ export const parseIntentWithAi = createServerFn({ method: "POST" })
     if (!obj || typeof obj.kind !== "string") {
       return { kind: "jump-to", query: data.input, confidence: 0.3 };
     }
-    const conf = typeof obj.confidence === "number" ? Math.max(0, Math.min(1, obj.confidence)) : 0.6;
+    const conf =
+      typeof obj.confidence === "number" ? Math.max(0, Math.min(1, obj.confidence)) : 0.6;
     const asStr = (v: unknown) => (typeof v === "string" ? v.trim() : "");
     switch (obj.kind) {
       case "mount-asset":
-        return { kind: "mount-asset", asset: asStr(obj.asset).toUpperCase(), component: asStr(obj.component).toUpperCase(), confidence: conf };
+        return {
+          kind: "mount-asset",
+          asset: asStr(obj.asset).toUpperCase(),
+          component: asStr(obj.component).toUpperCase(),
+          confidence: conf,
+        };
       case "unmount-asset":
-        return { kind: "unmount-asset", asset: asStr(obj.asset).toUpperCase(), component: asStr(obj.component).toUpperCase() || undefined, confidence: conf };
+        return {
+          kind: "unmount-asset",
+          asset: asStr(obj.asset).toUpperCase(),
+          component: asStr(obj.component).toUpperCase() || undefined,
+          confidence: conf,
+        };
       case "close-incident":
         return { kind: "close-incident", id: asStr(obj.id).toUpperCase(), confidence: conf };
       case "create-pm":

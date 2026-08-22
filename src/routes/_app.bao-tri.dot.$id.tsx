@@ -8,12 +8,49 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { CalendarClock, Plus, ArrowLeft, Printer, FileText, ClipboardCheck, BarChart3, CheckCircle2, XCircle, AlertCircle, Lock, Send, Undo2, ShieldCheck, TimerReset, Clock, AlertTriangle } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  CalendarClock,
+  Plus,
+  ArrowLeft,
+  Printer,
+  FileText,
+  ClipboardCheck,
+  BarChart3,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Lock,
+  Send,
+  Undo2,
+  ShieldCheck,
+  TimerReset,
+  Clock,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useMemo, useState } from "react";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
@@ -24,7 +61,10 @@ export const Route = createFileRoute("/_app/bao-tri/dot/$id")({
   head: ({ params }) => ({
     meta: [
       { title: `Đợt bảo dưỡng ${params.id.slice(0, 8)} — MIRATS` },
-      { name: "description", content: "Chi tiết đợt bảo dưỡng: danh mục hệ thống, kết quả và báo cáo tổng hợp." },
+      {
+        name: "description",
+        content: "Chi tiết đợt bảo dưỡng: danh mục hệ thống, kết quả và báo cáo tổng hợp.",
+      },
     ],
   }),
   component: DotDetailPage,
@@ -34,20 +74,28 @@ const trangThaiHM: Record<string, { label: string; color: string }> = {
   chua_bat_dau: { label: "Chưa bắt đầu", color: "bg-muted text-muted-foreground" },
   dang_lam: { label: "Đang làm", color: "bg-warning/10 text-warning border-warning/20" },
   hoan_thanh: { label: "Hoàn thành", color: "bg-success/10 text-success border-success/20" },
-  khong_thuc_hien: { label: "Không thực hiện", color: "bg-destructive/10 text-destructive border-destructive/20" },
+  khong_thuc_hien: {
+    label: "Không thực hiện",
+    color: "bg-destructive/10 text-destructive border-destructive/20",
+  },
 };
 
 const duyetTT: Record<string, { label: string; color: string }> = {
   chua_gui: { label: "Chưa gửi", color: "bg-muted text-muted-foreground" },
   cho_duyet: { label: "Chờ duyệt", color: "bg-warning/10 text-warning border-warning/20" },
   da_duyet: { label: "Đã duyệt", color: "bg-success/10 text-success border-success/20" },
-  tu_choi: { label: "Bị trả lại", color: "bg-destructive/10 text-destructive border-destructive/20" },
+  tu_choi: {
+    label: "Bị trả lại",
+    color: "bg-destructive/10 text-destructive border-destructive/20",
+  },
 };
 
 function deadlineTone(han: string | null | undefined, done: boolean) {
   if (!han) return { color: "text-muted-foreground", label: "—" };
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const d = new Date(han); d.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(han);
+  d.setHours(0, 0, 0, 0);
   const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
   if (done) return { color: "text-success", label: han };
   if (diff < 0) return { color: "text-destructive font-semibold", label: `${han} (quá ${-diff}d)` };
@@ -68,7 +116,11 @@ function DotDetailPage() {
   const { data: dot } = useQuery({
     queryKey: ["dot-bao-duong", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("dot_bao_duong").select("*").eq("id", id).single();
+      const { data, error } = await supabase
+        .from("dot_bao_duong")
+        .select("*")
+        .eq("id", id)
+        .single();
       if (error) throw error;
       return data;
     },
@@ -77,7 +129,11 @@ function DotDetailPage() {
   const { data: donViList } = useQuery({
     queryKey: ["dm-don-vi-all"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("dm_don_vi").select("id,ma,ten").eq("active", true).order("ma");
+      const { data, error } = await supabase
+        .from("dm_don_vi")
+        .select("id,ma,ten")
+        .eq("active", true)
+        .order("ma");
       if (error) throw error;
       return data;
     },
@@ -99,7 +155,10 @@ function DotDetailPage() {
   const { data: alerts, refetch: refetchAlerts } = useQuery({
     queryKey: ["dot-alerts", id],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("dot_bao_duong_canh_bao", { p_dot_id: id, p_sap_han_ngay: 3 });
+      const { data, error } = await supabase.rpc("dot_bao_duong_canh_bao", {
+        p_dot_id: id,
+        p_sap_han_ngay: 3,
+      });
       if (error) throw error;
       return data;
     },
@@ -121,7 +180,13 @@ function DotDetailPage() {
   }, [hans]);
 
   const groupedByDv = useMemo(() => {
-    const m = new Map<string, { donVi: { id: string; ma: string; ten: string } | null; items: NonNullable<typeof hangMuc>[number][] }>();
+    const m = new Map<
+      string,
+      {
+        donVi: { id: string; ma: string; ten: string } | null;
+        items: NonNullable<typeof hangMuc>[number][];
+      }
+    >();
     for (const h of hangMuc ?? []) {
       const dv = h.dm_don_vi;
       const key = dv?.id ?? "unknown";
@@ -129,7 +194,9 @@ function DotDetailPage() {
       rec.items.push(h);
       m.set(key, rec);
     }
-    return Array.from(m.values()).sort((a, b) => (a.donVi?.ma ?? "").localeCompare(b.donVi?.ma ?? ""));
+    return Array.from(m.values()).sort((a, b) =>
+      (a.donVi?.ma ?? "").localeCompare(b.donVi?.ma ?? ""),
+    );
   }, [hangMuc]);
 
   const kpi = useMemo(() => {
@@ -142,7 +209,10 @@ function DotDetailPage() {
 
   const updateDotMut = useMutation({
     mutationFn: async (patch: Partial<typeof dot>) => {
-      const { error } = await supabase.from("dot_bao_duong").update(patch as never).eq("id", id);
+      const { error } = await supabase
+        .from("dot_bao_duong")
+        .update(patch as never)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["dot-bao-duong", id] }),
@@ -151,12 +221,19 @@ function DotDetailPage() {
   const selectedHM = hangMuc?.find((h) => h.id === selHM) ?? null;
 
   const workflowMut = useMutation({
-    mutationFn: async (args: { fn: "dot_hm_submit" | "dot_hm_approve" | "dot_hm_reject" | "dot_hm_unlock"; id: string; note?: string }) => {
+    mutationFn: async (args: {
+      fn: "dot_hm_submit" | "dot_hm_approve" | "dot_hm_reject" | "dot_hm_unlock";
+      id: string;
+      note?: string;
+    }) => {
       if (args.fn === "dot_hm_submit" || args.fn === "dot_hm_unlock") {
         const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id });
         if (error) throw error;
       } else {
-        const { error } = await supabase.rpc(args.fn, { p_hang_muc_id: args.id, p_note: args.note });
+        const { error } = await supabase.rpc(args.fn, {
+          p_hang_muc_id: args.id,
+          p_note: args.note,
+        });
         if (error) throw error;
       }
     },
@@ -168,7 +245,11 @@ function DotDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const [noteDialog, setNoteDialog] = useState<{ open: boolean; action: "dot_hm_approve" | "dot_hm_reject"; id: string } | null>(null);
+  const [noteDialog, setNoteDialog] = useState<{
+    open: boolean;
+    action: "dot_hm_approve" | "dot_hm_reject";
+    id: string;
+  } | null>(null);
   const [noteText, setNoteText] = useState("");
   function openNoteDialog(action: "dot_hm_approve" | "dot_hm_reject", hmId: string) {
     setNoteText("");
@@ -177,9 +258,14 @@ function DotDetailPage() {
   function submitNoteDialog() {
     if (!noteDialog) return;
     if (noteDialog.action === "dot_hm_reject" && !noteText.trim()) {
-      toast.error("Vui lòng nhập lý do trả lại"); return;
+      toast.error("Vui lòng nhập lý do trả lại");
+      return;
     }
-    workflowMut.mutate({ fn: noteDialog.action, id: noteDialog.id, note: noteText.trim() || undefined });
+    workflowMut.mutate({
+      fn: noteDialog.action,
+      id: noteDialog.id,
+      note: noteText.trim() || undefined,
+    });
     setNoteDialog(null);
   }
 
@@ -187,19 +273,32 @@ function DotDetailPage() {
     <div className="space-y-4">
       <div className="flex items-center gap-2 print:hidden">
         <Button variant="ghost" size="sm" asChild>
-          <Link to="/bao-tri/dot"><ArrowLeft className="mr-1 h-4 w-4" />Danh sách đợt</Link>
+          <Link to="/bao-tri/dot">
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Danh sách đợt
+          </Link>
         </Button>
       </div>
 
       <PageHeader
         icon={CalendarClock}
         title={dot?.ten ?? "Đợt bảo dưỡng"}
-        description={dot ? `Kỳ ${dot.ky}/${dot.nam}${dot.tu_ngay ? ` · ${dot.tu_ngay} → ${dot.den_ngay ?? ""}` : ""}` : ""}
+        description={
+          dot
+            ? `Kỳ ${dot.ky}/${dot.nam}${dot.tu_ngay ? ` · ${dot.tu_ngay} → ${dot.den_ngay ?? ""}` : ""}`
+            : ""
+        }
         actions={
-          isKt && dot && (
+          isKt &&
+          dot && (
             <div className="flex items-center gap-2">
-              <Select value={dot.trang_thai} onValueChange={(v) => updateDotMut.mutate({ trang_thai: v as never })}>
-                <SelectTrigger className="h-9 w-40"><SelectValue /></SelectTrigger>
+              <Select
+                value={dot.trang_thai}
+                onValueChange={(v) => updateDotMut.mutate({ trang_thai: v as never })}
+              >
+                <SelectTrigger className="h-9 w-40">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="nhap">Nháp</SelectItem>
                   <SelectItem value="mo">Đã mở</SelectItem>
@@ -208,8 +307,14 @@ function DotDetailPage() {
                   <SelectItem value="huy">Đã huỷ</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="sm" onClick={() => setDeadlineDialogOpen(true)}><TimerReset className="mr-1 h-4 w-4" />Mốc tiến độ</Button>
-              <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="mr-1 h-4 w-4" />In</Button>
+              <Button variant="outline" size="sm" onClick={() => setDeadlineDialogOpen(true)}>
+                <TimerReset className="mr-1 h-4 w-4" />
+                Mốc tiến độ
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => window.print()}>
+                <Printer className="mr-1 h-4 w-4" />
+                In
+              </Button>
             </div>
           )
         }
@@ -219,32 +324,51 @@ function DotDetailPage() {
       {(alerts?.length ?? 0) > 0 && (
         <Card className="border-amber-200 bg-amber-50/40">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-600" />Cảnh báo tiến độ theo đơn vị</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              Cảnh báo tiến độ theo đơn vị
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
             {alerts!.map((a) => {
               const tone =
-                a.muc_do === "qua_han" ? "border-rose-300 bg-rose-50" :
-                a.muc_do === "sap_han" ? "border-amber-300 bg-amber-50" :
-                a.muc_do === "hoan_tat" ? "border-emerald-300 bg-emerald-50" :
-                "border-slate-200 bg-white";
+                a.muc_do === "qua_han"
+                  ? "border-rose-300 bg-rose-50"
+                  : a.muc_do === "sap_han"
+                    ? "border-amber-300 bg-amber-50"
+                    : a.muc_do === "hoan_tat"
+                      ? "border-emerald-300 bg-emerald-50"
+                      : "border-slate-200 bg-white";
               const label =
-                a.muc_do === "qua_han" ? "Quá hạn" :
-                a.muc_do === "sap_han" ? "Sắp hết hạn" :
-                a.muc_do === "hoan_tat" ? "Hoàn tất" : "Đúng tiến độ";
+                a.muc_do === "qua_han"
+                  ? "Quá hạn"
+                  : a.muc_do === "sap_han"
+                    ? "Sắp hết hạn"
+                    : a.muc_do === "hoan_tat"
+                      ? "Hoàn tất"
+                      : "Đúng tiến độ";
               return (
                 <div key={a.don_vi_id} className={`rounded border p-2 text-xs ${tone}`}>
                   <div className="flex items-center justify-between">
-                    <div className="font-medium">{a.don_vi_ma} — {a.don_vi_ten}</div>
-                    <Badge variant="outline" className="text-[10px]">{label}</Badge>
+                    <div className="font-medium">
+                      {a.don_vi_ma} — {a.don_vi_ten}
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">
+                      {label}
+                    </Badge>
                   </div>
                   <div className="mt-1 text-muted-foreground">
-                    Hạn: {a.han_ngay ?? "—"} · Tổng {a.tong} · HT {a.hoan_thanh} · Duyệt {a.da_duyet}
+                    Hạn: {a.han_ngay ?? "—"} · Tổng {a.tong} · HT {a.hoan_thanh} · Duyệt{" "}
+                    {a.da_duyet}
                   </div>
                   {(a.qua_han > 0 || a.sap_han > 0) && (
                     <div className="mt-1 flex gap-2 text-[11px]">
-                      {a.qua_han > 0 && <span className="text-rose-600">● Quá hạn: {a.qua_han}</span>}
-                      {a.sap_han > 0 && <span className="text-amber-600">● Sắp hạn: {a.sap_han}</span>}
+                      {a.qua_han > 0 && (
+                        <span className="text-rose-600">● Quá hạn: {a.qua_han}</span>
+                      )}
+                      {a.sap_han > 0 && (
+                        <span className="text-amber-600">● Sắp hạn: {a.sap_han}</span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -264,22 +388,42 @@ function DotDetailPage() {
 
       <Tabs defaultValue="danh-muc" className="space-y-3">
         <TabsList>
-          <TabsTrigger value="danh-muc"><ClipboardCheck className="mr-1 h-4 w-4" />Danh mục & Kết quả</TabsTrigger>
-          <TabsTrigger value="bao-cao"><BarChart3 className="mr-1 h-4 w-4" />Báo cáo</TabsTrigger>
-          <TabsTrigger value="nhat-ky"><FileText className="mr-1 h-4 w-4" />Nhật ký</TabsTrigger>
+          <TabsTrigger value="danh-muc">
+            <ClipboardCheck className="mr-1 h-4 w-4" />
+            Danh mục & Kết quả
+          </TabsTrigger>
+          <TabsTrigger value="bao-cao">
+            <BarChart3 className="mr-1 h-4 w-4" />
+            Báo cáo
+          </TabsTrigger>
+          <TabsTrigger value="nhat-ky">
+            <FileText className="mr-1 h-4 w-4" />
+            Nhật ký
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="danh-muc" className="space-y-3">
           {groupedByDv.length === 0 && (
-            <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">
-              Chưa có hệ thống nào. {isKt ? "Bấm \"Thêm hệ thống\" trong mỗi đơn vị." : "Đơn vị của bạn có thể thêm hệ thống dưới đây."}
-            </CardContent></Card>
+            <Card>
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                Chưa có hệ thống nào.{" "}
+                {isKt
+                  ? 'Bấm "Thêm hệ thống" trong mỗi đơn vị.'
+                  : "Đơn vị của bạn có thể thêm hệ thống dưới đây."}
+              </CardContent>
+            </Card>
           )}
           {isKt && donViList && groupedByDv.length === 0 && (
             <div className="flex flex-wrap gap-2">
               {donViList.map((dv) => (
-                <Button key={dv.id} size="sm" variant="outline" onClick={() => setAddOpenForDvId(dv.id)}>
-                  <Plus className="mr-1 h-3.5 w-3.5" />Thêm cho {dv.ma}
+                <Button
+                  key={dv.id}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setAddOpenForDvId(dv.id)}
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" />
+                  Thêm cho {dv.ma}
                 </Button>
               ))}
             </div>
@@ -290,11 +434,18 @@ function DotDetailPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">
                     {g.donVi ? `${g.donVi.ma} — ${g.donVi.ten}` : "Không xác định đơn vị"}
-                    <span className="ml-2 text-xs font-normal text-muted-foreground">({g.items.length} hệ thống)</span>
+                    <span className="ml-2 text-xs font-normal text-muted-foreground">
+                      ({g.items.length} hệ thống)
+                    </span>
                   </CardTitle>
                   {g.donVi && (isKt || profile?.don_vi === g.donVi.ma) && (
-                    <Button size="sm" variant="outline" onClick={() => setAddOpenForDvId(g.donVi!.id)}>
-                      <Plus className="mr-1 h-3.5 w-3.5" />Thêm hệ thống
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setAddOpenForDvId(g.donVi!.id)}
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" />
+                      Thêm hệ thống
                     </Button>
                   )}
                 </div>
@@ -317,7 +468,10 @@ function DotDetailPage() {
                       const tt = trangThaiHM[h.trang_thai] ?? trangThaiHM.chua_bat_dau;
                       const dt = duyetTT[h.duyet_trang_thai ?? "chua_gui"] ?? duyetTT.chua_gui;
                       const eff = h.han_hoan_thanh ?? hanByDv.get(h.don_vi_id) ?? undefined;
-                      const dl = deadlineTone(eff, h.trang_thai === "hoan_thanh" || h.duyet_trang_thai === "da_duyet");
+                      const dl = deadlineTone(
+                        eff,
+                        h.trang_thai === "hoan_thanh" || h.duyet_trang_thai === "da_duyet",
+                      );
                       const locked = h.duyet_trang_thai === "da_duyet";
                       const isMine = profile?.don_vi === g.donVi?.ma;
                       return (
@@ -329,47 +483,91 @@ function DotDetailPage() {
                             </div>
                             <div className="text-xs text-muted-foreground">{h.dm_he_thong?.ma}</div>
                           </td>
-                          <td className="px-3 py-2"><Badge className={tt.color} variant="outline">{tt.label}</Badge></td>
-                          <td className="px-3 py-2"><Badge className={dt.color} variant="outline">{dt.label}</Badge></td>
                           <td className="px-3 py-2">
-                            {h.ket_qua === "dat" && <span className="inline-flex items-center gap-1 text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" />Đạt</span>}
-                            {h.ket_qua === "khong_dat" && <span className="inline-flex items-center gap-1 text-rose-600"><XCircle className="h-3.5 w-3.5" />Không đạt</span>}
+                            <Badge className={tt.color} variant="outline">
+                              {tt.label}
+                            </Badge>
+                          </td>
+                          <td className="px-3 py-2">
+                            <Badge className={dt.color} variant="outline">
+                              {dt.label}
+                            </Badge>
+                          </td>
+                          <td className="px-3 py-2">
+                            {h.ket_qua === "dat" && (
+                              <span className="inline-flex items-center gap-1 text-emerald-600">
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                Đạt
+                              </span>
+                            )}
+                            {h.ket_qua === "khong_dat" && (
+                              <span className="inline-flex items-center gap-1 text-rose-600">
+                                <XCircle className="h-3.5 w-3.5" />
+                                Không đạt
+                              </span>
+                            )}
                             {!h.ket_qua && <span className="text-muted-foreground">—</span>}
                           </td>
                           <td className={`px-3 py-2 text-xs ${dl.color}`}>{dl.label}</td>
-                          <td className="px-3 py-2 text-xs text-muted-foreground line-clamp-1 max-w-[240px]">{h.ton_tai || "—"}</td>
+                          <td className="px-3 py-2 text-xs text-muted-foreground line-clamp-1 max-w-[240px]">
+                            {h.ton_tai || "—"}
+                          </td>
                           <td className="px-3 py-2 text-right">
                             <div className="flex items-center justify-end gap-1">
-                              <Button size="sm" variant="ghost" onClick={() => setSelHM(h.id)} disabled={locked && !isAdmin}>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setSelHM(h.id)}
+                                disabled={locked && !isAdmin}
+                              >
                                 {locked ? "Xem" : "Cập nhật"}
                               </Button>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button size="sm" variant="ghost">⋯</Button>
+                                  <Button size="sm" variant="ghost">
+                                    ⋯
+                                  </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-52">
-                                  {(isMine || isKt) && !locked && h.duyet_trang_thai !== "cho_duyet" && (
-                                    <DropdownMenuItem onClick={() => workflowMut.mutate({ fn: "dot_hm_submit", id: h.id })}>
-                                      <Send className="mr-2 h-3.5 w-3.5" />Gửi phê duyệt
-                                    </DropdownMenuItem>
-                                  )}
+                                  {(isMine || isKt) &&
+                                    !locked &&
+                                    h.duyet_trang_thai !== "cho_duyet" && (
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          workflowMut.mutate({ fn: "dot_hm_submit", id: h.id })
+                                        }
+                                      >
+                                        <Send className="mr-2 h-3.5 w-3.5" />
+                                        Gửi phê duyệt
+                                      </DropdownMenuItem>
+                                    )}
                                   {isKt && h.duyet_trang_thai === "cho_duyet" && (
                                     <>
-                                      <DropdownMenuItem onClick={() => openNoteDialog("dot_hm_approve", h.id)}>
-                                        <ShieldCheck className="mr-2 h-3.5 w-3.5" />Duyệt & khoá
+                                      <DropdownMenuItem
+                                        onClick={() => openNoteDialog("dot_hm_approve", h.id)}
+                                      >
+                                        <ShieldCheck className="mr-2 h-3.5 w-3.5" />
+                                        Duyệt & khoá
                                       </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => openNoteDialog("dot_hm_reject", h.id)}>
-                                        <Undo2 className="mr-2 h-3.5 w-3.5" />Trả lại đơn vị
+                                      <DropdownMenuItem
+                                        onClick={() => openNoteDialog("dot_hm_reject", h.id)}
+                                      >
+                                        <Undo2 className="mr-2 h-3.5 w-3.5" />
+                                        Trả lại đơn vị
                                       </DropdownMenuItem>
                                     </>
                                   )}
                                   {isAdmin && locked && (
                                     <>
                                       <DropdownMenuSeparator />
-                                      <DropdownMenuItem onClick={() => {
-                                        if (window.confirm("Mở khoá hạng mục đã duyệt?")) workflowMut.mutate({ fn: "dot_hm_unlock", id: h.id });
-                                      }}>
-                                        <Lock className="mr-2 h-3.5 w-3.5" />Mở khoá (Admin)
+                                      <DropdownMenuItem
+                                        onClick={() => {
+                                          if (window.confirm("Mở khoá hạng mục đã duyệt?"))
+                                            workflowMut.mutate({ fn: "dot_hm_unlock", id: h.id });
+                                        }}
+                                      >
+                                        <Lock className="mr-2 h-3.5 w-3.5" />
+                                        Mở khoá (Admin)
                                       </DropdownMenuItem>
                                     </>
                                   )}
@@ -392,8 +590,14 @@ function DotDetailPage() {
               {donViList
                 .filter((dv) => !groupedByDv.find((g) => g.donVi?.id === dv.id))
                 .map((dv) => (
-                  <Button key={dv.id} size="sm" variant="outline" onClick={() => setAddOpenForDvId(dv.id)}>
-                    <Plus className="mr-1 h-3.5 w-3.5" />Thêm cho {dv.ma}
+                  <Button
+                    key={dv.id}
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setAddOpenForDvId(dv.id)}
+                  >
+                    <Plus className="mr-1 h-3.5 w-3.5" />
+                    Thêm cho {dv.ma}
                   </Button>
                 ))}
             </div>
@@ -406,8 +610,14 @@ function DotDetailPage() {
 
         <TabsContent value="nhat-ky">
           <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base"><DotAuditTimelineHeader /></CardTitle></CardHeader>
-            <CardContent><DotAuditTimeline dotId={id} limit={200} /></CardContent>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">
+                <DotAuditTimelineHeader />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DotAuditTimeline dotId={id} limit={200} />
+            </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
@@ -419,18 +629,26 @@ function DotDetailPage() {
         dotId={id}
         donViId={addOpenForDvId}
         existingHeThongIds={(hangMuc ?? []).map((h) => h.he_thong_id)}
-        onDone={() => { setAddOpenForDvId(null); refetchHM(); }}
+        onDone={() => {
+          setAddOpenForDvId(null);
+          refetchHM();
+        }}
       />
 
       {/* Update sheet */}
       <Sheet open={!!selHM} onOpenChange={(o) => !o && setSelHM(null)}>
         <SheetContent className="w-full sm:max-w-lg">
-          <SheetHeader><SheetTitle>Cập nhật kết quả</SheetTitle></SheetHeader>
+          <SheetHeader>
+            <SheetTitle>Cập nhật kết quả</SheetTitle>
+          </SheetHeader>
           {selectedHM && (
             <UpdateHangMucPanel
               hangMuc={selectedHM}
               readonly={selectedHM.duyet_trang_thai === "da_duyet" && !isAdmin}
-              onSaved={() => { setSelHM(null); refetchHM(); }}
+              onSaved={() => {
+                setSelHM(null);
+                refetchHM();
+              }}
             />
           )}
         </SheetContent>
@@ -442,35 +660,58 @@ function DotDetailPage() {
         dotId={id}
         donViList={donViList ?? []}
         existingHans={hans ?? []}
-        onDone={() => { qc.invalidateQueries({ queryKey: ["dot-hans", id] }); refetchAlerts(); }}
+        onDone={() => {
+          qc.invalidateQueries({ queryKey: ["dot-hans", id] });
+          refetchAlerts();
+        }}
       />
 
-      <Dialog open={!!noteDialog?.open} onOpenChange={(o) => { if (!o) setNoteDialog(null); }}>
+      <Dialog
+        open={!!noteDialog?.open}
+        onOpenChange={(o) => {
+          if (!o) setNoteDialog(null);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {noteDialog?.action === "dot_hm_approve" ? "Duyệt & khoá hạng mục" : "Trả lại hạng mục cho đơn vị"}
+              {noteDialog?.action === "dot_hm_approve"
+                ? "Duyệt & khoá hạng mục"
+                : "Trả lại hạng mục cho đơn vị"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
             <Label>
-              {noteDialog?.action === "dot_hm_approve" ? "Ý kiến phê duyệt (tuỳ chọn)" : "Lý do trả lại"}
+              {noteDialog?.action === "dot_hm_approve"
+                ? "Ý kiến phê duyệt (tuỳ chọn)"
+                : "Lý do trả lại"}
               {noteDialog?.action === "dot_hm_reject" && <span className="text-rose-600"> *</span>}
             </Label>
             <Textarea
               rows={4}
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              placeholder={noteDialog?.action === "dot_hm_approve" ? "Nhận xét thêm cho hồ sơ…" : "Nêu rõ nội dung cần đơn vị chỉnh sửa/bổ sung"}
+              placeholder={
+                noteDialog?.action === "dot_hm_approve"
+                  ? "Nhận xét thêm cho hồ sơ…"
+                  : "Nêu rõ nội dung cần đơn vị chỉnh sửa/bổ sung"
+              }
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">Ghi chú sẽ hiển thị cho đơn vị và lưu vào nhật ký thao tác.</p>
+            <p className="text-xs text-muted-foreground">
+              Ghi chú sẽ hiển thị cho đơn vị và lưu vào nhật ký thao tác.
+            </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNoteDialog(null)}>Huỷ</Button>
+            <Button variant="outline" onClick={() => setNoteDialog(null)}>
+              Huỷ
+            </Button>
             <Button
               onClick={submitNoteDialog}
-              disabled={workflowMut.isPending || (noteDialog?.action === "dot_hm_reject" && !noteText.trim())}
+              disabled={
+                workflowMut.isPending ||
+                (noteDialog?.action === "dot_hm_reject" && !noteText.trim())
+              }
               variant={noteDialog?.action === "dot_hm_reject" ? "destructive" : "default"}
             >
               {noteDialog?.action === "dot_hm_approve" ? "Duyệt & khoá" : "Trả lại đơn vị"}
@@ -482,8 +723,17 @@ function DotDetailPage() {
   );
 }
 
-function KpiCard({ label, value, tone }: { label: string; value: React.ReactNode; tone?: "emerald" | "rose" }) {
-  const color = tone === "emerald" ? "text-emerald-600" : tone === "rose" ? "text-rose-600" : "text-foreground";
+function KpiCard({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: React.ReactNode;
+  tone?: "emerald" | "rose";
+}) {
+  const color =
+    tone === "emerald" ? "text-emerald-600" : tone === "rose" ? "text-rose-600" : "text-foreground";
   return (
     <Card>
       <CardContent className="p-3">
@@ -494,15 +744,30 @@ function KpiCard({ label, value, tone }: { label: string; value: React.ReactNode
   );
 }
 
-function AddHeThongDialog({ open, onOpenChange, dotId, donViId, existingHeThongIds, onDone }: {
-  open: boolean; onOpenChange: (o: boolean) => void; dotId: string; donViId: string | null;
-  existingHeThongIds: string[]; onDone: () => void;
+function AddHeThongDialog({
+  open,
+  onOpenChange,
+  dotId,
+  donViId,
+  existingHeThongIds,
+  onDone,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  dotId: string;
+  donViId: string | null;
+  existingHeThongIds: string[];
+  onDone: () => void;
 }) {
   const { data: he_thongs } = useQuery({
     queryKey: ["dm-he-thong-by-dv", donViId],
     queryFn: async () => {
       if (!donViId) return [];
-      const { data, error } = await supabase.from("dm_he_thong").select("id,ma,ten").eq("don_vi_id", donViId).order("ma");
+      const { data, error } = await supabase
+        .from("dm_he_thong")
+        .select("id,ma,ten")
+        .eq("don_vi_id", donViId)
+        .order("ma");
       if (error) throw error;
       return data;
     },
@@ -513,27 +778,43 @@ function AddHeThongDialog({ open, onOpenChange, dotId, donViId, existingHeThongI
     mutationFn: async () => {
       if (!donViId) return;
       const { error } = await supabase.rpc("dot_them_hang_muc_hang_loat", {
-        p_dot_id: dotId, p_don_vi_id: donViId, p_he_thong_ids: Array.from(sel),
+        p_dot_id: dotId,
+        p_don_vi_id: donViId,
+        p_he_thong_ids: Array.from(sel),
       });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã thêm hạng mục"); setSel(new Set()); onDone(); },
+    onSuccess: () => {
+      toast.success("Đã thêm hạng mục");
+      setSel(new Set());
+      onDone();
+    },
     onError: (e: Error) => toast.error(e.message),
   });
   const available = (he_thongs ?? []).filter((h) => !existingHeThongIds.includes(h.id));
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>Thêm hệ thống vào đợt</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Thêm hệ thống vào đợt</DialogTitle>
+        </DialogHeader>
         <div className="max-h-80 space-y-1 overflow-auto rounded border p-2">
-          {available.length === 0 && <div className="p-4 text-center text-sm text-muted-foreground">Không có hệ thống khả dụng.</div>}
+          {available.length === 0 && (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              Không có hệ thống khả dụng.
+            </div>
+          )}
           {available.map((h) => (
-            <label key={h.id} className="flex cursor-pointer items-start gap-2 rounded p-2 hover:bg-muted">
+            <label
+              key={h.id}
+              className="flex cursor-pointer items-start gap-2 rounded p-2 hover:bg-muted"
+            >
               <Checkbox
                 checked={sel.has(h.id)}
                 onCheckedChange={(checked) => {
                   const s = new Set(sel);
-                  if (checked) s.add(h.id); else s.delete(h.id);
+                  if (checked) s.add(h.id);
+                  else s.delete(h.id);
                   setSel(s);
                 }}
               />
@@ -555,7 +836,26 @@ function AddHeThongDialog({ open, onOpenChange, dotId, donViId, existingHeThongI
   );
 }
 
-function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: { id: string; trang_thai: string; duyet_trang_thai?: string | null; ket_qua: string | null; ton_tai: string | null; kien_nghi: string | null; han_hoan_thanh?: string | null; he_thong_id: string; dm_he_thong: { id: string; ma: string; ten: string } | null; approval_note?: string | null }; onSaved: () => void; readonly?: boolean }) {
+function UpdateHangMucPanel({
+  hangMuc,
+  onSaved,
+  readonly = false,
+}: {
+  hangMuc: {
+    id: string;
+    trang_thai: string;
+    duyet_trang_thai?: string | null;
+    ket_qua: string | null;
+    ton_tai: string | null;
+    kien_nghi: string | null;
+    han_hoan_thanh?: string | null;
+    he_thong_id: string;
+    dm_he_thong: { id: string; ma: string; ten: string } | null;
+    approval_note?: string | null;
+  };
+  onSaved: () => void;
+  readonly?: boolean;
+}) {
   const [trangThai, setTrangThai] = useState(hangMuc.trang_thai);
   const [ketQua, setKetQua] = useState<string>(hangMuc.ket_qua ?? "");
   const [tonTai, setTonTai] = useState(hangMuc.ton_tai ?? "");
@@ -565,16 +865,32 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
   const { data: bienBans } = useQuery({
     queryKey: ["hm-bien-ban", hangMuc.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("dot_bao_duong_bien_ban").select("id, form_submission:form_submission_id(id, tieu_de, template_code, created_at)").eq("hang_muc_id", hangMuc.id);
+      const { data, error } = await supabase
+        .from("dot_bao_duong_bien_ban")
+        .select("id, form_submission:form_submission_id(id, tieu_de, template_code, created_at)")
+        .eq("hang_muc_id", hangMuc.id);
       if (error) throw error;
-      return data as Array<{ id: string; form_submission: { id: string; tieu_de: string | null; template_code: string; created_at: string } | null }>;
+      return data as Array<{
+        id: string;
+        form_submission: {
+          id: string;
+          tieu_de: string | null;
+          template_code: string;
+          created_at: string;
+        } | null;
+      }>;
     },
   });
 
   const { data: candidates } = useQuery({
     queryKey: ["hm-candidate-forms", hangMuc.he_thong_id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("form_submission").select("id, tieu_de, template_code, created_at").eq("he_thong_id", hangMuc.he_thong_id).order("created_at", { ascending: false }).limit(20);
+      const { data, error } = await supabase
+        .from("form_submission")
+        .select("id, tieu_de, template_code, created_at")
+        .eq("he_thong_id", hangMuc.he_thong_id)
+        .order("created_at", { ascending: false })
+        .limit(20);
       if (error) throw error;
       return data;
     },
@@ -596,28 +912,41 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
         const { data: u } = await supabase.auth.getUser();
         if (u.user) nguoi_thuc_hien = u.user.id;
       }
-      const { error } = await supabase.from("dot_bao_duong_hang_muc")
-        .update({ ...base, ...(ngay_hoan_thanh ? { ngay_hoan_thanh } : {}), ...(nguoi_thuc_hien ? { nguoi_thuc_hien } : {}) })
+      const { error } = await supabase
+        .from("dot_bao_duong_hang_muc")
+        .update({
+          ...base,
+          ...(ngay_hoan_thanh ? { ngay_hoan_thanh } : {}),
+          ...(nguoi_thuc_hien ? { nguoi_thuc_hien } : {}),
+        })
         .eq("id", hangMuc.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã lưu"); onSaved(); },
+    onSuccess: () => {
+      toast.success("Đã lưu");
+      onSaved();
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const linkBb = useMutation({
     mutationFn: async (fsId: string) => {
-      const { error } = await supabase.from("dot_bao_duong_bien_ban").insert({ hang_muc_id: hangMuc.id, form_submission_id: fsId });
+      const { error } = await supabase
+        .from("dot_bao_duong_bien_ban")
+        .insert({ hang_muc_id: hangMuc.id, form_submission_id: fsId });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã gắn biên bản"); },
+    onSuccess: () => {
+      toast.success("Đã gắn biên bản");
+    },
   });
 
   return (
     <div className="mt-4 space-y-4">
       {readonly && (
         <div className="rounded border border-emerald-300 bg-emerald-50 p-2 text-xs text-emerald-800 flex items-center gap-2">
-          <Lock className="h-3.5 w-3.5" />Hạng mục đã được duyệt và khoá. Cần Admin mở khoá để chỉnh sửa.
+          <Lock className="h-3.5 w-3.5" />
+          Hạng mục đã được duyệt và khoá. Cần Admin mở khoá để chỉnh sửa.
         </div>
       )}
       {hangMuc.approval_note && (
@@ -633,7 +962,9 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
         <div>
           <Label>Trạng thái</Label>
           <Select value={trangThai} onValueChange={setTrangThai} disabled={readonly}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="chua_bat_dau">Chưa bắt đầu</SelectItem>
               <SelectItem value="dang_lam">Đang làm</SelectItem>
@@ -644,8 +975,14 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
         </div>
         <div>
           <Label>Kết quả</Label>
-          <Select value={ketQua || "none"} onValueChange={(v) => setKetQua(v === "none" ? "" : v)} disabled={readonly}>
-            <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+          <Select
+            value={ketQua || "none"}
+            onValueChange={(v) => setKetQua(v === "none" ? "" : v)}
+            disabled={readonly}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">— Chưa đánh giá</SelectItem>
               <SelectItem value="dat">Đạt</SelectItem>
@@ -656,20 +993,56 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
         </div>
         <div>
           <Label>Hạn hoàn thành</Label>
-          <Input type="date" value={han} onChange={(e) => setHan(e.target.value)} disabled={readonly} />
+          <Input
+            type="date"
+            value={han}
+            onChange={(e) => setHan(e.target.value)}
+            disabled={readonly}
+          />
         </div>
       </div>
-      <div><Label>Tồn tại</Label><Textarea rows={2} value={tonTai} onChange={(e) => setTonTai(e.target.value)} disabled={readonly} /></div>
-      <div><Label>Kiến nghị</Label><Textarea rows={2} value={kienNghi} onChange={(e) => setKienNghi(e.target.value)} disabled={readonly} /></div>
+      <div>
+        <Label>Tồn tại</Label>
+        <Textarea
+          rows={2}
+          value={tonTai}
+          onChange={(e) => setTonTai(e.target.value)}
+          disabled={readonly}
+        />
+      </div>
+      <div>
+        <Label>Kiến nghị</Label>
+        <Textarea
+          rows={2}
+          value={kienNghi}
+          onChange={(e) => setKienNghi(e.target.value)}
+          disabled={readonly}
+        />
+      </div>
 
       <div className="space-y-2 rounded border p-3">
-        <div className="flex items-center gap-2 text-sm font-medium"><FileText className="h-4 w-4" />Biên bản đã gắn</div>
-        {(bienBans ?? []).length === 0 && <div className="text-xs text-muted-foreground">Chưa có biên bản.</div>}
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <FileText className="h-4 w-4" />
+          Biên bản đã gắn
+        </div>
+        {(bienBans ?? []).length === 0 && (
+          <div className="text-xs text-muted-foreground">Chưa có biên bản.</div>
+        )}
         {(bienBans ?? []).map((b) => (
           <div key={b.id} className="flex items-center justify-between text-xs">
-            <span>{b.form_submission?.tieu_de ?? b.form_submission?.template_code ?? b.form_submission?.id?.slice(0, 8)}</span>
+            <span>
+              {b.form_submission?.tieu_de ??
+                b.form_submission?.template_code ??
+                b.form_submission?.id?.slice(0, 8)}
+            </span>
             {b.form_submission?.id && (
-              <Link to="/forms/submissions/$id" params={{ id: b.form_submission.id }} className="text-primary">Mở</Link>
+              <Link
+                to="/forms/submissions/$id"
+                params={{ id: b.form_submission.id }}
+                className="text-primary"
+              >
+                Mở
+              </Link>
             )}
           </div>
         ))}
@@ -678,9 +1051,14 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
             <summary className="cursor-pointer text-muted-foreground">Gắn biên bản có sẵn</summary>
             <div className="mt-2 space-y-1">
               {(candidates ?? []).map((f) => (
-                <div key={f.id} className="flex items-center justify-between rounded p-1 hover:bg-muted">
+                <div
+                  key={f.id}
+                  className="flex items-center justify-between rounded p-1 hover:bg-muted"
+                >
                   <span>{f.tieu_de ?? f.template_code ?? f.id.slice(0, 8)}</span>
-                  <Button size="sm" variant="ghost" onClick={() => linkBb.mutate(f.id)}>Gắn</Button>
+                  <Button size="sm" variant="ghost" onClick={() => linkBb.mutate(f.id)}>
+                    Gắn
+                  </Button>
                 </div>
               ))}
             </div>
@@ -689,7 +1067,9 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button onClick={() => save.mutate()} disabled={save.isPending || readonly}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
+        <Button onClick={() => save.mutate()} disabled={save.isPending || readonly}>
+          {save.isPending ? "Đang lưu…" : "Lưu"}
+        </Button>
       </div>
 
       <div className="space-y-2 rounded border p-3">
@@ -700,8 +1080,17 @@ function UpdateHangMucPanel({ hangMuc, onSaved, readonly = false }: { hangMuc: {
   );
 }
 
-function DeadlinesDialog({ open, onOpenChange, dotId, donViList, existingHans, onDone }: {
-  open: boolean; onOpenChange: (o: boolean) => void; dotId: string;
+function DeadlinesDialog({
+  open,
+  onOpenChange,
+  dotId,
+  donViList,
+  existingHans,
+  onDone,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  dotId: string;
   donViList: Array<{ id: string; ma: string; ten: string }>;
   existingHans: Array<{ id: string; don_vi_id: string; han_ngay: string; mo_ta: string | null }>;
   onDone: () => void;
@@ -711,44 +1100,81 @@ function DeadlinesDialog({ open, onOpenChange, dotId, donViList, existingHans, o
     const initial: Record<string, string> = {};
     for (const h of existingHans) initial[h.don_vi_id] = h.han_ngay;
     setRows(initial);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const save = useMutation({
     mutationFn: async () => {
-      const upserts = Object.entries(rows).filter(([, v]) => v).map(([don_vi_id, han_ngay]) => ({ dot_id: dotId, don_vi_id, han_ngay }));
+      const upserts = Object.entries(rows)
+        .filter(([, v]) => v)
+        .map(([don_vi_id, han_ngay]) => ({ dot_id: dotId, don_vi_id, han_ngay }));
       if (upserts.length === 0) return;
-      const { error } = await supabase.from("dot_bao_duong_han").upsert(upserts, { onConflict: "dot_id,don_vi_id" });
+      const { error } = await supabase
+        .from("dot_bao_duong_han")
+        .upsert(upserts, { onConflict: "dot_id,don_vi_id" });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã lưu mốc tiến độ"); onDone(); onOpenChange(false); },
+    onSuccess: () => {
+      toast.success("Đã lưu mốc tiến độ");
+      onDone();
+      onOpenChange(false);
+    },
     onError: (e: Error) => toast.error(e.message),
   });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>Mốc tiến độ theo đơn vị</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Mốc tiến độ theo đơn vị</DialogTitle>
+        </DialogHeader>
         <div className="space-y-2 max-h-96 overflow-auto">
           {donViList.map((dv) => (
             <div key={dv.id} className="grid grid-cols-[1fr_180px] items-center gap-2">
-              <div className="text-sm"><span className="font-medium">{dv.ma}</span> <span className="text-muted-foreground">{dv.ten}</span></div>
-              <Input type="date" value={rows[dv.id] ?? ""} onChange={(e) => setRows({ ...rows, [dv.id]: e.target.value })} />
+              <div className="text-sm">
+                <span className="font-medium">{dv.ma}</span>{" "}
+                <span className="text-muted-foreground">{dv.ten}</span>
+              </div>
+              <Input
+                type="date"
+                value={rows[dv.id] ?? ""}
+                onChange={(e) => setRows({ ...rows, [dv.id]: e.target.value })}
+              />
             </div>
           ))}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Đóng</Button>
-          <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? "Đang lưu…" : "Lưu"}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Đóng
+          </Button>
+          <Button onClick={() => save.mutate()} disabled={save.isPending}>
+            {save.isPending ? "Đang lưu…" : "Lưu"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-function BaoCaoTab({ dotId, dotName, kpi, grouped }: {
-  dotId: string; dotName: string;
+function BaoCaoTab({
+  dotId,
+  dotName,
+  kpi,
+  grouped,
+}: {
+  dotId: string;
+  dotName: string;
   kpi: { total: number; done: number; dat: number; kd: number; pct: number };
-  grouped: Array<{ donVi: { id: string; ma: string; ten: string } | null; items: Array<{ id: string; trang_thai: string; ket_qua: string | null; ton_tai: string | null; kien_nghi: string | null; dm_he_thong: { ma: string; ten: string } | null }> }>;
+  grouped: Array<{
+    donVi: { id: string; ma: string; ten: string } | null;
+    items: Array<{
+      id: string;
+      trang_thai: string;
+      ket_qua: string | null;
+      ton_tai: string | null;
+      kien_nghi: string | null;
+      dm_he_thong: { ma: string; ten: string } | null;
+    }>;
+  }>;
 }) {
   const perDv = grouped.map((g) => {
     const total = g.items.length;
@@ -761,17 +1187,31 @@ function BaoCaoTab({ dotId, dotName, kpi, grouped }: {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-end gap-2 print:hidden">
-        <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="mr-1 h-4 w-4" />In / Lưu PDF</Button>
-        <Button size="sm" disabled={exporting} onClick={async () => {
-          setExporting(true);
-          try { await exportWord({ dotId, dotName, kpi, perDv, grouped }); } finally { setExporting(false); }
-        }}>
-          <FileText className="mr-1 h-4 w-4" />{exporting ? "Đang xuất…" : "Xuất Word"}
+        <Button variant="outline" size="sm" onClick={() => window.print()}>
+          <Printer className="mr-1 h-4 w-4" />
+          In / Lưu PDF
+        </Button>
+        <Button
+          size="sm"
+          disabled={exporting}
+          onClick={async () => {
+            setExporting(true);
+            try {
+              await exportWord({ dotId, dotName, kpi, perDv, grouped });
+            } finally {
+              setExporting(false);
+            }
+          }}
+        >
+          <FileText className="mr-1 h-4 w-4" />
+          {exporting ? "Đang xuất…" : "Xuất Word"}
         </Button>
       </div>
 
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base">Tiến độ theo đơn vị</CardTitle></CardHeader>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Tiến độ theo đơn vị</CardTitle>
+        </CardHeader>
         <CardContent>
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-xs text-muted-foreground">
@@ -787,12 +1227,24 @@ function BaoCaoTab({ dotId, dotName, kpi, grouped }: {
             <tbody>
               {perDv.map((r) => (
                 <tr key={r.dv?.id ?? "?"} className="border-t">
-                  <td className="px-3 py-2 font-medium">{r.dv?.ma} — {r.dv?.ten}</td>
+                  <td className="px-3 py-2 font-medium">
+                    {r.dv?.ma} — {r.dv?.ten}
+                  </td>
                   <td className="px-3 py-2 text-right">{r.total}</td>
                   <td className="px-3 py-2 text-right">{r.done}</td>
                   <td className="px-3 py-2 text-right text-emerald-600">{r.dat}</td>
                   <td className="px-3 py-2 text-right text-rose-600">{r.kd}</td>
-                  <td className="px-3 py-2"><div className="flex items-center gap-2"><div className="h-2 flex-1 rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${r.pct}%` }} /></div><span className="w-10 text-xs">{r.pct}%</span></div></td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 flex-1 rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-primary"
+                          style={{ width: `${r.pct}%` }}
+                        />
+                      </div>
+                      <span className="w-10 text-xs">{r.pct}%</span>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -801,15 +1253,35 @@ function BaoCaoTab({ dotId, dotName, kpi, grouped }: {
       </Card>
 
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><AlertCircle className="h-4 w-4" />Tồn tại & Kiến nghị</CardTitle></CardHeader>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <AlertCircle className="h-4 w-4" />
+            Tồn tại & Kiến nghị
+          </CardTitle>
+        </CardHeader>
         <CardContent className="space-y-2">
-          {grouped.flatMap((g) => g.items.filter((h) => h.ton_tai || h.kien_nghi).map((h) => (
-            <div key={h.id} className="rounded border p-2 text-sm">
-              <div className="font-medium">{h.dm_he_thong?.ten} <span className="text-xs text-muted-foreground">({g.donVi?.ma})</span></div>
-              {h.ton_tai && <div className="text-xs"><span className="font-medium">Tồn tại:</span> {h.ton_tai}</div>}
-              {h.kien_nghi && <div className="text-xs"><span className="font-medium">Kiến nghị:</span> {h.kien_nghi}</div>}
-            </div>
-          )))}
+          {grouped.flatMap((g) =>
+            g.items
+              .filter((h) => h.ton_tai || h.kien_nghi)
+              .map((h) => (
+                <div key={h.id} className="rounded border p-2 text-sm">
+                  <div className="font-medium">
+                    {h.dm_he_thong?.ten}{" "}
+                    <span className="text-xs text-muted-foreground">({g.donVi?.ma})</span>
+                  </div>
+                  {h.ton_tai && (
+                    <div className="text-xs">
+                      <span className="font-medium">Tồn tại:</span> {h.ton_tai}
+                    </div>
+                  )}
+                  {h.kien_nghi && (
+                    <div className="text-xs">
+                      <span className="font-medium">Kiến nghị:</span> {h.kien_nghi}
+                    </div>
+                  )}
+                </div>
+              )),
+          )}
           {grouped.every((g) => g.items.every((h) => !h.ton_tai && !h.kien_nghi)) && (
             <div className="text-sm text-muted-foreground">Không có tồn tại nào được ghi nhận.</div>
           )}
@@ -820,58 +1292,148 @@ function BaoCaoTab({ dotId, dotName, kpi, grouped }: {
 }
 
 async function exportWord(args: {
-  dotId: string; dotName: string;
+  dotId: string;
+  dotName: string;
   kpi: { total: number; done: number; dat: number; kd: number; pct: number };
-  perDv: Array<{ dv: { ma: string; ten: string } | null; total: number; done: number; dat: number; kd: number; pct: number }>;
-  grouped: Array<{ donVi: { ma: string; ten: string } | null; items: Array<{ trang_thai: string; ket_qua: string | null; ton_tai: string | null; kien_nghi: string | null; dm_he_thong: { ma: string; ten: string } | null }> }>;
+  perDv: Array<{
+    dv: { ma: string; ten: string } | null;
+    total: number;
+    done: number;
+    dat: number;
+    kd: number;
+    pct: number;
+  }>;
+  grouped: Array<{
+    donVi: { ma: string; ten: string } | null;
+    items: Array<{
+      trang_thai: string;
+      ket_qua: string | null;
+      ton_tai: string | null;
+      kien_nghi: string | null;
+      dm_he_thong: { ma: string; ten: string } | null;
+    }>;
+  }>;
 }) {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType } = await import("docx");
-  const cell = (t: string, opts: { bold?: boolean; width?: number } = {}) => new TableCell({
-    width: opts.width ? { size: opts.width, type: WidthType.DXA } : undefined,
-    children: [new Paragraph({ children: [new TextRun({ text: t, bold: opts.bold })] })],
-  });
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    TextRun,
+    HeadingLevel,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+    AlignmentType,
+  } = await import("docx");
+  const cell = (t: string, opts: { bold?: boolean; width?: number } = {}) =>
+    new TableCell({
+      width: opts.width ? { size: opts.width, type: WidthType.DXA } : undefined,
+      children: [new Paragraph({ children: [new TextRun({ text: t, bold: opts.bold })] })],
+    });
   const doc = new Document({
-    sections: [{
-      children: [
-        new Paragraph({ heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER, children: [new TextRun({ text: "BÁO CÁO KẾT QUẢ ĐỢT BẢO DƯỠNG LỚN", bold: true })] }),
-        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: args.dotName, italics: true })] }),
-        new Paragraph({ children: [new TextRun({ text: "" })] }),
-        new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun("I. Tổng quan")] }),
-        new Paragraph({ children: [new TextRun(`Tổng số hạng mục: ${args.kpi.total} — Hoàn thành: ${args.kpi.done} (${args.kpi.pct}%) — Đạt: ${args.kpi.dat} — Không đạt: ${args.kpi.kd}`)] }),
-        new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun("II. Kết quả theo đơn vị")] }),
-        new Table({
-          width: { size: 9360, type: WidthType.DXA },
-          rows: [
-            new TableRow({ children: [cell("Đơn vị", { bold: true }), cell("Tổng", { bold: true }), cell("HT", { bold: true }), cell("Đạt", { bold: true }), cell("K.Đạt", { bold: true }), cell("%", { bold: true })] }),
-            ...args.perDv.map((r) => new TableRow({ children: [
-              cell(`${r.dv?.ma ?? ""} — ${r.dv?.ten ?? ""}`),
-              cell(String(r.total)), cell(String(r.done)), cell(String(r.dat)), cell(String(r.kd)), cell(`${r.pct}%`),
-            ] })),
-          ],
-        }),
-        new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun("III. Chi tiết hạng mục")] }),
-        ...args.grouped.flatMap((g) => [
-          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun(g.donVi ? `${g.donVi.ma} — ${g.donVi.ten}` : "Không xác định")] }),
+    sections: [
+      {
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.TITLE,
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: "BÁO CÁO KẾT QUẢ ĐỢT BẢO DƯỠNG LỚN", bold: true })],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: args.dotName, italics: true })],
+          }),
+          new Paragraph({ children: [new TextRun({ text: "" })] }),
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            children: [new TextRun("I. Tổng quan")],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(
+                `Tổng số hạng mục: ${args.kpi.total} — Hoàn thành: ${args.kpi.done} (${args.kpi.pct}%) — Đạt: ${args.kpi.dat} — Không đạt: ${args.kpi.kd}`,
+              ),
+            ],
+          }),
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            children: [new TextRun("II. Kết quả theo đơn vị")],
+          }),
           new Table({
             width: { size: 9360, type: WidthType.DXA },
             rows: [
-              new TableRow({ children: [cell("Hệ thống", { bold: true }), cell("Trạng thái", { bold: true }), cell("Kết quả", { bold: true }), cell("Tồn tại / Kiến nghị", { bold: true })] }),
-              ...g.items.map((h) => new TableRow({ children: [
-                cell(`${h.dm_he_thong?.ma ?? ""} — ${h.dm_he_thong?.ten ?? ""}`),
-                cell(h.trang_thai),
-                cell(h.ket_qua ?? ""),
-                cell([h.ton_tai, h.kien_nghi].filter(Boolean).join(" — ")),
-              ] })),
+              new TableRow({
+                children: [
+                  cell("Đơn vị", { bold: true }),
+                  cell("Tổng", { bold: true }),
+                  cell("HT", { bold: true }),
+                  cell("Đạt", { bold: true }),
+                  cell("K.Đạt", { bold: true }),
+                  cell("%", { bold: true }),
+                ],
+              }),
+              ...args.perDv.map(
+                (r) =>
+                  new TableRow({
+                    children: [
+                      cell(`${r.dv?.ma ?? ""} — ${r.dv?.ten ?? ""}`),
+                      cell(String(r.total)),
+                      cell(String(r.done)),
+                      cell(String(r.dat)),
+                      cell(String(r.kd)),
+                      cell(`${r.pct}%`),
+                    ],
+                  }),
+              ),
             ],
           }),
-        ]),
-      ],
-    }],
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            children: [new TextRun("III. Chi tiết hạng mục")],
+          }),
+          ...args.grouped.flatMap((g) => [
+            new Paragraph({
+              heading: HeadingLevel.HEADING_2,
+              children: [
+                new TextRun(g.donVi ? `${g.donVi.ma} — ${g.donVi.ten}` : "Không xác định"),
+              ],
+            }),
+            new Table({
+              width: { size: 9360, type: WidthType.DXA },
+              rows: [
+                new TableRow({
+                  children: [
+                    cell("Hệ thống", { bold: true }),
+                    cell("Trạng thái", { bold: true }),
+                    cell("Kết quả", { bold: true }),
+                    cell("Tồn tại / Kiến nghị", { bold: true }),
+                  ],
+                }),
+                ...g.items.map(
+                  (h) =>
+                    new TableRow({
+                      children: [
+                        cell(`${h.dm_he_thong?.ma ?? ""} — ${h.dm_he_thong?.ten ?? ""}`),
+                        cell(h.trang_thai),
+                        cell(h.ket_qua ?? ""),
+                        cell([h.ton_tai, h.kien_nghi].filter(Boolean).join(" — ")),
+                      ],
+                    }),
+                ),
+              ],
+            }),
+          ]),
+        ],
+      },
+    ],
   });
   const blob = await Packer.toBlob(doc);
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = `bao-cao-dot-${args.dotId.slice(0, 8)}.docx`; a.click();
+  a.href = url;
+  a.download = `bao-cao-dot-${args.dotId.slice(0, 8)}.docx`;
+  a.click();
   URL.revokeObjectURL(url);
   toast.success("Đã xuất Word");
 }

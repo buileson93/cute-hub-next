@@ -5,7 +5,6 @@ Hiện nay khi thêm một bản quyền mới, người dùng phải lưu xong,
 ## Trải nghiệm mới
 
 1. Trong form "Thêm bản quyền", bổ sung khối cuối form: **Cấp phát ngay (tuỳ chọn)**
-
    - Chọn nhiều máy tính (tài sản `la_may_tinh`) bằng ô tìm kiếm nhiều lựa chọn.
 
    - Ngày cài đặt (mặc định hôm nay), người cài (mặc định tài khoản đang đăng nhập), ghi chú.

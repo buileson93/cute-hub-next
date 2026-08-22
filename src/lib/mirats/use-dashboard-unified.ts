@@ -21,7 +21,7 @@ export function useUnifiedDashboardStats() {
     const reliabilityAvail = availability({
       assetCount: devices.length,
       windowHours: 720,
-      incidents
+      incidents,
     });
 
     const mttrKpi = mttr(incidents);
@@ -29,7 +29,7 @@ export function useUnifiedDashboardStats() {
 
     // 2. Phân bố sức khỏe (Health Distribution)
     const healthStats = { A: 0, B: 0, C: 0, D: 0, total: 0 };
-    devices.forEach(d => {
+    devices.forEach((d) => {
       const h = healthDetail(d);
       healthStats[h.xepLoai]++;
       healthStats.total++;
@@ -37,15 +37,15 @@ export function useUnifiedDashboardStats() {
 
     // 3. Phân loại tài sản (Asset Type)
     const assetTypeStats: Record<string, number> = {};
-    devices.forEach(d => {
+    devices.forEach((d) => {
       const type = (d as any)._loaiTbTen || d.loai || "Khác";
       assetTypeStats[type] = (assetTypeStats[type] || 0) + 1;
     });
 
     // 4. Danh sách thiết bị sức khỏe thấp (C/D)
     const lowHealthDevices = devices
-      .map(d => ({ device: d, health: healthDetail(d) }))
-      .filter(item => item.health.xepLoai === 'C' || item.health.xepLoai === 'D')
+      .map((d) => ({ device: d, health: healthDetail(d) }))
+      .filter((item) => item.health.xepLoai === "C" || item.health.xepLoai === "D")
       .sort((a, b) => a.health.score - b.health.score)
       .slice(0, 5);
 
@@ -58,7 +58,7 @@ export function useUnifiedDashboardStats() {
       assetTypeStats,
       pmKpi,
       scope,
-      assetCount: devices.length
+      assetCount: devices.length,
     };
   }, [scope, pmKpi]);
 

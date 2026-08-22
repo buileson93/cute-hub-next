@@ -4,12 +4,12 @@ Bảo vệ dữ liệu production khỏi mất mát do lỗi migration, sự c�
 
 ## 1. Chiến lược tổng thể
 
-| Lớp              | Công nghệ                          | Tần suất       | Giữ lại   | Mục đích                          |
-|------------------|------------------------------------|----------------|-----------|-----------------------------------|
-| PITR             | Supabase Point-in-Time Recovery    | Liên tục (WAL) | 7 ngày    | Khôi phục theo mốc giây bất kỳ    |
-| Snapshot hàng ngày | Supabase daily backup            | 1 lần/ngày     | 30 ngày   | Rollback nhanh về đầu ngày        |
-| Dump logic       | `pg_dump` scheduled (cron GH Actions) | 1 lần/ngày | 90 ngày (S3) | Off-site, độc lập với Supabase |
-| Export storage   | Rsync bucket → S3                  | 1 lần/ngày     | 90 ngày   | Backup file đính kèm              |
+| Lớp                | Công nghệ                             | Tần suất       | Giữ lại      | Mục đích                       |
+| ------------------ | ------------------------------------- | -------------- | ------------ | ------------------------------ |
+| PITR               | Supabase Point-in-Time Recovery       | Liên tục (WAL) | 7 ngày       | Khôi phục theo mốc giây bất kỳ |
+| Snapshot hàng ngày | Supabase daily backup                 | 1 lần/ngày     | 30 ngày      | Rollback nhanh về đầu ngày     |
+| Dump logic         | `pg_dump` scheduled (cron GH Actions) | 1 lần/ngày     | 90 ngày (S3) | Off-site, độc lập với Supabase |
+| Export storage     | Rsync bucket → S3                     | 1 lần/ngày     | 90 ngày      | Backup file đính kèm           |
 
 > Bật PITR trong Supabase project cho `mirats-prod` (yêu cầu gói phù hợp). Đây là lớp phòng thủ chính.
 

@@ -63,7 +63,9 @@ export interface BucketApi {
   createSignedUrls(
     paths: string[],
     expiresIn: number,
-  ): Promise<StorageResult<Array<{ path: string | null; signedUrl: string; error: string | null }>>>;
+  ): Promise<
+    StorageResult<Array<{ path: string | null; signedUrl: string; error: string | null }>>
+  >;
   getPublicUrl(path: string): { data: { publicUrl: string } };
   download(path: string): Promise<StorageResult<Blob>>;
   list(prefix?: string, options?: ListOptions): Promise<StorageResult<StorageFileObject[]>>;
@@ -81,10 +83,21 @@ interface SupabaseLikeStorage {
   storage: {
     listBuckets(): Promise<{ data: unknown; error: unknown }>;
     from(bucket: string): {
-      upload(path: string, file: unknown, options?: unknown): Promise<{ data: unknown; error: unknown }>;
+      upload(
+        path: string,
+        file: unknown,
+        options?: unknown,
+      ): Promise<{ data: unknown; error: unknown }>;
       remove(paths: string[]): Promise<{ data: unknown; error: unknown }>;
-      createSignedUrl(path: string, expiresIn: number, options?: unknown): Promise<{ data: unknown; error: unknown }>;
-      createSignedUrls(paths: string[], expiresIn: number): Promise<{ data: unknown; error: unknown }>;
+      createSignedUrl(
+        path: string,
+        expiresIn: number,
+        options?: unknown,
+      ): Promise<{ data: unknown; error: unknown }>;
+      createSignedUrls(
+        paths: string[],
+        expiresIn: number,
+      ): Promise<{ data: unknown; error: unknown }>;
       getPublicUrl(path: string): { data: { publicUrl: string } };
       download(path: string): Promise<{ data: unknown; error: unknown }>;
       list(prefix?: string, options?: unknown): Promise<{ data: unknown; error: unknown }>;
@@ -135,7 +148,11 @@ export function createSupabaseStorageAdapter(client: SupabaseLikeStorage): Stora
         async createSignedUrls(paths, expiresIn) {
           const r = await b.createSignedUrls(paths, expiresIn);
           return {
-            data: r.data as Array<{ path: string | null; signedUrl: string; error: string | null }> | null,
+            data: r.data as Array<{
+              path: string | null;
+              signedUrl: string;
+              error: string | null;
+            }> | null,
             error: r.error as Error | null,
           };
         },

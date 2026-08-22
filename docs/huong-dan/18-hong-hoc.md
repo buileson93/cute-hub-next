@@ -3,6 +3,7 @@
 Đường dẫn: `/hong-hoc`.
 
 ## Ghi nhận hỏng hóc
+
 1. Bấm **+ Ghi hỏng hóc**.
 2. Chọn thiết bị **cha** (`TB_XXXXXXXX`).
 3. Chọn **linh kiện con** (nếu có trong `he_thong_thanh_phan`).
@@ -13,6 +14,7 @@
 5. **Lưu**.
 
 ## Thay thế
+
 1. Mở bản ghi hỏng hóc → **Thay thế**.
 2. Chọn linh kiện thay:
    - Từ kho vật tư (`/vat-tu`).

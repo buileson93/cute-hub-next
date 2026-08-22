@@ -14,35 +14,27 @@ const actions: ContextualAction[] = [
 
 describe("ContextualToolbar", () => {
   it("render đủ 3 nút khi chọn 1 row", () => {
-    render(
-      <ContextualToolbar selectionCount={1} actions={actions} onDismiss={() => {}} />,
-    );
+    render(<ContextualToolbar selectionCount={1} actions={actions} onDismiss={() => {}} />);
     expect(screen.getByText("Lắp")).not.toBeNull();
     expect(screen.getByText("Tháo")).not.toBeNull();
     expect(screen.getByText("Xem QR")).not.toBeNull();
   });
 
   it("ẩn action không hỗ trợ bulk khi chọn >1 row", () => {
-    render(
-      <ContextualToolbar selectionCount={3} actions={actions} onDismiss={() => {}} />,
-    );
+    render(<ContextualToolbar selectionCount={3} actions={actions} onDismiss={() => {}} />);
     expect(screen.getByText("Lắp")).not.toBeNull();
     expect(screen.queryByText("Xem QR")).toBeNull();
   });
 
   it("ESC gọi onDismiss", () => {
     const onDismiss = vi.fn();
-    render(
-      <ContextualToolbar selectionCount={1} actions={actions} onDismiss={onDismiss} />,
-    );
+    render(<ContextualToolbar selectionCount={1} actions={actions} onDismiss={onDismiss} />);
     fireEvent.keyDown(window, { key: "Escape" });
     expect(onDismiss).toHaveBeenCalled();
   });
 
   it("không render khi selectionCount = 0", () => {
-    render(
-      <ContextualToolbar selectionCount={0} actions={actions} onDismiss={() => {}} />,
-    );
+    render(<ContextualToolbar selectionCount={0} actions={actions} onDismiss={() => {}} />);
     expect(document.querySelector('[role="toolbar"]')).toBeNull();
   });
 });

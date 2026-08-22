@@ -26,7 +26,12 @@ import ExcelJS from "exceljs";
 import { unzipSync, zipSync } from "fflate";
 import { supabase } from "@/integrations/backend/client";
 import {
-  findEntity, fieldMap, noAccent, compactFields, type EntityDef, type FieldDef,
+  findEntity,
+  fieldMap,
+  noAccent,
+  compactFields,
+  type EntityDef,
+  type FieldDef,
 } from "@/lib/mirats/import-config";
 
 // --------------------------------------------------------------------------
@@ -69,8 +74,10 @@ export const GUIDE_BLOCKS = [
 ] as const;
 
 const TECH_NOTE: Record<TechColKey, string> = {
-  _record_id: "Kỹ thuật — id bản ghi CSDL. KHÔNG sửa/xóa: dùng để nhập lại đúng dòng (cập nhật, không nhân bản).",
-  _row_version: "Kỹ thuật — phiên bản dòng (updated_at) lúc xuất. Dùng phát hiện xung đột khi nhập lại. KHÔNG sửa.",
+  _record_id:
+    "Kỹ thuật — id bản ghi CSDL. KHÔNG sửa/xóa: dùng để nhập lại đúng dòng (cập nhật, không nhân bản).",
+  _row_version:
+    "Kỹ thuật — phiên bản dòng (updated_at) lúc xuất. Dùng phát hiện xung đột khi nhập lại. KHÔNG sửa.",
   _action: "Kỹ thuật — hành động: create/update/skip/delete. Mặc định 'update' cho dòng có sẵn.",
   _source_row: "Kỹ thuật — số dòng gốc trong sheet để báo lỗi đúng vị trí. KHÔNG sửa.",
 };
@@ -85,8 +92,6 @@ export interface AllInOneMeta {
   /** Hành động cho phép khi nhập lại file này. */
   allowed_actions: string[];
 }
-
-
 
 // --------------------------------------------------------------------------
 // Thứ tự lớp (cha trước, con sau) — đúng thứ tự phụ thuộc khi ghi.
@@ -106,33 +111,161 @@ export type Layer = {
 export type LayerGroup = "catalog" | "structure" | "asset" | "operational";
 
 export const ALLINONE_LAYERS: (Layer & { group: LayerGroup })[] = [
-  { entity: "danh_muc", catTable: "dm_phan_loai", sheet: "1. Phân loại", group: "catalog", desc: "Nhóm 1/2/3 — gốc phân cấp tài sản." },
-  { entity: "danh_muc", catTable: "dm_nhom_he_thong", sheet: "2. Nhóm hệ thống", group: "catalog", desc: "VHF/VCCS… (thuộc một Phân loại)." },
-  { entity: "danh_muc", catTable: "dm_nha_san_xuat", sheet: "3. Nhà sản xuất", group: "catalog", desc: "Hãng sản xuất tài sản." },
-  { entity: "danh_muc", catTable: "dm_nha_cung_cap", sheet: "4. Nhà cung cấp", group: "catalog", desc: "Đơn vị cung cấp/bán hàng." },
-  { entity: "danh_muc", catTable: "dm_loai_thiet_bi", sheet: "5. Chủng loại", group: "catalog", desc: "Máy tính, Switch, Máy UHF…" },
-  { entity: "danh_muc", catTable: "dm_don_vi", sheet: "6. Đơn vị", group: "catalog", desc: "Đơn vị quản lý (phân cấp)." },
-  { entity: "danh_muc", catTable: "dm_vi_tri", sheet: "7. Vị trí", group: "catalog", desc: "Vị trí địa lý (Đài/Phòng…)." },
-  { entity: "dm_model", sheet: "8. Model", group: "structure", desc: "Model — kế thừa NSX/Loại; tài sản trỏ tới đây." },
-  { entity: "dm_he_thong", sheet: "9. Hệ thống", group: "structure", desc: "Hệ thống (thuộc Nhóm hệ thống + Đơn vị)." },
-  { entity: "giay_phep_khai_thac", sheet: "10. Giấy phép khai thác", group: "structure", desc: "Giấy phép khai thác hệ thống (khoá = gp_so)." },
-  { entity: "he_thong_thanh_phan", sheet: "11. Thành phần HT", group: "structure", desc: "Vị trí chức năng trong hệ thống — nơi tài sản được lắp vào." },
-  { entity: "thiet_bi", sheet: "12. Tài sản", group: "asset", desc: "Tài sản vật lý — có serial. Cột 'Trạng thái lắp' là CHỈ ĐỌC." },
-  { entity: "thiet_bi_khe_linh_kien", sheet: "13. Khe linh kiện", group: "asset", desc: "Khe/slot bên trong tài sản cha — nơi lắp linh kiện." },
-  { entity: "vat_tu", sheet: "14. Vật tư", group: "operational", desc: "Vật tư dự phòng/tiêu hao — quản lý kho." },
-  { entity: "nhan_vien", sheet: "15. Nhân viên", group: "operational", desc: "Danh sách nhân viên vận hành." },
-  { entity: "chung_chi", sheet: "16. Chứng chỉ tài sản", group: "operational", desc: "Chứng chỉ/kiểm định gắn với tài sản." },
-  { entity: "bao_tri", sheet: "17. Lịch sử bảo trì", group: "operational", desc: "Bản ghi bảo trì đã thực hiện." },
+  {
+    entity: "danh_muc",
+    catTable: "dm_phan_loai",
+    sheet: "1. Phân loại",
+    group: "catalog",
+    desc: "Nhóm 1/2/3 — gốc phân cấp tài sản.",
+  },
+  {
+    entity: "danh_muc",
+    catTable: "dm_nhom_he_thong",
+    sheet: "2. Nhóm hệ thống",
+    group: "catalog",
+    desc: "VHF/VCCS… (thuộc một Phân loại).",
+  },
+  {
+    entity: "danh_muc",
+    catTable: "dm_nha_san_xuat",
+    sheet: "3. Nhà sản xuất",
+    group: "catalog",
+    desc: "Hãng sản xuất tài sản.",
+  },
+  {
+    entity: "danh_muc",
+    catTable: "dm_nha_cung_cap",
+    sheet: "4. Nhà cung cấp",
+    group: "catalog",
+    desc: "Đơn vị cung cấp/bán hàng.",
+  },
+  {
+    entity: "danh_muc",
+    catTable: "dm_loai_thiet_bi",
+    sheet: "5. Chủng loại",
+    group: "catalog",
+    desc: "Máy tính, Switch, Máy UHF…",
+  },
+  {
+    entity: "danh_muc",
+    catTable: "dm_don_vi",
+    sheet: "6. Đơn vị",
+    group: "catalog",
+    desc: "Đơn vị quản lý (phân cấp).",
+  },
+  {
+    entity: "danh_muc",
+    catTable: "dm_vi_tri",
+    sheet: "7. Vị trí",
+    group: "catalog",
+    desc: "Vị trí địa lý (Đài/Phòng…).",
+  },
+  {
+    entity: "dm_model",
+    sheet: "8. Model",
+    group: "structure",
+    desc: "Model — kế thừa NSX/Loại; tài sản trỏ tới đây.",
+  },
+  {
+    entity: "dm_he_thong",
+    sheet: "9. Hệ thống",
+    group: "structure",
+    desc: "Hệ thống (thuộc Nhóm hệ thống + Đơn vị).",
+  },
+  {
+    entity: "giay_phep_khai_thac",
+    sheet: "10. Giấy phép khai thác",
+    group: "structure",
+    desc: "Giấy phép khai thác hệ thống (khoá = gp_so).",
+  },
+  {
+    entity: "he_thong_thanh_phan",
+    sheet: "11. Thành phần HT",
+    group: "structure",
+    desc: "Vị trí chức năng trong hệ thống — nơi tài sản được lắp vào.",
+  },
+  {
+    entity: "thiet_bi",
+    sheet: "12. Tài sản",
+    group: "asset",
+    desc: "Tài sản vật lý — có serial. Cột 'Trạng thái lắp' là CHỈ ĐỌC.",
+  },
+  {
+    entity: "thiet_bi_khe_linh_kien",
+    sheet: "13. Khe linh kiện",
+    group: "asset",
+    desc: "Khe/slot bên trong tài sản cha — nơi lắp linh kiện.",
+  },
+  {
+    entity: "vat_tu",
+    sheet: "14. Vật tư",
+    group: "operational",
+    desc: "Vật tư dự phòng/tiêu hao — quản lý kho.",
+  },
+  {
+    entity: "nhan_vien",
+    sheet: "15. Nhân viên",
+    group: "operational",
+    desc: "Danh sách nhân viên vận hành.",
+  },
+  {
+    entity: "chung_chi",
+    sheet: "16. Chứng chỉ tài sản",
+    group: "operational",
+    desc: "Chứng chỉ/kiểm định gắn với tài sản.",
+  },
+  {
+    entity: "bao_tri",
+    sheet: "17. Lịch sử bảo trì",
+    group: "operational",
+    desc: "Bản ghi bảo trì đã thực hiện.",
+  },
 ];
 
 /** Bảng màu theo nhóm lớp — dùng cho tab, tiêu đề, banding, legend. */
-const GROUP_STYLE: Record<LayerGroup, {
-  label: string; tab: string; header: string; headerReq: string; band: string; accent: string;
-}> = {
-  catalog:     { label: "Danh mục nền",         tab: "FF60A5FA", header: "FFDBEAFE", headerReq: "FFFDE68A", band: "FFF1F5F9", accent: "FF1D4ED8" },
-  structure:   { label: "Cấu trúc HT",          tab: "FF34D399", header: "FFDCFCE7", headerReq: "FFFDE68A", band: "FFF0FDF4", accent: "FF047857" },
-  asset:       { label: "Tài sản",              tab: "FFF59E0B", header: "FFFEF3C7", headerReq: "FFFDE68A", band: "FFFFFBEB", accent: "FF92400E" },
-  operational: { label: "Vận hành & vòng đời",  tab: "FFA78BFA", header: "FFEDE9FE", headerReq: "FFFDE68A", band: "FFF5F3FF", accent: "FF6D28D9" },
+const GROUP_STYLE: Record<
+  LayerGroup,
+  {
+    label: string;
+    tab: string;
+    header: string;
+    headerReq: string;
+    band: string;
+    accent: string;
+  }
+> = {
+  catalog: {
+    label: "Danh mục nền",
+    tab: "FF60A5FA",
+    header: "FFDBEAFE",
+    headerReq: "FFFDE68A",
+    band: "FFF1F5F9",
+    accent: "FF1D4ED8",
+  },
+  structure: {
+    label: "Cấu trúc HT",
+    tab: "FF34D399",
+    header: "FFDCFCE7",
+    headerReq: "FFFDE68A",
+    band: "FFF0FDF4",
+    accent: "FF047857",
+  },
+  asset: {
+    label: "Tài sản",
+    tab: "FFF59E0B",
+    header: "FFFEF3C7",
+    headerReq: "FFFDE68A",
+    band: "FFFFFBEB",
+    accent: "FF92400E",
+  },
+  operational: {
+    label: "Vận hành & vòng đời",
+    tab: "FFA78BFA",
+    header: "FFEDE9FE",
+    headerReq: "FFFDE68A",
+    band: "FFF5F3FF",
+    accent: "FF6D28D9",
+  },
 };
 
 /** Cột hiển thị của mỗi bảng tham chiếu trong dropdown & khi xuất ô ref. */
@@ -145,8 +278,13 @@ const refDisplayCol = (table: string): "ma" | "ten" => REF_DISPLAY[table] ?? "te
 
 /** A, B, …, AA… cho công thức Data Validation. */
 function colLetter(n: number): string {
-  let s = "", x = n;
-  while (x > 0) { const r = (x - 1) % 26; s = String.fromCharCode(65 + r) + s; x = Math.floor((x - 1) / 26); }
+  let s = "",
+    x = n;
+  while (x > 0) {
+    const r = (x - 1) % 26;
+    s = String.fromCharCode(65 + r) + s;
+    x = Math.floor((x - 1) / 26);
+  }
   return s;
 }
 
@@ -169,7 +307,10 @@ function cellStr(v: unknown): string {
   if (typeof o.text === "string") return o.text.trim();
   if (typeof o.result === "string") return o.result.trim();
   if (Array.isArray((o as { richText?: unknown }).richText)) {
-    return ((o as { richText: Array<{ text?: string }> }).richText).map((r) => r.text ?? "").join("").trim();
+    return (o as { richText: Array<{ text?: string }> }).richText
+      .map((r) => r.text ?? "")
+      .join("")
+      .trim();
   }
   if (typeof o.hyperlink === "string") return String(o.hyperlink).trim();
   return "";
@@ -185,15 +326,20 @@ export type RefConfig = { table: string; keyCol: string; nameCol: string };
 async function loadRefMaps(configs: RefConfig[]): Promise<Record<string, RefMap>> {
   // Gom cấu hình duy nhất theo bảng — nếu nhiều ref cùng trỏ 1 bảng, lấy cái đầu.
   const uniq = new Map<string, { keyCol: string; nameCol: string }>();
-  for (const c of configs) if (!uniq.has(c.table)) uniq.set(c.table, { keyCol: c.keyCol, nameCol: c.nameCol });
+  for (const c of configs)
+    if (!uniq.has(c.table)) uniq.set(c.table, { keyCol: c.keyCol, nameCol: c.nameCol });
   const out: Record<string, RefMap> = {};
   await Promise.all(
     [...uniq.entries()].map(async ([t, { keyCol, nameCol }]) => {
       // Alias PostgREST: đảm bảo record luôn có {id, ma, ten} bất kể tên cột thật.
-      const sel = keyCol === nameCol
-        ? `id, ma:${keyCol}, ten:${nameCol}`
-        : `id, ma:${keyCol}, ten:${nameCol}`;
-      const { data } = await supabase.from(t as never).select(sel).limit(20000);
+      const sel =
+        keyCol === nameCol
+          ? `id, ma:${keyCol}, ten:${nameCol}`
+          : `id, ma:${keyCol}, ten:${nameCol}`;
+      const { data } = await supabase
+        .from(t as never)
+        .select(sel)
+        .limit(20000);
       const byId = new Map<string, { ma: string; ten: string }>();
       const disp = refDisplayCol(t);
       const set = new Set<string>();
@@ -237,14 +383,24 @@ function mapRowToCells(
 }
 
 const KIND_LABEL: Record<FieldDef["kind"], string> = {
-  text: "Chuỗi", int: "Số nguyên", num: "Số", date: "Ngày (YYYY-MM-DD)", ref: "Danh mục (chọn)",
+  text: "Chuỗi",
+  int: "Số nguyên",
+  num: "Số",
+  date: "Ngày (YYYY-MM-DD)",
+  ref: "Danh mục (chọn)",
 };
 
 // ==========================================================================
 // PICKER: nạp danh sách bản ghi từng lớp để người dùng chọn phạm vi xuất
 // ==========================================================================
 export type PickerRecord = { id: string; ma: string; ten: string };
-export type PickerLayer = { table: string; sheet: string; label: string; count: number; records: PickerRecord[] };
+export type PickerLayer = {
+  table: string;
+  sheet: string;
+  label: string;
+  count: number;
+  records: PickerRecord[];
+};
 
 /** Cột tên hiển thị của một entity ("ten" hoặc "ten_thiet_bi"). */
 function nameColOf(ent: EntityDef): string {
@@ -260,11 +416,24 @@ export async function loadAllInOnePickerData(): Promise<PickerLayer[]> {
       const keyCol = ent.naturalKey;
       const nameCol = nameColOf(ent);
       const sel = Array.from(new Set(["id", keyCol, nameCol])).join(",");
-      const { data } = await supabase.from(ent.table as never).select(sel).limit(20000);
+      const { data } = await supabase
+        .from(ent.table as never)
+        .select(sel)
+        .limit(20000);
       const records: PickerRecord[] = ((data ?? []) as Array<Record<string, unknown>>)
-        .map((r) => ({ id: String(r.id), ma: String(r[keyCol] ?? ""), ten: String(r[nameCol] ?? "") }))
+        .map((r) => ({
+          id: String(r.id),
+          ma: String(r[keyCol] ?? ""),
+          ten: String(r[nameCol] ?? ""),
+        }))
         .sort((a, b) => (a.ma || a.ten).localeCompare(b.ma || b.ten, "vi"));
-      return { table: ent.table, sheet: layer.sheet, label: ent.label, count: records.length, records };
+      return {
+        table: ent.table,
+        sheet: layer.sheet,
+        label: ent.label,
+        count: records.length,
+        records,
+      };
     }),
   );
 }
@@ -273,10 +442,7 @@ export async function loadAllInOnePickerData(): Promise<PickerLayer[]> {
 // XUẤT FILE ALL-IN-ONE
 // ==========================================================================
 /** Lựa chọn xuất cho một lớp (theo tên bảng). */
-export type LayerPick =
-  | { mode: "all" }
-  | { mode: "none" }
-  | { mode: "some"; ids: string[] };
+export type LayerPick = { mode: "all" } | { mode: "none" } | { mode: "some"; ids: string[] };
 
 export type ExportAllInOneOpts = {
   /** true = kèm dữ liệu hiện có (để cập nhật); false = chỉ khung trống (khai mới). */
@@ -306,18 +472,21 @@ function describeScope(withData: boolean, picks?: Record<string, LayerPick>): st
  * dung mà không cần DOM. Mọi truy vấn dữ liệu đi qua supabase client của trình
  * duyệt nên CHỊU RLS: người dùng chỉ xuất được dữ liệu trong phạm vi được phép.
  */
-export async function buildAllInOneWorkbook(
-  { withData, picks, autoDeps = true, compact = false }: Omit<ExportAllInOneOpts, "fileName">,
-): Promise<{ wb: ExcelJS.Workbook; meta: AllInOneMeta }> {
+export async function buildAllInOneWorkbook({
+  withData,
+  picks,
+  autoDeps = true,
+  compact = false,
+}: Omit<ExportAllInOneOpts, "fileName">): Promise<{ wb: ExcelJS.Workbook; meta: AllInOneMeta }> {
   const wb = new ExcelJS.Workbook();
   wb.creator = "MIRATS";
   wb.created = new Date();
 
   const meta: AllInOneMeta = {
     export_id:
-      (typeof globalThis.crypto?.randomUUID === "function"
+      typeof globalThis.crypto?.randomUUID === "function"
         ? globalThis.crypto.randomUUID()
-        : `exp-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`),
+        : `exp-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
     scope: describeScope(withData, picks),
@@ -326,7 +495,6 @@ export async function buildAllInOneWorkbook(
 
   const thin = { style: "thin" as const, color: { argb: "FFCBD5E1" } };
   const border = { top: thin, left: thin, bottom: thin, right: thin };
-
 
   // Tập hợp mọi bảng tham chiếu dùng trong toàn bộ layer (kèm keyCol/nameCol).
   const refConfigs: RefConfig[] = [];
@@ -351,7 +519,10 @@ export async function buildAllInOneWorkbook(
     const tables = Array.from(new Set(ALLINONE_LAYERS.map((l) => entOf(l).table)));
     await Promise.all(
       tables.map(async (t) => {
-        const { data } = await supabase.from(t as never).select("*").limit(20000);
+        const { data } = await supabase
+          .from(t as never)
+          .select("*")
+          .limit(20000);
         rawByTable[t] = (data ?? []) as Array<Record<string, unknown>>;
       }),
     );
@@ -359,7 +530,8 @@ export async function buildAllInOneWorkbook(
     for (const l of ALLINONE_LAYERS) {
       const t = entOf(l).table;
       const p = picks?.[t] ?? { mode: "all" };
-      eff[t] = p.mode === "all" ? undefined : p.mode === "none" ? new Set<string>() : new Set(p.ids);
+      eff[t] =
+        p.mode === "all" ? undefined : p.mode === "none" ? new Set<string>() : new Set(p.ids);
     }
 
     // Cascade XUỐNG theo phân cấp: Phân loại → Nhóm hệ thống → Hệ thống → Tài sản.
@@ -368,7 +540,8 @@ export async function buildAllInOneWorkbook(
       if (!parent) return;
       if (eff[childT] !== undefined) return;
       const s = new Set<string>();
-      for (const r of rawByTable[childT] ?? []) if (parent.has(String(r[fk] ?? ""))) s.add(String(r.id));
+      for (const r of rawByTable[childT] ?? [])
+        if (parent.has(String(r[fk] ?? ""))) s.add(String(r.id));
       eff[childT] = s;
     };
     narrow("dm_nhom_he_thong", "phan_loai_id", eff["dm_phan_loai"]);
@@ -388,14 +561,19 @@ export async function buildAllInOneWorkbook(
         const ent = entOf(ALLINONE_LAYERS[i]);
         const t = ent.table;
         const set = eff[t];
-        const rows = set ? (rawByTable[t] ?? []).filter((r) => set.has(String(r.id))) : rawByTable[t] ?? [];
+        const rows = set
+          ? (rawByTable[t] ?? []).filter((r) => set.has(String(r.id)))
+          : (rawByTable[t] ?? []);
         if (rows.length === 0) continue;
         for (const f of ent.fields) {
           if (f.kind !== "ref" || !f.ref) continue;
           const rt = f.ref.table;
           const target = eff[rt];
           if (target === undefined) continue; // lớp danh mục đang "tất cả" → khỏi cần bơm
-          for (const r of rows) { const id = r[f.ref.idCol]; if (id) target.add(String(id)); }
+          for (const r of rows) {
+            const id = r[f.ref.idCol];
+            if (id) target.add(String(id));
+          }
         }
       }
     }
@@ -403,7 +581,8 @@ export async function buildAllInOneWorkbook(
 
   // ---- Sheet ① Hướng dẫn ----
   const guide = wb.addWorksheet("① Hướng dẫn");
-  guide.getCell("A1").value = "MẪU KHAI HỆ THỐNG THIẾT BỊ (ALL-IN-ONE) — điền lần lượt các sheet theo thứ tự";
+  guide.getCell("A1").value =
+    "MẪU KHAI HỆ THỐNG THIẾT BỊ (ALL-IN-ONE) — điền lần lượt các sheet theo thứ tự";
   guide.getCell("A1").font = { bold: true, size: 13, color: { argb: "FF1E3A8A" } };
   guide.mergeCells("A1:D1");
   const gTips = [
@@ -440,7 +619,9 @@ export async function buildAllInOneWorkbook(
     dmColOf[t] = colIdx;
     dm.getCell(1, colIdx).value = t;
     dm.getColumn(colIdx).width = 28;
-    (refMaps[t]?.list ?? []).forEach((v, r) => { dm.getCell(r + 2, colIdx).value = v; });
+    (refMaps[t]?.list ?? []).forEach((v, r) => {
+      dm.getCell(r + 2, colIdx).value = v;
+    });
   });
   dm.state = "hidden";
 
@@ -492,7 +673,9 @@ export async function buildAllInOneWorkbook(
     const ws = wb.addWorksheet(layer.sheet);
     const gs = GROUP_STYLE[layer.group];
     // Tab màu theo nhóm — người dùng nhận diện nhanh Danh mục / Cấu trúc / Tài sản.
-    (ws as unknown as { properties: { tabColor: { argb: string } } }).properties.tabColor = { argb: gs.tab };
+    (ws as unknown as { properties: { tabColor: { argb: string } } }).properties.tabColor = {
+      argb: gs.tab,
+    };
 
     // Cột "ảo" chỉ-đọc thêm ở lớp Tài sản (không có trong entity, không ghi khi nhập).
     const isThietBi = layer.entity === "thiet_bi";
@@ -518,9 +701,7 @@ export async function buildAllInOneWorkbook(
       const f = fields[fieldIdx];
       const isExtra = fieldIdx >= fields.length;
       // Cột chỉ-đọc: nền xám nhạt, chữ nghiêng để phân biệt.
-      const fill = isExtra
-        ? "FFF1F5F9"
-        : (f?.required ? gs.headerReq : gs.header);
+      const fill = isExtra ? "FFF1F5F9" : f?.required ? gs.headerReq : gs.header;
       c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fill } };
       c.font = { bold: true, color: { argb: isExtra ? "FF64748B" : gs.accent }, italic: isExtra };
       c.alignment = { vertical: "middle", wrapText: true, horizontal: "left" };
@@ -571,13 +752,21 @@ export async function buildAllInOneWorkbook(
           extras.push(info ? "Đã lắp" : "Chưa lắp");
           extras.push(info?.tp_ma ?? "");
         }
-        const excelRow = ws.addRow([...tech, ...mapRowToCells(raw, ent, refMaps, fields), ...extras]);
+        const excelRow = ws.addRow([
+          ...tech,
+          ...mapRowToCells(raw, ent, refMaps, fields),
+          ...extras,
+        ]);
         // Banding: dòng chẵn tô nền nhóm rất nhạt để dễ đọc.
         if (idx % 2 === 1) {
           const startCol = TECH_OFFSET + 1;
           const endCol = TECH_OFFSET + fields.length + extras.length;
           for (let c = startCol; c <= endCol; c++) {
-            excelRow.getCell(c).fill = { type: "pattern", pattern: "solid", fgColor: { argb: gs.band } };
+            excelRow.getCell(c).fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: gs.band },
+            };
           }
         }
         // Tô màu ô "Trạng thái lắp" — xanh nếu Đã lắp, xám nếu Chưa lắp.
@@ -585,7 +774,11 @@ export async function buildAllInOneWorkbook(
           const statusCol = TECH_OFFSET + fields.length + 1;
           const cell = excelRow.getCell(statusCol);
           const on = extras[0] === "Đã lắp";
-          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: on ? "FFBBF7D0" : "FFE5E7EB" } };
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: on ? "FFBBF7D0" : "FFE5E7EB" },
+          };
           cell.font = { color: { argb: on ? "FF047857" : "FF6B7280" }, bold: true };
           cell.alignment = { horizontal: "center" };
         }
@@ -612,7 +805,8 @@ export async function buildAllInOneWorkbook(
 
     // Data validation cho các cột ref (dịch cột theo TECH_OFFSET).
     const lastRow = Math.max(dataCount + 1, 500);
-    const dv = (ws as unknown as { dataValidations: { add: (r: string, v: unknown) => void } }).dataValidations;
+    const dv = (ws as unknown as { dataValidations: { add: (r: string, v: unknown) => void } })
+      .dataValidations;
     fields.forEach((f, i) => {
       if (f.kind !== "ref" || !f.ref) return;
       const list = refMaps[f.ref.table]?.list ?? [];
@@ -620,20 +814,17 @@ export async function buildAllInOneWorkbook(
       const dmCol = colLetter(dmColOf[f.ref.table]);
       const excelCol = colLetter(i + 1 + TECH_OFFSET);
       const allowNew = !!f.ref.create;
-      dv.add(
-        `${excelCol}2:${excelCol}${lastRow}`,
-        {
-          type: "list",
-          allowBlank: true,
-          formulae: [`DanhMuc!$${dmCol}$2:$${dmCol}$${list.length + 1}`],
-          showErrorMessage: true,
-          errorStyle: "warning",
-          errorTitle: "Ngoài danh mục",
-          error: allowNew
-            ? "Không có trong danh sách? Vẫn được — hệ thống sẽ TẠO MỚI danh mục này khi ghi."
-            : "Nên chọn giá trị có sẵn. Nếu gõ tay, bước Xem trước sẽ đối chiếu lại với dữ liệu thật.",
-        },
-      );
+      dv.add(`${excelCol}2:${excelCol}${lastRow}`, {
+        type: "list",
+        allowBlank: true,
+        formulae: [`DanhMuc!$${dmCol}$2:$${dmCol}$${list.length + 1}`],
+        showErrorMessage: true,
+        errorStyle: "warning",
+        errorTitle: "Ngoài danh mục",
+        error: allowNew
+          ? "Không có trong danh sách? Vẫn được — hệ thống sẽ TẠO MỚI danh mục này khi ghi."
+          : "Nên chọn giá trị có sẵn. Nếu gõ tay, bước Xem trước sẽ đối chiếu lại với dữ liệu thật.",
+      });
     });
 
     // Data validation cho các kind khác: int/num (số), date (ngày).
@@ -642,23 +833,34 @@ export async function buildAllInOneWorkbook(
       const range = `${excelCol}2:${excelCol}${lastRow}`;
       if (f.kind === "int") {
         dv.add(range, {
-          type: "whole", operator: "between", allowBlank: true,
+          type: "whole",
+          operator: "between",
+          allowBlank: true,
           formulae: [-2147483648, 2147483647],
-          showErrorMessage: true, errorStyle: "stop",
-          errorTitle: "Sai định dạng", error: `"${f.label}" phải là số nguyên.`,
+          showErrorMessage: true,
+          errorStyle: "stop",
+          errorTitle: "Sai định dạng",
+          error: `"${f.label}" phải là số nguyên.`,
         });
       } else if (f.kind === "num") {
         dv.add(range, {
-          type: "decimal", operator: "between", allowBlank: true,
+          type: "decimal",
+          operator: "between",
+          allowBlank: true,
           formulae: [-1e15, 1e15],
-          showErrorMessage: true, errorStyle: "stop",
-          errorTitle: "Sai định dạng", error: `"${f.label}" phải là số.`,
+          showErrorMessage: true,
+          errorStyle: "stop",
+          errorTitle: "Sai định dạng",
+          error: `"${f.label}" phải là số.`,
         });
       } else if (f.kind === "date") {
         dv.add(range, {
-          type: "date", operator: "between", allowBlank: true,
+          type: "date",
+          operator: "between",
+          allowBlank: true,
           formulae: [new Date(1900, 0, 1), new Date(2100, 11, 31)],
-          showErrorMessage: true, errorStyle: "warning",
+          showErrorMessage: true,
+          errorStyle: "warning",
           errorTitle: "Sai định dạng ngày",
           error: `"${f.label}" nên nhập ngày (dd/mm/yyyy hoặc yyyy-mm-dd).`,
         });
@@ -668,7 +870,10 @@ export async function buildAllInOneWorkbook(
 
     // Conditional formatting: tô đỏ ô rỗng ở cột BẮT BUỘC + vàng dòng _action=delete.
     const cfAny = ws as unknown as {
-      addConditionalFormatting: (cfg: { ref: string; rules: Array<Record<string, unknown>> }) => void;
+      addConditionalFormatting: (cfg: {
+        ref: string;
+        rules: Array<Record<string, unknown>>;
+      }) => void;
     };
     fields.forEach((f, i) => {
       if (!f.required) return;
@@ -677,33 +882,41 @@ export async function buildAllInOneWorkbook(
       try {
         cfAny.addConditionalFormatting({
           ref: range,
-          rules: [{
-            type: "containsBlanks",
-            priority: 1,
-            style: {
-              fill: { type: "pattern", pattern: "solid", bgColor: { argb: "FFFEE2E2" } },
-              font: { color: { argb: "FF991B1B" } },
+          rules: [
+            {
+              type: "containsBlanks",
+              priority: 1,
+              style: {
+                fill: { type: "pattern", pattern: "solid", bgColor: { argb: "FFFEE2E2" } },
+                font: { color: { argb: "FF991B1B" } },
+              },
             },
-          }],
+          ],
         });
-      } catch { /* bỏ qua nếu không hỗ trợ */ }
+      } catch {
+        /* bỏ qua nếu không hỗ trợ */
+      }
     });
     try {
       const firstCol = colLetter(TECH_OFFSET + 1);
       const lastCol = colLetter(TECH_OFFSET + fields.length + extraLabels.length);
       cfAny.addConditionalFormatting({
         ref: `${firstCol}2:${lastCol}${lastRow}`,
-        rules: [{
-          type: "expression",
-          priority: 2,
-          formulae: [`$C2="delete"`],
-          style: {
-            fill: { type: "pattern", pattern: "solid", bgColor: { argb: "FFFEF3C7" } },
-            font: { color: { argb: "FF92400E" }, italic: true },
+        rules: [
+          {
+            type: "expression",
+            priority: 2,
+            formulae: [`$C2="delete"`],
+            style: {
+              fill: { type: "pattern", pattern: "solid", bgColor: { argb: "FFFEF3C7" } },
+              font: { color: { argb: "FF92400E" }, italic: true },
+            },
           },
-        }],
+        ],
       });
-    } catch { /* bỏ qua nếu không hỗ trợ */ }
+    } catch {
+      /* bỏ qua nếu không hỗ trợ */
+    }
 
     // Data validation cho cột kỹ thuật _action (create/update/skip/delete).
     const actionCol = colLetter(3); // _action là cột kỹ thuật thứ 3
@@ -721,7 +934,11 @@ export async function buildAllInOneWorkbook(
   const layerMapTitle = guide.addRow(["# LAYER_MAP — thứ tự lớp & khoá upsert"]);
   guide.mergeCells(`A${layerMapTitle.number}:D${layerMapTitle.number}`);
   layerMapTitle.getCell(1).font = { bold: true, size: 12, color: { argb: "FF1E3A8A" } };
-  layerMapTitle.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFDBEAFE" } };
+  layerMapTitle.getCell(1).fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFDBEAFE" },
+  };
   ALLINONE_LAYERS.forEach((layer, i) => {
     const gs = GROUP_STYLE[layer.group];
     const row = guide.addRow([i + 1, layer.sheet, layer.desc, withData ? guideCounts[i] : 0]);
@@ -850,21 +1067,31 @@ export async function buildAllInOneWorkbook(
   // ---- Sheet ③ AI_RULES (ẩn) — JSON machine-readable ----
   const layersMeta = ALLINONE_LAYERS.map((l) => {
     const ent = entOf(l);
-    const refs = Array.from(new Set(ent.fields.filter((f) => f.kind === "ref" && f.ref).map((f) => f.ref!.table)));
+    const refs = Array.from(
+      new Set(ent.fields.filter((f) => f.kind === "ref" && f.ref).map((f) => f.ref!.table)),
+    );
     const required = ent.fields.filter((f) => f.required).map((f) => f.key);
     return { sheet: l.sheet, entity: ent.table, key: "ma", refs, required };
   });
-  const fieldHints: Record<string, Record<string, { type: string; required?: boolean; ref?: string; min?: number; max?: number }>> = {};
+  const fieldHints: Record<
+    string,
+    Record<string, { type: string; required?: boolean; ref?: string; min?: number; max?: number }>
+  > = {};
   for (const l of ALLINONE_LAYERS) {
     const ent = entOf(l);
-    const h: Record<string, { type: string; required?: boolean; ref?: string; min?: number; max?: number }> = {};
+    const h: Record<
+      string,
+      { type: string; required?: boolean; ref?: string; min?: number; max?: number }
+    > = {};
     for (const f of ent.fields) {
       const hint: { type: string; required?: boolean; ref?: string; min?: number; max?: number } = {
-        type: f.kind, required: !!f.required,
+        type: f.kind,
+        required: !!f.required,
       };
       if (f.kind === "ref" && f.ref) hint.ref = f.ref.table;
       if (f.key === "nam_san_xuat" || f.key === "nam_dua_vao_khai_thac") {
-        hint.min = 1980; hint.max = CURRENT_YEAR + 1;
+        hint.min = 1980;
+        hint.max = CURRENT_YEAR + 1;
       }
       h[f.key] = hint;
     }
@@ -872,16 +1099,61 @@ export async function buildAllInOneWorkbook(
   }
   const anomalyRules = [
     { id: "duplicate_ma", severity: "block", scope: "*", explain: "Trùng 'ma' trong cùng sheet" },
-    { id: "ref_missing", severity: "block", scope: "*", explain: "Giá trị ref không tồn tại ở sheet cha; gợi ý khớp gần đúng (Levenshtein ≤ 2)" },
+    {
+      id: "ref_missing",
+      severity: "block",
+      scope: "*",
+      explain: "Giá trị ref không tồn tại ở sheet cha; gợi ý khớp gần đúng (Levenshtein ≤ 2)",
+    },
     { id: "enum_invalid", severity: "block", scope: "*", explain: "Giá trị ngoài enum cho phép" },
-    { id: "orphan_component", severity: "block", scope: "he_thong_thanh_phan", explain: "Thành phần thiếu he_thong cha" },
-    { id: "date_future", severity: "block", scope: "thiet_bi", explain: "ngay_bao_hanh_den < ngay_dua_vao_su_dung" },
-    { id: "year_vs_ngay_dua_vao", severity: "block", scope: "thiet_bi", explain: "nam_san_xuat > year(ngay_dua_vao_su_dung)" },
-    { id: "sn_dup", severity: "warn", scope: "thiet_bi", explain: "ma_serial trùng trong file — cảnh báo, không chặn" },
-    { id: "year_out_of_range", severity: "warn", scope: "thiet_bi", explain: `nam_san_xuat < 1980 hoặc > ${CURRENT_YEAR + 1}` },
-    { id: "model_mismatch", severity: "warn", scope: "thiet_bi", explain: "Cùng model nhưng khác NSX/chủng loại so với baseline snapshot" },
-    { id: "price_outlier", severity: "warn", scope: "thiet_bi", explain: "gia_tri lệch > 3× median cùng model (dựa baseline)" },
-    { id: "lifespan_outlier", severity: "warn", scope: "thiet_bi", explain: "nien_han_su_dung lệch > 50% median cùng chủng loại (dựa baseline)" },
+    {
+      id: "orphan_component",
+      severity: "block",
+      scope: "he_thong_thanh_phan",
+      explain: "Thành phần thiếu he_thong cha",
+    },
+    {
+      id: "date_future",
+      severity: "block",
+      scope: "thiet_bi",
+      explain: "ngay_bao_hanh_den < ngay_dua_vao_su_dung",
+    },
+    {
+      id: "year_vs_ngay_dua_vao",
+      severity: "block",
+      scope: "thiet_bi",
+      explain: "nam_san_xuat > year(ngay_dua_vao_su_dung)",
+    },
+    {
+      id: "sn_dup",
+      severity: "warn",
+      scope: "thiet_bi",
+      explain: "ma_serial trùng trong file — cảnh báo, không chặn",
+    },
+    {
+      id: "year_out_of_range",
+      severity: "warn",
+      scope: "thiet_bi",
+      explain: `nam_san_xuat < 1980 hoặc > ${CURRENT_YEAR + 1}`,
+    },
+    {
+      id: "model_mismatch",
+      severity: "warn",
+      scope: "thiet_bi",
+      explain: "Cùng model nhưng khác NSX/chủng loại so với baseline snapshot",
+    },
+    {
+      id: "price_outlier",
+      severity: "warn",
+      scope: "thiet_bi",
+      explain: "gia_tri lệch > 3× median cùng model (dựa baseline)",
+    },
+    {
+      id: "lifespan_outlier",
+      severity: "warn",
+      scope: "thiet_bi",
+      explain: "nien_han_su_dung lệch > 50% median cùng chủng loại (dựa baseline)",
+    },
   ];
   const aiRules = {
     schema_version: SCHEMA_VERSION,
@@ -900,7 +1172,9 @@ export async function buildAllInOneWorkbook(
   guide.views = [{ state: "frozen", ySplit: gHeadIdx }];
 
   // Mở ở sheet Hướng dẫn.
-  wb.views = [{ activeTab: 0, x: 0, y: 0, width: 12000, height: 22000, firstSheet: 0, visibility: "visible" }];
+  wb.views = [
+    { activeTab: 0, x: 0, y: 0, width: 12000, height: 22000, firstSheet: 0, visibility: "visible" },
+  ];
 
   return { wb, meta };
 }
@@ -909,16 +1183,30 @@ export async function buildAllInOneWorkbook(
  * Xuất & tải file All-in-one. Giữ nguyên API/nút cũ; chọn mode (mẫu trống hay
  * kèm dữ liệu) qua `withData` và scope tối thiểu qua `picks`.
  */
-export async function exportAllInOneXlsx({ withData, picks, autoDeps = true, compact = false, fileName }: ExportAllInOneOpts) {
+export async function exportAllInOneXlsx({
+  withData,
+  picks,
+  autoDeps = true,
+  compact = false,
+  fileName,
+}: ExportAllInOneOpts) {
   const { wb } = await buildAllInOneWorkbook({ withData, picks, autoDeps, compact });
   const buf = await wb.xlsx.writeBuffer();
-  const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const blob = new Blob([buf], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = fileName ?? (compact
-    ? (withData ? "MIRATS_hethong_thietbi_rutgon_du-lieu.xlsx" : "MIRATS_hethong_thietbi_rutgon_mau-trong.xlsx")
-    : (withData ? "MIRATS_hethong_thietbi_du-lieu.xlsx" : "MIRATS_hethong_thietbi_mau-trong.xlsx"));
+  a.download =
+    fileName ??
+    (compact
+      ? withData
+        ? "MIRATS_hethong_thietbi_rutgon_du-lieu.xlsx"
+        : "MIRATS_hethong_thietbi_rutgon_mau-trong.xlsx"
+      : withData
+        ? "MIRATS_hethong_thietbi_du-lieu.xlsx"
+        : "MIRATS_hethong_thietbi_mau-trong.xlsx");
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -940,7 +1228,6 @@ export type ParsedLayer = {
   meta: Array<Record<TechColKey, string>>;
 };
 
-
 // exceljs 4.4.0 có lỗi round-trip với comment/ghi chú: phần comment được ghi ở
 // "xl/comments/comment1.xml" nhưng trình đọc lại dò theo "xl/comments1.xml" nên
 // không nạp được, trong khi quan hệ (.rels) của worksheet vẫn trỏ tới nó → nạp
@@ -961,14 +1248,20 @@ function sanitizeXlsxRels(buf: ArrayBuffer): ArrayBuffer {
           /<Relationship\b[^>]*Type="[^"]*\/(?:comments|vmlDrawing)"[^>]*\/>/g,
           "",
         );
-        if (fixed !== xml) { files[name] = enc.encode(fixed); changed = true; }
+        if (fixed !== xml) {
+          files[name] = enc.encode(fixed);
+          changed = true;
+        }
         continue;
       }
       // Gỡ thẻ <legacyDrawing/> (trỏ tới vmlDrawing của comment) trong sheet.
       if (/^xl\/worksheets\/sheet\d+\.xml$/i.test(name)) {
         const xml = dec.decode(files[name]);
         const fixed = xml.replace(/<legacyDrawing\b[^>]*\/>/g, "");
-        if (fixed !== xml) { files[name] = enc.encode(fixed); changed = true; }
+        if (fixed !== xml) {
+          files[name] = enc.encode(fixed);
+          changed = true;
+        }
       }
     }
     if (!changed) return buf;
@@ -978,7 +1271,6 @@ function sanitizeXlsxRels(buf: ArrayBuffer): ArrayBuffer {
     return buf; // Nếu vá lỗi thất bại, để exceljs tự xử lý như cũ.
   }
 }
-
 
 export async function parseAllInOneXlsx(file: File): Promise<ParsedLayer[]> {
   const wb = new ExcelJS.Workbook();
@@ -1009,11 +1301,23 @@ export async function parseAllInOneXlsx(file: File): Promise<ParsedLayer[]> {
     for (let c = 1; c <= maxCol; c++) {
       const h = cellStr(headerRow.getCell(c).value);
       headers.push(h);
-      if (!h) { colToKey.push(null); colToTech.push(null); continue; }
+      if (!h) {
+        colToKey.push(null);
+        colToTech.push(null);
+        continue;
+      }
       // Cột kỹ thuật nhận diện theo tên cố định (ẩn/khóa khi xuất).
-      if (TECH_COL_SET.has(h)) { colToKey.push(null); colToTech.push(h as TechColKey); continue; }
+      if (TECH_COL_SET.has(h)) {
+        colToKey.push(null);
+        colToTech.push(h as TechColKey);
+        continue;
+      }
       // Cột chỉ đọc: bỏ qua hoàn toàn, không đưa vào unmapped.
-      if (READONLY_LABELS.has(noAccent(h))) { colToKey.push(null); colToTech.push(null); continue; }
+      if (READONLY_LABELS.has(noAccent(h))) {
+        colToKey.push(null);
+        colToTech.push(null);
+        continue;
+      }
       const key = byNorm.get(noAccent(h)) ?? null;
       colToKey.push(key);
       colToTech.push(null);
@@ -1025,17 +1329,29 @@ export async function parseAllInOneXlsx(file: File): Promise<ParsedLayer[]> {
     for (let r = 2; r <= ws.rowCount; r++) {
       const excelRow = ws.getRow(r);
       const obj: Record<string, string> = {};
-      const techObj = { _record_id: "", _row_version: "", _action: "", _source_row: "" } as Record<TechColKey, string>;
+      const techObj = { _record_id: "", _row_version: "", _action: "", _source_row: "" } as Record<
+        TechColKey,
+        string
+      >;
       let hasAny = false;
       for (let c = 1; c <= maxCol; c++) {
         const v = cellStr(excelRow.getCell(c).value);
         const tech = colToTech[c - 1];
-        if (tech) { if (v !== "") techObj[tech] = v; continue; }
+        if (tech) {
+          if (v !== "") techObj[tech] = v;
+          continue;
+        }
         const key = colToKey[c - 1];
         if (!key) continue;
-        if (v !== "") { obj[key] = v; hasAny = true; }
+        if (v !== "") {
+          obj[key] = v;
+          hasAny = true;
+        }
       }
-      if (hasAny) { rows.push(obj); meta.push(techObj); }
+      if (hasAny) {
+        rows.push(obj);
+        meta.push(techObj);
+      }
     }
 
     out.push({ layer, headers, rows, unmapped, meta });
@@ -1060,7 +1376,9 @@ export async function readAllInOneMeta(file: File): Promise<AllInOneMeta | null>
     schema_version: kv.schema_version ?? "",
     generated_at: kv.generated_at ?? "",
     scope: kv.scope ?? "",
-    allowed_actions: (kv.allowed_actions ?? "").split(",").map((s) => s.trim()).filter(Boolean),
+    allowed_actions: (kv.allowed_actions ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
   };
 }
-

@@ -3,17 +3,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { 
-  KeyRound, 
-  Plus, 
-  Trash2, 
-  Copy, 
-  Check, 
+import {
+  KeyRound,
+  Plus,
+  Trash2,
+  Copy,
+  Check,
   ExternalLink,
   ShieldCheck,
   Calendar,
   Activity,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -21,13 +21,13 @@ import { vi } from "date-fns/locale";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
   Dialog,
@@ -41,12 +41,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/mirats/EmptyState";
 
 import { supabase } from "@/integrations/backend/client";
@@ -59,9 +54,21 @@ export const Route = createFileRoute("/_app/admin/tich-hop")({
 const AVAILABLE_SCOPES = [
   { id: "projects:read", label: "Xem dự án", desc: "Cho phép đọc thông tin dự án" },
   { id: "tasks:read", label: "Xem công việc", desc: "Cho phép đọc danh sách task" },
-  { id: "project_documents:write", label: "Tải lên tài liệu", desc: "Cho phép đính kèm tệp vào dự án" },
-  { id: "project_correspondence:write", label: "Tạo công văn", desc: "Cho phép tạo hồ sơ công văn qua extension" },
-  { id: "ocr_artifacts:publish", label: "Đóng góp OCR", desc: "Cho phép đẩy dữ liệu OCR từ máy khách" },
+  {
+    id: "project_documents:write",
+    label: "Tải lên tài liệu",
+    desc: "Cho phép đính kèm tệp vào dự án",
+  },
+  {
+    id: "project_correspondence:write",
+    label: "Tạo công văn",
+    desc: "Cho phép tạo hồ sơ công văn qua extension",
+  },
+  {
+    id: "ocr_artifacts:publish",
+    label: "Đóng góp OCR",
+    desc: "Cho phép đẩy dữ liệu OCR từ máy khách",
+  },
 ];
 
 function ApiKeysManagement() {
@@ -71,7 +78,10 @@ function ApiKeysManagement() {
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
-  const [selectedScopes, setSelectedScopes] = useState<string[]>(["projects:read", "project_correspondence:write"]);
+  const [selectedScopes, setSelectedScopes] = useState<string[]>([
+    "projects:read",
+    "project_correspondence:write",
+  ]);
   const [generatedToken, setGeneratedToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -90,12 +100,12 @@ function ApiKeysManagement() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      return await callCreateKey({ 
-        data: { 
-          name: newKeyName, 
+      return await callCreateKey({
+        data: {
+          name: newKeyName,
           scopes: selectedScopes,
-          expiresInDays: 365 // Mặc định 1 năm
-        } 
+          expiresInDays: 365, // Mặc định 1 năm
+        },
       });
     },
     onSuccess: (data) => {
@@ -105,7 +115,7 @@ function ApiKeysManagement() {
     },
     onError: (err) => {
       toast.error("Lỗi khi tạo API key: " + err.message);
-    }
+    },
   });
 
   const revokeMutation = useMutation({
@@ -118,7 +128,7 @@ function ApiKeysManagement() {
     },
     onError: (err) => {
       toast.error("Lỗi khi thu hồi: " + err.message);
-    }
+    },
   });
 
   const copyToken = () => {
@@ -195,7 +205,7 @@ function ApiKeysManagement() {
                       {format(new Date(key.created_at!), "dd/MM/yyyy HH:mm", { locale: vi })}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {key.last_used_at 
+                      {key.last_used_at
                         ? format(new Date(key.last_used_at), "dd/MM/yyyy HH:mm", { locale: vi })
                         : "Chưa sử dụng"}
                     </TableCell>
@@ -205,7 +215,10 @@ function ApiKeysManagement() {
                       ) : key.expires_at && new Date(key.expires_at) < new Date() ? (
                         <Badge variant="outline">Hết hạn</Badge>
                       ) : (
-                        <Badge variant="success" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
+                        <Badge
+                          variant="success"
+                          className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                        >
                           Đang hoạt động
                         </Badge>
                       )}
@@ -221,7 +234,11 @@ function ApiKeysManagement() {
                                 aria-label="Thu hồi key"
                                 className="text-destructive hover:bg-destructive/10"
                                 onClick={() => {
-                                  if (confirm("Bạn có chắc chắn muốn thu hồi key này? Mọi ứng dụng đang dùng key này sẽ bị ngắt kết nối.")) {
+                                  if (
+                                    confirm(
+                                      "Bạn có chắc chắn muốn thu hồi key này? Mọi ứng dụng đang dùng key này sẽ bị ngắt kết nối.",
+                                    )
+                                  ) {
                                     revokeMutation.mutate(key.id);
                                   }
                                 }}
@@ -251,9 +268,15 @@ function ApiKeysManagement() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>• <b>Tuyệt đối không</b> chia sẻ API Key cho người khác.</p>
-            <p>• Key chỉ được hiển thị <b>một lần duy nhất</b> khi tạo.</p>
-            <p>• Nếu nghi ngờ key bị lộ, hãy <b>Thu hồi</b> ngay lập tức và tạo key mới.</p>
+            <p>
+              • <b>Tuyệt đối không</b> chia sẻ API Key cho người khác.
+            </p>
+            <p>
+              • Key chỉ được hiển thị <b>một lần duy nhất</b> khi tạo.
+            </p>
+            <p>
+              • Nếu nghi ngờ key bị lộ, hãy <b>Thu hồi</b> ngay lập tức và tạo key mới.
+            </p>
             <p>• Sử dụng các scope tối thiểu cần thiết để đảm bảo an toàn.</p>
           </CardContent>
         </Card>
@@ -266,7 +289,10 @@ function ApiKeysManagement() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-3">
-            <p>Tải và cài đặt Browser Extension từ cửa hàng ứng dụng để tự động hóa việc nhập hồ sơ, công văn và xử lý PDF.</p>
+            <p>
+              Tải và cài đặt Browser Extension từ cửa hàng ứng dụng để tự động hóa việc nhập hồ sơ,
+              công văn và xử lý PDF.
+            </p>
             <Button variant="outline" size="sm" className="w-full gap-2" asChild>
               <a href="#" target="_blank">
                 Tải Extension <ExternalLink className="h-3 w-3" />
@@ -282,8 +308,8 @@ function ApiKeysManagement() {
           <DialogHeader>
             <DialogTitle>{generatedToken ? "Lưu API Key của bạn" : "Tạo API Key mới"}</DialogTitle>
             <DialogDescription>
-              {generatedToken 
-                ? "Đây là lần duy nhất bạn thấy key này. Hãy copy và lưu trữ nó an toàn." 
+              {generatedToken
+                ? "Đây là lần duy nhất bạn thấy key này. Hãy copy và lưu trữ nó an toàn."
                 : "Đặt tên và chọn phạm vi quyền hạn cho API Key mới."}
             </DialogDescription>
           </DialogHeader>
@@ -292,18 +318,27 @@ function ApiKeysManagement() {
             <div className="space-y-4 py-4">
               <div className="p-4 bg-muted rounded-lg font-mono text-sm break-all border flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Secret Token</span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    Secret Token
+                  </span>
                   <Button variant="ghost" size="sm" onClick={copyToken} className="h-8 gap-2">
-                    {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    {copied ? (
+                      <Check className="h-3 w-3 text-emerald-500" />
+                    ) : (
+                      <Copy className="h-3 w-3" />
+                    )}
                     {copied ? "Đã copy" : "Copy"}
                   </Button>
                 </div>
                 <div className="text-primary font-bold">{generatedToken}</div>
               </div>
-              
+
               <div className="flex items-start gap-3 p-3 bg-amber-500/10 text-amber-600 rounded-lg text-xs">
                 <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                <p>Nếu bạn đóng cửa sổ này, bạn sẽ không bao giờ có thể xem lại key này nữa. Hãy chắc chắn đã sao chép nó.</p>
+                <p>
+                  Nếu bạn đóng cửa sổ này, bạn sẽ không bao giờ có thể xem lại key này nữa. Hãy chắc
+                  chắn đã sao chép nó.
+                </p>
               </div>
             </div>
           ) : (
@@ -322,7 +357,10 @@ function ApiKeysManagement() {
                 <Label>Phạm vi quyền hạn (Scopes)</Label>
                 <div className="grid grid-cols-1 gap-2 border rounded-md p-3">
                   {AVAILABLE_SCOPES.map((scope) => (
-                    <div key={scope.id} className="flex items-start space-x-3 space-y-0 py-1.5 border-b last:border-0 border-border/50">
+                    <div
+                      key={scope.id}
+                      className="flex items-start space-x-3 space-y-0 py-1.5 border-b last:border-0 border-border/50"
+                    >
                       <Checkbox
                         id={scope.id}
                         checked={selectedScopes.includes(scope.id)}
@@ -330,7 +368,7 @@ function ApiKeysManagement() {
                           if (checked) {
                             setSelectedScopes([...selectedScopes, scope.id]);
                           } else {
-                            setSelectedScopes(selectedScopes.filter(s => s !== scope.id));
+                            setSelectedScopes(selectedScopes.filter((s) => s !== scope.id));
                           }
                         }}
                       />
@@ -341,9 +379,7 @@ function ApiKeysManagement() {
                         >
                           {scope.label}
                         </label>
-                        <p className="text-[11px] text-muted-foreground">
-                          {scope.desc}
-                        </p>
+                        <p className="text-[11px] text-muted-foreground">{scope.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -354,12 +390,16 @@ function ApiKeysManagement() {
 
           <DialogFooter>
             {generatedToken ? (
-              <Button onClick={handleCloseSuccess} className="w-full">Tôi đã lưu key này</Button>
+              <Button onClick={handleCloseSuccess} className="w-full">
+                Tôi đã lưu key này
+              </Button>
             ) : (
               <>
-                <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Hủy</Button>
-                <Button 
-                  onClick={() => createMutation.mutate()} 
+                <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
+                  Hủy
+                </Button>
+                <Button
+                  onClick={() => createMutation.mutate()}
                   disabled={!newKeyName || selectedScopes.length === 0 || createMutation.isPending}
                 >
                   {createMutation.isPending ? "Đang tạo..." : "Tạo API Key"}

@@ -8,12 +8,28 @@ afterEach(() => cleanup());
 
 function makeRow(over: Partial<DoThiRow>): DoThiRow {
   return {
-    id: "e-1", nguon_id: "ht-1", nguon_ten: "VHF", nguon_nhom: null, nguon_don_vi: null,
-    dich_id: "ht-2", dich_ten: "VCCS", dich_nhom: null, dich_don_vi: null,
-    loai_lien_ket_id: "l-1", loai_ma: "LUONG_TIN_HIEU", loai_ten: "Luồng tín hiệu",
-    mau_sac: "#2563eb", kieu_net: "solid", lop: "logic", huong: "mot_chieu",
-    vai_tro_du_phong: null, giao_dien_nguon: null, giao_dien_dich: null, giao_thuc: null,
-    trang_thai: "hoat_dong", don_vi_id_snapshot: null,
+    id: "e-1",
+    nguon_id: "ht-1",
+    nguon_ten: "VHF",
+    nguon_nhom: null,
+    nguon_don_vi: null,
+    dich_id: "ht-2",
+    dich_ten: "VCCS",
+    dich_nhom: null,
+    dich_don_vi: null,
+    loai_lien_ket_id: "l-1",
+    loai_ma: "LUONG_TIN_HIEU",
+    loai_ten: "Luồng tín hiệu",
+    mau_sac: "#2563eb",
+    kieu_net: "solid",
+    lop: "logic",
+    huong: "mot_chieu",
+    vai_tro_du_phong: null,
+    giao_dien_nguon: null,
+    giao_dien_dich: null,
+    giao_thuc: null,
+    trang_thai: "hoat_dong",
+    don_vi_id_snapshot: null,
     ...over,
   };
 }
@@ -26,7 +42,12 @@ describe("thieuDuPhong — quy tắc thuần", () => {
 
   it("có dự phòng cùng loại cùng phía => không thiếu", () => {
     const chinh = makeRow({ id: "e-1", vai_tro_du_phong: "chinh" });
-    const duPhong = makeRow({ id: "e-2", dich_id: "ht-3", dich_ten: "VCCS-BK", vai_tro_du_phong: "du_phong" });
+    const duPhong = makeRow({
+      id: "e-2",
+      dich_id: "ht-3",
+      dich_ten: "VCCS-BK",
+      vai_tro_du_phong: "du_phong",
+    });
     expect(thieuDuPhong(chinh, "ht-1", [chinh, duPhong])).toBe(false);
   });
 

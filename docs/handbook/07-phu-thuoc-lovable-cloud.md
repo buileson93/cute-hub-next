@@ -1,6 +1,7 @@
 # 07 — Phụ thuộc Lovable Cloud & cách chạy khi không có Lovable
 
 Tài liệu này gộp 2 câu hỏi:
+
 1. **Những tính năng nào đang phụ thuộc vào Lovable Cloud?**
 2. **Làm sao triển khai dự án khi không dùng hạ tầng Lovable?**
 
@@ -14,23 +15,23 @@ Rời Lovable là **cấu hình lại**, không phải viết lại.
 
 ### A.1. Phụ thuộc cứng (bắt buộc thay khi rời)
 
-| Tính năng | Đang dùng gì của Lovable Cloud | Thay bằng gì |
-|---|---|---|
-| **Database** | PostgreSQL do Cloud quản lý (Supabase quản lý bởi Lovable) | Supabase self-host / Supabase.com / Postgres bất kỳ |
-| **Auth** | Supabase Auth (`auth.users`, JWT, provider Google) | Supabase Auth tự vận hành / Auth0 / Clerk (nếu chấp nhận viết adapter) |
-| **Storage** | Supabase Storage — bucket `avatars`, `chat-files`, `model-anh`, `database-backups`, … | Supabase Storage tự vận hành / S3 / R2 (cần adapter) |
-| **Realtime** | Supabase Realtime channels | Supabase Realtime tự vận hành / PowerSync / socket riêng |
-| **Edge runtime** | Cloudflare Workers do Lovable vận hành | Cloudflare Workers riêng / Node server (Vercel, Fly, VPS) |
-| **Secret store** | Cloud secrets injected vào Worker env | `.env` server / KV / Vault / GitHub Secrets |
+| Tính năng        | Đang dùng gì của Lovable Cloud                                                        | Thay bằng gì                                                           |
+| ---------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Database**     | PostgreSQL do Cloud quản lý (Supabase quản lý bởi Lovable)                            | Supabase self-host / Supabase.com / Postgres bất kỳ                    |
+| **Auth**         | Supabase Auth (`auth.users`, JWT, provider Google)                                    | Supabase Auth tự vận hành / Auth0 / Clerk (nếu chấp nhận viết adapter) |
+| **Storage**      | Supabase Storage — bucket `avatars`, `chat-files`, `model-anh`, `database-backups`, … | Supabase Storage tự vận hành / S3 / R2 (cần adapter)                   |
+| **Realtime**     | Supabase Realtime channels                                                            | Supabase Realtime tự vận hành / PowerSync / socket riêng               |
+| **Edge runtime** | Cloudflare Workers do Lovable vận hành                                                | Cloudflare Workers riêng / Node server (Vercel, Fly, VPS)              |
+| **Secret store** | Cloud secrets injected vào Worker env                                                 | `.env` server / KV / Vault / GitHub Secrets                            |
 
 ### A.2. Phụ thuộc mềm (có sẵn đường thoát trong code)
 
-| Tính năng | Cơ chế | Đường thoát |
-|---|---|---|
-| **MIRATS AI** (chat, vision, parse sự cố) | Lovable AI Gateway qua `LOVABLE_API_KEY` | Đổi provider sang `custom` trong `/admin/ai` (OpenAI/Gemini key riêng). Code tại `src/lib/ai/gateway.server.ts` đã hỗ trợ sẵn |
-| **Email** | Lovable Email (tuỳ tính năng bật) | SMTP riêng / Resend / SendGrid |
-| **Cron sao lưu** | Lịch của Cloud gọi `/api/public/hooks/daily-backup` | pg_cron / GitHub Actions / cron VPS gọi cùng URL |
-| **Publish/Deploy** | Nút Publish trong Lovable UI | Build bằng Vite + deploy Cloudflare/Vercel |
+| Tính năng                                 | Cơ chế                                              | Đường thoát                                                                                                                   |
+| ----------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **MIRATS AI** (chat, vision, parse sự cố) | Lovable AI Gateway qua `LOVABLE_API_KEY`            | Đổi provider sang `custom` trong `/admin/ai` (OpenAI/Gemini key riêng). Code tại `src/lib/ai/gateway.server.ts` đã hỗ trợ sẵn |
+| **Email**                                 | Lovable Email (tuỳ tính năng bật)                   | SMTP riêng / Resend / SendGrid                                                                                                |
+| **Cron sao lưu**                          | Lịch của Cloud gọi `/api/public/hooks/daily-backup` | pg_cron / GitHub Actions / cron VPS gọi cùng URL                                                                              |
+| **Publish/Deploy**                        | Nút Publish trong Lovable UI                        | Build bằng Vite + deploy Cloudflare/Vercel                                                                                    |
 
 ### A.3. KHÔNG phụ thuộc Lovable (đã chuẩn mở)
 
@@ -42,24 +43,26 @@ Rời Lovable là **cấu hình lại**, không phải viết lại.
 
 ### A.4. Biến môi trường
 
-| Nhóm | Biến | Ghi chú |
-|---|---|---|
-| Công khai (FE) | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID` | Nhúng vào bundle. Chỉ khoá publishable/anon, an toàn để lộ |
-| Server-only | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | KHÔNG bao giờ `VITE_*`. Service role bỏ qua RLS |
-| AI | `LOVABLE_API_KEY` **hoặc** key provider riêng | Xem `/admin/ai` để đổi provider |
-| Backup / đồng bộ | `GOOGLE_DRIVE_API_KEY`, `AWS_S3_*`, `BACKUP_CRON_SECRET` | Chỉ cần nếu bật Drive/S3 và cron |
-| Bảo mật | `BOOTSTRAP_ADMIN_SECRET`, `RESET_CHALLENGE_SECRET`, `SESSION_SECRET` | Thao tác admin đặc biệt |
-| Telegram | `TELEGRAM_BOT_TOKEN` | Cảnh báo + OTP ký form |
+| Nhóm             | Biến                                                                             | Ghi chú                                                    |
+| ---------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Công khai (FE)   | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID` | Nhúng vào bundle. Chỉ khoá publishable/anon, an toàn để lộ |
+| Server-only      | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`          | KHÔNG bao giờ `VITE_*`. Service role bỏ qua RLS            |
+| AI               | `LOVABLE_API_KEY` **hoặc** key provider riêng                                    | Xem `/admin/ai` để đổi provider                            |
+| Backup / đồng bộ | `GOOGLE_DRIVE_API_KEY`, `AWS_S3_*`, `BACKUP_CRON_SECRET`                         | Chỉ cần nếu bật Drive/S3 và cron                           |
+| Bảo mật          | `BOOTSTRAP_ADMIN_SECRET`, `RESET_CHALLENGE_SECRET`, `SESSION_SECRET`             | Thao tác admin đặc biệt                                    |
+| Telegram         | `TELEGRAM_BOT_TOKEN`                                                             | Cảnh báo + OTP ký form                                     |
 
 ---
 
 ## Phần B. Ba khối phải mang theo (không chỉ file .zip)
 
 ### B.1. Mã nguồn
+
 Đưa lên GitHub (menu (+) → GitHub → Connect project). Repo chứa `src/` +
 `supabase/migrations/`. KHÔNG chứa dữ liệu bảng, file Storage, secrets.
 
 ### B.2. Cấu trúc + dữ liệu database
+
 1. **Cấu trúc**: `supabase/migrations/` — chạy lại là dựng lại y hệt.
 2. **Dữ liệu bảng public**: file `.zip` từ trang Sao lưu **hoặc**
    Cloud → Advanced settings → Export data.
@@ -68,6 +71,7 @@ Rời Lovable là **cấu hình lại**, không phải viết lại.
    Nếu không, người dùng phải đăng ký/đặt lại mật khẩu ở hệ thống mới.
 
 ### B.3. Tệp trong Storage
+
 File `.zip` sao lưu đã gom toàn bộ bucket. Ở hệ thống mới: tạo lại bucket
 **đúng tên & đúng public/private**, rồi tải file lên đúng đường dẫn.
 
@@ -80,7 +84,7 @@ File `.zip` sao lưu đã gom toàn bộ bucket. Ở hệ thống mới: tạo l
    tự các file trong `supabase/migrations/`). Dựng lại toàn bộ bảng, RLS,
    function, trigger.
 3. **Tạo lại Storage buckets** đúng tên & policy — RLS đã có trong migrations.
-4. **Nạp dữ liệu**: dùng chức năng *Khôi phục từ .zip* hoặc import
+4. **Nạp dữ liệu**: dùng chức năng _Khôi phục từ .zip_ hoặc import
    `data.json` / `database.sql`. Upload file Storage lên bucket tương ứng.
 5. **Migrate tài khoản** (nếu cần giữ user cũ): import `auth.users` từ Export data.
 6. **Khai biến môi trường** ở host mới (xem A.4).
@@ -96,14 +100,14 @@ File `.zip` sao lưu đã gom toàn bộ bucket. Ở hệ thống mới: tạo l
 
 ## Phần D. Mức độ khóa cứng theo lớp
 
-| Lớp | Mức lock-in | Ghi chú |
-|---|---|---|
-| **Database** | THẤP ✅ | Postgres chuẩn. Chỉ dính `auth.uid()`/`auth.jwt()` — dễ thay bằng GUC/shim |
-| **Auth** | TRUNG BÌNH ⚠️ | `auth.users` không có trong `.zip`; đổi provider phải viết lại claim mapping |
-| **Storage** | THẤP ✅ | Đã có `src/lib/storage/adapter.ts` — chỉ đổi implementation là xong |
-| **Realtime** | TRUNG BÌNH | Supabase Realtime dùng WAL logical replication — self-host được |
-| **Edge runtime** | THẤP ✅ | TanStack Start build ra bundle chuẩn — deploy được Node/Worker |
-| **AI Gateway** | THẤP ✅ | Đã có provider `custom` OpenAI-compat |
+| Lớp              | Mức lock-in   | Ghi chú                                                                      |
+| ---------------- | ------------- | ---------------------------------------------------------------------------- |
+| **Database**     | THẤP ✅       | Postgres chuẩn. Chỉ dính `auth.uid()`/`auth.jwt()` — dễ thay bằng GUC/shim   |
+| **Auth**         | TRUNG BÌNH ⚠️ | `auth.users` không có trong `.zip`; đổi provider phải viết lại claim mapping |
+| **Storage**      | THẤP ✅       | Đã có `src/lib/storage/adapter.ts` — chỉ đổi implementation là xong          |
+| **Realtime**     | TRUNG BÌNH    | Supabase Realtime dùng WAL logical replication — self-host được              |
+| **Edge runtime** | THẤP ✅       | TanStack Start build ra bundle chuẩn — deploy được Node/Worker               |
+| **AI Gateway**   | THẤP ✅       | Đã có provider `custom` OpenAI-compat                                        |
 
 ---
 

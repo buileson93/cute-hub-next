@@ -130,7 +130,6 @@ export async function rejectChangeRequest(id: string, ly_do: string): Promise<vo
   if (error) throw error;
 }
 
-
 export async function cancelChangeRequest(id: string): Promise<void> {
   const { error } = await supabase.rpc("cancel_change_request", { p_id: id });
   if (error) throw error;
@@ -152,7 +151,8 @@ export function useChangeRequests(filter: ChangeRequestFilter = {}) {
         .select("*")
         .order("created_at", { ascending: false })
         .limit(filter.limit ?? 200);
-      if (filter.trang_thai && filter.trang_thai !== "all") q = q.eq("trang_thai", filter.trang_thai);
+      if (filter.trang_thai && filter.trang_thai !== "all")
+        q = q.eq("trang_thai", filter.trang_thai);
       if (filter.loai && filter.loai !== "all") q = q.eq("loai", filter.loai);
       const { data, error } = await q;
       if (error) throw error;
@@ -180,7 +180,10 @@ export function usePendingChangeRequestCount() {
 }
 
 /** Tóm tắt payload cho hiển thị nhanh trong bảng danh sách. */
-export function summarizePayload(loai: ChangeRequestLoai, payload: Record<string, unknown>): string {
+export function summarizePayload(
+  loai: ChangeRequestLoai,
+  payload: Record<string, unknown>,
+): string {
   const p = payload ?? {};
   const s = (k: string) => (p[k] == null ? "" : String(p[k]));
   switch (loai) {

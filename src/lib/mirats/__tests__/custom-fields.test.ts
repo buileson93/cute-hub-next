@@ -8,9 +8,23 @@ import {
 
 const defs: DinhNghiaTruong[] = [
   { key: "so_seri_phu", nhan: "Số seri phụ", loai: "text", apDungCho: "thiet_bi" },
-  { key: "cong_suat", nhan: "Công suất (W)", loai: "so", batBuoc: true, min: 0, max: 10000, apDungCho: "thiet_bi" },
+  {
+    key: "cong_suat",
+    nhan: "Công suất (W)",
+    loai: "so",
+    batBuoc: true,
+    min: 0,
+    max: 10000,
+    apDungCho: "thiet_bi",
+  },
   { key: "ngay_kich_hoat", nhan: "Ngày kích hoạt", loai: "ngay", apDungCho: "thiet_bi" },
-  { key: "chuan", nhan: "Chuẩn", loai: "chon", luaChon: ["ICAO", "ITU", "IEC"], apDungCho: "thiet_bi" },
+  {
+    key: "chuan",
+    nhan: "Chuẩn",
+    loai: "chon",
+    luaChon: ["ICAO", "ITU", "IEC"],
+    apDungCho: "thiet_bi",
+  },
   { key: "co_pin_du_phong", nhan: "Có pin dự phòng", loai: "checkbox", apDungCho: "thiet_bi" },
   { key: "so_giay_phep", nhan: "Số GP", loai: "text", apDungCho: "he_thong" },
 ];

@@ -32,7 +32,12 @@ export function FormPageHeader({
 }: FormPageHeaderProps) {
   return (
     <div className="space-y-2">
-      <Button asChild variant="ghost" size="sm" className="-ml-2 h-8 gap-1 text-muted-foreground hover:text-foreground">
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className="-ml-2 h-8 gap-1 text-muted-foreground hover:text-foreground"
+      >
         <Link to={backTo}>
           <ArrowLeft className="h-4 w-4" /> {backLabel}
         </Link>

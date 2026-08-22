@@ -10,17 +10,20 @@ Standardize the application UI according to Astryx design principles (based on h
 ## Proposed Changes
 
 ### 1. Global Theme Foundation (`src/styles.css`)
+
 - Refactor `:root` and `.dark` variables to use Astryx Stone semantic naming.
 - Ensure all color definitions use `oklch` for consistent luminance across light/dark modes.
 - Fix overlapping background/card colors by increasing surface separation (e.g., using `oklch` lightness steps).
 - Standardize border contrast ratios (minimum 4.5:1 for accessibility where functional).
 
 ### 2. Component Skin Refinement (`src/styles/astryx-component-skins.css`)
+
 - Update `.astryx-card` to use standardized shadows and subtle border-active states.
 - Refine `.astryx-table-row` hover and selection states to avoid text-overlapping visual noise.
 - Fix `.astryx-status-*` tokens to use Astryx-standard status colors (Info Blue, Success Green, Warning Amber, Danger Red).
 
 ### 3. Contrast & Visibility Audit
+
 - Audit `StandardTable.tsx` and `CatalogTable.tsx` to ensure text readability over status-colored backgrounds.
 - Fix "color layering" in the Dashboard (`_app.index.tsx`) where multiple card-like components might be nested.
 

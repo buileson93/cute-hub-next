@@ -84,10 +84,7 @@ export function validateSuCoTimes(input: SuCoTimeInput): SuCoValidationIssue[] {
     });
   }
 
-  if (
-    typeof input.thoi_gian_gian_doan === "number" &&
-    input.thoi_gian_gian_doan < 0
-  ) {
+  if (typeof input.thoi_gian_gian_doan === "number" && input.thoi_gian_gian_doan < 0) {
     issues.push({
       code: "negative_downtime",
       field: "thoi_gian_gian_doan",

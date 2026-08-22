@@ -1,6 +1,13 @@
 import { useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { collections, ROLE_ORDER, roleMeta, tierMeta, permToTier, type Stats } from "./types";
 
@@ -33,7 +40,9 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
         <Table className="border-collapse">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[200px] sticky left-0 bg-background z-20 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">Dữ liệu</TableHead>
+              <TableHead className="w-[200px] sticky left-0 bg-background z-20 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+                Dữ liệu
+              </TableHead>
               {ROLE_ORDER.map((k) => (
                 <TableHead key={k} className="text-center min-w-[80px]">
                   <div className="text-xs font-medium">{roleMeta[k].short}</div>
@@ -59,7 +68,10 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
                     const { tier, dv } = permToTier(c.perms[k]);
                     const m = tierMeta[tier];
                     return (
-                      <TableCell key={k} className="text-center transition-colors group-hover/row:bg-muted/30">
+                      <TableCell
+                        key={k}
+                        className="text-center transition-colors group-hover/row:bg-muted/30"
+                      >
                         <span
                           title={m.label + (dv ? " · giới hạn đơn vị" : "")}
                           className={cn(
@@ -69,7 +81,11 @@ export function PermissionMatrix({ stats }: PermissionMatrixProps) {
                         >
                           <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} />
                           {tier === "none" ? "—" : m.label}
-                          {dv && <span className="rounded bg-background/60 px-1 font-mono text-[8.5px] font-semibold">ĐV</span>}
+                          {dv && (
+                            <span className="rounded bg-background/60 px-1 font-mono text-[8.5px] font-semibold">
+                              ĐV
+                            </span>
+                          )}
                         </span>
                       </TableCell>
                     );

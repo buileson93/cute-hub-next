@@ -76,14 +76,15 @@ export const Route = createFileRoute("/api/chat")({
           `\n- Ưu tiên tool chuyên dụng (search_global, list_thiet_bi, list_table, count_by...).` +
           `\n- Khi JOIN dùng đúng khoá ngoại (FK) ở trên; luôn thêm LIMIT hợp lý.`;
 
-        const writeBlock = canWrite === true
-          ? `\n\n### Ghi dữ liệu (chỉ khi được yêu cầu)` +
-            `\n- Bạn có các tool GHI: add_su_co, add_bao_tri, add_hong_hoc, add_kiem_ke.` +
-            `\n- CHỈ gọi tool ghi khi người dùng yêu cầu rõ ràng tạo/lưu bản ghi. KHÔNG tự ý ghi.` +
-            `\n- Mỗi lần ghi cần người dùng bấm xác nhận (hệ thống tự hỏi). Bạn chỉ chuẩn bị dữ liệu đúng và đủ trường bắt buộc.` +
-            `\n- Với add_kiem_ke phải có id tài sản: dùng list_thiet_bi để tra id trước.` +
-            `\n- Không sửa/xoá dữ liệu, không tạo bảng — chỉ được THÊM qua đúng các tool trên.`
-          : `\n\n### Ghi dữ liệu\n- Bạn KHÔNG có quyền ghi. Nếu người dùng muốn thêm bản ghi, hãy hướng dẫn họ làm trong giao diện.`;
+        const writeBlock =
+          canWrite === true
+            ? `\n\n### Ghi dữ liệu (chỉ khi được yêu cầu)` +
+              `\n- Bạn có các tool GHI: add_su_co, add_bao_tri, add_hong_hoc, add_kiem_ke.` +
+              `\n- CHỈ gọi tool ghi khi người dùng yêu cầu rõ ràng tạo/lưu bản ghi. KHÔNG tự ý ghi.` +
+              `\n- Mỗi lần ghi cần người dùng bấm xác nhận (hệ thống tự hỏi). Bạn chỉ chuẩn bị dữ liệu đúng và đủ trường bắt buộc.` +
+              `\n- Với add_kiem_ke phải có id tài sản: dùng list_thiet_bi để tra id trước.` +
+              `\n- Không sửa/xoá dữ liệu, không tạo bảng — chỉ được THÊM qua đúng các tool trên.`
+            : `\n\n### Ghi dữ liệu\n- Bạn KHÔNG có quyền ghi. Nếu người dùng muốn thêm bản ghi, hãy hướng dẫn họ làm trong giao diện.`;
 
         const systemPrompt = (cfg.system_prompt ?? "") + schemaBlock + writeBlock;
 

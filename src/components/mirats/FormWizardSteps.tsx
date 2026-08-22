@@ -21,12 +21,16 @@ export function FormWizardSteps({ steps, currentStep, className }: FormWizardSte
         {steps.map((step, idx) => {
           const isCompleted = currentStep > step.id;
           const isCurrent = currentStep === step.id;
-          
+
           return (
-            <li key={step.id} className={cn(
-              "relative flex flex-1 flex-col items-center",
-              idx !== steps.length - 1 && "after:content-[''] after:absolute after:top-4 after:left-[50%] after:w-full after:h-[2px] after:bg-muted"
-            )}>
+            <li
+              key={step.id}
+              className={cn(
+                "relative flex flex-1 flex-col items-center",
+                idx !== steps.length - 1 &&
+                  "after:content-[''] after:absolute after:top-4 after:left-[50%] after:w-full after:h-[2px] after:bg-muted",
+              )}
+            >
               <div className="relative z-10 flex h-8 w-8 items-center justify-center">
                 {isCompleted ? (
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
@@ -42,22 +46,26 @@ export function FormWizardSteps({ steps, currentStep, className }: FormWizardSte
                   </div>
                 )}
               </div>
-              
+
               <div className="mt-2 text-center">
-                <span className={cn(
-                  "block text-[10px] font-bold uppercase tracking-wider",
-                  isCurrent ? "text-primary" : "text-muted-foreground"
-                )}>
+                <span
+                  className={cn(
+                    "block text-[10px] font-bold uppercase tracking-wider",
+                    isCurrent ? "text-primary" : "text-muted-foreground",
+                  )}
+                >
                   Bước {step.id}
                 </span>
-                <span className={cn(
-                  "block text-xs font-medium",
-                  isCurrent ? "text-foreground" : "text-muted-foreground"
-                )}>
+                <span
+                  className={cn(
+                    "block text-xs font-medium",
+                    isCurrent ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
                   {step.title}
                 </span>
               </div>
-              
+
               {/* Connector line for completed state */}
               {idx !== steps.length - 1 && isCompleted && (
                 <div className="absolute top-4 left-[50%] h-[2px] w-full bg-primary transition-all duration-300" />

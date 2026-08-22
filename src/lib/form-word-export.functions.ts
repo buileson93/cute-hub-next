@@ -2,7 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { fmtFieldValue } from "@/lib/mirats/bao-tri-form";
-import { compileField, parseCompiledSchema, resolveSubmissionFields } from "@/lib/mirats/form-schema";
+import {
+  compileField,
+  parseCompiledSchema,
+  resolveSubmissionFields,
+} from "@/lib/mirats/form-schema";
 import { buildChecklistWordSections, CHECKLIST_WORD_HEADERS } from "@/lib/mirats/form-word";
 
 const inputSchema = z.object({ submission_id: z.string().uuid() });
@@ -67,7 +71,8 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
         .from("form_check_item")
         .select("item_code, huong_dan")
         .eq("template_id", sub.template_id);
-      for (const d of defs ?? []) huongDanByCode[d.item_code as string] = (d.huong_dan as string) ?? null;
+      for (const d of defs ?? [])
+        huongDanByCode[d.item_code as string] = (d.huong_dan as string) ?? null;
     }
     const checklistSections = buildChecklistWordSections(itemResults ?? [], huongDanByCode);
     const isChecklist = checklistSections.length > 0;
@@ -107,7 +112,6 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
     const cellBorders = { top: border, bottom: border, left: border, right: border };
 
     const fmtVal = fmtFieldValue;
-
 
     const dataObj = (sub.data ?? {}) as Record<string, unknown>;
 
@@ -194,9 +198,7 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
     for (const [i, section] of checklistSections.entries()) {
       checklistBlocks.push(
         new Paragraph({
-          children: [
-            new TextRun({ text: `${i + 1}. ${section.ten}`, bold: true, size: 24 }),
-          ],
+          children: [new TextRun({ text: `${i + 1}. ${section.ten}`, bold: true, size: 24 })],
           spacing: { before: 200, after: 80 },
         }),
         new Table({
@@ -233,7 +235,6 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
         }),
       );
     }
-
 
     const sig = (label: string) =>
       new TableCell({
@@ -276,16 +277,12 @@ export const exportSubmissionToWord = createServerFn({ method: "POST" })
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({ text: "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM", bold: true }),
-              ],
+              children: [new TextRun({ text: "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM", bold: true })],
               spacing: { after: 100 },
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({ text: "Độc lập - Tự do - Hạnh phúc", bold: true }),
-              ],
+              children: [new TextRun({ text: "Độc lập - Tự do - Hạnh phúc", bold: true })],
               spacing: { after: 300 },
             }),
             new Paragraph({

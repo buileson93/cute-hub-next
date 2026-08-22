@@ -21,18 +21,17 @@ interface Props {
  */
 export function PageBody({ children, className, noPadding, density }: Props) {
   return (
-    <div 
+    <div
       data-density={density}
       className={cn(
         "flex w-full flex-col flex-1 overflow-auto bg-background/50",
         TYPO.BODY,
         !noPadding && UI_DENSITY.PAGE_PADDING,
         UI_DENSITY.SECTION_GAP,
-        className
+        className,
       )}
     >
       {children}
     </div>
   );
 }
-

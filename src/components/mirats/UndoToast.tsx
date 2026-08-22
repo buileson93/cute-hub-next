@@ -86,12 +86,7 @@ export function showUndoToast(opts: {
   const seconds = opts.seconds ?? 12;
   toast.custom(
     (id) => (
-      <UndoToastBody
-        toastId={id}
-        message={opts.message}
-        seconds={seconds}
-        onUndo={opts.onUndo}
-      />
+      <UndoToastBody toastId={id} message={opts.message} seconds={seconds} onUndo={opts.onUndo} />
     ),
     { duration: seconds * 1000 },
   );

@@ -14,7 +14,9 @@ if (!sizes.length) {
   process.exit(0);
 }
 const max = Math.max(...sizes);
-console.log(`perf-budget: ${sizes.length} chunks, max ${max.toFixed(1)} KB gzip (limit ${LIMIT_KB} KB)`);
+console.log(
+  `perf-budget: ${sizes.length} chunks, max ${max.toFixed(1)} KB gzip (limit ${LIMIT_KB} KB)`,
+);
 if (max > LIMIT_KB) {
   console.error(`perf-budget: FAIL — chunk exceeds ${LIMIT_KB} KB gzip`);
   process.exit(1);

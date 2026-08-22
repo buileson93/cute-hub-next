@@ -21,10 +21,46 @@ function sample(): CoreGraph {
       { id: "E", ten: "E", don_vi: "DV3", ben_ngoai: true, to_chuc: "Org" },
     ],
     edges: [
-      { id: "e1", nguon: "A", dich: "B", loai: "CAP_QUANG", lop: "vat_ly", huong: "mot_chieu", trang_thai: "hoat_dong", co_huong: true },
-      { id: "e2", nguon: "B", dich: "C", loai: "LUONG_TIN_HIEU", lop: "logic", huong: "hai_chieu", trang_thai: "hoat_dong", hai_chieu: true },
-      { id: "e3", nguon: "C", dich: "D", loai: "CAP_QUANG", lop: "vat_ly", huong: "mot_chieu", trang_thai: "ngung", co_huong: true },
-      { id: "e4", nguon: "A", dich: "E", loai: "CAP_QUANG", lop: "vat_ly", huong: "mot_chieu", trang_thai: "hoat_dong", co_huong: true },
+      {
+        id: "e1",
+        nguon: "A",
+        dich: "B",
+        loai: "CAP_QUANG",
+        lop: "vat_ly",
+        huong: "mot_chieu",
+        trang_thai: "hoat_dong",
+        co_huong: true,
+      },
+      {
+        id: "e2",
+        nguon: "B",
+        dich: "C",
+        loai: "LUONG_TIN_HIEU",
+        lop: "logic",
+        huong: "hai_chieu",
+        trang_thai: "hoat_dong",
+        hai_chieu: true,
+      },
+      {
+        id: "e3",
+        nguon: "C",
+        dich: "D",
+        loai: "CAP_QUANG",
+        lop: "vat_ly",
+        huong: "mot_chieu",
+        trang_thai: "ngung",
+        co_huong: true,
+      },
+      {
+        id: "e4",
+        nguon: "A",
+        dich: "E",
+        loai: "CAP_QUANG",
+        lop: "vat_ly",
+        huong: "mot_chieu",
+        trang_thai: "hoat_dong",
+        co_huong: true,
+      },
     ],
   };
 }
@@ -51,7 +87,17 @@ describe("buildAdjacency", () => {
   it("bỏ qua cạnh trỏ tới node không tồn tại", () => {
     const g: CoreGraph = {
       nodes: [{ id: "A", ten: "A" }],
-      edges: [{ id: "x", nguon: "A", dich: "Z", loai: "X", lop: "vat_ly", huong: "mot_chieu", trang_thai: "hoat_dong" }],
+      edges: [
+        {
+          id: "x",
+          nguon: "A",
+          dich: "Z",
+          loai: "X",
+          lop: "vat_ly",
+          huong: "mot_chieu",
+          trang_thai: "hoat_dong",
+        },
+      ],
     };
     const adj = buildAdjacency(g);
     expect(adj.neighbors.get("A")!.size).toBe(0);

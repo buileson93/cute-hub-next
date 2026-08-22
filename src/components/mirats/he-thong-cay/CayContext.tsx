@@ -34,7 +34,8 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const [display, setDisplayState] = useState<DisplayMode>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("mirats_cay_display");
-      if (saved && ["tree", "table", "mindmap", "health"].includes(saved)) return saved as DisplayMode;
+      if (saved && ["tree", "table", "mindmap", "health"].includes(saved))
+        return saved as DisplayMode;
     }
     return "tree";
   });
@@ -50,7 +51,10 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["root"]));
   const [focus, setFocus] = useState<FocusTarget | null>(null);
-  const [badgeFilter, setBadgeFilter] = useState<BadgeFilter>({ status: new Set(), imp: new Set() });
+  const [badgeFilter, setBadgeFilter] = useState<BadgeFilter>({
+    status: new Set(),
+    imp: new Set(),
+  });
   const [groupMode, setGroupMode] = useState<"phanloai" | "donvi">("phanloai");
   const [groupByLoai, setGroupByLoai] = useState(false);
   const [viewTree, setViewTree] = useState<PlGroup[]>([]);
@@ -60,34 +64,34 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const seededTreeRef = React.useRef<string>("");
   React.useEffect(() => {
     // Generate a fingerprint of the tree structure to detect real data loads
-    const fingerprint = viewTree.map(pl => `${pl.id}:${pl.count}`).join("|");
+    const fingerprint = viewTree.map((pl) => `${pl.id}:${pl.count}`).join("|");
     if (viewTree.length > 0 && seededTreeRef.current !== fingerprint) {
       seededTreeRef.current = fingerprint;
-      
+
       // Auto-expand on search or initial load
       if (searchQuery.trim() !== "") {
-         const allKeys = new Set<string>(["root", "root-stopped"]);
-         const walk = (nodes: any[]) => {
-           nodes.forEach(n => {
-             allKeys.add(n.key || `pl:${n.id}`);
-             if (n.sub) walk(n.sub);
-             if (n.fields) walk(n.fields);
-             if (n.groups) walk(n.groups);
-             if (n.systems) walk(n.systems);
-           });
-         };
-         walk(viewTree);
-         setExpandedNodes(allKeys);
+        const allKeys = new Set<string>(["root", "root-stopped"]);
+        const walk = (nodes: any[]) => {
+          nodes.forEach((n) => {
+            allKeys.add(n.key || `pl:${n.id}`);
+            if (n.sub) walk(n.sub);
+            if (n.fields) walk(n.fields);
+            if (n.groups) walk(n.groups);
+            if (n.systems) walk(n.systems);
+          });
+        };
+        walk(viewTree);
+        setExpandedNodes(allKeys);
       } else {
-        setExpandedNodes(prev => {
+        setExpandedNodes((prev) => {
           const next = new Set(prev);
           next.add("root");
           next.add("root-stopped");
-          viewTree.forEach(pl => {
+          viewTree.forEach((pl) => {
             next.add(`pl:${pl.id}`);
-            pl.fields.forEach(lv => {
+            pl.fields.forEach((lv) => {
               if (lv.id && lv.id !== "all") next.add(`lv:${pl.id}:${lv.id}`);
-              lv.groups.slice(0, 3).forEach(nh => next.add(`nh:${pl.id}:${nh.ma}`));
+              lv.groups.slice(0, 3).forEach((nh) => next.add(`nh:${pl.id}:${nh.ma}`));
             });
           });
           return next;
@@ -108,17 +112,28 @@ export function CayProvider({ children }: { children: ReactNode }) {
   return (
     <CayContext.Provider
       value={{
-        display, setDisplay,
-        editMode, setEditMode,
-        searchQuery, setSearchQuery,
-        expandedNodes, toggleNode,
-        focus, setFocus,
-        badgeFilter, setBadgeFilter,
-        groupMode, setGroupMode,
-        groupByLoai, setGroupByLoai,
-        viewTree, setViewTree,
-        reorgOpen, setReorgOpen,
-        groupCode, setGroupCode,
+        display,
+        setDisplay,
+        editMode,
+        setEditMode,
+        searchQuery,
+        setSearchQuery,
+        expandedNodes,
+        toggleNode,
+        focus,
+        setFocus,
+        badgeFilter,
+        setBadgeFilter,
+        groupMode,
+        setGroupMode,
+        groupByLoai,
+        setGroupByLoai,
+        viewTree,
+        setViewTree,
+        reorgOpen,
+        setReorgOpen,
+        groupCode,
+        setGroupCode,
       }}
     >
       {children}

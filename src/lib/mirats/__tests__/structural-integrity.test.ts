@@ -30,14 +30,14 @@ const EXEMPTED_ORPHANS = [
   "AuditLogViewer.tsx",
   "DistributionStats.tsx",
   "RoleOverview.tsx",
-  "PermissionMatrix.tsx"
+  "PermissionMatrix.tsx",
 ];
 
 function getFilesRecursively(dir: string): string[] {
   let results: string[] = [];
   if (!fs.existsSync(dir)) return results;
   const list = fs.readdirSync(dir);
-  list.forEach(file => {
+  list.forEach((file) => {
     const fullPath = path.join(dir, file);
     const stat = fs.statSync(fullPath);
     if (stat && stat.isDirectory()) {
@@ -52,24 +52,48 @@ function getFilesRecursively(dir: string): string[] {
 describe("MIRATS Integrity Guard - Automated Audit", () => {
   describe("A. Giao diện lắp sai (Tabs Mismatch)", () => {
     const allTsx = getFilesRecursively(ROUTES_DIR).concat(getFilesRecursively(COMPONENTS_DIR));
-    
-    allTsx.forEach(file => {
+
+    allTsx.forEach((file) => {
       it(`kiểm tra Tabs trong ${path.relative(PROJECT_ROOT, file)}`, () => {
         const content = fs.readFileSync(file, "utf-8");
-        
+
         // 1. Kiểm tra lồng nhau
-        const nestingMatch = content.match(/<TabsContent[^>]*>(?:(?!<\/TabsContent>)[\s\S])*?<TabsContent[^>]*>/g);
+        const nestingMatch = content.match(
+          /<TabsContent[^>]*>(?:(?!<\/TabsContent>)[\s\S])*?<TabsContent[^>]*>/g,
+        );
         expect(nestingMatch || [], `Phát hiện TabsContent lồng nhau trong ${file}`).toHaveLength(0);
 
         // 2. Kiểm tra khớp value (Chỉ kiểm tra khi cả trigger và content nằm trong cùng file)
-        const triggerValues = Array.from(content.matchAll(/TabsTrigger[^>]*value="([^"]+)"/g)).map(m => m[1]);
-        const contentValues = Array.from(content.matchAll(/TabsContent[^>]*value="([^"]+)"/g)).map(m => m[1]);
-        
+        const triggerValues = Array.from(content.matchAll(/TabsTrigger[^>]*value="([^"]+)"/g)).map(
+          (m) => m[1],
+        );
+        const contentValues = Array.from(content.matchAll(/TabsContent[^>]*value="([^"]+)"/g)).map(
+          (m) => m[1],
+        );
+
         if (triggerValues.length > 0 && contentValues.length > 0) {
-          triggerValues.forEach(val => {
+          triggerValues.forEach((val) => {
             // Bỏ qua các giá trị navigation logic phổ biến
-            if (["table", "tree", "all", "current", "history", "mindmap", "health", "system", "component", "position", "asset"].includes(val)) return;
-            expect(contentValues, `TabsTrigger '${val}' không có TabsContent tương ứng trong ${file}`).toContain(val);
+            if (
+              [
+                "table",
+                "tree",
+                "all",
+                "current",
+                "history",
+                "mindmap",
+                "health",
+                "system",
+                "component",
+                "position",
+                "asset",
+              ].includes(val)
+            )
+              return;
+            expect(
+              contentValues,
+              `TabsTrigger '${val}' không có TabsContent tương ứng trong ${file}`,
+            ).toContain(val);
           });
         }
       });
@@ -80,27 +104,35 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
     it("quét các component mồ côi trong src/components/mirats", { timeout: 30000 }, () => {
       const allComponents = getFilesRecursively(COMPONENTS_DIR);
       const allFiles = getFilesRecursively(path.join(PROJECT_ROOT, "src"));
-      
+
       const orphans: string[] = [];
-      allComponents.forEach(comp => {
+      allComponents.forEach((comp) => {
         const fileName = path.basename(comp);
         const baseName = fileName.replace(".tsx", "").replace(".ts", "");
-        if (baseName === "index" || baseName.includes(".test") || EXEMPTED_ORPHANS.includes(fileName)) return;
-        
+        if (
+          baseName === "index" ||
+          baseName.includes(".test") ||
+          EXEMPTED_ORPHANS.includes(fileName)
+        )
+          return;
+
         let isImported = false;
-        allFiles.forEach(file => {
+        allFiles.forEach((file) => {
           if (file === comp) return;
           const content = fs.readFileSync(file, "utf-8");
-          const importPattern = new RegExp(`import\\s+.*${baseName}`, 'g');
+          const importPattern = new RegExp(`import\\s+.*${baseName}`, "g");
           if (importPattern.test(content) || content.includes(`<${baseName}`)) {
             isImported = true;
           }
         });
-        
+
         if (!isImported) orphans.push(comp);
       });
-      
-      expect(orphans, `Phát hiện các component mồ côi: ${orphans.map(o => path.relative(PROJECT_ROOT, o))}`).toHaveLength(0);
+
+      expect(
+        orphans,
+        `Phát hiện các component mồ côi: ${orphans.map((o) => path.relative(PROJECT_ROOT, o))}`,
+      ).toHaveLength(0);
     });
   });
 
@@ -109,7 +141,10 @@ describe("MIRATS Integrity Guard - Automated Audit", () => {
       const routePath = path.join(ROUTES_DIR, "_app.he-thong.cay.tsx");
       const content = fs.readFileSync(routePath, "utf-8");
       // Kiểm tra xem reorgOpen có được truyền vào CayThayDoiPanel không
-      expect(content.includes("open={reorgOpen}"), "State 'reorgOpen' được khai báo nhưng chưa truyền vào CayThayDoiPanel hoặc component tương đương.").toBe(true);
+      expect(
+        content.includes("open={reorgOpen}"),
+        "State 'reorgOpen' được khai báo nhưng chưa truyền vào CayThayDoiPanel hoặc component tương đương.",
+      ).toBe(true);
     });
   });
 });

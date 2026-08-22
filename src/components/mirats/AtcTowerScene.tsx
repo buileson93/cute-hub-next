@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useReducedMotion } from "motion/react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+} from "motion/react";
 import towerAsset from "@/assets/atc-tower-phucat.jpg.asset.json";
 import jetAsset from "@/assets/fighter-jet.png.asset.json";
 import twrInteriorAsset from "@/assets/twr-interior.jpg.asset.json";
 
-
 const towerPhoto = towerAsset.url;
 const jetPhoto = jetAsset.url;
 const twrInteriorPhoto = twrInteriorAsset.url;
-
-
 
 const INFO_LINES = [
   "▸ Đài KSKL Phù Cát — VATM / QLB miền Trung.",
@@ -23,12 +27,23 @@ const INFO_TEXT = INFO_LINES.join("\n");
 
 const FLIGHT_ZONE = { x: 50, y: 62, width: 50, height: 20 } as const;
 const JET_TRACKS = [
-  { start: { x: -20, y: 90 }, end: { x: 120, y: 20 }, delay: 0, size: "28%", opacity: 0.95, dur: 10.8 },
-  { start: { x: -20, y: 70 }, end: { x: 120, y: 6 }, delay: 4.5, size: "23.4%", opacity: 0.85, dur: 12 },
+  {
+    start: { x: -20, y: 90 },
+    end: { x: 120, y: 20 },
+    delay: 0,
+    size: "28%",
+    opacity: 0.95,
+    dur: 10.8,
+  },
+  {
+    start: { x: -20, y: 70 },
+    end: { x: 120, y: 6 },
+    delay: 4.5,
+    size: "23.4%",
+    opacity: 0.85,
+    dur: 12,
+  },
 ] as const;
-
-
-
 
 /**
  * Photorealistic ATC scene with cinematic overlays.
@@ -51,9 +66,6 @@ export function AtcTowerScene() {
     setMounted(true);
   }, []);
 
-
-
-
   useEffect(() => {
     if (!peek) {
       setTyped(0);
@@ -61,14 +73,16 @@ export function AtcTowerScene() {
     }
     let i = 0;
     setTyped(0);
-    const id = window.setInterval(() => {
-      i += 1;
-      setTyped(i);
-      if (i >= INFO_TEXT.length) window.clearInterval(id);
-    }, (() => 24)());
+    const id = window.setInterval(
+      () => {
+        i += 1;
+        setTyped(i);
+        if (i >= INFO_TEXT.length) window.clearInterval(id);
+      },
+      (() => 24)(),
+    );
     return () => window.clearInterval(id);
   }, [peek]);
-
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -80,7 +94,6 @@ export function AtcTowerScene() {
   const photoY = useTransform(sy, (v) => v * -12);
   const photoScale = useTransform(sy, (v) => 1.08 + Math.abs(v) * 0.01);
   const cloudX = useTransform(sx, (v) => v * -30);
-  
 
   useEffect(() => {
     const el = ref.current;
@@ -116,7 +129,7 @@ export function AtcTowerScene() {
     const tick = () => {
       const d = new Date();
       setTime(
-        `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}:${String(d.getUTCSeconds()).padStart(2, "0")}Z`
+        `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}:${String(d.getUTCSeconds()).padStart(2, "0")}Z`,
       );
     };
     tick();
@@ -133,10 +146,7 @@ export function AtcTowerScene() {
       aria-hidden
     >
       {/* Base photograph with Ken-Burns parallax + subtle hover zoom */}
-      <motion.div
-        className="absolute inset-0"
-        style={{ x: photoX, y: photoY, scale: photoScale }}
-      >
+      <motion.div className="absolute inset-0" style={{ x: photoX, y: photoY, scale: photoScale }}>
         <motion.div
           className="absolute inset-0"
           animate={{ scale: peek ? 1.08 : 1 }}
@@ -211,7 +221,6 @@ export function AtcTowerScene() {
         )}
       </AnimatePresence>
 
-
       {/* Info card with multi-line typewriter reveal */}
       <AnimatePresence>
         {peek && (
@@ -242,10 +251,6 @@ export function AtcTowerScene() {
           </motion.div>
         )}
       </AnimatePresence>
-
-
-
-
 
       {!reduce && (
         <motion.div
@@ -283,10 +288,7 @@ export function AtcTowerScene() {
 
       {/* Drifting cloud haze */}
       {!reduce && (
-        <motion.div
-          className="pointer-events-none absolute inset-0"
-          style={{ x: cloudX }}
-        >
+        <motion.div className="pointer-events-none absolute inset-0" style={{ x: cloudX }}>
           <motion.div
             className="absolute h-24 w-[60%] rounded-full bg-white/10 blur-3xl"
             style={{ top: "22%", left: "-20%" }}
@@ -373,18 +375,11 @@ export function AtcTowerScene() {
                     delay: j.delay * 0.3,
                   }}
                 />
-
               </div>
             </motion.div>
           ))}
         </div>
       )}
-
-
-
-
-
-
 
       {/* Runway strobe (subtle) */}
       {!reduce && (
@@ -414,8 +409,7 @@ export function AtcTowerScene() {
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay"
         style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.7) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.7) 1px, transparent 1px)",
           backgroundSize: "3px 3px",
         }}
       />
@@ -440,7 +434,6 @@ export function AtcTowerScene() {
       {/* HUD — ATM (Air Traffic Management) system monitor */}
       <AtmMonitor time={time} reduce={!!reduce} />
 
-
       {/* Caption */}
       <div className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 px-8 text-center">
         <div className="flex items-center gap-2 rounded-full border border-white/25 bg-black/35 px-3 py-1 backdrop-blur">
@@ -453,9 +446,7 @@ export function AtcTowerScene() {
           Bầu trời an toàn — Vận hành liền mạch
         </p>
       </div>
-
     </div>
-
   );
 }
 
@@ -467,10 +458,10 @@ export function AtcTowerScene() {
 function AtmMonitor({ time, reduce }: { time: string; reduce: boolean }) {
   // Các hướng bay khác nhau (Đông–Tây, Bắc–Nam, xuyên chéo) — mực bay tách biệt tránh xung đột.
   const blips = [
-    { id: "HVN213", fl: "350", from: [-44, -28], to: [40, 18],  dur: 26 },
-    { id: "VJC142", fl: "290", from: [38, -34],  to: [-42, 22], dur: 30 },
-    { id: "BAV611", fl: "380", from: [-40, 30],  to: [36, -26], dur: 28 },
-    { id: "QH1521", fl: "240", from: [42, 32],   to: [-42, -8], dur: 32 },
+    { id: "HVN213", fl: "350", from: [-44, -28], to: [40, 18], dur: 26 },
+    { id: "VJC142", fl: "290", from: [38, -34], to: [-42, 22], dur: 30 },
+    { id: "BAV611", fl: "380", from: [-40, 30], to: [36, -26], dur: 28 },
+    { id: "QH1521", fl: "240", from: [42, 32], to: [-42, -8], dur: 32 },
   ];
 
   return (
@@ -496,8 +487,22 @@ function AtmMonitor({ time, reduce }: { time: string; reduce: boolean }) {
           ))}
           <line x1="-46" y1="0" x2="46" y2="0" stroke="rgba(255,190,110,0.16)" strokeWidth="0.3" />
           <line x1="0" y1="-46" x2="0" y2="46" stroke="rgba(255,190,110,0.16)" strokeWidth="0.3" />
-          <line x1="-33" y1="-33" x2="33" y2="33" stroke="rgba(255,190,110,0.1)" strokeWidth="0.25" />
-          <line x1="-33" y1="33" x2="33" y2="-33" stroke="rgba(255,190,110,0.1)" strokeWidth="0.25" />
+          <line
+            x1="-33"
+            y1="-33"
+            x2="33"
+            y2="33"
+            stroke="rgba(255,190,110,0.1)"
+            strokeWidth="0.25"
+          />
+          <line
+            x1="-33"
+            y1="33"
+            x2="33"
+            y2="-33"
+            stroke="rgba(255,190,110,0.1)"
+            strokeWidth="0.25"
+          />
           {["N", "E", "S", "W"].map((d, i) => {
             const a = (i * Math.PI) / 2 - Math.PI / 2;
             const x = Math.cos(a) * 42;
@@ -566,7 +571,9 @@ function AtmMonitor({ time, reduce }: { time: string; reduce: boolean }) {
                 />
                 <motion.div
                   className="h-2 w-2 rounded-full bg-emerald-400 ring-1 ring-emerald-200/80"
-                  style={{ boxShadow: "0 0 10px rgba(74,222,128,1), 0 0 18px rgba(74,222,128,0.7)" }}
+                  style={{
+                    boxShadow: "0 0 10px rgba(74,222,128,1), 0 0 18px rgba(74,222,128,0.7)",
+                  }}
                   animate={reduce ? undefined : { scale: [1, 1.35, 1], opacity: [1, 0.75, 1] }}
                   transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
                 />
@@ -590,7 +597,9 @@ function AtmMonitor({ time, reduce }: { time: string; reduce: boolean }) {
       </div>
 
       <div className="mt-2 flex items-center justify-between px-1 text-[9px] uppercase tracking-[0.22em] text-amber-100/75">
-        <span>Trk · <span className="text-white">04</span></span>
+        <span>
+          Trk · <span className="text-white">04</span>
+        </span>
         <span className="text-emerald-300/90">Link · OK</span>
       </div>
     </div>

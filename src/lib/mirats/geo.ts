@@ -17,9 +17,7 @@ export type GpsError =
   | "het-gio"; // quá thời gian chờ
 
 /** Trạng thái quyền GPS hiện tại (nếu trình duyệt hỗ trợ Permissions API). */
-export async function trangThaiQuyenGps(): Promise<
-  "granted" | "denied" | "prompt" | "khong-ro"
-> {
+export async function trangThaiQuyenGps(): Promise<"granted" | "denied" | "prompt" | "khong-ro"> {
   try {
     if (!("permissions" in navigator)) return "khong-ro";
     const st = await navigator.permissions.query({
@@ -51,9 +49,7 @@ export function layViTriGps(opts?: {
         resolve({
           vi_do: pos.coords.latitude,
           kinh_do: pos.coords.longitude,
-          do_chinh_xac: Number.isFinite(pos.coords.accuracy)
-            ? pos.coords.accuracy
-            : null,
+          do_chinh_xac: Number.isFinite(pos.coords.accuracy) ? pos.coords.accuracy : null,
           chup_luc: new Date(pos.timestamp || Date.now()).toISOString(),
         });
       },

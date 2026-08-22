@@ -20,7 +20,12 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
-import { compileField, compileSchema, type CompiledField, type RawFieldRow } from "@/lib/mirats/form-schema";
+import {
+  compileField,
+  compileSchema,
+  type CompiledField,
+  type RawFieldRow,
+} from "@/lib/mirats/form-schema";
 import { evalVisible } from "@/lib/mirats/form-visibility";
 import { validateForm } from "@/lib/mirats/form-visibility";
 import { FormFieldRuntime, useGridRows } from "@/components/mirats/FormFieldRuntime";
@@ -64,11 +69,16 @@ function NewSubmission() {
       const { data: t, error } = await supabase
         .from("form_template")
         .select("id,code,ten,mo_ta,thiet_bi_mode,require_signature,version")
-        .eq("code", code).eq("active", true).maybeSingle();
+        .eq("code", code)
+        .eq("active", true)
+        .maybeSingle();
       if (error) throw error;
       if (!t) throw new Error("Không tìm thấy mẫu");
       const { data: f, error: fe } = await supabase
-        .from("form_field").select("*").eq("template_id", t.id).order("position");
+        .from("form_field")
+        .select("*")
+        .eq("template_id", t.id)
+        .order("position");
       if (fe) throw fe;
       const fields = ((f ?? []) as RawFieldRow[]).map((row, i) => compileField(row, i));
       return { t, fields };
@@ -89,8 +99,11 @@ function NewSubmission() {
     queryKey: ["my-don-vi", profile?.don_vi],
     enabled: !!profile?.don_vi,
     queryFn: async () => {
-      const { data } = await supabase.from("dm_don_vi").select("id,ma,ten")
-        .eq("ma", profile!.don_vi!).maybeSingle();
+      const { data } = await supabase
+        .from("dm_don_vi")
+        .select("id,ma,ten")
+        .eq("ma", profile!.don_vi!)
+        .maybeSingle();
       return data;
     },
   });
@@ -99,9 +112,13 @@ function NewSubmission() {
     queryKey: ["thiet-bi-picker", tbSearch],
     enabled: !!session && template?.t.thiet_bi_mode !== "none",
     queryFn: async () => {
-      let q = supabase.from("thiet_bi").select("id,ma_thiet_bi,ten_thiet_bi,ma_serial,he_thong_id")
-        .order("ma_thiet_bi").limit(50);
-      if (tbSearch.trim()) q = q.or(`ma_thiet_bi.ilike.%${tbSearch}%,ten_thiet_bi.ilike.%${tbSearch}%`);
+      let q = supabase
+        .from("thiet_bi")
+        .select("id,ma_thiet_bi,ten_thiet_bi,ma_serial,he_thong_id")
+        .order("ma_thiet_bi")
+        .limit(50);
+      if (tbSearch.trim())
+        q = q.or(`ma_thiet_bi.ilike.%${tbSearch}%,ten_thiet_bi.ilike.%${tbSearch}%`);
       const { data } = await q;
       return data ?? [];
     },
@@ -125,9 +142,7 @@ function NewSubmission() {
     queryKey: ["he-thong-picker", heThongSearch, templateHeThongIds?.join(",") ?? ""],
     enabled: !!session,
     queryFn: async () => {
-      let q = supabase.from("dm_he_thong")
-        .select("id,ma,ten,don_vi_id")
-        .order("ma").limit(50);
+      let q = supabase.from("dm_he_thong").select("id,ma,ten,don_vi_id").order("ma").limit(50);
       if (templateHeThongIds && templateHeThongIds.length > 0) {
         q = q.in("id", templateHeThongIds);
       }
@@ -152,7 +167,8 @@ function NewSubmission() {
   }, [thietBiList, selectedTb]);
   const effectiveHeThongId = heThongTouched ? heThongId : (heThongId ?? derivedHt);
   const heThongInfo = useMemo(
-    () => (effectiveHeThongId ? heThongList?.find((h) => h.id === effectiveHeThongId) ?? null : null),
+    () =>
+      effectiveHeThongId ? (heThongList?.find((h) => h.id === effectiveHeThongId) ?? null) : null,
     [heThongList, effectiveHeThongId],
   );
 
@@ -185,7 +201,6 @@ function NewSubmission() {
           throw new Error("Cần chọn ít nhất 1 tài sản");
       }
 
-
       // Upload chữ ký (dataURL -> PNG). Hỗ trợ cả single & multi-signer.
       const finalValues: Record<string, unknown> = { ...values };
       const allSignatures: Array<SignatureSlot & { field_key: string; field_label: string }> = [];
@@ -207,11 +222,14 @@ function NewSubmission() {
                 });
                 saved = { ...s, data_url: att.path };
               } catch (e) {
-                throw new Error(`Không lưu được chữ ký "${s.label}" (${f.label}): ${(e as Error).message}`);
+                throw new Error(
+                  `Không lưu được chữ ký "${s.label}" (${f.label}): ${(e as Error).message}`,
+                );
               }
             }
             out.push(saved);
-            if (saved.signed_at) allSignatures.push({ ...saved, field_key: f.key, field_label: f.label });
+            if (saved.signed_at)
+              allSignatures.push({ ...saved, field_key: f.key, field_label: f.label });
           }
           finalValues[f.key] = out;
           continue;
@@ -226,11 +244,14 @@ function NewSubmission() {
             });
             finalValues[f.key] = att satisfies FormAttachment;
             allSignatures.push({
-              key: f.key, label: f.label, data_url: att.path,
+              key: f.key,
+              label: f.label,
+              data_url: att.path,
               signer_id: session.user.id,
               signer_name: profile?.ho_ten ?? session.user.email ?? null,
               signed_at: new Date().toISOString(),
-              field_key: f.key, field_label: f.label,
+              field_key: f.key,
+              field_label: f.label,
             });
           } catch (e) {
             throw new Error(`Không lưu được chữ ký "${f.label}": ${(e as Error).message}`);
@@ -243,24 +264,28 @@ function NewSubmission() {
 
       // Snapshot cấu trúc mẫu tại thời điểm lập phiếu.
       const snapshot = compileSchema(template.t, template.fields);
-      const { data: ins, error } = await supabase.from("form_submission").insert({
-        template_id: template.t.id,
-        template_code: template.t.code,
-        template_version: template.t.version,
-        template_snapshot: snapshot as never,
-        don_vi_id: donVi?.id ?? null,
-        created_by: session.user.id,
-        status,
-        data: finalValues as never,
-        signatures: allSignatures as never,
-        tieu_de: tieuDe.trim() || template.t.ten,
-        ky_bao_cao: kyBaoCao.trim() || null,
-        thiet_bi_id: template.t.thiet_bi_mode === "single" && selectedTb[0] ? selectedTb[0] : null,
-        he_thong_id: effectiveHeThongId ?? null,
-        submitted_at: status === "submitted" ? new Date().toISOString() : null,
-      }).select("id").single();
+      const { data: ins, error } = await supabase
+        .from("form_submission")
+        .insert({
+          template_id: template.t.id,
+          template_code: template.t.code,
+          template_version: template.t.version,
+          template_snapshot: snapshot as never,
+          don_vi_id: donVi?.id ?? null,
+          created_by: session.user.id,
+          status,
+          data: finalValues as never,
+          signatures: allSignatures as never,
+          tieu_de: tieuDe.trim() || template.t.ten,
+          ky_bao_cao: kyBaoCao.trim() || null,
+          thiet_bi_id:
+            template.t.thiet_bi_mode === "single" && selectedTb[0] ? selectedTb[0] : null,
+          he_thong_id: effectiveHeThongId ?? null,
+          submitted_at: status === "submitted" ? new Date().toISOString() : null,
+        })
+        .select("id")
+        .single();
       if (error) throw error;
-
 
       if (template.t.thiet_bi_mode === "multi" && selectedTb.length > 0) {
         const arr = selectedTb.map((tid) => ({ submission_id: ins.id, thiet_bi_id: tid }));
@@ -293,14 +318,21 @@ function NewSubmission() {
   });
 
   if (loading || !template) {
-    return <div className="flex h-96 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
   }
   const { t } = template;
 
   return (
     <div className="astryx-surface mx-auto max-w-5xl px-6 py-8 lg:px-12 mt-4">
       <Button asChild variant="ghost" size="sm" className="astryx-control mb-4">
-        <Link to="/forms"><ArrowLeft className="mr-2 h-4 w-4" />Quay lại</Link>
+        <Link to="/forms">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Quay lại
+        </Link>
       </Button>
 
       <div className="mb-8">
@@ -310,12 +342,23 @@ function NewSubmission() {
       </div>
 
       <Card className="astryx-card mb-4">
-        <CardHeader><CardTitle className="astryx-heading-3">Thông tin chung</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="astryx-heading-3">Thông tin chung</CardTitle>
+        </CardHeader>
         <CardContent className="astryx-text-body grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div><Label>Tiêu đề biên bản</Label>
-            <Input value={tieuDe} onChange={(e) => setTieuDe(e.target.value)} maxLength={200} placeholder={t.ten} /></div>
-          <div><Label>Kỳ báo cáo (VD: Q1/2026)</Label>
-            <Input value={kyBaoCao} onChange={(e) => setKyBaoCao(e.target.value)} maxLength={40} /></div>
+          <div>
+            <Label>Tiêu đề biên bản</Label>
+            <Input
+              value={tieuDe}
+              onChange={(e) => setTieuDe(e.target.value)}
+              maxLength={200}
+              placeholder={t.ten}
+            />
+          </div>
+          <div>
+            <Label>Kỳ báo cáo (VD: Q1/2026)</Label>
+            <Input value={kyBaoCao} onChange={(e) => setKyBaoCao(e.target.value)} maxLength={40} />
+          </div>
           {profile?.don_vi && (
             <div className="text-xs text-muted-foreground md:col-span-2">
               Đơn vị: <Badge variant="outline">{profile.don_vi}</Badge>
@@ -326,28 +369,48 @@ function NewSubmission() {
 
       {t.thiet_bi_mode !== "none" && (
         <Card className="astryx-card mb-4">
-          <CardHeader><CardTitle className="astryx-heading-3">
-            Tài sản liên quan ({t.thiet_bi_mode === "single" ? "chọn 1" : "chọn nhiều"})
-          </CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="astryx-heading-3">
+              Tài sản liên quan ({t.thiet_bi_mode === "single" ? "chọn 1" : "chọn nhiều"})
+            </CardTitle>
+          </CardHeader>
           <CardContent className="astryx-text-body space-y-2">
-
-            <Input placeholder="Tìm mã hoặc tên tài sản…" value={tbSearch} onChange={(e) => setTbSearch(e.target.value)} />
+            <Input
+              placeholder="Tìm mã hoặc tên tài sản…"
+              value={tbSearch}
+              onChange={(e) => setTbSearch(e.target.value)}
+            />
             <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
               {(thietBiList ?? []).map((tb) => {
                 const on = selectedTb.includes(tb.id);
                 return (
-                  <button type="button" key={tb.id}
+                  <button
+                    type="button"
+                    key={tb.id}
                     onClick={() => {
                       if (t.thiet_bi_mode === "single") setSelectedTb([tb.id]);
-                      else setSelectedTb(on ? selectedTb.filter((x) => x !== tb.id) : [...selectedTb, tb.id]);
+                      else
+                        setSelectedTb(
+                          on ? selectedTb.filter((x) => x !== tb.id) : [...selectedTb, tb.id],
+                        );
                     }}
-                    className={`flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition ${on ? "bg-primary/10 text-primary" : "hover:bg-accent"}`}>
-                    <span><span className="font-mono text-xs">{tb.ma_thiet_bi}</span> — {tb.ten_thiet_bi}</span>
-                    {on && <Badge variant="outline" className="text-[10px]">Đã chọn</Badge>}
+                    className={`flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition ${on ? "bg-primary/10 text-primary" : "hover:bg-accent"}`}
+                  >
+                    <span>
+                      <span className="font-mono text-xs">{tb.ma_thiet_bi}</span> —{" "}
+                      {tb.ten_thiet_bi}
+                    </span>
+                    {on && (
+                      <Badge variant="outline" className="text-[10px]">
+                        Đã chọn
+                      </Badge>
+                    )}
                   </button>
                 );
               })}
-              {(thietBiList ?? []).length === 0 && <p className="p-2 text-xs text-muted-foreground">Không có tài sản.</p>}
+              {(thietBiList ?? []).length === 0 && (
+                <p className="p-2 text-xs text-muted-foreground">Không có tài sản.</p>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">Đã chọn: {selectedTb.length}</p>
           </CardContent>
@@ -359,7 +422,6 @@ function NewSubmission() {
           <CardTitle className="astryx-heading-3">Hệ thống liên kết</CardTitle>
         </CardHeader>
         <CardContent className="astryx-text-body space-y-2">
-
           <p className="text-xs text-muted-foreground">
             Biên bản sẽ được lưu vào Sổ lý lịch của hệ thống này để phục vụ đánh giá về sau.
             {derivedHt && !heThongTouched && (
@@ -372,22 +434,43 @@ function NewSubmission() {
                 <span className="font-mono text-xs text-muted-foreground">{heThongInfo.ma}</span>
                 <span className="ml-2 font-medium">{heThongInfo.ten}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => { setHeThongId(null); setHeThongTouched(true); }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setHeThongId(null);
+                  setHeThongTouched(true);
+                }}
+              >
                 Đổi
               </Button>
             </div>
           ) : (
             <>
-              <Input placeholder="Tìm mã hoặc tên hệ thống…" value={heThongSearch} onChange={(e) => setHeThongSearch(e.target.value)} />
+              <Input
+                placeholder="Tìm mã hoặc tên hệ thống…"
+                value={heThongSearch}
+                onChange={(e) => setHeThongSearch(e.target.value)}
+              />
               <div className="max-h-56 space-y-1 overflow-auto rounded border p-2">
                 {(heThongList ?? []).map((h) => (
-                  <button type="button" key={h.id}
-                    onClick={() => { setHeThongId(h.id); setHeThongTouched(true); }}
-                    className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition hover:bg-secondary">
-                    <span><span className="font-mono text-xs">{h.ma}</span> — {h.ten}</span>
+                  <button
+                    type="button"
+                    key={h.id}
+                    onClick={() => {
+                      setHeThongId(h.id);
+                      setHeThongTouched(true);
+                    }}
+                    className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition hover:bg-secondary"
+                  >
+                    <span>
+                      <span className="font-mono text-xs">{h.ma}</span> — {h.ten}
+                    </span>
                   </button>
                 ))}
-                {(heThongList ?? []).length === 0 && <p className="p-2 text-xs text-muted-foreground">Không có hệ thống phù hợp.</p>}
+                {(heThongList ?? []).length === 0 && (
+                  <p className="p-2 text-xs text-muted-foreground">Không có hệ thống phù hợp.</p>
+                )}
               </div>
             </>
           )}
@@ -395,7 +478,9 @@ function NewSubmission() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Nội dung biên bản</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-base">Nội dung biên bản</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-4">
           {rows.length === 0 && !isChecklist && (
             <p className="text-sm text-muted-foreground">Mẫu này chưa có trường dữ liệu.</p>
@@ -406,7 +491,12 @@ function NewSubmission() {
                 const forceFull = ["heading", "divider", "note", "table"].includes(f.kind);
                 const span = forceFull ? 3 : Math.max(1, Math.min(3, f.col_span || 3));
                 return (
-                  <div key={f.key} className={span === 3 ? "md:col-span-3" : span === 2 ? "md:col-span-2" : "md:col-span-1"}>
+                  <div
+                    key={f.key}
+                    className={
+                      span === 3 ? "md:col-span-3" : span === 2 ? "md:col-span-2" : "md:col-span-1"
+                    }
+                  >
                     <FormFieldRuntime
                       field={f}
                       value={values[f.key]}
@@ -415,7 +505,9 @@ function NewSubmission() {
                       templateCode={t.code}
                       draftId={draftIdRef.current}
                       attachments={attachments[f.key] ?? []}
-                      onAttachmentsChange={(a) => setAttachments((prev) => ({ ...prev, [f.key]: a }))}
+                      onAttachmentsChange={(a) =>
+                        setAttachments((prev) => ({ ...prev, [f.key]: a }))
+                      }
                     />
                   </div>
                 );
@@ -438,10 +530,15 @@ function NewSubmission() {
 
       <div className="sticky bottom-4 mt-6 flex justify-end gap-2">
         <Button variant="outline" onClick={() => saveM.mutate("draft")} disabled={saveM.isPending}>
-          <Save className="mr-2 h-4 w-4" />Lưu nháp
+          <Save className="mr-2 h-4 w-4" />
+          Lưu nháp
         </Button>
         <Button onClick={() => saveM.mutate("submitted")} disabled={saveM.isPending}>
-          {saveM.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+          {saveM.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="mr-2 h-4 w-4" />
+          )}
           Gửi biên bản
         </Button>
       </div>

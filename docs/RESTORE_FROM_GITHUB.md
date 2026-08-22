@@ -3,6 +3,7 @@
 Guide này đúc kết từ lần import thật (113 bảng, ~10.800 dòng) — làm theo đúng thứ tự sẽ tránh được toàn bộ lỗi đã gặp.
 
 Gồm 2 phần:
+
 - **Phần A — Build source code** (clone → chạy được dev server): ~5 phút
 - **Phần B — Khôi phục database** (schema + dữ liệu + tài khoản): ~10 phút
 
@@ -84,7 +85,6 @@ bun run build         # build production, không chỉ build:dev
 ```bash
 bash scripts/restore/restore-all.sh
 ```
-
 
 Script làm tuần tự các bước 2→7 bên dưới và in báo cáo cuối. Nếu muốn hiểu/chạy từng bước, đọc tiếp.
 
@@ -189,23 +189,24 @@ Sau đó regenerate types Supabase (tool `supabase--migration` chạy xong sẽ 
 
 ## Checklist lỗi thường gặp
 
-| Triệu chứng | Nguyên nhân | Fix |
-|---|---|---|
-| `permission denied for schema public` | không phải superuser | dùng `__restore_exec` (bước 1) |
-| `text search dictionary "public.unaccent" does not exist` | thiếu dictionary | bước 2 |
-| `violates foreign key constraint` khi COPY | thứ tự bảng | multi-pass (bước 4) |
-| `new row violates row-level security` | RLS bật | `BYPASSRLS` trong bước 4 |
-| typecheck báo thiếu bảng/cột | dump cũ hơn code | bước 5 |
-| duplicate key khi tạo bản ghi mới | sequence chưa sync | bước 6 |
-| Router: duplicate path `/` | index placeholder | bước 8 |
-| Login OK nhưng không vào được app | thiếu `profiles`/`user_roles` | `create-admin.py` |
-| Bảng đọc được bằng psql nhưng app báo permission | thiếu `GRANT` cho `authenticated` | `node scripts/apply-grants.mjs` |
+| Triệu chứng                                               | Nguyên nhân                       | Fix                             |
+| --------------------------------------------------------- | --------------------------------- | ------------------------------- |
+| `permission denied for schema public`                     | không phải superuser              | dùng `__restore_exec` (bước 1)  |
+| `text search dictionary "public.unaccent" does not exist` | thiếu dictionary                  | bước 2                          |
+| `violates foreign key constraint` khi COPY                | thứ tự bảng                       | multi-pass (bước 4)             |
+| `new row violates row-level security`                     | RLS bật                           | `BYPASSRLS` trong bước 4        |
+| typecheck báo thiếu bảng/cột                              | dump cũ hơn code                  | bước 5                          |
+| duplicate key khi tạo bản ghi mới                         | sequence chưa sync                | bước 6                          |
+| Router: duplicate path `/`                                | index placeholder                 | bước 8                          |
+| Login OK nhưng không vào được app                         | thiếu `profiles`/`user_roles`     | `create-admin.py`               |
+| Bảng đọc được bằng psql nhưng app báo permission          | thiếu `GRANT` cho `authenticated` | `node scripts/apply-grants.mjs` |
 
 ---
 
 ## Phần C — Asset logo & màn hình đăng nhập (nguyên nhân mất ảnh)
 
 ### Nguyên nhân
+
 Repo chỉ commit **con trỏ** `*.asset.json`, không commit ảnh gốc. Mỗi con trỏ chứa
 `project_id`/`asset_id` của **dự án Lovable cũ**:
 
@@ -218,21 +219,23 @@ CDN `/__l5e/assets-v1/…` phục vụ **theo từng dự án**. Khi khôi phụ
 trong git nên không thể tự phục hồi từ con trỏ.
 
 ### Cách xử lý (đã áp dụng)
+
 Dùng đúng ảnh **có sẵn trong `src/assets/`** và import trực tiếp (Vite bundle,
 không phụ thuộc CDN, khôi phục lần sau không bao giờ thiếu):
 
-| Vị trí dùng | Trước (404) | Sau (ảnh trong repo) |
-|---|---|---|
-| Logo trang đăng nhập `src/routes/auth.tsx` | `vatm-mirats-full-v2.svg.asset.json` | `@/assets/vatm-emblem.png` |
-| Logo sidebar/watermark `src/components/mirats/AppShell.tsx` | `vatm-mark-square.svg`, `vatm-mirats-full-v2.svg` | `@/assets/vatm-emblem.png` |
-| Logo mặc định `src/lib/mirats/branding.ts` | `vatm-mirats-full.svg`, `vatm-mirats-compact.svg` | `@/assets/vatm-emblem.png` |
-| Ảnh đài chỉ huy `AtcTowerScene.tsx` | `atc-tower-phucat.jpg.asset.json` | `@/assets/atc-tower-real.jpg` |
-| Ảnh trong đài `AtcTowerScene.tsx` | `twr-interior.jpg.asset.json` | `@/assets/auth-hero.jpg` |
-| Máy bay bay ngang `AtcTowerScene.tsx` | `fighter-jet.png.asset.json` | không có ảnh gốc → vẽ vệt sáng CSS |
+| Vị trí dùng                                                 | Trước (404)                                       | Sau (ảnh trong repo)               |
+| ----------------------------------------------------------- | ------------------------------------------------- | ---------------------------------- |
+| Logo trang đăng nhập `src/routes/auth.tsx`                  | `vatm-mirats-full-v2.svg.asset.json`              | `@/assets/vatm-emblem.png`         |
+| Logo sidebar/watermark `src/components/mirats/AppShell.tsx` | `vatm-mark-square.svg`, `vatm-mirats-full-v2.svg` | `@/assets/vatm-emblem.png`         |
+| Logo mặc định `src/lib/mirats/branding.ts`                  | `vatm-mirats-full.svg`, `vatm-mirats-compact.svg` | `@/assets/vatm-emblem.png`         |
+| Ảnh đài chỉ huy `AtcTowerScene.tsx`                         | `atc-tower-phucat.jpg.asset.json`                 | `@/assets/atc-tower-real.jpg`      |
+| Ảnh trong đài `AtcTowerScene.tsx`                           | `twr-interior.jpg.asset.json`                     | `@/assets/auth-hero.jpg`           |
+| Máy bay bay ngang `AtcTowerScene.tsx`                       | `fighter-jet.png.asset.json`                      | không có ảnh gốc → vẽ vệt sáng CSS |
 
 16 file `src/assets/*.asset.json` hỏng đã được xoá.
 
 ### Thư viện ảnh gốc hiện có (dùng lại khi khôi phục)
+
 ```
 src/assets/vatm-emblem.png       — logo VATM (1024×1024, nền trong suốt)
 src/assets/atc-tower-real.jpg    — đài kiểm soát không lưu (ảnh nền đăng nhập)
@@ -243,6 +246,7 @@ public/favicon*, icon-192/512, apple-touch-icon.png
 ```
 
 ### Quy tắc tránh lặp lại
+
 1. **Không dùng `*.asset.json` cho ảnh thương hiệu** trong dự án cần khôi phục nhiều lần —
    commit ảnh thật vào `src/assets/` và `import` trực tiếp.
 2. Nếu buộc phải dùng CDN asset: sau khi clone sang dự án mới, chạy
@@ -253,6 +257,7 @@ public/favicon*, icon-192/512, apple-touch-icon.png
    DevTools → Network không có request `/__l5e/assets-v1/…` nào 404.
 
 ### Còn thiếu (chưa có bản gốc trong repo)
+
 `src/assets/fonts/NotoSans-Regular.ttf.asset.json` và `NotoSans-Bold.ttf.asset.json`
 vẫn trỏ CDN dự án cũ → chỉ ảnh hưởng xuất PDF tiếng Việt (`src/lib/mirats/pdf-render.server.ts`).
 Khắc phục: tải Noto Sans về `src/assets/fonts/` rồi upload lại bằng `lovable-assets create`.

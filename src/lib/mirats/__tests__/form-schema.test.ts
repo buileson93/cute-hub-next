@@ -33,16 +33,21 @@ const cf = (over: Partial<CompiledField>): CompiledField => ({
   ...over,
 });
 
-
 describe("compileField", () => {
   it("chuẩn hoá dòng form_field với default", () => {
     const c = compileField({ key: "ghi_chu", label: "Ghi chú" }, 3);
     expect(c).toEqual(cf({ key: "ghi_chu", label: "Ghi chú", position: 3 }));
   });
 
-
   it("giữ options mảng và position rõ ràng", () => {
-    const c = compileField({ key: "tt", label: "Trạng thái", kind: "select", options: ["A", "B"], required: true, position: 1 });
+    const c = compileField({
+      key: "tt",
+      label: "Trạng thái",
+      kind: "select",
+      options: ["A", "B"],
+      required: true,
+      position: 1,
+    });
     expect(c.options).toEqual(["A", "B"]);
     expect(c.required).toBe(true);
     expect(c.position).toBe(1);
@@ -52,7 +57,14 @@ describe("compileField", () => {
 describe("compileSchema", () => {
   it("dựng snapshot đầy đủ và sắp theo position", () => {
     const schema = compileSchema(
-      { id: "t1", code: "PL01", ten: "Bảo dưỡng UHF", version: 2, require_signature: true, thiet_bi_mode: "single" },
+      {
+        id: "t1",
+        code: "PL01",
+        ten: "Bảo dưỡng UHF",
+        version: 2,
+        require_signature: true,
+        thiet_bi_mode: "single",
+      },
       [
         { key: "b", label: "B", position: 2 },
         { key: "a", label: "A", position: 1 },
@@ -66,7 +78,10 @@ describe("compileSchema", () => {
 
 describe("parseCompiledSchema", () => {
   it("parse jsonb hợp lệ", () => {
-    const raw = { template: { id: "t", code: "C", ten: "N", version: 3 }, fields: [{ key: "x", label: "X" }] };
+    const raw = {
+      template: { id: "t", code: "C", ten: "N", version: 3 },
+      fields: [{ key: "x", label: "X" }],
+    };
     const s = parseCompiledSchema(raw);
     expect(s?.template.version).toBe(3);
     expect(s?.fields[0].key).toBe("x");
@@ -81,8 +96,18 @@ describe("parseCompiledSchema", () => {
 describe("resolveSubmissionFields — bảo vệ lịch sử phiếu cũ", () => {
   // Phiếu cũ đã lập với 2 field. Sau đó admin sửa mẫu.
   const snapshot: CompiledSchema = {
-    template: { id: "t1", code: "PL01", ten: "Cũ", version: 1, require_signature: false, thiet_bi_mode: "none" },
-    fields: [cf({ key: "tinh_trang", label: "Tình trạng cũ", position: 0 }), cf({ key: "ghi_chu", label: "Ghi chú", position: 1 })],
+    template: {
+      id: "t1",
+      code: "PL01",
+      ten: "Cũ",
+      version: 1,
+      require_signature: false,
+      thiet_bi_mode: "none",
+    },
+    fields: [
+      cf({ key: "tinh_trang", label: "Tình trạng cũ", position: 0 }),
+      cf({ key: "ghi_chu", label: "Ghi chú", position: 1 }),
+    ],
   };
   // form_field HIỆN TẠI đã bị đổi: đổi nhãn + thêm field mới, xoá ghi_chu.
   const currentFields: CompiledField[] = [

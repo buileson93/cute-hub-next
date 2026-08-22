@@ -10,14 +10,10 @@
 // ============================================================================
 import * as React from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import {
-  HoverCard, HoverCardContent, HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { InfoGrid } from "@/components/mirats/InfoGrid";
-import {
-  entityView, renderField,
-} from "@/lib/mirats/display/registry";
+import { entityView, renderField } from "@/lib/mirats/display/registry";
 import type { EntityLoai } from "@/lib/mirats/display/types";
 import { cn } from "@/lib/utils";
 import { Package } from "lucide-react";
@@ -38,7 +34,6 @@ function ModelThumbSmall({ url, ten }: { url?: string | null; ten: string }) {
   );
 }
 
-
 export interface EntityHoverCardProps {
   loai: EntityLoai;
   row: Record<string, unknown> | null | undefined;
@@ -54,7 +49,12 @@ export interface EntityHoverCardProps {
  * popup thông tin đầy đủ của thực thể.
  */
 export function EntityHoverCard({
-  loai, row, children, treMo = 250, ben = "bottom", className,
+  loai,
+  row,
+  children,
+  treMo = 250,
+  ben = "bottom",
+  className,
 }: EntityHoverCardProps) {
   // Không có dữ liệu → render trigger trần, không mở HoverCard.
   if (!row) return <>{children}</>;
@@ -93,30 +93,20 @@ export function EntityHoverCard({
         <div className="flex items-start justify-between gap-3 border-b bg-muted/40 px-4 py-3">
           <div className="flex min-w-0 flex-1 items-start gap-3">
             {loai === "dm_model" && (
-              <ModelThumbSmall 
-                url={row.hinh_anh as string | null} 
-                ten={tieuDe} 
-              />
+              <ModelThumbSmall url={row.hinh_anh as string | null} ten={tieuDe} />
             )}
             <div className="min-w-0 flex-1">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {view.ten}
               </div>
-              <div className="mt-0.5 truncate text-sm font-semibold text-foreground">
-                {tieuDe}
-              </div>
-              {phu && (
-                <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                  {phu}
-                </div>
-              )}
+              <div className="mt-0.5 truncate text-sm font-semibold text-foreground">{tieuDe}</div>
+              {phu && <div className="mt-0.5 truncate text-xs text-muted-foreground">{phu}</div>}
             </div>
           </div>
           {view.badgeTrangThai && (
             <StatusBadge domain={view.badgeTrangThai.domain} code={badgeCode ?? null} />
           )}
         </div>
-
 
         {/* Highlight strip */}
         {highlightFields.length > 0 && (
@@ -135,7 +125,7 @@ export function EntityHoverCard({
         {/* Footer: Link sang trang chi tiết (Giai đoạn 2 - Mục 8) */}
         {loai === "dm_model" && (
           <div className="border-t bg-muted/20 px-4 py-2 text-right">
-            <a 
+            <a
               href={`/danh-muc/model?q=${encodeURIComponent(tieuDe)}`}
               className="inline-flex items-center gap-1.5 text-[11px] font-medium text-primary hover:underline"
             >
@@ -145,7 +135,6 @@ export function EntityHoverCard({
           </div>
         )}
       </HoverCardContent>
-
     </HoverCard>
   );
 }

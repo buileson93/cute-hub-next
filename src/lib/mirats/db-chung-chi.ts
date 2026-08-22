@@ -34,8 +34,13 @@ export interface KdHcRow {
 
 async function loadKdHc(): Promise<KdHcRow[]> {
   const tbs = await fetchAllRows<{
-    id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; model: string | null;
-    don_vi_id: string | null; he_thong_id: string | null; che_do_kd_hc: string;
+    id: string;
+    ma_thiet_bi: string;
+    ten_thiet_bi: string | null;
+    model: string | null;
+    don_vi_id: string | null;
+    he_thong_id: string | null;
+    che_do_kd_hc: string;
   }>((from, to) =>
     supabase
       .from("thiet_bi")
@@ -44,7 +49,7 @@ async function loadKdHc(): Promise<KdHcRow[]> {
       .range(from, to),
   );
   const ids = tbs.map((r) => r.id);
-  let ccByDev = new Map<string, ChungChiRow[]>();
+  const ccByDev = new Map<string, ChungChiRow[]>();
   if (ids.length > 0) {
     const { data: ccs, error: e2 } = await supabase
       .from("chung_chi_thiet_bi")
@@ -68,7 +73,9 @@ async function loadKdHc(): Promise<KdHcRow[]> {
         ngay_het_han: c.ngay_het_han,
       })),
     );
-    const found = cc ? list.find((x) => x.so_giay_chung_nhan === cc.so_giay_chung_nhan) ?? null : null;
+    const found = cc
+      ? (list.find((x) => x.so_giay_chung_nhan === cc.so_giay_chung_nhan) ?? null)
+      : null;
     const tt = trangThaiHetHan(found?.ngay_het_han ?? null);
     return {
       thiet_bi_id: r.id,

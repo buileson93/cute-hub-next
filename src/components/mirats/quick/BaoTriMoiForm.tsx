@@ -3,7 +3,17 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { rpcErrorToast } from "@/lib/mirats/rpc-error";
-import { Loader2, Save, Search, Wrench, FileText, CheckCircle2, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  Search,
+  Wrench,
+  FileText,
+  CheckCircle2,
+  ArrowRight,
+  ArrowLeft,
+  Trash2,
+} from "lucide-react";
 import { FormPageHeader } from "@/components/mirats/FormPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +22,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { useDbTaxonomy, type DbDevice } from "@/lib/mirats/db-taxonomy";
@@ -40,18 +56,37 @@ const TT_OPTIONS = ["Kế hoạch", "Đang thực hiện", "Hoàn thành", "Hoã
 const LOAI_BT_OPTIONS = ["Định kỳ", "Đột xuất", "Khắc phục"];
 
 type FieldRow = {
-  id: string; key: string; label: string; kind: string; required: boolean; help_text: string | null; placeholder: string | null; options: string[] | null; position: number;
+  id: string;
+  key: string;
+  label: string;
+  kind: string;
+  required: boolean;
+  help_text: string | null;
+  placeholder: string | null;
+  options: string[] | null;
+  position: number;
 };
 
 export interface BaoTriMoiFormProps {
-  defaultHeThongId?: string; defaultVersion?: string; defaultCongViec?: string; embedded?: boolean; onDone?: () => void;
+  defaultHeThongId?: string;
+  defaultVersion?: string;
+  defaultCongViec?: string;
+  embedded?: boolean;
+  onDone?: () => void;
 }
 
-export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongViec, embedded, onDone }: BaoTriMoiFormProps) {
+export function BaoTriMoiForm({
+  defaultHeThongId,
+  defaultVersion,
+  defaultCongViec,
+  embedded,
+  onDone,
+}: BaoTriMoiFormProps) {
   const qc = useQueryClient();
   const { user, profile, hasRole } = useSession();
   const { data: taxo } = useDbTaxonomy();
-  const canManage = hasRole("admin") || hasRole("phong_kt") || hasRole("ktv") || hasRole("to_truong");
+  const canManage =
+    hasRole("admin") || hasRole("phong_kt") || hasRole("ktv") || hasRole("to_truong");
   const [heThongId, setHeThongId] = useState(defaultHeThongId ?? "");
   const [heThongTen, setHeThongTen] = useState("");
   const [templateId, setTemplateId] = useState("");
@@ -71,26 +106,44 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
 
   useEffect(() => {
     if (!defaultHeThongId || !taxo) return;
-    const ht = (taxo.htList ?? []).find(h => h.id === defaultHeThongId);
-    if (ht) { setHeThongId(ht.id); setHeThongTen(ht.ten); }
+    const ht = (taxo.htList ?? []).find((h) => h.id === defaultHeThongId);
+    if (ht) {
+      setHeThongId(ht.id);
+      setHeThongTen(ht.ten);
+    }
   }, [defaultHeThongId, taxo]);
 
   const { data: templates } = useQuery({
     queryKey: ["bao-tri-templates", heThongId],
     enabled: !!heThongId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("form_template_he_thong").select("template_id, form_template!inner(id,code,ten,mo_ta,version,active,nhom)").eq("he_thong_id", heThongId);
+      const { data, error } = await supabase
+        .from("form_template_he_thong")
+        .select("template_id, form_template!inner(id,code,ten,mo_ta,version,active,nhom)")
+        .eq("he_thong_id", heThongId);
       if (error) throw error;
       return filterBaoTriTemplates((data ?? []) as any);
-    }
+    },
   });
 
-  const { data: fields } = useQuery({ queryKey: ["bao-tri-fields", templateId], enabled: !!templateId, queryFn: async () => {
-    const { data, error } = await supabase.from("form_field").select("*").eq("template_id", templateId).order("position");
-    return (data ?? []) as FieldRow[];
-  }});
+  const { data: fields } = useQuery({
+    queryKey: ["bao-tri-fields", templateId],
+    enabled: !!templateId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("form_field")
+        .select("*")
+        .eq("template_id", templateId)
+        .order("position");
+      return (data ?? []) as FieldRow[];
+    },
+  });
 
-  const { data: sectionsData } = useQuery({ queryKey: ["bao-tri-sections", templateId], enabled: !!templateId, queryFn: () => fetchCompiledSectionsForTemplate(templateId) });
+  const { data: sectionsData } = useQuery({
+    queryKey: ["bao-tri-sections", templateId],
+    enabled: !!templateId,
+    queryFn: () => fetchCompiledSectionsForTemplate(templateId),
+  });
   const sections = sectionsData?.sections;
   const isChecklist = isChecklistTemplate(sections);
 
@@ -99,20 +152,24 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
     return {
       loai: "BAO_DUONG",
       thiet_bi_id: selected[0].id,
-      moTa: templates?.find(t => t.id === templateId)?.ten ?? "Bảo trì định kỳ",
+      moTa: templates?.find((t) => t.id === templateId)?.ten ?? "Bảo trì định kỳ",
       thoiGian: ngayBatDau || new Date().toISOString(),
-      tenThietBi: selected[0].ten
+      tenThietBi: selected[0].ten,
     };
   }, [selected, templateId, templates, ngayBatDau]);
 
-  function nextStep() { if (step < 3) setStep(s => s + 1); }
-  function prevStep() { if (step > 1) setStep(s => s - 1); }
+  function nextStep() {
+    if (step < 3) setStep((s) => s + 1);
+  }
+  function prevStep() {
+    if (step > 1) setStep((s) => s - 1);
+  }
 
   function validateBeforeSave(): string | null {
     if (!heThongId) return "Vui lòng chọn hệ thống";
     if (!templateId) return "Vui lòng chọn mẫu phiếu";
     if (selected.length === 0) return "Chọn ít nhất một tài sản";
-    
+
     // Kiểm tra trường động bắt buộc
     if (!isChecklist && fields) {
       for (const f of fields) {
@@ -124,67 +181,80 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
       const chkErr = findChecklistError(sections ?? [], chkValues);
       if (chkErr) return chkErr;
     }
-    
+
     // Bổ sung validation các trường bắt buộc khác
     if (!donViThucHien.trim()) return "Vui lòng nhập đơn vị thực hiện";
     if (!nguoiThucHien.trim()) return "Vui lòng nhập người thực hiện";
-    
+
     return null;
   }
-
-
 
   const save = useMutation({
     mutationFn: async () => {
       const maBase = maBaseDraft ?? `BD-${Date.now().toString(36).toUpperCase()}`;
       const payload = buildBaoDuongPayload({
-        submission: { 
-          template_id: templateId, 
+        submission: {
+          template_id: templateId,
           he_thong_id: heThongId,
-          tieu_de: templates?.find(t => t.id === templateId)?.ten ?? "", 
-          data: values, 
-          submitted_at: new Date().toISOString(), 
-          template_code: templates?.find(t => t.id === templateId)?.code ?? "", 
-          template_version: templates?.find(t => t.id === templateId)?.version || 1, 
-          template_snapshot: templates?.find(t => t.id === templateId) || {} 
-
+          tieu_de: templates?.find((t) => t.id === templateId)?.ten ?? "",
+          data: values,
+          submitted_at: new Date().toISOString(),
+          template_code: templates?.find((t) => t.id === templateId)?.code ?? "",
+          template_version: templates?.find((t) => t.id === templateId)?.version || 1,
+          template_snapshot: templates?.find((t) => t.id === templateId) || {},
         },
 
-        ma_base: maBase, 
-        he_thong_ten: heThongTen, 
-        loai_bao_tri: loaiBaoTri, 
-        ngay_bat_dau: ngayBatDau, 
-        ngay_hoan_thanh: ngayHoanThanh, 
-        ket_qua: ketQua, 
-        trang_thai: trangThai, 
-        nguoi_thuc_hien: nguoiThucHien, 
-        don_vi_thuc_hien: donViThucHien, 
+        ma_base: maBase,
+        he_thong_ten: heThongTen,
+        loai_bao_tri: loaiBaoTri,
+        ngay_bat_dau: ngayBatDau,
+        ngay_hoan_thanh: ngayHoanThanh,
+        ket_qua: ketQua,
+        trang_thai: trangThai,
+        nguoi_thuc_hien: nguoiThucHien,
+        don_vi_thuc_hien: donViThucHien,
         mo_ta_cong_viec: "",
-        devices: selected.map(d => ({ id: d.id, ma_thiet_bi: d.ma_thiet_bi, don_vi: d.don_vi ?? null })),
-        item_results: isChecklist ? buildItemResults("__placeholder__", sections ?? [], chkValues) as any : []
+        devices: selected.map((d) => ({
+          id: d.id,
+          ma_thiet_bi: d.ma_thiet_bi,
+          don_vi: d.don_vi ?? null,
+        })),
+        item_results: isChecklist
+          ? (buildItemResults("__placeholder__", sections ?? [], chkValues) as any)
+          : [],
       });
       const err = validateBeforeSave();
       if (err) throw new Error(err);
       const r = await ghiBaoDuongFull(payload);
       return r.bao_tri_ids.length;
-
     },
-    onSuccess: () => { 
-      toast.success("Đã lưu phiếu bảo dưỡng"); 
+    onSuccess: () => {
+      toast.success("Đã lưu phiếu bảo dưỡng");
       qc.invalidateQueries({ queryKey: ["operations_data"] });
-      if (onDone) onDone(); 
+      if (onDone) onDone();
     },
 
-    onError: (e) => rpcErrorToast(e)
+    onError: (e) => rpcErrorToast(e),
   });
 
   if (!canManage) return <div className="p-8 text-center">Không có quyền truy cập.</div>;
 
-  const steps = [{ id: 1, title: "Hệ thống & Mẫu" }, { id: 2, title: "Tài sản" }, { id: 3, title: "Nội dung phiếu" }];
+  const steps = [
+    { id: 1, title: "Hệ thống & Mẫu" },
+    { id: 2, title: "Tài sản" },
+    { id: 3, title: "Nội dung phiếu" },
+  ];
 
   return (
     <div className={embedded ? "flex h-full flex-col" : "mx-auto max-w-5xl space-y-3 pb-28"}>
-      {!embedded && <FormPageHeader backTo="/bao-tri" backLabel="Quay lại" icon={Wrench} title="Tạo phiếu bảo dưỡng" />}
+      {!embedded && (
+        <FormPageHeader
+          backTo="/bao-tri"
+          backLabel="Quay lại"
+          icon={Wrench}
+          title="Tạo phiếu bảo dưỡng"
+        />
+      )}
       <FormWizardSteps steps={steps} currentStep={step} />
       <div className="flex-1 overflow-y-auto px-4">
         {step === 1 && (
@@ -198,34 +268,49 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <Label>Hệ thống *</Label>
-                  <Combobox options={(taxo?.htList ?? []).map(h => ({ value: h.id, label: h.ten }))} value={heThongId} onChange={v => setHeThongId(v)} />
+                  <Combobox
+                    options={(taxo?.htList ?? []).map((h) => ({ value: h.id, label: h.ten }))}
+                    value={heThongId}
+                    onChange={(v) => setHeThongId(v)}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label>Loại bảo dưỡng *</Label>
                     <Select value={loaiBaoTri} onValueChange={setLoaiBaoTri}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
-                        {LOAI_BT_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                        {LOAI_BT_OPTIONS.map((opt) => (
+                          <SelectItem key={opt} value={opt}>
+                            {opt}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
                     <Label>Đơn vị thực hiện *</Label>
-                    <Input value={donViThucHien} onChange={e => setDonViThucHien(e.target.value)} />
+                    <Input
+                      value={donViThucHien}
+                      onChange={(e) => setDonViThucHien(e.target.value)}
+                    />
                   </div>
                 </div>
 
                 {heThongId && (
                   <div className="space-y-2">
-                    <Label className="text-xs font-bold text-muted-foreground uppercase">Mẫu phiếu *</Label>
+                    <Label className="text-xs font-bold text-muted-foreground uppercase">
+                      Mẫu phiếu *
+                    </Label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {(templates ?? []).map(t => (
-                        <Button 
-                          key={t.id} 
-                          variant={templateId === t.id ? "default" : "outline"} 
-                          className="justify-start h-auto py-2 px-3 text-left" 
+                      {(templates ?? []).map((t) => (
+                        <Button
+                          key={t.id}
+                          variant={templateId === t.id ? "default" : "outline"}
+                          className="justify-start h-auto py-2 px-3 text-left"
                           onClick={() => setTemplateId(t.id)}
                         >
                           <div className="flex flex-col gap-0.5">
@@ -243,33 +328,39 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
         )}
         {step === 2 && (
           <Card>
-            <CardHeader><CardTitle className="text-sm font-semibold text-primary">2. Chọn tài sản</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold text-primary">2. Chọn tài sản</CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <Label>Chọn tài sản bảo dưỡng *</Label>
                 <AssetPicker
                   value="" // AssetPicker này dùng để thêm vào danh sách `selected`
                   onChange={(id, ma, ten) => {
-                    if (id && !selected.some(s => s.id === id)) {
+                    if (id && !selected.some((s) => s.id === id)) {
                       // Fetch full data if needed, or assume partial suffices for this flow
                       setSelected([...selected, { id, ma_thiet_bi: ma, ten_thiet_bi: ten } as any]);
                     }
                   }}
                   heThongId={heThongId}
                 />
-                
+
                 {selected.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <Label className="text-xs text-muted-foreground uppercase">Danh sách đã chọn ({selected.length})</Label>
+                    <Label className="text-xs text-muted-foreground uppercase">
+                      Danh sách đã chọn ({selected.length})
+                    </Label>
                     <div className="border rounded-md divide-y max-h-40 overflow-y-auto">
-                      {selected.map(d => (
+                      {selected.map((d) => (
                         <div key={d.id} className="flex items-center justify-between p-2 text-sm">
-                          <span className="truncate">{d.ma_thiet_bi} — {d.ten}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <span className="truncate">
+                            {d.ma_thiet_bi} — {d.ten}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-6 w-6 text-destructive"
-                            onClick={() => setSelected(selected.filter(s => s.id !== d.id))}
+                            onClick={() => setSelected(selected.filter((s) => s.id !== d.id))}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -284,45 +375,82 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
         )}
         {step === 3 && (
           <Card>
-            <CardHeader><CardTitle className="text-sm font-semibold text-primary">3. Nội dung phiếu</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold text-primary">
+                3. Nội dung phiếu
+              </CardTitle>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5"><Label>Ngày bắt đầu</Label><Input type="date" value={ngayBatDau} onChange={e => setNgayBatDau(e.target.value)} /></div>
-                <div className="space-y-1.5"><Label>Ngày hoàn thành</Label><Input type="date" value={ngayHoanThanh} onChange={e => setNgayHoanThanh(e.target.value)} /></div>
+                <div className="space-y-1.5">
+                  <Label>Ngày bắt đầu</Label>
+                  <Input
+                    type="date"
+                    value={ngayBatDau}
+                    onChange={(e) => setNgayBatDau(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Ngày hoàn thành</Label>
+                  <Input
+                    type="date"
+                    value={ngayHoanThanh}
+                    onChange={(e) => setNgayHoanThanh(e.target.value)}
+                  />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Người thực hiện</Label>
-                <Input value={nguoiThucHien} onChange={e => setNguoiThucHien(e.target.value)} placeholder="Tên những người tham gia..." />
+                <Input
+                  value={nguoiThucHien}
+                  onChange={(e) => setNguoiThucHien(e.target.value)}
+                  placeholder="Tên những người tham gia..."
+                />
               </div>
 
               {templateId && (
                 <div className="pt-4 border-t space-y-4">
-                  <Label className="text-xs font-bold text-primary uppercase">Nội dung chi tiết (Trường động)</Label>
+                  <Label className="text-xs font-bold text-primary uppercase">
+                    Nội dung chi tiết (Trường động)
+                  </Label>
                   {isChecklist && sections ? (
-                    <ChecklistRenderer sections={sections} values={chkValues} onChange={setChkValues} />
+                    <ChecklistRenderer
+                      sections={sections}
+                      values={chkValues}
+                      onChange={setChkValues}
+                    />
                   ) : fields && fields.length > 0 ? (
-                    <DynamicFieldsForm 
-                      specs={fields.map(f => ({
-                        field_key: f.key,
-                        nhan: f.label,
-                        kieu: f.kind as any,
-                        bat_buoc: f.required,
-                        help_text: f.help_text ?? undefined,
-                        tuy_chon: f.options ?? [],
-                        mac_dinh: null,
-                        rang_buoc: {}
-                      } as FieldSpec))}
+                    <DynamicFieldsForm
+                      specs={fields.map(
+                        (f) =>
+                          ({
+                            field_key: f.key,
+                            nhan: f.label,
+                            kieu: f.kind as any,
+                            bat_buoc: f.required,
+                            help_text: f.help_text ?? undefined,
+                            tuy_chon: f.options ?? [],
+                            mac_dinh: null,
+                            rang_buoc: {},
+                          }) as FieldSpec,
+                      )}
                       value={values}
                       onChange={setValues}
                       showErrors
                     />
                   ) : (
-                    <p className="text-xs text-muted-foreground italic">Mẫu phiếu này không có trường dữ liệu động nào.</p>
+                    <p className="text-xs text-muted-foreground italic">
+                      Mẫu phiếu này không có trường dữ liệu động nào.
+                    </p>
                   )}
-                  
+
                   <div className="space-y-1.5 pt-2">
                     <Label>Kết quả / Kết luận</Label>
-                    <Textarea value={ketQua} onChange={e => setKetQua(e.target.value)} placeholder="Ghi chú kết quả bảo dưỡng..." />
+                    <Textarea
+                      value={ketQua}
+                      onChange={(e) => setKetQua(e.target.value)}
+                      placeholder="Ghi chú kết quả bảo dưỡng..."
+                    />
                   </div>
                 </div>
               )}
@@ -331,18 +459,43 @@ export function BaoTriMoiForm({ defaultHeThongId, defaultVersion, defaultCongVie
         )}
       </div>
       <div className="sticky bottom-0 flex items-center justify-between border-t p-4 bg-background">
-        <Button variant="ghost" onClick={prevStep} disabled={step === 1}><ArrowLeft className="mr-2 h-4 w-4" /> Quay lại</Button>
+        <Button variant="ghost" onClick={prevStep} disabled={step === 1}>
+          <ArrowLeft className="mr-2 h-4 w-4" /> Quay lại
+        </Button>
         <div className="flex gap-2">
-           {step === 3 && <Button variant="secondary" onClick={() => {
-             const err = validateBeforeSave();
-             if (err) { toast.error(err); return; }
-             setPreviewOpen(true);
-           }}>Xem trước</Button>}
-           {step < 3 ? <Button onClick={nextStep}>Tiếp tục <ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={() => save.mutate()} disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}</Button>}
-
+          {step === 3 && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                const err = validateBeforeSave();
+                if (err) {
+                  toast.error(err);
+                  return;
+                }
+                setPreviewOpen(true);
+              }}
+            >
+              Xem trước
+            </Button>
+          )}
+          {step < 3 ? (
+            <Button onClick={nextStep}>
+              Tiếp tục <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={() => save.mutate()} disabled={save.isPending}>
+              {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ghi phiếu"}
+            </Button>
+          )}
         </div>
       </div>
-      <PreviewKhaiDialog open={previewOpen} input={previewInput} dangGhi={save.isPending} onCancel={() => setPreviewOpen(false)} onConfirm={() => save.mutate()} />
+      <PreviewKhaiDialog
+        open={previewOpen}
+        input={previewInput}
+        dangGhi={save.isPending}
+        onCancel={() => setPreviewOpen(false)}
+        onConfirm={() => save.mutate()}
+      />
     </div>
   );
 }

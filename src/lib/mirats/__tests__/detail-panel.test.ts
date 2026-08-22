@@ -3,7 +3,10 @@
 import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import {
-  parseDetail, serializeDetail, useDetailPanel, type UrlAdapter,
+  parseDetail,
+  serializeDetail,
+  useDetailPanel,
+  type UrlAdapter,
 } from "@/lib/mirats/ui/detail-panel";
 
 function mockAdapter(initial: Record<string, string> = {}): UrlAdapter & {
@@ -28,7 +31,8 @@ function mockAdapter(initial: Record<string, string> = {}): UrlAdapter & {
 describe("parseDetail / serializeDetail", () => {
   it("parse hợp lệ", () => {
     expect(parseDetail("thiet_bi:TB_123")).toEqual({
-      loai: "thiet_bi", moId: "TB_123",
+      loai: "thiet_bi",
+      moId: "TB_123",
     });
   });
   it("parse rỗng / invalid → null", () => {
@@ -46,7 +50,8 @@ describe("parseDetail / serializeDetail", () => {
   it("id chứa dấu ':' vẫn parse phần đầu làm loai", () => {
     // Chỉ chia tại dấu ':' đầu tiên.
     expect(parseDetail("thiet_bi:TB:xyz")).toEqual({
-      loai: "thiet_bi", moId: "TB:xyz",
+      loai: "thiet_bi",
+      moId: "TB:xyz",
     });
   });
 });

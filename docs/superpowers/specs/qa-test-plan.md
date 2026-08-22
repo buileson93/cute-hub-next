@@ -9,13 +9,13 @@ Hiện trạng: 94 test file trong `src/lib/mirats/__tests__/`, 23 file SQL tron
 
 ## 1. Kim tự tháp test
 
-| Tầng | Công cụ | Phạm vi | Tỉ lệ ước tính | Chạy trên |
-| --- | --- | --- | --- | --- |
-| **Unit** | Vitest (jsdom) | Pure logic trong `src/lib/mirats/*`, transforms, validators, `buildGraph`, `normalizeName`, formula MTBF/MTTR, N1–N13 SPEC logic | **~70%** | mọi PR, <30s |
-| **Integration (logic + Supabase mock)** | Vitest + `msw` / mocked `supabase` client | Hooks TanStack Query, mutation flows, resolver kế thừa Model, cascade filters bảng | **~15%** | mọi PR |
-| **DB / RLS (pgTAP)** | `supabase/tests/*.sql` chạy qua `supabase db test` | Bất biến DB: RLS chéo đơn vị, FK guard, RPC transaction, unique/GRANT | **~8%** | mọi PR (job riêng) |
-| **Route-smoke** | Vitest + React Testing Library | Mount 3 view (Vận hành/Sổ lý lịch/Danh mục) + các route N1–N13, không hồi quy navigation, `nav-contract.ts` | **~5%** | mọi PR |
-| **E2E** | Playwright (headless Chromium) | Kịch bản người dùng: đăng nhập, lắp/tháo tài sản, báo sự cố N6, hoàn thành PM N4, cảnh báo N5, QR N7, Import N10 | **~2%** | nightly + trước release |
+| Tầng                                    | Công cụ                                            | Phạm vi                                                                                                                          | Tỉ lệ ước tính | Chạy trên               |
+| --------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------------------- |
+| **Unit**                                | Vitest (jsdom)                                     | Pure logic trong `src/lib/mirats/*`, transforms, validators, `buildGraph`, `normalizeName`, formula MTBF/MTTR, N1–N13 SPEC logic | **~70%**       | mọi PR, <30s            |
+| **Integration (logic + Supabase mock)** | Vitest + `msw` / mocked `supabase` client          | Hooks TanStack Query, mutation flows, resolver kế thừa Model, cascade filters bảng                                               | **~15%**       | mọi PR                  |
+| **DB / RLS (pgTAP)**                    | `supabase/tests/*.sql` chạy qua `supabase db test` | Bất biến DB: RLS chéo đơn vị, FK guard, RPC transaction, unique/GRANT                                                            | **~8%**        | mọi PR (job riêng)      |
+| **Route-smoke**                         | Vitest + React Testing Library                     | Mount 3 view (Vận hành/Sổ lý lịch/Danh mục) + các route N1–N13, không hồi quy navigation, `nav-contract.ts`                      | **~5%**        | mọi PR                  |
+| **E2E**                                 | Playwright (headless Chromium)                     | Kịch bản người dùng: đăng nhập, lắp/tháo tài sản, báo sự cố N6, hoàn thành PM N4, cảnh báo N5, QR N7, Import N10                 | **~2%**        | nightly + trước release |
 
 Không kiểm mọi node UI ở E2E — nguyên tắc "logic dày ở đáy, UI mỏng ở đỉnh".
 
@@ -38,10 +38,18 @@ Tạo mới: `src/lib/mirats/__tests__/fixtures/` (TS thuần) và `supabase/tes
 
 ```ts
 // src/lib/mirats/__tests__/fixtures/index.ts
-export const makeGraphFixture = () => { /* nodes/edges cho N13 */ };
-export const makeUnitScopeFixture = () => { /* DV_A + DV_B với đầy đủ nhánh */ };
-export const makeIncidentTimelineFixture = () => { /* N6 states */ };
-export const makeImportBatchFixture = () => { /* N10 preview rows */ };
+export const makeGraphFixture = () => {
+  /* nodes/edges cho N13 */
+};
+export const makeUnitScopeFixture = () => {
+  /* DV_A + DV_B với đầy đủ nhánh */
+};
+export const makeIncidentTimelineFixture = () => {
+  /* N6 states */
+};
+export const makeImportBatchFixture = () => {
+  /* N10 preview rows */
+};
 ```
 
 **Trên DB (pgTAP)**:
@@ -62,12 +70,12 @@ Fixtures là **read-only trong test** — mỗi test wrap trong transaction đ�
 
 **Ngưỡng đề xuất cho `src/lib/mirats/*`** (đo bằng `vitest --coverage` / `v8`):
 
-| Metric | Ngưỡng ban đầu | Mục tiêu 3 tháng |
-| --- | --- | --- |
-| Statements | ≥ 75% | ≥ 85% |
-| Branches | ≥ 70% | ≥ 80% |
-| Functions | ≥ 80% | ≥ 90% |
-| Lines | ≥ 75% | ≥ 85% |
+| Metric     | Ngưỡng ban đầu | Mục tiêu 3 tháng |
+| ---------- | -------------- | ---------------- |
+| Statements | ≥ 75%          | ≥ 85%            |
+| Branches   | ≥ 70%          | ≥ 80%            |
+| Functions  | ≥ 80%          | ≥ 90%            |
+| Lines      | ≥ 75%          | ≥ 85%            |
 
 Ngưỡng cấu hình trong `vitest.config.ts` — CI fail nếu tụt.
 
@@ -117,21 +125,21 @@ typecheck  ─┼─► unit+integration (Vitest + coverage) ─► route-smoke 
 
 ## 5. Ánh xạ theo hạng mục N1–N13
 
-| Module | Unit | Integration | pgTAP | Route-smoke | E2E |
-| --- | :-: | :-: | :-: | :-: | :-: |
-| N1 Danh mục quality | ✓ (normalize, levenshtein) | ✓ (merge dry-run) | ✓ (unique partial idx) | – | – |
-| N2 Change request | ✓ (state machine) | ✓ (approve/reject) | ✓ (RLS admin-only) | ✓ | ✓ (approve flow) |
-| N3 History panel | ✓ (grouping ≤3s, restore whitelist) | ✓ | – | ✓ | – |
-| N4 PM | ✓ (next-due formula) | ✓ | ✓ (cron idempotent) | ✓ | ✓ (complete task) |
-| N5 Cảnh báo | ✓ (threshold 30/15/7) | ✓ | ✓ (v_sap_het_han) | ✓ | – |
-| N6 Sự cố workflow | ✓ (FSM matrix) | ✓ (downtime calc) | ✓ (state transition) | ✓ | ✓ (bao_cao → nghiem_thu) |
-| N7 QR | ✓ (deep-link parser) | – | – | ✓ | ✓ (scan → landing) |
-| N8 Dashboard | ✓ (kpi aggregation) | ✓ | ✓ (RPC security invoker) | ✓ | – |
-| N9 Reliability | ✓ (MTBF/MTTR/avail) | ✓ | – | ✓ | – |
-| N10 Import/Export | ✓ (validators, mapping) | ✓ (undo) | ✓ (transaction rollback) | ✓ | ✓ (import xlsx) |
-| N11 Mobile offline | ✓ (outbox, idempotency) | ✓ (flush order) | ✓ (client_uuid unique) | – | ✓ (offline flow) |
-| N12 Performance | ✓ (buildIndex) | – | – | ✓ | perf script |
-| N13 Graph view | ✓ (buildGraph, filter) | – | – | ✓ | – |
+| Module              |                Unit                 |    Integration     |          pgTAP           | Route-smoke |           E2E            |
+| ------------------- | :---------------------------------: | :----------------: | :----------------------: | :---------: | :----------------------: |
+| N1 Danh mục quality |     ✓ (normalize, levenshtein)      | ✓ (merge dry-run)  |  ✓ (unique partial idx)  |      –      |            –             |
+| N2 Change request   |          ✓ (state machine)          | ✓ (approve/reject) |    ✓ (RLS admin-only)    |      ✓      |     ✓ (approve flow)     |
+| N3 History panel    | ✓ (grouping ≤3s, restore whitelist) |         ✓          |            –             |      ✓      |            –             |
+| N4 PM               |        ✓ (next-due formula)         |         ✓          |   ✓ (cron idempotent)    |      ✓      |    ✓ (complete task)     |
+| N5 Cảnh báo         |        ✓ (threshold 30/15/7)        |         ✓          |    ✓ (v_sap_het_han)     |      ✓      |            –             |
+| N6 Sự cố workflow   |           ✓ (FSM matrix)            | ✓ (downtime calc)  |   ✓ (state transition)   |      ✓      | ✓ (bao_cao → nghiem_thu) |
+| N7 QR               |        ✓ (deep-link parser)         |         –          |            –             |      ✓      |    ✓ (scan → landing)    |
+| N8 Dashboard        |         ✓ (kpi aggregation)         |         ✓          | ✓ (RPC security invoker) |      ✓      |            –             |
+| N9 Reliability      |         ✓ (MTBF/MTTR/avail)         |         ✓          |            –             |      ✓      |            –             |
+| N10 Import/Export   |       ✓ (validators, mapping)       |      ✓ (undo)      | ✓ (transaction rollback) |      ✓      |     ✓ (import xlsx)      |
+| N11 Mobile offline  |       ✓ (outbox, idempotency)       |  ✓ (flush order)   |  ✓ (client_uuid unique)  |      –      |     ✓ (offline flow)     |
+| N12 Performance     |           ✓ (buildIndex)            |         –          |            –             |      ✓      |       perf script        |
+| N13 Graph view      |       ✓ (buildGraph, filter)        |         –          |            –             |      ✓      |            –             |
 
 ---
 

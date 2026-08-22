@@ -60,7 +60,9 @@ export function FileDropZone({
         if (disabled) return;
         const files = Array.from(e.dataTransfer.files ?? []);
         if (files.length === 0) return;
-        const match = files.find((f) => accept.some((a) => f.name.toLowerCase().endsWith(a.toLowerCase())));
+        const match = files.find((f) =>
+          accept.some((a) => f.name.toLowerCase().endsWith(a.toLowerCase())),
+        );
         if (!match) {
           toast.error(`Chỉ nhận file ${accept.join(", ")}. Đã bỏ qua "${files[0].name}".`);
           return;

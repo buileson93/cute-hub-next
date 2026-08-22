@@ -3,20 +3,32 @@ import { Activity, History, LineChart, AlertCircle } from "lucide-react";
 import { useTelemetry } from "@/lib/mirats/db-smart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 
-export function TelemetryPanel({ thietBiId, canManage }: { thietBiId: string; canManage?: boolean }) {
+export function TelemetryPanel({
+  thietBiId,
+  canManage,
+}: {
+  thietBiId: string;
+  canManage?: boolean;
+}) {
   const { data = [], isLoading, error } = useTelemetry(thietBiId);
 
-  if (isLoading) return <div className="py-8 text-center text-sm text-muted-foreground">Đang tải dữ liệu đo đạc...</div>;
-  if (error) return <div className="py-8 text-center text-sm text-destructive">Lỗi tải dữ liệu đo đạc.</div>;
+  if (isLoading)
+    return (
+      <div className="py-8 text-center text-sm text-muted-foreground">
+        Đang tải dữ liệu đo đạc...
+      </div>
+    );
+  if (error)
+    return <div className="py-8 text-center text-sm text-destructive">Lỗi tải dữ liệu đo đạc.</div>;
 
   return (
     <div className="space-y-4">
@@ -27,7 +39,9 @@ export function TelemetryPanel({ thietBiId, canManage }: { thietBiId: string; ca
           </CardTitle>
         </CardHeader>
         <CardContent className="h-32 flex items-center justify-center border-t bg-muted/10">
-          <span className="text-xs text-muted-foreground italic">Biểu đồ đang được tối ưu hóa...</span>
+          <span className="text-xs text-muted-foreground italic">
+            Biểu đồ đang được tối ưu hóa...
+          </span>
         </CardContent>
       </Card>
 
@@ -60,7 +74,9 @@ export function TelemetryPanel({ thietBiId, canManage }: { thietBiId: string; ca
                     {row.gia_tri !== null ? row.gia_tri.toLocaleString("vi-VN") : "—"}
                   </TableCell>
                   <TableCell>{row.don_vi_do || "—"}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{row.ghi_chu || "—"}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {row.ghi_chu || "—"}
+                  </TableCell>
                 </TableRow>
               ))
             )}

@@ -22,6 +22,7 @@ export function errResult(msg: string) {
 }
 
 export function requireAuth(ctx: ToolContext) {
-  if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập – vui lòng kết nối lại MCP với tài khoản MIRATS.");
+  if (!ctx.isAuthenticated())
+    return errResult("Chưa đăng nhập – vui lòng kết nối lại MCP với tài khoản MIRATS.");
   return null;
 }

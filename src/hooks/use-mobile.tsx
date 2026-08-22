@@ -36,7 +36,7 @@ export function useBreakpoint(): ViewBreakpoint {
 
     const mobileMql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX - 1}px)`);
     const tabletMql = window.matchMedia(
-      `(min-width: ${MOBILE_BREAKPOINT_PX}px) and (max-width: ${TABLET_BREAKPOINT_PX - 1}px)`
+      `(min-width: ${MOBILE_BREAKPOINT_PX}px) and (max-width: ${TABLET_BREAKPOINT_PX - 1}px)`,
     );
 
     mobileMql.addEventListener("change", updateBreakpoint);

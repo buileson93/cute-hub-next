@@ -16,7 +16,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, MinusCircle, Camera } from "lucide-react";
@@ -62,8 +66,16 @@ const KET_QUA_SHORT: Record<KetQua, string> = {
 export const chkAttachKey = (item_code: string) => `chk:${item_code}`;
 
 export function ChecklistRenderer({
-  sections, values, onChange, readOnly, showErrors, className,
-  templateCode, draftId, attachments, onAttachmentsChange,
+  sections,
+  values,
+  onChange,
+  readOnly,
+  showErrors,
+  className,
+  templateCode,
+  draftId,
+  attachments,
+  onAttachmentsChange,
 }: ChecklistRendererProps) {
   const patch = (code: string, part: Partial<ItemInput>) => {
     if (!onChange) return;
@@ -74,7 +86,8 @@ export function ChecklistRenderer({
     if (!onAttachmentsChange) return;
     const k = chkAttachKey(code);
     const next = { ...(attachments ?? {}) };
-    if (list.length === 0) delete next[k]; else next[k] = list;
+    if (list.length === 0) delete next[k];
+    else next[k] = list;
     onAttachmentsChange(next);
   };
 
@@ -87,7 +100,9 @@ export function ChecklistRenderer({
           <div className="border-b bg-muted/40 px-4 py-2.5">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-sm">{sec.ten}</span>
-              <Badge variant="outline" className="font-mono text-[10px]">{sec.ma_section}</Badge>
+              <Badge variant="outline" className="font-mono text-[10px]">
+                {sec.ma_section}
+              </Badge>
             </div>
             {sec.mo_ta && <p className="mt-0.5 text-xs text-muted-foreground">{sec.mo_ta}</p>}
           </div>
@@ -127,8 +142,16 @@ export function ChecklistRenderer({
 }
 
 function ItemRow({
-  item, value, readOnly, showErrors, onPatch,
-  canAttach, templateCode, draftId, photos, onPhotosChange,
+  item,
+  value,
+  readOnly,
+  showErrors,
+  onPatch,
+  canAttach,
+  templateCode,
+  draftId,
+  photos,
+  onPhotosChange,
 }: {
   item: ChecklistItem;
   value: ItemInput | undefined;
@@ -145,14 +168,14 @@ function ItemRow({
   const opts = item.options ?? DEFAULT_ITEM_OPTIONS;
   const err = showErrors ? validateItemInput(item, v) : null;
   const idBase = `chk-${item.item_code}`;
-  const numInvalid =
-    item.result_kind === "so" && Number.isNaN(coerceNumber(v.gia_tri_so ?? null));
+  const numInvalid = item.result_kind === "so" && Number.isNaN(coerceNumber(v.gia_tri_so ?? null));
   const thresholdLabel = formatThreshold(opts.tieu_chuan_min, opts.tieu_chuan_max, item.don_vi);
   const hasThreshold = opts.tieu_chuan_min != null || opts.tieu_chuan_max != null;
   const numValue = item.result_kind === "so" ? coerceNumber(v.gia_tri_so ?? null) : null;
-  const autoRes = item.result_kind === "so" && numValue != null && !Number.isNaN(numValue)
-    ? evaluateAutoResult(numValue, opts.tieu_chuan_min, opts.tieu_chuan_max)
-    : null;
+  const autoRes =
+    item.result_kind === "so" && numValue != null && !Number.isNaN(numValue)
+      ? evaluateAutoResult(numValue, opts.tieu_chuan_min, opts.tieu_chuan_max)
+      : null;
 
   // Tự chấm Đạt/K.Đạt khi nhập số hợp lệ và có ngưỡng — không đè kết luận thủ công khác.
   const handleNumChange = (raw: string) => {
@@ -173,10 +196,16 @@ function ItemRow({
         <div className="min-w-0">
           <Label htmlFor={idBase} className="text-sm flex items-center gap-1">
             {opts.hang_muc ?? item.ten}
-            {item.bat_buoc && <span className="text-destructive" aria-hidden="true">*</span>}
+            {item.bat_buoc && (
+              <span className="text-destructive" aria-hidden="true">
+                *
+              </span>
+            )}
           </Label>
           {opts.noi_dung_chi_tiet && (
-            <p className="mt-0.5 whitespace-pre-line text-[11px] text-foreground/80">{opts.noi_dung_chi_tiet}</p>
+            <p className="mt-0.5 whitespace-pre-line text-[11px] text-foreground/80">
+              {opts.noi_dung_chi_tiet}
+            </p>
           )}
           {item.huong_dan && (
             <p className="mt-0.5 text-[11px] text-muted-foreground">{item.huong_dan}</p>
@@ -194,7 +223,10 @@ function ItemRow({
             </span>
           )}
           {item.result_kind === "so" && hasThreshold && (
-            <LiveStatusBadge status={autoRes} hasValue={numValue != null && !Number.isNaN(numValue)} />
+            <LiveStatusBadge
+              status={autoRes}
+              hasValue={numValue != null && !Number.isNaN(numValue)}
+            />
           )}
         </div>
       </div>
@@ -214,7 +246,8 @@ function ItemRow({
               onChange={(e) => handleNumChange(e.target.value)}
               className={cn(
                 "h-8 text-xs transition-colors",
-                autoRes === "dat" && "border-emerald-500/70 bg-emerald-50/40 dark:bg-emerald-950/20",
+                autoRes === "dat" &&
+                  "border-emerald-500/70 bg-emerald-50/40 dark:bg-emerald-950/20",
                 autoRes === "khong_dat" && "border-rose-500/70 bg-rose-50/40 dark:bg-rose-950/20",
               )}
               data-testid={`chk-num-${item.item_code}`}
@@ -232,7 +265,9 @@ function ItemRow({
             </SelectTrigger>
             <SelectContent>
               {(opts.choices ?? item.tuy_chon ?? []).map((opt) => (
-                <SelectItem key={opt} value={opt} className="text-xs">{opt}</SelectItem>
+                <SelectItem key={opt} value={opt} className="text-xs">
+                  {opt}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -275,10 +310,7 @@ function ItemRow({
           aria-label={`Hành động: ${item.ten}`}
           aria-invalid={v.ket_qua === "khong_dat" && !(v.hanh_dong ?? "").trim()}
           onChange={(e) => onPatch({ hanh_dong: e.target.value })}
-          className={cn(
-            "min-h-8 text-xs",
-            v.ket_qua === "khong_dat" && "border-destructive/60",
-          )}
+          className={cn("min-h-8 text-xs", v.ket_qua === "khong_dat" && "border-destructive/60")}
         />
       </div>
 
@@ -287,7 +319,11 @@ function ItemRow({
         <div className="mt-2 rounded-md border border-dashed p-2">
           <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
             <Camera className="h-3 w-3" /> Ảnh chứng minh
-            {photos.length > 0 && <Badge variant="secondary" className="text-[10px]">{photos.length}</Badge>}
+            {photos.length > 0 && (
+              <Badge variant="secondary" className="text-[10px]">
+                {photos.length}
+              </Badge>
+            )}
           </div>
           <PhotoUpload
             value={photos}
@@ -302,13 +338,21 @@ function ItemRow({
         </div>
       )}
 
-      {err && <p role="alert" className="mt-1 text-[11px] text-destructive">{err}</p>}
+      {err && (
+        <p role="alert" className="mt-1 text-[11px] text-destructive">
+          {err}
+        </p>
+      )}
     </div>
   );
 }
 
 function KetQuaSegmented({
-  value, onChange, disabled, invalid, ariaLabel,
+  value,
+  onChange,
+  disabled,
+  invalid,
+  ariaLabel,
 }: {
   value: KetQua | null;
   onChange: (v: KetQua | null) => void;
@@ -368,7 +412,13 @@ function KetQuaSegmented({
   );
 }
 
-function LiveStatusBadge({ status, hasValue }: { status: "dat" | "khong_dat" | null; hasValue: boolean }) {
+function LiveStatusBadge({
+  status,
+  hasValue,
+}: {
+  status: "dat" | "khong_dat" | null;
+  hasValue: boolean;
+}) {
   if (!hasValue) {
     return (
       <Badge variant="outline" className="gap-1 text-[10px]">
@@ -395,8 +445,14 @@ function LiveStatusBadge({ status, hasValue }: { status: "dat" | "khong_dat" | n
 
 function KetQuaBadge({ value }: { value: KetQua }) {
   const map: Record<KetQua, { cls: string; icon: typeof CheckCircle2 }> = {
-    dat: { cls: "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300", icon: CheckCircle2 },
-    khong_dat: { cls: "border-rose-500/40 bg-rose-500/15 text-rose-700 dark:text-rose-300", icon: XCircle },
+    dat: {
+      cls: "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+      icon: CheckCircle2,
+    },
+    khong_dat: {
+      cls: "border-rose-500/40 bg-rose-500/15 text-rose-700 dark:text-rose-300",
+      icon: XCircle,
+    },
     khong_ap_dung: { cls: "border-muted bg-muted text-muted-foreground", icon: MinusCircle },
   };
   const { cls, icon: Icon } = map[value];

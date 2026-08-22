@@ -5,6 +5,7 @@ The System Components table (`/he-thong/thanh-phan`) is currently failing with a
 ## Proposed Changes
 
 ### Database Migration
+
 1. **Fix `rpc_thanh_phan_toan_cuc`**:
    - Create a new migration to redefine the function.
    - Replace the incorrect table name `thiet_bi_thanh_phan` with the correct one: `he_thong_thanh_phan`.
@@ -15,6 +16,7 @@ The System Components table (`/he-thong/thanh-phan`) is currently failing with a
 ## Technical Details
 
 ### SQL Definition Fix
+
 ```sql
 CREATE OR REPLACE FUNCTION public.rpc_thanh_phan_toan_cuc()
  RETURNS SETOF jsonb
@@ -25,7 +27,7 @@ CREATE OR REPLACE FUNCTION public.rpc_thanh_phan_toan_cuc()
 AS $function$
 BEGIN
   RETURN QUERY
-  SELECT 
+  SELECT
     jsonb_build_object(
       'id', tp.id,
       'ma', tp.ma_thanh_phan,
@@ -51,6 +53,7 @@ $function$;
 ```
 
 ## Verification Plan
+
 1. **Database Check**: Run the migration and manually test the RPC via `psql` to ensure it returns valid JSON without errors.
 2. **UI Check**: Navigate to the System Components page in the preview and verify that the table loads correctly and data is displayed.
 3. **Type Check**: Run `npx tsc --noEmit` to ensure no regressions in TypeScript types (though this is an RPC change, the returned shape must match expectations).

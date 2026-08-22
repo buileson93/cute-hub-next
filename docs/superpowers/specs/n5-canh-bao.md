@@ -15,14 +15,15 @@ Biến ba màn hiện có (Giấy phép, Kiểm định/Hiệu chuẩn, Sắp h�
 
 Không tạo cột hạn mới. Cảnh báo đọc từ các nguồn hiện có:
 
-| Loại cảnh báo | Bảng nguồn / View | Cột hạn | Đối tượng gắn kết |
-|---|---|---|---|
-| `bao_hanh` | `thiet_bi` (qua view `v_sap_het_han`) | `han_bao_hanh` | `thiet_bi.id` |
-| `giay_phep` | `giay_phep` + `giay_phep_khai_thac` (qua view `v_giay_phep`) | `ngay_het_han` | `thiet_bi_id` **hoặc** `he_thong_id` |
-| `chung_chi_kd` | `chung_chi_thiet_bi` (loai `KIEM_DINH`) qua `v_sap_het_han` | `ngay_het_han` | `thiet_bi_id` |
-| `chung_chi_hc` | `chung_chi_thiet_bi` (loai `HIEU_CHUAN`) qua `v_sap_het_han` | `ngay_het_han` | `thiet_bi_id` |
+| Loại cảnh báo  | Bảng nguồn / View                                            | Cột hạn        | Đối tượng gắn kết                    |
+| -------------- | ------------------------------------------------------------ | -------------- | ------------------------------------ |
+| `bao_hanh`     | `thiet_bi` (qua view `v_sap_het_han`)                        | `han_bao_hanh` | `thiet_bi.id`                        |
+| `giay_phep`    | `giay_phep` + `giay_phep_khai_thac` (qua view `v_giay_phep`) | `ngay_het_han` | `thiet_bi_id` **hoặc** `he_thong_id` |
+| `chung_chi_kd` | `chung_chi_thiet_bi` (loai `KIEM_DINH`) qua `v_sap_het_han`  | `ngay_het_han` | `thiet_bi_id`                        |
+| `chung_chi_hc` | `chung_chi_thiet_bi` (loai `HIEU_CHUAN`) qua `v_sap_het_han` | `ngay_het_han` | `thiet_bi_id`                        |
 
 Ràng buộc:
+
 - Bản ghi `bi_thay_the = true` (giấy phép cũ đã bị GP mới ghi đè) **không** sinh cảnh báo.
 - Chứng chỉ chỉ sinh cảnh báo cho tài sản có `che_do_kd_hc <> 'KHONG'`.
 - Đọc luôn qua module thuần `src/lib/mirats/han-canh-bao.ts` (đã tồn tại) — không hard-code ngưỡng ở nơi khác.
@@ -60,12 +61,14 @@ Cột chính:
 - `created_at`, `updated_at` chuẩn
 
 Chỉ mục:
+
 - `UNIQUE (khoa_chong_trung)` chống trùng.
 - `INDEX (nguoi_nhan, da_doc, created_at DESC)` cho query chuông.
 - `INDEX (don_vi_id, da_doc)`.
 - `INDEX (den_han_at)`.
 
 RLS:
+
 - `SELECT`: người nhận trực tiếp (`nguoi_nhan = auth.uid()`) HOẶC (`nguoi_nhan IS NULL` AND user thuộc `don_vi_id` qua `user_scope`) HOẶC admin.
 - `UPDATE`: chỉ đổi `da_doc`/`da_doc_at`/`da_doc_boi` cho chính người nhận (hoặc admin).
 - `INSERT`/`DELETE`: chỉ `service_role` (job) và admin.
@@ -114,18 +117,18 @@ Không thay `canh-bao-het-han.ts` cũ (được tái sử dụng cho KPI/nhãn "
 
 ```ts
 export interface AlertItem {
-  loai: 'bao_hanh' | 'giay_phep' | 'chung_chi_kd' | 'chung_chi_hc';
+  loai: "bao_hanh" | "giay_phep" | "chung_chi_kd" | "chung_chi_hc";
   doi_tuong_bang: string;
   doi_tuong_ref: string;
   don_vi_id: string | null;
   ten: string | null;
-  ngay_het_han: string;   // YYYY-MM-DD
+  ngay_het_han: string; // YYYY-MM-DD
 }
 
 export interface AlertOut extends AlertItem {
   so_ngay_con_lai: number;
-  nguong: number | 'overdue';
-  muc_do: 'info'|'warning'|'critical'|'overdue';
+  nguong: number | "overdue";
+  muc_do: "info" | "warning" | "critical" | "overdue";
   khoa_chong_trung: string;
   tieu_de: string;
   noi_dung: string;
@@ -135,11 +138,12 @@ export function daysRemaining(ngayHetHan: string, now?: Date): number;
 export function pickThreshold(soNgay: number, thresholds: number[]): number | null;
 export function buildAlerts(
   items: AlertItem[],
-  opts: { thresholds: number[]; now?: Date }
+  opts: { thresholds: number[]; now?: Date },
 ): AlertOut[];
 ```
 
 Ràng buộc hành vi:
+
 - `daysRemaining` dùng giờ VN (Asia/Ho_Chi_Minh) — reuse `ngayTheoMuiGio` từ `canh-bao-het-han.ts` để tránh drift.
 - `pickThreshold` chọn ngưỡng nhỏ nhất ≥ số ngày còn lại; trả `null` nếu > max hoặc < 0.
 - `buildAlerts` sinh **1 dòng cho mỗi (item, ngưỡng chạm)**; không sinh cho ngưỡng đã vượt (đã tạo dòng ở ngưỡng nhỏ hơn) — chống trùng qua `khoa_chong_trung`.
@@ -192,6 +196,7 @@ Nav: thêm mục `Thông báo` (icon chuông trong header) + link "Tuân thủ" 
 4. Regression: mọi test hiện có (`canh-bao-het-han.test.ts`, `expiring.test.ts`, `kiem-dinh.test.ts`, `nav-config.test.ts`, `badges.test.ts`, `metrics.test.ts`) vẫn xanh.
 
 pgTAP (tuỳ khả năng):
+
 - `thong_bao` RLS: user ngoài đơn vị không SELECT được dòng broadcast; chỉ đánh dấu đọc dòng của chính mình.
 - Unique `khoa_chong_trung` chặn insert trùng.
 

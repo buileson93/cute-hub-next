@@ -4,11 +4,11 @@ Tách biệt hoàn toàn **development / staging / production**. Mỗi môi trư
 
 ## 1. Ma trận môi trường
 
-| Môi trường  | `VITE_APP_ENV` | `NODE_ENV`     | Supabase project        | Dữ liệu demo | Người dùng          |
-|-------------|----------------|----------------|-------------------------|--------------|---------------------|
-| development | `development`  | `development`  | `mirats-dev`            | ✅ nạp       | Dev nội bộ          |
-| staging     | `staging`      | `production`   | `mirats-staging`        | ✅ nạp       | QA + demo khách hàng|
-| production  | `production`   | `production`   | `mirats-prod`           | ❌ CẤM       | Người dùng thật     |
+| Môi trường  | `VITE_APP_ENV` | `NODE_ENV`    | Supabase project | Dữ liệu demo | Người dùng           |
+| ----------- | -------------- | ------------- | ---------------- | ------------ | -------------------- |
+| development | `development`  | `development` | `mirats-dev`     | ✅ nạp       | Dev nội bộ           |
+| staging     | `staging`      | `production`  | `mirats-staging` | ✅ nạp       | QA + demo khách hàng |
+| production  | `production`   | `production`  | `mirats-prod`    | ❌ CẤM       | Người dùng thật      |
 
 Quy tắc:
 
@@ -22,24 +22,24 @@ Các biến `VITE_*` được nhúng vào bundle client, các biến còn lại 
 
 ### 2.1. Client (an toàn để lộ)
 
-| Biến                              | Ví dụ (staging)                                    |
-|-----------------------------------|----------------------------------------------------|
-| `VITE_APP_ENV`                    | `staging`                                          |
-| `VITE_SUPABASE_URL`               | `https://<staging-ref>.supabase.co`                |
-| `VITE_SUPABASE_PUBLISHABLE_KEY`   | `sb_publishable_...` (anon/publishable key)        |
-| `VITE_SUPABASE_PROJECT_ID`        | `<staging-ref>`                                    |
+| Biến                            | Ví dụ (staging)                             |
+| ------------------------------- | ------------------------------------------- |
+| `VITE_APP_ENV`                  | `staging`                                   |
+| `VITE_SUPABASE_URL`             | `https://<staging-ref>.supabase.co`         |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_...` (anon/publishable key) |
+| `VITE_SUPABASE_PROJECT_ID`      | `<staging-ref>`                             |
 
 ### 2.2. Server-only (tuyệt đối không nhúng client)
 
-| Biến                              | Ai đặt                          |
-|-----------------------------------|---------------------------------|
-| `SUPABASE_SERVICE_ROLE_KEY`       | Lovable Cloud tự inject         |
-| `SUPABASE_DB_PASSWORD`            | Ops (dùng cho `supabase db push`) |
-| Các API key ngoài (Telegram, …)   | `add_secret` / connector        |
+| Biến                            | Ai đặt                            |
+| ------------------------------- | --------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Lovable Cloud tự inject           |
+| `SUPABASE_DB_PASSWORD`          | Ops (dùng cho `supabase db push`) |
+| Các API key ngoài (Telegram, …) | `add_secret` / connector          |
 
 ### 2.3. URL cố định
 
-- Preview:   `https://project--<id>-dev.lovable.app`
+- Preview: `https://project--<id>-dev.lovable.app`
 - Published: `https://project--<id>.lovable.app`
 - Custom domain gắn ở project **production** khi cần.
 

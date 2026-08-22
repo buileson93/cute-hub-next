@@ -30,8 +30,14 @@ beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Element.prototype as any).scrollIntoView = () => {};
   }
-  if (typeof (globalThis as unknown as { ResizeObserver?: unknown }).ResizeObserver === "undefined") {
-    class RO { observe() {} unobserve() {} disconnect() {} }
+  if (
+    typeof (globalThis as unknown as { ResizeObserver?: unknown }).ResizeObserver === "undefined"
+  ) {
+    class RO {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).ResizeObserver = RO;
   }
@@ -57,14 +63,8 @@ vi.mock("@/lib/mirats/reference-sources", () => ({
 import { ReferenceCell } from "@/components/mirats/ReferenceCell";
 
 describe("ReferenceCell — P5 · reference field bắt buộc là Combobox danh mục", () => {
-  it("Render role=\"combobox\" và KHÔNG render bất kỳ <input type=text> nào", () => {
-    render(
-      <ReferenceCell
-        refTable="dm_don_vi"
-        value=""
-        onChange={() => {}}
-      />,
-    );
+  it('Render role="combobox" và KHÔNG render bất kỳ <input type=text> nào', () => {
+    render(<ReferenceCell refTable="dm_don_vi" value="" onChange={() => {}} />);
     // 1. Có Combobox (Popover trigger có role="combobox").
     const trigger = screen.getByRole("combobox");
     expect(trigger).toBeTruthy();
@@ -77,13 +77,7 @@ describe("ReferenceCell — P5 · reference field bắt buộc là Combobox danh
   });
 
   it("Hiển thị nhãn theo UUID hiện tại (không phải chuỗi tự do)", () => {
-    render(
-      <ReferenceCell
-        refTable="dm_don_vi"
-        value={UUID_B}
-        onChange={() => {}}
-      />,
-    );
+    render(<ReferenceCell refTable="dm_don_vi" value={UUID_B} onChange={() => {}} />);
     // Trigger phải hiển thị label khớp option có value=UUID_B.
     const trigger = screen.getByRole("combobox");
     expect(trigger.textContent).toContain("Đơn vị Tân Sơn Nhất");
@@ -93,13 +87,7 @@ describe("ReferenceCell — P5 · reference field bắt buộc là Combobox danh
 
   it("Chọn option ⇒ onChange nhận UUID (option.value), không phải label", async () => {
     const onChange = vi.fn();
-    render(
-      <ReferenceCell
-        refTable="dm_don_vi"
-        value=""
-        onChange={onChange}
-      />,
-    );
+    render(<ReferenceCell refTable="dm_don_vi" value="" onChange={onChange} />);
     // Mở popover.
     fireEvent.click(screen.getByRole("combobox"));
     // Chờ option xuất hiện trong portal & click.

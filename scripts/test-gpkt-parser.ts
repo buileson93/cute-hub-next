@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // ============================================================================
 // Đo tỷ lệ bóc tách GPKT của Tầng-1 (regex) trên bộ PDF mẫu.
 // Usage:
@@ -75,24 +74,49 @@ async function main() {
     try {
       const txt = await extractNodePdfText(f);
       if (!txt || txt.length < 100) {
-        reports.push({ file: rel, ok: false, filled: 0, needsCheck: 0, gp_so: "", method: "fallback-ai", reason: "PDF không có text (scan)" });
+        reports.push({
+          file: rel,
+          ok: false,
+          filled: 0,
+          needsCheck: 0,
+          gp_so: "",
+          method: "fallback-ai",
+          reason: "PDF không có text (scan)",
+        });
         continue;
       }
       const r = parseGpktText(txt);
       const needsCheck = Object.values(r.perField).filter((m) => m.needsCheck).length;
       const ok = !!r.fields.gp_so && r.filledCount >= 8;
       reports.push({
-        file: rel, ok, filled: r.filledCount, needsCheck,
-        gp_so: r.fields.gp_so, method: ok ? "regex" : "fallback-ai",
-        reason: ok ? undefined : (!r.fields.gp_so ? "Không tìm thấy số GP" : `Chỉ bóc được ${r.filledCount}/17`),
+        file: rel,
+        ok,
+        filled: r.filledCount,
+        needsCheck,
+        gp_so: r.fields.gp_so,
+        method: ok ? "regex" : "fallback-ai",
+        reason: ok
+          ? undefined
+          : !r.fields.gp_so
+            ? "Không tìm thấy số GP"
+            : `Chỉ bóc được ${r.filledCount}/17`,
       });
     } catch (e) {
-      reports.push({ file: rel, ok: false, filled: 0, needsCheck: 0, gp_so: "", method: "fallback-ai", reason: (e as Error).message });
+      reports.push({
+        file: rel,
+        ok: false,
+        filled: 0,
+        needsCheck: 0,
+        gp_so: "",
+        method: "fallback-ai",
+        reason: (e as Error).message,
+      });
     }
   }
 
   // In bảng
-  const pad = (s: string, n: number) => s.length >= n ? s.slice(0, n) : s + " ".repeat(n - s.length);
+  const pad = (s: string, n: number) =>
+    s.length >= n ? s.slice(0, n) : s + " ".repeat(n - s.length);
   console.log(pad("FILE", 48), pad("SỐ GP", 16), pad("FILLED", 8), pad("NEEDCHECK", 10), "METHOD");
   console.log("-".repeat(100));
   for (const r of reports) {
@@ -110,7 +134,9 @@ async function main() {
   const avgFilled = total ? (reports.reduce((s, r) => s + r.filled, 0) / total).toFixed(1) : "0";
   const avgNeed = total ? (reports.reduce((s, r) => s + r.needsCheck, 0) / total).toFixed(1) : "0";
   console.log("-".repeat(100));
-  console.log(`Tổng: ${total} tệp · Regex OK: ${okCount} (${rate}%) · Cần AI fallback: ${total - okCount}`);
+  console.log(
+    `Tổng: ${total} tệp · Regex OK: ${okCount} (${rate}%) · Cần AI fallback: ${total - okCount}`,
+  );
   console.log(`Trung bình: ${avgFilled}/17 trường bóc được · ${avgNeed} trường cần kiểm tra`);
   if (args.includes("--ai")) {
     console.log("\nDanh sách sẽ fallback AI:");
@@ -120,4 +146,7 @@ async function main() {
   process.exit(okCount === total ? 0 : 2);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

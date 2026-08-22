@@ -19,7 +19,15 @@ describe("ArtifactReuseManager", () => {
       id: "artifact-uuid",
       file_hash: mockHash,
       status: "completed",
-      pages: [{ page: 1, rawText: "Page 1 content", confidence: 0.9, method: "ocr", providerId: "tesseract" }],
+      pages: [
+        {
+          page: 1,
+          rawText: "Page 1 content",
+          confidence: 0.9,
+          method: "ocr",
+          providerId: "tesseract",
+        },
+      ],
       ocr_version: "1.0.0",
       language: "vie+eng",
     } as any);
@@ -45,7 +53,9 @@ describe("ArtifactReuseManager", () => {
       id: "partial-uuid",
       file_hash: mockHash,
       status: "partial",
-      pages: [{ page: 1, rawText: "Page 1", confidence: 0.8, method: "ocr", providerId: "tesseract" }],
+      pages: [
+        { page: 1, rawText: "Page 1", confidence: 0.8, method: "ocr", providerId: "tesseract" },
+      ],
     } as any);
 
     const result = await artifactReuseManager.attemptReuse(sourceType, sourceId, mockFile);

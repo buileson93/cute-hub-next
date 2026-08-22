@@ -13,7 +13,7 @@ Restore the `/_app/tong-quan` route to its original high-density visual structur
 ## Technical Details
 
 - **File**: `src/routes/_app.tong-quan.tsx`
-- **Logic**: 
+- **Logic**:
   - Switch from local stubs to `useUnifiedDashboardStats()`.
   - Re-implement the 4 main Reliability Cards (Availability, MTTR, MTBF, PM On-time).
   - Re-implement the 3 main Chart Sections (Health Distribution, Incident Trend, Asset Status).

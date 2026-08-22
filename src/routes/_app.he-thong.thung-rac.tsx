@@ -167,91 +167,114 @@ function ThungRacPage() {
   const canHardDelete = (r: Row) =>
     r.refs.gan_active === 0 && r.refs.bao_tri === 0 && r.refs.su_co === 0 && r.refs.hong_hoc === 0;
 
-  const columns = useMemo<ColumnDef<Row>[]>(() => [
-    {
-      key: "ten", header: "Thành phần", width: 300,
-      render: (r) => (
-        <div>
-          <div className="font-medium">{r.ten}</div>
-          {r.ma_thanh_phan && (
-            <div className="font-mono text-[11px] text-muted-foreground">{r.ma_thanh_phan}</div>
-          )}
-        </div>
-      )
-    },
-    {
-      key: "he_thong_ten", header: "Hệ thống", width: 200,
-      render: (r) => <span className="text-sm">{r.he_thong_ten ?? "—"}</span>
-    },
-    {
-      key: "don_vi_ma", header: "Đơn vị", width: 100,
-      render: (r) => <span className="text-sm">{r.don_vi_ma ?? "—"}</span>
-    },
-    {
-      key: "refs", header: "Ràng buộc",
-      render: (r) => {
-        const clean = canHardDelete(r);
-        return (
-          <div className="flex flex-wrap gap-1">
-            {r.refs.gan_active > 0 && (
-              <Badge variant="destructive" className="text-[10px]">
-                {r.refs.gan_active} tài sản đang lắp
-              </Badge>
-            )}
-            {r.refs.bao_tri > 0 && (
-              <Badge variant="secondary" className="text-[10px]">{r.refs.bao_tri} bảo trì</Badge>
-            )}
-            {r.refs.su_co > 0 && (
-              <Badge variant="secondary" className="text-[10px]">{r.refs.su_co} sự cố</Badge>
-            )}
-            {r.refs.hong_hoc > 0 && (
-              <Badge variant="secondary" className="text-[10px]">{r.refs.hong_hoc} hỏng hóc</Badge>
-            )}
-            {clean && (
-              <Badge variant="outline" className="text-[10px] text-emerald-600">Không ràng buộc</Badge>
+  const columns = useMemo<ColumnDef<Row>[]>(
+    () => [
+      {
+        key: "ten",
+        header: "Thành phần",
+        width: 300,
+        render: (r) => (
+          <div>
+            <div className="font-medium">{r.ten}</div>
+            {r.ma_thanh_phan && (
+              <div className="font-mono text-[11px] text-muted-foreground">{r.ma_thanh_phan}</div>
             )}
           </div>
-        );
-      }
-    },
-    {
-      key: "deleted_at", header: "Đã ẩn lúc", width: 150,
-      render: (r) => (
-        <span className="text-xs text-muted-foreground">
-          {r.deleted_at ? new Date(r.deleted_at).toLocaleString("vi-VN") : "—"}
-        </span>
-      )
-    },
-    {
-      key: "actions", header: "", width: 220, align: "right",
-      render: (r) => {
-        const clean = canHardDelete(r);
-        return (
-          <div className="flex justify-end gap-1">
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-[11px]"
-              onClick={() => restoreMut.mutate(r)}
-              disabled={restoreMut.isPending}
-            >
-              <RotateCcw className="mr-1 h-3 w-3" /> Khôi phục
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              className="h-7 text-[11px]"
-              disabled={!clean || hardDeleteMut.isPending}
-              onClick={() => setHardTarget(r)}
-              title={clean ? "Xoá vĩnh viễn" : "Còn ràng buộc — không thể xoá vĩnh viễn"}
-            >
-              <Trash2 className="mr-1 h-3 w-3" /> Xoá
-            </Button>
-          </div>
-        );
-      }
-    }
-  ], [restoreMut.isPending, hardDeleteMut.isPending]);
+        ),
+      },
+      {
+        key: "he_thong_ten",
+        header: "Hệ thống",
+        width: 200,
+        render: (r) => <span className="text-sm">{r.he_thong_ten ?? "—"}</span>,
+      },
+      {
+        key: "don_vi_ma",
+        header: "Đơn vị",
+        width: 100,
+        render: (r) => <span className="text-sm">{r.don_vi_ma ?? "—"}</span>,
+      },
+      {
+        key: "refs",
+        header: "Ràng buộc",
+        render: (r) => {
+          const clean = canHardDelete(r);
+          return (
+            <div className="flex flex-wrap gap-1">
+              {r.refs.gan_active > 0 && (
+                <Badge variant="destructive" className="text-[10px]">
+                  {r.refs.gan_active} tài sản đang lắp
+                </Badge>
+              )}
+              {r.refs.bao_tri > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {r.refs.bao_tri} bảo trì
+                </Badge>
+              )}
+              {r.refs.su_co > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {r.refs.su_co} sự cố
+                </Badge>
+              )}
+              {r.refs.hong_hoc > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {r.refs.hong_hoc} hỏng hóc
+                </Badge>
+              )}
+              {clean && (
+                <Badge variant="outline" className="text-[10px] text-emerald-600">
+                  Không ràng buộc
+                </Badge>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        key: "deleted_at",
+        header: "Đã ẩn lúc",
+        width: 150,
+        render: (r) => (
+          <span className="text-xs text-muted-foreground">
+            {r.deleted_at ? new Date(r.deleted_at).toLocaleString("vi-VN") : "—"}
+          </span>
+        ),
+      },
+      {
+        key: "actions",
+        header: "",
+        width: 220,
+        align: "right",
+        render: (r) => {
+          const clean = canHardDelete(r);
+          return (
+            <div className="flex justify-end gap-1">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-[11px]"
+                onClick={() => restoreMut.mutate(r)}
+                disabled={restoreMut.isPending}
+              >
+                <RotateCcw className="mr-1 h-3 w-3" /> Khôi phục
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="h-7 text-[11px]"
+                disabled={!clean || hardDeleteMut.isPending}
+                onClick={() => setHardTarget(r)}
+                title={clean ? "Xoá vĩnh viễn" : "Còn ràng buộc — không thể xoá vĩnh viễn"}
+              >
+                <Trash2 className="mr-1 h-3 w-3" /> Xoá
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    [restoreMut.isPending, hardDeleteMut.isPending],
+  );
 
   return (
     <PageFrame density="compact">
@@ -300,8 +323,8 @@ function ThungRacPage() {
                 </div>
                 {hardTarget && hardTarget.refs.gan_total > 0 && (
                   <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-amber-700 dark:text-amber-300">
-                    Có {hardTarget.refs.gan_total} bản ghi tháo–lắp đã kết thúc sẽ bị xoá theo.
-                    Tài sản liên quan KHÔNG bị ảnh hưởng.
+                    Có {hardTarget.refs.gan_total} bản ghi tháo–lắp đã kết thúc sẽ bị xoá theo. Tài
+                    sản liên quan KHÔNG bị ảnh hưởng.
                   </div>
                 )}
               </div>

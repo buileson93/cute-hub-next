@@ -5,12 +5,7 @@ import { useState, useMemo } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RawTableWrapper } from "@/components/mirats/ui/RawTableWrapper";
 
 // Nhãn tiếng Việt cho toàn bộ cột vật lý của bảng thiet_bi (nguồn: schema DB).
@@ -62,12 +57,11 @@ const FIELD_LABELS: Record<string, string> = {
   vai_tro: "Vai trò",
   file_tai_lieu: "File tài liệu",
   hinh_anh: "Hình ảnh",
-  
+
   created_at: "Ngày tạo",
   updated_at: "Cập nhật gần nhất",
   id: "ID Hệ thống (UUID)",
 };
-
 
 const HIDDEN_COLS = new Set<string>([
   "search_text",
@@ -136,9 +130,11 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
 
   const displayRows = useMemo(() => {
     if (!data) return [];
-    const thuocTinh = (data.thuoc_tinh && typeof data.thuoc_tinh === "object" ? data.thuoc_tinh : {}) as Record<string, unknown>;
-    
-    const allKeys = Object.keys(data).filter(k => k !== "thuoc_tinh");
+    const thuocTinh = (
+      data.thuoc_tinh && typeof data.thuoc_tinh === "object" ? data.thuoc_tinh : {}
+    ) as Record<string, unknown>;
+
+    const allKeys = Object.keys(data).filter((k) => k !== "thuoc_tinh");
     const dynKeys = Object.keys(thuocTinh);
 
     const mapRow = (k: string, isDyn = false) => {
@@ -152,24 +148,21 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
         isSnapshot: !isDyn && SNAPSHOT_COLS.has(k),
         isHidden: !isDyn && HIDDEN_COLS.has(k),
         isEmpty: val == null || val === "" || val === undefined,
-        isDyn
+        isDyn,
       };
     };
 
-    let rows = [
-      ...allKeys.map(k => mapRow(k)),
-      ...dynKeys.map(k => mapRow(k, true))
-    ];
+    let rows = [...allKeys.map((k) => mapRow(k)), ...dynKeys.map((k) => mapRow(k, true))];
 
     // Lọc theo chế độ
     if (!techMode) {
       // Chế độ thường: Ẩn ID kỹ thuật, ẩn cột nội bộ
-      rows = rows.filter(r => !r.isFK && !r.isHidden);
+      rows = rows.filter((r) => !r.isFK && !r.isHidden);
     }
 
     if (!showEmpty) {
       // Ẩn các trường trống
-      rows = rows.filter(r => !r.isEmpty);
+      rows = rows.filter((r) => !r.isEmpty);
     }
 
     return rows;
@@ -187,45 +180,43 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
   }
 
   const sections = [
-    { 
-      title: "Thông tin chính", 
-      rows: displayRows.filter(r => !r.isFK && !r.isSnapshot && !r.isDyn && !r.isHidden) 
+    {
+      title: "Thông tin chính",
+      rows: displayRows.filter((r) => !r.isFK && !r.isSnapshot && !r.isDyn && !r.isHidden),
     },
-    { 
-      title: "Trường mở rộng (Dynamic)", 
-      rows: displayRows.filter(r => r.isDyn) 
+    {
+      title: "Trường mở rộng (Dynamic)",
+      rows: displayRows.filter((r) => r.isDyn),
     },
-    { 
-      title: "Snapshot Dữ liệu", 
-      rows: displayRows.filter(r => r.isSnapshot) 
+    {
+      title: "Snapshot Dữ liệu",
+      rows: displayRows.filter((r) => r.isSnapshot),
     },
-    { 
-      title: "Kỹ thuật & Liên kết", 
-      rows: displayRows.filter(r => r.isFK || r.isHidden) 
+    {
+      title: "Kỹ thuật & Liên kết",
+      rows: displayRows.filter((r) => r.isFK || r.isHidden),
     },
-  ].filter(s => s.rows.length > 0);
+  ].filter((s) => s.rows.length > 0);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-muted/20 p-3">
         <div className="flex items-center gap-6">
           <div className="flex items-center space-x-2">
-            <Switch 
-              id="tech-mode" 
-              checked={techMode} 
-              onCheckedChange={setTechMode}
-            />
-            <Label htmlFor="tech-mode" className="flex items-center gap-1.5 cursor-pointer text-xs font-medium">
+            <Switch id="tech-mode" checked={techMode} onCheckedChange={setTechMode} />
+            <Label
+              htmlFor="tech-mode"
+              className="flex items-center gap-1.5 cursor-pointer text-xs font-medium"
+            >
               <Settings2 className="h-3.5 w-3.5" /> Chế độ kỹ thuật
             </Label>
           </div>
           <div className="flex items-center space-x-2">
-            <Switch 
-              id="show-empty" 
-              checked={showEmpty} 
-              onCheckedChange={setShowEmpty}
-            />
-            <Label htmlFor="show-empty" className="flex items-center gap-1.5 cursor-pointer text-xs font-medium">
+            <Switch id="show-empty" checked={showEmpty} onCheckedChange={setShowEmpty} />
+            <Label
+              htmlFor="show-empty"
+              className="flex items-center gap-1.5 cursor-pointer text-xs font-medium"
+            >
               <Info className="h-3.5 w-3.5" /> Hiện trường trống
             </Label>
           </div>
@@ -246,10 +237,13 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
               <table>
                 <tbody>
                   {s.rows.map((r, i) => (
-                    <tr key={r.key} className={cn(
-                      "group transition-colors",
-                      i % 2 === 0 ? "bg-background" : "bg-muted/20"
-                    )}>
+                    <tr
+                      key={r.key}
+                      className={cn(
+                        "group transition-colors",
+                        i % 2 === 0 ? "bg-background" : "bg-muted/20",
+                      )}
+                    >
                       <td className="w-1/3 min-w-[160px] border-r align-top">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-foreground">{r.label}</span>
@@ -270,11 +264,15 @@ export function ThietBiAllFields({ maThietBi }: { maThietBi: string }) {
                           {r.key}
                         </div>
                       </td>
-                      <td className={cn(
-                        "align-top break-all font-medium",
-                        (r.isFK || r.isHidden) ? "font-mono text-[11px] text-muted-foreground bg-muted/10" : "text-foreground",
-                        r.isEmpty && "text-muted-foreground/40 italic font-normal"
-                      )}>
+                      <td
+                        className={cn(
+                          "align-top break-all font-medium",
+                          r.isFK || r.isHidden
+                            ? "font-mono text-[11px] text-muted-foreground bg-muted/10"
+                            : "text-foreground",
+                          r.isEmpty && "text-muted-foreground/40 italic font-normal",
+                        )}
+                      >
                         {r.value}
                       </td>
                     </tr>

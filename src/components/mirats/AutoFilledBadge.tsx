@@ -58,7 +58,14 @@ export function useAmbientApply<T>(opts: {
 
   return {
     isAuto,
-    undo: () => { setIsAuto(false); touched.current = true; clear(); },
-    onUserChange: () => { if (isAuto) setIsAuto(false); touched.current = true; },
+    undo: () => {
+      setIsAuto(false);
+      touched.current = true;
+      clear();
+    },
+    onUserChange: () => {
+      if (isAuto) setIsAuto(false);
+      touched.current = true;
+    },
   };
 }

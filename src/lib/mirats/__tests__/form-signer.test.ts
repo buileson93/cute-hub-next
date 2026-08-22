@@ -13,7 +13,9 @@ import {
 } from "../form-signer";
 import type { AppRole } from "@/hooks/use-session";
 
-const rec = (p: Partial<SignerRecord> & { signer_role: SignerRecord["signer_role"] }): SignerRecord => ({
+const rec = (
+  p: Partial<SignerRecord> & { signer_role: SignerRecord["signer_role"] },
+): SignerRecord => ({
   signer_role: p.signer_role,
   signed_by: p.signed_by ?? "u",
   signed_at: p.signed_at ?? "2026-01-01T00:00:00Z",
@@ -49,10 +51,7 @@ describe("nextSignerRole — thứ tự", () => {
   });
   it("đủ hai vai trò → null", () => {
     expect(
-      nextSignerRole([
-        rec({ signer_role: "nguoi_thuc_hien" }),
-        rec({ signer_role: "phu_trach" }),
-      ]),
+      nextSignerRole([rec({ signer_role: "nguoi_thuc_hien" }), rec({ signer_role: "phu_trach" })]),
     ).toBeNull();
   });
 });
@@ -132,10 +131,7 @@ describe("sortSigners & isFullySigned", () => {
   });
   it("đủ chữ ký khi có cả hai", () => {
     expect(
-      isFullySigned([
-        rec({ signer_role: "nguoi_thuc_hien" }),
-        rec({ signer_role: "phu_trach" }),
-      ]),
+      isFullySigned([rec({ signer_role: "nguoi_thuc_hien" }), rec({ signer_role: "phu_trach" })]),
     ).toBe(true);
     expect(isFullySigned([rec({ signer_role: "nguoi_thuc_hien" })])).toBe(false);
   });
@@ -143,10 +139,10 @@ describe("sortSigners & isFullySigned", () => {
 
 describe("resolveSigners — fallback signed_by/signed_at", () => {
   it("dùng bản ghi signer khi có (bỏ qua legacy)", () => {
-    const out = resolveSigners(
-      [rec({ signer_role: "nguoi_thuc_hien", signed_by: "tech" })],
-      { signed_by: "old", signed_at: "2020-01-01T00:00:00Z" },
-    );
+    const out = resolveSigners([rec({ signer_role: "nguoi_thuc_hien", signed_by: "tech" })], {
+      signed_by: "old",
+      signed_at: "2020-01-01T00:00:00Z",
+    });
     expect(out).toHaveLength(1);
     expect(out[0].signed_by).toBe("tech");
   });

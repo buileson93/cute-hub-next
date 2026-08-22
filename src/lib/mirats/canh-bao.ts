@@ -9,11 +9,7 @@ import { ngayTheoMuiGio } from "./canh-bao-het-han";
 /** Ngưỡng thông báo mặc định cho N5. Có thể ghi đè qua `thong_bao_cau_hinh`. */
 export const NGUONG_THONG_BAO = [30, 15, 7] as const;
 
-export type LoaiCanhBao =
-  | "bao_hanh"
-  | "giay_phep"
-  | "chung_chi_kd"
-  | "chung_chi_hc";
+export type LoaiCanhBao = "bao_hanh" | "giay_phep" | "chung_chi_kd" | "chung_chi_hc";
 
 export type MucDo = "info" | "warning" | "critical" | "overdue";
 
@@ -101,9 +97,7 @@ export function buildAlerts(
     const muc_do = mucDoTheoNguong(nguong);
     const ten = item.ten ?? "(không tên)";
     const tieu_de =
-      nguong === "overdue"
-        ? `[Quá hạn] ${nhan}: ${ten}`
-        : `[Còn ${so} ngày] ${nhan}: ${ten}`;
+      nguong === "overdue" ? `[Quá hạn] ${nhan}: ${ten}` : `[Còn ${so} ngày] ${nhan}: ${ten}`;
     const noi_dung =
       nguong === "overdue"
         ? `${nhan} "${ten}" đã quá hạn ${Math.abs(so)} ngày (hết hạn ${item.ngay_het_han.slice(0, 10)}).`

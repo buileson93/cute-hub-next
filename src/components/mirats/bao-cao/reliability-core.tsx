@@ -58,8 +58,7 @@ export function computeTotals(rows: ReliabilityRow[]) {
   const totalIncidents = rows.reduce((a, r) => a + (r.so_su_co ?? 0), 0);
   const totalClosed = rows.reduce((a, r) => a + (r.so_dong ?? 0), 0);
   const weightedMttr =
-    rows.reduce((a, r) => a + (r.mttr_phut ?? 0) * (r.so_dong ?? 0), 0) /
-    Math.max(totalClosed, 1);
+    rows.reduce((a, r) => a + (r.mttr_phut ?? 0) * (r.so_dong ?? 0), 0) / Math.max(totalClosed, 1);
   return { totalIncidents, totalClosed, weightedMttr };
 }
 
@@ -79,5 +78,9 @@ export function DeltaBadge({ d, lowerIsBetter = true }: { d: Delta; lowerIsBette
   const cls = good ? "text-emerald-600" : "text-destructive";
   const sign = up ? "▲" : "▼";
   const pct = d.pct == null ? "mới" : `${Math.abs(d.pct).toFixed(1)}%`;
-  return <span className={`text-xs font-medium ${cls}`}>{sign} {pct} vs kỳ trước</span>;
+  return (
+    <span className={`text-xs font-medium ${cls}`}>
+      {sign} {pct} vs kỳ trước
+    </span>
+  );
 }

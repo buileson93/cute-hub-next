@@ -21,7 +21,8 @@ export const CATALOG_TEMPLATE_VERSION = "1";
 const VERSION_TAG = "MIRATS_TEMPLATE_VERSION";
 
 function colLetter(n: number): string {
-  let s = "", x = n;
+  let s = "",
+    x = n;
   while (x > 0) {
     const r = (x - 1) % 26;
     s = String.fromCharCode(65 + r) + s;
@@ -55,9 +56,16 @@ async function loadRefNames(table: string): Promise<string[]> {
   return Array.from(set).sort((a, b) => a.localeCompare(b, "vi"));
 }
 
-
 export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
-  const { fileName, labelSingular, headers, rows, refDropdowns = [], notes = {}, required = [] } = args;
+  const {
+    fileName,
+    labelSingular,
+    headers,
+    rows,
+    refDropdowns = [],
+    notes = {},
+    required = [],
+  } = args;
 
   const wb = new ExcelJS.Workbook();
   wb.creator = "MIRATS";
@@ -69,12 +77,15 @@ export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
   // ---- Nạp dropdown song song ----
   const dmLists: Record<string, string[]> = {};
   await Promise.all(
-    refDropdowns.map(async (r) => { dmLists[r.csvKey] = await loadRefNames(r.refTable); }),
+    refDropdowns.map(async (r) => {
+      dmLists[r.csvKey] = await loadRefNames(r.refTable);
+    }),
   );
 
   // ---- ① Hướng dẫn ----
   const guide = wb.addWorksheet("① Hướng dẫn");
-  guide.getCell("A1").value = `MẪU NHẬP LIỆU ${labelSingular.toUpperCase()} — điền vào sheet "② Nhập liệu"`;
+  guide.getCell("A1").value =
+    `MẪU NHẬP LIỆU ${labelSingular.toUpperCase()} — điền vào sheet "② Nhập liệu"`;
   guide.getCell("A1").font = { bold: true, size: 13, color: { argb: "FF1E3A8A" } };
   guide.mergeCells("A1:D1");
   guide.getCell("A2").value =
@@ -93,11 +104,19 @@ export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
       h,
       required.includes(h) ? "✔" : "",
       dropdownKeys.has(h) || h === "active" ? "✔" : "",
-      notes[h] ?? (h === "ma" ? "Khoá tự nhiên. Trống = tạo mới." : h === "ten" ? "Tên hiển thị." : h === "active" ? "1 = hoạt động, 0 = ngừng." : ""),
+      notes[h] ??
+        (h === "ma"
+          ? "Khoá tự nhiên. Trống = tạo mới."
+          : h === "ten"
+            ? "Tên hiển thị."
+            : h === "active"
+              ? "1 = hoạt động, 0 = ngừng."
+              : ""),
     ]);
     row.alignment = { vertical: "top", wrapText: true };
     row.eachCell((c) => (c.border = border));
-    if (required.includes(h)) row.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF9C3" } };
+    if (required.includes(h))
+      row.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF9C3" } };
   }
   guide.getColumn(1).width = 22;
   guide.getColumn(2).width = 12;
@@ -117,7 +136,9 @@ export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
     dmCol[r.csvKey] = colIdx;
     dm.getCell(1, colIdx).value = r.csvKey;
     dm.getColumn(colIdx).width = 26;
-    (dmLists[r.csvKey] ?? []).forEach((v, k) => { dm.getCell(k + 2, colIdx).value = v; });
+    (dmLists[r.csvKey] ?? []).forEach((v, k) => {
+      dm.getCell(k + 2, colIdx).value = v;
+    });
   });
   // Cột dành cho active dropdown
   const activeCol = refDropdowns.length + 1;
@@ -134,7 +155,11 @@ export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
   headerRow.eachCell((c, col) => {
     const h = headers[col - 1];
     const isReq = required.includes(h);
-    c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: isReq ? "FFFEF08A" : "FFE8EEF7" } };
+    c.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: isReq ? "FFFEF08A" : "FFE8EEF7" },
+    };
     c.alignment = { vertical: "middle" };
     c.border = border;
   });
@@ -148,7 +173,8 @@ export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
 
   // ---- Data validation ----
   const lastRow = Math.max(rows.length + 1, 500);
-  const dv = (ws as unknown as { dataValidations: { add: (r: string, v: unknown) => void } }).dataValidations;
+  const dv = (ws as unknown as { dataValidations: { add: (r: string, v: unknown) => void } })
+    .dataValidations;
   headers.forEach((h, i) => {
     const excelCol = colLetter(i + 1);
     if (dmCol[h] != null) {
@@ -179,7 +205,9 @@ export async function exportCatalogTemplateXlsx(args: CatalogTemplateArgs) {
   });
 
   ws.state = "visible";
-  wb.views = [{ activeTab: 2, x: 0, y: 0, width: 10000, height: 20000, firstSheet: 0, visibility: "visible" }];
+  wb.views = [
+    { activeTab: 2, x: 0, y: 0, width: 10000, height: 20000, firstSheet: 0, visibility: "visible" },
+  ];
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], {
@@ -225,7 +253,14 @@ export async function readXlsxFirstSheet(file: File): Promise<XlsxReadResult> {
   const preferred = wb.worksheets.find((w) => w.name.includes("Nhập liệu"));
   const ws = preferred ?? wb.worksheets.find((w) => w.state !== "hidden") ?? wb.worksheets[0];
   const warnings: string[] = [];
-  if (!ws) return { headers: [], rows: [], version, warnings: ["File không có sheet dữ liệu."], sheetName: "" };
+  if (!ws)
+    return {
+      headers: [],
+      rows: [],
+      version,
+      warnings: ["File không có sheet dữ liệu."],
+      sheetName: "",
+    };
   if (!preferred) warnings.push(`Không thấy sheet "② Nhập liệu", đang đọc "${ws.name}".`);
   if (version && version !== CATALOG_TEMPLATE_VERSION) {
     warnings.push(
@@ -237,7 +272,9 @@ export async function readXlsxFirstSheet(file: File): Promise<XlsxReadResult> {
   // 3) Đọc header + rows.
   const headerRow = ws.getRow(1);
   const headers: string[] = [];
-  headerRow.eachCell({ includeEmpty: false }, (c) => { headers.push(String(c.value ?? "").trim()); });
+  headerRow.eachCell({ includeEmpty: false }, (c) => {
+    headers.push(String(c.value ?? "").trim());
+  });
   if (headers.length === 0) warnings.push("Dòng đầu (header) trống — không đọc được cột nào.");
   const rows: Record<string, string>[] = [];
   for (let i = 2; i <= ws.rowCount; i++) {
@@ -246,7 +283,12 @@ export async function readXlsxFirstSheet(file: File): Promise<XlsxReadResult> {
     let hasAny = false;
     headers.forEach((h, idx) => {
       const v = r.getCell(idx + 1).value;
-      const s = v == null ? "" : typeof v === "object" && "text" in (v as object) ? String((v as { text: unknown }).text ?? "") : String(v);
+      const s =
+        v == null
+          ? ""
+          : typeof v === "object" && "text" in (v as object)
+            ? String((v as { text: unknown }).text ?? "")
+            : String(v);
       rec[h] = s;
       if (s.trim()) hasAny = true;
     });
@@ -307,7 +349,12 @@ export function validateCatalogRows(
       }
     }
     const av = (r[activeCol] ?? "").trim();
-    if (av && !["1", "0", "true", "false", "yes", "no", "co", "khong", "ẩn", "an"].includes(av.toLowerCase())) {
+    if (
+      av &&
+      !["1", "0", "true", "false", "yes", "no", "co", "khong", "ẩn", "an"].includes(
+        av.toLowerCase(),
+      )
+    ) {
       const m = `Giá trị "${av}" ở cột ${activeCol} không rõ — sẽ coi là hoạt động.`;
       warnings.push(m);
       issues.push({ field: activeCol, value: av, message: m, level: "warning" });
@@ -323,5 +370,3 @@ export function validateCatalogRows(
     return { errors, warnings, issues };
   });
 }
-
-

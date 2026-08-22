@@ -12,6 +12,7 @@ Toàn bộ RPC nằm trong schema `public`. Đa số là `SECURITY DEFINER` vớ
 ## Nhóm RPC theo miền
 
 ### Cây & thành phần hệ thống
+
 - `khai_them_thanh_phan_he_thong(...)` — thêm thành phần vào cây; sinh mã `TPHT_*`; đồng bộ đơn vị.
 - `khai_them_he_thong(...)` — thêm hệ thống mới.
 - `_cay_apply(id)` — apply thay đổi cây (nội bộ).
@@ -20,25 +21,30 @@ Toàn bộ RPC nằm trong schema `public`. Đa số là `SECURITY DEFINER` vớ
 - `_validate_vi_tri_tuong_thich(vi_tri, thanh_phan)` — validate vị trí khả dụng.
 
 ### Lắp/tháo tài sản
+
 - `_dong_gan_lk(...)`, `_dong_gan_va_vong_doi(...)` — đóng gán + ghi vòng đời.
 - `_mo_gan_lk(...)`, `_mo_gan_va_vong_doi(...)` — mở gán mới.
 - Xem thêm `device-movement-history.ts` phía client gọi.
 
 ### Sự cố / hỏng hóc / vấn đề
+
 - `agent_add_su_co(...)`, `agent_add_hong_hoc(...)`, `agent_add_bao_tri(...)`, `agent_add_kiem_ke(...)` — AI agent nhập nhanh.
 - `_n6_normalize(raw)` — chuẩn hoá text N6.
 - `_map_trang_thai_tb(key)` — map key → trạng thái tài sản.
 
 ### RBAC / quyền
+
 - `has_role(_user_id, _role app_role)` — kiểm role, dùng trong RLS.
 - `get_my_permissions()` — trả roles + permissions + scope cho client.
 - `can_access_du_an`, `can_manage_du_an`, `can_edit_cong_viec`, `can_access_so_do`, `can_access_ticket`, `can_view_thiet_bi`, `can_view_thiet_bi_ma`, `can_view_import_batch`, `can_manage_equipment` — helper cho policy.
 
 ### Change request (N2)
+
 - `approve_change_request(id, ly_do)` — duyệt.
 - `cancel_change_request(id)` — huỷ.
 
 ### Import / backup / schema admin
+
 - `apply_import_batch(batch_id, limit)`.
 - `_import_allowed_table`, `_import_has_dependents`, `_backup_allowed_table` — guard.
 - `admin_add_column`, `admin_drop_column`, `admin_rename_column`, `admin_import_rows`, `admin_list_schema`, `admin_list_backup_tables`, `admin_restore_database`, `admin_rollback_audit`, `admin_reset_sequences`.
@@ -46,16 +52,20 @@ Toàn bộ RPC nằm trong schema `public`. Đa số là `SECURITY DEFINER` vớ
 - `backup_schema_json()`.
 
 ### AI
+
 - `ai_describe_schema()` — mô tả schema cho AI grounding.
 - `ai_run_select(sql, max_rows)` — chạy SELECT có kiểm.
 
 ### Danh mục quality (N1)
+
 - `_danh_muc_merge_ref_map()` — map ref khi merge duplicate.
 
 ### Audit
+
 - `audit_row_change()` — trigger function ghi audit_log.
 
 ### Debug/util
+
 - `_admin_check_ident/_table/_type`, `_debug_test_insert`, `_gen_ma_thiet_bi_random(len)`, `_search_tsv(tieu_de, noi_dung)`.
 
 ## Tra cứu đầy đủ

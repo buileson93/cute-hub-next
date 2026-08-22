@@ -88,9 +88,7 @@ function AccountPage() {
       // Xoá toàn bộ ảnh trong thư mục của user
       const list = await storage.from("avatars").list(session.user.id);
       if (list.data && list.data.length > 0) {
-        await storage
-          .from("avatars")
-          .remove(list.data.map((f) => `${session.user.id}/${f.name}`));
+        await storage.from("avatars").remove(list.data.map((f) => `${session.user.id}/${f.name}`));
       }
       await supabase.from("profiles").update({ avatar_url: null }).eq("id", session.user.id);
       toast.success("Đã xoá ảnh đại diện");
@@ -126,9 +124,7 @@ function AccountPage() {
   }
 
   if (loading || !profile) {
-    return (
-      <div className="p-6 text-sm text-muted-foreground">Đang tải…</div>
-    );
+    return <div className="p-6 text-sm text-muted-foreground">Đang tải…</div>;
   }
 
   return (
@@ -139,103 +135,102 @@ function AccountPage() {
         description="Quản lý thông tin cá nhân, ảnh đại diện và bảo mật tài khoản."
       />
 
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Ảnh đại diện</CardTitle>
-            <CardDescription>
-              Hình ảnh sẽ hiển thị ở thanh điều hướng và các bình luận, thảo luận.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-5">
-              <UserAvatar
-                name={profile.ho_ten}
-                email={profile.email}
-                url={profile.avatar_url}
-                className="h-20 w-20"
-              />
-              <div className="flex flex-wrap gap-2">
-                <Button size="sm" onClick={handlePickFile} disabled={uploading}>
-                  {uploading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Upload className="mr-2 h-4 w-4" />
-                  )}
-                  Tải ảnh lên
-                </Button>
-                {profile.avatar_url && (
-                  <Button size="sm" variant="outline" onClick={handleRemove} disabled={uploading}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Xoá ảnh
-                  </Button>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Ảnh đại diện</CardTitle>
+          <CardDescription>
+            Hình ảnh sẽ hiển thị ở thanh điều hướng và các bình luận, thảo luận.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-5">
+            <UserAvatar
+              name={profile.ho_ten}
+              email={profile.email}
+              url={profile.avatar_url}
+              className="h-20 w-20"
+            />
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" onClick={handlePickFile} disabled={uploading}>
+                {uploading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
                 )}
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) handleUpload(f);
-                    e.target.value = "";
-                  }}
-                />
-              </div>
-            </div>
-            <div className="mt-3 text-xs text-muted-foreground">
-              Định dạng ảnh (JPG/PNG/WEBP), tối đa 5MB.
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Thông tin cá nhân</CardTitle>
-            <CardDescription>Cập nhật họ tên hiển thị của bạn.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input value={profile.email} disabled />
-            </div>
-            <div className="space-y-2">
-              <Label>Họ và tên</Label>
-              <Input
-                value={hoTen}
-                onChange={(e) => setHoTen(e.target.value)}
-                placeholder="Nguyễn Văn A"
+                Tải ảnh lên
+              </Button>
+              {profile.avatar_url && (
+                <Button size="sm" variant="outline" onClick={handleRemove} disabled={uploading}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Xoá ảnh
+                </Button>
+              )}
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleUpload(f);
+                  e.target.value = "";
+                }}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Đơn vị</Label>
-              <Input value={profile.don_vi ?? "—"} disabled />
-            </div>
-            <Button size="sm" onClick={handleSaveName} disabled={savingName}>
-              {savingName ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Lưu thay đổi
-            </Button>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="mt-3 text-xs text-muted-foreground">
+            Định dạng ảnh (JPG/PNG/WEBP), tối đa 5MB.
+          </div>
+        </CardContent>
+      </Card>
 
-        <DisplayDensityCard />
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Thông tin cá nhân</CardTitle>
+          <CardDescription>Cập nhật họ tên hiển thị của bạn.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Email</Label>
+            <Input value={profile.email} disabled />
+          </div>
+          <div className="space-y-2">
+            <Label>Họ và tên</Label>
+            <Input
+              value={hoTen}
+              onChange={(e) => setHoTen(e.target.value)}
+              placeholder="Nguyễn Văn A"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Đơn vị</Label>
+            <Input value={profile.don_vi ?? "—"} disabled />
+          </div>
+          <Button size="sm" onClick={handleSaveName} disabled={savingName}>
+            {savingName ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            Lưu thay đổi
+          </Button>
+        </CardContent>
+      </Card>
 
-        <PasskeyManager />
+      <DisplayDensityCard />
+
+      <PasskeyManager />
     </div>
   );
 }
 
 function DisplayDensityCard() {
   const [d, setD] = useDensity();
-  
+
   const options = [
     { value: "compact", label: "Gọn", desc: "Tiết kiệm không gian, hiển thị nhiều dữ liệu" },
     { value: "comfortable", label: "Vừa", desc: "Cân bằng, mặc định hệ thống" },
-    { value: "spacious", label: "Thoáng", desc: "Dễ nhìn, khoảng cách rộng rãi" }
+    { value: "spacious", label: "Thoáng", desc: "Dễ nhìn, khoảng cách rộng rãi" },
   ];
 
   return (
@@ -243,7 +238,8 @@ function DisplayDensityCard() {
       <CardHeader>
         <CardTitle className="text-base">Giao diện</CardTitle>
         <CardDescription>
-          Chế độ hiển thị cho toàn bộ ứng dụng. Thay đổi mật độ các thành phần như bảng, nút và khoảng cách.
+          Chế độ hiển thị cho toàn bộ ứng dụng. Thay đổi mật độ các thành phần như bảng, nút và
+          khoảng cách.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -261,7 +257,7 @@ function DisplayDensityCard() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground italic">
-            {options.find(o => o.value === d)?.desc}
+            {options.find((o) => o.value === d)?.desc}
           </p>
         </div>
       </CardContent>

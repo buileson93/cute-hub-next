@@ -111,14 +111,7 @@ export function ProductTourProvider({
   return (
     <TourContext.Provider value={value}>
       {children}
-      {active && (
-        <TourOverlay
-          steps={runSteps}
-          index={index}
-          setIndex={setIndex}
-          onClose={stop}
-        />
-      )}
+      {active && <TourOverlay steps={runSteps} index={index} setIndex={setIndex} onClose={stop} />}
     </TourContext.Provider>
   );
 }
@@ -140,12 +133,8 @@ function TourOverlay({
 }) {
   const reduce = useReducedMotion();
   const [rect, setRect] = useState<Rect | null>(null);
-  const [vw, setVw] = useState(() =>
-    typeof window === "undefined" ? 0 : window.innerWidth,
-  );
-  const [vh, setVh] = useState(() =>
-    typeof window === "undefined" ? 0 : window.innerHeight,
-  );
+  const [vw, setVw] = useState(() => (typeof window === "undefined" ? 0 : window.innerWidth));
+  const [vh, setVh] = useState(() => (typeof window === "undefined" ? 0 : window.innerHeight));
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardH, setCardH] = useState(180);
 
@@ -222,9 +211,18 @@ function TourOverlay({
   const card = computeCardPosition(hole, step.placement, vw, vh, cardH);
 
   const overlay = (
-    <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true" aria-label="Hướng dẫn sử dụng">
+    <div
+      className="fixed inset-0 z-[200]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Hướng dẫn sử dụng"
+    >
       {/* Nền tối + khoét lỗ spotlight bằng SVG mask */}
-      <svg className="absolute inset-0 h-full w-full" style={{ pointerEvents: "auto" }} onClick={onClose}>
+      <svg
+        className="absolute inset-0 h-full w-full"
+        style={{ pointerEvents: "auto" }}
+        onClick={onClose}
+      >
         <defs>
           <mask id="tour-spotlight">
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
@@ -232,7 +230,9 @@ function TourOverlay({
               <motion.rect
                 initial={false}
                 animate={{ x: hole.x, y: hole.y, width: hole.w, height: hole.h }}
-                transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 30 }}
+                transition={
+                  reduce ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 30 }
+                }
                 rx={14}
                 ry={14}
                 fill="black"

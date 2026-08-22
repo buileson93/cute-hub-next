@@ -1,10 +1,10 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 // Mock matchMedia for all tests
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'matchMedia', {
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -18,8 +18,8 @@ if (typeof window !== 'undefined') {
 
   // Mock ResizeObserver for all tests
   global.ResizeObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
   })) as any;
 }

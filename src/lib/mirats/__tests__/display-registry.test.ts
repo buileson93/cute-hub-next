@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
-  entityView, entityLoaiList, renderField, soNgayDenHan,
+  entityView,
+  entityLoaiList,
+  renderField,
+  soNgayDenHan,
 } from "@/lib/mirats/display/registry";
 import type { EntityLoai } from "@/lib/mirats/display/types";
 import { KHONG_CO } from "@/lib/mirats/format";
@@ -8,8 +11,14 @@ import { DEFAULT_NGAY_SAP_HET_HAN } from "@/lib/mirats/han-canh-bao";
 
 describe("display registry — entityView", () => {
   const ALL: EntityLoai[] = [
-    "thiet_bi", "su_co", "van_de", "cong_viec",
-    "hong_hoc", "ban_giao", "giay_phep", "vat_tu",
+    "thiet_bi",
+    "su_co",
+    "van_de",
+    "cong_viec",
+    "hong_hoc",
+    "ban_giao",
+    "giay_phep",
+    "vat_tu",
   ];
 
   it("có đủ 8 thực thể chính", () => {
@@ -46,8 +55,9 @@ describe("display registry — entityView", () => {
   });
 
   it("tieuDe của thiet_bi lấy ten_thiet_bi", () => {
-    expect(entityView("thiet_bi").tieuDe({ ten_thiet_bi: "Máy UHF #1", ma_thiet_bi: "TB_ABC" }))
-      .toBe("Máy UHF #1");
+    expect(
+      entityView("thiet_bi").tieuDe({ ten_thiet_bi: "Máy UHF #1", ma_thiet_bi: "TB_ABC" }),
+    ).toBe("Máy UHF #1");
   });
 });
 
@@ -61,10 +71,7 @@ describe("display registry — renderField", () => {
   });
 
   it("vnd → fmtVND", () => {
-    const r = renderField(
-      { key: "chi_phi", nhan: "Chi phí", loai: "vnd" },
-      { chi_phi: 2_500_000 },
-    );
+    const r = renderField({ key: "chi_phi", nhan: "Chi phí", loai: "vnd" }, { chi_phi: 2_500_000 });
     expect(r.giaTri).toContain("triệu");
   });
 
@@ -90,10 +97,7 @@ describe("display registry — renderField", () => {
   });
 
   it("text rỗng → placeholder KHONG_CO", () => {
-    const r = renderField(
-      { key: "ghi_chu", nhan: "Ghi chú", loai: "text" },
-      { ghi_chu: null },
-    );
+    const r = renderField({ key: "ghi_chu", nhan: "Ghi chú", loai: "text" }, { ghi_chu: null });
     expect(r.giaTri).toBe(KHONG_CO);
   });
 

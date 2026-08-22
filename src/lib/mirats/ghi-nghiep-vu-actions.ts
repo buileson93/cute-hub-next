@@ -152,7 +152,7 @@ export async function ghiHongHocFull(
   return r;
 }
 
-/** 
+/**
  * Tạo một yêu cầu thay đổi (Change Request) để đề xuất cập nhật các trường dữ liệu.
  * Dùng khi user không có quyền ghi trực tiếp vào bảng đích (RLS).
  */
@@ -177,4 +177,3 @@ export async function createChangeRequest(args: {
   if (error) throw error;
   return data.id;
 }
-

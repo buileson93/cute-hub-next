@@ -6,25 +6,25 @@ Dự án MIRATS đang gặp tình trạng "hụt tính năng" nghiêm trọng �
 
 Sẽ cấu trúc lại `src/routes/_app.thiet-bi.$maThietBi.tsx` để hiển thị đầy đủ các tab nghiệp vụ. Các tab mới được tách tệp sẽ được giữ lại, nhưng bổ sung các tab còn thiếu.
 
-| Tab cũ | Nội dung / Component thay thế | Trạng thái hiện tại | Hành động |
-| :--- | :--- | :--- | :--- |
-| **Tổng quan** | `TabTongQuan.tsx` | Đang hoạt động | Giữ nguyên |
-| **Dòng thời gian** | `TabVanHanh.tsx` (Tab Timeline) | Đang hoạt động | Đổi nhãn "Timeline" -> "Dòng thời gian" |
-| **Lý lịch** | `LyLichThietBiPanel.tsx` | Bị chôn trong Tổng quan | Đưa ra thành Tab riêng (toàn chiều rộng) |
-| **Linh kiện** | `TabCauHinh.tsx` (Tab Linh kiện) | Đang hoạt động | Giữ nguyên |
-| **Đo đạc** | `TelemetryPanel` (mới) | **Mất (truyền null)** | Dựng lại dựa trên `thiet_bi_do_dac` |
-| **Vòng đời** | `LifecyclePanel` (mới) | **Mất (truyền null)** | Dựng lại dựa trên `thiet_bi_vong_doi` |
-| **KĐ/HC** | `ChungChiPanel.tsx` | Đã có component | Thêm tab "Kiểm định / Hiệu chuẩn" |
-| **Giấy phép** | `TabHoSoPhapLy.tsx` | Đang hoạt động | Giữ nguyên |
-| **Bảo dưỡng** | `TabVanHanh.tsx` (Tab Bảo dưỡng) | Đang hoạt động | Giữ nguyên |
-| **Sự cố** | `TabVanHanh.tsx` (Tab Sự cố) | Đang hoạt động | Giữ nguyên |
-| **Thay thế** | `TabVanHanh.tsx` (Tab Thay thế) | Đang hoạt động | Giữ nguyên |
-| **Bàn giao** | `TabVanHanh.tsx` (Tab Bàn giao) | Đang hoạt động | Giữ nguyên |
-| **Cấp phát** | `AllocationPanel` (mới) | **Mất (truyền null)** | Dựng lại dựa trên `thiet_bi_cap_phat` |
-| **Phần mềm** | `ThietBiBanQuyen.tsx` | Đang hoạt động | Giữ nguyên |
-| **Tệp đính kèm** | `ThietBiTepDinhKem.tsx` | Đã có component | Thêm tab "Tệp đính kèm" |
-| **Toàn bộ trường** | `TabNangCao.tsx` (Tab Fields) | Đang hoạt động | Giữ nguyên |
-| **Lịch sử thay đổi** | `TabNangCao.tsx` (Tab Changelog) | Đang hoạt động | Giữ nguyên |
+| Tab cũ               | Nội dung / Component thay thế    | Trạng thái hiện tại     | Hành động                                |
+| :------------------- | :------------------------------- | :---------------------- | :--------------------------------------- |
+| **Tổng quan**        | `TabTongQuan.tsx`                | Đang hoạt động          | Giữ nguyên                               |
+| **Dòng thời gian**   | `TabVanHanh.tsx` (Tab Timeline)  | Đang hoạt động          | Đổi nhãn "Timeline" -> "Dòng thời gian"  |
+| **Lý lịch**          | `LyLichThietBiPanel.tsx`         | Bị chôn trong Tổng quan | Đưa ra thành Tab riêng (toàn chiều rộng) |
+| **Linh kiện**        | `TabCauHinh.tsx` (Tab Linh kiện) | Đang hoạt động          | Giữ nguyên                               |
+| **Đo đạc**           | `TelemetryPanel` (mới)           | **Mất (truyền null)**   | Dựng lại dựa trên `thiet_bi_do_dac`      |
+| **Vòng đời**         | `LifecyclePanel` (mới)           | **Mất (truyền null)**   | Dựng lại dựa trên `thiet_bi_vong_doi`    |
+| **KĐ/HC**            | `ChungChiPanel.tsx`              | Đã có component         | Thêm tab "Kiểm định / Hiệu chuẩn"        |
+| **Giấy phép**        | `TabHoSoPhapLy.tsx`              | Đang hoạt động          | Giữ nguyên                               |
+| **Bảo dưỡng**        | `TabVanHanh.tsx` (Tab Bảo dưỡng) | Đang hoạt động          | Giữ nguyên                               |
+| **Sự cố**            | `TabVanHanh.tsx` (Tab Sự cố)     | Đang hoạt động          | Giữ nguyên                               |
+| **Thay thế**         | `TabVanHanh.tsx` (Tab Thay thế)  | Đang hoạt động          | Giữ nguyên                               |
+| **Bàn giao**         | `TabVanHanh.tsx` (Tab Bàn giao)  | Đang hoạt động          | Giữ nguyên                               |
+| **Cấp phát**         | `AllocationPanel` (mới)          | **Mất (truyền null)**   | Dựng lại dựa trên `thiet_bi_cap_phat`    |
+| **Phần mềm**         | `ThietBiBanQuyen.tsx`            | Đang hoạt động          | Giữ nguyên                               |
+| **Tệp đính kèm**     | `ThietBiTepDinhKem.tsx`          | Đã có component         | Thêm tab "Tệp đính kèm"                  |
+| **Toàn bộ trường**   | `TabNangCao.tsx` (Tab Fields)    | Đang hoạt động          | Giữ nguyên                               |
+| **Lịch sử thay đổi** | `TabNangCao.tsx` (Tab Changelog) | Đang hoạt động          | Giữ nguyên                               |
 
 ## 2. Dựng lại 3 Panel bị mất (Telemetry, Allocation, Lifecycle)
 
@@ -45,12 +45,12 @@ Ba panel này sẽ được tạo mới tại `src/components/mirats/thiet-bi-de
 
 ## 3. Khôi phục Sổ lý lịch Hệ thống
 
-| Cấp sổ | Hook dữ liệu (đã có) | Component (đã có) | Điểm mở hiện tại | Điểm mở đề xuất |
-| :--- | :--- | :--- | :--- | :--- |
-| **Hệ thống** | `useLyLichHeThong` | `LyLichHeThongPanel` | Không có | 1. Tab "Lý lịch" trong `_app.he-thong.$id.tsx`. 2. Dialog chi tiết thành phần. |
-| **Thành phần** | `useLyLichThanhPhan` | `LyLichThanhPhanPanel` | Dialog chi tiết thành phần | Giữ nguyên |
-| **Vị trí** | `useLyLichViTri` | `Timeline` (trong Layer) | Không có | Tích hợp vào TreeView hoặc Map vị trí |
-| **Tài sản** | `useLyLichThietBi` | `LyLichThietBiPanel` | Tab Tổng quan (nhỏ) | Tab "Lý lịch" riêng (chiều rộng đầy đủ) |
+| Cấp sổ         | Hook dữ liệu (đã có) | Component (đã có)        | Điểm mở hiện tại           | Điểm mở đề xuất                                                                |
+| :------------- | :------------------- | :----------------------- | :------------------------- | :----------------------------------------------------------------------------- |
+| **Hệ thống**   | `useLyLichHeThong`   | `LyLichHeThongPanel`     | Không có                   | 1. Tab "Lý lịch" trong `_app.he-thong.$id.tsx`. 2. Dialog chi tiết thành phần. |
+| **Thành phần** | `useLyLichThanhPhan` | `LyLichThanhPhanPanel`   | Dialog chi tiết thành phần | Giữ nguyên                                                                     |
+| **Vị trí**     | `useLyLichViTri`     | `Timeline` (trong Layer) | Không có                   | Tích hợp vào TreeView hoặc Map vị trí                                          |
+| **Tài sản**    | `useLyLichThietBi`   | `LyLichThietBiPanel`     | Tab Tổng quan (nhỏ)        | Tab "Lý lịch" riêng (chiều rộng đầy đủ)                                        |
 
 ## 4. Danh sách prop truyền null/rỗng cần sửa
 
@@ -64,11 +64,13 @@ Ba panel này sẽ được tạo mới tại `src/components/mirats/thiet-bi-de
 ## Chi tiết kỹ thuật & Kiểm thử
 
 ### Kỹ thuật
+
 - Sử dụng `donViTenMap` từ `useDbTaxonomy` để hiển thị tên đơn vị trong `AllocationPanel`.
 - Đổi nhãn "Timeline" thành "Dòng thời gian" trong `TabVanHanh.tsx`.
 - Chuyển `LyLichThietBiPanel` từ `TabTongQuan.tsx` sang một `TabsContent` riêng trong route chính.
 
 ### Kiểm thử (Structural Integrity)
+
 - Bổ sung test case vào `src/lib/mirats/__tests__/structural-integrity.test.ts`:
   - `checkSolyLichOpenable`: Kiểm tra xem component `LyLichHeThongPanel` có ít nhất một đường import/render từ UI chính.
   - `checkDeviceDetailTabs`: Kiểm tra sự tồn tại của đủ 16 tab (hoặc các tab nghiệp vụ trọng yếu) trong route chi tiết tài sản.

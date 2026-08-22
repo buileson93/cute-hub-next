@@ -5,14 +5,20 @@ import { CapPhatControl } from "../CapPhatControl";
 
 afterEach(() => cleanup());
 
-const donVi = [{ id: "dv1", ten: "CRA" }, { id: "dv2", ten: "CLA" }];
+const donVi = [
+  { id: "dv1", ten: "CRA" },
+  { id: "dv2", ten: "CLA" },
+];
 
 describe("CapPhatControl — nút cấp phát / thu hồi", () => {
   it("tài sản sẵn sàng: hiện nút 'Cấp phát' cho người có quyền", () => {
     render(
       <CapPhatControl
-        trangThai="san_sang" canManage donViOptions={donVi}
-        onCapPhat={() => {}} onThuHoi={() => {}}
+        trangThai="san_sang"
+        canManage
+        donViOptions={donVi}
+        onCapPhat={() => {}}
+        onThuHoi={() => {}}
       />,
     );
     expect(screen.getByText("Sẵn sàng")).toBeTruthy();
@@ -22,8 +28,13 @@ describe("CapPhatControl — nút cấp phát / thu hồi", () => {
   it("tài sản đã cấp phát: hiện người giữ và nút 'Thu hồi'", () => {
     render(
       <CapPhatControl
-        trangThai="da_cap_phat" nguoiGiu="Nguyễn Văn An" donViGiuTen="CRA"
-        canManage donViOptions={donVi} onCapPhat={() => {}} onThuHoi={() => {}}
+        trangThai="da_cap_phat"
+        nguoiGiu="Nguyễn Văn An"
+        donViGiuTen="CRA"
+        canManage
+        donViOptions={donVi}
+        onCapPhat={() => {}}
+        onThuHoi={() => {}}
       />,
     );
     expect(screen.getByText("Đã cấp phát")).toBeTruthy();
@@ -34,8 +45,11 @@ describe("CapPhatControl — nút cấp phát / thu hồi", () => {
   it("người không có quyền: không hiện nút thao tác", () => {
     render(
       <CapPhatControl
-        trangThai="san_sang" canManage={false} donViOptions={donVi}
-        onCapPhat={() => {}} onThuHoi={() => {}}
+        trangThai="san_sang"
+        canManage={false}
+        donViOptions={donVi}
+        onCapPhat={() => {}}
+        onThuHoi={() => {}}
       />,
     );
     expect(screen.queryByRole("button", { name: /Cấp phát/ })).toBeNull();
@@ -45,8 +59,11 @@ describe("CapPhatControl — nút cấp phát / thu hồi", () => {
     const onCapPhat = vi.fn();
     render(
       <CapPhatControl
-        trangThai="san_sang" canManage donViOptions={donVi}
-        onCapPhat={onCapPhat} onThuHoi={() => {}}
+        trangThai="san_sang"
+        canManage
+        donViOptions={donVi}
+        onCapPhat={onCapPhat}
+        onThuHoi={() => {}}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Cấp phát/ }));
@@ -61,8 +78,12 @@ describe("CapPhatControl — nút cấp phát / thu hồi", () => {
     const onThuHoi = vi.fn();
     render(
       <CapPhatControl
-        trangThai="da_cap_phat" nguoiGiu="Nguyễn Văn An"
-        canManage donViOptions={donVi} onCapPhat={() => {}} onThuHoi={onThuHoi}
+        trangThai="da_cap_phat"
+        nguoiGiu="Nguyễn Văn An"
+        canManage
+        donViOptions={donVi}
+        onCapPhat={() => {}}
+        onThuHoi={onThuHoi}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Thu hồi/ }));

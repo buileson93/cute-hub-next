@@ -60,7 +60,10 @@ async function layCauHinh(sb: any, id: string, canServiceKey = true) {
 }
 
 /** Thử chạy SQL trên Supabase đích qua RPC trợ giúp (nếu dự án đích có). */
-async function execTarget(cfg: any, sql: string): Promise<{ ok: boolean; via: string | null; message?: string }> {
+async function execTarget(
+  cfg: any,
+  sql: string,
+): Promise<{ ok: boolean; via: string | null; message?: string }> {
   const url = normUrl(cfg.url);
   const ungVien: { fn: string; body: Record<string, string> }[] = [
     { fn: "__restore_exec", body: { p_sql: sql } },
@@ -88,7 +91,9 @@ async function execTarget(cfg: any, sql: string): Promise<{ ok: boolean; via: st
 /** Đọc lược đồ đích qua OpenAPI của PostgREST: { bảng → tập cột }. */
 async function lucDoDich(cfg: any): Promise<Map<string, Set<string>> | null> {
   try {
-    const r = await fetch(`${normUrl(cfg.url)}/rest/v1/`, { headers: targetHeaders(cfg.service_role_key) });
+    const r = await fetch(`${normUrl(cfg.url)}/rest/v1/`, {
+      headers: targetHeaders(cfg.service_role_key),
+    });
     if (!r.ok) return null;
     const spec: any = await r.json();
     const defs = spec?.definitions ?? spec?.components?.schemas ?? {};
@@ -104,9 +109,12 @@ async function lucDoDich(cfg: any): Promise<Map<string, Set<string>> | null> {
 
 async function demDongDich(cfg: any, table: string): Promise<number | null> {
   try {
-    const r = await fetch(`${normUrl(cfg.url)}/rest/v1/${encodeURIComponent(table)}?select=*&limit=1`, {
-      headers: targetHeaders(cfg.service_role_key, { Prefer: "count=exact", Range: "0-0" }),
-    });
+    const r = await fetch(
+      `${normUrl(cfg.url)}/rest/v1/${encodeURIComponent(table)}?select=*&limit=1`,
+      {
+        headers: targetHeaders(cfg.service_role_key, { Prefer: "count=exact", Range: "0-0" }),
+      },
+    );
     const cr = r.headers.get("content-range");
     const tong = cr?.split("/")?.[1];
     return tong && tong !== "*" ? Number(tong) : null;
@@ -247,7 +255,11 @@ export const testSupabaseNgoai = createServerFn({ method: "POST" })
 
     try {
       const r = await fetch(`${url}/rest/v1/`, { headers: targetHeaders(cfg.publishable_key) });
-      res.rest = { ok: r.ok, status: r.status, message: r.ok ? undefined : (await r.text()).slice(0, 300) };
+      res.rest = {
+        ok: r.ok,
+        status: r.status,
+        message: r.ok ? undefined : (await r.text()).slice(0, 300),
+      };
     } catch (e: any) {
       res.rest = { ok: false, status: 0, message: e?.message ?? "Không kết nối được" };
     }
@@ -255,7 +267,11 @@ export const testSupabaseNgoai = createServerFn({ method: "POST" })
     if (cfg.service_role_key) {
       try {
         const r = await fetch(`${url}/rest/v1/`, { headers: targetHeaders(cfg.service_role_key) });
-        res.service = { ok: r.ok, status: r.status, message: r.ok ? undefined : (await r.text()).slice(0, 300) };
+        res.service = {
+          ok: r.ok,
+          status: r.status,
+          message: r.ok ? undefined : (await r.text()).slice(0, 300),
+        };
         if (r.ok) {
           const dich = await lucDoDich(cfg);
           const { data: tbls } = await sb.rpc("admin_list_backup_tables");
@@ -273,7 +289,7 @@ export const testSupabaseNgoai = createServerFn({ method: "POST" })
         });
         if (r.ok) {
           const j: any = await r.json().catch(() => ({}));
-          res.auth = { ok: true, so_tai_khoan: j?.total ?? (j?.users?.length ?? 0) };
+          res.auth = { ok: true, so_tai_khoan: j?.total ?? j?.users?.length ?? 0 };
         } else {
           res.auth = { ok: false, message: `${r.status} ${(await r.text()).slice(0, 200)}` };
         }
@@ -287,7 +303,10 @@ export const testSupabaseNgoai = createServerFn({ method: "POST" })
     res.do_tre_ms = Date.now() - t0;
     res.ok = res.rest.ok && res.service.ok;
 
-    await sb.from("supabase_ngoai").update({ kiem_tra_luc: res.luc, kiem_tra_ket_qua: res }).eq("id", data.id);
+    await sb
+      .from("supabase_ngoai")
+      .update({ kiem_tra_luc: res.luc, kiem_tra_ket_qua: res })
+      .eq("id", data.id);
     return res;
   });
 
@@ -329,7 +348,9 @@ export const kiemTraTuongThich = createServerFn({ method: "POST" })
         bc.thieu_bang.push(t.name);
         continue;
       }
-      const thieu = (t.columns ?? []).map((c: any) => c.name).filter((c: string) => !cotDich.has(c));
+      const thieu = (t.columns ?? [])
+        .map((c: any) => c.name)
+        .filter((c: string) => !cotDich.has(c));
       if (thieu.length) bc.thieu_cot.push({ bang: t.name, cot: thieu });
     }
 
@@ -346,7 +367,9 @@ export const kiemTraTuongThich = createServerFn({ method: "POST" })
 
     bc.tuong_thich = bc.thieu_bang.length === 0 && bc.thieu_cot.length === 0;
     if (!bc.tuong_thich)
-      bc.canh_bao.push("Lược đồ đích chưa khớp — cần đồng bộ trước khi import dữ liệu hoặc chuyển nguồn.");
+      bc.canh_bao.push(
+        "Lược đồ đích chưa khớp — cần đồng bộ trước khi import dữ liệu hoặc chuyển nguồn.",
+      );
 
     await sb.from("supabase_ngoai").update({ kiem_tra_luc: bc.luc }).eq("id", data.id);
     return bc;
@@ -355,7 +378,9 @@ export const kiemTraTuongThich = createServerFn({ method: "POST" })
 /** Sinh (và áp dụng nếu có thể) toàn bộ DDL: extension, kiểu, hàm, bảng, cột, RLS, policy. */
 export const dongBoLucDo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i) => z.object({ id: z.string().uuid(), ap_dung: z.boolean().default(true) }).parse(i))
+  .inputValidator((i) =>
+    z.object({ id: z.string().uuid(), ap_dung: z.boolean().default(true) }).parse(i),
+  )
   .handler(async ({ data, context }) => {
     const sb = await guard(context, "dong_bo_luoc_do", { id: data.id, ap_dung: data.ap_dung });
     const cfg = await layCauHinh(sb, data.id);
@@ -365,7 +390,14 @@ export const dongBoLucDo = createServerFn({ method: "POST" })
     const cauLenh: string[] = stmts ?? [];
 
     if (!data.ap_dung) {
-      return { ap_dung: false, tong: cauLenh.length, thanh_cong: 0, that_bai: 0, loi: [] as string[], sql: cauLenh.join(";\n") + ";" };
+      return {
+        ap_dung: false,
+        tong: cauLenh.length,
+        thanh_cong: 0,
+        that_bai: 0,
+        loi: [] as string[],
+        sql: cauLenh.join(";\n") + ";",
+      };
     }
 
     const probe = await execTarget(cfg, "select 1");
@@ -414,7 +446,11 @@ export const dongBoLucDo = createServerFn({ method: "POST" })
 /* ------------------------------------------------------------------ */
 
 async function docPhien(sb: any, jobId: string): Promise<Phien> {
-  const { data: job, error } = await sb.from("supabase_ngoai_job").select("*").eq("id", jobId).single();
+  const { data: job, error } = await sb
+    .from("supabase_ngoai_job")
+    .select("*")
+    .eq("id", jobId)
+    .single();
   if (error || !job) throw new Error("Không tìm thấy phiên di chuyển");
   const { data: bang } = await sb
     .from("supabase_ngoai_job_bang")
@@ -448,7 +484,9 @@ async function docPhien(sb: any, jobId: string): Promise<Phien> {
 /** Tạo phiên mới: đếm dòng nguồn + dòng sẵn có ở đích (mốc khôi phục). */
 export const taoPhienDiChuyen = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i) => z.object({ id: z.string().uuid(), che_do: z.enum(["dry_run", "that"]) }).parse(i))
+  .inputValidator((i) =>
+    z.object({ id: z.string().uuid(), che_do: z.enum(["dry_run", "that"]) }).parse(i),
+  )
   .handler(async ({ data, context }): Promise<Phien> => {
     const sb = await guard(context, "tao_phien", { id: data.id, che_do: data.che_do });
     const cfg = await layCauHinh(sb, data.id);
@@ -535,7 +573,8 @@ export const chuyenLo = createServerFn({ method: "POST" })
       .single();
     if (!job) throw new Error("Không tìm thấy phiên");
     if (job.che_do === "dry_run") throw new Error("Phiên chạy thử không ghi dữ liệu");
-    if (job.trang_thai === "tam_dung") return { sent: 0, done: false, tam_dung: true, error: null as string | null };
+    if (job.trang_thai === "tam_dung")
+      return { sent: 0, done: false, tam_dung: true, error: null as string | null };
 
     const cfg = await layCauHinh(sb, job.ngoai_id);
     const { data: row } = await sb
@@ -562,18 +601,26 @@ export const chuyenLo = createServerFn({ method: "POST" })
     }
     const batch = (rows ?? []) as any[];
     if (batch.length === 0) {
-      await sb.from("supabase_ngoai_job_bang").update({ trang_thai: "hoan_thanh" }).eq("id", row.id);
+      await sb
+        .from("supabase_ngoai_job_bang")
+        .update({ trang_thai: "hoan_thanh" })
+        .eq("id", row.id);
       return { sent: 0, done: true, tam_dung: false, error: null as string | null };
     }
 
     const r = await fetch(`${normUrl(cfg.url)}/rest/v1/${encodeURIComponent(data.table)}`, {
       method: "POST",
-      headers: targetHeaders(cfg.service_role_key, { Prefer: "resolution=merge-duplicates,return=minimal" }),
+      headers: targetHeaders(cfg.service_role_key, {
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      }),
       body: JSON.stringify(batch),
     });
     if (!r.ok) {
       const msg = `${r.status}: ${(await r.text()).slice(0, 300)}`;
-      await sb.from("supabase_ngoai_job_bang").update({ trang_thai: "that_bai", loi: msg }).eq("id", row.id);
+      await sb
+        .from("supabase_ngoai_job_bang")
+        .update({ trang_thai: "that_bai", loi: msg })
+        .eq("id", row.id);
       return { sent: 0, done: true, tam_dung: false, error: `${data.table} — ${msg}` };
     }
 
@@ -610,7 +657,10 @@ export const capNhatTrangThaiPhien = createServerFn({ method: "POST" })
       .parse(i),
   )
   .handler(async ({ data, context }): Promise<Phien> => {
-    const sb = await guard(context, "cap_nhat_phien", { id: data.job_id, trang_thai: data.trang_thai });
+    const sb = await guard(context, "cap_nhat_phien", {
+      id: data.job_id,
+      trang_thai: data.trang_thai,
+    });
     await sb
       .from("supabase_ngoai_job")
       .update({
@@ -661,7 +711,10 @@ export const hoanTacPhien = createServerFn({ method: "POST" })
         }
         const r = await fetch(
           `${normUrl(cfg.url)}/rest/v1/${encodeURIComponent(b.ten_bang)}?${encodeURIComponent(pk[0])}=not.is.null`,
-          { method: "DELETE", headers: targetHeaders(cfg.service_role_key, { Prefer: "return=minimal" }) },
+          {
+            method: "DELETE",
+            headers: targetHeaders(cfg.service_role_key, { Prefer: "return=minimal" }),
+          },
         );
         if (r.ok) daDon.push(b.ten_bang);
         else {
@@ -727,7 +780,13 @@ export const migrateAuthUsers = createServerFn({ method: "POST" })
 export const setActiveSupabaseNgoai = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i) =>
-    z.object({ id: z.string().uuid(), kich_hoat: z.boolean(), bo_qua_canh_bao: z.boolean().default(false) }).parse(i),
+    z
+      .object({
+        id: z.string().uuid(),
+        kich_hoat: z.boolean(),
+        bo_qua_canh_bao: z.boolean().default(false),
+      })
+      .parse(i),
   )
   .handler(async ({ data, context }) => {
     const sb = await guard(context, data.kich_hoat ? "kich_hoat" : "bo_kich_hoat", {
@@ -757,11 +816,14 @@ export const setActiveSupabaseNgoai = createServerFn({ method: "POST" })
           const cot = dich.get(t.name);
           if (!cot) baoCao.thieu_bang.push(t.name);
           else {
-            const thieu = (t.columns ?? []).map((c: any) => c.name).filter((c: string) => !cot.has(c));
+            const thieu = (t.columns ?? [])
+              .map((c: any) => c.name)
+              .filter((c: string) => !cot.has(c));
             if (thieu.length) baoCao.thieu_cot.push({ bang: t.name, cot: thieu });
           }
         }
-      baoCao.tuong_thich = !!dich && baoCao.thieu_bang.length === 0 && baoCao.thieu_cot.length === 0;
+      baoCao.tuong_thich =
+        !!dich && baoCao.thieu_bang.length === 0 && baoCao.thieu_cot.length === 0;
 
       if (!baoCao.tuong_thich && !data.bo_qua_canh_bao) {
         throw new Error(
@@ -772,7 +834,10 @@ export const setActiveSupabaseNgoai = createServerFn({ method: "POST" })
       await sb.from("supabase_ngoai").update({ kich_hoat: false }).eq("kich_hoat", true);
     }
 
-    const { error } = await sb.from("supabase_ngoai").update({ kich_hoat: data.kich_hoat }).eq("id", data.id);
+    const { error } = await sb
+      .from("supabase_ngoai")
+      .update({ kich_hoat: data.kich_hoat })
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
 
     const { data: cfg } = await sb.from("supabase_ngoai").select("*").eq("id", data.id).single();

@@ -10,18 +10,22 @@ Phân tích nguyên nhân: Lỗi "Invalid Hook Call" thường xảy ra khi các
 ## Proposed Changes
 
 ### 1. Phục hồi cấu trúc Provider trong `src/routes/_app.he-thong.cay.tsx`
+
 - Đảm bảo `ReactFlowProvider` bao bọc toàn bộ thành phần trang có sử dụng hook của React Flow.
 - Kiểm tra lại logic `HeThongCayPageWrapper` để chắc chắn không có sự rò rỉ hook ra ngoài scope cho phép.
 
 ### 2. Sửa lỗi Hook trong các thành phần MindMap
+
 - Di chuyển các hook `useReactFlow`, `useNodesState` vào đúng vị trí bên trong các thành phần được Provider bảo vệ.
 - Kiểm tra file `src/components/mirats/he-thong-cay/CayMindMap.tsx` để xử lý các logic focus/zoom có thể đang vi phạm quy tắc Hook.
 
 ### 3. Tối ưu hóa logic `useMemo` và `useEffect`
+
 - Sửa lỗi trong `src/components/mirats/he-thong-cay/CayContext.tsx` liên quan đến việc cập nhật state `expandedNodes` để tránh trigger re-render vô hạn.
 - Đảm bảo `buildTree` là một hàm thuần (pure function) và không chứa bất kỳ hook ẩn nào.
 
 ### 4. Đồng bộ hóa tìm kiếm (Unified Search)
+
 - Đảm bảo kết quả từ `NodeSearch` kích hoạt đúng các action mở rộng cây (expand) và focus vào sơ đồ mà không gây lỗi runtime.
 
 ## Technical Details
@@ -31,6 +35,7 @@ Phân tích nguyên nhân: Lỗi "Invalid Hook Call" thường xảy ra khi các
 - **State Sync**: Logic `useEffect` đồng bộ URL `view` param trong `cay.tsx` cần được debounce hoặc kiểm tra `prevValue` chặt chẽ hơn.
 
 ## Phân công công việc (Sub-tasks)
+
 1. **Kiểm tra Provider**: Audit `HeThongCayPageWrapper`.
 2. **Fix MindMap Hooks**: Kiểm rà `useNodesState` và `useReactFlow` trong `CayMindMap.tsx`.
 3. **Fix Context**: Kiểm tra logic `seededTreeRef` trong `CayProvider`.

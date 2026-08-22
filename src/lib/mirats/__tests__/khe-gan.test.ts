@@ -37,7 +37,9 @@ describe("filterEligibleUnits (đủ điều kiện gán)", () => {
 
 describe("canLap", () => {
   it("cho phép khi khe hoạt động, trống và đơn vị rảnh", () => {
-    expect(canLap({ kheTrangThai: "hoat_dong", kheDangCoDonVi: false, donViDangBanO: false }).ok).toBe(true);
+    expect(
+      canLap({ kheTrangThai: "hoat_dong", kheDangCoDonVi: false, donViDangBanO: false }).ok,
+    ).toBe(true);
   });
   it("chặn khi khe đã ngừng", () => {
     const r = canLap({ kheTrangThai: "ngung", kheDangCoDonVi: false, donViDangBanO: false });
@@ -50,7 +52,9 @@ describe("canLap", () => {
     expect(r.reason).toMatch(/Thay thế|Điều chuyển/);
   });
   it("chặn khi đơn vị đang bận ở khe khác", () => {
-    expect(canLap({ kheTrangThai: "hoat_dong", kheDangCoDonVi: false, donViDangBanO: true }).ok).toBe(false);
+    expect(
+      canLap({ kheTrangThai: "hoat_dong", kheDangCoDonVi: false, donViDangBanO: true }).ok,
+    ).toBe(false);
   });
 });
 
@@ -77,7 +81,9 @@ describe("canThayThe", () => {
 
 describe("canDieuChuyen", () => {
   it("cho phép khi khe đích hoạt động và trống", () => {
-    expect(canDieuChuyen({ kheDichTrangThai: "hoat_dong", kheDichDangCoDonVi: false }).ok).toBe(true);
+    expect(canDieuChuyen({ kheDichTrangThai: "hoat_dong", kheDichDangCoDonVi: false }).ok).toBe(
+      true,
+    );
   });
   it("chặn khi khe đích đã ngừng", () => {
     expect(canDieuChuyen({ kheDichTrangThai: "ngung", kheDichDangCoDonVi: false }).ok).toBe(false);

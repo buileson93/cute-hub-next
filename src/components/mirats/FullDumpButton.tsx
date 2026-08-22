@@ -10,7 +10,10 @@ import { toast } from "sonner";
 import { zipSync, strToU8 } from "fflate";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  fullDumpManifest, fullDumpTableChunk, fullDumpAuthUsers, fullDumpFileUrls,
+  fullDumpManifest,
+  fullDumpTableChunk,
+  fullDumpAuthUsers,
+  fullDumpFileUrls,
 } from "@/lib/full-dump.functions";
 
 type Log = { t: string; ok?: boolean };
@@ -25,7 +28,8 @@ export function tsName(prefix = "mirats-dump") {
 /** Ghi tệp vào thư mục người dùng chọn (File System Access API) */
 async function ensureDir(root: any, parts: string[]) {
   let dir = root;
-  for (const p of parts) dir = await dir.getDirectoryHandle(p.replace(/[\\/:*?"<>|]/g, "_"), { create: true });
+  for (const p of parts)
+    dir = await dir.getDirectoryHandle(p.replace(/[\\/:*?"<>|]/g, "_"), { create: true });
   return dir;
 }
 async function writeFile(root: any, path: string, data: Blob | string) {
@@ -97,7 +101,9 @@ export function FullDumpButton() {
       const manifest = await manifestFn({ data: {} } as any);
       await put("manifest.json", JSON.stringify(manifest, null, 2));
       await put("schema.json", JSON.stringify(manifest.schema, null, 2));
-      addLog(`Kiểm kê: ${manifest.tables.length} bảng · ${manifest.storage.length} tệp Cloud · ${manifest.r2.length} tệp R2`);
+      addLog(
+        `Kiểm kê: ${manifest.tables.length} bảng · ${manifest.storage.length} tệp Cloud · ${manifest.r2.length} tệp R2`,
+      );
 
       const soTep = goiTep ? manifest.storage.length + manifest.r2.length : 0;
       const totalSteps = manifest.tables.length + soTep + 1;
@@ -128,7 +134,11 @@ export function FullDumpButton() {
       await put(
         "data.json",
         JSON.stringify({
-          meta: { created_at: new Date().toISOString(), tables: Object.keys(data).length, rows: tongDong },
+          meta: {
+            created_at: new Date().toISOString(),
+            tables: Object.keys(data).length,
+            rows: tongDong,
+          },
           data,
         }),
       );
@@ -241,21 +251,40 @@ export function FullDumpButton() {
       <div className="flex flex-wrap items-center gap-2">
         <AppTooltip noiDung="Tải toàn bộ dữ liệu CSDL dưới dạng tệp nén .zip">
           <Button size="sm" onClick={() => run("zip")} disabled={!!running} className="h-8 w-8 p-0">
-            {running === "zip" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileArchive className="h-4 w-4" />}
+            {running === "zip" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FileArchive className="h-4 w-4" />
+            )}
             <span className="sr-only">Tải .zip dump</span>
           </Button>
         </AppTooltip>
-        
+
         <AppTooltip noiDung="Dump dữ liệu trực tiếp vào một thư mục trên máy tính (yêu cầu Chrome/Edge)">
-          <Button size="sm" variant="outline" onClick={() => run("folder")} disabled={!!running} className="h-8 w-8 p-0">
-            {running === "folder" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderDown className="h-4 w-4" />}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => run("folder")}
+            disabled={!!running}
+            className="h-8 w-8 p-0"
+          >
+            {running === "folder" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FolderDown className="h-4 w-4" />
+            )}
             <span className="sr-only">Dump ra thư mục</span>
           </Button>
         </AppTooltip>
 
         {running && (
           <AppTooltip noiDung="Dừng quá trình dump ngay lập tức">
-            <Button size="sm" variant="outline" onClick={() => (cancelRef.current = true)} className="h-8 w-8 p-0">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => (cancelRef.current = true)}
+              className="h-8 w-8 p-0"
+            >
               <StopCircle className="h-4 w-4" />
               <span className="sr-only">Dừng</span>
             </Button>
@@ -267,34 +296,44 @@ export function FullDumpButton() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Checkbox id="dump-kem-tep" checked={kemTep} onCheckedChange={(v) => setKemTep(v === true)} disabled={!!running} />
+        <Checkbox
+          id="dump-kem-tep"
+          checked={kemTep}
+          onCheckedChange={(v) => setKemTep(v === true)}
+          disabled={!!running}
+        />
         <Label htmlFor="dump-kem-tep" className="text-xs font-normal text-muted-foreground">
           Gói .zip kèm cả tệp đính kèm & hình ảnh (Cloud Storage + R2) — dung lượng lớn hơn nhiều
         </Label>
       </div>
 
       <p className="text-[11px] text-muted-foreground">
-        Tên tệp gồm ngày giờ tạo, ví dụ <code>mirats-dump-20260728-153012.zip</code>. Gói .zip này dùng lại được
-        ở mục “Phục hồi CSDL từ gói .zip” bên dưới.
+        Tên tệp gồm ngày giờ tạo, ví dụ <code>mirats-dump-20260728-153012.zip</code>. Gói .zip này
+        dùng lại được ở mục “Phục hồi CSDL từ gói .zip” bên dưới.
       </p>
 
       {!supported && (
         <p className="text-xs text-amber-600">
-          Trình duyệt hiện tại không hỗ trợ ghi thẳng vào thư mục — hãy dùng nút “Tải .zip dump về máy”.
+          Trình duyệt hiện tại không hỗ trợ ghi thẳng vào thư mục — hãy dùng nút “Tải .zip dump về
+          máy”.
         </p>
       )}
 
       {(running || pct > 0) && (
         <div className="space-y-1">
           <Progress value={pct} />
-          <p className="text-xs text-muted-foreground">{pct}% — {msg}</p>
+          <p className="text-xs text-muted-foreground">
+            {pct}% — {msg}
+          </p>
         </div>
       )}
 
       {logs.length > 0 && (
         <div className="max-h-56 overflow-auto rounded-md border bg-muted/30 p-2 text-[11px] leading-5">
           {logs.map((l, i) => (
-            <div key={i} className={l.ok ? "text-muted-foreground" : "text-destructive"}>{l.t}</div>
+            <div key={i} className={l.ok ? "text-muted-foreground" : "text-destructive"}>
+              {l.t}
+            </div>
           ))}
         </div>
       )}

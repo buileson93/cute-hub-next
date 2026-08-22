@@ -3,9 +3,26 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  ArrowLeft, ShieldAlert, Loader2, Search, RefreshCw,
-  Plus, Pencil, Trash2, Shield, LogIn, KeyRound, Activity,
-  RotateCcw, Download, CalendarDays, ChevronRight, Info, AlertTriangle, XCircle, ChevronDown
+  ArrowLeft,
+  ShieldAlert,
+  Loader2,
+  Search,
+  RefreshCw,
+  Plus,
+  Pencil,
+  Trash2,
+  Shield,
+  LogIn,
+  KeyRound,
+  Activity,
+  RotateCcw,
+  Download,
+  CalendarDays,
+  ChevronRight,
+  Info,
+  AlertTriangle,
+  XCircle,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
@@ -13,10 +30,22 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/backend/client";
@@ -91,19 +120,43 @@ const ENTITY_PAGE: Record<string, { label: string; path: string }> = {
 
 type Kind = "create" | "update" | "delete" | "security" | "auth" | "other";
 const KIND_META: Record<Kind, { label: string; Icon: typeof Plus }> = {
-  create:   { label: "Tạo mới",   Icon: Plus },
-  update:   { label: "Cập nhật",  Icon: Pencil },
-  delete:   { label: "Xoá",       Icon: Trash2 },
-  security: { label: "Bảo mật",   Icon: Shield },
-  auth:     { label: "Đăng nhập", Icon: LogIn },
-  other:    { label: "Khác",      Icon: Activity },
+  create: { label: "Tạo mới", Icon: Plus },
+  update: { label: "Cập nhật", Icon: Pencil },
+  delete: { label: "Xoá", Icon: Trash2 },
+  security: { label: "Bảo mật", Icon: Shield },
+  auth: { label: "Đăng nhập", Icon: LogIn },
+  other: { label: "Khác", Icon: Activity },
 };
 
 type Severity = "info" | "warn" | "error";
-const SEVERITY_META: Record<Severity, { label: string; dot: string; text: string; bg: string; border: string; Icon: typeof Info }> = {
-  info:  { label: "Info",  dot: "bg-sky-500",    text: "text-sky-700 dark:text-sky-300",      bg: "bg-sky-50 dark:bg-sky-500/10",       border: "border-sky-200 dark:border-sky-500/30",       Icon: Info },
-  warn:  { label: "Warn",  dot: "bg-amber-500",  text: "text-amber-700 dark:text-amber-300",  bg: "bg-amber-50 dark:bg-amber-500/10",   border: "border-amber-200 dark:border-amber-500/30",   Icon: AlertTriangle },
-  error: { label: "Error", dot: "bg-rose-500",   text: "text-rose-700 dark:text-rose-300",    bg: "bg-rose-50 dark:bg-rose-500/10",     border: "border-rose-200 dark:border-rose-500/30",     Icon: XCircle },
+const SEVERITY_META: Record<
+  Severity,
+  { label: string; dot: string; text: string; bg: string; border: string; Icon: typeof Info }
+> = {
+  info: {
+    label: "Info",
+    dot: "bg-sky-500",
+    text: "text-sky-700 dark:text-sky-300",
+    bg: "bg-sky-50 dark:bg-sky-500/10",
+    border: "border-sky-200 dark:border-sky-500/30",
+    Icon: Info,
+  },
+  warn: {
+    label: "Warn",
+    dot: "bg-amber-500",
+    text: "text-amber-700 dark:text-amber-300",
+    bg: "bg-amber-50 dark:bg-amber-500/10",
+    border: "border-amber-200 dark:border-amber-500/30",
+    Icon: AlertTriangle,
+  },
+  error: {
+    label: "Error",
+    dot: "bg-rose-500",
+    text: "text-rose-700 dark:text-rose-300",
+    bg: "bg-rose-50 dark:bg-rose-500/10",
+    border: "border-rose-200 dark:border-rose-500/30",
+    Icon: XCircle,
+  },
 };
 
 const SECURITY_ACTIONS: Record<string, string> = {
@@ -116,10 +169,20 @@ const SECURITY_ACTIONS: Record<string, string> = {
   password_reset_send_failed: "Gửi email reset thất bại",
 };
 
-function describe(row: AuditRow): { kind: Kind; severity: Severity; verb: string; icon: typeof Plus } {
+function describe(row: AuditRow): {
+  kind: Kind;
+  severity: Severity;
+  verb: string;
+  icon: typeof Plus;
+} {
   const a = row.action;
   if (SECURITY_ACTIONS[a]) {
-    const isBad = a.includes("failed") || a.includes("captcha") || a.includes("rate_limited") || a.includes("unknown") || a.includes("inactive");
+    const isBad =
+      a.includes("failed") ||
+      a.includes("captcha") ||
+      a.includes("rate_limited") ||
+      a.includes("unknown") ||
+      a.includes("inactive");
     return {
       kind: isBad ? "security" : "auth",
       severity: isBad ? (a.includes("failed") ? "error" : "warn") : "info",
@@ -128,8 +191,10 @@ function describe(row: AuditRow): { kind: Kind; severity: Severity; verb: string
     };
   }
   if (a.startsWith("insert_")) return { kind: "create", severity: "info", verb: "Tạo", icon: Plus };
-  if (a.startsWith("update_")) return { kind: "update", severity: "info", verb: "Cập nhật", icon: Pencil };
-  if (a.startsWith("delete_")) return { kind: "delete", severity: "warn", verb: "Xoá", icon: Trash2 };
+  if (a.startsWith("update_"))
+    return { kind: "update", severity: "info", verb: "Cập nhật", icon: Pencil };
+  if (a.startsWith("delete_"))
+    return { kind: "delete", severity: "warn", verb: "Xoá", icon: Trash2 };
   return { kind: "other", severity: "info", verb: a, icon: Activity };
 }
 
@@ -144,7 +209,8 @@ function pageLabel(entity: string | null): string {
 }
 
 // Entities that support rollback (must match admin_rollback_audit whitelist)
-const ROLLBACK_ENTITY_RE = /^(dm_|thiet_bi|giay_phep|form_|cay_node_edit|so_do|du_an|notifications)/;
+const ROLLBACK_ENTITY_RE =
+  /^(dm_|thiet_bi|giay_phep|form_|cay_node_edit|so_do|du_an|notifications)/;
 const SYSTEM_TABLES = new Set(["audit_log", "profiles", "user_roles"]);
 
 function canRollback(row: AuditRow): boolean {
@@ -168,7 +234,10 @@ function fmtVal(v: unknown): string {
 
 const SKIP_FIELDS = new Set(["id", "created_at", "updated_at", "created_by", "updated_by"]);
 
-function diffChanges(oldObj: unknown, newObj: unknown): Array<{ field: string; from: string; to: string }> {
+function diffChanges(
+  oldObj: unknown,
+  newObj: unknown,
+): Array<{ field: string; from: string; to: string }> {
   if (!oldObj || !newObj || typeof oldObj !== "object" || typeof newObj !== "object") return [];
   const o = oldObj as Record<string, unknown>;
   const n = newObj as Record<string, unknown>;
@@ -207,7 +276,11 @@ const RANGE_LABEL: Record<RangePreset, string> = {
   "30d": "30 ngày qua",
   custom: "Tuỳ chọn…",
 };
-function rangeToIso(preset: RangePreset, fromDate: string, toDate: string): { from?: string; to?: string } {
+function rangeToIso(
+  preset: RangePreset,
+  fromDate: string,
+  toDate: string,
+): { from?: string; to?: string } {
   if (preset === "custom") {
     return {
       from: fromDate ? new Date(fromDate + "T00:00:00").toISOString() : undefined,
@@ -216,7 +289,10 @@ function rangeToIso(preset: RangePreset, fromDate: string, toDate: string): { fr
   }
   const now = Date.now();
   const ms: Record<Exclude<RangePreset, "custom">, number> = {
-    "1h": 3600e3, "24h": 86400e3, "7d": 7 * 86400e3, "30d": 30 * 86400e3,
+    "1h": 3600e3,
+    "24h": 86400e3,
+    "7d": 7 * 86400e3,
+    "30d": 30 * 86400e3,
   };
   return { from: new Date(now - ms[preset]).toISOString() };
 }
@@ -284,7 +360,10 @@ function AdminAuditPage() {
     },
     refetchOnWindowFocus: false,
   });
-  const profileMap = useMemo(() => new Map((profilesQ.data ?? []).map((p) => [p.id, p])), [profilesQ.data]);
+  const profileMap = useMemo(
+    () => new Map((profilesQ.data ?? []).map((p) => [p.id, p])),
+    [profilesQ.data],
+  );
 
   const queryClient = useQueryClient();
   const [rollbackTarget, setRollbackTarget] = useState<AuditRow | null>(null);
@@ -364,12 +443,14 @@ function AdminAuditPage() {
       if (entityFilter !== "__all__" && e.row.entity !== entityFilter) return false;
       if (pageFilter !== "__all__" && pageLabel(e.row.entity) !== pageFilter) return false;
       if (userFilter !== "__all__") {
-        if (userFilter === "__system__") { if (e.row.user_id) return false; }
-        else if (e.row.user_id !== userFilter) return false;
+        if (userFilter === "__system__") {
+          if (e.row.user_id) return false;
+        } else if (e.row.user_id !== userFilter) return false;
       }
       if (!kw) return true;
       const p = e.row.user_id ? profileMap.get(e.row.user_id) : null;
-      const hay = `${e.verb} ${e.row.action} ${e.row.entity ?? ""} ${e.row.entity_id ?? ""} ${p?.email ?? ""} ${p?.ho_ten ?? ""} ${JSON.stringify(e.row.detail ?? {})}`.toLowerCase();
+      const hay =
+        `${e.verb} ${e.row.action} ${e.row.entity ?? ""} ${e.row.entity_id ?? ""} ${p?.email ?? ""} ${p?.ho_ten ?? ""} ${JSON.stringify(e.row.detail ?? {})}`.toLowerCase();
       return hay.includes(kw);
     });
   }, [enriched, q, severityFilter, kindFilter, entityFilter, pageFilter, userFilter, profileMap]);
@@ -382,21 +463,33 @@ function AdminAuditPage() {
       const s = v === null || v === undefined ? "" : typeof v === "string" ? v : JSON.stringify(v);
       return `"${s.replace(/"/g, '""').replace(/\r?\n/g, " ")}"`;
     };
-    const header = ["Thoi_diem", "Muc_do", "Nguoi_thuc_hien", "Email", "Trang", "Hanh_dong", "Loai_du_lieu", "Entity_ID", "Chi_tiet"];
+    const header = [
+      "Thoi_diem",
+      "Muc_do",
+      "Nguoi_thuc_hien",
+      "Email",
+      "Trang",
+      "Hanh_dong",
+      "Loai_du_lieu",
+      "Entity_ID",
+      "Chi_tiet",
+    ];
     const lines = [header.join(",")];
     for (const e of filtered) {
       const p = e.row.user_id ? profileMap.get(e.row.user_id) : null;
-      lines.push([
-        esc(fmtTime(e.row.created_at)),
-        esc(e.severity),
-        esc(p?.ho_ten ?? ""),
-        esc(p?.email ?? ""),
-        esc(pageLabel(e.row.entity)),
-        esc(e.row.action),
-        esc(entityLabel(e.row.entity)),
-        esc(e.row.entity_id ?? ""),
-        esc(e.row.detail ?? {}),
-      ].join(","));
+      lines.push(
+        [
+          esc(fmtTime(e.row.created_at)),
+          esc(e.severity),
+          esc(p?.ho_ten ?? ""),
+          esc(p?.email ?? ""),
+          esc(pageLabel(e.row.entity)),
+          esc(e.row.action),
+          esc(entityLabel(e.row.entity)),
+          esc(e.row.entity_id ?? ""),
+          esc(e.row.detail ?? {}),
+        ].join(","),
+      );
     }
     const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -410,7 +503,7 @@ function AdminAuditPage() {
     toast.success(`Đã xuất ${filtered.length} dòng`);
   };
 
-  type EnrichedAuditRow = typeof enriched[0];
+  type EnrichedAuditRow = (typeof enriched)[0];
 
   const columns: ColumnDef<EnrichedAuditRow>[] = [
     {
@@ -420,7 +513,11 @@ function AdminAuditPage() {
       render: (e) => {
         const m = SEVERITY_META[e.severity];
         return (
-          <Badge className={cn("gap-1.5 font-medium", m.bg, m.text, m.border)} variant="outline" size="sm">
+          <Badge
+            className={cn("gap-1.5 font-medium", m.bg, m.text, m.border)}
+            variant="outline"
+            size="sm"
+          >
             <span className={cn("h-1.5 w-1.5 rounded-full", m.dot)} />
             {m.label}
           </Badge>
@@ -488,19 +585,23 @@ function AdminAuditPage() {
     },
   ];
 
-
-  
-
   const clearFilters = () => {
-    setQ(""); setSeverityFilter("__all__"); setKindFilter("__all__");
-    setEntityFilter("__all__"); setPageFilter("__all__"); setUserFilter("__all__");
-    setRange("24h"); setFromDate(""); setToDate("");
+    setQ("");
+    setSeverityFilter("__all__");
+    setKindFilter("__all__");
+    setEntityFilter("__all__");
+    setPageFilter("__all__");
+    setUserFilter("__all__");
+    setRange("24h");
+    setFromDate("");
+    setToDate("");
   };
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -521,10 +622,16 @@ function AdminAuditPage() {
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldAlert className="h-4 w-4 text-destructive" /> Không có quyền
             </CardTitle>
-            <CardDescription>Chỉ vai trò <b>admin</b> hoặc <b>phong_kt</b> mới xem được nhật ký hệ thống.</CardDescription>
+            <CardDescription>
+              Chỉ vai trò <b>admin</b> hoặc <b>phong_kt</b> mới xem được nhật ký hệ thống.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline"><Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Về trang chủ</Link></Button>
+            <Button asChild variant="outline">
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Về trang chủ
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </AppShell>
@@ -538,17 +645,34 @@ function AdminAuditPage() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold sm:text-2xl">Nhật ký hệ thống</h1>
-            <p className="text-sm text-muted-foreground">Ghi nhận hoạt động theo mức độ, người dùng, và trang.</p>
+            <p className="text-sm text-muted-foreground">
+              Ghi nhận hoạt động theo mức độ, người dùng, và trang.
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm">
-              <Link to="/admin/audit/lap-thao"><Activity className="mr-1.5 h-3.5 w-3.5" /> Lắp / tháo</Link>
+              <Link to="/admin/audit/lap-thao">
+                <Activity className="mr-1.5 h-3.5 w-3.5" /> Lắp / tháo
+              </Link>
             </Button>
-            <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportCsv}
+              disabled={filtered.length === 0}
+            >
               <Download className="mr-1.5 h-3.5 w-3.5" /> Xuất CSV
             </Button>
-            <Button variant="outline" size="sm" onClick={() => auditQ.refetch()} disabled={auditQ.isFetching}>
-              <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${auditQ.isFetching ? "animate-spin" : ""}`} /> Làm mới
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => auditQ.refetch()}
+              disabled={auditQ.isFetching}
+            >
+              <RefreshCw
+                className={`mr-1.5 h-3.5 w-3.5 ${auditQ.isFetching ? "animate-spin" : ""}`}
+              />{" "}
+              Làm mới
             </Button>
           </div>
         </div>
@@ -566,12 +690,16 @@ function AdminAuditPage() {
                 onClick={() => setSeverityFilter(active ? "__all__" : s)}
                 className={`flex items-center gap-2.5 rounded-md border px-3 py-2 text-left transition-colors ${active ? `${m.border} ${m.bg}` : "border-border hover:bg-muted/60"}`}
               >
-                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${m.bg} ${m.border} border`}>
+                <span
+                  className={`grid h-7 w-7 shrink-0 place-items-center rounded-md ${m.bg} ${m.border} border`}
+                >
                   <Icon className={`h-3.5 w-3.5 ${m.text}`} />
                 </span>
                 <div className="min-w-0">
                   <div className={`text-[11px] uppercase tracking-wide ${m.text}`}>{m.label}</div>
-                  <div className="font-mono text-base font-semibold tabular-nums leading-tight">{sevCount[s]}</div>
+                  <div className="font-mono text-base font-semibold tabular-nums leading-tight">
+                    {sevCount[s]}
+                  </div>
                 </div>
               </button>
             );
@@ -593,68 +721,113 @@ function AdminAuditPage() {
 
             <Select value={range} onValueChange={(v) => setRange(v as RangePreset)}>
               <SelectTrigger className="h-8 w-[140px] text-xs">
-                <div className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" /><SelectValue /></div>
+                <div className="flex items-center gap-1.5">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  <SelectValue />
+                </div>
               </SelectTrigger>
               <SelectContent>
                 {(Object.keys(RANGE_LABEL) as RangePreset[]).map((k) => (
-                  <SelectItem key={k} value={k}>{RANGE_LABEL[k]}</SelectItem>
+                  <SelectItem key={k} value={k}>
+                    {RANGE_LABEL[k]}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             {range === "custom" && (
               <div className="flex items-center gap-1 rounded-md border px-1.5">
-                <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="h-7 w-[130px] border-0 p-0 text-xs focus-visible:ring-0" aria-label="Từ ngày" />
+                <Input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="h-7 w-[130px] border-0 p-0 text-xs focus-visible:ring-0"
+                  aria-label="Từ ngày"
+                />
                 <span className="text-xs text-muted-foreground">→</span>
-                <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="h-7 w-[130px] border-0 p-0 text-xs focus-visible:ring-0" aria-label="Đến ngày" />
+                <Input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="h-7 w-[130px] border-0 p-0 text-xs focus-visible:ring-0"
+                  aria-label="Đến ngày"
+                />
               </div>
             )}
 
             <Select value={userFilter} onValueChange={setUserFilter}>
-              <SelectTrigger className="h-8 w-[180px] text-xs"><SelectValue placeholder="Người dùng" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[180px] text-xs">
+                <SelectValue placeholder="Người dùng" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Tất cả người dùng</SelectItem>
                 <SelectItem value="__system__">Hệ thống (không user)</SelectItem>
                 {userOptions.map((u) => (
-                  <SelectItem key={u.id} value={u.id}>{u.ho_ten ?? u.email ?? u.id.slice(0, 8)}</SelectItem>
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.ho_ten ?? u.email ?? u.id.slice(0, 8)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             <Select value={pageFilter} onValueChange={setPageFilter}>
-              <SelectTrigger className="h-8 w-[150px] text-xs"><SelectValue placeholder="Trang" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[150px] text-xs">
+                <SelectValue placeholder="Trang" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Tất cả trang</SelectItem>
-                {pageOptions.map((p) => (<SelectItem key={p} value={p}>{p}</SelectItem>))}
+                {pageOptions.map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {p}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
             <Select value={entityFilter} onValueChange={setEntityFilter}>
-              <SelectTrigger className="h-8 w-[170px] text-xs"><SelectValue placeholder="Loại dữ liệu" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[170px] text-xs">
+                <SelectValue placeholder="Loại dữ liệu" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Tất cả loại</SelectItem>
-                {entityOptions.map((e) => (<SelectItem key={e} value={e}>{entityLabel(e)}</SelectItem>))}
+                {entityOptions.map((e) => (
+                  <SelectItem key={e} value={e}>
+                    {entityLabel(e)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
             <Select value={kindFilter} onValueChange={setKindFilter}>
-              <SelectTrigger className="h-8 w-[130px] text-xs"><SelectValue placeholder="Hành động" /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[130px] text-xs">
+                <SelectValue placeholder="Hành động" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">Mọi hành động</SelectItem>
                 {(Object.keys(KIND_META) as Kind[]).map((k) => (
-                  <SelectItem key={k} value={k}>{KIND_META[k].label}</SelectItem>
+                  <SelectItem key={k} value={k}>
+                    {KIND_META[k].label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
             <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
-              <SelectTrigger className="h-8 w-[100px] text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-[100px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {[50, 100, 200, 500, 1000].map((n) => (<SelectItem key={n} value={String(n)}>{n} dòng</SelectItem>))}
+                {[50, 100, 200, 500, 1000].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n} dòng
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
-            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={clearFilters}>Đặt lại</Button>
+            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={clearFilters}>
+              Đặt lại
+            </Button>
             <div className="ml-auto text-xs text-muted-foreground">
               {filtered.length}/{enriched.length} bản ghi
             </div>
@@ -674,7 +847,7 @@ function AdminAuditPage() {
             const changes = diffChanges(detail.old, detail.new);
             const email = typeof detail.email === "string" ? detail.email : null;
             const ip = typeof detail.ip === "string" ? detail.ip : null;
-            
+
             return (
               <div className="space-y-4 p-4 text-xs">
                 {/* Meta info */}
@@ -696,9 +869,9 @@ function AdminAuditPage() {
                     </div>
                   )}
                   {isAdmin && canRollback(e.row) && (
-                    <Button 
-                      size="sm" 
-                      variant="destructive" 
+                    <Button
+                      size="sm"
+                      variant="destructive"
                       className="h-6 px-2 text-[10px]"
                       onClick={() => setRollbackTarget(e.row)}
                     >
@@ -722,8 +895,12 @@ function AdminAuditPage() {
                         {changes.map((c) => (
                           <tr key={c.field} className="hover:bg-muted/20 transition-colors">
                             <td className="px-3 py-2 font-medium border-r">{c.field}</td>
-                            <td className="px-3 py-2 text-destructive border-r break-all">{String(c.from)}</td>
-                            <td className="px-3 py-2 text-emerald-600 dark:text-emerald-400 break-all">{String(c.to)}</td>
+                            <td className="px-3 py-2 text-destructive border-r break-all">
+                              {String(c.from)}
+                            </td>
+                            <td className="px-3 py-2 text-emerald-600 dark:text-emerald-400 break-all">
+                              {String(c.to)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -747,13 +924,13 @@ function AdminAuditPage() {
           }}
         />
 
-
         {/* Retention (admin only) */}
         {isAdmin && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">
-                <CalendarDays className="h-4 w-4 text-muted-foreground" /> Chính sách lưu trữ nhật ký
+                <CalendarDays className="h-4 w-4 text-muted-foreground" /> Chính sách lưu trữ nhật
+                ký
               </CardTitle>
               <CardDescription className="text-xs">
                 Bản ghi cũ hơn số ngày cấu hình sẽ tự động xoá vào 03:15 mỗi ngày (30–3650 ngày).
@@ -782,20 +959,31 @@ function AdminAuditPage() {
                   }
                   retentionMut.mutate(Math.floor(n));
                 }}
-                disabled={retentionMut.isPending || retentionQ.isLoading || Number(retentionInput) === retentionQ.data}
+                disabled={
+                  retentionMut.isPending ||
+                  retentionQ.isLoading ||
+                  Number(retentionInput) === retentionQ.data
+                }
               >
                 {retentionMut.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                 Lưu
               </Button>
               {typeof retentionQ.data === "number" && (
-                <span className="text-xs text-muted-foreground">Hiện tại: <b>{retentionQ.data}</b> ngày</span>
+                <span className="text-xs text-muted-foreground">
+                  Hiện tại: <b>{retentionQ.data}</b> ngày
+                </span>
               )}
             </CardContent>
           </Card>
         )}
       </div>
 
-      <AlertDialog open={!!rollbackTarget} onOpenChange={(o) => { if (!o) setRollbackTarget(null); }}>
+      <AlertDialog
+        open={!!rollbackTarget}
+        onOpenChange={(o) => {
+          if (!o) setRollbackTarget(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận hoàn tác</AlertDialogTitle>
@@ -803,16 +991,19 @@ function AdminAuditPage() {
               {rollbackTarget?.action.startsWith("insert_")
                 ? "Bản ghi vừa được tạo sẽ bị xoá khỏi cơ sở dữ liệu."
                 : rollbackTarget?.action.startsWith("delete_")
-                ? "Bản ghi đã xoá sẽ được khôi phục lại với dữ liệu cũ."
-                : "Bản ghi sẽ được đưa về đúng giá trị trước khi chỉnh sửa."}
-              {" "}Thao tác này cũng được ghi vào nhật ký.
+                  ? "Bản ghi đã xoá sẽ được khôi phục lại với dữ liệu cũ."
+                  : "Bản ghi sẽ được đưa về đúng giá trị trước khi chỉnh sửa."}{" "}
+              Thao tác này cũng được ghi vào nhật ký.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={rollbackMut.isPending}>Huỷ</AlertDialogCancel>
             <AlertDialogAction
               disabled={rollbackMut.isPending}
-              onClick={(ev) => { ev.preventDefault(); if (rollbackTarget) rollbackMut.mutate(rollbackTarget); }}
+              onClick={(ev) => {
+                ev.preventDefault();
+                if (rollbackTarget) rollbackMut.mutate(rollbackTarget);
+              }}
             >
               {rollbackMut.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
               Hoàn tác
@@ -825,7 +1016,12 @@ function AdminAuditPage() {
 }
 
 function LogRow({
-  entry, profile, expanded, onToggle, canRollback, onRollback,
+  entry,
+  profile,
+  expanded,
+  onToggle,
+  canRollback,
+  onRollback,
 }: {
   entry: { row: AuditRow; kind: Kind; severity: Severity; verb: string; icon: typeof Plus };
   profile: ProfileLite | null | undefined;
@@ -852,8 +1048,12 @@ function LogRow({
         onClick={onToggle}
         className="grid w-full grid-cols-[28px_170px_80px_180px_1fr_140px] items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-muted/40"
       >
-        <ChevronRight className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${expanded ? "rotate-90" : ""}`} />
-        <span className="font-mono tabular-nums text-[11px] text-muted-foreground">{fmtTime(row.created_at)}</span>
+        <ChevronRight
+          className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${expanded ? "rotate-90" : ""}`}
+        />
+        <span className="font-mono tabular-nums text-[11px] text-muted-foreground">
+          {fmtTime(row.created_at)}
+        </span>
         <span className="flex items-center gap-1.5">
           <span className={`h-2 w-2 rounded-full ${sev.dot}`} />
           <span className={`text-[11px] uppercase ${sev.text}`}>{sev.label}</span>
@@ -862,7 +1062,9 @@ function LogRow({
         <span className="flex min-w-0 items-center gap-1.5">
           <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <span className="text-muted-foreground">{verb.toLowerCase()}</span>
-          <Badge variant="outline" className="h-4 px-1.5 text-[10px]">{entLabel}</Badge>
+          <Badge variant="outline" className="h-4 px-1.5 text-[10px]">
+            {entLabel}
+          </Badge>
           {label && <span className="truncate font-medium">{label}</span>}
         </span>
         <span className="truncate text-[11px] text-muted-foreground">{pg}</span>
@@ -884,8 +1086,12 @@ function LogRow({
                   {changes.map((c) => (
                     <tr key={c.field} className="border-t">
                       <td className="py-1 pr-3 font-medium">{c.field}</td>
-                      <td className="py-1 pr-3 font-mono text-rose-700 line-through dark:text-rose-300">{c.from}</td>
-                      <td className="py-1 font-mono text-emerald-700 dark:text-emerald-300">{c.to}</td>
+                      <td className="py-1 pr-3 font-mono text-rose-700 line-through dark:text-rose-300">
+                        {c.from}
+                      </td>
+                      <td className="py-1 font-mono text-emerald-700 dark:text-emerald-300">
+                        {c.to}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -897,14 +1103,24 @@ function LogRow({
             <MetaRow label="Mã hành động" value={row.action} mono />
             <MetaRow label="Loại dữ liệu" value={entLabel} />
             <MetaRow label="ID bản ghi" value={row.entity_id ?? "—"} mono />
-            <MetaRow label="Người thực hiện" value={profile ? `${profile.ho_ten ?? ""} ${profile.email ? `<${profile.email}>` : ""}`.trim() || "—" : "Hệ thống"} />
+            <MetaRow
+              label="Người thực hiện"
+              value={
+                profile
+                  ? `${profile.ho_ten ?? ""} ${profile.email ? `<${profile.email}>` : ""}`.trim() ||
+                    "—"
+                  : "Hệ thống"
+              }
+            />
             <MetaRow label="Thời điểm" value={new Date(row.created_at).toLocaleString("vi-VN")} />
             {ip && <MetaRow label="IP" value={ip} mono />}
           </div>
 
           {row.detail && Object.keys(row.detail).length > 0 && (
             <details className="text-xs">
-              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Xem dữ liệu thô (JSON)</summary>
+              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                Xem dữ liệu thô (JSON)
+              </summary>
               <pre className="mt-1 max-h-64 overflow-auto rounded bg-background p-2 font-mono text-[10px] leading-snug">
                 {JSON.stringify(row.detail, null, 2)}
               </pre>
@@ -914,11 +1130,18 @@ function LogRow({
           {canRollback && onRollback && (
             <div className="flex items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 dark:border-amber-500/30 dark:bg-amber-500/10">
               <span className="text-[11px] text-amber-800 dark:text-amber-200">
-                {kind === "create" ? "Hoàn tác sẽ xoá bản ghi vừa được tạo."
-                  : kind === "delete" ? "Hoàn tác sẽ khôi phục lại bản ghi đã xoá."
-                  : "Hoàn tác sẽ đưa bản ghi về đúng giá trị trước khi sửa."}
+                {kind === "create"
+                  ? "Hoàn tác sẽ xoá bản ghi vừa được tạo."
+                  : kind === "delete"
+                    ? "Hoàn tác sẽ khôi phục lại bản ghi đã xoá."
+                    : "Hoàn tác sẽ đưa bản ghi về đúng giá trị trước khi sửa."}
               </span>
-              <Button size="sm" variant="outline" className="h-7 shrink-0 border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-500/40 dark:text-amber-200 dark:hover:bg-amber-500/20" onClick={onRollback}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 shrink-0 border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-500/40 dark:text-amber-200 dark:hover:bg-amber-500/20"
+                onClick={onRollback}
+              >
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Hoàn tác
               </Button>
             </div>
@@ -933,7 +1156,9 @@ function MetaRow({ label, value, mono }: { label: string; value: string; mono?: 
   return (
     <div className="flex gap-1.5">
       <span className="text-muted-foreground">{label}:</span>
-      <span className={`min-w-0 flex-1 truncate ${mono ? "font-mono" : ""}`} title={value}>{value}</span>
+      <span className={`min-w-0 flex-1 truncate ${mono ? "font-mono" : ""}`} title={value}>
+        {value}
+      </span>
     </div>
   );
 }

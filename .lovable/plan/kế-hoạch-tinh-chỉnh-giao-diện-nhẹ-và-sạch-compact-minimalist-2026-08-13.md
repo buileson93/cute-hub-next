@@ -7,6 +7,7 @@ Mục tiêu là đạt được cảm giác nhẹ nhàng, hiện đại như m�
 Thay vì hard-code, chúng ta sẽ điều chỉnh bộ biến CSS gốc để các component tự động thừa hưởng.
 
 ### Đề xuất giá trị mới:
+
 - `--radius`: Tăng từ `0.625rem` (10px) lên `1rem` (16px) cho `rounded-lg` (thường dùng cho card).
 - `--border`: Giảm độ tương phản. Hiện tại `oklch(0.92 0.004 250)`. Sẽ chuyển sang `oklch(0.95 0.002 250)` (~5% tương phản trên nền trắng) để đạt độ mảnh 6-8%.
 - `--muted`: Tăng nhẹ độ sáng để làm nền phân cách thay cho bóng đổ.
@@ -22,6 +23,7 @@ Thay vì hard-code, chúng ta sẽ điều chỉnh bộ biến CSS gốc để c
 ## 3. Cập nhật Component Base (shadcn UI)
 
 ### Các file cần sửa đổi:
+
 - `src/components/ui/card.tsx`: Đảm bảo dùng `UI_DENSITY.CARD_RADIUS` và bỏ bóng đổ (`shadow-sm` -> `shadow-none` hoặc `shadow-[0_1px_2px_rgba(0,0,0,0.05)]`).
 - `src/components/ui/button.tsx` & `input.tsx`: Chuyển từ `rounded-md` sang `rounded-lg` (8px).
 - `src/components/ui/badge.tsx`: Chuyển từ `rounded-md` sang `rounded-full`.
@@ -34,6 +36,7 @@ Thay vì hard-code, chúng ta sẽ điều chỉnh bộ biến CSS gốc để c
 - **Dark Mode**: Cập nhật biến `--border` trong block `.dark` để đảm bảo không bị quá mờ hoặc quá gắt.
 
 ## Danh sách file sửa đổi:
+
 1. `src/styles.css`
 2. `src/lib/mirats/ui/ui-density.ts`
 3. `src/components/ui/card.tsx`

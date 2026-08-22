@@ -1,6 +1,7 @@
 # U10: FORM PAGE ARCHETYPE - Anatomy & Parity Matrix
 
 ## Anatomy Map
+
 - **PageFrame**: Root container with `comfortable` density.
 - **PageHeader**:
   - `title`: Template name (`t.ten`).
@@ -15,6 +16,7 @@
 - **PageFooter**: Sticky bottom bar with Save/Submit actions.
 
 ## UX Parity Checklist
+
 - [ ] Maintain RHF/Zod validation logic.
 - [ ] Preserve field order, groups, and `visible_if` behavior.
 - [ ] Keep current autocomplete/picker logic for assets and systems.
@@ -22,6 +24,7 @@
 - [ ] Enforce Astryx typography (Plex Mono for numbers/code).
 
 ## Metrics & Rollback
+
 - Build check: `bun run build:dev`
 - Visual check: Ensure form isn't wrapped in a giant card; use section spacing.
 - Rollback: Revert `src/routes/_app.forms.new.$code.tsx` to pre-refactor version.

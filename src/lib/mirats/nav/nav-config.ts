@@ -9,7 +9,11 @@
 // đó để tránh trùng lặp. Mọi thay đổi menu → sửa nav-contract, nav-config sẽ
 // tự cập nhật.
 // ============================================================================
-import { workspaces, isItemActive as isItemActiveContract, type NavItem as ContractNavItem } from "@/lib/mirats/nav-contract";
+import {
+  workspaces,
+  isItemActive as isItemActiveContract,
+  type NavItem as ContractNavItem,
+} from "@/lib/mirats/nav-contract";
 import type { AppRole } from "@/hooks/use-session";
 
 export type NavBadgeKey = "su_co_mo" | "sap_het_han" | "hong_hoc_mo" | "kd_hc_sap_het_han";
@@ -89,7 +93,12 @@ export function navGroups(): NavGroup[] {
  */
 export function isActive(pathname: string, item: NavItem): boolean {
   return isItemActiveContract(
-    { to: item.route, label: item.nhan, exact: item.exact, icon: (() => null) as unknown as ContractNavItem["icon"] },
+    {
+      to: item.route,
+      label: item.nhan,
+      exact: item.exact,
+      icon: (() => null) as unknown as ContractNavItem["icon"],
+    },
     pathname,
   );
 }

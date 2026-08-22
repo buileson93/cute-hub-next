@@ -25,7 +25,9 @@ const item = (p: Partial<FailItemResult> & { id: string }): FailItemResult => ({
 
 describe("isActionableFail", () => {
   it("không đạt + có hành động ⇒ actionable", () => {
-    expect(isActionableFail(item({ id: "1", ket_qua: "khong_dat", hanh_dong: "Thay acquy" }))).toBe(true);
+    expect(isActionableFail(item({ id: "1", ket_qua: "khong_dat", hanh_dong: "Thay acquy" }))).toBe(
+      true,
+    );
   });
   it("đạt ⇒ không actionable", () => {
     expect(isActionableFail(item({ id: "1", ket_qua: "dat", hanh_dong: "x" }))).toBe(false);
@@ -41,8 +43,14 @@ describe("idempotent guard", () => {
     expect(alreadyHasIncident(item({ id: "1" }))).toBe(false);
   });
   it("canCreateIncident chỉ khi actionable & chưa tạo", () => {
-    expect(canCreateIncident(item({ id: "1", ket_qua: "khong_dat", hanh_dong: "Thay" }))).toBe(true);
-    expect(canCreateIncident(item({ id: "1", ket_qua: "khong_dat", hanh_dong: "Thay", su_co_id: "SC1" }))).toBe(false);
+    expect(canCreateIncident(item({ id: "1", ket_qua: "khong_dat", hanh_dong: "Thay" }))).toBe(
+      true,
+    );
+    expect(
+      canCreateIncident(
+        item({ id: "1", ket_qua: "khong_dat", hanh_dong: "Thay", su_co_id: "SC1" }),
+      ),
+    ).toBe(false);
     expect(canCreateIncident(item({ id: "1", ket_qua: "dat" }))).toBe(false);
   });
 });
@@ -60,7 +68,14 @@ describe("buildSuCoDraft", () => {
         ghi_chu: "sụt áp",
         hanh_dong: "Thay acquy",
       }),
-      { thiet_bi_id: "TB1", he_thong_id: "HT1", he_thong: "UPS", thiet_bi: "TB-01", don_vi: "CRA", ngay: "2026-06-01" },
+      {
+        thiet_bi_id: "TB1",
+        he_thong_id: "HT1",
+        he_thong: "UPS",
+        thiet_bi: "TB-01",
+        don_vi: "CRA",
+        ngay: "2026-06-01",
+      },
     );
     expect(d.hien_tuong).toContain("Điện áp acquy");
     expect(d.hien_tuong).toContain("10.5 V");

@@ -1,1 +1,20 @@
-[{"ma": "AWOS", "ten": "AWOS", "linh_vuc": "MET"}, {"ma": "BDMT", "ten": "Các thiết bị BĐMT & Tổng đài", "linh_vuc": "Phụ trợ"}, {"ma": "VHF", "ten": "VHF – Bộ đàm", "linh_vuc": "CNS"}, {"ma": "CAM", "ten": "Camera", "linh_vuc": "Phụ trợ"}, {"ma": "PWR", "ten": "Điện nguồn – UPS", "linh_vuc": "Nguồn điện"}, {"ma": "VCCS", "ten": "VCCS", "linh_vuc": "CNS"}, {"ma": "VIBA", "ten": "VIBA – VSAT", "linh_vuc": "CNS"}, {"ma": "ATS", "ten": "Giám sát ATS", "linh_vuc": "ATM"}, {"ma": "MET", "ten": "Thiết bị đo đạc quan trắc", "linh_vuc": "MET"}, {"ma": "AMHS", "ten": "AMHS – AIM", "linh_vuc": "ATM"}, {"ma": "CLK", "ten": "Đồng hồ", "linh_vuc": "Phụ trợ"}, {"ma": "REC", "ten": "Ghi âm – Ghi hình", "linh_vuc": "CNS"}, {"ma": "ADSB", "ten": "ADS-B", "linh_vuc": "CNS"}, {"ma": "DATIS", "ten": "D-ATIS", "linh_vuc": "ATM"}, {"ma": "MUX", "ten": "Ghép kênh", "linh_vuc": "CNS"}, {"ma": "OFF", "ten": "Thiết bị văn phòng", "linh_vuc": "Văn phòng"}, {"ma": "ATM", "ten": "ATM", "linh_vuc": "ATM"}, {"ma": "PCDHB", "ten": "PC phục vụ ĐHB", "linh_vuc": "ATM"}]
+[
+  { "ma": "AWOS", "ten": "AWOS", "linh_vuc": "MET" },
+  { "ma": "BDMT", "ten": "Các thiết bị BĐMT & Tổng đài", "linh_vuc": "Phụ trợ" },
+  { "ma": "VHF", "ten": "VHF – Bộ đàm", "linh_vuc": "CNS" },
+  { "ma": "CAM", "ten": "Camera", "linh_vuc": "Phụ trợ" },
+  { "ma": "PWR", "ten": "Điện nguồn – UPS", "linh_vuc": "Nguồn điện" },
+  { "ma": "VCCS", "ten": "VCCS", "linh_vuc": "CNS" },
+  { "ma": "VIBA", "ten": "VIBA – VSAT", "linh_vuc": "CNS" },
+  { "ma": "ATS", "ten": "Giám sát ATS", "linh_vuc": "ATM" },
+  { "ma": "MET", "ten": "Thiết bị đo đạc quan trắc", "linh_vuc": "MET" },
+  { "ma": "AMHS", "ten": "AMHS – AIM", "linh_vuc": "ATM" },
+  { "ma": "CLK", "ten": "Đồng hồ", "linh_vuc": "Phụ trợ" },
+  { "ma": "REC", "ten": "Ghi âm – Ghi hình", "linh_vuc": "CNS" },
+  { "ma": "ADSB", "ten": "ADS-B", "linh_vuc": "CNS" },
+  { "ma": "DATIS", "ten": "D-ATIS", "linh_vuc": "ATM" },
+  { "ma": "MUX", "ten": "Ghép kênh", "linh_vuc": "CNS" },
+  { "ma": "OFF", "ten": "Thiết bị văn phòng", "linh_vuc": "Văn phòng" },
+  { "ma": "ATM", "ten": "ATM", "linh_vuc": "ATM" },
+  { "ma": "PCDHB", "ten": "PC phục vụ ĐHB", "linh_vuc": "ATM" }
+]

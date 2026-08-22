@@ -75,7 +75,11 @@ export function gheConLai(soGhe: number | null, daDung: number): number | null {
 
 export function dinhDangTien(v: number | null): string {
   if (v == null) return "—";
-  return v.toLocaleString("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 });
+  return v.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  });
 }
 
 type RawRow = {
@@ -119,7 +123,11 @@ export function useBanQuyenList() {
           loaiTen: r.dm_loai_ban_quyen?.ten ?? null,
           donViTen: r.dm_don_vi?.ten ?? null,
           nccTen: r.dm_nha_cung_cap?.ten ?? null,
-          gheDaDung: daDung, deviceSummary: (r.phan_mem_ban_quyen_cap_phat ?? []).filter(c => !c.ngay_thu_hoi).map(c => (c as any).thiet_bi?.ma_thiet_bi).filter(Boolean),
+          gheDaDung: daDung,
+          deviceSummary: (r.phan_mem_ban_quyen_cap_phat ?? [])
+            .filter((c) => !c.ngay_thu_hoi)
+            .map((c) => (c as any).thiet_bi?.ma_thiet_bi)
+            .filter(Boolean),
           gheConLai: gheConLai(r.so_ghe, daDung),
           soNgayConLai: soNgayConLai(r.ngay_het_han),
           status: trangThaiBanQuyen(r.ngay_het_han),
@@ -134,18 +142,17 @@ export function useBanQuyenTongHop(donViIds?: string[]) {
     queryKey: ["ban_quyen", "tong_hop", donViIds],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ban_quyen_tong_hop" as any, {
-        p_don_vi_ids: donViIds || null
+        p_don_vi_ids: donViIds || null,
       });
       if (error) throw error;
       const res = data as any;
       return {
         ...res,
-        utilization: res.ghe > 0 ? (res.gheDung / res.ghe) * 100 : 0
+        utilization: res.ghe > 0 ? (res.gheDung / res.ghe) * 100 : 0,
       };
-    }
+    },
   });
 }
-
 
 export function useBanQuyenDetail(maBanQuyen: string | null) {
   return useQuery({
@@ -169,7 +176,10 @@ export function useBanQuyenDetail(maBanQuyen: string | null) {
         donViTen: r.dm_don_vi?.ten ?? null,
         nccTen: r.dm_nha_cung_cap?.ten ?? null,
         gheDaDung: daDung,
-        deviceSummary: (r.phan_mem_ban_quyen_cap_phat ?? []).filter(c => !c.ngay_thu_hoi).map(c => (c as any).thiet_bi?.ma_thiet_bi).filter(Boolean),
+        deviceSummary: (r.phan_mem_ban_quyen_cap_phat ?? [])
+          .filter((c) => !c.ngay_thu_hoi)
+          .map((c) => (c as any).thiet_bi?.ma_thiet_bi)
+          .filter(Boolean),
         gheConLai: gheConLai(r.so_ghe, daDung),
         soNgayConLai: soNgayConLai(r.ngay_het_han),
         status: trangThaiBanQuyen(r.ngay_het_han),
@@ -177,7 +187,6 @@ export function useBanQuyenDetail(maBanQuyen: string | null) {
     },
   });
 }
-
 
 export type CapPhatRow = {
   id: string;
@@ -192,7 +201,6 @@ export type CapPhatRow = {
   nhanVien?: { hoTen: string; donVi: string | null; chucVu: string | null } | null;
 };
 
-
 export function useCapPhatList(banQuyenId: string | null) {
   return useQuery({
     queryKey: ["ban_quyen", "cap_phat", banQuyenId],
@@ -200,36 +208,38 @@ export function useCapPhatList(banQuyenId: string | null) {
     queryFn: async (): Promise<CapPhatRow[]> => {
       const { data, error } = await supabase
         .from("phan_mem_ban_quyen_cap_phat")
-        .select(`
+        .select(
+          `
           id, ban_quyen_id, thiet_bi_id, ngay_cai_dat, nguoi_cai, ngay_thu_hoi, ghi_chu, 
           thiet_bi(
             ma_thiet_bi, ten_thiet_bi,
             nhan_vien:nhan_vien_id(ho_ten, don_vi, chuc_vu)
           )
-        `)
+        `,
+        )
 
         .eq("ban_quyen_id", banQuyenId!)
         .order("ngay_cai_dat", { ascending: false });
       if (error) throw error;
       type Raw = Omit<CapPhatRow, "maThietBi" | "tenThietBi"> & {
-        thiet_bi: { 
-          ma_thiet_bi: string; 
+        thiet_bi: {
+          ma_thiet_bi: string;
           ten_thiet_bi: string | null;
           nhan_vien: { ho_ten: string; don_vi: string | null; chuc_vu: string | null } | null;
         } | null;
-
       };
       return ((data ?? []) as unknown as Raw[]).map((r) => ({
         ...r,
         maThietBi: r.thiet_bi?.ma_thiet_bi ?? null,
         tenThietBi: r.thiet_bi?.ten_thiet_bi ?? null,
-        nhanVien: r.thiet_bi?.nhan_vien ? {
-          hoTen: r.thiet_bi.nhan_vien.ho_ten,
-          donVi: r.thiet_bi.nhan_vien.don_vi,
-          chucVu: r.thiet_bi.nhan_vien.chuc_vu
-        } : null,
+        nhanVien: r.thiet_bi?.nhan_vien
+          ? {
+              hoTen: r.thiet_bi.nhan_vien.ho_ten,
+              donVi: r.thiet_bi.nhan_vien.don_vi,
+              chucVu: r.thiet_bi.nhan_vien.chuc_vu,
+            }
+          : null,
       }));
-
     },
   });
 }
@@ -237,19 +247,17 @@ export function useCapPhatList(banQuyenId: string | null) {
 /**
  * Hook gộp để lấy danh sách cấp phát theo Bản quyền ID hoặc Thiết bị ID.
  */
-export function useCapPhatListUnified({ 
-  banQuyenId, 
-  thietBiId 
-}: { 
-  banQuyenId?: string | null; 
-  thietBiId?: string | null; 
+export function useCapPhatListUnified({
+  banQuyenId,
+  thietBiId,
+}: {
+  banQuyenId?: string | null;
+  thietBiId?: string | null;
 }) {
   return useQuery({
     queryKey: ["ban_quyen", "cap-phat-list-unified", { banQuyenId, thietBiId }],
     queryFn: async () => {
-      let query = supabase
-        .from("phan_mem_ban_quyen_cap_phat")
-        .select(`
+      let query = supabase.from("phan_mem_ban_quyen_cap_phat").select(`
           id,
           ban_quyen_id,
           thiet_bi_id,
@@ -270,16 +278,18 @@ export function useCapPhatListUnified({
 
       const { data, error } = await query.order("ngay_cai_dat", { ascending: false });
       if (error) throw error;
-      
+
       return (data || []).map((r: any) => ({
         ...r,
         maThietBi: r.thiet_bi?.ma_thiet_bi,
         tenThietBi: r.thiet_bi?.ten_thiet_bi,
-        nhanVien: r.thiet_bi?.nhan_vien ? {
-          hoTen: r.thiet_bi.nhan_vien.ho_ten,
-          donVi: r.thiet_bi.nhan_vien.don_vi,
-          chucVu: r.thiet_bi.nhan_vien.chuc_vu
-        } : null,
+        nhanVien: r.thiet_bi?.nhan_vien
+          ? {
+              hoTen: r.thiet_bi.nhan_vien.ho_ten,
+              donVi: r.thiet_bi.nhan_vien.don_vi,
+              chucVu: r.thiet_bi.nhan_vien.chuc_vu,
+            }
+          : null,
 
         tenPhanMem: r.phan_mem_ban_quyen?.ten_phan_mem,
         phienBan: r.phan_mem_ban_quyen?.phien_ban,

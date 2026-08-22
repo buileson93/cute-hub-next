@@ -10,8 +10,8 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 // ---------- Types ----------
 export interface GpktParsedFields {
   gp_so: string;
-  gp_ngay: string;      // YYYY-MM-DD nếu suy được
-  gp_han: string;       // YYYY-MM-DD
+  gp_ngay: string; // YYYY-MM-DD nếu suy được
+  gp_han: string; // YYYY-MM-DD
   gp_cu: string;
   ten_he_thong_theo_gp: string;
   nam_sx_gp: string;
@@ -29,15 +29,27 @@ export interface GpktParsedFields {
 }
 
 const EMPTY_FIELDS: GpktParsedFields = {
-  gp_so: "", gp_ngay: "", gp_han: "", gp_cu: "",
-  ten_he_thong_theo_gp: "", nam_sx_gp: "", kieu_thiet_bi: "",
-  so_san_xuat: "", noi_san_xuat: "", muc_dich: "", pham_vi: "",
-  ma_dia_chi: "", dia_diem: "", thoi_gian: "", thanh_phan_theo_gp: "",
-  don_vi: "", tram: "",
+  gp_so: "",
+  gp_ngay: "",
+  gp_han: "",
+  gp_cu: "",
+  ten_he_thong_theo_gp: "",
+  nam_sx_gp: "",
+  kieu_thiet_bi: "",
+  so_san_xuat: "",
+  noi_san_xuat: "",
+  muc_dich: "",
+  pham_vi: "",
+  ma_dia_chi: "",
+  dia_diem: "",
+  thoi_gian: "",
+  thanh_phan_theo_gp: "",
+  don_vi: "",
+  tram: "",
 };
 
 function asStr(v: unknown): string {
-  return typeof v === "string" ? v.trim() : (v == null ? "" : String(v).trim());
+  return typeof v === "string" ? v.trim() : v == null ? "" : String(v).trim();
 }
 
 function extractJson(raw: string): Record<string, unknown> | null {
@@ -48,8 +60,11 @@ function extractJson(raw: string): Record<string, unknown> | null {
   const start = s.indexOf("{");
   const end = s.lastIndexOf("}");
   if (start === -1 || end === -1) return null;
-  try { return JSON.parse(s.slice(start, end + 1)) as Record<string, unknown>; }
-  catch { return null; }
+  try {
+    return JSON.parse(s.slice(start, end + 1)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
 }
 
 const SYSTEM_PROMPT = `Bạn là trợ lý bóc tách GIẤY PHÉP KHAI THÁC HỆ THỐNG CNS/ATM hàng không Việt Nam
@@ -122,7 +137,8 @@ export const parseGpktPdf = createServerFn({ method: "POST" })
     });
 
     if (res.status === 429) throw new Error("AI Gateway đang giới hạn tốc độ, thử lại sau");
-    if (res.status === 402) throw new Error("Hết credit AI — vui lòng nạp thêm trong Workspace Settings");
+    if (res.status === 402)
+      throw new Error("Hết credit AI — vui lòng nạp thêm trong Workspace Settings");
     if (!res.ok) {
       const t = await res.text().catch(() => "");
       throw new Error(`AI Gateway lỗi ${res.status}: ${t.slice(0, 300)}`);

@@ -23,16 +23,21 @@ export function useBanQuyenTep(bqId: string) {
         .eq("ban_quyen_id", bqId)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data as any[])?.map(r => ({
-        id: r.id,
-        created_at: r.created_at,
-        ban_quyen_id: r.ban_quyen_id,
-        ten_tep: r.ten_tep,
-        loai_tep: r.loai_tep,
-        url: r.url,
-        size_bytes: r.size_bytes,
-        uploaded_by: r.uploaded_by
-      } as BanQuyenTep)) || [];
+      return (
+        (data as any[])?.map(
+          (r) =>
+            ({
+              id: r.id,
+              created_at: r.created_at,
+              ban_quyen_id: r.ban_quyen_id,
+              ten_tep: r.ten_tep,
+              loai_tep: r.loai_tep,
+              url: r.url,
+              size_bytes: r.size_bytes,
+              uploaded_by: r.uploaded_by,
+            }) as BanQuyenTep,
+        ) || []
+      );
     },
     enabled: !!bqId,
   });
@@ -55,8 +60,15 @@ export function useBanQuyenAudit(bqId: string) {
   });
 }
 
-export async function logBanQuyenAudit(bqId: string, action: string, detail: string, metadata?: any) {
-  const { data: { user } } = await supabase.auth.getUser();
+export async function logBanQuyenAudit(
+  bqId: string,
+  action: string,
+  detail: string,
+  metadata?: any,
+) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return;
 
   await supabase.from("audit_log" as any).insert({
@@ -65,7 +77,7 @@ export async function logBanQuyenAudit(bqId: string, action: string, detail: str
     entity: "phan_mem_ban_quyen",
     entity_id: bqId,
     detail,
-    metadata: metadata || {}
+    metadata: metadata || {},
   });
 }
 
@@ -73,16 +85,18 @@ export function useUploadBanQuyenTep(bqId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ file, loai }: { file: File; loai: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Chưa đăng nhập");
 
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const filePath = `ban-quyen/${bqId}/${crypto.randomUUID()}.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from("giay-phep")
         .upload(filePath, file);
-      
+
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage.from("giay-phep").getPublicUrl(filePath);
@@ -93,16 +107,16 @@ export function useUploadBanQuyenTep(bqId: string) {
         loai_tep: loai,
         url: urlData.publicUrl,
         size_bytes: file.size,
-        uploaded_by: user.id
+        uploaded_by: user.id,
       });
 
       if (dbError) throw dbError;
-      
+
       await logBanQuyenAudit(bqId, "UPLOAD_FILE", `Tải lên tệp ${file.name} (${loai})`);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ban_quyen_tep", bqId] });
       toast.success("Đã tải tệp lên");
-    }
+    },
   });
 }

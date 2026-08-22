@@ -6,8 +6,6 @@
 // MERGE_REF_MAP. Không phụ thuộc DB/network để dễ test và tái dùng.
 // ============================================================================
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /** Chuẩn hoá tên: bỏ dấu, đ→d, lowercase, gộp ký tự đặc biệt về khoảng trắng. */
 export function normalizeName(input: unknown): string {
   const s = String(input ?? "");

@@ -16,10 +16,12 @@ export const getCompletenessStats = createServerFn({ method: "GET" })
 
 export const getCompletenessOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => 
-    z.object({
-      limit: z.number().optional().default(10)
-    }).parse(d)
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        limit: z.number().optional().default(10),
+      })
+      .parse(d),
   )
   .handler(async ({ data, context }) => {
     const { supabase, unauthenticated } = context as any;
@@ -45,6 +47,6 @@ export const getCompletenessOverview = createServerFn({ method: "GET" })
 
     return {
       lowCompleteness: (lowCompleteness || []) as any[],
-      tasks: (tasks || []) as any[]
+      tasks: (tasks || []) as any[],
     };
   });

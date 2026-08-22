@@ -104,8 +104,7 @@ export type ItemResultInsert = {
   position: number;
 };
 
-const isEmpty = (v: unknown): boolean =>
-  v == null || (typeof v === "string" && v.trim() === "");
+const isEmpty = (v: unknown): boolean => v == null || (typeof v === "string" && v.trim() === "");
 
 /**
  * Ép giá trị đo về number. Trả về null nếu rỗng, hoặc NaN sentinel nếu KHÔNG

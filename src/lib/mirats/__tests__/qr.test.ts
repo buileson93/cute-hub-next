@@ -33,13 +33,17 @@ describe("qr.parseQr", () => {
 
   it("nhận URL đầy đủ và bỏ query", () => {
     expect(parseQr("https://vatm.app/q/TB-001?utm=x")).toEqual({
-      kind: "asset", maThietBi: "TB-001", path: "/q/TB-001",
+      kind: "asset",
+      maThietBi: "TB-001",
+      path: "/q/TB-001",
     });
   });
 
   it("nhận /qr/thiet-bi/<id> legacy", () => {
     expect(parseQr("https://vatm.app/qr/thiet-bi/uuid-xxxx")).toEqual({
-      kind: "legacy_id", id: "uuid-xxxx", path: "/qr/thiet-bi/uuid-xxxx",
+      kind: "legacy_id",
+      id: "uuid-xxxx",
+      path: "/qr/thiet-bi/uuid-xxxx",
     });
   });
 
@@ -54,7 +58,9 @@ describe("qr.parseQr", () => {
 
   it("decode ký tự URL-encoded", () => {
     expect(parseQr("/q/AB%2FCD%2001")).toEqual({
-      kind: "asset", maThietBi: "AB/CD 01", path: "/q/AB%2FCD%2001",
+      kind: "asset",
+      maThietBi: "AB/CD 01",
+      path: "/q/AB%2FCD%2001",
     });
   });
 

@@ -11,11 +11,11 @@ async function hashSecret(secret: string, pepper: string): Promise<string> {
 }
 
 export const API_KEY_SCOPES = [
-  { id: 'projects:read', label: 'Xem dự án' },
-  { id: 'tasks:read', label: 'Xem công việc' },
-  { id: 'project_documents:write', label: 'Tải tài liệu lên' },
-  { id: 'project_correspondence:write', label: 'Tạo công văn' },
-  { id: 'ocr_artifacts:publish', label: 'Xuất bản kết quả OCR' },
+  { id: "projects:read", label: "Xem dự án" },
+  { id: "tasks:read", label: "Xem công việc" },
+  { id: "project_documents:write", label: "Tải tài liệu lên" },
+  { id: "project_correspondence:write", label: "Tạo công văn" },
+  { id: "ocr_artifacts:publish", label: "Xuất bản kết quả OCR" },
 ] as const;
 
 /**
@@ -30,15 +30,17 @@ export const createApiKey = createServerFn({ method: "POST" })
         scopes: z.array(z.string()).default([]),
         expiresInDays: z.number().optional(),
       })
-      .parse(data)
+      .parse(data),
   )
   .handler(async ({ data, context }) => {
     const { userId, supabase } = context;
     if (!userId || !supabase) throw new Error("Unauthorized");
-    
+
     // Validate scopes
-    const validScopes = API_KEY_SCOPES.map(s => s.id);
-    const filteredScopes = data.scopes.filter(s => (validScopes as readonly string[]).includes(s));
+    const validScopes = API_KEY_SCOPES.map((s) => s.id);
+    const filteredScopes = data.scopes.filter((s) =>
+      (validScopes as readonly string[]).includes(s),
+    );
 
     // Generate public keyId (12 chars)
     const keyIdArray = new Uint8Array(6);
@@ -54,7 +56,7 @@ export const createApiKey = createServerFn({ method: "POST" })
     const secretHash = await hashSecret(secret, pepper);
 
     const fullToken = `mrt_ext_live_${keyId}_${secret}`;
-    const expiresAt = data.expiresInDays 
+    const expiresAt = data.expiresInDays
       ? new Date(Date.now() + data.expiresInDays * 24 * 60 * 60 * 1000).toISOString()
       : null;
 
@@ -77,9 +79,9 @@ export const createApiKey = createServerFn({ method: "POST" })
     await supabase.from("api_audit_log" as any).insert({
       key_id: keyId,
       user_id: userId,
-      action: 'key_created',
-      result: 'success',
-      metadata: { name: data.name }
+      action: "key_created",
+      result: "success",
+      metadata: { name: data.name },
     } as any);
 
     return {
@@ -87,7 +89,6 @@ export const createApiKey = createServerFn({ method: "POST" })
       fullToken,
     };
   });
-
 
 /**
  * Revoke an API key.
@@ -98,7 +99,7 @@ export const revokeApiKey = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { userId, supabase } = context;
     if (!userId || !supabase) throw new Error("Unauthorized");
-    
+
     const { error } = await supabase
       .from("api_keys" as any)
       .update({ revoked_at: new Date().toISOString() } as any)
@@ -106,32 +107,34 @@ export const revokeApiKey = createServerFn({ method: "POST" })
       .eq("user_id", userId);
 
     if (error) throw new Error(error.message);
-    
+
     // Audit Log: Key Revocation
     await supabase.from("api_audit_log" as any).insert({
       user_id: userId,
-      action: 'key_revoked',
-      result: 'success',
-      metadata: { key_uuid: data.id }
+      action: "key_revoked",
+      result: "success",
+      metadata: { key_uuid: data.id },
     } as any);
 
     return { success: true };
   });
 
-
 /**
  * Verify an API key (Internal helper for middleware).
  */
-export async function verifyApiKey(token: string, ip?: string): Promise<{ 
-  isValid: boolean; 
-  user_id?: string; 
+export async function verifyApiKey(
+  token: string,
+  ip?: string,
+): Promise<{
+  isValid: boolean;
+  user_id?: string;
   scopes?: string[];
   key_id?: string;
 }> {
   if (!token.startsWith("mrt_ext_live_")) return { isValid: false };
 
   const parts = token.split("_");
-  if (parts.length !== 5) return { isValid: false }; 
+  if (parts.length !== 5) return { isValid: false };
 
   const keyId = parts[3];
   const secret = parts[4];
@@ -140,7 +143,7 @@ export async function verifyApiKey(token: string, ip?: string): Promise<{
   const crypto = await import("crypto");
   const ipHash = ip ? crypto.createHash("sha256").update(ip).digest("hex") : null;
 
-  const { supabaseAdmin } = await import('@/integrations/backend/admin.server');
+  const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
   const { data: keyData, error } = await supabaseAdmin
     .from("api_keys" as any)
@@ -150,13 +153,16 @@ export async function verifyApiKey(token: string, ip?: string): Promise<{
 
   if (error || !keyData) {
     // Audit Log: Failed attempt (invalid key_id)
-    supabaseAdmin.from("api_audit_log" as any).insert({
-      key_id: keyId,
-      action: 'api_call',
-      result: 'failure',
-      ip_hash: ipHash,
-      metadata: { reason: 'invalid_key_id' }
-    } as any).then();
+    supabaseAdmin
+      .from("api_audit_log" as any)
+      .insert({
+        key_id: keyId,
+        action: "api_call",
+        result: "failure",
+        ip_hash: ipHash,
+        metadata: { reason: "invalid_key_id" },
+      } as any)
+      .then();
 
     return { isValid: false };
   }
@@ -164,66 +170,69 @@ export async function verifyApiKey(token: string, ip?: string): Promise<{
   const typedKey = keyData as any;
 
   if (typedKey.revoked_at || (typedKey.expires_at && new Date(typedKey.expires_at) < new Date())) {
-     // Audit Log: Failed attempt (expired/revoked)
-     supabaseAdmin.from("api_audit_log" as any).insert({
-      key_id: keyId,
-      user_id: typedKey.user_id,
-      action: 'api_call',
-      result: 'failure',
-      ip_hash: ipHash,
-      metadata: { reason: typedKey.revoked_at ? 'revoked' : 'expired' }
-    } as any).then();
-    
+    // Audit Log: Failed attempt (expired/revoked)
+    supabaseAdmin
+      .from("api_audit_log" as any)
+      .insert({
+        key_id: keyId,
+        user_id: typedKey.user_id,
+        action: "api_call",
+        result: "failure",
+        ip_hash: ipHash,
+        metadata: { reason: typedKey.revoked_at ? "revoked" : "expired" },
+      } as any)
+      .then();
+
     return { isValid: false };
   }
-
 
   const pepper = process.env["MIRATS_API_PEPPER"] || "default-pepper-change-me";
   const incomingHash = await hashSecret(secret, pepper);
 
-  const isValid = timingSafeEqual(
-    Buffer.from(typedKey.secret_hash),
-    Buffer.from(incomingHash)
-  );
+  const isValid = timingSafeEqual(Buffer.from(typedKey.secret_hash), Buffer.from(incomingHash));
 
   if (isValid) {
     // Non-blocking update of last used info
     supabaseAdmin
       .from("api_keys" as any)
-      .update({ 
+      .update({
         last_used_at: new Date().toISOString(),
-        last_used_ip_hash: ipHash
+        last_used_ip_hash: ipHash,
       } as any)
       .eq("key_id", keyId)
       .then();
 
     // Audit Log: API Call
-    supabaseAdmin.from("api_audit_log" as any).insert({
-      key_id: keyId,
-      user_id: typedKey.user_id,
-      action: 'api_call',
-      result: 'success',
-      ip_hash: ipHash
-    } as any).then();
+    supabaseAdmin
+      .from("api_audit_log" as any)
+      .insert({
+        key_id: keyId,
+        user_id: typedKey.user_id,
+        action: "api_call",
+        result: "success",
+        ip_hash: ipHash,
+      } as any)
+      .then();
 
-    return { 
-      isValid: true, 
-      user_id: typedKey.user_id, 
+    return {
+      isValid: true,
+      user_id: typedKey.user_id,
       scopes: typedKey.scopes,
-      key_id: keyId
+      key_id: keyId,
     };
   }
 
   // Audit Log: Failed attempt
-  supabaseAdmin.from("api_audit_log" as any).insert({
-    key_id: keyId,
-    action: 'api_call',
-    result: 'failure',
-    ip_hash: ipHash,
-    metadata: { reason: 'invalid_secret' }
-  } as any).then();
+  supabaseAdmin
+    .from("api_audit_log" as any)
+    .insert({
+      key_id: keyId,
+      action: "api_call",
+      result: "failure",
+      ip_hash: ipHash,
+      metadata: { reason: "invalid_secret" },
+    } as any)
+    .then();
 
   return { isValid: false };
 }
-
-

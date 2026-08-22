@@ -76,7 +76,9 @@ const CAT_FIELDS = (label: string): FieldDef[] => [
 
 /** Ref tới chính bảng danh mục (phân cấp cha–con). Không tự tạo cấp cha. */
 const parentRef = (table: string): FieldDef => ({
-  key: "cap_cha", label: "Cấp cha (mã/tên)", kind: "ref",
+  key: "cap_cha",
+  label: "Cấp cha (mã/tên)",
+  kind: "ref",
   ref: { table, by: ["ma", "ten"], idCol: "parent_id", create: false },
   ghi_chu: "Để trống nếu là cấp gốc. Nhập cấp cha TRƯỚC để khớp được.",
 });
@@ -85,22 +87,39 @@ const parentRef = (table: string): FieldDef => ({
 export const CATALOG_TABLES: Array<{ table: string; label: string; extra?: FieldDef[] }> = [
   { table: "dm_don_vi", label: "Đơn vị", extra: [parentRef("dm_don_vi")] },
   { table: "dm_vi_tri", label: "Vị trí", extra: [parentRef("dm_vi_tri")] },
-  { table: "dm_nha_san_xuat", label: "Nhà sản xuất", extra: [
-    { key: "trang_web", label: "Trang web", kind: "text" },
-    { key: "xuat_xu", label: "Xuất xứ", kind: "text" },
-    { key: "ghi_chu", label: "Ghi chú", kind: "text" },
-  ] },
+  {
+    table: "dm_nha_san_xuat",
+    label: "Nhà sản xuất",
+    extra: [
+      { key: "trang_web", label: "Trang web", kind: "text" },
+      { key: "xuat_xu", label: "Xuất xứ", kind: "text" },
+      { key: "ghi_chu", label: "Ghi chú", kind: "text" },
+    ],
+  },
   { table: "dm_nha_cung_cap", label: "Nhà cung cấp" },
   { table: "dm_loai_thiet_bi", label: "Chủng loại" },
   { table: "dm_phan_loai", label: "Phân loại (Nhóm 1/2/3)" },
-  { table: "dm_nhom_he_thong", label: "Nhóm hệ thống (VHF/VCCS…)", extra: [
-    { key: "phan_loai", label: "Phân loại (Nhóm 1/2/3)", kind: "ref",
-      ref: { table: "dm_phan_loai", by: ["ma", "ten"], idCol: "phan_loai_id", create: true, guard: true } },
-  ] },
-  
+  {
+    table: "dm_nhom_he_thong",
+    label: "Nhóm hệ thống (VHF/VCCS…)",
+    extra: [
+      {
+        key: "phan_loai",
+        label: "Phân loại (Nhóm 1/2/3)",
+        kind: "ref",
+        ref: {
+          table: "dm_phan_loai",
+          by: ["ma", "ten"],
+          idCol: "phan_loai_id",
+          create: true,
+          guard: true,
+        },
+      },
+    ],
+  },
+
   { table: "dm_trang_thai_thiet_bi", label: "Trạng thái tài sản" },
 ];
-
 
 export const ENTITIES: EntityDef[] = [
   {
@@ -112,37 +131,104 @@ export const ENTITIES: EntityDef[] = [
     note: "Khóa upsert = mã tài sản. Thứ tự quan hệ: Phân loại → Nhóm hệ thống → Hệ thống → Chủng loại → Nhà sản xuất → Mẫu → Nhà cung cấp → Đơn vị/Vị trí → Tài sản. Khớp Hệ thống theo mã/tên (kế thừa Phân loại + Nhóm hệ thống từ hệ thống). Mẫu KHÔNG tự tạo từ tên nếu chưa có sẵn — hãy nhập Model trước. Cột bắt đầu bằng x_ ghi vào thuộc tính mở rộng. Điền 'Lắp vào vị trí' để TỰ tìm/tạo thành phần trong Hệ thống và lắp tài sản vào (không cần khai sheet Thành phần riêng).",
     inheritFromRef: {
       field: "he_thong",
-      map: { phan_loai_id: "phan_loai_id", nhom_he_thong_id: "nhom_he_thong_id", don_vi_id: "don_vi_id" },
+      map: {
+        phan_loai_id: "phan_loai_id",
+        nhom_he_thong_id: "nhom_he_thong_id",
+        don_vi_id: "don_vi_id",
+      },
     },
     fields: [
       { key: "ma_thiet_bi", label: "Mã tài sản", kind: "text", required: true, common: true },
       { key: "ma_tai_san_bravo", label: "Mã tài sản Bravo", kind: "text" },
       { key: "ten_thiet_bi", label: "Tên tài sản", kind: "text", required: true, common: true },
-      { key: "he_thong", label: "Hệ thống", kind: "ref", common: true,
-        ref: { table: "dm_he_thong", by: ["ma", "ten"], idCol: "he_thong_id" } },
-      { key: "lap_vi_tri", label: "Lắp vào vị trí (thành phần)", kind: "text", virtual: true, common: true,
-        ghi_chu: "Tên/mã vị trí chức năng TRONG hệ thống ở cột 'Hệ thống'. Có thì lắp vào, chưa có thì TỰ tạo thành phần (TP-…) rồi lắp tài sản vào (gan_chuc_nang). Để trống = không đổi lắp đặt." },
-      { key: "don_vi", label: "Đơn vị", kind: "ref", common: true,
-        ref: { table: "dm_don_vi", by: ["ma", "ten"], idCol: "don_vi_id", create: true } },
-      { key: "trang_thai", label: "Trạng thái", kind: "ref", common: true,
-        ref: { table: "dm_trang_thai_thiet_bi", by: ["ma", "ten"], idCol: "trang_thai_id", create: true } },
-      { key: "vi_tri_ref", label: "Vị trí (danh mục)", kind: "ref",
-        ref: { table: "dm_vi_tri", by: ["ma", "ten"], idCol: "vi_tri_id", create: true } },
+      {
+        key: "he_thong",
+        label: "Hệ thống",
+        kind: "ref",
+        common: true,
+        ref: { table: "dm_he_thong", by: ["ma", "ten"], idCol: "he_thong_id" },
+      },
+      {
+        key: "lap_vi_tri",
+        label: "Lắp vào vị trí (thành phần)",
+        kind: "text",
+        virtual: true,
+        common: true,
+        ghi_chu:
+          "Tên/mã vị trí chức năng TRONG hệ thống ở cột 'Hệ thống'. Có thì lắp vào, chưa có thì TỰ tạo thành phần (TP-…) rồi lắp tài sản vào (gan_chuc_nang). Để trống = không đổi lắp đặt.",
+      },
+      {
+        key: "don_vi",
+        label: "Đơn vị",
+        kind: "ref",
+        common: true,
+        ref: { table: "dm_don_vi", by: ["ma", "ten"], idCol: "don_vi_id", create: true },
+      },
+      {
+        key: "trang_thai",
+        label: "Trạng thái",
+        kind: "ref",
+        common: true,
+        ref: {
+          table: "dm_trang_thai_thiet_bi",
+          by: ["ma", "ten"],
+          idCol: "trang_thai_id",
+          create: true,
+        },
+      },
+      {
+        key: "vi_tri_ref",
+        label: "Vị trí (danh mục)",
+        kind: "ref",
+        ref: { table: "dm_vi_tri", by: ["ma", "ten"], idCol: "vi_tri_id", create: true },
+      },
       { key: "ma_serial", label: "Số serial", kind: "text", common: true },
-      { key: "model", label: "Model", kind: "ref", common: true,
+      {
+        key: "model",
+        label: "Model",
+        kind: "ref",
+        common: true,
         // create:true → nếu model chưa có trong danh mục sẽ TỰ tạo dm_model mới
         // (chỉ với ma/ten), giúp INSERT tài sản không vi phạm ràng buộc model_id
         // NOT NULL. NSX/loại có thể bổ sung sau ở /danh-muc/model.
-        ref: { table: "dm_model", by: ["ma", "ten"], idCol: "model_id", create: true } },
-      { key: "loai_thiet_bi", label: "Chủng loại", kind: "ref",
-        ref: { table: "dm_loai_thiet_bi", by: ["ma", "ten"], idCol: "loai_thiet_bi_id", create: true } },
+        ref: { table: "dm_model", by: ["ma", "ten"], idCol: "model_id", create: true },
+      },
+      {
+        key: "loai_thiet_bi",
+        label: "Chủng loại",
+        kind: "ref",
+        ref: {
+          table: "dm_loai_thiet_bi",
+          by: ["ma", "ten"],
+          idCol: "loai_thiet_bi_id",
+          create: true,
+        },
+      },
       { key: "p_n", label: "P/N", kind: "text" },
       { key: "nam_san_xuat", label: "Năm sản xuất", kind: "int" },
       { key: "nam_dua_vao_khai_thac", label: "Năm khai thác", kind: "int" },
-      { key: "nha_san_xuat", label: "Nhà sản xuất", kind: "ref",
-        ref: { table: "dm_nha_san_xuat", by: ["ma", "ten"], idCol: "nha_san_xuat_id", create: true } },
-      { key: "nha_cung_cap", label: "Nhà cung cấp", kind: "ref",
-        ref: { table: "dm_nha_cung_cap", by: ["ma", "ten"], idCol: "nha_cung_cap_id", create: true } },
+      {
+        key: "nha_san_xuat",
+        label: "Nhà sản xuất",
+        kind: "ref",
+        ref: {
+          table: "dm_nha_san_xuat",
+          by: ["ma", "ten"],
+          idCol: "nha_san_xuat_id",
+          create: true,
+        },
+      },
+      {
+        key: "nha_cung_cap",
+        label: "Nhà cung cấp",
+        kind: "ref",
+        ref: {
+          table: "dm_nha_cung_cap",
+          by: ["ma", "ten"],
+          idCol: "nha_cung_cap_id",
+          create: true,
+        },
+      },
       { key: "vi_tri", label: "Vị trí (mô tả)", kind: "text" },
       { key: "ngay_mua", label: "Ngày mua", kind: "date" },
       { key: "han_bao_hanh", label: "Hạn bảo hành", kind: "date" },
@@ -170,12 +256,39 @@ export const ENTITIES: EntityDef[] = [
       { key: "ma", label: "Mã hệ thống", kind: "text", required: true },
       { key: "ten", label: "Tên hệ thống", kind: "text", required: true, common: true },
       { key: "ma_tai_san_bravo", label: "Mã tài sản Bravo", kind: "text" },
-      { key: "phan_loai", label: "Phân loại (Nhóm 1/2/3)", kind: "ref", common: true,
-        ref: { table: "dm_phan_loai", by: ["ma", "ten"], idCol: "phan_loai_id", create: true, guard: true } },
-      { key: "nhom_he_thong", label: "Nhóm hệ thống", kind: "ref", common: true,
-        ref: { table: "dm_nhom_he_thong", by: ["ma", "ten"], idCol: "nhom_he_thong_id", create: true, guard: true } },
-      { key: "don_vi", label: "Đơn vị", kind: "ref", common: true,
-        ref: { table: "dm_don_vi", by: ["ma", "ten"], idCol: "don_vi_id", create: true } },
+      {
+        key: "phan_loai",
+        label: "Phân loại (Nhóm 1/2/3)",
+        kind: "ref",
+        common: true,
+        ref: {
+          table: "dm_phan_loai",
+          by: ["ma", "ten"],
+          idCol: "phan_loai_id",
+          create: true,
+          guard: true,
+        },
+      },
+      {
+        key: "nhom_he_thong",
+        label: "Nhóm hệ thống",
+        kind: "ref",
+        common: true,
+        ref: {
+          table: "dm_nhom_he_thong",
+          by: ["ma", "ten"],
+          idCol: "nhom_he_thong_id",
+          create: true,
+          guard: true,
+        },
+      },
+      {
+        key: "don_vi",
+        label: "Đơn vị",
+        kind: "ref",
+        common: true,
+        ref: { table: "dm_don_vi", by: ["ma", "ten"], idCol: "don_vi_id", create: true },
+      },
       { key: "mo_ta", label: "Mô tả", kind: "text", common: true },
       { key: "gp_so", label: "Số giấy phép", kind: "text" },
       { key: "gp_ngay_cap", label: "Ngày cấp GP", kind: "text" },
@@ -206,11 +319,34 @@ export const ENTITIES: EntityDef[] = [
       { key: "ma", label: "Mã mẫu", kind: "text", required: true },
       { key: "ten", label: "Tên mẫu", kind: "text", required: true },
       { key: "p_n", label: "P/N", kind: "text" },
-      { key: "nha_san_xuat", label: "Nhà sản xuất", kind: "ref",
-        ref: { table: "dm_nha_san_xuat", by: ["ma", "ten"], idCol: "nha_san_xuat_id", create: true } },
-      { key: "loai_thiet_bi", label: "Chủng loại", kind: "ref",
-        ref: { table: "dm_loai_thiet_bi", by: ["ma", "ten"], idCol: "loai_thiet_bi_id", create: true } },
-      { key: "hinh_anh", label: "Ảnh (URL)", kind: "text", ghi_chu: "URL ảnh mẫu — nhập hàng loạt ảnh qua cột này" },
+      {
+        key: "nha_san_xuat",
+        label: "Nhà sản xuất",
+        kind: "ref",
+        ref: {
+          table: "dm_nha_san_xuat",
+          by: ["ma", "ten"],
+          idCol: "nha_san_xuat_id",
+          create: true,
+        },
+      },
+      {
+        key: "loai_thiet_bi",
+        label: "Chủng loại",
+        kind: "ref",
+        ref: {
+          table: "dm_loai_thiet_bi",
+          by: ["ma", "ten"],
+          idCol: "loai_thiet_bi_id",
+          create: true,
+        },
+      },
+      {
+        key: "hinh_anh",
+        label: "Ảnh (URL)",
+        kind: "text",
+        ghi_chu: "URL ảnh mẫu — nhập hàng loạt ảnh qua cột này",
+      },
       { key: "mo_ta", label: "Mô tả", kind: "text" },
       { key: "thu_tu", label: "Thứ tự", kind: "int" },
     ],
@@ -224,8 +360,12 @@ export const ENTITIES: EntityDef[] = [
     note: "Khóa upsert = số giấy phép. Có thể liên kết hệ thống theo mã/tên (không tự tạo hệ thống).",
     fields: [
       { key: "gp_so", label: "Số giấy phép", kind: "text", required: true },
-      { key: "he_thong", label: "Hệ thống (liên kết)", kind: "ref",
-        ref: { table: "dm_he_thong", by: ["ma", "ten"], idCol: "he_thong_id" } },
+      {
+        key: "he_thong",
+        label: "Hệ thống (liên kết)",
+        kind: "ref",
+        ref: { table: "dm_he_thong", by: ["ma", "ten"], idCol: "he_thong_id" },
+      },
       { key: "don_vi", label: "Đơn vị", kind: "text" },
       { key: "tram", label: "Trạm", kind: "text" },
       { key: "ten_he_thong_theo_gp", label: "Tên HT theo GP", kind: "text" },
@@ -253,11 +393,25 @@ export const ENTITIES: EntityDef[] = [
     note: "Khai THÀNH PHẦN HỆ THỐNG (không có serial). Khóa upsert = mã thành phần trong phạm vi một hệ thống — nhập đúng cột 'Hệ thống'. Gán tài sản cụ thể là thao tác riêng qua giao diện (Lắp/Thay), KHÔNG nhập ở đây.",
     fields: [
       { key: "ma_thanh_phan", label: "Mã thành phần", kind: "text", required: true },
-      { key: "he_thong", label: "Hệ thống (liên kết)", kind: "ref", required: true,
-        ref: { table: "dm_he_thong", by: ["ma", "ten"], idCol: "he_thong_id" } },
+      {
+        key: "he_thong",
+        label: "Hệ thống (liên kết)",
+        kind: "ref",
+        required: true,
+        ref: { table: "dm_he_thong", by: ["ma", "ten"], idCol: "he_thong_id" },
+      },
       { key: "ten", label: "Thành phần hệ thống", kind: "text", required: true },
-      { key: "loai_yeu_cau", label: "Chủng loại yêu cầu", kind: "ref",
-        ref: { table: "dm_loai_thiet_bi", by: ["ma", "ten"], idCol: "loai_thiet_bi_yeu_cau", create: true } },
+      {
+        key: "loai_yeu_cau",
+        label: "Chủng loại yêu cầu",
+        kind: "ref",
+        ref: {
+          table: "dm_loai_thiet_bi",
+          by: ["ma", "ten"],
+          idCol: "loai_thiet_bi_yeu_cau",
+          create: true,
+        },
+      },
       { key: "bat_buoc", label: "Bắt buộc (true/false)", kind: "text" },
       { key: "thu_tu", label: "Thứ tự", kind: "int" },
       { key: "trang_thai", label: "Trạng thái (hoat_dong/ngung)", kind: "text" },
@@ -275,11 +429,31 @@ export const ENTITIES: EntityDef[] = [
     note: "Khai KHE LINH KIỆN (không có serial). Khóa upsert = mã khe trong phạm vi một tài sản cha — nhập đúng cột 'Tài sản cha'. Gán linh kiện cụ thể là thao tác riêng qua giao diện (Lắp/Thay), KHÔNG nhập ở đây.",
     fields: [
       { key: "ma_khe", label: "Mã khe", kind: "text", required: true },
-      { key: "thiet_bi", label: "Tài sản cha (liên kết)", kind: "ref", required: true,
-        ref: { table: "thiet_bi", by: ["ma", "ten"], keyCol: "ma_thiet_bi", nameCol: "ma_serial", idCol: "thiet_bi_id" } },
+      {
+        key: "thiet_bi",
+        label: "Tài sản cha (liên kết)",
+        kind: "ref",
+        required: true,
+        ref: {
+          table: "thiet_bi",
+          by: ["ma", "ten"],
+          keyCol: "ma_thiet_bi",
+          nameCol: "ma_serial",
+          idCol: "thiet_bi_id",
+        },
+      },
       { key: "ten", label: "Tên khe", kind: "text", required: true },
-      { key: "loai_yeu_cau", label: "Loại linh kiện yêu cầu", kind: "ref",
-        ref: { table: "dm_loai_thiet_bi", by: ["ma", "ten"], idCol: "loai_thiet_bi_yeu_cau", create: true } },
+      {
+        key: "loai_yeu_cau",
+        label: "Loại linh kiện yêu cầu",
+        kind: "ref",
+        ref: {
+          table: "dm_loai_thiet_bi",
+          by: ["ma", "ten"],
+          idCol: "loai_thiet_bi_yeu_cau",
+          create: true,
+        },
+      },
       { key: "bat_buoc", label: "Bắt buộc (true/false)", kind: "text" },
       { key: "thu_tu", label: "Thứ tự", kind: "int" },
       { key: "trang_thai", label: "Trạng thái (hoat_dong/ngung)", kind: "text" },
@@ -298,16 +472,40 @@ export const ENTITIES: EntityDef[] = [
     fields: [
       { key: "ma_vat_tu", label: "Mã vật tư", kind: "text", common: true },
       { key: "ten", label: "Tên vật tư", kind: "text", required: true, common: true },
-      { key: "loai", label: "Loại (DU_PHONG/TIEU_HAO)", kind: "text", required: true, common: true },
+      {
+        key: "loai",
+        label: "Loại (DU_PHONG/TIEU_HAO)",
+        kind: "text",
+        required: true,
+        common: true,
+      },
       { key: "don_vi_tinh", label: "Đơn vị tính", kind: "text", required: true, common: true },
       { key: "don_gia", label: "Đơn giá", kind: "num", required: true },
       { key: "muc_ton_toi_thieu", label: "Tồn tối thiểu", kind: "num", required: true },
-      { key: "don_vi", label: "Đơn vị (dm_don_vi)", kind: "ref", common: true,
-        ref: { table: "dm_don_vi", by: ["ma", "ten"], idCol: "don_vi_id", create: true } },
-      { key: "nha_cung_cap", label: "Nhà cung cấp", kind: "ref",
-        ref: { table: "dm_nha_cung_cap", by: ["ma", "ten"], idCol: "nha_cung_cap_id", create: true } },
-      { key: "model", label: "Model", kind: "ref",
-        ref: { table: "dm_model", by: ["ma", "ten"], idCol: "model_id", create: true } },
+      {
+        key: "don_vi",
+        label: "Đơn vị (dm_don_vi)",
+        kind: "ref",
+        common: true,
+        ref: { table: "dm_don_vi", by: ["ma", "ten"], idCol: "don_vi_id", create: true },
+      },
+      {
+        key: "nha_cung_cap",
+        label: "Nhà cung cấp",
+        kind: "ref",
+        ref: {
+          table: "dm_nha_cung_cap",
+          by: ["ma", "ten"],
+          idCol: "nha_cung_cap_id",
+          create: true,
+        },
+      },
+      {
+        key: "model",
+        label: "Model",
+        kind: "ref",
+        ref: { table: "dm_model", by: ["ma", "ten"], idCol: "model_id", create: true },
+      },
       { key: "ghi_chu", label: "Ghi chú", kind: "text" },
     ],
   },
@@ -336,8 +534,20 @@ export const ENTITIES: EntityDef[] = [
     note: "Khóa upsert = số giấy chứng nhận. Trường 'thiet_bi' BẮT BUỘC — nhập mã tài sản (ưu tiên) hoặc số serial để khớp thiet_bi_id.",
     fields: [
       { key: "so_giay_chung_nhan", label: "Số GCN", kind: "text", required: true, common: true },
-      { key: "thiet_bi", label: "Tài sản (mã/serial)", kind: "ref", required: true, common: true,
-        ref: { table: "thiet_bi", by: ["ma", "ten"], keyCol: "ma_thiet_bi", nameCol: "ma_serial", idCol: "thiet_bi_id" } },
+      {
+        key: "thiet_bi",
+        label: "Tài sản (mã/serial)",
+        kind: "ref",
+        required: true,
+        common: true,
+        ref: {
+          table: "thiet_bi",
+          by: ["ma", "ten"],
+          keyCol: "ma_thiet_bi",
+          nameCol: "ma_serial",
+          idCol: "thiet_bi_id",
+        },
+      },
       { key: "loai", label: "Loại chứng chỉ", kind: "text", required: true, common: true },
       { key: "ngay_bat_dau", label: "Ngày cấp", kind: "date", common: true },
       { key: "ngay_het_han", label: "Ngày hết hạn", kind: "date", common: true },
@@ -369,8 +579,6 @@ export const ENTITIES: EntityDef[] = [
     ],
   },
 ];
-
-
 
 /** Lấy định nghĩa 1 danh mục nền theo tên bảng. */
 export function catalogEntity(table: string): EntityDef {
@@ -451,26 +659,36 @@ export function parseCsv(text: string): { headers: string[]; rows: Array<Record<
     const c = src[i];
     if (inQuotes) {
       if (c === '"') {
-        if (src[i + 1] === '"') { field += '"'; i++; }
-        else inQuotes = false;
+        if (src[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else inQuotes = false;
       } else field += c;
     } else if (c === '"') inQuotes = true;
-    else if (c === ",") { row.push(field); field = ""; }
-    else if (c === "\n" || c === "\r") {
+    else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
       if (c === "\r" && src[i + 1] === "\n") i++;
-      row.push(field); field = "";
+      row.push(field);
+      field = "";
       if (row.some((x) => x !== "")) records.push(row);
       row = [];
     } else field += c;
   }
-  if (field !== "" || row.length) { row.push(field); if (row.some((x) => x !== "")) records.push(row); }
+  if (field !== "" || row.length) {
+    row.push(field);
+    if (row.some((x) => x !== "")) records.push(row);
+  }
   if (records.length === 0) return { headers: [], rows: [] };
   // Làm sạch mỗi ô: gộp xuống dòng/tab/khoảng trắng thừa về 1 dấu cách, cắt đầu–cuối.
   const cleanCell = (s: string) => (s ?? "").replace(/\s+/g, " ").trim();
   const headers = records[0].map((h) => cleanCell(h));
   const rows = records.slice(1).map((rec) => {
     const o: Record<string, string> = {};
-    headers.forEach((h, idx) => { o[h] = cleanCell(rec[idx] ?? ""); });
+    headers.forEach((h, idx) => {
+      o[h] = cleanCell(rec[idx] ?? "");
+    });
     return o;
   });
   return { headers, rows };
@@ -481,7 +699,8 @@ export function noAccent(s: string): string {
   return (s || "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d").replace(/Đ/g, "D")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
     .toLowerCase()
     .trim();
 }

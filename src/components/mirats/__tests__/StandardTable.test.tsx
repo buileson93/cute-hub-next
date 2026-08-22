@@ -5,15 +5,22 @@ import { StandardTable, type StdColumn } from "../StandardTable";
 import { parseMinW } from "@/lib/mirats/ui/table-geometry";
 
 // Mock ResizeObserver properly for Vitest/JSDOM
-vi.stubGlobal('ResizeObserver', class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-});
+vi.stubGlobal(
+  "ResizeObserver",
+  class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  },
+);
 
 afterEach(() => cleanup());
 
-interface Row { id: string; ten: string; nhom: string }
+interface Row {
+  id: string;
+  ten: string;
+  nhom: string;
+}
 const rows: Row[] = [
   { id: "1", ten: "Sản phẩm A", nhom: "Nhóm X" },
   { id: "2", ten: "Sản phẩm B", nhom: "Nhóm Y" },
@@ -69,49 +76,42 @@ describe("StandardTable — Tương tác và Lọc", () => {
   it("hỗ trợ selectable và chọn dòng", () => {
     const setSelected = vi.fn();
     const selected = new Set<string>();
-    
+
     render(
-      <StandardTable<Row> 
-        {...baseProps()} 
-        selectable={true} 
+      <StandardTable<Row>
+        {...baseProps()}
+        selectable={true}
         selected={selected}
         setSelected={setSelected}
-      />
+      />,
     );
-    
+
     const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[1]); 
+    fireEvent.click(checkboxes[1]);
     expect(setSelected).toHaveBeenCalled();
   });
 
   it("render các nút sắp xếp và lọc", async () => {
     render(<StandardTable<Row> {...baseProps()} />);
-    
+
     // Kiểm tra các thành phần giao diện chính thay vì hành vi lọc phức tạp trong JSDOM
     expect(screen.getByText("Tên")).not.toBeNull();
-    const filterButtons = screen.getAllByRole("button").filter(b => 
-      b.querySelector(".lucide-funnel") || b.innerHTML.includes('lucide-funnel')
-    );
+    const filterButtons = screen
+      .getAllByRole("button")
+      .filter((b) => b.querySelector(".lucide-funnel") || b.innerHTML.includes("lucide-funnel"));
     expect(filterButtons.length).toBeGreaterThan(0);
   });
-
-
-
-
-
-
-
 
   it("áp dụng defaultHidden cho cột", () => {
     const colsWithHidden: StdColumn<Row>[] = [
       { key: "ten", label: "Tên", value: (r) => r.ten },
       { key: "nhom", label: "Nhóm", value: (r) => r.nhom, defaultHidden: true },
     ];
-    
+
     render(<StandardTable<Row> {...baseProps()} columns={colsWithHidden} />);
-    
+
     const headers = screen.getAllByRole("columnheader");
-    const headerTexts = headers.map(h => h.textContent);
+    const headerTexts = headers.map((h) => h.textContent);
     expect(headerTexts).not.toContain("Nhóm");
   });
 });
@@ -130,9 +130,9 @@ describe("StandardTable — Nâng cấp Độ rộng", () => {
         {...baseProps()}
         columns={[
           { key: "ten", label: "Tên", minW: "min-w-[60px]" },
-          { key: "nhom", label: "Nhóm", width: 250, minWidth: 200 }
-        ]} 
-      />
+          { key: "nhom", label: "Nhóm", width: 250, minWidth: 200 },
+        ]}
+      />,
     );
     const cols = container.querySelectorAll("colgroup col");
     // col[0] là checkbox nếu selectable, nhưng ở đây baseProps có selectable không? Mặc định không.

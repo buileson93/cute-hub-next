@@ -5,16 +5,19 @@ The user reported that chart hover points on the overview dashboard are inconsis
 ## Proposed Changes
 
 ### 1. Standardize `VisualKpiChart.tsx`
+
 - **Area & Line Charts**: Add visible `dot` elements on hover and active states.
 - **Bar Charts**: Improve hover state visibility with better active bar highlights.
 - **Tooltip Consistency**: Ensure all tooltips across different chart types use the same styling (padding, border-radius, font size, and shadow).
 - **Interactive Points**: Use `activeDot={{ r: 4, strokeWidth: 0 }}` to make hover points clearly visible.
 
 ### 2. Standardize `StatusDonutChart.tsx` & `KpiCard.tsx`
+
 - **Donut/Pie Charts**: Add a subtle "active" segment expand effect on hover.
 - **Sparklines**: Add minimal hover feedback if missing.
 
 ### 3. Improve `_app.tong-quan.tsx` Charts
+
 - Standardize the `Tooltip` component usage in the "Trend Analysis" and "Asset Status" cards to match the visual language of `VisualKpiChart`.
 
 ## Technical Details

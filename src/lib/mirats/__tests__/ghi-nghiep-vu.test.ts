@@ -61,9 +61,7 @@ describe("previewKhai", () => {
     const kq = previewKhai(
       base({
         loai: "BAO_DUONG",
-        vatTuTieuHao: [
-          { vat_tu_id: "VT_1", kho_id: "K_1", so_luong: 3, ten_vat_tu: "Bóng đèn" },
-        ],
+        vatTuTieuHao: [{ vat_tu_id: "VT_1", kho_id: "K_1", so_luong: 3, ten_vat_tu: "Bóng đèn" }],
       }),
     );
     expect(kq.tomTat).toMatch(/Bảo dưỡng/);

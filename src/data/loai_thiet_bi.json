@@ -1,1 +1,25 @@
-[{"ma": "SERVER", "ten": "Server", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "SW", "ten": "Switch", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "PC", "ten": "PC / Workstation", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "SENSOR", "ten": "Sensor khí tượng", "nhom_loai": "Cảm biến", "tuoi_tho_thiet_ke_nam": 10}, {"ma": "VHF", "ten": "VHF Transceiver", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12}, {"ma": "UHF", "ten": "UHF Transceiver", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12}, {"ma": "UPS", "ten": "UPS", "nhom_loai": "Nguồn–điện", "tuoi_tho_thiet_ke_nam": 15}, {"ma": "BAT", "ten": "Ắc quy", "nhom_loai": "Nguồn–điện", "tuoi_tho_thiet_ke_nam": 15}, {"ma": "AC", "ten": "Điều hòa", "nhom_loai": "Cơ–điện", "tuoi_tho_thiet_ke_nam": 15}, {"ma": "CAM", "ten": "Camera IP", "nhom_loai": "Cảm biến", "tuoi_tho_thiet_ke_nam": 10}, {"ma": "ANT", "ten": "Anten", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12}, {"ma": "MODEM", "ten": "Modem", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "PRN", "ten": "Máy in", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "MON", "ten": "Màn hình", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "CLOCK", "ten": "Đồng hồ", "nhom_loai": "Khác", "tuoi_tho_thiet_ke_nam": 10}, {"ma": "REC", "ten": "Bộ ghi âm", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8}, {"ma": "MUX", "ten": "Ghép kênh", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12}, {"ma": "DGEN", "ten": "Máy phát điện", "nhom_loai": "Nguồn–điện", "tuoi_tho_thiet_ke_nam": 15}]
+[
+  { "ma": "SERVER", "ten": "Server", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  { "ma": "SW", "ten": "Switch", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  { "ma": "PC", "ten": "PC / Workstation", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  {
+    "ma": "SENSOR",
+    "ten": "Sensor khí tượng",
+    "nhom_loai": "Cảm biến",
+    "tuoi_tho_thiet_ke_nam": 10
+  },
+  { "ma": "VHF", "ten": "VHF Transceiver", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12 },
+  { "ma": "UHF", "ten": "UHF Transceiver", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12 },
+  { "ma": "UPS", "ten": "UPS", "nhom_loai": "Nguồn–điện", "tuoi_tho_thiet_ke_nam": 15 },
+  { "ma": "BAT", "ten": "Ắc quy", "nhom_loai": "Nguồn–điện", "tuoi_tho_thiet_ke_nam": 15 },
+  { "ma": "AC", "ten": "Điều hòa", "nhom_loai": "Cơ–điện", "tuoi_tho_thiet_ke_nam": 15 },
+  { "ma": "CAM", "ten": "Camera IP", "nhom_loai": "Cảm biến", "tuoi_tho_thiet_ke_nam": 10 },
+  { "ma": "ANT", "ten": "Anten", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12 },
+  { "ma": "MODEM", "ten": "Modem", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  { "ma": "PRN", "ten": "Máy in", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  { "ma": "MON", "ten": "Màn hình", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  { "ma": "CLOCK", "ten": "Đồng hồ", "nhom_loai": "Khác", "tuoi_tho_thiet_ke_nam": 10 },
+  { "ma": "REC", "ten": "Bộ ghi âm", "nhom_loai": "CNTT", "tuoi_tho_thiet_ke_nam": 8 },
+  { "ma": "MUX", "ten": "Ghép kênh", "nhom_loai": "Vô tuyến", "tuoi_tho_thiet_ke_nam": 12 },
+  { "ma": "DGEN", "ten": "Máy phát điện", "nhom_loai": "Nguồn–điện", "tuoi_tho_thiet_ke_nam": 15 }
+]

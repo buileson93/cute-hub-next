@@ -1,7 +1,13 @@
 import { useState } from "react";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { NHAN } from "@/lib/mirats/tu-vung";
@@ -29,9 +35,16 @@ export interface ConfirmDialogProps {
 }
 
 export function ConfirmDialog({
-  open, onOpenChange, title, description,
-  confirmLabel, cancelLabel = NHAN.huy,
-  danger = false, onConfirm, successMessage, silent = false,
+  open,
+  onOpenChange,
+  title,
+  description,
+  confirmLabel,
+  cancelLabel = NHAN.huy,
+  danger = false,
+  onConfirm,
+  successMessage,
+  silent = false,
 }: ConfirmDialogProps) {
   const [busy, setBusy] = useState(false);
 
@@ -61,11 +74,14 @@ export function ConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction
-            onClick={(e) => { e.preventDefault(); void handle(); }}
+            onClick={(e) => {
+              e.preventDefault();
+              void handle();
+            }}
             disabled={busy}
             className={cn(
               danger &&
-              "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive",
+                "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive",
             )}
           >
             {busy ? "Đang xử lý…" : (confirmLabel ?? NHAN.xacNhan)}

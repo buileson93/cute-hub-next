@@ -10,9 +10,28 @@ export interface DetectResult {
 }
 
 const REJECT_EXT = new Set([
-  "pdf", "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "heic",
-  "xlsx", "xls", "csv", "zip", "rar", "7z", "mp3", "mp4", "mov",
-  "pptx", "ppt", "txt", "rtf",
+  "pdf",
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "webp",
+  "bmp",
+  "svg",
+  "heic",
+  "xlsx",
+  "xls",
+  "csv",
+  "zip",
+  "rar",
+  "7z",
+  "mp3",
+  "mp4",
+  "mov",
+  "pptx",
+  "ppt",
+  "txt",
+  "rtf",
 ]);
 
 // Từ khoá bắt buộc/nhấn mạnh cho báo cáo tuần sự cố.
@@ -50,29 +69,53 @@ export function classifyTextForWeeklyReport(text: string): DetectResult {
   }
 
   let score = 0;
-  for (const rx of STRONG_KEYWORDS) if (rx.test(t)) { score += 0.28; hints.push(`match: ${rx.source.slice(0, 30)}`); }
-  for (const rx of MED_KEYWORDS) if (rx.test(t)) { score += 0.1; }
+  for (const rx of STRONG_KEYWORDS)
+    if (rx.test(t)) {
+      score += 0.28;
+      hints.push(`match: ${rx.source.slice(0, 30)}`);
+    }
+  for (const rx of MED_KEYWORDS)
+    if (rx.test(t)) {
+      score += 0.1;
+    }
 
   // Bảng thường có cột TT/STT + Tên thiết bị + Thời gian
   if (/\bTT\b|\bSTT\b/.test(t) && /(t[eê]n\s*(thi[eế]t\s*b[iị]|h[eệ]\s*th[oố]ng))/i.test(t)) {
-    score += 0.15; hints.push("cột bảng: TT + Tên thiết bị");
+    score += 0.15;
+    hints.push("cột bảng: TT + Tên thiết bị");
   }
 
   // Nhiều mốc thời gian dd/mm hoặc hh:mm → dấu hiệu báo cáo tuần
-  const timeMarks = (t.match(/\b\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?\b/g) || []).length
-    + (t.match(/\b\d{1,2}h\d{0,2}\b/gi) || []).length;
-  if (timeMarks >= 3) { score += 0.1; hints.push(`${timeMarks} mốc thời gian`); }
+  const timeMarks =
+    (t.match(/\b\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?\b/g) || []).length +
+    (t.match(/\b\d{1,2}h\d{0,2}\b/gi) || []).length;
+  if (timeMarks >= 3) {
+    score += 0.1;
+    hints.push(`${timeMarks} mốc thời gian`);
+  }
 
   // Loại trừ nếu có dấu hiệu tài liệu khác rõ ràng
   for (const [rx, label] of NEGATIVE_KEYWORDS) {
     if (rx.test(t)) {
-      return { verdict: "reject", score, reason: `Có vẻ là tài liệu "${label}", không phải báo cáo tuần`, hints };
+      return {
+        verdict: "reject",
+        score,
+        reason: `Có vẻ là tài liệu "${label}", không phải báo cáo tuần`,
+        hints,
+      };
     }
   }
 
   score = Math.min(1, score);
-  if (score >= 0.55) return { verdict: "accept", score, reason: "Đủ dấu hiệu báo cáo tuần sự cố", hints };
-  if (score >= 0.3) return { verdict: "suspect", score, reason: "Không chắc chắn — thiếu tiêu đề/cột bảng đặc trưng", hints };
+  if (score >= 0.55)
+    return { verdict: "accept", score, reason: "Đủ dấu hiệu báo cáo tuần sự cố", hints };
+  if (score >= 0.3)
+    return {
+      verdict: "suspect",
+      score,
+      reason: "Không chắc chắn — thiếu tiêu đề/cột bảng đặc trưng",
+      hints,
+    };
   return { verdict: "reject", score, reason: "Không phát hiện dấu hiệu báo cáo tuần sự cố", hints };
 }
 
@@ -82,17 +125,31 @@ export async function classifyWeeklyReportFile(file: File): Promise<DetectResult
   if (REJECT_EXT.has(ext)) {
     const map: Record<string, string> = {
       pdf: "PDF (giấy phép/tài liệu quét)",
-      png: "ảnh PNG", jpg: "ảnh JPG", jpeg: "ảnh JPEG", gif: "ảnh GIF",
-      webp: "ảnh WEBP", bmp: "ảnh BMP", svg: "SVG", heic: "ảnh HEIC",
-      xlsx: "bảng tính Excel", xls: "bảng tính Excel", csv: "CSV",
-      zip: "gói nén", rar: "gói nén", "7z": "gói nén",
-      pptx: "slide PowerPoint", ppt: "slide PowerPoint",
-      txt: "text thô (hãy dùng tab \"Dán nội dung\")",
+      png: "ảnh PNG",
+      jpg: "ảnh JPG",
+      jpeg: "ảnh JPEG",
+      gif: "ảnh GIF",
+      webp: "ảnh WEBP",
+      bmp: "ảnh BMP",
+      svg: "SVG",
+      heic: "ảnh HEIC",
+      xlsx: "bảng tính Excel",
+      xls: "bảng tính Excel",
+      csv: "CSV",
+      zip: "gói nén",
+      rar: "gói nén",
+      "7z": "gói nén",
+      pptx: "slide PowerPoint",
+      ppt: "slide PowerPoint",
+      txt: 'text thô (hãy dùng tab "Dán nội dung")',
       rtf: "văn bản RTF",
-      mp3: "âm thanh", mp4: "video", mov: "video",
+      mp3: "âm thanh",
+      mp4: "video",
+      mov: "video",
     };
     return {
-      verdict: "reject", score: 0,
+      verdict: "reject",
+      score: 0,
       reason: `File là ${map[ext] ?? ext.toUpperCase()} — không phải báo cáo tuần .docx`,
       hints: [`ext=${ext}`],
     };
@@ -100,7 +157,8 @@ export async function classifyWeeklyReportFile(file: File): Promise<DetectResult
 
   if (ext === "doc") {
     return {
-      verdict: "reject", score: 0,
+      verdict: "reject",
+      score: 0,
       reason: "File .doc cũ không hỗ trợ — hãy Save As sang .docx",
       hints: ["ext=doc"],
     };
@@ -108,7 +166,8 @@ export async function classifyWeeklyReportFile(file: File): Promise<DetectResult
 
   if (ext !== "docx") {
     return {
-      verdict: "reject", score: 0,
+      verdict: "reject",
+      score: 0,
       reason: `Định dạng .${ext || "?"} không được hỗ trợ`,
       hints: [`ext=${ext}`],
     };
@@ -121,7 +180,8 @@ export async function classifyWeeklyReportFile(file: File): Promise<DetectResult
     return classifyTextForWeeklyReport(raw.value ?? "");
   } catch (e) {
     return {
-      verdict: "reject", score: 0,
+      verdict: "reject",
+      score: 0,
       reason: `Không đọc được nội dung DOCX: ${e instanceof Error ? e.message : String(e)}`,
       hints: ["mammoth.error"],
     };

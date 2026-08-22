@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/backend/client";
 
-export type AppRole = "admin" | "phong_kt" | "phu_trach_dv" | "ktv" | "readonly" | "quan_ly_du_an" | "to_truong";
+export type AppRole =
+  | "admin"
+  | "phong_kt"
+  | "phu_trach_dv"
+  | "ktv"
+  | "readonly"
+  | "quan_ly_du_an"
+  | "to_truong";
 
 export interface Profile {
   id: string;
@@ -22,9 +29,16 @@ interface AuthState {
   roles: AppRole[];
 }
 
-export function useSession(): AuthState & { hasRole: (r: AppRole) => boolean; refresh: () => void } {
+export function useSession(): AuthState & {
+  hasRole: (r: AppRole) => boolean;
+  refresh: () => void;
+} {
   const [state, setState] = useState<AuthState>({
-    loading: true, session: null, user: null, profile: null, roles: [],
+    loading: true,
+    session: null,
+    user: null,
+    profile: null,
+    roles: [],
   });
   const [tick, setTick] = useState(0);
 
@@ -33,11 +47,16 @@ export function useSession(): AuthState & { hasRole: (r: AppRole) => boolean; re
 
     async function hydrate(session: Session | null) {
       if (!session?.user) {
-        if (!cancelled) setState({ loading: false, session: null, user: null, profile: null, roles: [] });
+        if (!cancelled)
+          setState({ loading: false, session: null, user: null, profile: null, roles: [] });
         return;
       }
       const [profileRes, rolesRes] = await Promise.all([
-        supabase.from("profiles").select("id,email,ho_ten,don_vi,active,avatar_url,tour_hoan_thanh").eq("id", session.user.id).maybeSingle(),
+        supabase
+          .from("profiles")
+          .select("id,email,ho_ten,don_vi,active,avatar_url,tour_hoan_thanh")
+          .eq("id", session.user.id)
+          .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", session.user.id),
       ]);
       if (cancelled) return;
@@ -52,11 +71,19 @@ export function useSession(): AuthState & { hasRole: (r: AppRole) => boolean; re
 
     supabase.auth.getSession().then(({ data }) => hydrate(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED") {
+      if (
+        event === "SIGNED_IN" ||
+        event === "SIGNED_OUT" ||
+        event === "USER_UPDATED" ||
+        event === "TOKEN_REFRESHED"
+      ) {
         hydrate(session);
       }
     });
-    return () => { cancelled = true; sub.subscription.unsubscribe(); };
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, [tick]);
 
   return {

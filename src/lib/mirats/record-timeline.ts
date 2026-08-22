@@ -123,7 +123,10 @@ export function buildRecordTimeline(sources: TimelineSources): TimelineItem[] {
       tag: e.trang_thai,
     };
     if (withDeviceLabel) {
-      const d = deviceLabelFor({ deviceId: e.thiet_bi_hong_id, deviceText: e.thiet_bi_hong, ...e }, getLive);
+      const d = deviceLabelFor(
+        { deviceId: e.thiet_bi_hong_id, deviceText: e.thiet_bi_hong, ...e },
+        getLive,
+      );
       item.device = d.device;
       item.deviceSource = d.source;
     }
@@ -149,10 +152,12 @@ export function buildRecordTimeline(sources: TimelineSources): TimelineItem[] {
 
   for (const ev of sources.changeEvents ?? []) {
     const title =
-      ev.action === "insert" ? "Tạo mới bản ghi"
-      : ev.action === "delete" ? "Xoá bản ghi"
-      : `Cập nhật ${ev.changesCount ?? 0} trường`;
-    const desc = ev.action === "update" ? ev.changesText ?? "" : "";
+      ev.action === "insert"
+        ? "Tạo mới bản ghi"
+        : ev.action === "delete"
+          ? "Xoá bản ghi"
+          : `Cập nhật ${ev.changesCount ?? 0} trường`;
+    const desc = ev.action === "update" ? (ev.changesText ?? "") : "";
     items.push({ kind: "cd", date: ev.at, title, label: `bởi ${ev.userName}`, desc });
   }
 

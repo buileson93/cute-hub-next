@@ -12,7 +12,14 @@ import {
 describe("Bất biến: sửa mẫu không thay đổi submission cũ", () => {
   // Mẫu tại thời điểm lập phiếu (v1): 2 field.
   const schemaV1 = compileSchema(
-    { id: "t1", code: "PL01", ten: "Bảo dưỡng", version: 1, require_signature: true, thiet_bi_mode: "single" },
+    {
+      id: "t1",
+      code: "PL01",
+      ten: "Bảo dưỡng",
+      version: 1,
+      require_signature: true,
+      thiet_bi_mode: "single",
+    },
     [
       { key: "dien_ap", label: "Điện áp", kind: "number", required: true, position: 1 },
       { key: "ghi_chu", label: "Ghi chú", kind: "text", position: 2 },
@@ -23,9 +30,22 @@ describe("Bất biến: sửa mẫu không thay đổi submission cũ", () => {
 
   // Sau đó mẫu bị SỬA: thêm field, đổi nhãn, bỏ field cũ (v2 hiện tại).
   const currentFields: CompiledField[] = compileSchema(
-    { id: "t1", code: "PL01", ten: "Bảo dưỡng", version: 2, require_signature: true, thiet_bi_mode: "single" },
+    {
+      id: "t1",
+      code: "PL01",
+      ten: "Bảo dưỡng",
+      version: 2,
+      require_signature: true,
+      thiet_bi_mode: "single",
+    },
     [
-      { key: "dien_ap", label: "Điện áp (V) — ĐÃ ĐỔI", kind: "number", required: true, position: 1 },
+      {
+        key: "dien_ap",
+        label: "Điện áp (V) — ĐÃ ĐỔI",
+        kind: "number",
+        required: true,
+        position: 1,
+      },
       { key: "nhiet_do", label: "Nhiệt độ", kind: "number", required: true, position: 2 },
     ],
   ).fields;
@@ -47,7 +67,14 @@ describe("Bất biến: sửa mẫu không thay đổi submission cũ", () => {
 
   it("ưu tiên snapshot > version > current", () => {
     const version = compileSchema(
-      { id: "t1", code: "PL01", ten: "Bảo dưỡng", version: 1, require_signature: false, thiet_bi_mode: "single" },
+      {
+        id: "t1",
+        code: "PL01",
+        ten: "Bảo dưỡng",
+        version: 1,
+        require_signature: false,
+        thiet_bi_mode: "single",
+      },
       [{ key: "chi_version", label: "V", position: 1 }],
     );
     const res = resolveSubmissionFields({

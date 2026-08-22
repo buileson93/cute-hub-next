@@ -21,17 +21,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-export type RenameKind =
-  | "pl"
-  | "nh"
-  | "ht"
-  | "tb"
-  | "md"
-  | "nsx"
-  | "ncc"
-  | "loai"
-  | "dv"
-  | "vt";
+export type RenameKind = "pl" | "nh" | "ht" | "tb" | "md" | "nsx" | "ncc" | "loai" | "dv" | "vt";
 
 interface TargetSpec {
   table: string;
@@ -78,16 +68,11 @@ export async function renameEntity(input: RenameInput): Promise<void> {
 
   if (input.draft) {
     if (input.kind !== "nh" && input.kind !== "tb" && input.kind !== "ht") {
-      throw new Error(
-        `Không hỗ trợ draft cho kind=${input.kind}`,
-      );
+      throw new Error(`Không hỗ trợ draft cho kind=${input.kind}`);
     }
     const { error } = await supabase
       .from("cay_node_edit")
-      .upsert(
-        { kind: input.kind, ma: id, ten } as never,
-        { onConflict: "kind,ma" },
-      );
+      .upsert({ kind: input.kind, ma: id, ten } as never, { onConflict: "kind,ma" });
     if (error) throw error;
     return;
   }
@@ -101,11 +86,7 @@ export async function renameEntity(input: RenameInput): Promise<void> {
 
   // Xoá override nếu có để đảm bảo SSoT bảng gốc thắng
   if (input.kind === "ht" || input.kind === "tb" || input.kind === "nh") {
-    await supabase
-      .from("cay_node_edit")
-      .delete()
-      .eq("kind", input.kind)
-      .eq("ma", id);
+    await supabase.from("cay_node_edit").delete().eq("kind", input.kind).eq("ma", id);
   }
 }
 

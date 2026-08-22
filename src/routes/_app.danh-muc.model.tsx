@@ -2,8 +2,26 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Package, Plus, Search, ImageUp, Loader2, Pencil, Trash2, Factory, Tag, Boxes, X,
-  LayoutGrid, List as ListIcon, Info, MapPin, Building2, GitMerge, ChevronRight, Layers, AlertTriangle,
+  Package,
+  Plus,
+  Search,
+  ImageUp,
+  Loader2,
+  Pencil,
+  Trash2,
+  Factory,
+  Tag,
+  Boxes,
+  X,
+  LayoutGrid,
+  List as ListIcon,
+  Info,
+  MapPin,
+  Building2,
+  GitMerge,
+  ChevronRight,
+  Layers,
+  AlertTriangle,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,9 +30,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
@@ -25,7 +54,6 @@ import { ModelTaiLieu } from "@/components/mirats/ModelTaiLieu";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
-
 
 import { ImageCropDialog } from "@/components/mirats/ImageCropDialog";
 import { ModelDacTinhIODialog } from "@/components/mirats/ModelDacTinhIODialog";
@@ -42,7 +70,9 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/danh-muc/model")({
-  validateSearch: (s: Record<string, unknown>): { q?: string; edit?: string; filter?: "thieu-loai" } => ({
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { q?: string; edit?: string; filter?: "thieu-loai" } => ({
     q: typeof s.q === "string" && s.q.trim() ? s.q : undefined,
     edit: typeof s.edit === "string" && s.edit.trim() ? s.edit : undefined,
     filter: s.filter === "thieu-loai" ? "thieu-loai" : undefined,
@@ -50,8 +80,11 @@ export const Route = createFileRoute("/_app/danh-muc/model")({
   head: () => ({
     meta: [
       { title: "Model — Danh mục MIRATS" },
-      { name: "description", content: "Danh mục model: hình ảnh minh hoạ, nhà sản xuất, chủng loại và số tài sản đang dùng." },
-
+      {
+        name: "description",
+        content:
+          "Danh mục model: hình ảnh minh hoạ, nhà sản xuất, chủng loại và số tài sản đang dùng.",
+      },
     ],
   }),
   component: ModelCatalogPage,
@@ -105,12 +138,18 @@ async function copyTextToClipboard(text: string) {
 
 /** Tạo mã danh mục từ tên (bỏ dấu, viết hoa, thay ký tự đặc biệt). */
 function slug(name: string): string {
-  const s = normalize(name).toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const s = normalize(name)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
   return s.slice(0, 40) || "MODEL_" + Date.now().toString(36).toUpperCase();
 }
 
 /** Tìm danh mục theo tên (không phân biệt hoa/thường, dấu) hoặc tạo mới. */
-async function resolveDmId(table: "dm_nha_san_xuat" | "dm_loai_thiet_bi", name: string): Promise<string | null> {
+async function resolveDmId(
+  table: "dm_nha_san_xuat" | "dm_loai_thiet_bi",
+  name: string,
+): Promise<string | null> {
   const t = name.trim();
   if (!t) return null;
   const { data: found } = await supabase.from(table).select("id,ten").limit(2000);
@@ -151,7 +190,9 @@ function ModelCatalogPage() {
       await copyTextToClipboard(url);
       toast.success("Đã sao chép link tìm kiếm Google");
     } catch {
-      toast.message("Đã tạo link tìm kiếm", { description: "Copy thủ công nếu Chrome chặn clipboard trong preview." });
+      toast.message("Đã tạo link tìm kiếm", {
+        description: "Copy thủ công nếu Chrome chặn clipboard trong preview.",
+      });
     }
   }
 
@@ -173,12 +214,18 @@ function ModelCatalogPage() {
     },
   });
 
-  const { data: models, isLoading, error } = useQuery({
+  const {
+    data: models,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["model_catalog"],
     queryFn: async (): Promise<ModelRow[]> => {
       const { data, error } = await supabase
         .from("dm_model")
-        .select("id,ma,ten,p_n,mo_ta,hinh_anh,active,nha_san_xuat_id,loai_thiet_bi_id,field_set_id,dm_nha_san_xuat(ten),dm_loai_thiet_bi(ten),field_set(ten)")
+        .select(
+          "id,ma,ten,p_n,mo_ta,hinh_anh,active,nha_san_xuat_id,loai_thiet_bi_id,field_set_id,dm_nha_san_xuat(ten),dm_loai_thiet_bi(ten),field_set(ten)",
+        )
         .order("ten");
       if (error) throw error;
       const rows = (data ?? []) as Record<string, any>[];
@@ -199,7 +246,6 @@ function ModelCatalogPage() {
         }
         if (batch.length < PAGE) break;
       }
-
 
       // Ký URL ảnh hàng loạt.
       const paths = rows.map((r) => r.hinh_anh).filter(Boolean) as string[];
@@ -223,7 +269,7 @@ function ModelCatalogPage() {
         nhaSanXuat: r.dm_nha_san_xuat?.ten ?? "",
         loaiThietBi: r.dm_loai_thiet_bi?.ten ?? "",
         fieldSetTen: r.field_set?.ten ?? "",
-        imgUrl: r.hinh_anh ? urlMap.get(r.hinh_anh) ?? "" : "",
+        imgUrl: r.hinh_anh ? (urlMap.get(r.hinh_anh) ?? "") : "",
         soThietBi: counts.get(r.id) ?? 0,
       }));
     },
@@ -240,8 +286,6 @@ function ModelCatalogPage() {
     }
   }, [editParam, models]);
 
-
-
   // Filter thu hẹp dần: NSX → Chủng loại → Tên mẫu → P/N.
   // Mỗi filter sau chỉ hiện các giá trị còn lại sau khi đã áp dụng các filter trước.
   const all = models ?? [];
@@ -250,7 +294,8 @@ function ModelCatalogPage() {
     [all, nsxFilter],
   );
   const afterLoai = useMemo(
-    () => afterNsx.filter((m) => !loaiFilter || (m.loaiThietBi || "(Chưa phân loại)") === loaiFilter),
+    () =>
+      afterNsx.filter((m) => !loaiFilter || (m.loaiThietBi || "(Chưa phân loại)") === loaiFilter),
     [afterNsx, loaiFilter],
   );
   const afterTen = useMemo(
@@ -271,14 +316,26 @@ function ModelCatalogPage() {
     return Array.from(set.entries()).sort((a, b) => a[0].localeCompare(b[0], "vi"));
   }
   const nsxOptions = useMemo(() => buildOpts(all, (m) => m.nhaSanXuat, "(Chưa có NSX)"), [all]);
-  const loaiOptions = useMemo(() => buildOpts(afterNsx, (m) => m.loaiThietBi, "(Chưa phân loại)"), [afterNsx]);
+  const loaiOptions = useMemo(
+    () => buildOpts(afterNsx, (m) => m.loaiThietBi, "(Chưa phân loại)"),
+    [afterNsx],
+  );
   const tenOptions = useMemo(() => buildOpts(afterLoai, (m) => m.ten, "(Không tên)"), [afterLoai]);
-  const pnOptions = useMemo(() => buildOpts(afterTen, (m) => m.p_n ?? "", "(Không P/N)"), [afterTen]);
+  const pnOptions = useMemo(
+    () => buildOpts(afterTen, (m) => m.p_n ?? "", "(Không P/N)"),
+    [afterTen],
+  );
 
   // Nếu giá trị filter con không còn hợp lệ sau khi filter cha đổi → tự reset.
-  useEffect(() => { if (loaiFilter && !loaiOptions.some(([k]) => k === loaiFilter)) setLoaiFilter(""); }, [loaiOptions, loaiFilter]);
-  useEffect(() => { if (tenFilter && !tenOptions.some(([k]) => k === tenFilter)) setTenFilter(""); }, [tenOptions, tenFilter]);
-  useEffect(() => { if (pnFilter && !pnOptions.some(([k]) => k === pnFilter)) setPnFilter(""); }, [pnOptions, pnFilter]);
+  useEffect(() => {
+    if (loaiFilter && !loaiOptions.some(([k]) => k === loaiFilter)) setLoaiFilter("");
+  }, [loaiOptions, loaiFilter]);
+  useEffect(() => {
+    if (tenFilter && !tenOptions.some(([k]) => k === tenFilter)) setTenFilter("");
+  }, [tenOptions, tenFilter]);
+  useEffect(() => {
+    if (pnFilter && !pnOptions.some(([k]) => k === pnFilter)) setPnFilter("");
+  }, [pnOptions, pnFilter]);
 
   const thieuLoaiCount = useMemo(
     () => (models ?? []).filter((m) => !m.loai_thiet_bi_id).length,
@@ -301,10 +358,14 @@ function ModelCatalogPage() {
 
   const delMut = useMutation({
     mutationFn: async (m: ModelRow) => {
-      if (m.soThietBi > 0) throw new Error(`Không thể xoá: còn ${m.soThietBi} tài sản đang dùng mẫu này.`);
+      if (m.soThietBi > 0)
+        throw new Error(`Không thể xoá: còn ${m.soThietBi} tài sản đang dùng mẫu này.`);
       if (m.hinh_anh) await storage.from(BUCKET).remove([m.hinh_anh]);
       // DB-level guard qua RPC dm_xoa_an_toan (Task 11).
-      const { error } = await supabase.rpc("dm_xoa_an_toan" as never, { _bang: "dm_model", _id: m.id } as never);
+      const { error } = await supabase.rpc(
+        "dm_xoa_an_toan" as never,
+        { _bang: "dm_model", _id: m.id } as never,
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -320,11 +381,15 @@ function ModelCatalogPage() {
     mutationFn: async (list: ModelRow[]) => {
       const removable = list.filter((m) => m.soThietBi === 0);
       const blocked = list.length - removable.length;
-      if (removable.length === 0) throw new Error("Các mẫu đã chọn đều còn tài sản đang dùng — không thể xoá.");
+      if (removable.length === 0)
+        throw new Error("Các mẫu đã chọn đều còn tài sản đang dùng — không thể xoá.");
       const paths = removable.map((m) => m.hinh_anh).filter((p): p is string => !!p);
       if (paths.length) await storage.from(BUCKET).remove(paths);
       for (const m of removable) {
-        const { error } = await supabase.rpc("dm_xoa_an_toan" as never, { _bang: "dm_model", _id: m.id } as never);
+        const { error } = await supabase.rpc(
+          "dm_xoa_an_toan" as never,
+          { _bang: "dm_model", _id: m.id } as never,
+        );
         if (error) throw error;
       }
       return { deleted: removable.length, blocked };
@@ -332,7 +397,9 @@ function ModelCatalogPage() {
     onSuccess: ({ deleted, blocked }) => {
       qc.invalidateQueries({ queryKey: ["model_catalog"] });
       invalidateTaxonomy(qc);
-      toast.success(`Đã xoá ${deleted} model${blocked > 0 ? ` · bỏ qua ${blocked} mẫu còn tài sản đang dùng` : ""}.`);
+      toast.success(
+        `Đã xoá ${deleted} model${blocked > 0 ? ` · bỏ qua ${blocked} mẫu còn tài sản đang dùng` : ""}.`,
+      );
     },
     onError: (e) => toast.error((e as Error).message),
   });
@@ -343,8 +410,13 @@ function ModelCatalogPage() {
       const srcIds = sources.map((s) => s.id).filter((id) => id !== target.id);
       if (srcIds.length === 0) throw new Error("Không có mẫu nguồn để gộp.");
       // Dọn ảnh của các mẫu nguồn (mẫu đích giữ ảnh của nó).
-      const paths = sources.filter((s) => s.id !== target.id && s.hinh_anh).map((s) => s.hinh_anh!) as string[];
-      const { error } = await supabase.rpc("gop_model", { p_source_ids: srcIds, p_target_id: target.id });
+      const paths = sources
+        .filter((s) => s.id !== target.id && s.hinh_anh)
+        .map((s) => s.hinh_anh!) as string[];
+      const { error } = await supabase.rpc("gop_model", {
+        p_source_ids: srcIds,
+        p_target_id: target.id,
+      });
       if (error) throw error;
       if (paths.length) await storage.from(BUCKET).remove(paths);
       return srcIds.length;
@@ -354,7 +426,9 @@ function ModelCatalogPage() {
       qc.invalidateQueries({ queryKey: ["catalog-tools", "dm_model"] });
       invalidateTaxonomy(qc);
       setMergeList(null);
-      toast.success(`Đã gộp ${n} mẫu vào mẫu đích. Tài sản liên quan đã được chuyển sang mẫu đích.`);
+      toast.success(
+        `Đã gộp ${n} mẫu vào mẫu đích. Tài sản liên quan đã được chuyển sang mẫu đích.`,
+      );
     },
     onError: (e) => toast.error((e as Error).message),
   });
@@ -380,16 +454,36 @@ function ModelCatalogPage() {
                     { key: "mo_ta", header: "Mô tả" },
                   ],
                   refs: [
-                    { col: "nha_san_xuat_id", refTable: "dm_nha_san_xuat", csvKey: "nha_san_xuat", header: "Nhà sản xuất" },
-                    { col: "loai_thiet_bi_id", refTable: "dm_loai_thiet_bi", csvKey: "loai_thiet_bi", header: "Chủng loại" },
+                    {
+                      col: "nha_san_xuat_id",
+                      refTable: "dm_nha_san_xuat",
+                      csvKey: "nha_san_xuat",
+                      header: "Nhà sản xuất",
+                    },
+                    {
+                      col: "loai_thiet_bi_id",
+                      refTable: "dm_loai_thiet_bi",
+                      csvKey: "loai_thiet_bi",
+                      header: "Chủng loại",
+                    },
                   ],
-                  counts: [{ key: "tb", header: "Tài sản", rels: [{ table: "thiet_bi", col: "model_id" }] }],
+                  counts: [
+                    {
+                      key: "tb",
+                      header: "Tài sản",
+                      rels: [{ table: "thiet_bi", col: "model_id" }],
+                    },
+                  ],
                 }}
               />
               <Button variant="outline" onClick={() => setDacTinhIOOpen(true)} className="gap-1.5">
                 <Tag className="h-4 w-4" /> Nhãn tài sản · Nhập/Xuất
               </Button>
-              <Button onClick={() => setEditing("new")} variant="default" className="gap-1.5 shadow-none">
+              <Button
+                onClick={() => setEditing("new")}
+                variant="default"
+                className="gap-1.5 shadow-none"
+              >
                 <Plus className="h-4 w-4" /> Thêm mẫu
               </Button>
             </div>
@@ -397,11 +491,15 @@ function ModelCatalogPage() {
         }
       />
 
-
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm mẫu, số model, nhà sản xuất…" className="pl-8" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Tìm mẫu, số model, nhà sản xuất…"
+            className="pl-8"
+          />
         </div>
         <Combobox
           className="w-full sm:w-48"
@@ -409,7 +507,10 @@ function ModelCatalogPage() {
           onChange={(v) => setNsxFilter(v === "__all__" ? "" : v)}
           placeholder="Tất cả NSX"
           searchPlaceholder="Tìm nhà sản xuất…"
-          options={[{ value: "__all__", label: `Tất cả NSX (${all.length})` }, ...nsxOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+          options={[
+            { value: "__all__", label: `Tất cả NSX (${all.length})` },
+            ...nsxOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` })),
+          ]}
         />
         <Combobox
           className="w-full sm:w-48"
@@ -417,7 +518,10 @@ function ModelCatalogPage() {
           onChange={(v) => setLoaiFilter(v === "__all__" ? "" : v)}
           placeholder="Tất cả chủng loại"
           searchPlaceholder="Tìm chủng loại…"
-          options={[{ value: "__all__", label: `Tất cả chủng loại (${afterNsx.length})` }, ...loaiOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+          options={[
+            { value: "__all__", label: `Tất cả chủng loại (${afterNsx.length})` },
+            ...loaiOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` })),
+          ]}
         />
         <Combobox
           className="w-full sm:w-48"
@@ -425,7 +529,10 @@ function ModelCatalogPage() {
           onChange={(v) => setTenFilter(v === "__all__" ? "" : v)}
           placeholder="Tất cả tên mẫu"
           searchPlaceholder="Tìm tên mẫu…"
-          options={[{ value: "__all__", label: `Tất cả tên mẫu (${afterLoai.length})` }, ...tenOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+          options={[
+            { value: "__all__", label: `Tất cả tên mẫu (${afterLoai.length})` },
+            ...tenOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` })),
+          ]}
         />
         <Combobox
           className="w-full sm:w-44"
@@ -433,12 +540,22 @@ function ModelCatalogPage() {
           onChange={(v) => setPnFilter(v === "__all__" ? "" : v)}
           placeholder="Tất cả P/N"
           searchPlaceholder="Tìm P/N…"
-          options={[{ value: "__all__", label: `Tất cả P/N (${afterTen.length})` }, ...pnOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` }))]}
+          options={[
+            { value: "__all__", label: `Tất cả P/N (${afterTen.length})` },
+            ...pnOptions.map(([name, n]) => ({ value: name, label: `${name} (${n})` })),
+          ]}
         />
         {(nsxFilter || loaiFilter || tenFilter || pnFilter) && (
           <Button
-            variant="ghost" size="sm" className="h-9 gap-1 text-muted-foreground"
-            onClick={() => { setNsxFilter(""); setLoaiFilter(""); setTenFilter(""); setPnFilter(""); }}
+            variant="ghost"
+            size="sm"
+            className="h-9 gap-1 text-muted-foreground"
+            onClick={() => {
+              setNsxFilter("");
+              setLoaiFilter("");
+              setTenFilter("");
+              setPnFilter("");
+            }}
             title="Bỏ tất cả filter"
           >
             <X className="h-3.5 w-3.5" /> Bỏ filter
@@ -448,26 +565,45 @@ function ModelCatalogPage() {
           <Button
             variant={filterParam === "thieu-loai" ? "default" : "outline"}
             size="sm"
-            className={cn("h-9 gap-1.5", filterParam === "thieu-loai" && "bg-amber-600 hover:bg-amber-700")}
-            onClick={() => navigate({ search: (s: { q?: string; edit?: string; filter?: "thieu-loai" }) => ({ ...s, filter: filterParam === "thieu-loai" ? undefined : "thieu-loai" as const }) })}
+            className={cn(
+              "h-9 gap-1.5",
+              filterParam === "thieu-loai" && "bg-amber-600 hover:bg-amber-700",
+            )}
+            onClick={() =>
+              navigate({
+                search: (s: { q?: string; edit?: string; filter?: "thieu-loai" }) => ({
+                  ...s,
+                  filter: filterParam === "thieu-loai" ? undefined : ("thieu-loai" as const),
+                }),
+              })
+            }
             title="Các mẫu tự tạo khi nhập liệu, chưa khai chủng loại"
           >
             <AlertTriangle className="h-4 w-4" />
-            Thiếu chủng loại <Badge variant="secondary" className="ml-1">{thieuLoaiCount}</Badge>
+            Thiếu chủng loại{" "}
+            <Badge variant="secondary" className="ml-1">
+              {thieuLoaiCount}
+            </Badge>
             {filterParam === "thieu-loai" && <X className="ml-1 h-3 w-3" />}
           </Button>
         )}
         <div className="ml-auto inline-flex overflow-hidden rounded-md border">
           <button
             onClick={() => setViewMode("table")}
-            className={cn("flex items-center gap-1 px-2.5 py-1 text-xs transition-colors", viewMode === "table" ? "bg-primary text-primary-foreground" : "hover:bg-muted")}
+            className={cn(
+              "flex items-center gap-1 px-2.5 py-1 text-xs transition-colors",
+              viewMode === "table" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+            )}
             title="Dạng bảng"
           >
             <ListIcon className="h-3.5 w-3.5" /> Bảng
           </button>
           <button
             onClick={() => setViewMode("grid")}
-            className={cn("flex items-center gap-1 px-2.5 py-1 text-xs transition-colors", viewMode === "grid" ? "bg-primary text-primary-foreground" : "hover:bg-muted")}
+            className={cn(
+              "flex items-center gap-1 px-2.5 py-1 text-xs transition-colors",
+              viewMode === "grid" ? "bg-primary text-primary-foreground" : "hover:bg-muted",
+            )}
             title="Dạng lưới"
           >
             <LayoutGrid className="h-3.5 w-3.5" /> Lưới
@@ -475,20 +611,30 @@ function ModelCatalogPage() {
         </div>
       </div>
 
-      {isLoading && viewMode === "grid" && (
-        <CardGridSkeleton items={10} />
+      {isLoading && viewMode === "grid" && <CardGridSkeleton items={10} />}
+      {error && (
+        <p className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>
       )}
-      {error && <p className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>}
 
       {!isLoading && !error && viewMode === "grid" && (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {filtered.map((m) => (
-              <ModelCard key={m.id} m={m} canManage={canManage} onGoogleSearch={showGoogleSearch} onInfo={() => setInfoModel(m)} onEdit={() => setEditing(m)} onDelete={() => delMut.mutate(m)} />
+              <ModelCard
+                key={m.id}
+                m={m}
+                canManage={canManage}
+                onGoogleSearch={showGoogleSearch}
+                onInfo={() => setInfoModel(m)}
+                onEdit={() => setEditing(m)}
+                onDelete={() => delMut.mutate(m)}
+              />
             ))}
           </div>
           {filtered.length === 0 && (
-            <p className="py-10 text-center text-sm text-muted-foreground">Không có model phù hợp.</p>
+            <p className="py-10 text-center text-sm text-muted-foreground">
+              Không có model phù hợp.
+            </p>
           )}
         </>
       )}
@@ -512,7 +658,10 @@ function ModelCatalogPage() {
                 className="h-8 gap-1.5"
                 disabled={selectedRows.length < 2}
                 onClick={() => {
-                  if (selectedRows.length < 2) { toast.error("Chọn ít nhất 2 mẫu để gộp."); return; }
+                  if (selectedRows.length < 2) {
+                    toast.error("Chọn ít nhất 2 mẫu để gộp.");
+                    return;
+                  }
                   setMergeList(selectedRows);
                 }}
                 title="Gộp các mẫu đã chọn thành một"
@@ -526,82 +675,183 @@ function ModelCatalogPage() {
                 disabled={bulkDelMut.isPending}
                 onClick={() => {
                   const removable = selectedRows.filter((m) => m.soThietBi === 0).length;
-                  if (removable === 0) { toast.error("Các mẫu đã chọn đều còn tài sản đang dùng — không thể xoá."); return; }
-                  if (!confirm(`Xoá ${removable} model đã chọn? Thao tác không thể hoàn tác.`)) return;
+                  if (removable === 0) {
+                    toast.error("Các mẫu đã chọn đều còn tài sản đang dùng — không thể xoá.");
+                    return;
+                  }
+                  if (!confirm(`Xoá ${removable} model đã chọn? Thao tác không thể hoàn tác.`))
+                    return;
                   bulkDelMut.mutate(selectedRows, { onSuccess: () => clear() });
                 }}
               >
-                {bulkDelMut.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                {bulkDelMut.isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="h-3.5 w-3.5" />
+                )}
                 Xoá đã chọn
               </Button>
             </div>
           )}
           columns={[
-            { key: "anh", label: "Ảnh", minW: "min-w-[56px]", priority: "detail" as const, cell: (m) => <ModelThumb m={m} /> },
-            { key: "ten", label: "Tên mẫu", minW: "min-w-[200px]", filter: "text", value: (m) => m.ten,
+            {
+              key: "anh",
+              label: "Ảnh",
+              minW: "min-w-[56px]",
+              priority: "detail" as const,
+              cell: (m) => <ModelThumb m={m} />,
+            },
+            {
+              key: "ten",
+              label: "Tên mẫu",
+              minW: "min-w-[200px]",
+              filter: "text",
+              value: (m) => m.ten,
               priority: "primary" as const,
               cell: (m) => (
-                <div className="group/item flex flex-col gap-0.5 cursor-pointer" onClick={() => setInfoModel(m)}>
-                  <span className="font-bold leading-tight group-hover/item:text-primary">{m.ten}</span>
+                <div
+                  className="group/item flex flex-col gap-0.5 cursor-pointer"
+                  onClick={() => setInfoModel(m)}
+                >
+                  <span className="font-bold leading-tight group-hover/item:text-primary">
+                    {m.ten}
+                  </span>
                   {m.p_n && <code className="text-[10.5px] text-muted-foreground/70">{m.p_n}</code>}
                 </div>
-              ) },
-            { key: "p_n", label: "P/N", minW: "min-w-[130px]", filter: "text", value: (m) => m.p_n ?? "",
+              ),
+            },
+            {
+              key: "p_n",
+              label: "P/N",
+              minW: "min-w-[130px]",
+              filter: "text",
+              value: (m) => m.p_n ?? "",
               priority: "detail" as const,
-              cell: (m) => <span className="font-mono text-xs text-muted-foreground">{m.p_n || "—"}</span> },
-            { key: "nhaSanXuat", label: "Nhà sản xuất", minW: "min-w-[160px]", filter: "cat", value: (m) => m.nhaSanXuat,
+              cell: (m) => (
+                <span className="font-mono text-xs text-muted-foreground">{m.p_n || "—"}</span>
+              ),
+            },
+            {
+              key: "nhaSanXuat",
+              label: "Nhà sản xuất",
+              minW: "min-w-[160px]",
+              filter: "cat",
+              value: (m) => m.nhaSanXuat,
               priority: "secondary" as const,
-              cell: (m) => m.nhaSanXuat
-                ? <NsxLink name={m.nhaSanXuat} className="text-sm" />
-                : <span className="text-muted-foreground">—</span> },
-            { key: "loaiThietBi", label: "Chủng loại", minW: "min-w-[150px]", filter: "cat", value: (m) => m.loaiThietBi,
+              cell: (m) =>
+                m.nhaSanXuat ? (
+                  <NsxLink name={m.nhaSanXuat} className="text-sm" />
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                ),
+            },
+            {
+              key: "loaiThietBi",
+              label: "Chủng loại",
+              minW: "min-w-[150px]",
+              filter: "cat",
+              value: (m) => m.loaiThietBi,
               priority: "secondary" as const,
-              cell: (m) => m.loaiThietBi
-                ? <LtbLink name={m.loaiThietBi} className="text-sm" />
-                : <span className="text-muted-foreground">—</span> },
-            { key: "soThietBi", label: "Số TB", align: "center", value: (m) => m.soThietBi,
+              cell: (m) =>
+                m.loaiThietBi ? (
+                  <LtbLink name={m.loaiThietBi} className="text-sm" />
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                ),
+            },
+            {
+              key: "soThietBi",
+              label: "Số TB",
+              align: "center",
+              value: (m) => m.soThietBi,
               priority: "primary" as const,
-              cell: (m) => m.soThietBi > 0
-                ? <Badge variant="secondary" className="gap-1 text-[10px]"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
-                : <span className="text-muted-foreground">0</span> },
-            { key: "info", label: "", align: "center" as const,
+              cell: (m) =>
+                m.soThietBi > 0 ? (
+                  <Badge variant="secondary" className="gap-1 text-[10px]">
+                    <Boxes className="h-3 w-3" /> {m.soThietBi}
+                  </Badge>
+                ) : (
+                  <span className="text-muted-foreground">0</span>
+                ),
+            },
+            {
+              key: "info",
+              label: "",
+              align: "center" as const,
               priority: "detail" as const,
               cell: (m: ModelRow) => (
                 <div className="flex items-center justify-center gap-0.5">
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={(e) => showGoogleSearch(e, m)} title="Tạo link tìm sản phẩm trên Google" aria-label="Tìm trên Google">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary"
+                    onClick={(e) => showGoogleSearch(e, m)}
+                    title="Tạo link tìm sản phẩm trên Google"
+                    aria-label="Tìm trên Google"
+                  >
                     <Search className="h-3.5 w-3.5" />
                   </Button>
                   <HoverCard openDelay={120} closeDelay={60}>
                     <HoverCardTrigger asChild>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary" onClick={() => setInfoModel(m)} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-muted-foreground transition-colors hover:text-primary"
+                        onClick={() => setInfoModel(m)}
+                        title="Xem thông số & tài sản đang dùng mẫu này"
+                        aria-label="Thông tin mẫu"
+                      >
                         <Info className="h-3.5 w-3.5" />
                       </Button>
                     </HoverCardTrigger>
-                    <HoverCardContent side="left" align="start" className="w-72 overflow-hidden p-0">
+                    <HoverCardContent
+                      side="left"
+                      align="start"
+                      className="w-72 overflow-hidden p-0"
+                    >
                       <ModelUsageHoverCard m={m} />
                     </HoverCardContent>
                   </HoverCard>
                 </div>
               ),
             },
-            ...(canManage ? [{
-              key: "actions", label: "", align: "right" as const,
-              priority: "detail" as const,
-              cell: (m: ModelRow) => (
-                <div className="flex justify-end gap-1 whitespace-nowrap">
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(m)} title="Sửa" aria-label="Sửa mẫu">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(m)} title="Xoá" aria-label="Xoá mẫu">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              ),
-            }] : []),
+            ...(canManage
+              ? [
+                  {
+                    key: "actions",
+                    label: "",
+                    align: "right" as const,
+                    priority: "detail" as const,
+                    cell: (m: ModelRow) => (
+                      <div className="flex justify-end gap-1 whitespace-nowrap">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={() => setEditing(m)}
+                          title="Sửa"
+                          aria-label="Sửa mẫu"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 text-destructive"
+                          onClick={() => delMut.mutate(m)}
+                          title="Xoá"
+                          aria-label="Xoá mẫu"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    ),
+                  },
+                ]
+              : []),
           ]}
         />
       )}
-
 
       {editing && (
         <ModelDialog
@@ -620,9 +870,7 @@ function ModelCatalogPage() {
         />
       )}
 
-      {infoModel && (
-        <ModelUsageDialog model={infoModel} onClose={() => setInfoModel(null)} />
-      )}
+      {infoModel && <ModelUsageDialog model={infoModel} onClose={() => setInfoModel(null)} />}
 
       {mergeList && (
         <MergeModelsDialog
@@ -640,12 +888,24 @@ function ModelCatalogPage() {
           onClose={() => setGoogleLink(null)}
         />
       )}
-      <ModelDacTinhIODialog open={dacTinhIOOpen} onOpenChange={setDacTinhIOOpen} canManage={canManage} />
+      <ModelDacTinhIODialog
+        open={dacTinhIOOpen}
+        onOpenChange={setDacTinhIOOpen}
+        canManage={canManage}
+      />
     </div>
   );
 }
 
-function GoogleSearchLinkDialog({ model, url, onClose }: { model: ModelRow; url: string; onClose: () => void }) {
+function GoogleSearchLinkDialog({
+  model,
+  url,
+  onClose,
+}: {
+  model: ModelRow;
+  url: string;
+  onClose: () => void;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -664,19 +924,31 @@ function GoogleSearchLinkDialog({ model, url, onClose }: { model: ModelRow; url:
         <DialogHeader>
           <DialogTitle>Tìm mẫu trên Google</DialogTitle>
           <DialogDescription>
-            {model.ten}{model.p_n ? ` · ${model.p_n}` : ""}{model.nhaSanXuat ? ` · ${model.nhaSanXuat}` : ""}
+            {model.ten}
+            {model.p_n ? ` · ${model.p_n}` : ""}
+            {model.nhaSanXuat ? ` · ${model.nhaSanXuat}` : ""}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Google/Chrome có thể chặn mở trực tiếp từ khung preview. Link bên dưới dùng được khi dán vào tab mới.
+            Google/Chrome có thể chặn mở trực tiếp từ khung preview. Link bên dưới dùng được khi dán
+            vào tab mới.
           </p>
-          <Input value={url} readOnly onFocus={(e) => e.currentTarget.select()} className="font-mono text-xs" />
+          <Input
+            value={url}
+            readOnly
+            onFocus={(e) => e.currentTarget.select()}
+            className="font-mono text-xs"
+          />
         </div>
         <DialogFooter className="gap-2 sm:gap-2">
-          <Button variant="outline" onClick={copy}>{copied ? "Đã copy" : "Copy link"}</Button>
+          <Button variant="outline" onClick={copy}>
+            {copied ? "Đã copy" : "Copy link"}
+          </Button>
           <Button asChild>
-            <a href={url} target="_blank" rel="noopener noreferrer">Mở tab mới</a>
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              Mở tab mới
+            </a>
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -684,9 +956,28 @@ function GoogleSearchLinkDialog({ model, url, onClose }: { model: ModelRow; url:
   );
 }
 
-function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: { m: ModelRow; canManage: boolean; onGoogleSearch: (e: MouseEvent<HTMLElement>, m: ModelRow) => void; onInfo: () => void; onEdit: () => void; onDelete: () => void }) {
+function ModelCard({
+  m,
+  canManage,
+  onGoogleSearch,
+  onInfo,
+  onEdit,
+  onDelete,
+}: {
+  m: ModelRow;
+  canManage: boolean;
+  onGoogleSearch: (e: MouseEvent<HTMLElement>, m: ModelRow) => void;
+  onInfo: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   return (
-    <Card className={cn("group overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl", !m.active && "opacity-60")}>
+    <Card
+      className={cn(
+        "group overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
+        !m.active && "opacity-60",
+      )}
+    >
       <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br from-muted/20 via-muted/40 to-muted/60 [perspective:800px]">
         {m.imgUrl ? (
           <img
@@ -705,7 +996,8 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
         )}
         <div className="absolute left-1.5 top-1.5 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <Button
-            size="icon" variant="secondary"
+            size="icon"
+            variant="secondary"
             className="h-7 w-7"
             onClick={(e) => onGoogleSearch(e, m)}
             title="Tạo link tìm sản phẩm trên Google"
@@ -716,9 +1008,13 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
           <HoverCard openDelay={120} closeDelay={60}>
             <HoverCardTrigger asChild>
               <Button
-                size="icon" variant="secondary"
+                size="icon"
+                variant="secondary"
                 className="h-7 w-7"
-                onClick={onInfo} title="Xem thông số & tài sản đang dùng mẫu này" aria-label="Thông tin mẫu">
+                onClick={onInfo}
+                title="Xem thông số & tài sản đang dùng mẫu này"
+                aria-label="Thông tin mẫu"
+              >
                 <Info className="h-3.5 w-3.5" />
               </Button>
             </HoverCardTrigger>
@@ -729,17 +1025,33 @@ function ModelCard({ m, canManage, onGoogleSearch, onInfo, onEdit, onDelete }: {
         </div>
         {canManage && (
           <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/50 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onEdit} title="Sửa" aria-label="Sửa mẫu">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-7 w-7"
+              onClick={onEdit}
+              title="Sửa"
+              aria-label="Sửa mẫu"
+            >
               <Pencil className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" variant="secondary" className="h-7 w-7" onClick={onDelete} title="Xoá" aria-label="Xoá mẫu">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-7 w-7"
+              onClick={onDelete}
+              title="Xoá"
+              aria-label="Xoá mẫu"
+            >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
         )}
       </div>
       <CardContent className="space-y-1 p-2.5">
-        <p className="truncate text-sm font-medium" title={m.ten}>{m.ten}</p>
+        <p className="truncate text-sm font-medium" title={m.ten}>
+          {m.ten}
+        </p>
         {m.p_n && <p className="truncate font-mono text-xs text-muted-foreground">{m.p_n}</p>}
         <div className="flex flex-wrap gap-1 pt-0.5">
           {m.nhaSanXuat && (
@@ -824,9 +1136,16 @@ function ModelInfoCard({ m }: { m: ModelRow }) {
     <div className="animate-in fade-in-0 zoom-in-95 duration-150">
       <div className="flex gap-3 border-b bg-muted/40 p-3">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded border bg-background">
-          {m.imgUrl
-            ? <img src={m.imgUrl} alt={m.ten} className="h-full w-full object-contain p-1" loading="lazy" />
-            : <Package className="h-7 w-7 text-muted-foreground/40" />}
+          {m.imgUrl ? (
+            <img
+              src={m.imgUrl}
+              alt={m.ten}
+              className="h-full w-full object-contain p-1"
+              loading="lazy"
+            />
+          ) : (
+            <Package className="h-7 w-7 text-muted-foreground/40" />
+          )}
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold leading-snug">{m.ten}</p>
@@ -873,7 +1192,9 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
     queryFn: async (): Promise<UsageRow[]> => {
       const { data, error } = await supabase
         .from("thiet_bi")
-        .select("id,ma_thiet_bi,ten_thiet_bi,ma_serial,vi_tri_id,don_vi_quan_ly_id,don_vi_id,he_thong_id,dm_vi_tri:vi_tri_id(ten),qly:don_vi_quan_ly_id(ten),dv:don_vi_id(ten),ht:he_thong_id(ten)")
+        .select(
+          "id,ma_thiet_bi,ten_thiet_bi,ma_serial,vi_tri_id,don_vi_quan_ly_id,don_vi_id,he_thong_id,dm_vi_tri:vi_tri_id(ten),qly:don_vi_quan_ly_id(ten),dv:don_vi_id(ten),ht:he_thong_id(ten)",
+        )
         .eq("model_id", m.id)
         .order("ma_thiet_bi");
       if (error) throw error;
@@ -908,7 +1229,9 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
           </div>
         )}
         {!isLoading && rows.length === 0 && (
-          <p className="px-1 py-3 text-center text-muted-foreground">Chưa có tài sản nào dùng mẫu này.</p>
+          <p className="px-1 py-3 text-center text-muted-foreground">
+            Chưa có tài sản nào dùng mẫu này.
+          </p>
         )}
         {!isLoading && rows.length > 0 && (
           <div className="space-y-1">
@@ -917,19 +1240,27 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
                 <p className="truncate font-medium">{r.ten || "(Không tên)"}</p>
                 <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-muted-foreground">
                   {r.donVi && (
-                    <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" /> {r.donVi}</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Building2 className="h-3 w-3" /> {r.donVi}
+                    </span>
                   )}
                   {r.heThong && (
-                    <span className="inline-flex items-center gap-1"><Layers className="h-3 w-3" /> {r.heThong}</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Layers className="h-3 w-3" /> {r.heThong}
+                    </span>
                   )}
                   {r.viTri && (
-                    <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {r.viTri}</span>
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> {r.viTri}
+                    </span>
                   )}
                 </div>
               </div>
             ))}
             {rows.length > 10 && (
-              <p className="px-1 pt-0.5 text-[11px] text-muted-foreground">…và {rows.length - 10} tài sản khác</p>
+              <p className="px-1 pt-0.5 text-[11px] text-muted-foreground">
+                …và {rows.length - 10} tài sản khác
+              </p>
             )}
           </div>
         )}
@@ -940,7 +1271,15 @@ function ModelUsageHoverCard({ m }: { m: ModelRow }) {
     </div>
   );
 }
-type UsageRow = { id: string; ma: string; ten: string; serial: string; viTri: string; donVi: string; heThong: string };
+type UsageRow = {
+  id: string;
+  ma: string;
+  ten: string;
+  serial: string;
+  viTri: string;
+  donVi: string;
+  heThong: string;
+};
 
 function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => void }) {
   const { hasRole } = useSession();
@@ -950,7 +1289,9 @@ function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => 
     queryFn: async (): Promise<UsageRow[]> => {
       const { data, error } = await supabase
         .from("thiet_bi")
-        .select("id,ma_thiet_bi,ten_thiet_bi,ma_serial,vi_tri_id,don_vi_quan_ly_id,don_vi_id,he_thong_id,dm_vi_tri:vi_tri_id(ten),qly:don_vi_quan_ly_id(ten),dv:don_vi_id(ten),ht:he_thong_id(ten)")
+        .select(
+          "id,ma_thiet_bi,ten_thiet_bi,ma_serial,vi_tri_id,don_vi_quan_ly_id,don_vi_id,he_thong_id,dm_vi_tri:vi_tri_id(ten),qly:don_vi_quan_ly_id(ten),dv:don_vi_id(ten),ht:he_thong_id(ten)",
+        )
         .eq("model_id", model.id)
         .order("ma_thiet_bi");
       if (error) throw error;
@@ -985,81 +1326,104 @@ function ModelUsageDialog({ model, onClose }: { model: ModelRow; onClose: () => 
       description={`${model.p_n ? `P/N: ${model.p_n} · ` : ""}${data?.length ?? 0} tài sản${canEdit && (data?.length ?? 0) > 0 ? " · bấm một tài sản để sửa trường của tài sản đó" : ""}`}
       className="max-w-2xl"
     >
-
-        {isLoading && (
-          <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
-          </div>
-        )}
-        {error && <p className="py-6 text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>}
-        {!isLoading && !error && (data?.length ?? 0) === 0 && (
-          <p className="py-8 text-center text-sm text-muted-foreground">Chưa có tài sản nào dùng mẫu này.</p>
-        )}
-        {!isLoading && !error && (data?.length ?? 0) > 0 && (
-          <ScrollArea className="max-h-[60vh] pr-3">
-            <div className="space-y-4">
-              {byUnit.map(([unit, list]) => (
-                <div key={unit}>
-                  <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
-                    <Building2 className="h-4 w-4 text-muted-foreground" /> {unit}
-                    <Badge variant="secondary" className="ml-1 text-[10px]">{list.length}</Badge>
-                  </div>
-                  <div className="space-y-1">
-                    {list.map((r) => {
-                      const inner = (
-                        <>
-                          <span className="font-mono text-xs text-muted-foreground">{r.ma || "—"}</span>
-                          <span className="font-medium">{r.ten || "(Không tên)"}</span>
-                          {r.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {r.serial}</span>}
-                          {r.heThong && (
-                            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                              <Layers className="h-3 w-3" /> {r.heThong}
-                            </span>
-                          )}
-                          {r.viTri && (
-                            <span className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground">
-                              <MapPin className="h-3 w-3" /> {r.viTri}
-                            </span>
-                          )}
-                          {canEdit && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />}
-                        </>
-                      );
-                      const base = "flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded border bg-muted/30 px-2.5 py-1.5 text-sm";
-                      return canEdit && r.ma ? (
-                        <Link
-                          key={r.id}
-                          to="/he-thong/cay"
-                          search={{ editTb: r.ma }}
-                          onClick={onClose}
-                          className={cn(base, "transition-colors hover:border-primary/50 hover:bg-primary/5")}
-                          title="Mở trình sửa trường của tài sản này"
-                        >
-                          {inner}
-                        </Link>
-                      ) : (
-                        <div key={r.id} className={base}>{inner}</div>
-                      );
-                    })}
-                  </div>
-
+      {isLoading && (
+        <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
+        </div>
+      )}
+      {error && (
+        <p className="py-6 text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>
+      )}
+      {!isLoading && !error && (data?.length ?? 0) === 0 && (
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          Chưa có tài sản nào dùng mẫu này.
+        </p>
+      )}
+      {!isLoading && !error && (data?.length ?? 0) > 0 && (
+        <ScrollArea className="max-h-[60vh] pr-3">
+          <div className="space-y-4">
+            {byUnit.map(([unit, list]) => (
+              <div key={unit}>
+                <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
+                  <Building2 className="h-4 w-4 text-muted-foreground" /> {unit}
+                  <Badge variant="secondary" className="ml-1 text-[10px]">
+                    {list.length}
+                  </Badge>
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
-        )}
+                <div className="space-y-1">
+                  {list.map((r) => {
+                    const inner = (
+                      <>
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {r.ma || "—"}
+                        </span>
+                        <span className="font-medium">{r.ten || "(Không tên)"}</span>
+                        {r.serial && (
+                          <span className="font-mono text-[11px] text-muted-foreground">
+                            S/N: {r.serial}
+                          </span>
+                        )}
+                        {r.heThong && (
+                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                            <Layers className="h-3 w-3" /> {r.heThong}
+                          </span>
+                        )}
+                        {r.viTri && (
+                          <span className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground">
+                            <MapPin className="h-3 w-3" /> {r.viTri}
+                          </span>
+                        )}
+                        {canEdit && (
+                          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        )}
+                      </>
+                    );
+                    const base =
+                      "flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded border bg-muted/30 px-2.5 py-1.5 text-sm";
+                    return canEdit && r.ma ? (
+                      <Link
+                        key={r.id}
+                        to="/he-thong/cay"
+                        search={{ editTb: r.ma }}
+                        onClick={onClose}
+                        className={cn(
+                          base,
+                          "transition-colors hover:border-primary/50 hover:bg-primary/5",
+                        )}
+                        title="Mở trình sửa trường của tài sản này"
+                      >
+                        {inner}
+                      </Link>
+                    ) : (
+                      <div key={r.id} className={base}>
+                        {inner}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      )}
 
-        <DialogFooter className="mt-4">
-          <Button variant="outline" className="w-full sm:w-auto" onClick={onClose}>Đóng</Button>
-        </DialogFooter>
-      </ResponsiveDialog>
-    );
-  }
+      <DialogFooter className="mt-4">
+        <Button variant="outline" className="w-full sm:w-auto" onClick={onClose}>
+          Đóng
+        </Button>
+      </DialogFooter>
+    </ResponsiveDialog>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Hộp thoại: Gộp nhiều mẫu đã chọn thành một mẫu đích.
 // ---------------------------------------------------------------------------
 function MergeModelsDialog({
-  models, pending, onClose, onMerge,
+  models,
+  pending,
+  onClose,
+  onMerge,
 }: {
   models: ModelRow[];
   pending: boolean;
@@ -1081,50 +1445,63 @@ function MergeModelsDialog({
       description={`Chọn mẫu giữ lại. Toàn bộ ${totalTb} tài sản của các mẫu còn lại sẽ được chuyển sang mẫu này, sau đó các mẫu trùng sẽ bị xoá.`}
       className="max-w-lg"
     >
+      <ScrollArea className="max-h-[50vh] pr-3">
+        <div className="space-y-1.5">
+          {models.map((m) => (
+            <label
+              key={m.id}
+              className={cn(
+                "flex cursor-pointer items-center gap-2.5 rounded border px-3 py-2 text-sm transition-colors",
+                m.id === targetId ? "border-primary bg-primary/5" : "hover:bg-muted/50",
+              )}
+            >
+              <input
+                type="radio"
+                name="merge-target"
+                className="h-4 w-4 accent-[hsl(var(--primary))]"
+                checked={m.id === targetId}
+                onChange={() => setTargetId(m.id)}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium">
+                  {m.ten}
+                  {m.p_n ? (
+                    <span className="ml-1 font-mono text-xs text-muted-foreground">· {m.p_n}</span>
+                  ) : null}
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {m.nhaSanXuat || "—"} · {m.loaiThietBi || "Chưa phân loại"}
+                </p>
+              </div>
+              <Badge variant="secondary" className="gap-1 text-[10px]">
+                <Boxes className="h-3 w-3" /> {m.soThietBi}
+              </Badge>
+              {m.id === targetId && <Badge className="text-[10px]">Giữ lại</Badge>}
+            </label>
+          ))}
+        </div>
+      </ScrollArea>
 
-        <ScrollArea className="max-h-[50vh] pr-3">
-          <div className="space-y-1.5">
-            {models.map((m) => (
-              <label
-                key={m.id}
-                className={cn(
-                  "flex cursor-pointer items-center gap-2.5 rounded border px-3 py-2 text-sm transition-colors",
-                  m.id === targetId ? "border-primary bg-primary/5" : "hover:bg-muted/50",
-                )}
-              >
-                <input
-                  type="radio"
-                  name="merge-target"
-                  className="h-4 w-4 accent-[hsl(var(--primary))]"
-                  checked={m.id === targetId}
-                  onChange={() => setTargetId(m.id)}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{m.ten}{m.p_n ? <span className="ml-1 font-mono text-xs text-muted-foreground">· {m.p_n}</span> : null}</p>
-                  <p className="truncate text-xs text-muted-foreground">{m.nhaSanXuat || "—"} · {m.loaiThietBi || "Chưa phân loại"}</p>
-                </div>
-                <Badge variant="secondary" className="gap-1 text-[10px]"><Boxes className="h-3 w-3" /> {m.soThietBi}</Badge>
-                {m.id === targetId && <Badge className="text-[10px]">Giữ lại</Badge>}
-              </label>
-            ))}
-          </div>
-        </ScrollArea>
-
-        <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose} disabled={pending}>Huỷ</Button>
-          <Button onClick={() => target && onMerge(target)} disabled={pending || !target} className="gap-1.5">
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitMerge className="h-4 w-4" aria-hidden="true" />}
-            Gộp vào mẫu này
-          </Button>
-        </DialogFooter>
-      </ResponsiveDialog>
-    );
-  }
-
-
-
-
-
+      <DialogFooter className="mt-4">
+        <Button variant="outline" onClick={onClose} disabled={pending}>
+          Huỷ
+        </Button>
+        <Button
+          onClick={() => target && onMerge(target)}
+          disabled={pending || !target}
+          className="gap-1.5"
+        >
+          {pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <GitMerge className="h-4 w-4" aria-hidden="true" />
+          )}
+          Gộp vào mẫu này
+        </Button>
+      </DialogFooter>
+    </ResponsiveDialog>
+  );
+}
 
 function ModelDialog({
   value,
@@ -1221,7 +1598,9 @@ function ModelDialog({
   async function createLtb() {
     const name = newLtb.trim();
     if (!name) return;
-    const exists = [...ltbList, ...extraLtb].some((r) => r.ten.toLowerCase() === name.toLowerCase());
+    const exists = [...ltbList, ...extraLtb].some(
+      (r) => r.ten.toLowerCase() === name.toLowerCase(),
+    );
     if (exists) {
       setLtb(name);
       setAddingLtb(false);
@@ -1284,9 +1663,15 @@ function ModelDialog({
       if (file) {
         const safe = file.name.replace(/[^\w.\-]+/g, "_");
         const path = `${Date.now()}_${safe}`;
-        const up = await storage.from(BUCKET).upload(path, file, { upsert: false, contentType: file.type });
+        const up = await storage
+          .from(BUCKET)
+          .upload(path, file, { upsert: false, contentType: file.type });
         if (up.error) throw up.error;
-        if (value?.hinh_anh) await storage.from(BUCKET).remove([value.hinh_anh]).catch(() => {});
+        if (value?.hinh_anh)
+          await storage
+            .from(BUCKET)
+            .remove([value.hinh_anh])
+            .catch(() => {});
         hinhAnh = path;
       }
 
@@ -1360,7 +1745,8 @@ function ModelDialog({
         <DialogHeader>
           <DialogTitle>{value ? "Sửa model" : "Thêm model"}</DialogTitle>
           <DialogDescription>
-            Mẫu (model) mô tả một chủng loại chuẩn. Tài sản chọn mẫu để kế thừa hình ảnh, nhà sản xuất và loại.
+            Mẫu (model) mô tả một chủng loại chuẩn. Tài sản chọn mẫu để kế thừa hình ảnh, nhà sản
+            xuất và loại.
           </DialogDescription>
         </DialogHeader>
 
@@ -1385,7 +1771,13 @@ function ModelDialog({
                   e.target.value = "";
                 }}
               />
-              <Button type="button" size="sm" variant="outline" className="gap-1.5" onClick={() => setCropOpen(true)}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                onClick={() => setCropOpen(true)}
+              >
                 <ImageUp className="h-4 w-4" /> Chọn ảnh
               </Button>
               <ImageCropDialog
@@ -1394,7 +1786,9 @@ function ModelDialog({
                 title="Chọn & cắt ảnh model"
                 maxMb={5}
                 outSize={800}
-                onConfirm={(f) => { setFile(f); }}
+                onConfirm={(f) => {
+                  setFile(f);
+                }}
               />
               {preview && (
                 <Button
@@ -1410,19 +1804,31 @@ function ModelDialog({
                   <X className="h-4 w-4" /> Bỏ ảnh
                 </Button>
               )}
-              <p className="text-[11px] text-muted-foreground">PNG, JPG, WebP, SVG · tối đa 5MB · nên dùng ảnh nền trắng, vuông.</p>
+              <p className="text-[11px] text-muted-foreground">
+                PNG, JPG, WebP, SVG · tối đa 5MB · nên dùng ảnh nền trắng, vuông.
+              </p>
             </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5 sm:col-span-2">
               <Label>Tên mẫu *</Label>
-              <Input value={ten} onChange={(e) => setTen(e.target.value)} placeholder="VD: HP Z620 Workstation" />
+              <Input
+                value={ten}
+                onChange={(e) => setTen(e.target.value)}
+                placeholder="VD: HP Z620 Workstation"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>P/N (Part number)</Label>
-              <Input value={pn} onChange={(e) => setPn(e.target.value)} placeholder="VD: 671396-001" />
-              <p className="text-[11px] text-muted-foreground">Tài sản chọn mẫu này sẽ tự kế thừa P/N.</p>
+              <Input
+                value={pn}
+                onChange={(e) => setPn(e.target.value)}
+                placeholder="VD: 671396-001"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Tài sản chọn mẫu này sẽ tự kế thừa P/N.
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label>Nhà sản xuất</Label>
@@ -1472,12 +1878,21 @@ function ModelDialog({
                     value={newLtb}
                     onChange={(e) => setNewLtb(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") { e.preventDefault(); createLtb(); }
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        createLtb();
+                      }
                     }}
                     placeholder="Tên chủng loại mới…"
                     className="h-8"
                   />
-                  <Button type="button" size="sm" onClick={createLtb} disabled={creatingLtb || !newLtb.trim()} className="gap-1.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={createLtb}
+                    disabled={creatingLtb || !newLtb.trim()}
+                    className="gap-1.5"
+                  >
                     {creatingLtb && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Tạo
                   </Button>
                 </div>
@@ -1485,14 +1900,19 @@ function ModelDialog({
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label>Bộ thuộc tính (field set)</Label>
-              <Select value={fieldSetId || "__none__"} onValueChange={(v) => setFieldSetId(v === "__none__" ? "" : v)}>
+              <Select
+                value={fieldSetId || "__none__"}
+                onValueChange={(v) => setFieldSetId(v === "__none__" ? "" : v)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Không áp dụng" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">— Không áp dụng —</SelectItem>
                   {fsList.map((f) => (
-                    <SelectItem key={f.id} value={f.id}>{f.ten}</SelectItem>
+                    <SelectItem key={f.id} value={f.id}>
+                      {f.ten}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -1502,16 +1922,29 @@ function ModelDialog({
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label>Mô tả</Label>
-              <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} placeholder="Ghi chú kỹ thuật, thông số chung…" />
+              <Textarea
+                value={moTa}
+                onChange={(e) => setMoTa(e.target.value)}
+                rows={2}
+                placeholder="Ghi chú kỹ thuật, thông số chung…"
+              />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" /> Nhãn tài sản (đa chọn)</Label>
-                <Link to="/danh-muc/dac-tinh" className="text-[11px] text-primary hover:underline">Quản lý</Link>
+                <Label className="flex items-center gap-1.5">
+                  <Tag className="h-3.5 w-3.5" /> Nhãn tài sản (đa chọn)
+                </Label>
+                <Link to="/danh-muc/dac-tinh" className="text-[11px] text-primary hover:underline">
+                  Quản lý
+                </Link>
               </div>
               {dacTinhSorted.length === 0 ? (
                 <div className="rounded-md border bg-muted/20 p-3 text-[11px] text-muted-foreground">
-                  Chưa có nhãn tài sản nào. Thêm ở <Link to="/danh-muc/dac-tinh" className="text-primary hover:underline">Danh mục › Nhãn tài sản</Link>.
+                  Chưa có nhãn tài sản nào. Thêm ở{" "}
+                  <Link to="/danh-muc/dac-tinh" className="text-primary hover:underline">
+                    Danh mục › Nhãn tài sản
+                  </Link>
+                  .
                 </div>
               ) : (
                 <div className="rounded-md border bg-muted/20 p-2">
@@ -1527,7 +1960,9 @@ function ModelDialog({
                           onClick={() => toggleDacTinh(id)}
                           className={cn(
                             "rounded-full border px-2.5 py-0.5 text-xs transition-colors",
-                            on ? "border-primary bg-primary text-primary-foreground" : "bg-background hover:bg-muted",
+                            on
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "bg-background hover:bg-muted",
                             !canManage && "cursor-not-allowed opacity-60",
                           )}
                         >
@@ -1539,12 +1974,15 @@ function ModelDialog({
                 </div>
               )}
               <p className="text-[11px] text-muted-foreground">
-                Tài sản của mẫu này sẽ tự kế thừa nhãn tài sản qua view <code>v_thiet_bi_dac_tinh</code>. Không thay thế Chủng loại.
+                Tài sản của mẫu này sẽ tự kế thừa nhãn tài sản qua view{" "}
+                <code>v_thiet_bi_dac_tinh</code>. Không thay thế Chủng loại.
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={active} onCheckedChange={setActive} id="model-active" />
-              <Label htmlFor="model-active" className="cursor-pointer">Đang sử dụng</Label>
+              <Label htmlFor="model-active" className="cursor-pointer">
+                Đang sử dụng
+              </Label>
             </div>
           </div>
 
@@ -1561,7 +1999,9 @@ function ModelDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={saving}>Huỷ</Button>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
+            Huỷ
+          </Button>
           <Button onClick={save} disabled={saving} className="gap-1.5">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />} Lưu
           </Button>

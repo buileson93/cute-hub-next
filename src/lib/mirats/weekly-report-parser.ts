@@ -7,25 +7,25 @@
 import mammoth from "mammoth";
 
 export interface WeeklyReportHeader {
-  don_vi: string;      // "TRUNG TÂM BẢO ĐẢM KỸ THUẬT" / "ĐÀI KSKL PHÚ BÀI"
-  so_van_ban: string;  // "30/BC-BĐKT"
-  ngay_ky: string;     // "22/7/2026"
+  don_vi: string; // "TRUNG TÂM BẢO ĐẢM KỸ THUẬT" / "ĐÀI KSKL PHÚ BÀI"
+  so_van_ban: string; // "30/BC-BĐKT"
+  ngay_ky: string; // "22/7/2026"
   tuan_tu_ngay: string; // "16/07/2026"
   tuan_den_ngay: string; // "22/07/2026"
-  tieu_de: string;     // "BÁO CÁO TUẦN 30"
+  tieu_de: string; // "BÁO CÁO TUẦN 30"
 }
 
 export interface WeeklyIncidentRow {
   stt: string;
-  thiet_bi: string;       // "VHF 120.45MHz DAN"
-  vi_tri: string;         // "Đội Thông tin"
-  sl_hong: string;        // "01"
-  thoi_diem_raw: string;  // "Từ 02:45 đến 09:00 Ngày 16/07/2026"
-  tinh_trang: string;     // Máy thu VHF … báo mất nguồn AC…
-  vat_tu: string;         // Thay máy dự phòng…
-  ghi_chu: string;        // BBKT số 172…
-  he_thong_hint: string;  // "Hệ thống VHF" (từ header nhóm)
-  nhom: string;           // "I" | "II" | "III"
+  thiet_bi: string; // "VHF 120.45MHz DAN"
+  vi_tri: string; // "Đội Thông tin"
+  sl_hong: string; // "01"
+  thoi_diem_raw: string; // "Từ 02:45 đến 09:00 Ngày 16/07/2026"
+  tinh_trang: string; // Máy thu VHF … báo mất nguồn AC…
+  vat_tu: string; // Thay máy dự phòng…
+  ghi_chu: string; // BBKT số 172…
+  he_thong_hint: string; // "Hệ thống VHF" (từ header nhóm)
+  nhom: string; // "I" | "II" | "III"
   // Suy luận sau parse
   thoi_gian_bat_dau: string; // ISO YYYY-MM-DDTHH:mm hoặc ""
   thoi_gian_ket_thuc: string;
@@ -36,14 +36,14 @@ export interface WeeklyIncidentRow {
 
 export interface WeeklyHongHocRow {
   stt: string;
-  thiet_bi: string;       // "Máy thu VHF R&S EU4200 (S/N: 105806)"
-  don_vi_ql: string;      // "Đội Thông tin"
-  tinh_trang: string;     // "Hỏng nguồn AC"
-  ngay_hong_raw: string;  // "02:45 ngày 16/07/2026"
+  thiet_bi: string; // "Máy thu VHF R&S EU4200 (S/N: 105806)"
+  don_vi_ql: string; // "Đội Thông tin"
+  tinh_trang: string; // "Hỏng nguồn AC"
+  ngay_hong_raw: string; // "02:45 ngày 16/07/2026"
   don_vi_sc: string;
   ngay_chuyen_sc: string;
   ghi_chu: string;
-  ngay_hong_iso: string;  // "" nếu không suy được
+  ngay_hong_iso: string; // "" nếu không suy được
 }
 
 export interface WeeklyReportParsed {
@@ -61,7 +61,9 @@ async function docxToTables(buf: ArrayBuffer): Promise<string[][][]> {
   for (const tbl of Array.from(doc.querySelectorAll("table"))) {
     const rows: string[][] = [];
     for (const tr of Array.from(tbl.querySelectorAll("tr"))) {
-      const cells = Array.from(tr.querySelectorAll("th,td")).map((c) => (c.textContent ?? "").replace(/\s+/g, " ").trim());
+      const cells = Array.from(tr.querySelectorAll("th,td")).map((c) =>
+        (c.textContent ?? "").replace(/\s+/g, " ").trim(),
+      );
       rows.push(cells);
     }
     if (rows.length) tables.push(rows);
@@ -72,10 +74,14 @@ async function docxToTables(buf: ArrayBuffer): Promise<string[][][]> {
 /** Đọc header văn bản (đơn vị, số, tuần). */
 function parseHeader(fullText: string): WeeklyReportHeader {
   const t = fullText.replace(/\r\n?/g, "\n");
-  const dv = t.match(/(TRUNG T[ÂA]M[^\n]{0,80}|Đ[ÀA]I\s+K[SI][ĐD]?K[LI][^\n]{0,80}|ĐỘI[^\n]{0,60})/i);
+  const dv = t.match(
+    /(TRUNG T[ÂA]M[^\n]{0,80}|Đ[ÀA]I\s+K[SI][ĐD]?K[LI][^\n]{0,80}|ĐỘI[^\n]{0,60})/i,
+  );
   const so = t.match(/S[ốo]:\s*([^\n]+)/i);
   const ngayKy = t.match(/ng[àa]y\s+(\d{1,2})\s+th[áa]ng\s+(\d{1,2})\s+n[ăa]m\s+(\d{4})/i);
-  const tuan = t.match(/T[ừu]\s+ng[àa]y\s+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})[^\d]{1,10}(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})/i);
+  const tuan = t.match(
+    /T[ừu]\s+ng[àa]y\s+(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})[^\d]{1,10}(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})/i,
+  );
   const td = t.match(/B[ÁA]O\s+C[ÁA]O\s+TU[ẦA]N[^\n]{0,40}/i);
   return {
     don_vi: (dv?.[1] || "").trim(),
@@ -118,8 +124,10 @@ export function extractEndTime(raw: string): string {
 
 function classifyImpact(txt: string): string {
   const s = txt.toLowerCase();
-  if (/gi[áa]n\s*đo[ạa]n|d[ừu]ng\s*đi[ềe]u\s*h[àa]nh|ng[ưu]ng\s*[đd]hb/.test(s)) return "Có gián đoạn ĐHB";
-  if (/kh[ôo]ng\s*[ảa]nh\s*h[ưu][ơở]ng|v[ẫâ]n\s*ho[ạa]t\s*đ[ộo]ng\s*b[ìi]nh\s*th[ưu][ơờ]ng/.test(s)) return "Không ảnh hưởng";
+  if (/gi[áa]n\s*đo[ạa]n|d[ừu]ng\s*đi[ềe]u\s*h[àa]nh|ng[ưu]ng\s*[đd]hb/.test(s))
+    return "Có gián đoạn ĐHB";
+  if (/kh[ôo]ng\s*[ảa]nh\s*h[ưu][ơở]ng|v[ẫâ]n\s*ho[ạa]t\s*đ[ộo]ng\s*b[ìi]nh\s*th[ưu][ơờ]ng/.test(s))
+    return "Không ảnh hưởng";
   if (/[ảa]nh\s*h[ưu][ởo]ng/.test(s)) return "Ảnh hưởng một phần";
   return "Không ảnh hưởng";
 }
@@ -146,7 +154,9 @@ function isTable1Header(row: string[]): boolean {
 /** Đoán Bảng 2 (hỏng tồn) từ header có "Đơn vị sửa chữa". */
 function isTable2Header(row: string[]): boolean {
   const s = row.join("|").toLowerCase();
-  return /đ[ơo]n\s*v[ịi]\s*s[ửu]a\s*ch[ữu]a/.test(s) || /ng[àa]y\s*chuy[ểe]n\s*đ[ơo]n\s*v[ịi]/.test(s);
+  return (
+    /đ[ơo]n\s*v[ịi]\s*s[ửu]a\s*ch[ữu]a/.test(s) || /ng[àa]y\s*chuy[ểe]n\s*đ[ơo]n\s*v[ịi]/.test(s)
+  );
 }
 
 function isEmptyRow(row: string[]): boolean {
@@ -169,7 +179,10 @@ function extractTable1(rows: string[][]): WeeklyIncidentRow[] {
     if (!joined) continue;
     // Nhóm La Mã "I. Thiết bị nhóm 1:"
     const nm = joined.match(NHOM_RE);
-    if (nm) { nhom = nm[1]; continue; }
+    if (nm) {
+      nhom = nm[1];
+      continue;
+    }
     // Header hệ thống — dòng chỉ có tên nhóm hệ thống, các ô sau rỗng
     const first = (r[0] ?? "").trim();
     if (GROUP_RE.test(first) && r.slice(1).every((c) => !c || !c.trim())) {
@@ -195,11 +208,20 @@ function extractTable1(rows: string[][]): WeeklyIncidentRow[] {
     if (tinh_trang) conf += 0.1;
     if (heThongHint) conf += 0.05;
     out.push({
-      stt: c(0), thiet_bi, vi_tri: c(2), sl_hong: c(3),
-      thoi_diem_raw: thoi_diem, tinh_trang, vat_tu: c(6), ghi_chu: c(7),
-      he_thong_hint: heThongHint, nhom,
-      thoi_gian_bat_dau: isoStart, thoi_gian_ket_thuc: isoEnd,
-      phan_loai: level, anh_huong_dhb: impact,
+      stt: c(0),
+      thiet_bi,
+      vi_tri: c(2),
+      sl_hong: c(3),
+      thoi_diem_raw: thoi_diem,
+      tinh_trang,
+      vat_tu: c(6),
+      ghi_chu: c(7),
+      he_thong_hint: heThongHint,
+      nhom,
+      thoi_gian_bat_dau: isoStart,
+      thoi_gian_ket_thuc: isoEnd,
+      phan_loai: level,
+      anh_huong_dhb: impact,
       confidence: Math.min(1, conf),
     });
   }
@@ -216,9 +238,14 @@ function extractTable2(rows: string[][]): WeeklyHongHocRow[] {
     if (!thiet_bi || thiet_bi === "//") continue;
     const ngayHongRaw = c(4);
     out.push({
-      stt: c(0), thiet_bi, don_vi_ql: c(2), tinh_trang: c(3),
-      ngay_hong_raw: ngayHongRaw, don_vi_sc: c(5),
-      ngay_chuyen_sc: c(6), ghi_chu: c(7),
+      stt: c(0),
+      thiet_bi,
+      don_vi_ql: c(2),
+      tinh_trang: c(3),
+      ngay_hong_raw: ngayHongRaw,
+      don_vi_sc: c(5),
+      ngay_chuyen_sc: c(6),
+      ghi_chu: c(7),
       ngay_hong_iso: extractStartTime(ngayHongRaw),
     });
   }
@@ -244,7 +271,13 @@ export function parseWeeklyReportText(text: string): WeeklyReportParsed {
   const tables: string[][][] = [];
   let cur: string[][] = [];
   for (const line of text.replace(/\r\n?/g, "\n").split("\n")) {
-    if (!line.trim()) { if (cur.length) { tables.push(cur); cur = []; } continue; }
+    if (!line.trim()) {
+      if (cur.length) {
+        tables.push(cur);
+        cur = [];
+      }
+      continue;
+    }
     cur.push(line.split("\t"));
   }
   if (cur.length) tables.push(cur);
@@ -280,14 +313,19 @@ function finalize(fullText: string, tables: string[][][]): WeeklyReportParsed {
 function normVN(s: string): string {
   return (s || "")
     .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
 
 function tokenSet(s: string): Set<string> {
-  return new Set(normVN(s).split(" ").filter((x) => x.length >= 2));
+  return new Set(
+    normVN(s)
+      .split(" ")
+      .filter((x) => x.length >= 2),
+  );
 }
 
 /** Jaccard trên tokens + bonus cho substring khớp. */
@@ -304,7 +342,11 @@ export function fuzzyScore(a: string, b: string): number {
   return Math.min(1, jac + sub);
 }
 
-export interface HeThongCandidate { id: string; ten: string; score: number }
+export interface HeThongCandidate {
+  id: string;
+  ten: string;
+  score: number;
+}
 
 export function fuzzyMatchHeThong(
   hint: string,

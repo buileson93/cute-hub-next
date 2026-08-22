@@ -3,12 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getHeartBeatData, HeartBeatGroup } from "@/lib/mirats/dashboard-realtime.functions";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@tanstack/react-router";
 import { useGlobalRealtime } from "@/lib/realtime/useGlobalRealtime";
 
@@ -27,7 +22,7 @@ export function HeartBeatStrip() {
         <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-2">
           Hệ thống
         </span>
-        
+
         {isLoading ? (
           <div className="flex gap-2">
             {Array.from({ length: 12 }).map((_, i) => (
@@ -71,13 +66,13 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Link 
-          to="/he-thong/cay" 
+        <Link
+          to="/he-thong/cay"
           className={cn(
             "w-7 h-7 rounded-lg transition-all duration-300 flex items-center justify-center text-[10px] font-bold cursor-pointer select-none",
             statusColors[group.status],
             isFlashing && "animate-in fade-in zoom-in duration-500 ring-2 ring-white/50",
-            "motion-reduce:animate-none"
+            "motion-reduce:animate-none",
           )}
         >
           {group.ten.charAt(0)}
@@ -87,17 +82,23 @@ function HeartBeatCell({ group }: { group: HeartBeatGroup }) {
         <div className="space-y-1">
           <div className="flex justify-between items-center border-b border-border pb-1 mb-1">
             <span className="font-bold text-[12px] uppercase">{group.ten}</span>
-            <span className="text-[10px] bg-muted px-1 rounded font-black">{group.systemCount}</span>
+            <span className="text-[10px] bg-muted px-1 rounded font-black">
+              {group.systemCount}
+            </span>
           </div>
-          
+
           {group.reasons.length > 0 ? (
             <div className="space-y-1">
               {group.reasons.map((r, i) => (
                 <div key={i} className="text-[11px] flex items-start gap-1">
-                  <span className={cn(
-                    "w-1.5 h-1.5 rounded-full mt-1 shrink-0",
-                    group.status === 'critical' ? 'bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.3)]' : 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.3)]'
-                  )} />
+                  <span
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full mt-1 shrink-0",
+                      group.status === "critical"
+                        ? "bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.3)]"
+                        : "bg-warning shadow-[0_0_8px_rgba(245,158,11,0.3)]",
+                    )}
+                  />
                   <span>{r}</span>
                 </div>
               ))}

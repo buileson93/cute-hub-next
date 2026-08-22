@@ -21,16 +21,35 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 
-export type FilterOp = "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "in" | "ilike" | "is_null" | "not_null";
+export type FilterOp =
+  | "eq"
+  | "neq"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "in"
+  | "ilike"
+  | "is_null"
+  | "not_null";
 export interface Filter {
   column: string;
   op: FilterOp;
   value?: string | number | boolean | null | Array<string | number>;
 }
-export interface Sort { column: string; ascending?: boolean }
-export interface TsSearch { column: string; tsquery: string }
+export interface Sort {
+  column: string;
+  ascending?: boolean;
+}
+export interface TsSearch {
+  column: string;
+  tsquery: string;
+}
 
-export interface PagedResult<T> { rows: T[]; total: number }
+export interface PagedResult<T> {
+  rows: T[];
+  total: number;
+}
 
 export interface PagedQueryOpts<T> {
   key: readonly unknown[];
@@ -57,16 +76,36 @@ function applyFilters<B extends { eq: unknown }>(qb: B, filters: Filter[]): B {
   let q: any = qb;
   for (const f of filters) {
     switch (f.op) {
-      case "eq": q = q.eq(f.column, f.value); break;
-      case "neq": q = q.neq(f.column, f.value); break;
-      case "gt": q = q.gt(f.column, f.value); break;
-      case "gte": q = q.gte(f.column, f.value); break;
-      case "lt": q = q.lt(f.column, f.value); break;
-      case "lte": q = q.lte(f.column, f.value); break;
-      case "in": q = q.in(f.column, (f.value ?? []) as Array<string | number>); break;
-      case "ilike": q = q.ilike(f.column, `%${f.value ?? ""}%`); break;
-      case "is_null": q = q.is(f.column, null); break;
-      case "not_null": q = q.not(f.column, "is", null); break;
+      case "eq":
+        q = q.eq(f.column, f.value);
+        break;
+      case "neq":
+        q = q.neq(f.column, f.value);
+        break;
+      case "gt":
+        q = q.gt(f.column, f.value);
+        break;
+      case "gte":
+        q = q.gte(f.column, f.value);
+        break;
+      case "lt":
+        q = q.lt(f.column, f.value);
+        break;
+      case "lte":
+        q = q.lte(f.column, f.value);
+        break;
+      case "in":
+        q = q.in(f.column, (f.value ?? []) as Array<string | number>);
+        break;
+      case "ilike":
+        q = q.ilike(f.column, `%${f.value ?? ""}%`);
+        break;
+      case "is_null":
+        q = q.is(f.column, null);
+        break;
+      case "not_null":
+        q = q.not(f.column, "is", null);
+        break;
     }
   }
   return q as B;
@@ -77,8 +116,19 @@ function applyFilters<B extends { eq: unknown }>(qb: B, filters: Filter[]): B {
  * Trả về đúng 1 trang + tổng số dòng để render UI phân trang.
  */
 export function usePagedQuery<T>(opts: PagedQueryOpts<T>) {
-  const { key, table, select, page, pageSize, filters = [], sort, search,
-    countMode = "planned", enabled = true, staleTime = 10_000 } = opts;
+  const {
+    key,
+    table,
+    select,
+    page,
+    pageSize,
+    filters = [],
+    sort,
+    search,
+    countMode = "planned",
+    enabled = true,
+    staleTime = 10_000,
+  } = opts;
 
   return useQuery({
     queryKey: key,
@@ -100,7 +150,11 @@ export function usePagedQuery<T>(opts: PagedQueryOpts<T>) {
       const from = page * pageSize;
       const to = from + pageSize - 1;
       q = q.range(from, to);
-      const { data, count, error } = (await q) as { data: T[] | null; count: number | null; error: unknown };
+      const { data, count, error } = (await q) as {
+        data: T[] | null;
+        count: number | null;
+        error: unknown;
+      };
       if (error) throw error;
       return { rows: (data ?? []) as T[], total: count ?? 0 };
     },

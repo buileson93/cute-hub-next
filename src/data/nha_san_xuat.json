@@ -1,1 +1,20 @@
-[{"ten": "Cisco", "quoc_gia": "USA"}, {"ten": "Dell", "quoc_gia": "USA"}, {"ten": "HP", "quoc_gia": "USA"}, {"ten": "Vaisala", "quoc_gia": "Finland"}, {"ten": "Park Air", "quoc_gia": "UK"}, {"ten": "Attech", "quoc_gia": "Việt Nam"}, {"ten": "Daikin", "quoc_gia": "Nhật Bản"}, {"ten": "Schneider", "quoc_gia": "Pháp"}, {"ten": "APC", "quoc_gia": "USA"}, {"ten": "Sennheiser", "quoc_gia": "Đức"}, {"ten": "Motorola", "quoc_gia": "USA"}, {"ten": "Rohde & Schwarz", "quoc_gia": "Đức"}, {"ten": "Selex", "quoc_gia": "Ý"}, {"ten": "Thales", "quoc_gia": "Pháp"}, {"ten": "Indra", "quoc_gia": "Tây Ban Nha"}, {"ten": "Panasonic", "quoc_gia": "Nhật Bản"}, {"ten": "Bosch", "quoc_gia": "Đức"}, {"ten": "Axis", "quoc_gia": "Thụy Điển"}]
+[
+  { "ten": "Cisco", "quoc_gia": "USA" },
+  { "ten": "Dell", "quoc_gia": "USA" },
+  { "ten": "HP", "quoc_gia": "USA" },
+  { "ten": "Vaisala", "quoc_gia": "Finland" },
+  { "ten": "Park Air", "quoc_gia": "UK" },
+  { "ten": "Attech", "quoc_gia": "Việt Nam" },
+  { "ten": "Daikin", "quoc_gia": "Nhật Bản" },
+  { "ten": "Schneider", "quoc_gia": "Pháp" },
+  { "ten": "APC", "quoc_gia": "USA" },
+  { "ten": "Sennheiser", "quoc_gia": "Đức" },
+  { "ten": "Motorola", "quoc_gia": "USA" },
+  { "ten": "Rohde & Schwarz", "quoc_gia": "Đức" },
+  { "ten": "Selex", "quoc_gia": "Ý" },
+  { "ten": "Thales", "quoc_gia": "Pháp" },
+  { "ten": "Indra", "quoc_gia": "Tây Ban Nha" },
+  { "ten": "Panasonic", "quoc_gia": "Nhật Bản" },
+  { "ten": "Bosch", "quoc_gia": "Đức" },
+  { "ten": "Axis", "quoc_gia": "Thụy Điển" }
+]

@@ -29,7 +29,11 @@ export function buildInitialValues(
     const cur = existing?.[s.field_key];
     if (cur != null && cur !== "") {
       out[s.field_key] =
-        typeof cur === "string" ? cur : typeof cur === "number" || typeof cur === "boolean" ? String(cur) : "";
+        typeof cur === "string"
+          ? cur
+          : typeof cur === "number" || typeof cur === "boolean"
+            ? String(cur)
+            : "";
     } else {
       out[s.field_key] = macDinhToStr(s.mac_dinh);
     }
@@ -52,13 +56,16 @@ export function validateFieldValue(spec: FieldSpec, value: FormValue | null): st
   if (spec.kieu === "number") {
     const n = Number(val);
     if (!Number.isFinite(n)) return "Phải là số hợp lệ";
-    if (spec.rang_buoc.min !== undefined && n < spec.rang_buoc.min) return `Tối thiểu ${spec.rang_buoc.min}`;
-    if (spec.rang_buoc.max !== undefined && n > spec.rang_buoc.max) return `Tối đa ${spec.rang_buoc.max}`;
+    if (spec.rang_buoc.min !== undefined && n < spec.rang_buoc.min)
+      return `Tối thiểu ${spec.rang_buoc.min}`;
+    if (spec.rang_buoc.max !== undefined && n > spec.rang_buoc.max)
+      return `Tối đa ${spec.rang_buoc.max}`;
     return null;
   }
 
   if (spec.kieu === "select") {
-    if (spec.tuy_chon.length > 0 && !spec.tuy_chon.includes(val)) return "Giá trị không nằm trong danh sách";
+    if (spec.tuy_chon.length > 0 && !spec.tuy_chon.includes(val))
+      return "Giá trị không nằm trong danh sách";
     return null;
   }
 
@@ -89,7 +96,10 @@ export function validateFields(specs: FieldSpec[], values: FormValues): Record<s
  * - Bỏ qua field rỗng & không bắt buộc (không ghi key thừa).
  * - Chỉ giữ key thuộc specs (tránh rác từ giá trị ngoài lề).
  */
-export function serializeThuocTinh(specs: FieldSpec[], values: FormValues): Record<string, JsonValue> {
+export function serializeThuocTinh(
+  specs: FieldSpec[],
+  values: FormValues,
+): Record<string, JsonValue> {
   const out: Record<string, JsonValue> = {};
   for (const s of specs) {
     const raw = values[s.field_key];

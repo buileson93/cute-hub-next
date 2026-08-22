@@ -14,7 +14,11 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import * as ed from "@noble/ed25519";
 import { sha512 } from "@noble/hashes/sha2.js";
 import { canonicalize, hashPayload, type SignablePayload } from "@/lib/mirats/sig-canonical";
-import { compileField, parseCompiledSchema, resolveSubmissionFields } from "@/lib/mirats/form-schema";
+import {
+  compileField,
+  parseCompiledSchema,
+  resolveSubmissionFields,
+} from "@/lib/mirats/form-schema";
 import { validateForm } from "@/lib/mirats/form-visibility";
 
 // Bắt buộc cho @noble/ed25519 v3 khi chạy trên môi trường không có SHA-512 native.
@@ -40,7 +44,13 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 /** Sinh (hoặc lấy) cặp khoá Ed25519 hoạt động. Placeholder từ migration sẽ bị thay. */
-async function getActiveKey(admin: Awaited<ReturnType<typeof import("@/integrations/backend/admin.server").supabaseAdmin.from>> extends never ? never : any) {
+async function getActiveKey(
+  admin: Awaited<
+    ReturnType<typeof import("@/integrations/backend/admin.server").supabaseAdmin.from>
+  > extends never
+    ? never
+    : any,
+) {
   const { data: rows, error } = await admin
     .from("system_signing_key")
     .select("*")
@@ -64,10 +74,16 @@ async function getActiveKey(admin: Awaited<ReturnType<typeof import("@/integrati
   };
   // Vô hiệu hoá placeholder trước, sau đó insert
   if (row) {
-    await admin.from("system_signing_key").update({ active: false, rotated_at: new Date().toISOString() }).eq("id", row.id);
+    await admin
+      .from("system_signing_key")
+      .update({ active: false, rotated_at: new Date().toISOString() })
+      .eq("id", row.id);
   }
   const { data: created, error: insErr } = await admin
-    .from("system_signing_key").insert(insertRow).select("*").single();
+    .from("system_signing_key")
+    .insert(insertRow)
+    .select("*")
+    .single();
   if (insErr) throw new Error(`Không tạo được khoá ký: ${insErr.message}`);
   return created;
 }
@@ -77,19 +93,30 @@ export const ensureSigningKey = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data: roles } = await context.supabase
-      .from("user_roles").select("role").eq("user_id", context.userId);
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
     const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
     if (!isAdmin) throw new Error("Chỉ admin mới được sinh khoá ký.");
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const key = await getActiveKey(supabaseAdmin);
-    return { key_id: key.id as string, public_key_b64: key.public_key_b64 as string, alg: key.alg as string };
+    return {
+      key_id: key.id as string,
+      public_key_b64: key.public_key_b64 as string,
+      alg: key.alg as string,
+    };
   });
 
 /** Lấy payload có thể ký từ submission (server-side). */
-async function buildSignablePayload(admin: any, submissionId: string): Promise<{ payload: SignablePayload; sub: any }> {
+async function buildSignablePayload(
+  admin: any,
+  submissionId: string,
+): Promise<{ payload: SignablePayload; sub: any }> {
   const { data: sub, error } = await admin
     .from("form_submission")
-    .select("id, template_id, template_code, template_version_id, don_vi_id, thiet_bi_id, ky_bao_cao, tieu_de, data")
+    .select(
+      "id, template_id, template_code, template_version_id, don_vi_id, thiet_bi_id, ky_bao_cao, tieu_de, data",
+    )
     .eq("id", submissionId)
     .single();
   if (error || !sub) throw new Error("Không tìm thấy biên bản.");
@@ -108,17 +135,28 @@ async function buildSignablePayload(admin: any, submissionId: string): Promise<{
   return { payload, sub };
 }
 
-
 /** Core: thực hiện ký (đã kiểm tra quyền/OTP bên ngoài). */
 async function performSign(
   userId: string,
   submission_id: string,
   signer_role: "nguoi_thuc_hien" | "phu_trach" | "admin",
   note: string | null | undefined,
-  userSupabase: { from: (t: string) => { select: (c: string) => { eq: (k: string, v: unknown) => { maybeSingle: () => Promise<{ data: { ho_ten?: string } | null }> } } } },
+  userSupabase: {
+    from: (t: string) => {
+      select: (c: string) => {
+        eq: (
+          k: string,
+          v: unknown,
+        ) => { maybeSingle: () => Promise<{ data: { ho_ten?: string } | null }> };
+      };
+    };
+  },
 ) {
   const { data: prof } = await userSupabase
-    .from("profiles").select("ho_ten").eq("id", userId).maybeSingle();
+    .from("profiles")
+    .select("ho_ten")
+    .eq("id", userId)
+    .maybeSingle();
 
   const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
   const key = await getActiveKey(supabaseAdmin);
@@ -127,15 +165,24 @@ async function performSign(
   // Validate required / required_if
   try {
     const { data: rows } = await supabaseAdmin
-      .from("form_field").select("*").eq("template_id", sub.template_id).order("position");
+      .from("form_field")
+      .select("*")
+      .eq("template_id", sub.template_id)
+      .order("position");
     let versionSchema = null;
     if (sub.template_version_id) {
       const { data: ver } = await supabaseAdmin
-        .from("form_template_version").select("compiled_schema").eq("id", sub.template_version_id).maybeSingle();
+        .from("form_template_version")
+        .select("compiled_schema")
+        .eq("id", sub.template_version_id)
+        .maybeSingle();
       versionSchema = parseCompiledSchema(ver?.compiled_schema);
     }
     const { data: subFull } = await supabaseAdmin
-      .from("form_submission").select("template_snapshot").eq("id", submission_id).maybeSingle();
+      .from("form_submission")
+      .select("template_snapshot")
+      .eq("id", submission_id)
+      .maybeSingle();
     const { fields } = resolveSubmissionFields({
       snapshot: parseCompiledSchema(subFull?.template_snapshot),
       versionSchema,
@@ -143,7 +190,10 @@ async function performSign(
     });
     const errs = validateForm(fields, (sub.data ?? {}) as Record<string, unknown>);
     if (errs.length > 0) {
-      throw new Error("Không thể ký — biên bản thiếu dữ liệu bắt buộc:\n" + errs.map((e) => `• ${e.message}`).join("\n"));
+      throw new Error(
+        "Không thể ký — biên bản thiếu dữ liệu bắt buộc:\n" +
+          errs.map((e) => `• ${e.message}`).join("\n"),
+      );
     }
   } catch (e) {
     if (e instanceof Error && e.message.startsWith("Không thể ký")) throw e;
@@ -167,11 +217,14 @@ async function performSign(
   });
   if (insErr) throw new Error(`Không lưu được chữ ký: ${insErr.message}`);
 
-  await supabaseAdmin.from("form_submission").update({
-    content_hash: hashHex,
-    signed_by: userId,
-    signed_at: new Date().toISOString(),
-  }).eq("id", submission_id);
+  await supabaseAdmin
+    .from("form_submission")
+    .update({
+      content_hash: hashHex,
+      signed_by: userId,
+      signed_at: new Date().toISOString(),
+    })
+    .eq("id", submission_id);
 
   return { ok: true, content_hash: hashHex, signer_role };
 }
@@ -187,10 +240,18 @@ export const signSubmission = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => SignInput.parse(data))
   .handler(async ({ data, context }) => {
     const { data: roles } = await context.supabase
-      .from("user_roles").select("role").eq("user_id", context.userId);
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
     const roleList = (roles ?? []).map((r: any) => r.role);
     if (!roleList.length) throw new Error("Tài khoản không có vai trò để ký.");
-    return performSign(context.userId, data.submission_id, data.signer_role, data.note, context.supabase as never);
+    return performSign(
+      context.userId,
+      data.submission_id,
+      data.signer_role,
+      data.note,
+      context.supabase as never,
+    );
   });
 
 // ── OTP: yêu cầu mã & ký bằng mã (P4 Form Designer) ─────────────────────────
@@ -204,7 +265,9 @@ function genOtp(): string {
 
 async function sha256Hex(s: string): Promise<string> {
   const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return Array.from(new Uint8Array(h))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 const RequestOtpInput = z.object({
@@ -219,7 +282,9 @@ export const requestSignOtp = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => RequestOtpInput.parse(data))
   .handler(async ({ data, context }) => {
     const { data: roles } = await context.supabase
-      .from("user_roles").select("role").eq("user_id", context.userId);
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
     if (!(roles ?? []).length) throw new Error("Tài khoản không có vai trò để ký.");
 
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
@@ -234,7 +299,9 @@ export const requestSignOtp = createServerFn({ method: "POST" })
       .limit(1);
     const chat = subs?.[0];
     if (!chat) {
-      throw new Error("Bạn chưa liên kết Telegram cá nhân (không phải nhóm). Vào Cài đặt → Telegram để đăng ký chat_id trước khi ký bằng OTP.");
+      throw new Error(
+        "Bạn chưa liên kết Telegram cá nhân (không phải nhóm). Vào Cài đặt → Telegram để đăng ký chat_id trước khi ký bằng OTP.",
+      );
     }
 
     const code = genOtp();
@@ -242,7 +309,8 @@ export const requestSignOtp = createServerFn({ method: "POST" })
     const expires_at = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
     // Huỷ các OTP cũ chưa dùng cho cặp (user, submission)
-    await supabaseAdmin.from("form_sign_otp")
+    await supabaseAdmin
+      .from("form_sign_otp")
       .update({ consumed_at: new Date().toISOString() })
       .eq("user_id", context.userId)
       .eq("submission_id", data.submission_id)
@@ -261,7 +329,10 @@ export const requestSignOtp = createServerFn({ method: "POST" })
 
     // Meta biên bản
     const { data: sub } = await supabaseAdmin
-      .from("form_submission").select("tieu_de, template_code, ky_bao_cao").eq("id", data.submission_id).maybeSingle();
+      .from("form_submission")
+      .select("tieu_de, template_code, ky_bao_cao")
+      .eq("id", data.submission_id)
+      .maybeSingle();
 
     const { sendMessage, escapeHtml } = await import("@/lib/telegram.server");
     const title = sub?.tieu_de ?? sub?.template_code ?? "Biên bản";
@@ -275,10 +346,17 @@ export const requestSignOtp = createServerFn({ method: "POST" })
     try {
       await sendMessage(chat.chat_id, text);
     } catch (e) {
-      throw new Error(`Không gửi được OTP qua Telegram: ${e instanceof Error ? e.message : String(e)}`);
+      throw new Error(
+        `Không gửi được OTP qua Telegram: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
 
-    return { ok: true, channel: data.channel, sent_to: `Telegram (${chat.ten ?? chat.chat_id})`, expires_at };
+    return {
+      ok: true,
+      channel: data.channel,
+      sent_to: `Telegram (${chat.ten ?? chat.chat_id})`,
+      expires_at,
+    };
   });
 
 const SignWithOtpInput = z.object({
@@ -302,20 +380,32 @@ export const signSubmissionWithOtp = createServerFn({ method: "POST" })
     const row = rows?.[0];
     if (!row) throw new Error("Không có OTP đang chờ. Hãy yêu cầu mã mới.");
     if (new Date(row.expires_at).getTime() < Date.now()) {
-      await supabaseAdmin.from("form_sign_otp").update({ consumed_at: new Date().toISOString() }).eq("id", row.id);
+      await supabaseAdmin
+        .from("form_sign_otp")
+        .update({ consumed_at: new Date().toISOString() })
+        .eq("id", row.id);
       throw new Error("OTP đã hết hạn. Hãy yêu cầu mã mới.");
     }
     if ((row.attempts ?? 0) >= 5) {
-      await supabaseAdmin.from("form_sign_otp").update({ consumed_at: new Date().toISOString() }).eq("id", row.id);
+      await supabaseAdmin
+        .from("form_sign_otp")
+        .update({ consumed_at: new Date().toISOString() })
+        .eq("id", row.id);
       throw new Error("Sai OTP quá số lần cho phép. Hãy yêu cầu mã mới.");
     }
     const codeHash = await sha256Hex(data.code);
     if (codeHash !== row.code_hash) {
-      await supabaseAdmin.from("form_sign_otp").update({ attempts: (row.attempts ?? 0) + 1 }).eq("id", row.id);
+      await supabaseAdmin
+        .from("form_sign_otp")
+        .update({ attempts: (row.attempts ?? 0) + 1 })
+        .eq("id", row.id);
       throw new Error(`OTP không đúng. Còn ${5 - ((row.attempts ?? 0) + 1)} lần thử.`);
     }
     // Đánh dấu đã dùng trước khi ký (chống replay)
-    await supabaseAdmin.from("form_sign_otp").update({ consumed_at: new Date().toISOString() }).eq("id", row.id);
+    await supabaseAdmin
+      .from("form_sign_otp")
+      .update({ consumed_at: new Date().toISOString() })
+      .eq("id", row.id);
 
     return performSign(
       context.userId,
@@ -325,7 +415,6 @@ export const signSubmissionWithOtp = createServerFn({ method: "POST" })
       context.supabase as never,
     );
   });
-
 
 /** Verify PUBLIC — không cần đăng nhập, chỉ trả về trạng thái xác thực. */
 const VerifyInput = z.object({ submission_id: z.string().uuid() });
@@ -344,7 +433,9 @@ export const verifySubmission = createServerFn({ method: "POST" })
     // Meta biên bản (public: chỉ những trường bất biến để hiển thị)
     const { data: sub } = await supabaseAdmin
       .from("form_submission")
-      .select("id, template_code, tieu_de, ky_bao_cao, status, submitted_at, signed_at, don_vi:dm_don_vi(ten)")
+      .select(
+        "id, template_code, tieu_de, ky_bao_cao, status, submitted_at, signed_at, don_vi:dm_don_vi(ten)",
+      )
       .eq("id", data.submission_id)
       .maybeSingle();
 
@@ -356,43 +447,64 @@ export const verifySubmission = createServerFn({ method: "POST" })
       currentHash = hashPayload(payload);
       const s = canonicalize(payload);
       canonicalPreview = s.length > 2000 ? s.slice(0, 2000) + "…" : s;
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
 
     // Signed URL của PDF (nếu đã xuất)
     let pdfUrl: string | null = null;
     try {
       const key = `submissions/${data.submission_id}.pdf`;
-      const { data: signed } = await supabaseAdmin.storage.from("form-pdf").createSignedUrl(key, 3600);
+      const { data: signed } = await supabaseAdmin.storage
+        .from("form-pdf")
+        .createSignedUrl(key, 3600);
       if (signed?.signedUrl) pdfUrl = signed.signedUrl;
-    } catch { /* file chưa tồn tại */ }
+    } catch {
+      /* file chưa tồn tại */
+    }
 
-    const meta = sub ? {
-      id: sub.id,
-      template_code: sub.template_code,
-      tieu_de: sub.tieu_de,
-      ky_bao_cao: sub.ky_bao_cao,
-      status: sub.status,
-      submitted_at: sub.submitted_at,
-      signed_at: sub.signed_at,
-      don_vi_ten: (sub.don_vi as { ten?: string } | null)?.ten ?? null,
-    } : null;
+    const meta = sub
+      ? {
+          id: sub.id,
+          template_code: sub.template_code,
+          tieu_de: sub.tieu_de,
+          ky_bao_cao: sub.ky_bao_cao,
+          status: sub.status,
+          submitted_at: sub.submitted_at,
+          signed_at: sub.signed_at,
+          don_vi_ten: (sub.don_vi as { ten?: string } | null)?.ten ?? null,
+        }
+      : null;
 
     if (!sigs || sigs.length === 0) {
       return {
-        found: false, valid: false, current_hash: currentHash,
-        canonical_preview: canonicalPreview, pdf_url: pdfUrl, meta,
+        found: false,
+        valid: false,
+        current_hash: currentHash,
+        canonical_preview: canonicalPreview,
+        pdf_url: pdfUrl,
+        meta,
         signatures: [] as any[],
       };
     }
 
     const keyIds = Array.from(new Set(sigs.map((s) => s.key_id)));
     const { data: keys } = await supabaseAdmin
-      .from("system_signing_key").select("id, public_key_b64, alg").in("id", keyIds);
+      .from("system_signing_key")
+      .select("id, public_key_b64, alg")
+      .in("id", keyIds);
     const keyMap = new Map((keys ?? []).map((k) => [k.id, k]));
 
     const results = [] as Array<{
-      id: string; signer_name: string | null; signer_role: string; signed_at: string;
-      content_hash: string; matches_current: boolean; signature_valid: boolean; alg: string; key_id: string;
+      id: string;
+      signer_name: string | null;
+      signer_role: string;
+      signed_at: string;
+      content_hash: string;
+      matches_current: boolean;
+      signature_valid: boolean;
+      alg: string;
+      key_id: string;
     }>;
 
     for (const s of sigs) {
@@ -404,20 +516,31 @@ export const verifySubmission = createServerFn({ method: "POST" })
           const sigBytes = b64ToBytes(s.signature_b64);
           const pubBytes = b64ToBytes(k.public_key_b64);
           sigValid = await ed.verifyAsync(sigBytes, msg, pubBytes);
-        } catch { sigValid = false; }
+        } catch {
+          sigValid = false;
+        }
       }
       results.push({
-        id: s.id, signer_name: s.signer_name, signer_role: s.signer_role, signed_at: s.signed_at,
+        id: s.id,
+        signer_name: s.signer_name,
+        signer_role: s.signer_role,
+        signed_at: s.signed_at,
         content_hash: s.content_hash,
         matches_current: currentHash != null && s.content_hash === currentHash,
-        signature_valid: sigValid, alg: s.alg, key_id: s.key_id,
+        signature_valid: sigValid,
+        alg: s.alg,
+        key_id: s.key_id,
       });
     }
 
     const allValid = results.every((r) => r.signature_valid && r.matches_current);
     return {
-      found: true, valid: allValid, current_hash: currentHash,
-      canonical_preview: canonicalPreview, pdf_url: pdfUrl, meta,
+      found: true,
+      valid: allValid,
+      current_hash: currentHash,
+      canonical_preview: canonicalPreview,
+      pdf_url: pdfUrl,
+      meta,
       signatures: results,
     };
   });

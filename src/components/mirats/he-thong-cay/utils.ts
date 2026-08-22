@@ -1,6 +1,13 @@
-import { 
-  PlGroup, LvGroup, NhGroup, HtGroup, DevNode, 
-  StatusCat, ImpCat, BadgeFilter, InfoChip
+import {
+  PlGroup,
+  LvGroup,
+  NhGroup,
+  HtGroup,
+  DevNode,
+  StatusCat,
+  ImpCat,
+  BadgeFilter,
+  InfoChip,
 } from "./types";
 import { DbDevice, DbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { htSysMa, parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
@@ -70,19 +77,78 @@ export function filterTreeByBadge(tree: PlGroup[], f: BadgeFilter): PlGroup[] {
 export function deviceChips(d: any): InfoChip[] {
   const chips: InfoChip[] = [];
   const vt = (d.vi_tri ?? "").trim();
-  if (vt) chips.push({ text: vt, className: "border-border bg-muted/60 text-muted-foreground", title: `Vị trí lắp đặt: ${vt}` });
+  if (vt)
+    chips.push({
+      text: vt,
+      className: "border-border bg-muted/60 text-muted-foreground",
+      title: `Vị trí lắp đặt: ${vt}`,
+    });
   return chips;
 }
 
-export const NH_COLORS: Array<{ id: string; label: string; list: string; mind: string; dot: string }> = [
-  { id: "violet", label: "Tím", list: "bg-violet-500/5", mind: "border-violet-500/40 bg-violet-500/5", dot: "bg-violet-500" },
-  { id: "blue", label: "Xanh dương", list: "bg-blue-500/5", mind: "border-blue-500/40 bg-blue-500/5", dot: "bg-blue-500" },
-  { id: "emerald", label: "Xanh lá", list: "bg-emerald-500/5", mind: "border-emerald-500/40 bg-emerald-500/5", dot: "bg-emerald-500" },
-  { id: "amber", label: "Vàng", list: "bg-amber-500/5", mind: "border-amber-500/40 bg-amber-500/5", dot: "bg-amber-500" },
-  { id: "rose", label: "Đỏ", list: "bg-rose-500/5", mind: "border-rose-500/40 bg-rose-500/5", dot: "bg-rose-500" },
-  { id: "sky", label: "Xanh biển", list: "bg-sky-500/5", mind: "border-sky-500/40 bg-sky-500/5", dot: "bg-sky-500" },
-  { id: "cyan", label: "Lục lam", list: "bg-cyan-500/5", mind: "border-cyan-500/40 bg-cyan-500/5", dot: "bg-cyan-500" },
-  { id: "slate", label: "Xám", list: "bg-slate-500/5", mind: "border-slate-500/40 bg-slate-500/5", dot: "bg-slate-500" },
+export const NH_COLORS: Array<{
+  id: string;
+  label: string;
+  list: string;
+  mind: string;
+  dot: string;
+}> = [
+  {
+    id: "violet",
+    label: "Tím",
+    list: "bg-violet-500/5",
+    mind: "border-violet-500/40 bg-violet-500/5",
+    dot: "bg-violet-500",
+  },
+  {
+    id: "blue",
+    label: "Xanh dương",
+    list: "bg-blue-500/5",
+    mind: "border-blue-500/40 bg-blue-500/5",
+    dot: "bg-blue-500",
+  },
+  {
+    id: "emerald",
+    label: "Xanh lá",
+    list: "bg-emerald-500/5",
+    mind: "border-emerald-500/40 bg-emerald-500/5",
+    dot: "bg-emerald-500",
+  },
+  {
+    id: "amber",
+    label: "Vàng",
+    list: "bg-amber-500/5",
+    mind: "border-amber-500/40 bg-amber-500/5",
+    dot: "bg-amber-500",
+  },
+  {
+    id: "rose",
+    label: "Đỏ",
+    list: "bg-rose-500/5",
+    mind: "border-rose-500/40 bg-rose-500/5",
+    dot: "bg-rose-500",
+  },
+  {
+    id: "sky",
+    label: "Xanh biển",
+    list: "bg-sky-500/5",
+    mind: "border-sky-500/40 bg-sky-500/5",
+    dot: "bg-sky-500",
+  },
+  {
+    id: "cyan",
+    label: "Lục lam",
+    list: "bg-cyan-500/5",
+    mind: "border-cyan-500/40 bg-cyan-500/5",
+    dot: "bg-cyan-500",
+  },
+  {
+    id: "slate",
+    label: "Xám",
+    list: "bg-slate-500/5",
+    mind: "border-slate-500/40 bg-slate-500/5",
+    dot: "bg-slate-500",
+  },
 ];
 
 export const NH_COLOR_MAP = new Map(NH_COLORS.map((c) => [c.id, c]));
@@ -94,14 +160,14 @@ import { STATUS_TONE, IMP_TONE } from "./types";
 
 export function statusTone(tt: string): string {
   const c = statusCat(tt);
-  return c === "khac" && (tt ?? "").trim() ? "border-blue-500/30 bg-blue-500/10 text-blue-600" : STATUS_TONE[c];
+  return c === "khac" && (tt ?? "").trim()
+    ? "border-blue-500/30 bg-blue-500/10 text-blue-600"
+    : STATUS_TONE[c];
 }
 
 export function importanceTone(v: string): string {
   return IMP_TONE[impCat(v)];
 }
-
-
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -135,19 +201,31 @@ export function buildTree(
   realSystems: Array<{ ma: string; ten: string; nhMa: string; nhTen: string; plId: string }> = [],
 ): { tree: PlGroup[]; total: number } {
   if (!devices || !Array.isArray(devices)) return { tree: [], total: 0 };
-  
+
   // acc: plId -> nhMa -> htId -> devices
   const acc = new Map<string, Map<string, Map<string, DevNode[]>>>();
-  
+
   // 1. Phân bổ tài sản hiện có
   for (const t of devices) {
     const pl = t._pl || "__nopl__";
     const nh = t._nhKey || "KHAC";
     const ht = t._htId || NONE_HT;
-    let m1 = acc.get(pl); if (!m1) { m1 = new Map(); acc.set(pl, m1); }
-    let m2 = m1.get(nh); if (!m2) { m2 = new Map(); m1.set(nh, m2); }
-    let list = m2.get(ht); if (!list) { list = []; m2.set(ht, list); }
-    
+    let m1 = acc.get(pl);
+    if (!m1) {
+      m1 = new Map();
+      acc.set(pl, m1);
+    }
+    let m2 = m1.get(nh);
+    if (!m2) {
+      m2 = new Map();
+      m1.set(nh, m2);
+    }
+    let list = m2.get(ht);
+    if (!list) {
+      list = [];
+      m2.set(ht, list);
+    }
+
     // Đếm tài sản thật
     list.push({ tb: t, children: [] });
   }
@@ -172,7 +250,7 @@ export function buildTree(
   for (const rs of realSystems) if (rs.plId) plIdSet.add(rs.plId);
   for (const cg of customGroups) if (cg.plId) plIdSet.add(cg.plId);
   for (const cs of customSystems) if (cs.plId) plIdSet.add(cs.plId);
-  
+
   const plIds = [...plIdSet].sort((a, b) => (plOrder.get(a) ?? 999) - (plOrder.get(b) ?? 999));
 
   const tree: PlGroup[] = [];
@@ -193,8 +271,10 @@ export function buildTree(
 
       // Lấy tập hợp HT Id từ tài sản + custom + real
       const htIdSet = new Set<string>(m2.keys());
-      for (const rs of realSystems) if (rs.plId === plId && rs.nhMa === nhMa) htIdSet.add(parseHtSysMa(rs.ma).sysName);
-      for (const cs of customSystems) if (cs.plId === plId && cs.nhMa === nhMa) htIdSet.add(parseHtSysMa(cs.ma).sysName);
+      for (const rs of realSystems)
+        if (rs.plId === plId && rs.nhMa === nhMa) htIdSet.add(parseHtSysMa(rs.ma).sysName);
+      for (const cs of customSystems)
+        if (cs.plId === plId && cs.nhMa === nhMa) htIdSet.add(parseHtSysMa(cs.ma).sysName);
 
       for (const sysId of htIdSet) {
         const devs = m2.get(sysId) ?? [];
@@ -202,7 +282,7 @@ export function buildTree(
 
         const ma = htSysMa(nhMa, sysId);
         let donViMa: string | null = htDonVi(sysId);
-        
+
         // Dự phòng đơn vị từ tài sản bên trong nếu htDonVi không trả về
         if (!donViMa && devs.length > 0) {
           const dvCount = new Map<string, number>();
@@ -211,17 +291,21 @@ export function buildTree(
             if (dv) dvCount.set(dv, (dvCount.get(dv) ?? 0) + 1);
           }
           let best = 0;
-          for (const [dv, n] of dvCount) if (n > best) { best = n; donViMa = dv; }
+          for (const [dv, n] of dvCount)
+            if (n > best) {
+              best = n;
+              donViMa = dv;
+            }
         }
 
-        const isCustom = customSystems.some(cs => cs.ma === ma);
-        systems.push({ 
-          ma, 
-          ten: htLabel(ma), 
-          devices: devs, 
-          count: totalOf(devs), 
+        const isCustom = customSystems.some((cs) => cs.ma === ma);
+        systems.push({
+          ma,
+          ten: htLabel(ma),
+          devices: devs,
+          count: totalOf(devs),
           donViMa,
-          isCustom 
+          isCustom,
         });
       }
 
@@ -237,37 +321,41 @@ export function buildTree(
         return (ordHt(a.ma) ?? 1e9) - (ordHt(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi");
       });
 
-      const isCustomNh = customGroups.some(cg => cg.ma === nhMa);
-      const nhTen = nhLabel(nhMa) || realSystems.find(rs => rs.nhMa === nhMa)?.nhTen || nhMa;
-      
-      groups.push({ 
-        ma: nhMa, 
-        ten: nhTen, 
-        systems, 
-        count: systems.reduce((n, s) => n + s.count, 0), 
+      const isCustomNh = customGroups.some((cg) => cg.ma === nhMa);
+      const nhTen = nhLabel(nhMa) || realSystems.find((rs) => rs.nhMa === nhMa)?.nhTen || nhMa;
+
+      groups.push({
+        ma: nhMa,
+        ten: nhTen,
+        systems,
+        count: systems.reduce((n, s) => n + s.count, 0),
         mau: colNh(nhMa),
-        isCustom: isCustomNh 
+        isCustom: isCustomNh,
       });
     }
 
     // Sắp xếp NH theo thứ tự thủ công -> tên
-    groups.sort((a, b) => (ordNh(a.ma) ?? 1e9) - (ordNh(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi"));
+    groups.sort(
+      (a, b) => (ordNh(a.ma) ?? 1e9) - (ordNh(b.ma) ?? 1e9) || a.ten.localeCompare(b.ten, "vi"),
+    );
 
-    const fields: LvGroup[] = [{ 
-      id: "all", 
-      ten: "Tất cả", 
-      groups, 
-      count: groups.reduce((n, g) => n + g.count, 0), 
-      passthrough: true 
-    }];
-    
+    const fields: LvGroup[] = [
+      {
+        id: "all",
+        ten: "Tất cả",
+        groups,
+        count: groups.reduce((n, g) => n + g.count, 0),
+        passthrough: true,
+      },
+    ];
+
     const count = fields.reduce((n, lv) => n + lv.count, 0);
-    tree.push({ 
-      id: plId, 
-      ten: plTenMap.get(plId) || plId, 
-      tone: plToneMap.get(plId) || "", 
-      fields, 
-      count 
+    tree.push({
+      id: plId,
+      ten: plTenMap.get(plId) || plId,
+      tone: plToneMap.get(plId) || "",
+      fields,
+      count,
     });
     grandTotal += count;
   }
@@ -275,8 +363,11 @@ export function buildTree(
 }
 
 export function parseCsv(text: string) {
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-  const rows = lines.map(l => l.split(",").map(c => c.trim()));
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const rows = lines.map((l) => l.split(",").map((c) => c.trim()));
   return rows;
 }
 
@@ -310,4 +401,3 @@ export function downloadCsv(content: string, filename: string) {
   link.click();
   document.body.removeChild(link);
 }
-

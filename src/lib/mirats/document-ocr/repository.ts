@@ -1,11 +1,11 @@
 import { supabase } from "../../../integrations/supabase/client";
-import { 
-  TaiLieuOcr, 
-  OcrSourceType, 
+import {
+  TaiLieuOcr,
+  OcrSourceType,
   UpsertTaiLieuOcr,
   OcrStatus,
   OcrStats,
-  UnprocessedPdfItem
+  UnprocessedPdfItem,
 } from "./types";
 
 /**
@@ -29,26 +29,29 @@ export const ocrRepository = {
       throw error;
     }
 
-    return (data as unknown) as TaiLieuOcr;
+    return data as unknown as TaiLieuOcr;
   },
 
   /**
    * Upsert an OCR record (create if not exists, update if exists)
    */
   async upsertOcr(
-    sourceType: OcrSourceType, 
-    sourceId: string, 
-    data: UpsertTaiLieuOcr
+    sourceType: OcrSourceType,
+    sourceId: string,
+    data: UpsertTaiLieuOcr,
   ): Promise<TaiLieuOcr> {
     const { data: result, error } = await supabase
       .from("tai_lieu_ocr")
-      .upsert({
-        source_type: sourceType,
-        source_id: sourceId,
-        ...data,
-      }, {
-        onConflict: "source_type, source_id"
-      })
+      .upsert(
+        {
+          source_type: sourceType,
+          source_id: sourceId,
+          ...data,
+        },
+        {
+          onConflict: "source_type, source_id",
+        },
+      )
       .select("*")
       .single();
 
@@ -57,18 +60,22 @@ export const ocrRepository = {
       throw error;
     }
 
-    return (result as unknown) as TaiLieuOcr;
+    return result as unknown as TaiLieuOcr;
   },
 
   /**
    * Mark OCR as pending/queued
    */
-  async queueOcr(sourceType: OcrSourceType, sourceId: string, fileHash: string): Promise<TaiLieuOcr> {
+  async queueOcr(
+    sourceType: OcrSourceType,
+    sourceId: string,
+    fileHash: string,
+  ): Promise<TaiLieuOcr> {
     return this.upsertOcr(sourceType, sourceId, {
       status: "queued",
       file_hash: fileHash,
       error_code: null,
-      error_message: null
+      error_message: null,
     });
   },
 
@@ -76,16 +83,16 @@ export const ocrRepository = {
    * Update OCR progress
    */
   async updateProgress(
-    sourceType: OcrSourceType, 
-    sourceId: string, 
-    processedPages: number, 
-    status: OcrStatus = "ocr_running"
+    sourceType: OcrSourceType,
+    sourceId: string,
+    processedPages: number,
+    status: OcrStatus = "ocr_running",
   ): Promise<void> {
     const { error } = await supabase
       .from("tai_lieu_ocr")
       .update({
         processed_pages: processedPages,
-        status: status
+        status: status,
       })
       .eq("source_type", sourceType)
       .eq("source_id", sourceId);
@@ -105,7 +112,7 @@ export const ocrRepository = {
 
     if (error) throw error;
   },
-  
+
   /**
    * Find existing successful OCR result by file hash
    */
@@ -122,7 +129,7 @@ export const ocrRepository = {
       console.error("Error finding existing OCR:", error);
       return null;
     }
-    return (data as unknown) as TaiLieuOcr;
+    return data as unknown as TaiLieuOcr;
   },
 
   /**
@@ -142,10 +149,10 @@ export const ocrRepository = {
       failed: 0,
       pending: 0,
       totalPageCount: 0,
-      totalProcessedPages: 0
+      totalProcessedPages: 0,
     };
 
-    data.forEach(row => {
+    data.forEach((row) => {
       if (row.status === "completed") stats.completed++;
       else if (row.status === "partial") stats.partial++;
       else if (row.status === "failed") stats.failed++;
@@ -156,6 +163,5 @@ export const ocrRepository = {
     });
 
     return stats;
-  }
+  },
 };
-

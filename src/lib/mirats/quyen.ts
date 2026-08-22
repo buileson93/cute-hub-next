@@ -46,10 +46,7 @@ const MA_TRAN: Record<Domain, readonly AppRole[]> = {
 };
 
 /** Người dùng có quyền GHI ở miền này không? */
-export function canWrite(
-  domain: Domain,
-  roles: readonly AppRole[] | null | undefined,
-): boolean {
+export function canWrite(domain: Domain, roles: readonly AppRole[] | null | undefined): boolean {
   if (!roles || roles.length === 0) return false;
   const allowed = MA_TRAN[domain];
   return roles.some((r) => allowed.includes(r));

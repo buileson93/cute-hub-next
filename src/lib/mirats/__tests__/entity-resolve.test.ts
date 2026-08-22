@@ -1,11 +1,46 @@
 import { describe, it, expect } from "vitest";
-import { resolveEntity, similarity, levenshtein, type Candidate, type AliasEntry } from "@/lib/mirats/entity-resolve";
+import {
+  resolveEntity,
+  similarity,
+  levenshtein,
+  type Candidate,
+  type AliasEntry,
+} from "@/lib/mirats/entity-resolve";
 
-const dev = (over: Partial<Candidate>): Candidate => ({ id: "id-0", ma: null, ten: null, ma_serial: null, model_id: null, nha_san_xuat_id: null, ...over });
+const dev = (over: Partial<Candidate>): Candidate => ({
+  id: "id-0",
+  ma: null,
+  ten: null,
+  ma_serial: null,
+  model_id: null,
+  nha_san_xuat_id: null,
+  ...over,
+});
 
-const A = dev({ id: "id-A", ma: "TB-001", ten: "Máy tính trạm bờ", ma_serial: "SN-100", model_id: "m1", nha_san_xuat_id: "nsx1" });
-const B = dev({ id: "id-B", ma: "TB-002", ten: "Switch mạng lõi", ma_serial: "SN-200", model_id: "m2", nha_san_xuat_id: "nsx2" });
-const C = dev({ id: "id-C", ma: "TB-003", ten: "Máy tính trạm bờ 2", ma_serial: "SN-300", model_id: "m1", nha_san_xuat_id: "nsx1" });
+const A = dev({
+  id: "id-A",
+  ma: "TB-001",
+  ten: "Máy tính trạm bờ",
+  ma_serial: "SN-100",
+  model_id: "m1",
+  nha_san_xuat_id: "nsx1",
+});
+const B = dev({
+  id: "id-B",
+  ma: "TB-002",
+  ten: "Switch mạng lõi",
+  ma_serial: "SN-200",
+  model_id: "m2",
+  nha_san_xuat_id: "nsx2",
+});
+const C = dev({
+  id: "id-C",
+  ma: "TB-003",
+  ten: "Máy tính trạm bờ 2",
+  ma_serial: "SN-300",
+  model_id: "m1",
+  nha_san_xuat_id: "nsx1",
+});
 const ALL = [A, B, C];
 
 describe("similarity/levenshtein", () => {
@@ -33,7 +68,12 @@ describe("resolveEntity — exact", () => {
   });
 
   it("khớp serial+model+NSX duy nhất → resolved", () => {
-    const r = resolveEntity({ ma_serial: "SN-100", model_id: "m1", nha_san_xuat_id: "nsx1" }, ALL, [], { entity: "thiet_bi" });
+    const r = resolveEntity(
+      { ma_serial: "SN-100", model_id: "m1", nha_san_xuat_id: "nsx1" },
+      ALL,
+      [],
+      { entity: "thiet_bi" },
+    );
     expect(r.decision).toBe("resolved");
     expect(r.kind).toBe("serial_model_mfr");
     expect(r.candidate?.id).toBe("id-A");
@@ -42,7 +82,10 @@ describe("resolveEntity — exact", () => {
 
 describe("resolveEntity — possible duplicate luôn needs_review, không tự merge", () => {
   it("mã trùng ở nhiều bản ghi → needs_review", () => {
-    const dup = [dev({ id: "d1", ma: "TB-DUP", ten: "X" }), dev({ id: "d2", ma: "TB-DUP", ten: "Y" })];
+    const dup = [
+      dev({ id: "d1", ma: "TB-DUP", ten: "X" }),
+      dev({ id: "d2", ma: "TB-DUP", ten: "Y" }),
+    ];
     const r = resolveEntity({ ma: "TB-DUP" }, dup, [], { entity: "thiet_bi" });
     expect(r.decision).toBe("needs_review");
     expect(r.candidates).toHaveLength(2);
@@ -58,7 +101,9 @@ describe("resolveEntity — possible duplicate luôn needs_review, không tự m
 
 describe("resolveEntity — alias", () => {
   it("alias đã xác nhận → resolved trỏ bản ghi chuẩn", () => {
-    const aliases: AliasEntry[] = [{ alias: "may tram bo", canonical_id: "id-A", entity: "thiet_bi", scope: null }];
+    const aliases: AliasEntry[] = [
+      { alias: "may tram bo", canonical_id: "id-A", entity: "thiet_bi", scope: null },
+    ];
     const r = resolveEntity({ ten: "Máy trạm bờ" }, ALL, aliases, { entity: "thiet_bi" });
     expect(r.decision).toBe("resolved");
     expect(r.kind).toBe("alias");
@@ -66,7 +111,9 @@ describe("resolveEntity — alias", () => {
   });
 
   it("alias khác entity → bỏ qua", () => {
-    const aliases: AliasEntry[] = [{ alias: "may tram bo", canonical_id: "id-A", entity: "dm_he_thong", scope: null }];
+    const aliases: AliasEntry[] = [
+      { alias: "may tram bo", canonical_id: "id-A", entity: "dm_he_thong", scope: null },
+    ];
     const r = resolveEntity({ ten: "Máy trạm bờ" }, ALL, aliases, { entity: "thiet_bi" });
     expect(r.kind).not.toBe("alias");
   });
@@ -82,14 +129,21 @@ describe("resolveEntity — tên gần giống & low-confidence", () => {
   });
 
   it("nhiều tên gần giống → needs_review, candidate=null (nhiều ứng viên)", () => {
-    const r = resolveEntity({ ten: "Máy tính trạm bờ" }, ALL, [], { entity: "thiet_bi", nearThreshold: 0.7 });
+    const r = resolveEntity({ ten: "Máy tính trạm bờ" }, ALL, [], {
+      entity: "thiet_bi",
+      nearThreshold: 0.7,
+    });
     expect(r.decision).toBe("needs_review");
     expect(r.candidates.length).toBeGreaterThanOrEqual(2);
     expect(r.candidate).toBeNull();
   });
 
   it("độ tin cậy thấp → needs_review", () => {
-    const r = resolveEntity({ ten: "May tinh tram" }, ALL, [], { entity: "thiet_bi", nearThreshold: 0.95, lowThreshold: 0.4 });
+    const r = resolveEntity({ ten: "May tinh tram" }, ALL, [], {
+      entity: "thiet_bi",
+      nearThreshold: 0.95,
+      lowThreshold: 0.4,
+    });
     expect(r.decision).toBe("needs_review");
     expect(r.kind).toBe("low_confidence");
   });
@@ -97,7 +151,10 @@ describe("resolveEntity — tên gần giống & low-confidence", () => {
 
 describe("resolveEntity — không tự tạo danh mục quan trọng từ typo", () => {
   it("guard + không ứng viên → needs_review (không create)", () => {
-    const r = resolveEntity({ ten: "Nhóm hoàn toàn mới" }, [], [], { entity: "dm_nhom_he_thong", guard: true });
+    const r = resolveEntity({ ten: "Nhóm hoàn toàn mới" }, [], [], {
+      entity: "dm_nhom_he_thong",
+      guard: true,
+    });
     expect(r.decision).toBe("needs_review");
     expect(r.kind).toBe("none");
   });
@@ -109,7 +166,10 @@ describe("resolveEntity — không tự tạo danh mục quan trọng từ typo"
 
   it("guard + có typo gần giống → needs_review (không tự tạo)", () => {
     const cats = [dev({ id: "g1", ten: "Nhóm định vị" })];
-    const r = resolveEntity({ ten: "Nhom dinh vi" }, cats, [], { entity: "dm_nhom_he_thong", guard: true });
+    const r = resolveEntity({ ten: "Nhom dinh vi" }, cats, [], {
+      entity: "dm_nhom_he_thong",
+      guard: true,
+    });
     expect(r.decision).toBe("needs_review");
   });
 });

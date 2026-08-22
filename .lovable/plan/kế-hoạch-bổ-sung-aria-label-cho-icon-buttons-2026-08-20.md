@@ -1,9 +1,11 @@
 # Kế hoạch Bổ sung aria-label cho Icon Buttons
 
 ## Mục tiêu
+
 Bổ sung `aria-label` bằng tiếng Việt cho 30 nút `size="icon"` đầu tiên trong danh sách vi phạm UI để đảm bảo tính truy cập (accessibility). Vì `src/components/ui/button.tsx` đã có logic tự động hiển thị `Tooltip` nếu có `aria-label`, chúng ta không cần thêm `Tooltip` thủ công.
 
 ## Danh sách 30 vị trí đầu tiên
+
 1. `src/routes/_app.admin.bao-tri-chinh-sach.tsx:194` - Sửa: `aria-label="Chỉnh sửa chính sách"`
 2. `src/routes/_app.admin.bao-tri-chinh-sach.tsx:195` - Sửa: `aria-label="Xoá chính sách"`
 3. `src/routes/_app.admin.nhan-vien.tsx:158` - Sửa: `aria-label="Xuất báo cáo cá nhân"`
@@ -36,6 +38,7 @@ Bổ sung `aria-label` bằng tiếng Việt cho 30 nút `size="icon"` đầu ti
 30. `src/routes/_app.he-thong.thanh-phan.tsx:53` - Sửa: `aria-label="Chỉnh sửa nhanh thành phần"`
 
 ## Kế hoạch thực thi
+
 1. Thực hiện `line_replace` cho 30 file/vị trí trên.
 2. Xác nhận bằng `npm run ui:audit` (số vi phạm giảm 30).
 3. Kiểm tra bằng cách hover thủ công vài nút để xác nhận tooltip hiển thị đúng.

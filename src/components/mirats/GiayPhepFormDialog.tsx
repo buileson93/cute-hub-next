@@ -29,7 +29,11 @@ interface Props {
   row: LicenseRow | null;
 }
 
-interface OptionRow { id: string; ma: string | null; ten: string | null; }
+interface OptionRow {
+  id: string;
+  ma: string | null;
+  ten: string | null;
+}
 
 async function fetchOptions(table: "dm_loai_giay_phep" | "dm_noi_cap"): Promise<OptionRow[]> {
   const { data, error } = await supabase
@@ -41,7 +45,9 @@ async function fetchOptions(table: "dm_loai_giay_phep" | "dm_noi_cap"): Promise<
   return (data ?? []) as OptionRow[];
 }
 
-async function fetchThietBiOptions(): Promise<{ id: string; ma_thiet_bi: string; ten_thiet_bi: string | null }[]> {
+async function fetchThietBiOptions(): Promise<
+  { id: string; ma_thiet_bi: string; ten_thiet_bi: string | null }[]
+> {
   const { data, error } = await supabase
     .from("thiet_bi")
     .select("id, ma_thiet_bi, ten_thiet_bi")
@@ -51,7 +57,9 @@ async function fetchThietBiOptions(): Promise<{ id: string; ma_thiet_bi: string;
   return data ?? [];
 }
 
-async function fetchHeThongOptions(): Promise<{ id: string; ma: string | null; ten: string | null }[]> {
+async function fetchHeThongOptions(): Promise<
+  { id: string; ma: string | null; ten: string | null }[]
+> {
   const { data, error } = await supabase
     .from("dm_he_thong")
     .select("id, ma, ten")
@@ -65,7 +73,9 @@ async function fetchHeThongOptions(): Promise<{ id: string; ma: string | null; t
 async function fetchLicenseDetail(rowId: string) {
   const { data, error } = await supabase
     .from("giay_phep")
-    .select("id, ma_giay_phep, thiet_bi_id, loai_giay_phep_id, so_giay_phep, ngay_cap, ngay_het_han, noi_cap_id, file_giay_phep, ghi_chu")
+    .select(
+      "id, ma_giay_phep, thiet_bi_id, loai_giay_phep_id, so_giay_phep, ngay_cap, ngay_het_han, noi_cap_id, file_giay_phep, ghi_chu",
+    )
     .eq("id", rowId)
     .maybeSingle();
   if (error) throw error;
@@ -86,8 +96,16 @@ interface FormState {
 }
 
 const EMPTY: FormState = {
-  maGiayPhep: "", thietBiId: "", heThongId: "", loaiGiayPhepId: "", soGiayPhep: "",
-  ngayCap: "", ngayHetHan: "", noiCapId: "", fileUrl: "", ghiChu: "",
+  maGiayPhep: "",
+  thietBiId: "",
+  heThongId: "",
+  loaiGiayPhepId: "",
+  soGiayPhep: "",
+  ngayCap: "",
+  ngayHetHan: "",
+  noiCapId: "",
+  fileUrl: "",
+  ghiChu: "",
 };
 
 export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
@@ -97,10 +115,28 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
   const [nguon, setNguon] = useState<"giay_phep" | "gpkt">("giay_phep");
   const saveGpkt = useServerFn(saveGpktRecord);
 
-  const loaiOpts = useQuery({ queryKey: ["dm_loai_giay_phep_active"], queryFn: () => fetchOptions("dm_loai_giay_phep"), staleTime: 60_000 });
-  const noiOpts = useQuery({ queryKey: ["dm_noi_cap_active"], queryFn: () => fetchOptions("dm_noi_cap"), staleTime: 60_000 });
-  const tbOpts = useQuery({ queryKey: ["thiet_bi_options"], queryFn: fetchThietBiOptions, staleTime: 60_000, enabled: open });
-  const htOpts = useQuery({ queryKey: ["dm_he_thong_options"], queryFn: fetchHeThongOptions, staleTime: 60_000, enabled: open });
+  const loaiOpts = useQuery({
+    queryKey: ["dm_loai_giay_phep_active"],
+    queryFn: () => fetchOptions("dm_loai_giay_phep"),
+    staleTime: 60_000,
+  });
+  const noiOpts = useQuery({
+    queryKey: ["dm_noi_cap_active"],
+    queryFn: () => fetchOptions("dm_noi_cap"),
+    staleTime: 60_000,
+  });
+  const tbOpts = useQuery({
+    queryKey: ["thiet_bi_options"],
+    queryFn: fetchThietBiOptions,
+    staleTime: 60_000,
+    enabled: open,
+  });
+  const htOpts = useQuery({
+    queryKey: ["dm_he_thong_options"],
+    queryFn: fetchHeThongOptions,
+    staleTime: 60_000,
+    enabled: open,
+  });
 
   const detail = useQuery({
     queryKey: ["giay_phep_detail", row?.rowId],
@@ -110,7 +146,11 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    if (!isEdit) { setForm(EMPTY); setNguon("giay_phep"); return; }
+    if (!isEdit) {
+      setForm(EMPTY);
+      setNguon("giay_phep");
+      return;
+    }
     if (row) setNguon(row.nguon);
     if (!detail.data) return;
     const d = detail.data;
@@ -139,10 +179,20 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
               gp_so: form.soGiayPhep.trim(),
               gp_ngay: form.ngayCap || "",
               gp_han: form.ngayHetHan || "",
-              gp_cu: "", ten_he_thong_theo_gp: "", nam_sx_gp: "", kieu_thiet_bi: "",
-              so_san_xuat: "", noi_san_xuat: "", muc_dich: "", pham_vi: "",
-              ma_dia_chi: "", dia_diem: "", thoi_gian: "", thanh_phan_theo_gp: "",
-              don_vi: "", tram: "",
+              gp_cu: "",
+              ten_he_thong_theo_gp: "",
+              nam_sx_gp: "",
+              kieu_thiet_bi: "",
+              so_san_xuat: "",
+              noi_san_xuat: "",
+              muc_dich: "",
+              pham_vi: "",
+              ma_dia_chi: "",
+              dia_diem: "",
+              thoi_gian: "",
+              thanh_phan_theo_gp: "",
+              don_vi: "",
+              tram: "",
             },
             he_thong_id: form.heThongId,
             file_gpkt: form.fileUrl.trim() || null,
@@ -183,12 +233,22 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
     },
   });
 
-  const tbOptions = useMemo(() =>
-    (tbOpts.data ?? []).map((t) => ({ value: t.id, label: `${t.ma_thiet_bi}${t.ten_thiet_bi ? " — " + t.ten_thiet_bi : ""}` })),
-    [tbOpts.data]);
-  const htOptions = useMemo(() =>
-    (htOpts.data ?? []).map((h) => ({ value: h.id, label: `${h.ma ?? ""}${h.ten ? " — " + h.ten : ""}` })),
-    [htOpts.data]);
+  const tbOptions = useMemo(
+    () =>
+      (tbOpts.data ?? []).map((t) => ({
+        value: t.id,
+        label: `${t.ma_thiet_bi}${t.ten_thiet_bi ? " — " + t.ten_thiet_bi : ""}`,
+      })),
+    [tbOpts.data],
+  );
+  const htOptions = useMemo(
+    () =>
+      (htOpts.data ?? []).map((h) => ({
+        value: h.id,
+        label: `${h.ma ?? ""}${h.ten ? " — " + h.ten : ""}`,
+      })),
+    [htOpts.data],
+  );
 
   const disabled = isEdit && row?.nguon === "gpkt";
 
@@ -207,7 +267,6 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
       className="max-w-2xl"
     >
       <div className="flex flex-col gap-6 h-full">
-
         {disabled ? (
           <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
             Đóng dialog và cập nhật từ template Excel All-in-one hoặc trang chi tiết hệ thống.
@@ -218,10 +277,20 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
               <div className="sm:col-span-2">
                 <Field label="Gán cho *">
                   <div className="flex gap-2">
-                    <Button type="button" size="sm" variant={nguon === "giay_phep" ? "default" : "outline"} onClick={() => setNguon("giay_phep")}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={nguon === "giay_phep" ? "default" : "outline"}
+                      onClick={() => setNguon("giay_phep")}
+                    >
                       Tài sản (thiết bị)
                     </Button>
-                    <Button type="button" size="sm" variant={nguon === "gpkt" ? "default" : "outline"} onClick={() => setNguon("gpkt")}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={nguon === "gpkt" ? "default" : "outline"}
+                      onClick={() => setNguon("gpkt")}
+                    >
                       GPKT — Hệ thống
                     </Button>
                   </div>
@@ -230,18 +299,22 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
             )}
             {nguon === "giay_phep" ? (
               <>
-            <Field label="Mã giấy phép *">
-              <Input value={form.maGiayPhep} onChange={(e) => setForm({ ...form, maGiayPhep: e.target.value })} placeholder="GP_XXXXXX" />
-            </Field>
-            <Field label="Tài sản *">
-              <Combobox
-                value={form.thietBiId}
-                onChange={(v) => setForm({ ...form, thietBiId: v })}
-                options={tbOptions}
-                placeholder="Chọn tài sản…"
-                searchPlaceholder="Tìm mã/tên tài sản…"
-              />
-            </Field>
+                <Field label="Mã giấy phép *">
+                  <Input
+                    value={form.maGiayPhep}
+                    onChange={(e) => setForm({ ...form, maGiayPhep: e.target.value })}
+                    placeholder="GP_XXXXXX"
+                  />
+                </Field>
+                <Field label="Tài sản *">
+                  <Combobox
+                    value={form.thietBiId}
+                    onChange={(v) => setForm({ ...form, thietBiId: v })}
+                    options={tbOptions}
+                    placeholder="Chọn tài sản…"
+                    searchPlaceholder="Tìm mã/tên tài sản…"
+                  />
+                </Field>
               </>
             ) : (
               <div className="sm:col-span-2">
@@ -260,40 +333,68 @@ export function GiayPhepFormDialog({ open, onOpenChange, row }: Props) {
               <Combobox
                 value={form.loaiGiayPhepId}
                 onChange={(v) => setForm({ ...form, loaiGiayPhepId: v })}
-                options={(loaiOpts.data ?? []).map((o) => ({ value: o.id, label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}` }))}
+                options={(loaiOpts.data ?? []).map((o) => ({
+                  value: o.id,
+                  label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}`,
+                }))}
                 placeholder="Chọn loại…"
               />
             </Field>
             <Field label={nguon === "gpkt" ? "Số giấy phép *" : "Số giấy phép"}>
-              <Input value={form.soGiayPhep} onChange={(e) => setForm({ ...form, soGiayPhep: e.target.value })} />
+              <Input
+                value={form.soGiayPhep}
+                onChange={(e) => setForm({ ...form, soGiayPhep: e.target.value })}
+              />
             </Field>
             <Field label="Ngày cấp">
-              <Input type="date" value={form.ngayCap} onChange={(e) => setForm({ ...form, ngayCap: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngayCap}
+                onChange={(e) => setForm({ ...form, ngayCap: e.target.value })}
+              />
             </Field>
             <Field label="Ngày hết hạn">
-              <Input type="date" value={form.ngayHetHan} onChange={(e) => setForm({ ...form, ngayHetHan: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngayHetHan}
+                onChange={(e) => setForm({ ...form, ngayHetHan: e.target.value })}
+              />
             </Field>
             <Field label="Nơi cấp">
               <Combobox
                 value={form.noiCapId}
                 onChange={(v) => setForm({ ...form, noiCapId: v })}
-                options={(noiOpts.data ?? []).map((o) => ({ value: o.id, label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}` }))}
+                options={(noiOpts.data ?? []).map((o) => ({
+                  value: o.id,
+                  label: `${o.ma ?? ""}${o.ten ? " — " + o.ten : ""}`,
+                }))}
                 placeholder="Chọn nơi cấp…"
               />
             </Field>
             <Field label="Link file (tuỳ chọn)">
-              <Input value={form.fileUrl} onChange={(e) => setForm({ ...form, fileUrl: e.target.value })} placeholder="https://…" />
+              <Input
+                value={form.fileUrl}
+                onChange={(e) => setForm({ ...form, fileUrl: e.target.value })}
+                placeholder="https://…"
+              />
             </Field>
             <div className="sm:col-span-2">
               <Field label="Ghi chú">
-                <Textarea rows={2} value={form.ghiChu} onChange={(e) => setForm({ ...form, ghiChu: e.target.value })} disabled={nguon === "gpkt"} />
+                <Textarea
+                  rows={2}
+                  value={form.ghiChu}
+                  onChange={(e) => setForm({ ...form, ghiChu: e.target.value })}
+                  disabled={nguon === "gpkt"}
+                />
               </Field>
             </div>
           </div>
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Huỷ
+          </Button>
           <Button onClick={() => save.mutate()} disabled={disabled || save.isPending}>
             {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEdit ? "Lưu thay đổi" : "Tạo giấy phép"}

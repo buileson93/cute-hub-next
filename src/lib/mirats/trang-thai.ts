@@ -11,7 +11,14 @@
 // còn `normalizeLegacy` ánh xạ về code chuẩn khi cần so sánh / phân loại.
 // ============================================================================
 
-export type Domain = "su_co" | "van_de" | "cong_viec" | "hong_hoc" | "ban_giao" | "bao_tri" | "thiet_bi";
+export type Domain =
+  | "su_co"
+  | "van_de"
+  | "cong_viec"
+  | "hong_hoc"
+  | "ban_giao"
+  | "bao_tri"
+  | "thiet_bi";
 
 export type Phase = "open" | "in_progress" | "closed" | "cancelled";
 
@@ -28,105 +35,169 @@ const DEFS: Record<Domain, readonly StatusDef[]> = {
   // SỰ CỐ — DB hiện lưu chuỗi tiếng Việt ("Mới", "Đang xử lý", ...)
   // ------------------------------------------------------------------------
   su_co: [
-    { code: "moi", label: "Mới", phase: "open",
-      aliases: ["Mới", "moi", "MOI", "new"] },
-    { code: "dang_xu_ly", label: "Đang xử lý", phase: "in_progress",
-      aliases: ["Đang xử lý", "dang_xu_ly", "DANG_XU_LY", "in_progress"] },
-    { code: "da_khac_phuc", label: "Đã khắc phục", phase: "closed",
-      aliases: ["Đã khắc phục", "da_khac_phuc", "DA_KHAC_PHUC", "resolved"] },
-    { code: "dong", label: "Đóng", phase: "closed",
-      aliases: ["Đóng", "dong", "DONG", "closed"] },
+    { code: "moi", label: "Mới", phase: "open", aliases: ["Mới", "moi", "MOI", "new"] },
+    {
+      code: "dang_xu_ly",
+      label: "Đang xử lý",
+      phase: "in_progress",
+      aliases: ["Đang xử lý", "dang_xu_ly", "DANG_XU_LY", "in_progress"],
+    },
+    {
+      code: "da_khac_phuc",
+      label: "Đã khắc phục",
+      phase: "closed",
+      aliases: ["Đã khắc phục", "da_khac_phuc", "DA_KHAC_PHUC", "resolved"],
+    },
+    { code: "dong", label: "Đóng", phase: "closed", aliases: ["Đóng", "dong", "DONG", "closed"] },
   ],
 
   // ------------------------------------------------------------------------
   // VẤN ĐỀ (RCA) — DB lưu snake_case ("moi", "dang_phan_tich", ...)
   // ------------------------------------------------------------------------
   van_de: [
-    { code: "moi", label: "Mới", phase: "open",
-      aliases: ["moi", "Mới", "MOI"] },
-    { code: "dang_phan_tich", label: "Đang phân tích", phase: "in_progress",
-      aliases: ["dang_phan_tich", "Đang phân tích"] },
-    { code: "da_xac_dinh", label: "Đã xác định", phase: "in_progress",
-      aliases: ["da_xac_dinh", "Đã xác định"] },
-    { code: "da_khac_phuc", label: "Đã khắc phục", phase: "in_progress",
-      aliases: ["da_khac_phuc", "Đã khắc phục"] },
-    { code: "dong", label: "Đóng", phase: "closed",
-      aliases: ["dong", "Đóng", "closed", "DONG"] },
+    { code: "moi", label: "Mới", phase: "open", aliases: ["moi", "Mới", "MOI"] },
+    {
+      code: "dang_phan_tich",
+      label: "Đang phân tích",
+      phase: "in_progress",
+      aliases: ["dang_phan_tich", "Đang phân tích"],
+    },
+    {
+      code: "da_xac_dinh",
+      label: "Đã xác định",
+      phase: "in_progress",
+      aliases: ["da_xac_dinh", "Đã xác định"],
+    },
+    {
+      code: "da_khac_phuc",
+      label: "Đã khắc phục",
+      phase: "in_progress",
+      aliases: ["da_khac_phuc", "Đã khắc phục"],
+    },
+    { code: "dong", label: "Đóng", phase: "closed", aliases: ["dong", "Đóng", "closed", "DONG"] },
   ],
 
   // ------------------------------------------------------------------------
   // CÔNG VIỆC BẢO DƯỠNG — DB lưu UPPER_SNAKE ("MO", "DANG_LAM", ...)
   // ------------------------------------------------------------------------
   cong_viec: [
-    { code: "mo", label: "Mở", phase: "open",
-      aliases: ["MO", "mo", "Mở", "Mo", "Mới"] },
-    { code: "dang_lam", label: "Đang làm", phase: "in_progress",
-      aliases: ["DANG_LAM", "dang_lam", "Đang làm"] },
-    { code: "hoan_thanh", label: "Hoàn thành", phase: "closed",
-      aliases: ["HOAN_THANH", "hoan_thanh", "Hoàn thành"] },
-    { code: "huy", label: "Hủy", phase: "cancelled",
-      aliases: ["HUY", "huy", "Hủy", "Huỷ"] },
+    { code: "mo", label: "Mở", phase: "open", aliases: ["MO", "mo", "Mở", "Mo", "Mới"] },
+    {
+      code: "dang_lam",
+      label: "Đang làm",
+      phase: "in_progress",
+      aliases: ["DANG_LAM", "dang_lam", "Đang làm"],
+    },
+    {
+      code: "hoan_thanh",
+      label: "Hoàn thành",
+      phase: "closed",
+      aliases: ["HOAN_THANH", "hoan_thanh", "Hoàn thành"],
+    },
+    { code: "huy", label: "Hủy", phase: "cancelled", aliases: ["HUY", "huy", "Hủy", "Huỷ"] },
   ],
 
   // ------------------------------------------------------------------------
   // HỎNG HÓC / THAY THẾ — DB lưu VN ("Mới", "Đang xử lý", "Hoàn thành")
   // ------------------------------------------------------------------------
   hong_hoc: [
-    { code: "moi", label: "Mới", phase: "open",
-      aliases: ["Mới", "moi"] },
-    { code: "dang_xu_ly", label: "Đang xử lý", phase: "in_progress",
-      aliases: ["Đang xử lý", "dang_xu_ly"] },
-    { code: "hoan_thanh", label: "Hoàn thành", phase: "closed",
-      aliases: ["Hoàn thành", "hoan_thanh", "HOAN_THANH"] },
+    { code: "moi", label: "Mới", phase: "open", aliases: ["Mới", "moi"] },
+    {
+      code: "dang_xu_ly",
+      label: "Đang xử lý",
+      phase: "in_progress",
+      aliases: ["Đang xử lý", "dang_xu_ly"],
+    },
+    {
+      code: "hoan_thanh",
+      label: "Hoàn thành",
+      phase: "closed",
+      aliases: ["Hoàn thành", "hoan_thanh", "HOAN_THANH"],
+    },
   ],
 
   // ------------------------------------------------------------------------
   // BÀN GIAO — DB lưu VN ("Đang mượn", "Đang giữ", "Đã trả")
   // ------------------------------------------------------------------------
   ban_giao: [
-    { code: "dang_muon", label: "Đang mượn", phase: "open",
-      aliases: ["Đang mượn", "dang_muon"] },
-    { code: "dang_giu", label: "Đang giữ", phase: "open",
-      aliases: ["Đang giữ", "dang_giu"] },
-    { code: "da_tra", label: "Đã trả", phase: "closed",
-      aliases: ["Đã trả", "da_tra"] },
+    { code: "dang_muon", label: "Đang mượn", phase: "open", aliases: ["Đang mượn", "dang_muon"] },
+    { code: "dang_giu", label: "Đang giữ", phase: "open", aliases: ["Đang giữ", "dang_giu"] },
+    { code: "da_tra", label: "Đã trả", phase: "closed", aliases: ["Đã trả", "da_tra"] },
   ],
 
   // ------------------------------------------------------------------------
   // BẢO DƯỠNG (phiếu bảo dưỡng) — DB lưu VN ("Kế hoạch", "Đang thực hiện", ...)
   // ------------------------------------------------------------------------
   bao_tri: [
-    { code: "ke_hoach", label: "Kế hoạch", phase: "open",
-      aliases: ["Kế hoạch", "ke_hoach", "KE_HOACH", "planned"] },
-    { code: "dang_thuc_hien", label: "Đang thực hiện", phase: "in_progress",
-      aliases: ["Đang thực hiện", "dang_thuc_hien", "DANG_THUC_HIEN", "in_progress"] },
-    { code: "hoan_thanh", label: "Hoàn thành", phase: "closed",
-      aliases: ["Hoàn thành", "hoan_thanh", "HOAN_THANH", "done"] },
-    { code: "hoan", label: "Hoãn", phase: "cancelled",
-      aliases: ["Hoãn", "hoan", "HOAN", "postponed"] },
+    {
+      code: "ke_hoach",
+      label: "Kế hoạch",
+      phase: "open",
+      aliases: ["Kế hoạch", "ke_hoach", "KE_HOACH", "planned"],
+    },
+    {
+      code: "dang_thuc_hien",
+      label: "Đang thực hiện",
+      phase: "in_progress",
+      aliases: ["Đang thực hiện", "dang_thuc_hien", "DANG_THUC_HIEN", "in_progress"],
+    },
+    {
+      code: "hoan_thanh",
+      label: "Hoàn thành",
+      phase: "closed",
+      aliases: ["Hoàn thành", "hoan_thanh", "HOAN_THANH", "done"],
+    },
+    {
+      code: "hoan",
+      label: "Hoãn",
+      phase: "cancelled",
+      aliases: ["Hoãn", "hoan", "HOAN", "postponed"],
+    },
   ],
 
   // ------------------------------------------------------------------------
   // TÀI SẢN (TRẠNG THÁI KHAI THÁC)
   // ------------------------------------------------------------------------
   thiet_bi: [
-    { code: "dang_su_dung", label: "Đang sử dụng", phase: "closed",
-      aliases: ["Đang sử dụng", "Đang khai thác", "Đang hoạt động", "dang_su_dung", "active"] },
-    { code: "du_phong", label: "Dự phòng", phase: "open",
-      aliases: ["Dự phòng", "du_phong", "standby"] },
-    { code: "dang_sua_chua", label: "Đang sửa chữa", phase: "in_progress",
-      aliases: ["Đang sửa chữa", "dang_sua_chua", "repairing"] },
-    { code: "hong", label: "Hỏng", phase: "in_progress",
-      aliases: ["Hỏng", "hong", "broken"] },
-    { code: "cho_thanh_ly", label: "Chờ thanh lý", phase: "cancelled",
-      aliases: ["Chờ thanh lý", "cho_thanh_ly"] },
-    { code: "da_thanh_ly", label: "Đã thanh lý", phase: "cancelled",
-      aliases: ["Đã thanh lý", "da_thanh_ly", "retired"] },
-    { code: "ngung_hoat_dong", label: "Ngừng hoạt động", phase: "cancelled",
-      aliases: ["Ngừng hoạt động", "ngung_hoat_dong"] },
+    {
+      code: "dang_su_dung",
+      label: "Đang sử dụng",
+      phase: "closed",
+      aliases: ["Đang sử dụng", "Đang khai thác", "Đang hoạt động", "dang_su_dung", "active"],
+    },
+    {
+      code: "du_phong",
+      label: "Dự phòng",
+      phase: "open",
+      aliases: ["Dự phòng", "du_phong", "standby"],
+    },
+    {
+      code: "dang_sua_chua",
+      label: "Đang sửa chữa",
+      phase: "in_progress",
+      aliases: ["Đang sửa chữa", "dang_sua_chua", "repairing"],
+    },
+    { code: "hong", label: "Hỏng", phase: "in_progress", aliases: ["Hỏng", "hong", "broken"] },
+    {
+      code: "cho_thanh_ly",
+      label: "Chờ thanh lý",
+      phase: "cancelled",
+      aliases: ["Chờ thanh lý", "cho_thanh_ly"],
+    },
+    {
+      code: "da_thanh_ly",
+      label: "Đã thanh lý",
+      phase: "cancelled",
+      aliases: ["Đã thanh lý", "da_thanh_ly", "retired"],
+    },
+    {
+      code: "ngung_hoat_dong",
+      label: "Ngừng hoạt động",
+      phase: "cancelled",
+      aliases: ["Ngừng hoạt động", "ngung_hoat_dong"],
+    },
   ],
 };
-
 
 /** Trả về danh sách trạng thái đã định nghĩa cho một domain. */
 export function statuses(d: Domain): StatusDef[] {

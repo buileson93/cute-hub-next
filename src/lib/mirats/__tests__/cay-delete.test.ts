@@ -39,7 +39,10 @@ describe("xoaThietBiAnToan — an toàn dữ liệu", () => {
         return Promise.resolve({ data: { da_xoa: [], bo_qua: ["TB_HIST"] }, error: null });
       }
       if (fn === "ngung_khai_thac_thiet_bi") {
-        return Promise.resolve({ data: { so_thiet_bi: 1, trang_thai: "Ngừng khai thác" }, error: null });
+        return Promise.resolve({
+          data: { so_thiet_bi: 1, trang_thai: "Ngừng khai thác" },
+          error: null,
+        });
       }
       return Promise.resolve({ data: null, error: null });
     });

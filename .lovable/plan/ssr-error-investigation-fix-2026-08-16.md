@@ -25,15 +25,18 @@ The user reported an SSR error after completing Phase 5 (Component Lab). This pl
 ## Implementation Tasks
 
 ### 1. Identify Failing Component
+
 - Use the `admin.ui-kit.tsx` as a testbed. Comment out sections one by one to isolate the failing component.
 - Check `Icon` component specifically, as it often involves complex loading logic.
 
 ### 2. Apply SSR Fixes
+
 - **Global Guards**: Add `if (typeof window === 'undefined') return null;` where appropriate, or move side-effects to `useEffect`.
 - **ClientOnly Wrapper**: Use the existing `<ClientOnly>` component for any leaf components that are strictly browser-dependent.
 - **Deterministic State**: Ensure any state used in the first render is the same on server and client.
 
 ### 3. Verification
+
 - Run `bun run build:dev` to ensure it still compiles.
 - Test the preview at `http://localhost:8080/admin/ui-kit`.
 - Verify no hydration warnings in the console.

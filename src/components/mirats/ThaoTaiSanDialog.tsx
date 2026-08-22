@@ -16,7 +16,8 @@ export interface ThaoTaiSanTarget {
 }
 
 export function ThaoTaiSanDialog({
-  target, onClose,
+  target,
+  onClose,
 }: {
   target: ThaoTaiSanTarget | null;
   onClose: () => void;

@@ -6,8 +6,16 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
-import { compileField, parseCompiledSchema, resolveSubmissionFields } from "@/lib/mirats/form-schema";
-import { renderSubmissionPdf, type PdfInput, type PdfSignatureRow } from "@/lib/mirats/pdf-render.server";
+import {
+  compileField,
+  parseCompiledSchema,
+  resolveSubmissionFields,
+} from "@/lib/mirats/form-schema";
+import {
+  renderSubmissionPdf,
+  type PdfInput,
+  type PdfSignatureRow,
+} from "@/lib/mirats/pdf-render.server";
 import { signSubmission } from "@/lib/form-signing.functions";
 
 const Input = z.object({
@@ -30,25 +38,35 @@ export const exportSubmissionPdf = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => Input.parse(data))
   .handler(async ({ data, context }) => {
     if (data.sign_before_export) {
-      await signSubmission({ data: { submission_id: data.submission_id, signer_role: data.signer_role ?? "phu_trach" } });
+      await signSubmission({
+        data: { submission_id: data.submission_id, signer_role: data.signer_role ?? "phu_trach" },
+      });
     }
 
     const supabase = context.supabase;
 
     const { data: sub, error: subErr } = await supabase
       .from("form_submission")
-      .select("*, template:form_template(id,ten,thiet_bi_mode,require_signature), don_vi:dm_don_vi(ma,ten)")
+      .select(
+        "*, template:form_template(id,ten,thiet_bi_mode,require_signature), don_vi:dm_don_vi(ma,ten)",
+      )
       .eq("id", data.submission_id)
       .maybeSingle();
     if (subErr || !sub) throw new Error("Không tìm thấy biên bản.");
 
     const { data: currentFields } = await supabase
-      .from("form_field").select("*").eq("template_id", sub.template_id).order("position");
+      .from("form_field")
+      .select("*")
+      .eq("template_id", sub.template_id)
+      .order("position");
 
     let versionSchema = null;
     if (sub.template_version_id) {
       const { data: ver } = await supabase
-        .from("form_template_version").select("compiled_schema").eq("id", sub.template_version_id).maybeSingle();
+        .from("form_template_version")
+        .select("compiled_schema")
+        .eq("id", sub.template_version_id)
+        .maybeSingle();
       versionSchema = parseCompiledSchema(ver?.compiled_schema);
     }
     const { fields } = resolveSubmissionFields({
@@ -101,7 +119,9 @@ export const exportSubmissionPdf = createServerFn({ method: "POST" })
         .from("form-pdf")
         .upload(key, pdfBytes, { contentType: "application/pdf", upsert: true });
       stored = !upErr;
-    } catch { /* bucket có thể chưa cấu hình — vẫn trả PDF cho client */ }
+    } catch {
+      /* bucket có thể chưa cấu hình — vẫn trả PDF cho client */
+    }
 
     const base64 = bytesToB64(pdfBytes);
     const fileName = `bien-ban-${sub.template_code}-${sub.id.slice(0, 8)}.pdf`;

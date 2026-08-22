@@ -49,9 +49,7 @@ export function patchPagedCache(
   oldRow: RowLike | null,
   pk: string = "id",
 ): boolean {
-  const queries: Query[] = qc
-    .getQueryCache()
-    .findAll({ queryKey: [keyPrefix] });
+  const queries: Query[] = qc.getQueryCache().findAll({ queryKey: [keyPrefix] });
   if (queries.length === 0) return false;
 
   let touched = 0;

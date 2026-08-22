@@ -4,16 +4,13 @@
 // chuyển thành PDF/Excel. Tách bạch để có thể test không cần I/O.
 // ============================================================================
 
-export type LoaiBaoCao =
-  | "ly_lich_thiet_bi"
-  | "bao_duong_ky"
-  | "sap_het_han";
+export type LoaiBaoCao = "ly_lich_thiet_bi" | "bao_duong_ky" | "sap_het_han";
 
 export interface BaoCaoMeta {
   loai: LoaiBaoCao;
   tieu_de: string;
-  tao_luc: string;      // ISO string
-  ky_bat_dau?: string;  // ISO
+  tao_luc: string; // ISO string
+  ky_bat_dau?: string; // ISO
   ky_ket_thuc?: string; // ISO
   don_vi?: string | null;
   ghi_chu?: string | null;

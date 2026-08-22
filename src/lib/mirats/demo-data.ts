@@ -34,9 +34,24 @@ import hongHocRaw from "@/data/hong_hoc_thay_the.json";
 import banGiaoRaw from "@/data/ban_giao.json";
 import xnkRaw from "@/data/xuat_nhap_kho.json";
 import type {
-  DonVi, NhomHeThong, HeThong, LoaiThietBi, NhaSanXuat, ViTri,
-  NhanVien, ThietBi, SuKienThietBi, GiayPhep, SuCo,
-  BaoTri, BaoTriHangMuc, KeHoachBaoTri, VatTu, HongHocThayThe, BanGiao, XuatNhapKho,
+  DonVi,
+  NhomHeThong,
+  HeThong,
+  LoaiThietBi,
+  NhaSanXuat,
+  ViTri,
+  NhanVien,
+  ThietBi,
+  SuKienThietBi,
+  GiayPhep,
+  SuCo,
+  BaoTri,
+  BaoTriHangMuc,
+  KeHoachBaoTri,
+  VatTu,
+  HongHocThayThe,
+  BanGiao,
+  XuatNhapKho,
 } from "./types";
 
 export const donVi = donViRaw as DonVi[];
@@ -74,17 +89,21 @@ export function xnkByVatTu(ma: string) {
 }
 
 export function banGiaoByThietBi(ma: string) {
-  return banGiao.filter((b) => b.thiet_bi === ma)
+  return banGiao
+    .filter((b) => b.thiet_bi === ma)
     .sort((a, b) => b.ngay_nhan.localeCompare(a.ngay_nhan));
 }
 export function currentHolder(ma: string) {
-  return banGiao
-    .filter((b) => b.thiet_bi === ma && b.trang_thai === "Đang giữ")
-    .sort((a, b) => b.ngay_nhan.localeCompare(a.ngay_nhan))[0] ?? null;
+  return (
+    banGiao
+      .filter((b) => b.thiet_bi === ma && b.trang_thai === "Đang giữ")
+      .sort((a, b) => b.ngay_nhan.localeCompare(a.ngay_nhan))[0] ?? null
+  );
 }
 
 export function hongHocByThietBi(ma: string) {
-  return hongHoc.filter((h) => h.thiet_bi_hong === ma || h.thiet_bi_thay_the === ma)
+  return hongHoc
+    .filter((h) => h.thiet_bi_hong === ma || h.thiet_bi_thay_the === ma)
     .sort((a, b) => b.ngay_hong.localeCompare(a.ngay_hong));
 }
 
@@ -99,7 +118,8 @@ export const suCoMap = new Map(suCo.map((s) => [s.ma_su_co, s]));
 export const baoTriMap = new Map(baoTri.map((b) => [b.ma_bao_tri, b]));
 
 export function baoTriByThietBi(ma: string) {
-  return baoTri.filter((b) => b.thiet_bi === ma)
+  return baoTri
+    .filter((b) => b.thiet_bi === ma)
     .sort((a, b) => b.ngay_bat_dau.localeCompare(a.ngay_bat_dau));
 }
 export function hangMucByBaoTri(ma: string) {
@@ -109,7 +129,8 @@ export function hangMucByBaoTri(ma: string) {
 export { fmtVND } from "./format";
 
 export function suCoByThietBi(ma: string) {
-  return suCo.filter((s) => s.thiet_bi === ma)
+  return suCo
+    .filter((s) => s.thiet_bi === ma)
     .sort((a, b) => b.ngay_phat_hien.localeCompare(a.ngay_phat_hien));
 }
 export function mttrPhut(list: SuCo[]) {
@@ -122,13 +143,15 @@ export function mtbfNgay(list: SuCo[]) {
   const sorted = [...list].sort((a, b) => a.ngay_phat_hien.localeCompare(b.ngay_phat_hien));
   let total = 0;
   for (let i = 1; i < sorted.length; i++) {
-    total += (new Date(sorted[i].ngay_phat_hien).getTime() - new Date(sorted[i-1].ngay_phat_hien).getTime()) / 86400000;
+    total +=
+      (new Date(sorted[i].ngay_phat_hien).getTime() -
+        new Date(sorted[i - 1].ngay_phat_hien).getTime()) /
+      86400000;
   }
   return Math.round(total / (sorted.length - 1));
 }
 /** @deprecated Task 25 — dùng `@/lib/mirats/format#fmtDowntime`. */
 export { fmtDowntime } from "./format";
-
 
 export function giayPhepByThietBi(ma: string) {
   return giayPhep.filter((g) => g.thietBi === ma);
@@ -143,7 +166,8 @@ export function childrenOfThietBi(ma: string) {
   return thietBi.filter((t) => t.thiet_bi_cha === ma);
 }
 export function eventsBySource(ma: string, nguon: string) {
-  return suKien.filter((e) => e.thiet_bi === ma && e.nguon === nguon)
+  return suKien
+    .filter((e) => e.thiet_bi === ma && e.nguon === nguon)
     .sort((a, b) => (b.ngay ?? "").localeCompare(a.ngay ?? ""));
 }
 
@@ -161,7 +185,8 @@ export function phanTramVongDoi(t: ThietBi, today = new Date()) {
 }
 export function soSuCo12Thang(ma: string, today = new Date()) {
   const cutoff = new Date(today.getTime() - 365 * 86400000).toISOString().slice(0, 10);
-  return suKien.filter((e) => e.thiet_bi === ma && e.nguon === "su_co" && (e.ngay ?? "") >= cutoff).length;
+  return suKien.filter((e) => e.thiet_bi === ma && e.nguon === "su_co" && (e.ngay ?? "") >= cutoff)
+    .length;
 }
 export function chiPhiBaoTriLuyKe(ma: string) {
   // Parse "X triệu đồng" from event descriptions
@@ -214,24 +239,54 @@ export function healthDetail(t: ThietBi, today = new Date()): HealthDetail {
   const diemDowntime = Math.max(0, 100 - downtimeH * 2); // 50h → 0
   const diemChiPhi = Math.max(0, 100 - tyLeChiPhi * 2); // 50% → 0
   const diemBaoHanh = conBaoHanh(t, today) ? 100 : 0;
-  const diemTinhTrang = { "Tốt": 100, "Khá": 75, "Trung bình": 50, "Kém": 25 }[t.tinh_trang_ky_thuat] ?? 60;
+  const diemTinhTrang =
+    { Tốt: 100, Khá: 75, "Trung bình": 50, Kém: 25 }[t.tinh_trang_ky_thuat] ?? 60;
 
   let score = Math.round(
-    0.30 * diemTuoi + 0.25 * diemSuCo + 0.15 * diemDowntime +
-    0.15 * diemChiPhi + 0.05 * diemBaoHanh + 0.10 * diemTinhTrang
+    0.3 * diemTuoi +
+      0.25 * diemSuCo +
+      0.15 * diemDowntime +
+      0.15 * diemChiPhi +
+      0.05 * diemBaoHanh +
+      0.1 * diemTinhTrang,
   );
-  if (t.trang_thai === "Chờ thanh lý" || t.trang_thai === "Đã thanh lý") score = Math.min(score, 20);
+  if (t.trang_thai === "Chờ thanh lý" || t.trang_thai === "Đã thanh lý")
+    score = Math.min(score, 20);
   if (t.trang_thai === "Đang sửa chữa") score = Math.max(0, score - 10);
   score = Math.max(0, Math.min(100, score));
 
   let xepLoai: HealthDetail["xepLoai"];
   let khuyenNghi: string;
-  if (score >= 80) { xepLoai = "A"; khuyenNghi = "Tiếp tục sử dụng"; }
-  else if (score >= 60) { xepLoai = "B"; khuyenNghi = "Theo dõi, BT bình thường"; }
-  else if (score >= 40) { xepLoai = "C"; khuyenNghi = "Tăng cường BT, lên kế hoạch thay"; }
-  else { xepLoai = "D"; khuyenNghi = "Ưu tiên thay thế/nâng cấp"; }
+  if (score >= 80) {
+    xepLoai = "A";
+    khuyenNghi = "Tiếp tục sử dụng";
+  } else if (score >= 60) {
+    xepLoai = "B";
+    khuyenNghi = "Theo dõi, BT bình thường";
+  } else if (score >= 40) {
+    xepLoai = "C";
+    khuyenNghi = "Tăng cường BT, lên kế hoạch thay";
+  } else {
+    xepLoai = "D";
+    khuyenNghi = "Ưu tiên thay thế/nâng cấp";
+  }
 
-  return { score, xepLoai, khuyenNghi, diemTuoi, diemSuCo, diemDowntime, diemChiPhi, diemBaoHanh, diemTinhTrang, ptVongDoi, suCo12t, downtime12t: downtimeMin, chiPhiLuyKe, tyLeChiPhi };
+  return {
+    score,
+    xepLoai,
+    khuyenNghi,
+    diemTuoi,
+    diemSuCo,
+    diemDowntime,
+    diemChiPhi,
+    diemBaoHanh,
+    diemTinhTrang,
+    ptVongDoi,
+    suCo12t,
+    downtime12t: downtimeMin,
+    chiPhiLuyKe,
+    tyLeChiPhi,
+  };
 }
 // Predict remaining useful life (years) — simple heuristic from health & lifecycle
 export function tuoiThoConLai(t: ThietBi, today = new Date()) {
@@ -257,4 +312,3 @@ export function licenseStatus(g: GiayPhep, today = new Date()): LicenseStatus {
   if (diff <= 90) return "expiring";
   return "valid";
 }
-

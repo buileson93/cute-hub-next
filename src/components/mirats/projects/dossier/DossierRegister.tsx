@@ -1,17 +1,33 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
-import { 
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  FileText, Plus, Search, FileUp, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Loader2
+import {
+  FileText,
+  Plus,
+  Search,
+  FileUp,
+  Filter,
+  MoreHorizontal,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { 
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Blockquote } from "@/components/ui/blockquote";
 
@@ -29,35 +45,44 @@ interface DocumentRecord {
 
 export function DossierRegister({ project_id }: { project_id: string }) {
   const [search, setSearch] = useState("");
-  
+
   const { data: docs = [], isLoading } = useQuery({
     queryKey: ["dossier-docs", project_id],
     queryFn: async () => {
-      const { data: dossiers } = await supabase.from("project_dossiers").select("id").eq("project_id", project_id);
+      const { data: dossiers } = await supabase
+        .from("project_dossiers")
+        .select("id")
+        .eq("project_id", project_id);
       const dossiersArr = (dossiers || []) as any[];
       if (!dossiersArr.length) return [];
-      
-      const dossierIds = dossiersArr.map(d => d.id);
+
+      const dossierIds = dossiersArr.map((d) => d.id);
       const { data, error } = await supabase
         .from("dossier_documents")
         .select("*")
         .in("dossier_id", dossierIds)
         .order("created_at", { ascending: false });
-      
+
       if (error) throw error;
-      return (data as any || []) as DocumentRecord[];
-    }
+      return ((data as any) || []) as DocumentRecord[];
+    },
   });
 
-  if (isLoading) return <div className="p-8 text-slate-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Đang tải hồ sơ…</div>;
+  if (isLoading)
+    return (
+      <div className="p-8 text-slate-500 flex items-center gap-2">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Đang tải hồ sơ…
+      </div>
+    );
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-          <Input 
-            placeholder="Tìm hồ sơ, trích yếu, số hiệu..." 
+          <Input
+            placeholder="Tìm hồ sơ, trích yếu, số hiệu..."
             className="pl-9 text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -101,17 +126,19 @@ export function DossierRegister({ project_id }: { project_id: string }) {
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="text-[10px] uppercase font-semibold">
-                    {doc.format === 'paper' ? 'Bản giấy' : 'Điện tử'}
+                    {doc.format === "paper" ? "Bản giấy" : "Điện tử"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-xs text-slate-600">
-                  {doc.copy_type === 'original' ? 'Bản gốc' : doc.copy_type === 'copy' ? 'Bản sao' : 'Chứng thực'}
+                  {doc.copy_type === "original"
+                    ? "Bản gốc"
+                    : doc.copy_type === "copy"
+                      ? "Bản sao"
+                      : "Chứng thực"}
                 </TableCell>
-                <TableCell className="text-xs text-slate-600">
-                  {doc.issuing_body}
-                </TableCell>
+                <TableCell className="text-xs text-slate-600">{doc.issuing_body}</TableCell>
                 <TableCell>
-                  {doc.status === 'complete' ? (
+                  {doc.status === "complete" ? (
                     <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium">
                       <CheckCircle2 className="h-3.5 w-3.5" /> Đầy đủ
                     </div>
@@ -145,7 +172,9 @@ export function DossierRegister({ project_id }: { project_id: string }) {
         <div className="flex gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
           <div className="text-[11px] leading-relaxed italic">
-            <strong>Lưu ý:</strong> Sổ đăng ký văn bản/hồ sơ này phục vụ việc đối soát thực tế. Đảm bảo các bản quét (digital) khớp với bản lưu kho (paper) để duy trì tính nhất quán của Dossier dự án.
+            <strong>Lưu ý:</strong> Sổ đăng ký văn bản/hồ sơ này phục vụ việc đối soát thực tế. Đảm
+            bảo các bản quét (digital) khớp với bản lưu kho (paper) để duy trì tính nhất quán của
+            Dossier dự án.
           </div>
         </div>
       </Blockquote>

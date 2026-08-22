@@ -15,7 +15,7 @@ function levenshteinDistance(s1: string, s2: string): number {
       d[i][j] = Math.min(
         d[i - 1][j] + 1, // deletion
         d[i][j - 1] + 1, // insertion
-        d[i - 1][j - 1] + cost // substitution
+        d[i - 1][j - 1] + cost, // substitution
       );
     }
   }
@@ -41,10 +41,10 @@ export function calculateWER(reference: string, hypothesis: string): number {
 
   if (refWords.length === 0) return hypWords.length === 0 ? 0 : 1;
 
-  const distance = levenshteinDistance(refWords.join(' '), hypWords.join(' '));
+  const distance = levenshteinDistance(refWords.join(" "), hypWords.join(" "));
   // Simple approximation for WER using word-level Levenshtein
   // Better implementation would use word tokens
-  return distance / refWords.join(' ').length; // Approximation
+  return distance / refWords.join(" ").length; // Approximation
 }
 
 /**
@@ -74,6 +74,6 @@ export function aggregatePerformance(durations: number[]): PerformanceMetrics {
   return {
     durationMs: total,
     pageCount: durations.length,
-    timePerPage: durations.length > 0 ? total / durations.length : 0
+    timePerPage: durations.length > 0 ? total / durations.length : 0,
   };
 }

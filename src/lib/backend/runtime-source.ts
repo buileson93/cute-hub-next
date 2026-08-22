@@ -31,7 +31,9 @@ export function readBackendOverride(): BackendOverride | null {
 export function writeBackendOverride(v: BackendOverride | null): boolean {
   if (typeof window === "undefined") return false;
   const cu = readBackendOverride();
-  const same = (cu?.url ?? null) === (v?.url ?? null) && (cu?.publishableKey ?? null) === (v?.publishableKey ?? null);
+  const same =
+    (cu?.url ?? null) === (v?.url ?? null) &&
+    (cu?.publishableKey ?? null) === (v?.publishableKey ?? null);
   if (v) window.localStorage.setItem(BACKEND_OVERRIDE_KEY, JSON.stringify(v));
   else window.localStorage.removeItem(BACKEND_OVERRIDE_KEY);
   return !same;
@@ -65,11 +67,17 @@ export async function donCacheNguonCu() {
       await Promise.all(
         (dbs ?? [])
           .map((d: any) => d?.name as string | undefined)
-          .filter((n: string | undefined): n is string => !!n && (n.startsWith("supabase") || n.startsWith("mirats")))
-          .map((n: string) => new Promise((res) => {
-            const req = idb.deleteDatabase(n);
-            req.onsuccess = req.onerror = req.onblocked = () => res(null);
-          })),
+          .filter(
+            (n: string | undefined): n is string =>
+              !!n && (n.startsWith("supabase") || n.startsWith("mirats")),
+          )
+          .map(
+            (n: string) =>
+              new Promise((res) => {
+                const req = idb.deleteDatabase(n);
+                req.onsuccess = req.onerror = req.onblocked = () => res(null);
+              }),
+          ),
       );
     }
   } catch {

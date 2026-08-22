@@ -16,6 +16,7 @@ Từ Lovable UI: nút Publish. Không có CI/CD GitHub (đã cắt tháng 7/26 �
 ## Cron / scheduled jobs
 
 pg_cron trong Supabase:
+
 - `refresh_mv_asset_anomaly()` — `0 */6 * * *`.
 - `canh_bao_het_han` — hằng ngày.
 - Báo cáo Telegram nightly.

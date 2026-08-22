@@ -39,21 +39,44 @@ export function validateR2Config(cfg: R2ConfigInput): R2ValidationIssue[] {
     try {
       url = new URL(endpoint);
     } catch {
-      issues.push({ field: "endpoint", level: "error", message: "Endpoint không phải URL hợp lệ (ví dụ: https://<account_id>.r2.cloudflarestorage.com)." });
+      issues.push({
+        field: "endpoint",
+        level: "error",
+        message:
+          "Endpoint không phải URL hợp lệ (ví dụ: https://<account_id>.r2.cloudflarestorage.com).",
+      });
     }
     if (url) {
       if (url.protocol !== "https:") {
-        issues.push({ field: "endpoint", level: "error", message: "Endpoint phải dùng giao thức https://." });
+        issues.push({
+          field: "endpoint",
+          level: "error",
+          message: "Endpoint phải dùng giao thức https://.",
+        });
       }
       if (url.pathname && url.pathname !== "/") {
-        issues.push({ field: "endpoint", level: "error", message: "Endpoint không được chứa đường dẫn (bỏ phần sau tên miền, tên bucket nhập ở ô riêng)." });
+        issues.push({
+          field: "endpoint",
+          level: "error",
+          message:
+            "Endpoint không được chứa đường dẫn (bỏ phần sau tên miền, tên bucket nhập ở ô riêng).",
+        });
       }
       if (!/r2\.cloudflarestorage\.com$/i.test(url.hostname)) {
-        issues.push({ field: "endpoint", level: "warning", message: "Endpoint không thuộc tên miền r2.cloudflarestorage.com — hãy kiểm tra lại nếu bạn không dùng proxy riêng." });
+        issues.push({
+          field: "endpoint",
+          level: "warning",
+          message:
+            "Endpoint không thuộc tên miền r2.cloudflarestorage.com — hãy kiểm tra lại nếu bạn không dùng proxy riêng.",
+        });
       }
       const m = url.hostname.match(/^([0-9a-f]{32})\.r2\.cloudflarestorage\.com$/i);
       if (m && t(cfg.accountId) && m[1].toLowerCase() !== t(cfg.accountId).toLowerCase()) {
-        issues.push({ field: "accountId", level: "warning", message: "Account ID khác với account trong Endpoint." });
+        issues.push({
+          field: "accountId",
+          level: "warning",
+          message: "Account ID khác với account trong Endpoint.",
+        });
       }
     }
   }
@@ -61,7 +84,11 @@ export function validateR2Config(cfg: R2ConfigInput): R2ValidationIssue[] {
   // Account ID
   const acc = t(cfg.accountId);
   if (acc && !/^[0-9a-f]{32}$/i.test(acc)) {
-    issues.push({ field: "accountId", level: "warning", message: "Account ID thường là 32 ký tự hex." });
+    issues.push({
+      field: "accountId",
+      level: "warning",
+      message: "Account ID thường là 32 ký tự hex.",
+    });
   }
 
   // Bucket
@@ -69,17 +96,30 @@ export function validateR2Config(cfg: R2ConfigInput): R2ValidationIssue[] {
   if (!bucket) {
     issues.push({ field: "bucketName", level, message: "Chưa nhập tên bucket." });
   } else if (!BUCKET_RE.test(bucket)) {
-    issues.push({ field: "bucketName", level: "error", message: "Tên bucket chỉ gồm chữ thường, số, dấu chấm và gạch ngang; dài 3–63 ký tự và không bắt đầu/kết thúc bằng ký tự đặc biệt." });
+    issues.push({
+      field: "bucketName",
+      level: "error",
+      message:
+        "Tên bucket chỉ gồm chữ thường, số, dấu chấm và gạch ngang; dài 3–63 ký tự và không bắt đầu/kết thúc bằng ký tự đặc biệt.",
+    });
   }
 
   // Prefix
   const prefix = t(cfg.keyPrefix);
   if (prefix) {
     if (prefix.startsWith("/")) {
-      issues.push({ field: "keyPrefix", level: "error", message: "Tiền tố không được bắt đầu bằng dấu “/”." });
+      issues.push({
+        field: "keyPrefix",
+        level: "error",
+        message: "Tiền tố không được bắt đầu bằng dấu “/”.",
+      });
     }
     if (!prefix.endsWith("/")) {
-      issues.push({ field: "keyPrefix", level: "warning", message: "Nên kết thúc tiền tố bằng “/” (ví dụ: mirats/)." });
+      issues.push({
+        field: "keyPrefix",
+        level: "warning",
+        message: "Nên kết thúc tiền tố bằng “/” (ví dụ: mirats/).",
+      });
     }
     if (prefix.includes("..")) {
       issues.push({ field: "keyPrefix", level: "error", message: "Tiền tố không được chứa “..”." });
@@ -101,10 +141,18 @@ export function validateR2Config(cfg: R2ConfigInput): R2ValidationIssue[] {
     try {
       const u = new URL(pub);
       if (u.protocol !== "https:") {
-        issues.push({ field: "publicBaseUrl", level: "error", message: "URL công khai phải dùng https://." });
+        issues.push({
+          field: "publicBaseUrl",
+          level: "error",
+          message: "URL công khai phải dùng https://.",
+        });
       }
     } catch {
-      issues.push({ field: "publicBaseUrl", level: "error", message: "URL công khai không hợp lệ." });
+      issues.push({
+        field: "publicBaseUrl",
+        level: "error",
+        message: "URL công khai không hợp lệ.",
+      });
     }
   }
 

@@ -44,14 +44,17 @@ export function hieuLucPhieu(cv: Pick<CongViecBaoTri, "trang_thai" | "ngay_den_h
   cls: string;
   quaHan: boolean;
 } {
-  if (cv.trang_thai === "HOAN_THANH") return { label: "Hoàn thành", cls: "bg-emerald-100 text-emerald-700", quaHan: false };
-  if (cv.trang_thai === "HUY") return { label: "Đã huỷ", cls: "bg-slate-100 text-slate-500", quaHan: false };
+  if (cv.trang_thai === "HOAN_THANH")
+    return { label: "Hoàn thành", cls: "bg-emerald-100 text-emerald-700", quaHan: false };
+  if (cv.trang_thai === "HUY")
+    return { label: "Đã huỷ", cls: "bg-slate-100 text-slate-500", quaHan: false };
   const today = new Date().toISOString().slice(0, 10);
   if (cv.ngay_den_han && cv.ngay_den_han < today) {
     const days = Math.round((Date.now() - new Date(cv.ngay_den_han).getTime()) / 86400000);
     return { label: `Quá hạn ${days} ngày`, cls: "bg-red-100 text-red-700", quaHan: true };
   }
-  if (cv.trang_thai === "DANG_LAM") return { label: "Đang làm", cls: "bg-amber-100 text-amber-700", quaHan: false };
+  if (cv.trang_thai === "DANG_LAM")
+    return { label: "Đang làm", cls: "bg-amber-100 text-amber-700", quaHan: false };
   return { label: "Đang mở", cls: "bg-sky-100 text-sky-700", quaHan: false };
 }
 
@@ -124,7 +127,12 @@ export function useSinhPhieuDinhKy() {
 export function useCapNhatPhieu() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { id: string; trang_thai?: CongViecTrangThai; uu_tien?: CongViecUuTien; ngay_bat_dau?: string | null }) => {
+    mutationFn: async (input: {
+      id: string;
+      trang_thai?: CongViecTrangThai;
+      uu_tien?: CongViecUuTien;
+      ngay_bat_dau?: string | null;
+    }) => {
       const patch: {
         trang_thai?: CongViecTrangThai;
         uu_tien?: CongViecUuTien;
@@ -147,7 +155,11 @@ export function useCapNhatPhieu() {
 export function useHoanThanhPhieu() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { id: string; baoTriId?: string | null; formSubmissionId?: string | null }) => {
+    mutationFn: async (input: {
+      id: string;
+      baoTriId?: string | null;
+      formSubmissionId?: string | null;
+    }) => {
       const { error } = await supabase.rpc("hoan_thanh_cong_viec_bao_tri", {
         _id: input.id,
         _bao_tri_id: input.baoTriId ?? undefined,

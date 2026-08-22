@@ -12,12 +12,7 @@ interface WidgetContainerProps {
   children: React.ReactNode;
 }
 
-export function WidgetContainer({ 
-  config, 
-  isEditing, 
-  onRemove, 
-  children 
-}: WidgetContainerProps) {
+export function WidgetContainer({ config, isEditing, onRemove, children }: WidgetContainerProps) {
   // Map column width (1-12) to Tailwind grid-cols
   const colSpanMap: Record<number, string> = {
     1: "col-span-1",
@@ -35,11 +30,13 @@ export function WidgetContainer({
   };
 
   return (
-    <div className={cn(
-      "group relative transition-all duration-300",
-      colSpanMap[config.w] || "col-span-full",
-      isEditing && "ring-2 ring-primary/20 ring-offset-2 rounded-2xl"
-    )}>
+    <div
+      className={cn(
+        "group relative transition-all duration-300",
+        colSpanMap[config.w] || "col-span-full",
+        isEditing && "ring-2 ring-primary/20 ring-offset-2 rounded-2xl",
+      )}
+    >
       {isEditing && (
         <div className="absolute -top-2 -right-2 z-20 flex gap-1">
           <Button

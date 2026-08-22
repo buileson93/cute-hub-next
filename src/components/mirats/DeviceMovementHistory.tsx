@@ -9,11 +9,22 @@
 // ============================================================================
 import { useMemo, useState } from "react";
 import {
-  History, PackagePlus, PackageMinus, ArrowRightLeft, ArrowRight,
-  Loader2, PackageOpen, Undo2, Search,
+  History,
+  PackagePlus,
+  PackageMinus,
+  ArrowRightLeft,
+  ArrowRight,
+  Loader2,
+  PackageOpen,
+  Undo2,
+  Search,
 } from "lucide-react";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -21,11 +32,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDT, timeAgo } from "@/lib/time";
 import { normalize } from "@/lib/mirats/global-search";
 import {
-  useDeviceMovementHistory, type MovementEvent, type MovementAction,
+  useDeviceMovementHistory,
+  type MovementEvent,
+  type MovementAction,
 } from "@/lib/mirats/device-movement-history";
 import { cn } from "@/lib/utils";
 
-const ACTION_META: Record<MovementAction, { label: string; icon: typeof PackagePlus; tone: string }> = {
+const ACTION_META: Record<
+  MovementAction,
+  { label: string; icon: typeof PackagePlus; tone: string }
+> = {
   gan: { label: "Gán vào hệ thống", icon: PackagePlus, tone: "bg-emerald-100 text-emerald-700" },
   chuyen: { label: "Chuyển hệ thống", icon: ArrowRightLeft, tone: "bg-sky-100 text-sky-700" },
   go: { label: "Gỡ khỏi hệ thống", icon: PackageMinus, tone: "bg-amber-100 text-amber-700" },
@@ -54,7 +70,10 @@ function SystemChip({ label, muted }: { label: string; muted?: boolean }) {
 }
 
 function EventRow({
-  ev, systemName, deviceName, showDevice,
+  ev,
+  systemName,
+  deviceName,
+  showDevice,
 }: {
   ev: MovementEvent;
   systemName: Resolvers["systemName"];
@@ -69,7 +88,12 @@ function EventRow({
   return (
     <div className={cn("rounded-lg border p-3", ev.daHoanTac && "opacity-60")}>
       <div className="flex flex-wrap items-center gap-2">
-        <span className={cn("inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium", meta.tone)}>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium",
+            meta.tone,
+          )}
+        >
           <Icon className="h-3 w-3" /> {meta.label}
         </span>
         {showDevice && deviceName && (
@@ -81,7 +105,9 @@ function EventRow({
           </Badge>
         )}
         {!ev.daApDung && (
-          <Badge variant="outline" className="text-[11px] text-muted-foreground">Chờ duyệt</Badge>
+          <Badge variant="outline" className="text-[11px] text-muted-foreground">
+            Chờ duyệt
+          </Badge>
         )}
       </div>
 
@@ -95,7 +121,9 @@ function EventRow({
       {/* Ai làm, lúc nào */}
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
         <span>👤 {ev.actorName}</span>
-        <span title={formatDT(ev.createdAt)}>🕒 {formatDT(ev.createdAt)} · {timeAgo(ev.createdAt)}</span>
+        <span title={formatDT(ev.createdAt)}>
+          🕒 {formatDT(ev.createdAt)} · {timeAgo(ev.createdAt)}
+        </span>
       </div>
     </div>
   );
@@ -103,8 +131,14 @@ function EventRow({
 
 /** Timeline gọn cho một tài sản (dùng trong ngăn chi tiết). */
 export function DeviceMovementHistoryList({
-  deviceMa, systemName, className,
-}: { deviceMa: string; systemName: Resolvers["systemName"]; className?: string }) {
+  deviceMa,
+  systemName,
+  className,
+}: {
+  deviceMa: string;
+  systemName: Resolvers["systemName"];
+  className?: string;
+}) {
   const { data, isLoading } = useDeviceMovementHistory(deviceMa);
 
   if (isLoading) {
@@ -116,7 +150,11 @@ export function DeviceMovementHistoryList({
   }
   const events = data ?? [];
   if (events.length === 0) {
-    return <p className="py-4 text-sm text-muted-foreground">Chưa có lịch sử gán / chuyển / gỡ hệ thống.</p>;
+    return (
+      <p className="py-4 text-sm text-muted-foreground">
+        Chưa có lịch sử gán / chuyển / gỡ hệ thống.
+      </p>
+    );
   }
   return (
     <div className={cn("space-y-2", className)}>
@@ -129,7 +167,10 @@ export function DeviceMovementHistoryList({
 
 /** Hộp thoại lịch sử tổng của toàn bộ tài sản. */
 export function DeviceMovementHistoryDialog({
-  open, onOpenChange, systemName, deviceName,
+  open,
+  onOpenChange,
+  systemName,
+  deviceName,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -145,7 +186,9 @@ export function DeviceMovementHistoryDialog({
     if (!nq) return all;
     return all.filter((ev) => {
       const hay = [
-        deviceName(ev.deviceMa), ev.deviceMa, ev.actorName,
+        deviceName(ev.deviceMa),
+        ev.deviceMa,
+        ev.actorName,
         ACTION_META[ev.action].label,
         ev.fromHtId ? systemName(ev.fromHtId) : STANDALONE,
         ev.toHtId ? systemName(ev.toHtId) : STANDALONE,
@@ -162,7 +205,8 @@ export function DeviceMovementHistoryDialog({
             <History className="h-5 w-5 text-primary" /> Lịch sử gán / chuyển / gỡ tài sản
           </DialogTitle>
           <DialogDescription>
-            Ai đã gán, chuyển hoặc gỡ tài sản khỏi hệ thống — kèm thời điểm và trạng thái trước → sau.
+            Ai đã gán, chuyển hoặc gỡ tài sản khỏi hệ thống — kèm thời điểm và trạng thái trước →
+            sau.
           </DialogDescription>
         </DialogHeader>
 

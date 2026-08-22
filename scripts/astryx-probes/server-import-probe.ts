@@ -1,6 +1,6 @@
 /**
  * Astryx Server Import Probe
- * 
+ *
  * This script runs in a Node/Worker-like environment to verify that
  * Astryx components and themes can be imported without triggering
  * ReferenceErrors for browser globals (window, document, etc.) at module scope.
@@ -8,12 +8,12 @@
 
 async function probe() {
   console.log("--- Starting Astryx Server Import Probe ---");
-  
+
   const results = {
     core: false,
     themeNeutral: false,
     themeStone: false,
-    errors: [] as string[]
+    errors: [] as string[],
   };
 
   try {

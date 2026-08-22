@@ -13,7 +13,7 @@ const FILE = join(process.cwd(), "src", "routes", "_app.he-thong.cay.tsx");
 describe("cây hệ thống — không xoá trực tiếp thiet_bi", () => {
   const src = readFileSync(FILE, "utf8");
 
-  it("không gọi supabase.from(\"thiet_bi\").delete()", () => {
+  it('không gọi supabase.from("thiet_bi").delete()', () => {
     // Bắt mọi biến thể khoảng trắng: from("thiet_bi") ... .delete()
     const rx = /from\(\s*["']thiet_bi["']\s*\)\s*\.delete\s*\(/;
     expect(rx.test(src)).toBe(false);

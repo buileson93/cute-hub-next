@@ -30,11 +30,11 @@ nhận thêm `statuses?: ImportPreviewRowStatus[]`. Khi truyền vào:
 
 ## 3. Điểm chạm đã nối `engine.preview()`
 
-| Vị trí | File | Trạng thái |
-|---|---|---|
-| Admin Import Studio (all-in-one) | `src/routes/_app.admin.nhap-lieu.tsx` | ✅ có sẵn |
-| Danh mục nền dùng chung (NCC, Loại TB, Model…) | `src/components/mirats/CatalogTools.tsx` | ✅ GĐ4 |
-| Nhà sản xuất | `src/components/mirats/NhaSanXuatTools.tsx` | ✅ GĐ4 |
+| Vị trí                                         | File                                        | Trạng thái |
+| ---------------------------------------------- | ------------------------------------------- | ---------- |
+| Admin Import Studio (all-in-one)               | `src/routes/_app.admin.nhap-lieu.tsx`       | ✅ có sẵn  |
+| Danh mục nền dùng chung (NCC, Loại TB, Model…) | `src/components/mirats/CatalogTools.tsx`    | ✅ GĐ4     |
+| Nhà sản xuất                                   | `src/components/mirats/NhaSanXuatTools.tsx` | ✅ GĐ4     |
 
 Bật/tắt qua feature flag `importEngineUnified` (xem
 `src/lib/mirats/feature-flags.ts`). Khi tắt: fallback về upsert
@@ -68,4 +68,3 @@ Trong `AllInOneImport`, dải cảnh báo "nhóm nền chưa có" giờ có
 checkbox **"Cho phép tự tạo N nhóm nền còn thiếu khi ghi"** ngay
 trong banner. Bật ô → hệ thống tự chạy lại `checkAll(true)` để badge
 "Danh mục sẽ tạo" cập nhật, không cần bước xác nhận rời.
-

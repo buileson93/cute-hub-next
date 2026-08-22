@@ -41,10 +41,7 @@ async function loadItems(
   );
   const donViMap = new Map<string, string | null>();
   if (tbIds.length > 0) {
-    const { data: tbs } = await supabase
-      .from("thiet_bi")
-      .select("id,don_vi_id")
-      .in("id", tbIds);
+    const { data: tbs } = await supabase.from("thiet_bi").select("id,don_vi_id").in("id", tbIds);
     for (const t of (tbs ?? []) as { id: string; don_vi_id: string | null }[]) {
       donViMap.set(t.id, t.don_vi_id);
     }
@@ -80,7 +77,9 @@ async function loadItems(
   // 2) v_giay_phep: mỗi giấy phép 1 dòng, ref = id giấy phép
   const { data: gp, error: e2 } = await supabase
     .from("v_giay_phep")
-    .select("id,thiet_bi_id,he_thong_id,don_vi_id,so_giay_phep,ten_doi_tuong,ngay_het_han,bi_thay_the")
+    .select(
+      "id,thiet_bi_id,he_thong_id,don_vi_id,so_giay_phep,ten_doi_tuong,ngay_het_han,bi_thay_the",
+    )
     .not("ngay_het_han", "is", null)
     .eq("bi_thay_the", false);
   if (e2) throw e2;

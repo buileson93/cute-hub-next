@@ -7,13 +7,26 @@ import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, FileText, Loader2, Sparkles, CheckCircle2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -28,9 +41,16 @@ import {
   type WeeklyHongHocRow,
   type HeThongCandidate,
 } from "@/lib/mirats/weekly-report-parser";
-import { classifyWeeklyReportFile, classifyTextForWeeklyReport, type DetectResult } from "@/lib/mirats/weekly-report-detector";
+import {
+  classifyWeeklyReportFile,
+  classifyTextForWeeklyReport,
+  type DetectResult,
+} from "@/lib/mirats/weekly-report-detector";
 
-interface Props { trigger?: React.ReactNode; onImported?: () => void }
+interface Props {
+  trigger?: React.ReactNode;
+  onImported?: () => void;
+}
 
 interface IncidentDraft extends WeeklyIncidentRow {
   key: string;
@@ -58,7 +78,12 @@ function genMa(prefix: string, i: number): string {
 }
 
 function ConfidenceBadge({ value }: { value: number }) {
-  if (value >= 0.8) return <Badge variant="default" className="bg-emerald-600">Cao {(value * 100).toFixed(0)}%</Badge>;
+  if (value >= 0.8)
+    return (
+      <Badge variant="default" className="bg-emerald-600">
+        Cao {(value * 100).toFixed(0)}%
+      </Badge>
+    );
   if (value >= 0.6) return <Badge variant="secondary">TB {(value * 100).toFixed(0)}%</Badge>;
   return <Badge variant="destructive">Thấp {(value * 100).toFixed(0)}%</Badge>;
 }
@@ -100,7 +125,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
       if (detect.verdict === "suspect") {
         const ok = window.confirm(
           `File "${file.name}" không chắc là báo cáo tuần sự cố ` +
-          `(score ${Math.round(detect.score * 100)}%): ${detect.reason}.\n\nVẫn tiếp tục phân tích?`
+            `(score ${Math.round(detect.score * 100)}%): ${detect.reason}.\n\nVẫn tiếp tục phân tích?`,
         );
         if (!ok) return;
       }
@@ -110,11 +135,16 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       toast.error(`Không đọc được DOCX: ${msg}. File .doc cũ cần Save As sang .docx trước.`);
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   function runText() {
-    if (!pasteText.trim()) { toast.error("Chưa có nội dung dán"); return; }
+    if (!pasteText.trim()) {
+      toast.error("Chưa có nội dung dán");
+      return;
+    }
     const detect = classifyTextForWeeklyReport(pasteText);
     if (detect.verdict === "reject") {
       toast.error(`Nội dung không phải báo cáo tuần: ${detect.reason}`);
@@ -122,7 +152,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
     }
     if (detect.verdict === "suspect") {
       const ok = window.confirm(
-        `Nội dung dán có vẻ không phải báo cáo tuần (score ${Math.round(detect.score * 100)}%). Vẫn phân tích?`
+        `Nội dung dán có vẻ không phải báo cáo tuần (score ${Math.round(detect.score * 100)}%). Vẫn phân tích?`,
       );
       if (!ok) return;
     }
@@ -130,7 +160,9 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
     try {
       const p = parseWeeklyReportText(pasteText);
       applyParsed(p);
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   function applyParsed(p: WeeklyReportParsed) {
@@ -143,16 +175,24 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
         selected: r.confidence >= 0.6,
         he_thong_id: cands[0]?.score >= 0.4 ? cands[0].id : "",
         candidates: cands,
-        hien_tuong: r.tinh_trang.split(/\.\s|\n/)[0].slice(0, 140) || `Sự cố ${r.he_thong_hint}`.trim(),
+        hien_tuong:
+          r.tinh_trang.split(/\.\s|\n/)[0].slice(0, 140) || `Sự cố ${r.he_thong_hint}`.trim(),
       };
     });
     const hh: HongHocDraft[] = p.hong_hoc.map((r, i) => {
       const cands = fuzzyMatchHeThong("", r.thiet_bi, systems, 5);
-      return { ...r, key: `hh-${i}`, selected: true, he_thong_id: cands[0]?.score >= 0.4 ? cands[0].id : "", candidates: cands };
+      return {
+        ...r,
+        key: `hh-${i}`,
+        selected: true,
+        he_thong_id: cands[0]?.score >= 0.4 ? cands[0].id : "",
+        candidates: cands,
+      };
     });
     setIncidents(inc);
     setHongs(hh);
-    if (inc.length + hh.length === 0) toast.warning("Không phát hiện dòng dữ liệu nào — kiểm tra lại cấu trúc file");
+    if (inc.length + hh.length === 0)
+      toast.warning("Không phát hiện dòng dữ liệu nào — kiểm tra lại cấu trúc file");
     else toast.success(`Bóc được ${inc.length} sự cố, ${hh.length} hỏng-tồn`);
   }
 
@@ -195,9 +235,18 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
             thiet_bi: r.thiet_bi || heThongTen || "(chưa xác định)",
             he_thong: heThongTen || null,
             he_thong_id: r.he_thong_id || null,
-            ngay_phat_hien: r.thoi_gian_bat_dau ? new Date(r.thoi_gian_bat_dau).toISOString() : new Date().toISOString(),
+            ngay_phat_hien: r.thoi_gian_bat_dau
+              ? new Date(r.thoi_gian_bat_dau).toISOString()
+              : new Date().toISOString(),
             nguoi_bao_cao: nguoiBc,
-            muc_do: r.phan_loai === "A" ? "Nghiêm trọng" : r.phan_loai === "B" ? "Cao" : r.phan_loai === "C" ? "Trung bình" : "Thấp",
+            muc_do:
+              r.phan_loai === "A"
+                ? "Nghiêm trọng"
+                : r.phan_loai === "B"
+                  ? "Cao"
+                  : r.phan_loai === "C"
+                    ? "Trung bình"
+                    : "Thấp",
             anh_huong_dhb: r.anh_huong_dhb,
             hien_tuong: r.hien_tuong,
             trang_thai: "Mới",
@@ -220,8 +269,12 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
           };
         });
         const { error } = await supabase.from("su_co").insert(rows as never);
-        if (error) { await logImport("failed", `Lỗi tạo sự cố: ${error.message}`); throw new Error(`Lỗi tạo sự cố: ${error.message}`); }
-        created += rows.length; createdInc = rows.length;
+        if (error) {
+          await logImport("failed", `Lỗi tạo sự cố: ${error.message}`);
+          throw new Error(`Lỗi tạo sự cố: ${error.message}`);
+        }
+        created += rows.length;
+        createdInc = rows.length;
       }
 
       // 2) Hỏng-tồn (hong_hoc)
@@ -230,15 +283,21 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
           ma_hong_hoc: genMa("HH", i + 1),
           thiet_bi_hong: r.thiet_bi,
           he_thong_id: r.he_thong_id || null,
-          ngay_hong: r.ngay_hong_iso ? r.ngay_hong_iso.slice(0, 10) : new Date().toISOString().slice(0, 10),
+          ngay_hong: r.ngay_hong_iso
+            ? r.ngay_hong_iso.slice(0, 10)
+            : new Date().toISOString().slice(0, 10),
           mo_ta_hong_hoc: r.tinh_trang,
           don_vi_thuc_hien: r.don_vi_sc || null,
           trang_thai: "Đang xử lý",
           nguoi_thuc_hien: nguoiBc ? [nguoiBc] : [],
         }));
         const { error } = await supabase.from("hong_hoc").insert(rows as never);
-        if (error) { await logImport("failed", `Lỗi tạo hỏng hóc: ${error.message}`); throw new Error(`Lỗi tạo hỏng hóc: ${error.message}`); }
-        created += rows.length; createdHH = rows.length;
+        if (error) {
+          await logImport("failed", `Lỗi tạo hỏng hóc: ${error.message}`);
+          throw new Error(`Lỗi tạo hỏng hóc: ${error.message}`);
+        }
+        created += rows.length;
+        createdHH = rows.length;
       }
 
       await logImport("success");
@@ -249,7 +308,11 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
       qc.invalidateQueries({ queryKey: ["operations_data"] });
       qc.invalidateQueries({ queryKey: ["weekly_report_import"] });
       setOpen(false);
-      setParsed(null); setIncidents([]); setHongs([]); setPasteText(""); setFileMeta(null);
+      setParsed(null);
+      setIncidents([]);
+      setHongs([]);
+      setPasteText("");
+      setFileMeta(null);
       onImported?.();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -273,8 +336,9 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
             <Sparkles className="h-5 w-5 text-primary" /> Nhập báo cáo tuần
           </DialogTitle>
           <DialogDescription>
-            Nhận file <code>.docx</code> hoặc dán nội dung bảng. Parser sẽ bóc tách 2 bảng
-            (sự cố trong tuần + thiết bị đang sửa chữa). Bạn duyệt từng dòng và bấm tạo — không có gì được ghi tự động.
+            Nhận file <code>.docx</code> hoặc dán nội dung bảng. Parser sẽ bóc tách 2 bảng (sự cố
+            trong tuần + thiết bị đang sửa chữa). Bạn duyệt từng dòng và bấm tạo — không có gì được
+            ghi tự động.
           </DialogDescription>
         </DialogHeader>
 
@@ -285,23 +349,42 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
               <TabsTrigger value="paste">Dán nội dung</TabsTrigger>
             </TabsList>
             <TabsContent value="file" className="space-y-3 pt-4">
-              <input ref={fileRef} type="file" accept=".docx" className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) void runFile(f); }} />
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".docx"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void runFile(f);
+                }}
+              />
               <div className="border-2 border-dashed rounded-lg p-8 text-center">
                 <Upload className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-3">Chọn file báo cáo tuần định dạng <code>.docx</code></p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Chọn file báo cáo tuần định dạng <code>.docx</code>
+                </p>
                 <Button onClick={() => fileRef.current?.click()} disabled={busy}>
-                  {busy ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                  {busy ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Upload className="h-4 w-4 mr-2" />
+                  )}
                   Chọn file
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3">
-                  File <code>.doc</code> cũ (Word 97-2003) không được hỗ trợ — hãy mở trong Word và <b>Save As → .docx</b>.
+                  File <code>.doc</code> cũ (Word 97-2003) không được hỗ trợ — hãy mở trong Word và{" "}
+                  <b>Save As → .docx</b>.
                 </p>
               </div>
             </TabsContent>
             <TabsContent value="paste" className="space-y-3 pt-4">
-              <Textarea rows={12} placeholder="Dán nội dung bảng từ Word (Ctrl+A → Ctrl+C trong Word rồi dán vào đây)"
-                value={pasteText} onChange={(e) => setPasteText(e.target.value)} />
+              <Textarea
+                rows={12}
+                placeholder="Dán nội dung bảng từ Word (Ctrl+A → Ctrl+C trong Word rồi dán vào đây)"
+                value={pasteText}
+                onChange={(e) => setPasteText(e.target.value)}
+              />
               <Button onClick={runText} disabled={busy || !pasteText.trim()}>
                 {busy ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Phân tích
               </Button>
@@ -319,10 +402,18 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground pt-0 grid grid-cols-2 md:grid-cols-4 gap-2">
-                <div>Số VB: <b>{parsed.header.so_van_ban || "—"}</b></div>
-                <div>Ngày ký: <b>{parsed.header.ngay_ky || "—"}</b></div>
-                <div>Từ: <b>{parsed.header.tuan_tu_ngay || "—"}</b></div>
-                <div>Đến: <b>{parsed.header.tuan_den_ngay || "—"}</b></div>
+                <div>
+                  Số VB: <b>{parsed.header.so_van_ban || "—"}</b>
+                </div>
+                <div>
+                  Ngày ký: <b>{parsed.header.ngay_ky || "—"}</b>
+                </div>
+                <div>
+                  Từ: <b>{parsed.header.tuan_tu_ngay || "—"}</b>
+                </div>
+                <div>
+                  Đến: <b>{parsed.header.tuan_den_ngay || "—"}</b>
+                </div>
               </CardContent>
             </Card>
 
@@ -335,46 +426,98 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
               <TabsContent value="inc" className="flex-1 overflow-hidden">
                 <ScrollArea className="h-[45vh] pr-2">
                   <div className="space-y-2">
-                    {incidents.length === 0 && <p className="text-sm text-muted-foreground p-4 text-center">Không có sự cố trong bảng 1.</p>}
+                    {incidents.length === 0 && (
+                      <p className="text-sm text-muted-foreground p-4 text-center">
+                        Không có sự cố trong bảng 1.
+                      </p>
+                    )}
                     {incidents.map((r, i) => (
                       <Card key={r.key} className={r.selected ? "border-primary/40" : "opacity-70"}>
                         <CardContent className="p-3 space-y-2">
                           <div className="flex items-start gap-2">
-                            <Checkbox checked={r.selected} onCheckedChange={(v) => setIncidents((cur) => cur.map((x, j) => j === i ? { ...x, selected: !!v } : x))} />
+                            <Checkbox
+                              checked={r.selected}
+                              onCheckedChange={(v) =>
+                                setIncidents((cur) =>
+                                  cur.map((x, j) => (j === i ? { ...x, selected: !!v } : x)),
+                                )
+                              }
+                            />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <b className="text-sm">{r.thiet_bi || <span className="text-destructive">(chưa có tên thiết bị)</span>}</b>
+                                <b className="text-sm">
+                                  {r.thiet_bi || (
+                                    <span className="text-destructive">(chưa có tên thiết bị)</span>
+                                  )}
+                                </b>
                                 <Badge variant="outline">Nhóm {r.nhom || "?"}</Badge>
-                                {r.he_thong_hint && <Badge variant="secondary">{r.he_thong_hint}</Badge>}
+                                {r.he_thong_hint && (
+                                  <Badge variant="secondary">{r.he_thong_hint}</Badge>
+                                )}
                                 <ConfidenceBadge value={r.confidence} />
                                 <Badge variant="outline">PL {r.phan_loai}</Badge>
                               </div>
-                              <p className="text-xs text-muted-foreground mt-1">{r.tinh_trang || "(chưa có tình trạng)"}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {r.tinh_trang || "(chưa có tình trạng)"}
+                              </p>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
                                 <div>
-                                  <label className="text-[11px] text-muted-foreground">Hệ thống trong DB</label>
-                                  <Select value={r.he_thong_id} onValueChange={(v) => setIncidents((cur) => cur.map((x, j) => j === i ? { ...x, he_thong_id: v } : x))}>
-                                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="— chưa gán —" /></SelectTrigger>
+                                  <label className="text-[11px] text-muted-foreground">
+                                    Hệ thống trong DB
+                                  </label>
+                                  <Select
+                                    value={r.he_thong_id}
+                                    onValueChange={(v) =>
+                                      setIncidents((cur) =>
+                                        cur.map((x, j) => (j === i ? { ...x, he_thong_id: v } : x)),
+                                      )
+                                    }
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue placeholder="— chưa gán —" />
+                                    </SelectTrigger>
                                     <SelectContent>
                                       {r.candidates.map((c) => (
                                         <SelectItem key={c.id} value={c.id}>
-                                          {c.ten} <span className="text-muted-foreground">({(c.score * 100).toFixed(0)}%)</span>
+                                          {c.ten}{" "}
+                                          <span className="text-muted-foreground">
+                                            ({(c.score * 100).toFixed(0)}%)
+                                          </span>
                                         </SelectItem>
                                       ))}
-                                      {systems.filter((s) => !r.candidates.some((c) => c.id === s.id)).slice(0, 30).map((s) => (
-                                        <SelectItem key={s.id} value={s.id}>{s.ten}</SelectItem>
-                                      ))}
+                                      {systems
+                                        .filter((s) => !r.candidates.some((c) => c.id === s.id))
+                                        .slice(0, 30)
+                                        .map((s) => (
+                                          <SelectItem key={s.id} value={s.id}>
+                                            {s.ten}
+                                          </SelectItem>
+                                        ))}
                                     </SelectContent>
                                   </Select>
                                 </div>
                                 <div className="md:col-span-2">
-                                  <label className="text-[11px] text-muted-foreground">Hiện tượng (tiêu đề)</label>
-                                  <Input className="h-8 text-xs" value={r.hien_tuong}
-                                    onChange={(e) => setIncidents((cur) => cur.map((x, j) => j === i ? { ...x, hien_tuong: e.target.value } : x))} />
+                                  <label className="text-[11px] text-muted-foreground">
+                                    Hiện tượng (tiêu đề)
+                                  </label>
+                                  <Input
+                                    className="h-8 text-xs"
+                                    value={r.hien_tuong}
+                                    onChange={(e) =>
+                                      setIncidents((cur) =>
+                                        cur.map((x, j) =>
+                                          j === i ? { ...x, hien_tuong: e.target.value } : x,
+                                        ),
+                                      )
+                                    }
+                                  />
                                 </div>
                               </div>
                               <div className="text-[11px] text-muted-foreground mt-1 flex gap-3">
-                                <span>⏱ {r.thoi_diem_raw || "—"} {r.thoi_gian_bat_dau && `→ ${r.thoi_gian_bat_dau}`}</span>
+                                <span>
+                                  ⏱ {r.thoi_diem_raw || "—"}{" "}
+                                  {r.thoi_gian_bat_dau && `→ ${r.thoi_gian_bat_dau}`}
+                                </span>
                                 <span>📍 {r.vi_tri || "—"}</span>
                               </div>
                             </div>
@@ -389,11 +532,22 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
               <TabsContent value="hh" className="flex-1 overflow-hidden">
                 <ScrollArea className="h-[45vh] pr-2">
                   <div className="space-y-2">
-                    {hongs.length === 0 && <p className="text-sm text-muted-foreground p-4 text-center">Không có bảng 2.</p>}
+                    {hongs.length === 0 && (
+                      <p className="text-sm text-muted-foreground p-4 text-center">
+                        Không có bảng 2.
+                      </p>
+                    )}
                     {hongs.map((r, i) => (
                       <Card key={r.key} className={r.selected ? "border-primary/40" : "opacity-70"}>
                         <CardContent className="p-3 flex items-start gap-2">
-                          <Checkbox checked={r.selected} onCheckedChange={(v) => setHongs((cur) => cur.map((x, j) => j === i ? { ...x, selected: !!v } : x))} />
+                          <Checkbox
+                            checked={r.selected}
+                            onCheckedChange={(v) =>
+                              setHongs((cur) =>
+                                cur.map((x, j) => (j === i ? { ...x, selected: !!v } : x)),
+                              )
+                            }
+                          />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <b className="text-sm">{r.thiet_bi}</b>
@@ -401,19 +555,39 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                               <Badge variant="secondary">{r.tinh_trang || "—"}</Badge>
                             </div>
                             <div className="text-[11px] text-muted-foreground mt-1">
-                              Ngày hỏng: {r.ngay_hong_raw || "—"} {r.ngay_hong_iso && `→ ${r.ngay_hong_iso.slice(0, 10)}`} · SC: {r.don_vi_sc || "—"} · Ghi chú: {r.ghi_chu || "—"}
+                              Ngày hỏng: {r.ngay_hong_raw || "—"}{" "}
+                              {r.ngay_hong_iso && `→ ${r.ngay_hong_iso.slice(0, 10)}`} · SC:{" "}
+                              {r.don_vi_sc || "—"} · Ghi chú: {r.ghi_chu || "—"}
                             </div>
                             <div className="mt-2">
-                              <label className="text-[11px] text-muted-foreground">Hệ thống trong DB</label>
-                              <Select value={r.he_thong_id} onValueChange={(v) => setHongs((cur) => cur.map((x, j) => j === i ? { ...x, he_thong_id: v } : x))}>
-                                <SelectTrigger className="h-8 text-xs w-full md:w-96"><SelectValue placeholder="— chưa gán —" /></SelectTrigger>
+                              <label className="text-[11px] text-muted-foreground">
+                                Hệ thống trong DB
+                              </label>
+                              <Select
+                                value={r.he_thong_id}
+                                onValueChange={(v) =>
+                                  setHongs((cur) =>
+                                    cur.map((x, j) => (j === i ? { ...x, he_thong_id: v } : x)),
+                                  )
+                                }
+                              >
+                                <SelectTrigger className="h-8 text-xs w-full md:w-96">
+                                  <SelectValue placeholder="— chưa gán —" />
+                                </SelectTrigger>
                                 <SelectContent>
                                   {r.candidates.map((c) => (
-                                    <SelectItem key={c.id} value={c.id}>{c.ten} ({(c.score * 100).toFixed(0)}%)</SelectItem>
+                                    <SelectItem key={c.id} value={c.id}>
+                                      {c.ten} ({(c.score * 100).toFixed(0)}%)
+                                    </SelectItem>
                                   ))}
-                                  {systems.filter((s) => !r.candidates.some((c) => c.id === s.id)).slice(0, 30).map((s) => (
-                                    <SelectItem key={s.id} value={s.id}>{s.ten}</SelectItem>
-                                  ))}
+                                  {systems
+                                    .filter((s) => !r.candidates.some((c) => c.id === s.id))
+                                    .slice(0, 30)
+                                    .map((s) => (
+                                      <SelectItem key={s.id} value={s.id}>
+                                        {s.ten}
+                                      </SelectItem>
+                                    ))}
                                 </SelectContent>
                               </Select>
                             </div>
@@ -429,11 +603,24 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
             <div className="flex items-center justify-between gap-2 pt-2 border-t">
               <div className="text-xs text-muted-foreground flex items-center gap-1">
                 <AlertTriangle className="h-3 w-3" />
-                Sẽ tạo <b>{nChosenInc}</b> sự cố + <b>{nChosenHH}</b> hỏng-tồn dưới dạng bản nháp (trạng thái "Mới"/"Đang xử lý").
+                Sẽ tạo <b>{nChosenInc}</b> sự cố + <b>{nChosenHH}</b> hỏng-tồn dưới dạng bản nháp
+                (trạng thái "Mới"/"Đang xử lý").
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => { setParsed(null); setIncidents([]); setHongs([]); }}>Nhập lại</Button>
-                <Button disabled={createBatch.isPending || (nChosenInc + nChosenHH === 0)} onClick={() => createBatch.mutate()}>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setParsed(null);
+                    setIncidents([]);
+                    setHongs([]);
+                  }}
+                >
+                  Nhập lại
+                </Button>
+                <Button
+                  disabled={createBatch.isPending || nChosenInc + nChosenHH === 0}
+                  onClick={() => createBatch.mutate()}
+                >
                   {createBatch.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Tạo {nChosenInc + nChosenHH} bản ghi
                 </Button>

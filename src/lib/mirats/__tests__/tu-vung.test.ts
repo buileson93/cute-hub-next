@@ -14,8 +14,14 @@ describe("tu-vung: NHAN & KHAI_NIEM", () => {
   it("khái niệm nghiệp vụ có đủ các nhóm chính", () => {
     const keys = Object.keys(KHAI_NIEM);
     for (const k of [
-      "thiet_bi", "thanh_phan", "su_co", "van_de",
-      "cong_viec", "bien_ban", "ban_giao", "giay_phep",
+      "thiet_bi",
+      "thanh_phan",
+      "su_co",
+      "van_de",
+      "cong_viec",
+      "bien_ban",
+      "ban_giao",
+      "giay_phep",
     ]) {
       expect(keys).toContain(k);
     }

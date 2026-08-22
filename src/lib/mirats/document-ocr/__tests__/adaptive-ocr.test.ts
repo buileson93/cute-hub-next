@@ -10,13 +10,13 @@ describe("AdaptiveOcrSelector", () => {
     selector = new AdaptiveOcrSelector();
     deviceProfiler.setTierOverride(null);
     // Ensure rollout stage allows Tesseract for tests
-    vi.spyOn(ocrConfig, 'rolloutStage', 'get').mockReturnValue(3);
-    
+    vi.spyOn(ocrConfig, "rolloutStage", "get").mockReturnValue(3);
+
     // Explicitly mock isSupported for providers to avoid environment-specific failures in tests
-    const registryModule = await import('../provider-registry');
+    const registryModule = await import("../provider-registry");
     const providers = registryModule.ocrProviderRegistry.getAllProviders();
-    providers.forEach(p => {
-      vi.spyOn(p, 'isSupported').mockResolvedValue(true);
+    providers.forEach((p) => {
+      vi.spyOn(p, "isSupported").mockResolvedValue(true);
     });
   });
 

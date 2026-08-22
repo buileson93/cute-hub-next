@@ -25,7 +25,7 @@ describe("UI_DENSITY", () => {
     expect(UI_DENSITY.SECTION_GAP).toContain("md:data-[density=comfortable]:gap-4");
     expect(UI_DENSITY.CARD_PADDING).toContain("data-[density=comfortable]:p-5");
   });
-  
+
   it("đảm bảo đích chạm mobile tối thiểu 44px (h-11) cho các control", () => {
     // h-11 = 2.75rem = 44px
     expect(UI_DENSITY.CONTROL_H).toContain("h-11");

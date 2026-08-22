@@ -12,16 +12,17 @@ Chuẩn hoá luồng xử lý sự cố (`su_co`) và hỏng hóc (`hong_hoc`) t
 
 Enum `su_co_trang_thai` (chuỗi ổn định, không đổi giá trị đã dùng):
 
-| # | Mã | Nhãn | Ý nghĩa |
-|---|---|---|---|
-| 1 | `bao_cao`      | Đã báo cáo         | Người dùng vừa tạo báo cáo; chưa có ai tiếp nhận. |
-| 2 | `tiep_nhan`    | Đã tiếp nhận       | Có `nguoi_tiep_nhan`; **mốc SLA phản hồi** kết thúc ở đây. |
-| 3 | `dang_xu_ly`   | Đang xử lý         | Đội kỹ thuật bắt đầu can thiệp tại chỗ; **downtime bắt đầu**. |
-| 4 | `cho_vat_tu`   | Chờ vật tư (tạm dừng) | Chờ linh kiện/giấy phép; **downtime vẫn tính**, nhưng "thời gian tay-nghề" tạm dừng. |
-| 5 | `hoan_thanh`   | Hoàn thành xử lý   | Kỹ thuật kết thúc thao tác; **downtime kết thúc**; chờ nghiệm thu. |
-| 6 | `nghiem_thu`   | Đã nghiệm thu      | Trưởng đơn vị / phong_kt xác nhận đóng hồ sơ. Trạng thái **kết thúc** (terminal). |
+| #   | Mã           | Nhãn                  | Ý nghĩa                                                                              |
+| --- | ------------ | --------------------- | ------------------------------------------------------------------------------------ |
+| 1   | `bao_cao`    | Đã báo cáo            | Người dùng vừa tạo báo cáo; chưa có ai tiếp nhận.                                    |
+| 2   | `tiep_nhan`  | Đã tiếp nhận          | Có `nguoi_tiep_nhan`; **mốc SLA phản hồi** kết thúc ở đây.                           |
+| 3   | `dang_xu_ly` | Đang xử lý            | Đội kỹ thuật bắt đầu can thiệp tại chỗ; **downtime bắt đầu**.                        |
+| 4   | `cho_vat_tu` | Chờ vật tư (tạm dừng) | Chờ linh kiện/giấy phép; **downtime vẫn tính**, nhưng "thời gian tay-nghề" tạm dừng. |
+| 5   | `hoan_thanh` | Hoàn thành xử lý      | Kỹ thuật kết thúc thao tác; **downtime kết thúc**; chờ nghiệm thu.                   |
+| 6   | `nghiem_thu` | Đã nghiệm thu         | Trưởng đơn vị / phong_kt xác nhận đóng hồ sơ. Trạng thái **kết thúc** (terminal).    |
 
 Trạng thái phụ (không nằm trong hành trình chính, xử lý riêng):
+
 - `huy`: huỷ toàn bộ (báo nhầm). Chỉ chuyển từ `bao_cao` hoặc `tiep_nhan`. Terminal.
 - `mo_lai`: **không** là trạng thái riêng — thực hiện bằng cách chuyển `nghiem_thu → dang_xu_ly` với ghi chú `mo_lai=true` trong `su_co_lich_su.meta`.
 
@@ -40,6 +41,7 @@ huy          → (terminal, không đi tiếp)
 ```
 
 **Chặn nhảy cóc tuyệt đối**:
+
 - `bao_cao → dang_xu_ly` ❌ (phải qua `tiep_nhan`)
 - `bao_cao → hoan_thanh` ❌
 - `tiep_nhan → hoan_thanh` ❌ (phải qua `dang_xu_ly`)
@@ -47,6 +49,7 @@ huy          → (terminal, không đi tiếp)
 - Trở về cùng trạng thái ❌ (`from === to`).
 
 Ràng buộc vai trò (RLS + guard app):
+
 - `tiep_nhan`, `dang_xu_ly`, `cho_vat_tu`, `hoan_thanh`: `phong_kt` hoặc `admin`.
 - `nghiem_thu`: `truong_don_vi` của `don_vi_id` sở hữu, hoặc `admin`. Không được self-approve (người tiếp nhận ≠ người nghiệm thu).
 - `huy`: người báo cáo (trong 24h) hoặc `admin`.
@@ -56,22 +59,23 @@ Ràng buộc vai trò (RLS + guard app):
 
 Thêm cột (nullable, backfill bằng `ngay_phat_hien` / `created_at` cho dữ liệu cũ):
 
-| Cột | Kiểu | Ý nghĩa |
-|---|---|---|
-| `trang_thai`           | `text` (đã có) — chuẩn hoá về enum trên; migration đưa giá trị cũ về `bao_cao` nếu không map được | |
-| `nguoi_bao_cao_id`     | `uuid` | user tạo báo cáo (`auth.uid()` tại thời điểm insert) |
-| `nguoi_tiep_nhan_id`   | `uuid` | được set khi vào `tiep_nhan` |
-| `nguoi_xu_ly_chinh_id` | `uuid` | được set/đổi khi vào `dang_xu_ly` |
-| `nguoi_nghiem_thu_id`  | `uuid` | set khi vào `nghiem_thu` |
-| `at_bao_cao`           | `timestamptz` | = `ngay_phat_hien` (đã có với `su_co`) hoặc `created_at` |
-| `at_tiep_nhan`         | `timestamptz` | mốc bắt đầu SLA phản hồi |
-| `at_bat_dau_xu_ly`     | `timestamptz` | **downtime_start** |
-| `at_hoan_thanh`        | `timestamptz` | **downtime_end** = `thoi_diem_khac_phuc` (giữ cột cũ; đồng bộ ở trigger) |
-| `at_nghiem_thu`        | `timestamptz` | đóng hồ sơ |
-| `at_huy`               | `timestamptz` | nếu huỷ |
-| `tong_thoi_gian_cho_vat_tu_phut` | `int` | cộng dồn thời gian ở `cho_vat_tu` (để tách "downtime" và "wrench-time") |
+| Cột                              | Kiểu                                                                                              | Ý nghĩa                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `trang_thai`                     | `text` (đã có) — chuẩn hoá về enum trên; migration đưa giá trị cũ về `bao_cao` nếu không map được |                                                                          |
+| `nguoi_bao_cao_id`               | `uuid`                                                                                            | user tạo báo cáo (`auth.uid()` tại thời điểm insert)                     |
+| `nguoi_tiep_nhan_id`             | `uuid`                                                                                            | được set khi vào `tiep_nhan`                                             |
+| `nguoi_xu_ly_chinh_id`           | `uuid`                                                                                            | được set/đổi khi vào `dang_xu_ly`                                        |
+| `nguoi_nghiem_thu_id`            | `uuid`                                                                                            | set khi vào `nghiem_thu`                                                 |
+| `at_bao_cao`                     | `timestamptz`                                                                                     | = `ngay_phat_hien` (đã có với `su_co`) hoặc `created_at`                 |
+| `at_tiep_nhan`                   | `timestamptz`                                                                                     | mốc bắt đầu SLA phản hồi                                                 |
+| `at_bat_dau_xu_ly`               | `timestamptz`                                                                                     | **downtime_start**                                                       |
+| `at_hoan_thanh`                  | `timestamptz`                                                                                     | **downtime_end** = `thoi_diem_khac_phuc` (giữ cột cũ; đồng bộ ở trigger) |
+| `at_nghiem_thu`                  | `timestamptz`                                                                                     | đóng hồ sơ                                                               |
+| `at_huy`                         | `timestamptz`                                                                                     | nếu huỷ                                                                  |
+| `tong_thoi_gian_cho_vat_tu_phut` | `int`                                                                                             | cộng dồn thời gian ở `cho_vat_tu` (để tách "downtime" và "wrench-time")  |
 
 Ghi chú:
+
 - `hong_hoc.trang_thai` hiện có — mapping giá trị cũ về enum mới trong migration.
 - `su_co.thoi_gian_gian_doan` (đã có) tiếp tục lưu số phút downtime tính từ `at_bat_dau_xu_ly → at_hoan_thanh`; trigger cập nhật.
 
@@ -93,6 +97,7 @@ index  (doi_tuong_bang, doi_tuong_id, at desc)
 ```
 
 RLS:
+
 - `SELECT`: user có quyền xem đối tượng gốc (join theo `don_vi_id` snapshot / `user_scope`).
 - `INSERT`: chỉ qua RPC `su_co_transition()` (security definer); không cho INSERT trực tiếp.
 - `UPDATE`/`DELETE`: chặn (immutable audit trail).
@@ -121,6 +126,7 @@ su_co_transition(
 ```
 
 Ngữ nghĩa (transaction):
+
 1. `SELECT ... FOR UPDATE` bản ghi đích.
 2. Đọc `tu = trang_thai` hiện tại.
 3. Kiểm tra `canTransition(tu, _den)` ở DB (function `su_co_check_transition`) — raise `invalid_transition` nếu sai.
@@ -131,6 +137,7 @@ Ngữ nghĩa (transaction):
 8. Trả về dòng lịch sử vừa tạo.
 
 Guard bổ sung:
+
 - `nghiem_thu`: chặn nếu `nguoi_nghiem_thu_id = nguoi_tiep_nhan_id` (không self-approve).
 - `huy` từ `tiep_nhan`: cho phép cả trong 24h kể từ `at_bao_cao` (người báo cáo) hoặc admin bất cứ lúc nào.
 
@@ -147,8 +154,13 @@ src/lib/mirats/
 
 ```ts
 export type SuCoTrangThai =
-  | 'bao_cao' | 'tiep_nhan' | 'dang_xu_ly'
-  | 'cho_vat_tu' | 'hoan_thanh' | 'nghiem_thu' | 'huy';
+  | "bao_cao"
+  | "tiep_nhan"
+  | "dang_xu_ly"
+  | "cho_vat_tu"
+  | "hoan_thanh"
+  | "nghiem_thu"
+  | "huy";
 
 export const TRANSITIONS: Record<SuCoTrangThai, SuCoTrangThai[]>;
 
@@ -161,11 +173,11 @@ export interface LichSuBuoc {
 }
 
 export interface TimeMetrics {
-  response_time_phut: number | null;   // bao_cao → tiep_nhan
-  repair_time_phut: number | null;     // tiep_nhan → hoan_thanh cuối
-  downtime_phut: number | null;        // Σ (dang_xu_ly → hoan_thanh)
-  wait_parts_phut: number;             // Σ cho_vat_tu
-  wrench_time_phut: number | null;     // downtime - wait_parts
+  response_time_phut: number | null; // bao_cao → tiep_nhan
+  repair_time_phut: number | null; // tiep_nhan → hoan_thanh cuối
+  downtime_phut: number | null; // Σ (dang_xu_ly → hoan_thanh)
+  wait_parts_phut: number; // Σ cho_vat_tu
+  wrench_time_phut: number | null; // downtime - wait_parts
 }
 
 export function computeMetrics(lich_su: LichSuBuoc[]): TimeMetrics;
@@ -198,6 +210,7 @@ Không tạo trang mới — nâng cấp các trang có sẵn:
 6. **Regression**: chạy toàn bộ test hiện có (`canh-bao-het-han`, `expiring`, `kiem-dinh`, `nav-config`, `badges`, `metrics`, v.v.) — phải xanh.
 
 pgTAP (BƯỚC 2, khả năng):
+
 - `su_co_transition` chặn cặp nhảy cóc → SQLSTATE `P0001` `invalid_transition`.
 - RLS `su_co_lich_su`: user ngoài `don_vi` không SELECT được; INSERT trực tiếp bị chặn.
 - Self-approve `nghiem_thu` bị chặn.

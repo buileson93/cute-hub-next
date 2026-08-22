@@ -5,7 +5,11 @@ import { QueryClient } from "@tanstack/react-query";
 import { patchPagedCache } from "../patch-paged-cache";
 import type { PagedResult } from "@/lib/mirats/paged";
 
-interface Row { id: string; name: string; status?: string }
+interface Row {
+  id: string;
+  name: string;
+  status?: string;
+}
 
 function seed(qc: QueryClient, key: readonly unknown[], data: PagedResult<Row>) {
   qc.setQueryData(key, data);
@@ -36,11 +40,19 @@ describe("patchPagedCache", () => {
 
   it("UPDATE: replace đúng dòng theo pk, giữ total", () => {
     seed(qc, KEY, {
-      rows: [{ id: "a", name: "A", status: "old" }, { id: "b", name: "B" }],
+      rows: [
+        { id: "a", name: "A", status: "old" },
+        { id: "b", name: "B" },
+      ],
       total: 2,
     });
-    patchPagedCache(qc, "paged-thiet-bi", "UPDATE",
-      { id: "a", name: "A2", status: "new" }, { id: "a", name: "A" });
+    patchPagedCache(
+      qc,
+      "paged-thiet-bi",
+      "UPDATE",
+      { id: "a", name: "A2", status: "new" },
+      { id: "a", name: "A" },
+    );
     const data = qc.getQueryData<PagedResult<Row>>(KEY)!;
     expect(data.total).toBe(2);
     expect(data.rows[0]).toMatchObject({ id: "a", name: "A2", status: "new" });
@@ -49,16 +61,20 @@ describe("patchPagedCache", () => {
 
   it("UPDATE: merge (không xoá field cũ ngoài payload)", () => {
     seed(qc, KEY, { rows: [{ id: "a", name: "A", status: "keep" }], total: 1 });
-    patchPagedCache(qc, "paged-thiet-bi", "UPDATE",
-      { id: "a", name: "A2" }, { id: "a" });
+    patchPagedCache(qc, "paged-thiet-bi", "UPDATE", { id: "a", name: "A2" }, { id: "a" });
     const data = qc.getQueryData<PagedResult<Row>>(KEY)!;
     expect(data.rows[0]).toEqual({ id: "a", name: "A2", status: "keep" });
   });
 
   it("UPDATE: dòng không có trong trang → không đổi total và không thêm", () => {
     seed(qc, KEY, { rows: [{ id: "a", name: "A" }], total: 50 });
-    patchPagedCache(qc, "paged-thiet-bi", "UPDATE",
-      { id: "z", name: "Z2" }, { id: "z", name: "Z" });
+    patchPagedCache(
+      qc,
+      "paged-thiet-bi",
+      "UPDATE",
+      { id: "z", name: "Z2" },
+      { id: "z", name: "Z" },
+    );
     const data = qc.getQueryData<PagedResult<Row>>(KEY)!;
     expect(data.total).toBe(50);
     expect(data.rows).toHaveLength(1);
@@ -67,7 +83,10 @@ describe("patchPagedCache", () => {
 
   it("DELETE: dòng trong trang → xoá khỏi rows và giảm total", () => {
     seed(qc, KEY, {
-      rows: [{ id: "a", name: "A" }, { id: "b", name: "B" }],
+      rows: [
+        { id: "a", name: "A" },
+        { id: "b", name: "B" },
+      ],
       total: 5,
     });
     patchPagedCache(qc, "paged-thiet-bi", "DELETE", null, { id: "a" });
@@ -108,13 +127,14 @@ describe("patchPagedCache", () => {
     const K1 = ["paged-su-co", { page: 1 }];
     const K2 = ["paged-su-co", { page: 2 }];
     qc.setQueryData<PagedResult<Row>>(K1, {
-      rows: [{ id: "a", name: "A" }], total: 3,
+      rows: [{ id: "a", name: "A" }],
+      total: 3,
     });
     qc.setQueryData<PagedResult<Row>>(K2, {
-      rows: [{ id: "c", name: "C" }], total: 3,
+      rows: [{ id: "c", name: "C" }],
+      total: 3,
     });
-    patchPagedCache(qc, "paged-su-co", "UPDATE",
-      { id: "a", name: "A2" }, { id: "a" });
+    patchPagedCache(qc, "paged-su-co", "UPDATE", { id: "a", name: "A2" }, { id: "a" });
     expect(qc.getQueryData<PagedResult<Row>>(K1)!.rows[0].name).toBe("A2");
     expect(qc.getQueryData<PagedResult<Row>>(K2)!.rows[0].name).toBe("C");
   });
@@ -122,7 +142,10 @@ describe("patchPagedCache", () => {
   it("custom pk khác 'id'", () => {
     const key = ["paged-custom", {}];
     qc.setQueryData(key, {
-      rows: [{ ma: "M1", ten: "X" }, { ma: "M2", ten: "Y" }],
+      rows: [
+        { ma: "M1", ten: "X" },
+        { ma: "M2", ten: "Y" },
+      ],
       total: 2,
     });
     patchPagedCache(qc, "paged-custom", "DELETE", null, { ma: "M1" }, "ma");
@@ -134,8 +157,7 @@ describe("patchPagedCache", () => {
   it("chuỗi INSERT+UPDATE+DELETE giữ total nhất quán", () => {
     seed(qc, KEY, { rows: [{ id: "a", name: "A" }], total: 1 });
     patchPagedCache(qc, "paged-thiet-bi", "INSERT", { id: "b", name: "B" }, null);
-    patchPagedCache(qc, "paged-thiet-bi", "UPDATE",
-      { id: "a", name: "A2" }, { id: "a" });
+    patchPagedCache(qc, "paged-thiet-bi", "UPDATE", { id: "a", name: "A2" }, { id: "a" });
     patchPagedCache(qc, "paged-thiet-bi", "DELETE", null, { id: "a" });
     const data = qc.getQueryData<PagedResult<Row>>(KEY)!;
     expect(data.total).toBe(1);

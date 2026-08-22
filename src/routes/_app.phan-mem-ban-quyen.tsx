@@ -5,7 +5,19 @@
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { KeyRound, Plus, Pencil, Laptop, AlertTriangle, Clock, Wallet, ShieldCheck, PieChart, Info, ExternalLink } from "lucide-react";
+import {
+  KeyRound,
+  Plus,
+  Pencil,
+  Laptop,
+  AlertTriangle,
+  Clock,
+  Wallet,
+  ShieldCheck,
+  PieChart,
+  Info,
+  ExternalLink,
+} from "lucide-react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +30,12 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
-  useBanQuyenList, useBanQuyenTongHop, STATUS_CLASS, STATUS_LABEL, dinhDangTien, type BanQuyenRow,
+  useBanQuyenList,
+  useBanQuyenTongHop,
+  STATUS_CLASS,
+  STATUS_LABEL,
+  dinhDangTien,
+  type BanQuyenRow,
 } from "@/lib/mirats/ban-quyen";
 
 export const Route = createFileRoute("/_app/phan-mem-ban-quyen")({
@@ -31,7 +48,10 @@ export const Route = createFileRoute("/_app/phan-mem-ban-quyen")({
           "Quản lý bản quyền phần mềm: máy tính đang cài những gì, bản quyền đã gán và chưa gán thiết bị.",
       },
       { property: "og:title", content: "Bản quyền phần mềm — MIRATS" },
-      { property: "og:description", content: "Theo dõi seats, hạn bản quyền và cấp phát phần mềm cho tài sản CNTT." },
+      {
+        property: "og:description",
+        content: "Theo dõi seats, hạn bản quyền và cấp phát phần mềm cho tài sản CNTT.",
+      },
     ],
   }),
   component: BanQuyenPage,
@@ -60,7 +80,7 @@ function BanQuyenPage() {
       if (r.status === "expiring") expiring++;
       else if (r.status === "expired") expired++;
       else valid++;
-      
+
       ghe += r.so_ghe ?? 0;
       gheDung += r.gheDaDung;
       chiPhi += r.gia_tri ?? 0;
@@ -94,12 +114,19 @@ function BanQuyenPage() {
             )}
           </div>
           <div className="truncate font-mono text-[10.5px] text-muted-foreground uppercase tracking-tight">
-            {r.ma_ban_quyen}{r.phien_ban ? ` · v${r.phien_ban}` : ""}
+            {r.ma_ban_quyen}
+            {r.phien_ban ? ` · v${r.phien_ban}` : ""}
           </div>
         </div>
       ),
     },
-    { key: "nha_phat_hanh", label: "Nhà phát hành", filter: "cat", hideBelow: "xl", value: (r) => r.nha_phat_hanh ?? "—" },
+    {
+      key: "nha_phat_hanh",
+      label: "Nhà phát hành",
+      filter: "cat",
+      hideBelow: "xl",
+      value: (r) => r.nha_phat_hanh ?? "—",
+    },
     { key: "loai", label: "Loại", filter: "cat", hideBelow: "sm", value: (r) => r.loaiTen ?? "—" },
     {
       key: "ghe",
@@ -110,28 +137,43 @@ function BanQuyenPage() {
       value: (r) => (r.so_ghe == null ? "∞" : `${r.gheDaDung}/${r.so_ghe}`),
       sortValue: (r) => (r.so_ghe == null ? -1 : r.gheDaDung / r.so_ghe),
       cell: (r) => {
-        if (r.so_ghe == null) return <span className="text-xs text-muted-foreground font-mono italic">∞ (Không giới hạn)</span>;
+        if (r.so_ghe == null)
+          return (
+            <span className="text-xs text-muted-foreground font-mono italic">
+              ∞ (Không giới hạn)
+            </span>
+          );
         const pct = Math.round((r.gheDaDung / r.so_ghe) * 100);
         return (
           <div className="w-full max-w-[140px] space-y-1">
             <div className="flex justify-between text-[11px] tabular-nums font-medium">
-              <span>{r.gheDaDung}/{r.so_ghe}</span>
+              <span>
+                {r.gheDaDung}/{r.so_ghe}
+              </span>
               <span className={pct >= 90 ? "text-red-500" : "text-muted-foreground"}>{pct}%</span>
             </div>
-            <Progress 
-              value={pct} 
-              className="h-1.5" 
+            <Progress
+              value={pct}
+              className="h-1.5"
               indicatorClassName={
-                (pct >= 95 ? "bg-red-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500")
+                pct >= 95 ? "bg-red-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500"
               }
             />
             {r.deviceSummary && r.deviceSummary.length > 0 && (
               <div className="flex flex-wrap gap-1 pt-1">
-                {r.deviceSummary.slice(0, 3).map(ma => (
-                  <Badge key={ma} variant="outline" className="text-[9px] px-1 py-0 h-4 font-mono bg-muted/30">{ma}</Badge>
+                {r.deviceSummary.slice(0, 3).map((ma) => (
+                  <Badge
+                    key={ma}
+                    variant="outline"
+                    className="text-[9px] px-1 py-0 h-4 font-mono bg-muted/30"
+                  >
+                    {ma}
+                  </Badge>
                 ))}
                 {r.deviceSummary.length > 3 && (
-                  <span className="text-[9px] text-muted-foreground font-medium">+{r.deviceSummary.length - 3}</span>
+                  <span className="text-[9px] text-muted-foreground font-medium">
+                    +{r.deviceSummary.length - 3}
+                  </span>
                 )}
               </div>
             )}
@@ -147,10 +189,16 @@ function BanQuyenPage() {
       value: (r) => r.ngay_het_han ?? "",
       cell: (r) => (
         <div className="text-xs">
-          <div className={cn(
-            "font-medium",
-            r.status === "expired" ? "text-red-600" : r.status === "expiring" ? "text-amber-600" : "text-foreground"
-          )}>
+          <div
+            className={cn(
+              "font-medium",
+              r.status === "expired"
+                ? "text-red-600"
+                : r.status === "expiring"
+                  ? "text-amber-600"
+                  : "text-foreground",
+            )}
+          >
             {r.ngay_het_han ?? "Vĩnh viễn"}
           </div>
           {r.soNgayConLai !== null && r.soNgayConLai >= 0 && (
@@ -168,7 +216,13 @@ function BanQuyenPage() {
       hideBelow: "sm",
       value: (r) => STATUS_LABEL[r.status],
       cell: (r) => (
-        <Badge variant="secondary" className={cn("px-2 py-0 h-5 text-[10px] font-semibold uppercase tracking-wider", STATUS_CLASS[r.status])}>
+        <Badge
+          variant="secondary"
+          className={cn(
+            "px-2 py-0 h-5 text-[10px] font-semibold uppercase tracking-wider",
+            STATUS_CLASS[r.status],
+          )}
+        >
           {STATUS_LABEL[r.status]}
         </Badge>
       ),
@@ -181,7 +235,9 @@ function BanQuyenPage() {
       hideBelow: "2xl",
       value: (r) => r.gia_tri ?? "",
       sortValue: (r) => r.gia_tri ?? -1,
-      cell: (r) => <span className="tabular-nums text-sm font-medium">{dinhDangTien(r.gia_tri)}</span>,
+      cell: (r) => (
+        <span className="tabular-nums text-sm font-medium">{dinhDangTien(r.gia_tri)}</span>
+      ),
     },
     {
       key: "actions",
@@ -262,32 +318,33 @@ function BanQuyenPage() {
           <div className="space-y-1">
             <div className="text-sm font-bold text-primary">Thông tin hệ thống</div>
             <p className="text-sm leading-relaxed text-muted-foreground/90 font-medium">
-              Hiện nay đã có tính năng để phần mềm bản quyền cấp phát cho máy tính (Laptop/PC) thuộc quyền sử dụng của nhân viên nào. 
-              Bạn có thể gán tài sản cho nhân viên trong danh mục Tài sản, sau đó cấp phát bản quyền cho tài sản đó tại đây hoặc từ Sổ lý lịch tài sản.
+              Hiện nay đã có tính năng để phần mềm bản quyền cấp phát cho máy tính (Laptop/PC) thuộc
+              quyền sử dụng của nhân viên nào. Bạn có thể gán tài sản cho nhân viên trong danh mục
+              Tài sản, sau đó cấp phát bản quyền cho tài sản đó tại đây hoặc từ Sổ lý lịch tài sản.
             </p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4 sm:grid-cols-2">
-        <Kpi 
-          icon={KeyRound} 
-          label="Tổng bản quyền" 
-          value={kpi.total} 
+        <Kpi
+          icon={KeyRound}
+          label="Tổng bản quyền"
+          value={kpi.total}
           description={`${kpi.valid} đang hoạt động`}
           color="primary"
         />
-        <Kpi 
-          icon={Clock} 
-          label="Sắp hết hạn" 
-          value={kpi.expiring} 
+        <Kpi
+          icon={Clock}
+          label="Sắp hết hạn"
+          value={kpi.expiring}
           description="Cần gia hạn trong 60 ngày"
           color="warning"
         />
-        <Kpi 
-          icon={AlertTriangle} 
-          label="Đã quá hạn" 
-          value={kpi.expired} 
+        <Kpi
+          icon={AlertTriangle}
+          label="Đã quá hạn"
+          value={kpi.expired}
           description="Cần xử lý ngay"
           color="destructive"
         />
@@ -305,7 +362,7 @@ function BanQuyenPage() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-muted/20 border-b border-muted/40">
             <div className="space-y-1">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-primary" /> 
+                <ShieldCheck className="h-4 w-4 text-primary" />
                 Chi tiết License
               </CardTitle>
               <CardDescription className="text-[11px]">
@@ -321,7 +378,9 @@ function BanQuyenPage() {
               tableKey="phan_mem_ban_quyen_visual"
               rows={rows}
               getRowId={(r) => r.id}
-              onRowClick={(r) => navigate({ to: "/phan-mem-ban-quyen/$ma", params: { ma: r.ma_ban_quyen } })}
+              onRowClick={(r) =>
+                navigate({ to: "/phan-mem-ban-quyen/$ma", params: { ma: r.ma_ban_quyen } })
+              }
               requireFilterToShow={false}
               emptyContent={
                 <div className="py-20 text-center flex flex-col items-center gap-3">
@@ -329,7 +388,9 @@ function BanQuyenPage() {
                     <KeyRound className="h-6 w-6" />
                   </div>
                   <div className="text-sm text-muted-foreground font-medium">
-                    {isLoading ? "Đang truy xuất dữ liệu bản quyền…" : "Hệ thống chưa ghi nhận bản quyền phần mềm nào"}
+                    {isLoading
+                      ? "Đang truy xuất dữ liệu bản quyền…"
+                      : "Hệ thống chưa ghi nhận bản quyền phần mềm nào"}
                   </div>
                 </div>
               }
@@ -353,49 +414,73 @@ function BanQuyenPage() {
               <div className="relative h-28 w-28">
                 {/* Visual donut representation via CSS */}
                 <svg className="h-full w-full" viewBox="0 0 100 100">
-                  <circle 
-                    className="text-muted/30 stroke-current" 
-                    strokeWidth="10" 
-                    fill="transparent" 
-                    r="40" 
-                    cx="50" 
-                    cy="50" 
+                  <circle
+                    className="text-muted/30 stroke-current"
+                    strokeWidth="10"
+                    fill="transparent"
+                    r="40"
+                    cx="50"
+                    cy="50"
                   />
-                  <circle 
+                  <circle
                     className={cn(
                       "stroke-current transition-all duration-1000 ease-out",
-                      kpi.utilization >= 90 ? "text-red-500" : kpi.utilization >= 70 ? "text-amber-500" : "text-primary"
+                      kpi.utilization >= 90
+                        ? "text-red-500"
+                        : kpi.utilization >= 70
+                          ? "text-amber-500"
+                          : "text-primary",
                     )}
-                    strokeWidth="10" 
-                    strokeDasharray={`${kpi.utilization * 2.51} 251.2`} 
-                    strokeLinecap="round" 
-                    fill="transparent" 
-                    r="40" 
-                    cx="50" 
-                    cy="50" 
-                    transform="rotate(-90 50 50)" 
+                    strokeWidth="10"
+                    strokeDasharray={`${kpi.utilization * 2.51} 251.2`}
+                    strokeLinecap="round"
+                    fill="transparent"
+                    r="40"
+                    cx="50"
+                    cy="50"
+                    transform="rotate(-90 50 50)"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                   <span className="text-2xl font-bold tabular-nums tracking-tighter">
                     {Math.round(kpi.utilization)}%
                   </span>
-                  <span className="text-[9px] font-medium text-muted-foreground uppercase">Tỷ lệ dùng</span>
+                  <span className="text-[9px] font-medium text-muted-foreground uppercase">
+                    Tỷ lệ dùng
+                  </span>
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-[11px] font-semibold flex items-center gap-1.5 justify-center">
-                  <span className="text-primary">{kpi.gheDung}</span> / <span className="text-muted-foreground">{kpi.ghe}</span>
+                  <span className="text-primary">{kpi.gheDung}</span> /{" "}
+                  <span className="text-muted-foreground">{kpi.ghe}</span>
                   <span className="text-muted-foreground font-normal">Ghế đã cấp</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Cảnh báo tài nguyên</div>
-              <UsageItem label="Seats khả dụng" value={kpi.ghe - kpi.gheDung} total={kpi.ghe} color="bg-emerald-500" />
-              <UsageItem label="Licenses quá hạn" value={kpi.expired} total={kpi.total} color="bg-red-500" />
-              <UsageItem label="Sắp hết hạn" value={kpi.expiring} total={kpi.total} color="bg-amber-500" />
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                Cảnh báo tài nguyên
+              </div>
+              <UsageItem
+                label="Seats khả dụng"
+                value={kpi.ghe - kpi.gheDung}
+                total={kpi.ghe}
+                color="bg-emerald-500"
+              />
+              <UsageItem
+                label="Licenses quá hạn"
+                value={kpi.expired}
+                total={kpi.total}
+                color="bg-red-500"
+              />
+              <UsageItem
+                label="Sắp hết hạn"
+                value={kpi.expiring}
+                total={kpi.total}
+                color="bg-amber-500"
+              />
             </div>
 
             <div className="rounded-xl bg-primary/5 p-4 border border-primary/10">
@@ -406,7 +491,8 @@ function BanQuyenPage() {
                 <div className="space-y-1">
                   <div className="text-[11px] font-bold text-primary">Mẹo vận hành</div>
                   <p className="text-[10px] leading-relaxed text-muted-foreground/90 font-medium">
-                    Hãy thu hồi bản quyền (Cap phat {"->"} Thu hoi) khi máy tính bị hỏng hoặc thanh lý để tối ưu hóa chi phí phần mềm.
+                    Hãy thu hồi bản quyền (Cap phat {"->"} Thu hoi) khi máy tính bị hỏng hoặc thanh
+                    lý để tối ưu hóa chi phí phần mềm.
                   </p>
                 </div>
               </div>
@@ -428,7 +514,17 @@ function BanQuyenPage() {
   );
 }
 
-function UsageItem({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+function UsageItem({
+  label,
+  value,
+  total,
+  color,
+}: {
+  label: string;
+  value: number;
+  total: number;
+  color: string;
+}) {
   const pct = total > 0 ? (value / total) * 100 : 0;
   return (
     <div className="space-y-1.5">
@@ -464,21 +560,28 @@ function Kpi({
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow duration-300 group">
       <CardContent className="flex items-center gap-4 p-5">
-        <div className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors group-hover:bg-white dark:group-hover:bg-slate-800",
-          colorMap[color]
-        )}>
+        <div
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors group-hover:bg-white dark:group-hover:bg-slate-800",
+            colorMap[color],
+          )}
+        >
           <Icon className="h-6 w-6 stroke-[2px]" />
         </div>
         <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 mb-0.5">{label}</div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 mb-0.5">
+            {label}
+          </div>
           <div className="text-xl font-black tabular-nums tracking-tight">
             {typeof value === "number" ? value.toLocaleString("vi-VN") : value}
           </div>
-          {description && <div className="text-[10px] font-medium text-muted-foreground/70 truncate">{description}</div>}
+          {description && (
+            <div className="text-[10px] font-medium text-muted-foreground/70 truncate">
+              {description}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 }
-

@@ -3,6 +3,7 @@
 Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow` attribute on `StandardTable` columns, ensuring a mobile-first experience.
 
 ## Target Tables & Files
+
 1. **Bảo trì**: `src/routes/_app.bao-tri.index.tsx`
 2. **Sự cố**: `src/routes/_app.su-co.index.tsx`
 3. **Giấy phép**: `src/components/mirats/tuan-thu/AssetRegistryBook.tsx` (Imported in `_app.giay-phep.tsx`)
@@ -10,9 +11,10 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 5. **Vật tư (Giao dịch)**: `src/components/mirats/vat-tu/StockMovementLog.tsx` (Imported in `_app.vat-tu.tsx`)
 6. **Vật tư (Cảnh báo & Danh mục)**: `src/routes/_app.vat-tu.tsx`
 
-*(Note: The user asked for 5 tables but listed 5 routes. I will apply it to all `StandardTable` instances within these files.)*
+_(Note: The user asked for 5 tables but listed 5 routes. I will apply it to all `StandardTable` instances within these files.)_
 
 ## Column Visibility Convention (BP_PX)
+
 - **Always Visible**: Name (Tên), ID/Code (Mã).
 - **sm (640px)**: Status (Trạng thái).
 - **md (768px)**: Location (Vị trí), Department/Unit (Đơn vị), Hiện tượng.
@@ -23,6 +25,7 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 ## Implementation Steps
 
 ### 1. Bảo trì (`src/routes/_app.bao-tri.index.tsx`)
+
 - `ma_bao_tri`: Always
 - `ngay_bat_dau`: `xl`
 - `thiet_bi`: Always
@@ -32,6 +35,7 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 - `trang_thai`: `sm`
 
 ### 2. Sự cố (`src/routes/_app.su-co.index.tsx`)
+
 - `ma_su_co`: Always
 - `ngay_phat_hien`: `xl`
 - `thiet_bi`: Always
@@ -40,6 +44,7 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 - `trang_thai`: `sm`
 
 ### 3. Giấy phép (`src/components/mirats/tuan-thu/AssetRegistryBook.tsx`)
+
 - `so_gp`: Always
 - `doi_tuong`: Always
 - `loai`: `lg`
@@ -47,6 +52,7 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 - `trang_thai`: `sm`
 
 ### 4. Vật tư (SparePartsTable.tsx)
+
 - `vat_tu`: Always
 - `loai`: `sm`
 - `kho`: `md`
@@ -54,6 +60,7 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 - `dinh_muc`: `lg`
 
 ### 5. Vật tư (StockMovementLog.tsx)
+
 - `so_ct`: Always
 - `ngay`: `xl`
 - `vat_tu`: Always
@@ -62,9 +69,11 @@ Optimize UI responsiveness for 5 critical tables by implementing the `hideBelow`
 - `so_luong`: Always
 
 ### 6. Vật tư (Cảnh báo & Danh mục in `src/routes/_app.vat-tu.tsx`)
+
 - Apply similar conventions to the internal tables in this file.
 
 ## Verification
+
 - Run `npx tsc --noEmit`.
 - Run `npm test`.
 - Verify mobile view (375px) shows max 4 columns.

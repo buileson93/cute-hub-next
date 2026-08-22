@@ -66,7 +66,10 @@ async function loadLicenses(): Promise<LicenseRow[]> {
   const client = supabase as unknown as {
     from: (t: string) => {
       select: (c: string) => {
-        order: (c: string, o: { ascending: boolean; nullsFirst?: boolean }) => Promise<{
+        order: (
+          c: string,
+          o: { ascending: boolean; nullsFirst?: boolean },
+        ) => Promise<{
           data: UnifiedLicense[] | null;
           error: unknown;
         }>;

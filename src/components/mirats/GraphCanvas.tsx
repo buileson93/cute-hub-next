@@ -45,21 +45,21 @@ import {
 import "@xyflow/react/dist/style.css";
 // html-to-image is lazy-loaded on export (GĐ1-06 perf)
 import {
-  Download, ImageDown, Maximize2, Minimize2, Crosshair, Save,
-  RotateCcw, Boxes, Locate,
+  Download,
+  ImageDown,
+  Maximize2,
+  Minimize2,
+  Crosshair,
+  Save,
+  RotateCcw,
+  Boxes,
+  Locate,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  computeLayout,
-  type LayoutKind,
-} from "@/lib/mirats/graph-layout";
-import {
-  highlightNeighbors,
-  chipHslTheoKhoa,
-  type CoreGraph,
-} from "@/lib/mirats/graph-core";
+import { computeLayout, type LayoutKind } from "@/lib/mirats/graph-layout";
+import { highlightNeighbors, chipHslTheoKhoa, type CoreGraph } from "@/lib/mirats/graph-core";
 
 // ---- Custom node ------------------------------------------------------------
 
@@ -98,12 +98,17 @@ function GraphNodeCard({ data }: NodeProps) {
         {d.laCum ? (
           <Boxes className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
         ) : d.chipColor ? (
-          <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: d.chipColor }} />
+          <span
+            className="h-2 w-2 shrink-0 rounded-full"
+            style={{ backgroundColor: d.chipColor }}
+          />
         ) : null}
         <span className="truncate text-sm font-semibold">{d.label}</span>
       </div>
       {d.laCum ? (
-        <div className="truncate text-[10px] text-muted-foreground">{d.soThanhVien ?? 0} hệ thống</div>
+        <div className="truncate text-[10px] text-muted-foreground">
+          {d.soThanhVien ?? 0} hệ thống
+        </div>
       ) : (
         <>
           {d.don_vi && <div className="truncate text-[10px] text-muted-foreground">{d.don_vi}</div>}
@@ -132,15 +137,32 @@ interface GraphEdgeData extends Record<string, unknown> {
 
 function LienKetEdge(props: EdgeProps) {
   const {
-    id, sourceX, sourceY, targetX, targetY,
-    sourcePosition, targetPosition, markerEnd, markerStart, data,
+    id,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    markerEnd,
+    markerStart,
+    data,
   } = props;
   const d = (data ?? {}) as GraphEdgeData;
   const [path] = getBezierPath({
-    sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition,
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
   });
   const stroke = d.impacted ? "hsl(var(--destructive))" : d.color;
-  const width = d.hovered ? Math.max(d.width * 1.9, 3.5) : d.impacted ? Math.max(d.width, 2.5) : d.width;
+  const width = d.hovered
+    ? Math.max(d.width * 1.9, 3.5)
+    : d.impacted
+      ? Math.max(d.width, 2.5)
+      : d.width;
   return (
     <BaseEdge
       id={id}
@@ -169,7 +191,10 @@ const edgeTypes = { lien_ket: LienKetEdge };
 function groupGraph(graph: CoreGraph): CoreGraph {
   const rep = new Map<string, string>();
 
-  const superNodes = new Map<string, CoreGraph["nodes"][number] & { meta?: Record<string, unknown> }>();
+  const superNodes = new Map<
+    string,
+    CoreGraph["nodes"][number] & { meta?: Record<string, unknown> }
+  >();
   const keep = new Map<string, CoreGraph["nodes"][number]>();
   for (const n of graph.nodes) {
     const gk = n.nhom ?? n.don_vi;
@@ -178,7 +203,10 @@ function groupGraph(graph: CoreGraph): CoreGraph {
       rep.set(n.id, sid);
       if (!superNodes.has(sid)) {
         superNodes.set(sid, {
-          id: sid, ten: gk, nhom: gk, don_vi: n.don_vi,
+          id: sid,
+          ten: gk,
+          nhom: gk,
+          don_vi: n.don_vi,
           meta: { la_cum: true, so_thanh_vien: 0 },
         });
       }
@@ -195,10 +223,14 @@ function groupGraph(graph: CoreGraph): CoreGraph {
     if (a === b) continue;
     const key = a < b ? `${a}|${b}` : `${b}|${a}`;
     const ex = merged.get(key);
-    if (ex) { (ex.meta!.trong_so as number) += 1; }
-    else {
+    if (ex) {
+      (ex.meta!.trong_so as number) += 1;
+    } else {
       merged.set(key, {
-        ...e, id: `grp-edge:${key}`, nguon: a, dich: b,
+        ...e,
+        id: `grp-edge:${key}`,
+        nguon: a,
+        dich: b,
         meta: { ...(e.meta ?? {}), trong_so: 1 },
       });
     }
@@ -240,7 +272,10 @@ function Legend({ items }: { items: LegendItem[] }) {
           <li key={it.ma} className="flex items-center gap-2">
             <svg width="26" height="8" aria-hidden>
               <line
-                x1="0" y1="4" x2="26" y2="4"
+                x1="0"
+                y1="4"
+                x2="26"
+                y2="4"
                 stroke={it.mau_sac}
                 strokeWidth="2.5"
                 strokeDasharray={
@@ -380,7 +415,9 @@ function GraphCanvasInner({
           impacted: impactIds?.has(n.id) ?? false,
           dim: !!activeHi && !inHi,
           laCum,
-          soThanhVien: (n.meta as Record<string, unknown> | undefined)?.so_thanh_vien as number | undefined,
+          soThanhVien: (n.meta as Record<string, unknown> | undefined)?.so_thanh_vien as
+            | number
+            | undefined,
         } satisfies GraphNodeData,
       };
     });
@@ -390,15 +427,14 @@ function GraphCanvasInner({
     return graph.edges.map((e) => {
       const color = e.mau_sac ?? "#6b7280";
       const inHi = !activeHi || activeHi.edges.has(e.id);
-      const impacted =
-        (impactIds?.has(e.nguon) ?? false) && (impactIds?.has(e.dich) ?? false);
-      const dash =
-        e.kieu_net === "dashed" ? "6 4" : e.kieu_net === "dotted" ? "2 4" : undefined;
+      const impacted = (impactIds?.has(e.nguon) ?? false) && (impactIds?.has(e.dich) ?? false);
+      const dash = e.kieu_net === "dashed" ? "6 4" : e.kieu_net === "dotted" ? "2 4" : undefined;
       const twoWay = e.hai_chieu ?? e.huong === "hai_chieu";
       const drawStart = e.co_huong === false || (e.co_huong == null && twoWay);
       const trongSo =
         ((e.meta as Record<string, unknown> | undefined)?.trong_so as number | undefined) ??
-        weights.get(e.id) ?? 1;
+        weights.get(e.id) ??
+        1;
       const width = 1.4 + Math.min(Math.log2(trongSo + 1), 3.2) * 0.9;
       return {
         id: e.id,
@@ -572,7 +608,6 @@ function GraphCanvasInner({
     };
   }, [laserOn]);
 
-
   // ---- Lưu / khôi phục khung nhìn ------------------------------------------
   const saveView = useCallback(() => {
     if (!storageKey) return;
@@ -581,7 +616,11 @@ function GraphCanvasInner({
     for (const n of rf.getNodes()) pos[n.id] = { x: n.position.x, y: n.position.y };
     const data: SavedView = { vp, pos };
     savedRef.current = data;
-    try { window.localStorage.setItem(storageKey, JSON.stringify(data)); } catch { /* ignore */ }
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch {
+      /* ignore */
+    }
   }, [rf, storageKey]);
 
   const restoreView = useCallback(() => {
@@ -589,7 +628,9 @@ function GraphCanvasInner({
     if (!saved) return;
     savedRef.current = saved;
     if (saved.pos) {
-      setNodes((ns) => ns.map((n) => (saved.pos![n.id] ? { ...n, position: saved.pos![n.id] } : n)));
+      setNodes((ns) =>
+        ns.map((n) => (saved.pos![n.id] ? { ...n, position: saved.pos![n.id] } : n)),
+      );
     }
     if (saved.vp) rf.setViewport(saved.vp, { duration: 400 });
   }, [rf, storageKey, setNodes]);
@@ -640,7 +681,12 @@ function GraphCanvasInner({
       <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center gap-1 rounded-md border bg-card/95 p-1 shadow-sm backdrop-blur">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="ghost" className={iconBtn} onClick={() => rf.fitView({ duration: 400, padding: 0.2 })}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={iconBtn}
+              onClick={() => rf.fitView({ duration: 400, padding: 0.2 })}
+            >
               <Locate className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
@@ -659,7 +705,9 @@ function GraphCanvasInner({
                 <Boxes className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{grouped ? "Bỏ gom nhóm" : "Gom nhóm theo lớp/hệ thống"}</TooltipContent>
+            <TooltipContent>
+              {grouped ? "Bỏ gom nhóm" : "Gom nhóm theo lớp/hệ thống"}
+            </TooltipContent>
           </Tooltip>
         )}
 
@@ -667,7 +715,13 @@ function GraphCanvasInner({
           <>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="icon" variant="ghost" className={iconBtn} onClick={saveView} aria-label="Lưu">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={iconBtn}
+                  onClick={saveView}
+                  aria-label="Lưu"
+                >
                   <Save className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -675,7 +729,14 @@ function GraphCanvasInner({
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="icon" variant="ghost" className={iconBtn} disabled={!hasSaved} onClick={restoreView} aria-label="Hoàn tác">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={iconBtn}
+                  disabled={!hasSaved}
+                  onClick={restoreView}
+                  aria-label="Hoàn tác"
+                >
                   <RotateCcw className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -690,7 +751,11 @@ function GraphCanvasInner({
               size="icon"
               variant={laserOn ? "default" : "ghost"}
               className={iconBtn}
-              onClick={() => { setLaserOn((v) => !v); laserTrailRef.current = []; laserPosRef.current = null; }}
+              onClick={() => {
+                setLaserOn((v) => !v);
+                laserTrailRef.current = [];
+                laserPosRef.current = null;
+              }}
             >
               <Crosshair className="h-4 w-4" />
             </Button>
@@ -700,7 +765,13 @@ function GraphCanvasInner({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="ghost" className={iconBtn} onClick={toggleFullscreen} aria-label="Thu nhỏ">
+            <Button
+              size="icon"
+              variant="ghost"
+              className={iconBtn}
+              onClick={toggleFullscreen}
+              aria-label="Thu nhỏ"
+            >
               {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
           </TooltipTrigger>
@@ -719,10 +790,20 @@ function GraphCanvasInner({
 
       {showExport && (
         <div className="absolute right-3 top-3 z-10 flex gap-1">
-          <Button size="sm" variant="secondary" className="h-8 gap-1" onClick={() => exportImage("png")}>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 gap-1"
+            onClick={() => exportImage("png")}
+          >
             <ImageDown className="h-3.5 w-3.5" /> PNG
           </Button>
-          <Button size="sm" variant="secondary" className="h-8 gap-1" onClick={() => exportImage("svg")}>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 gap-1"
+            onClick={() => exportImage("svg")}
+          >
             <Download className="h-3.5 w-3.5" /> SVG
           </Button>
         </div>

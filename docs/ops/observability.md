@@ -22,7 +22,12 @@ setUserContext({ id: profile.id, email: profile.email, ho_ten: profile.ho_ten })
 addBreadcrumb({ category: "ui", message: "click submit su co", data: { form: "PL01" } });
 
 // Bắt lỗi thủ công trong try/catch
-try { await goiRpc(); } catch (e) { captureError(e, { rpc: "ghi_su_co" }); throw e; }
+try {
+  await goiRpc();
+} catch (e) {
+  captureError(e, { rpc: "ghi_su_co" });
+  throw e;
+}
 ```
 
 Mỗi báo cáo kèm: user context, tag môi trường, 30 breadcrumb gần nhất, route hiện tại, user-agent. Xem log trong bảng điều khiển Lovable → Errors.
@@ -31,18 +36,18 @@ Mỗi báo cáo kèm: user context, tag môi trường, 30 breadcrumb gần nh�
 
 Bảng `public.audit_log` mở rộng (Task 38):
 
-| Cột            | Ý nghĩa                                                        |
-|----------------|----------------------------------------------------------------|
-| `user_id`      | `auth.uid()` tại thời điểm thay đổi (NULL nếu do trigger nền)  |
-| `action`       | Ví dụ `row_insert`, `row_update`, `row_delete`, hoặc action nghiệp vụ |
-| `entity`       | Tên bảng chịu tác động                                          |
-| `entity_id`    | id / mã của dòng bị tác động                                    |
-| `table_name`   | (mới) Trùng `entity` với trigger tự động                       |
-| `operation`    | (mới) `INSERT` / `UPDATE` / `DELETE`                            |
-| `old_data`     | (mới) `to_jsonb(OLD)` — NULL với INSERT                        |
-| `new_data`     | (mới) `to_jsonb(NEW)` — NULL với DELETE                        |
-| `severity`     | `info` / `warning` / `error`                                    |
-| `created_at`   | Thời điểm ghi log                                               |
+| Cột          | Ý nghĩa                                                               |
+| ------------ | --------------------------------------------------------------------- |
+| `user_id`    | `auth.uid()` tại thời điểm thay đổi (NULL nếu do trigger nền)         |
+| `action`     | Ví dụ `row_insert`, `row_update`, `row_delete`, hoặc action nghiệp vụ |
+| `entity`     | Tên bảng chịu tác động                                                |
+| `entity_id`  | id / mã của dòng bị tác động                                          |
+| `table_name` | (mới) Trùng `entity` với trigger tự động                              |
+| `operation`  | (mới) `INSERT` / `UPDATE` / `DELETE`                                  |
+| `old_data`   | (mới) `to_jsonb(OLD)` — NULL với INSERT                               |
+| `new_data`   | (mới) `to_jsonb(NEW)` — NULL với DELETE                               |
+| `severity`   | `info` / `warning` / `error`                                          |
+| `created_at` | Thời điểm ghi log                                                     |
 
 ### 2.1. Trigger tự động
 
@@ -73,6 +78,7 @@ Không gắn trigger cho bảng ghi log tần suất cao (`feature_usage_log`, `
 - `/admin/audit/lap-thao` — tra cứu chuyên sâu theo bảng + rollback (đã có từ Task audit trước).
 
 Chính sách xem:
+
 - User thường: chỉ thấy nhật ký của chính mình (`audit_self_select`).
 - `admin` + `phong_kt`: xem toàn bộ (`audit_admin_kt_select_all`).
 

@@ -16,9 +16,7 @@ import {
 describe("computeDowntimeMinutes (nguồn thời gian duy nhất)", () => {
   it("tính đúng số phút từ đầu ngày phát hiện đến khắc phục", () => {
     // 2 giờ sau nửa đêm ngày phát hiện = 120 phút
-    expect(
-      computeDowntimeMinutes("2026-07-13", "2026-07-13T02:00:00Z"),
-    ).toBe(120);
+    expect(computeDowntimeMinutes("2026-07-13", "2026-07-13T02:00:00Z")).toBe(120);
   });
 
   it("thiếu một mốc → null (chưa xác định)", () => {
@@ -28,15 +26,11 @@ describe("computeDowntimeMinutes (nguồn thời gian duy nhất)", () => {
   });
 
   it("khôi phục trước phát hiện → không trả số âm (kẹp về 0)", () => {
-    expect(
-      computeDowntimeMinutes("2026-07-13", "2026-07-12T10:00:00Z"),
-    ).toBe(0);
+    expect(computeDowntimeMinutes("2026-07-13", "2026-07-12T10:00:00Z")).toBe(0);
   });
 
   it("khắc phục nhiều ngày sau → cộng dồn theo phút", () => {
-    expect(
-      computeDowntimeMinutes("2026-07-13", "2026-07-14T00:00:00Z"),
-    ).toBe(1440);
+    expect(computeDowntimeMinutes("2026-07-13", "2026-07-14T00:00:00Z")).toBe(1440);
   });
 });
 

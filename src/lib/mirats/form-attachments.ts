@@ -21,18 +21,18 @@ export type FormAttachment = {
 
 /** Các giai đoạn của một tệp trong queue upload. */
 export type UploadPhase =
-  | "queued"      // đang chờ tới lượt
-  | "hashing"     // đang tính SHA-256
+  | "queued" // đang chờ tới lượt
+  | "hashing" // đang tính SHA-256
   | "compressing" // đang nén ảnh/PDF
-  | "dedup"       // đã có bản trùng, bỏ qua upload
-  | "uploading"   // đang upload, có % tiến độ
-  | "done"        // hoàn tất
-  | "error";      // thất bại
+  | "dedup" // đã có bản trùng, bỏ qua upload
+  | "uploading" // đang upload, có % tiến độ
+  | "done" // hoàn tất
+  | "error"; // thất bại
 
 export interface UploadStatus {
   phase: UploadPhase;
-  progress?: number;         // 0..100 cho phase "uploading"
-  message?: string;          // mô tả ngắn (VD "Nén 2.4MB → 620KB")
+  progress?: number; // 0..100 cho phase "uploading"
+  message?: string; // mô tả ngắn (VD "Nén 2.4MB → 620KB")
   originalSize?: number;
   compressedSize?: number;
   contentType?: string;
@@ -138,7 +138,9 @@ export async function uploadAttachment(
     try {
       const { sha256Hex } = await import("@/lib/storage/compress");
       hash = await sha256Hex(payload);
-    } catch { hash = ""; }
+    } catch {
+      hash = "";
+    }
   }
   if (hash) {
     const ext = extForType(contentType, safeExt(outName));
@@ -148,8 +150,13 @@ export async function uploadAttachment(
       opts.onProgress?.(100);
       status({ phase: "done", compressedSize: outSize, contentType });
       return {
-        path, name: outName, size: outSize, type: contentType,
-        uploaded_at: new Date().toISOString(), sha256: hash, dedup: true,
+        path,
+        name: outName,
+        size: outSize,
+        type: contentType,
+        uploaded_at: new Date().toISOString(),
+        sha256: hash,
+        dedup: true,
       };
     }
   } else {
@@ -159,11 +166,14 @@ export async function uploadAttachment(
   status({ phase: "uploading", progress: 0, compressedSize: outSize, contentType });
   // Ưu tiên signed-upload-URL + XHR để có tiến độ upload thật.
   const { data: signed, error: signErr } = await supabase.storage
-    .from(BUCKET).createSignedUploadUrl(path);
+    .from(BUCKET)
+    .createSignedUploadUrl(path);
   if (signErr || !signed) {
     // Fallback: upload trực tiếp (không có progress).
     const { error } = await supabase.storage.from(BUCKET).upload(path, payload, {
-      cacheControl: "31536000", contentType, upsert: false,
+      cacheControl: "31536000",
+      contentType,
+      upsert: false,
     });
     if (error) {
       status({ phase: "error", message: error.message });
@@ -184,23 +194,29 @@ export async function uploadAttachment(
           status({ phase: "uploading", progress: pct });
         }
       };
-      xhr.onload = () => xhr.status >= 200 && xhr.status < 300
-        ? resolve() : reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
+      xhr.onload = () =>
+        xhr.status >= 200 && xhr.status < 300
+          ? resolve()
+          : reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
       xhr.onerror = () => reject(new Error("Lỗi mạng khi upload"));
       xhr.send(payload);
-    }).catch((e) => { status({ phase: "error", message: (e as Error).message }); throw e; });
+    }).catch((e) => {
+      status({ phase: "error", message: (e as Error).message });
+      throw e;
+    });
   }
 
   status({ phase: "done", compressedSize: outSize, contentType });
   return {
-    path, name: outName, size: outSize,
+    path,
+    name: outName,
+    size: outSize,
     type: contentType,
     uploaded_at: new Date().toISOString(),
     sha256: hash || undefined,
     dedup: false,
   };
 }
-
 
 export async function removeAttachment(path: string): Promise<void> {
   // Không xoá tệp CAS — có thể đang được tham chiếu bởi FormSubmission khác.

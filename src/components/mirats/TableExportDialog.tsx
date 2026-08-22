@@ -14,12 +14,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader,
-  DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  buildCsv, exportableCols, slugTen, taiFileCsv, SCOPE_LABEL,
-  type ExportCol, type ExportScope,
+  buildCsv,
+  exportableCols,
+  slugTen,
+  taiFileCsv,
+  SCOPE_LABEL,
+  type ExportCol,
+  type ExportScope,
 } from "@/lib/mirats/ui/table-export";
 
 type Props<T> = {
@@ -37,12 +47,19 @@ type Props<T> = {
 };
 
 export function TableExportDialog<T>({
-  ten, visibleColumns, allColumns, rowsByScope,
-  defaultScope, countUnit = "dòng", trigger,
+  ten,
+  visibleColumns,
+  allColumns,
+  rowsByScope,
+  defaultScope,
+  countUnit = "dòng",
+  trigger,
 }: Props<T>) {
   const [open, setOpen] = useState(false);
   const coChon = rowsByScope.selected.length > 0;
-  const [scope, setScope] = useState<ExportScope>(defaultScope ?? (coChon ? "selected" : "filtered"));
+  const [scope, setScope] = useState<ExportScope>(
+    defaultScope ?? (coChon ? "selected" : "filtered"),
+  );
   const [cheDoCot, setCheDoCot] = useState<"visible" | "all" | "custom">("all");
   const [cotChon, setCotChon] = useState<string[]>(() => allColumns.map((c) => c.key));
   const [sep, setSep] = useState(";");
@@ -64,15 +81,21 @@ export function TableExportDialog<T>({
   const xuat = () => {
     if (!sanSang) return;
     taiFileCsv(`${slugTen(tenFile)}.csv`, buildCsv(rows, cols, sep));
-    toast.success(`Đã xuất ${rows.length.toLocaleString("vi-VN")} ${countUnit} × ${cols.length} cột ra CSV.`);
+    toast.success(
+      `Đã xuất ${rows.length.toLocaleString("vi-VN")} ${countUnit} × ${cols.length} cột ra CSV.`,
+    );
     setOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => {
-      setOpen(v);
-      if (v) setScope(defaultScope ?? (rowsByScope.selected.length > 0 ? "selected" : "filtered"));
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (v)
+          setScope(defaultScope ?? (rowsByScope.selected.length > 0 ? "selected" : "filtered"));
+      }}
+    >
       <DialogTrigger asChild>
         {trigger ?? (
           <Button variant="outline" size="sm" className="h-8 gap-1.5">
@@ -90,14 +113,23 @@ export function TableExportDialog<T>({
 
         <div className="space-y-4 text-sm">
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Phạm vi dòng</Label>
-            <RadioGroup value={scope} onValueChange={(v) => setScope(v as ExportScope)} className="gap-2">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+              Phạm vi dòng
+            </Label>
+            <RadioGroup
+              value={scope}
+              onValueChange={(v) => setScope(v as ExportScope)}
+              className="gap-2"
+            >
               {(["selected", "filtered", "page"] as ExportScope[]).map((s) => {
                 const n = rowsByScope[s]?.length ?? 0;
                 return (
                   <div key={s} className="flex items-center gap-2">
                     <RadioGroupItem value={s} id={`scope-${s}`} disabled={n === 0} />
-                    <Label htmlFor={`scope-${s}`} className={n === 0 ? "text-muted-foreground" : ""}>
+                    <Label
+                      htmlFor={`scope-${s}`}
+                      className={n === 0 ? "text-muted-foreground" : ""}
+                    >
                       {SCOPE_LABEL[s]}{" "}
                       <span className="text-xs text-muted-foreground">
                         ({n.toLocaleString("vi-VN")} {countUnit})
@@ -110,7 +142,9 @@ export function TableExportDialog<T>({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cột xuất</Label>
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+              Cột xuất
+            </Label>
             <RadioGroup
               value={cheDoCot}
               onValueChange={(v) => {
@@ -165,7 +199,7 @@ export function TableExportDialog<T>({
                       checked={cotChon.includes(c.key)}
                       onCheckedChange={(v) =>
                         setCotChon((prev) =>
-                          v === true ? [...prev, c.key] : prev.filter((k) => k !== c.key)
+                          v === true ? [...prev, c.key] : prev.filter((k) => k !== c.key),
                         )
                       }
                     />
@@ -180,11 +214,26 @@ export function TableExportDialog<T>({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor="ten-file" className="text-xs uppercase tracking-wide text-muted-foreground">Tên file</Label>
-              <Input id="ten-file" value={tenFile} onChange={(e) => setTenFile(e.target.value)} className="h-8" />
+              <Label
+                htmlFor="ten-file"
+                className="text-xs uppercase tracking-wide text-muted-foreground"
+              >
+                Tên file
+              </Label>
+              <Input
+                id="ten-file"
+                value={tenFile}
+                onChange={(e) => setTenFile(e.target.value)}
+                className="h-8"
+              />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="dau-phan-cach" className="text-xs uppercase tracking-wide text-muted-foreground">Dấu phân cách</Label>
+              <Label
+                htmlFor="dau-phan-cach"
+                className="text-xs uppercase tracking-wide text-muted-foreground"
+              >
+                Dấu phân cách
+              </Label>
               <select
                 id="dau-phan-cach"
                 value={sep}
@@ -199,12 +248,15 @@ export function TableExportDialog<T>({
           </div>
 
           <p className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-            Sẽ xuất <b>{rows.length.toLocaleString("vi-VN")}</b> {countUnit} × <b>{cols.length}</b> cột.
+            Sẽ xuất <b>{rows.length.toLocaleString("vi-VN")}</b> {countUnit} × <b>{cols.length}</b>{" "}
+            cột.
           </p>
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>Huỷ</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>
+            Huỷ
+          </Button>
           <Button onClick={xuat} disabled={!sanSang} className="gap-1.5">
             <Download className="h-4 w-4" /> Tải file CSV
           </Button>

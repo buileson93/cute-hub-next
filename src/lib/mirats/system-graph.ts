@@ -7,11 +7,7 @@
 // Test bằng Vitest (system-graph.test.ts).
 // ============================================================================
 
-export type LoaiLienKetMa =
-  | "DAU_NOI_VAT_LY"
-  | "LUONG_TIN_HIEU"
-  | "PHU_THUOC_DICH_VU"
-  | "DU_PHONG";
+export type LoaiLienKetMa = "DAU_NOI_VAT_LY" | "LUONG_TIN_HIEU" | "PHU_THUOC_DICH_VU" | "DU_PHONG";
 
 export type Lop = "vat_ly" | "logic";
 export type Huong = "mot_chieu" | "hai_chieu";
@@ -177,7 +173,14 @@ export function buildSystemGraph(rows: DoThiRow[]): SystemGraph {
   };
 
   for (const r of rows) {
-    themNode(r.nguon_id, r.nguon_ten, r.nguon_nhom, r.nguon_don_vi, r.nguon_ben_ngoai, r.nguon_to_chuc);
+    themNode(
+      r.nguon_id,
+      r.nguon_ten,
+      r.nguon_nhom,
+      r.nguon_don_vi,
+      r.nguon_ben_ngoai,
+      r.nguon_to_chuc,
+    );
     themNode(r.dich_id, r.dich_ten, r.dich_nhom, r.dich_don_vi, r.dich_ben_ngoai, r.dich_to_chuc);
     edges.push({
       id: r.id,
@@ -313,10 +316,7 @@ export function sinhCanhDieuHuong(lienKets: LienKetCanh[]): CanhDieuHuong[] {
  * Phân tích tác động trên cạnh định hướng (mirror RPC mới): chỉ đi theo cạnh
  * lan_truyen_tac_dong=true, chặn chu trình bằng đường đi, trả do_sau nhỏ nhất.
  */
-export function phanTichTacDongTheoCanh(
-  canh: CanhDieuHuong[],
-  startId: string,
-): ImpactResult[] {
+export function phanTichTacDongTheoCanh(canh: CanhDieuHuong[], startId: string): ImpactResult[] {
   const ke = new Map<string, string[]>();
   for (const c of canh) {
     if (!c.lan_truyen_tac_dong) continue;

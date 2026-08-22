@@ -13,7 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Send, User as UserIcon, AlertTriangle, Clock, ArrowUpRight } from "lucide-react";
+import {
+  ArrowLeft,
+  Send,
+  User as UserIcon,
+  AlertTriangle,
+  Clock,
+  ArrowUpRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import { formatDT, timeAgo } from "@/lib/time";
 import {
@@ -98,7 +105,9 @@ function TicketDetailPage() {
               .select("ma_su_co")
               .eq("id", data.su_co_id)
               .maybeSingle()
-              .then(({ data: sc }) => setSuCoMa((sc as { ma_su_co: string } | null)?.ma_su_co ?? null));
+              .then(({ data: sc }) =>
+                setSuCoMa((sc as { ma_su_co: string } | null)?.ma_su_co ?? null),
+              );
           }
         }
       });
@@ -116,7 +125,12 @@ function TicketDetailPage() {
     const ch = freshChannel(`ticket:${id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "ticket_comment", filter: `ticket_id=eq.${id}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "ticket_comment",
+          filter: `ticket_id=eq.${id}`,
+        },
         (payload) => {
           const c = payload.new as Comment;
           setComments((prev) => (prev.find((x) => x.id === c.id) ? prev : [...prev, c]));
@@ -159,7 +173,10 @@ function TicketDetailPage() {
 
   async function claim() {
     if (!user) return;
-    const { error } = await supabase.from("tickets").update({ assigned_to: user.id, trang_thai: "dang_xu_ly" }).eq("id", id);
+    const { error } = await supabase
+      .from("tickets")
+      .update({ assigned_to: user.id, trang_thai: "dang_xu_ly" })
+      .eq("id", id);
     if (error) toast.error(error.message);
     else toast.success("Đã nhận xử lý");
   }
@@ -175,7 +192,11 @@ function TicketDetailPage() {
     toast.success("Đã chuyển thành sự cố");
     if (data) {
       setTicket((t) => (t ? { ...t, su_co_id: data as string } : t));
-      const { data: sc } = await supabase.from("su_co").select("ma_su_co").eq("id", data as string).maybeSingle();
+      const { data: sc } = await supabase
+        .from("su_co")
+        .select("ma_su_co")
+        .eq("id", data as string)
+        .maybeSingle();
       setSuCoMa((sc as { ma_su_co: string } | null)?.ma_su_co ?? null);
     }
   }
@@ -189,7 +210,10 @@ function TicketDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-6 lg:p-8">
-      <Link to="/tickets" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <Link
+        to="/tickets"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-3.5 w-3.5" /> Quay lại danh sách
       </Link>
 
@@ -200,18 +224,30 @@ function TicketDetailPage() {
               <Badge variant="outline" className={cn(TRANG_THAI_COLOR[ticket.trang_thai])}>
                 {TICKET_TRANG_THAI[ticket.trang_thai]}
               </Badge>
-              <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", UU_TIEN_COLOR[ticket.uu_tien])}>
+              <span
+                className={cn(
+                  "rounded px-1.5 py-0.5 text-[10px] font-medium",
+                  UU_TIEN_COLOR[ticket.uu_tien],
+                )}
+              >
                 {TICKET_UU_TIEN[ticket.uu_tien]}
               </span>
               <span className="text-xs text-muted-foreground">{TICKET_LOAI[ticket.loai]}</span>
             </div>
             <h1 className="mt-2 text-xl font-bold tracking-tight">{ticket.tieu_de}</h1>
-            {ticket.mo_ta && <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{ticket.mo_ta}</p>}
+            {ticket.mo_ta && (
+              <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
+                {ticket.mo_ta}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col items-end gap-2">
             {(hasRole("admin") || canManage) && (
-              <Select value={ticket.trang_thai} onValueChange={(v) => updateStatus(v as keyof typeof TICKET_TRANG_THAI)}>
+              <Select
+                value={ticket.trang_thai}
+                onValueChange={(v) => updateStatus(v as keyof typeof TICKET_TRANG_THAI)}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
@@ -241,7 +277,9 @@ function TicketDetailPage() {
           </div>
           <div>
             <span className="text-[10px] uppercase tracking-wide">Người xử lý</span>
-            <div className="mt-0.5 text-foreground">{assignee?.ho_ten ?? assignee?.email ?? "Chưa gán"}</div>
+            <div className="mt-0.5 text-foreground">
+              {assignee?.ho_ten ?? assignee?.email ?? "Chưa gán"}
+            </div>
           </div>
           <div>
             <span className="text-[10px] uppercase tracking-wide">Tạo lúc</span>
@@ -274,7 +312,8 @@ function TicketDetailPage() {
                 params={{ maSuCo: suCoMa }}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/70"
               >
-                <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> Đã liên kết sự cố · Xem chi tiết
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> Đã liên kết sự cố · Xem chi
+                tiết
                 <ArrowUpRight className="h-3 w-3" />
               </Link>
             ) : (

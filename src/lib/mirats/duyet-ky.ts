@@ -77,7 +77,10 @@ export function canEdit(ctx: DuyetKyContext): boolean {
 export function attemptAction(ctx: DuyetKyContext, action: DuyetKyAction): DuyetKyResult {
   const next = TRANSITIONS[ctx.currentState]?.[action];
   if (!next) {
-    return { ok: false, reason: `Không thể thực hiện '${action}' từ trạng thái '${ctx.currentState}'` };
+    return {
+      ok: false,
+      reason: `Không thể thực hiện '${action}' từ trạng thái '${ctx.currentState}'`,
+    };
   }
   // Kiểm tra quyền
   if (action === "submit") {

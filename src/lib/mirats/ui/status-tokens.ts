@@ -74,7 +74,7 @@ export const TYPO_STATUS = {
     label: "Thanh lý",
     kyHieu: "⊘",
   },
-  
+
   // Các mã khác dùng cho domain khác hoặc alias
   DU_PHONG: {
     color: "astryx-status-info",
@@ -98,32 +98,156 @@ export const TYPO_STATUS = {
     kyHieu: "✔",
   },
   // Health A/B/C/D mapping
-  A: { color: "astryx-status-attention", class: "astryx-status-attention", hex: "#10b981", icon: "status.success", label: "A", kyHieu: "A" },
-  B: { color: "astryx-status-info", class: "astryx-status-info", hex: "#3b82f6", icon: "status.info", label: "B", kyHieu: "B" },
-  C: { color: "astryx-status-warning", class: "astryx-status-warning", hex: "#f59e0b", icon: "status.warning", label: "C", kyHieu: "C" },
-  D: { color: "astryx-status-danger", class: "astryx-status-danger", hex: "#ef4444", icon: "status.danger", label: "D", kyHieu: "D" },
+  A: {
+    color: "astryx-status-attention",
+    class: "astryx-status-attention",
+    hex: "#10b981",
+    icon: "status.success",
+    label: "A",
+    kyHieu: "A",
+  },
+  B: {
+    color: "astryx-status-info",
+    class: "astryx-status-info",
+    hex: "#3b82f6",
+    icon: "status.info",
+    label: "B",
+    kyHieu: "B",
+  },
+  C: {
+    color: "astryx-status-warning",
+    class: "astryx-status-warning",
+    hex: "#f59e0b",
+    icon: "status.warning",
+    label: "C",
+    kyHieu: "C",
+  },
+  D: {
+    color: "astryx-status-danger",
+    class: "astryx-status-danger",
+    hex: "#ef4444",
+    icon: "status.danger",
+    label: "D",
+    kyHieu: "D",
+  },
 
   // --- OCR STATUS (Task 63) ---
-  completed: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "status.success", label: "Hoàn tất", kyHieu: "✔" },
-  ocr_ready: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "entity.history", label: "OCR Sẵn có", kyHieu: "🗄" },
-  partial: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "action.pause", label: "Một phần", kyHieu: "⏸" },
-  failed: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Thất bại", kyHieu: "✖" },
-  ocr_running: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.loading", label: "Đang xử lý", kyHieu: "⏳" },
-  extracting: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.loading", label: "Đang giải nén", kyHieu: "⏳" },
-  queued: { color: "astryx-status-normal", class: "astryx-status-normal", icon: "status.info", label: "Chờ xử lý", kyHieu: "○" },
-  cancelled: { color: "astryx-status-normal", class: "astryx-status-normal", icon: "action.pause", label: "Đã hủy", kyHieu: "⊘" },
+  completed: {
+    color: "astryx-status-attention",
+    class: "astryx-status-attention",
+    icon: "status.success",
+    label: "Hoàn tất",
+    kyHieu: "✔",
+  },
+  ocr_ready: {
+    color: "astryx-status-attention",
+    class: "astryx-status-attention",
+    icon: "entity.history",
+    label: "OCR Sẵn có",
+    kyHieu: "🗄",
+  },
+  partial: {
+    color: "astryx-status-warning",
+    class: "astryx-status-warning",
+    icon: "action.pause",
+    label: "Một phần",
+    kyHieu: "⏸",
+  },
+  failed: {
+    color: "astryx-status-danger",
+    class: "astryx-status-danger",
+    icon: "status.danger",
+    label: "Thất bại",
+    kyHieu: "✖",
+  },
+  ocr_running: {
+    color: "astryx-status-info",
+    class: "astryx-status-info",
+    icon: "status.loading",
+    label: "Đang xử lý",
+    kyHieu: "⏳",
+  },
+  extracting: {
+    color: "astryx-status-info",
+    class: "astryx-status-info",
+    icon: "status.loading",
+    label: "Đang giải nén",
+    kyHieu: "⏳",
+  },
+  queued: {
+    color: "astryx-status-normal",
+    class: "astryx-status-normal",
+    icon: "status.info",
+    label: "Chờ xử lý",
+    kyHieu: "○",
+  },
+  cancelled: {
+    color: "astryx-status-normal",
+    class: "astryx-status-normal",
+    icon: "action.pause",
+    label: "Đã hủy",
+    kyHieu: "⊘",
+  },
 
   // --- CONNECTIVITY / OFFLINE (Task 63) ---
-  offline: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "status.warning", label: "Offline", kyHieu: "📵" },
-  syncing: { color: "astryx-status-info", class: "astryx-status-info", icon: "status.loading", label: "Đang đồng bộ", kyHieu: "🔄" },
-  conflict: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Cần xử lý", kyHieu: "⚠" },
-  online: { color: "astryx-status-attention", class: "astryx-status-attention", icon: "status.success", label: "Online", kyHieu: "📶" },
+  offline: {
+    color: "astryx-status-warning",
+    class: "astryx-status-warning",
+    icon: "status.warning",
+    label: "Offline",
+    kyHieu: "📵",
+  },
+  syncing: {
+    color: "astryx-status-info",
+    class: "astryx-status-info",
+    icon: "status.loading",
+    label: "Đang đồng bộ",
+    kyHieu: "🔄",
+  },
+  conflict: {
+    color: "astryx-status-danger",
+    class: "astryx-status-danger",
+    icon: "status.danger",
+    label: "Cần xử lý",
+    kyHieu: "⚠",
+  },
+  online: {
+    color: "astryx-status-attention",
+    class: "astryx-status-attention",
+    icon: "status.success",
+    label: "Online",
+    kyHieu: "📶",
+  },
 
   // --- EXPIRY (Task 63) ---
-  overdue: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Quá hạn", kyHieu: "‼" },
-  urgent: { color: "astryx-status-danger", class: "astryx-status-danger", icon: "status.danger", label: "Khẩn cấp", kyHieu: "‼" },
-  warning: { color: "astryx-status-warning", class: "astryx-status-warning", icon: "status.warning", label: "Sắp hết hạn", kyHieu: "⚠" },
-  normal: { color: "astryx-status-normal", class: "astryx-status-normal", icon: "status.info", label: "Bình thường", kyHieu: "○" },
+  overdue: {
+    color: "astryx-status-danger",
+    class: "astryx-status-danger",
+    icon: "status.danger",
+    label: "Quá hạn",
+    kyHieu: "‼",
+  },
+  urgent: {
+    color: "astryx-status-danger",
+    class: "astryx-status-danger",
+    icon: "status.danger",
+    label: "Khẩn cấp",
+    kyHieu: "‼",
+  },
+  warning: {
+    color: "astryx-status-warning",
+    class: "astryx-status-warning",
+    icon: "status.warning",
+    label: "Sắp hết hạn",
+    kyHieu: "⚠",
+  },
+  normal: {
+    color: "astryx-status-normal",
+    class: "astryx-status-normal",
+    icon: "status.info",
+    label: "Bình thường",
+    kyHieu: "○",
+  },
 } as const;
 
 /**
@@ -133,17 +257,17 @@ export const TYPO_STATUS = {
 export const LEGACY_NAME_TO_MA: Record<string, keyof typeof TYPO_STATUS> = {
   "Đang khai thác": "DANG_KHAI_THAC",
   "Đang sử dụng": "DANG_KHAI_THAC",
-  "DANG_SU_DUNG": "DANG_KHAI_THAC",
+  DANG_SU_DUNG: "DANG_KHAI_THAC",
   "Đang sửa chữa": "DANG_SUA_CHUA",
-  "Hỏng": "HONG",
+  Hỏng: "HONG",
   "Chờ xử lý": "CHO_XU_LY",
   "Chờ thanh lý": "CHO_XU_LY",
-  "CHO_THANH_LY": "CHO_XU_LY",
+  CHO_THANH_LY: "CHO_XU_LY",
   "Ngừng hoạt động": "NGUNG_KHAI_THAC",
-  "NGUNG_HOAT_DONG": "NGUNG_KHAI_THAC",
+  NGUNG_HOAT_DONG: "NGUNG_KHAI_THAC",
   "Thanh lý": "THANH_LY",
   "Đã thanh lý": "THANH_LY",
-  "DA_THANH_LY": "THANH_LY",
+  DA_THANH_LY: "THANH_LY",
   "Dự phòng": "DU_PHONG",
   "Kế hoạch": "KE_HOACH",
   "Hoàn thành": "HOAN_THANH",
@@ -156,23 +280,23 @@ export const LEGACY_NAME_TO_MA: Record<string, keyof typeof TYPO_STATUS> = {
  */
 export function getStatusToken(domain: string, key: string | null): StatusToken {
   if (!key) return FALLBACK_TOKEN;
-  
+
   const rawKey = key.trim();
-  
+
   // 1. Kiểm tra nếu là mã chuẩn (Invariant Code)
   if (rawKey in TYPO_STATUS) {
     return (TYPO_STATUS as any)[rawKey];
   }
-  
+
   // 2. Kiểm tra nếu là tên cũ (Legacy Name)
   if (rawKey in LEGACY_NAME_TO_MA) {
     const ma = LEGACY_NAME_TO_MA[rawKey];
     return (TYPO_STATUS as any)[ma];
   }
-  
+
   // 3. Không nhận diện - Fallback + Cảnh báo
   warningCount++;
-  
+
   // Log cảnh báo để test capture được và dev biết
   console.warn(`[MIRATS UI] Mã trạng thái lạ gặp phải: "${rawKey}" tại domain "${domain}"`);
 
@@ -199,12 +323,24 @@ export const XEP_LOAI_HEALTH_TOKEN = TYPO_STATUS;
 // --- Khôi phục các hàm cũ để tránh lỗi import ở các file chưa migrate ---
 export const TRANG_THAI_TOKEN = TYPO_STATUS;
 
-export function getTrangThaiToken(key: string | null) { return getStatusToken('thiet_bi', key); }
-export function getMucDoSuCoToken(key: string | null) { return getStatusToken('su_co', key); }
-export function getLoaiBaoTriToken(key: string | null) { return getStatusToken('bao_tri', key); }
-export function getPhuongAnHongHocToken(key: string | null) { return getStatusToken('hong_hoc', key); }
-export function getLoaiBanGiaoToken(key: string | null) { return getStatusToken('ban_giao', key); }
-export function getXepLoaiHealthToken(key: string | null) { return getStatusToken('health', key); }
+export function getTrangThaiToken(key: string | null) {
+  return getStatusToken("thiet_bi", key);
+}
+export function getMucDoSuCoToken(key: string | null) {
+  return getStatusToken("su_co", key);
+}
+export function getLoaiBaoTriToken(key: string | null) {
+  return getStatusToken("bao_tri", key);
+}
+export function getPhuongAnHongHocToken(key: string | null) {
+  return getStatusToken("hong_hoc", key);
+}
+export function getLoaiBanGiaoToken(key: string | null) {
+  return getStatusToken("ban_giao", key);
+}
+export function getXepLoaiHealthToken(key: string | null) {
+  return getStatusToken("health", key);
+}
 
 /**
  * Tính mã trạng thái từ số ngày còn lại (Task 63).

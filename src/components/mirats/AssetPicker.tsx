@@ -29,16 +29,18 @@ export function AssetPicker({
   const { data: assets, isLoading } = useQuery({
     queryKey: ["asset-picker-list", heThongId, thanhPhanId],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from("thiet_bi")
-        .select(`
+        .select(
+          `
           id, ma_thiet_bi, ten_thiet_bi, ma_serial, he_thong_id, trang_thai_id,
           dm_trang_thai_thiet_bi:trang_thai_id(ma, ten, yeu_cau_gan_slot)
-        `)
+        `,
+        )
         // N53: Có thể lọc theo yeu_cau_gan_slot tại đây nếu cần quy trình nghiêm ngặt.
         // Hiện tại chỉ loại bỏ các bản ghi không hợp lệ cơ bản.
         .neq("trang_thai_id", "00000000-0000-0000-0000-000000000000");
-      
+
       const { data, error } = await query.order("ma_thiet_bi");
       if (error) throw error;
       return data || [];
@@ -49,15 +51,17 @@ export function AssetPicker({
     return (assets || []).map((a) => {
       const status = a.dm_trang_thai_thiet_bi as any;
       const canSlot = status?.yeu_cau_gan_slot;
-      
+
       return {
         value: a.id,
         label: `${a.ma_thiet_bi} — ${a.ten_thiet_bi}`,
         hint: [
           a.ma_serial ? `S/N: ${a.ma_serial}` : "",
           status?.ten ? `TT: ${status.ten}` : "",
-          canSlot === false ? "⚠️ Chưa sẵn sàng lắp" : ""
-        ].filter(Boolean).join(" · "),
+          canSlot === false ? "⚠️ Chưa sẵn sàng lắp" : "",
+        ]
+          .filter(Boolean)
+          .join(" · "),
       };
     });
   }, [assets]);
@@ -78,7 +82,9 @@ export function AssetPicker({
         placeholder={isLoading ? "Đang tải..." : placeholder}
         loading={isLoading}
       />
-      {disabled && <div className="pointer-events-none absolute inset-0 opacity-50 bg-background/50" />}
+      {disabled && (
+        <div className="pointer-events-none absolute inset-0 opacity-50 bg-background/50" />
+      )}
     </div>
   );
 }

@@ -7,8 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  ArrowLeft, Plus, Search, MessageSquare, Send, Paperclip,
-  File as FileIcon, Image as ImageIcon, Download, X,
+  ArrowLeft,
+  Plus,
+  Search,
+  MessageSquare,
+  Send,
+  Paperclip,
+  File as FileIcon,
+  Image as ImageIcon,
+  Download,
+  X,
 } from "lucide-react";
 import { timeAgo, formatDT } from "@/lib/time";
 import { cn } from "@/lib/utils";
@@ -112,7 +120,10 @@ function ConversationList({ onOpen }: { onOpen: (id: string, title: string) => v
       for (const p of (profs ?? []) as ProfileMini[]) byId[p.id] = p;
       const map: Record<string, ProfileMini[]> = {};
       for (const [cid, uids] of Object.entries(partsByConv)) {
-        map[cid] = uids.filter((u) => u !== user.id).map((u) => byId[u]).filter(Boolean);
+        map[cid] = uids
+          .filter((u) => u !== user.id)
+          .map((u) => byId[u])
+          .filter(Boolean);
       }
       setParts(map);
     }
@@ -124,22 +135,44 @@ function ConversationList({ onOpen }: { onOpen: (id: string, title: string) => v
     const ch = freshChannel("panel-conv-list")
       .on("postgres_changes", { event: "*", schema: "public", table: "conversations" }, loadConvs)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, loadConvs)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "conversation_participant", filter: `user_id=eq.${user.id}` }, loadConvs)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "conversation_participant",
+          filter: `user_id=eq.${user.id}`,
+        },
+        loadConvs,
+      )
       .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    return () => {
+      supabase.removeChannel(ch);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   function titleOf(c: Conversation) {
     const others = parts[c.id] ?? [];
-    return c.ten ?? (others.length > 0 ? others.map((p) => p.ho_ten ?? p.email).join(", ") : "Hội thoại");
+    return (
+      c.ten ?? (others.length > 0 ? others.map((p) => p.ho_ten ?? p.email).join(", ") : "Hội thoại")
+    );
   }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hội thoại</div>
-        <Button size="icon" variant="ghost" className="h-8 w-8" title="Hội thoại mới" aria-label="Hội thoại mới" onClick={() => setNewOpen(true)}>
+        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Hội thoại
+        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8"
+          title="Hội thoại mới"
+          aria-label="Hội thoại mới"
+          onClick={() => setNewOpen(true)}
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -167,7 +200,9 @@ function ConversationList({ onOpen }: { onOpen: (id: string, title: string) => v
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium">{title}</div>
-                      <div className="text-[11px] text-muted-foreground">{timeAgo(c.last_message_at)}</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        {timeAgo(c.last_message_at)}
+                      </div>
                     </div>
                   </button>
                 </li>
@@ -179,7 +214,10 @@ function ConversationList({ onOpen }: { onOpen: (id: string, title: string) => v
       <NewConversationDialog
         open={newOpen}
         onOpenChange={setNewOpen}
-        onStarted={(id, title) => { setNewOpen(false); onOpen(id, title); }}
+        onStarted={(id, title) => {
+          setNewOpen(false);
+          onOpen(id, title);
+        }}
       />
     </div>
   );
@@ -264,7 +302,13 @@ function NewConversationDialog({
   return (
     <div className="absolute inset-0 z-20 flex flex-col bg-background">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onOpenChange(false)} aria-label="Quay lại">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8"
+          onClick={() => onOpenChange(false)}
+          aria-label="Quay lại"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="text-sm font-semibold">Bắt đầu hội thoại</div>
@@ -282,7 +326,9 @@ function NewConversationDialog({
       </div>
       <ul className="min-h-0 flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <li className="py-6 text-center text-sm text-muted-foreground">Không có người dùng phù hợp</li>
+          <li className="py-6 text-center text-sm text-muted-foreground">
+            Không có người dùng phù hợp
+          </li>
         ) : (
           filtered.map((u) => (
             <li key={u.id}>
@@ -308,7 +354,15 @@ function NewConversationDialog({
   );
 }
 
-function MessageThread({ convId, title, onBack }: { convId: string; title: string; onBack: () => void }) {
+function MessageThread({
+  convId,
+  title,
+  onBack,
+}: {
+  convId: string;
+  title: string;
+  onBack: () => void;
+}) {
   const { user } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [profiles, setProfiles] = useState<Record<string, ProfileMini>>({});
@@ -372,7 +426,12 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
     const ch = freshChannel(`panel-msg:${convId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${convId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${convId}`,
+        },
         (payload) => {
           const m = payload.new as Message;
           setMessages((prev) => (prev.find((x) => x.id === m.id) ? prev : [...prev, m]));
@@ -381,7 +440,9 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
         },
       )
       .subscribe();
-    return () => { supabase.removeChannel(ch); };
+    return () => {
+      supabase.removeChannel(ch);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [convId, user?.id]);
 
@@ -403,7 +464,9 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
       let file_mime: string | null = null;
       if (file) {
         if (!isAllowedFile(file)) {
-          toast.error("File không hợp lệ", { description: "Chỉ nhận ảnh, PDF, Office; tối đa 20MB." });
+          toast.error("File không hợp lệ", {
+            description: "Chỉ nhận ảnh, PDF, Office; tối đa 20MB.",
+          });
           setSending(false);
           return;
         }
@@ -446,7 +509,14 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-2 border-b border-border px-2 py-2">
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onBack} title="Quay lại" aria-label="Quay lại">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8"
+          onClick={onBack}
+          title="Quay lại"
+          aria-label="Quay lại"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary">
@@ -470,10 +540,12 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
                 <div key={m.id} className={cn("flex gap-2", mine && "flex-row-reverse")}>
                   <div className="w-7 shrink-0">
                     {showHeader && (
-                      <div className={cn(
-                        "flex h-7 w-7 items-center justify-center rounded-full text-[9px] font-semibold",
-                        mine ? "bg-primary text-primary-foreground" : "bg-secondary",
-                      )}>
+                      <div
+                        className={cn(
+                          "flex h-7 w-7 items-center justify-center rounded-full text-[9px] font-semibold",
+                          mine ? "bg-primary text-primary-foreground" : "bg-secondary",
+                        )}
+                      >
                         {(p?.ho_ten ?? p?.email ?? "?").slice(0, 2).toUpperCase()}
                       </div>
                     )}
@@ -485,10 +557,12 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
                       </div>
                     )}
                     {m.noi_dung && (
-                      <div className={cn(
-                        "inline-block whitespace-pre-wrap break-words rounded-2xl px-3 py-2 text-sm",
-                        mine ? "bg-primary text-primary-foreground" : "bg-secondary",
-                      )}>
+                      <div
+                        className={cn(
+                          "inline-block whitespace-pre-wrap break-words rounded-2xl px-3 py-2 text-sm",
+                          mine ? "bg-primary text-primary-foreground" : "bg-secondary",
+                        )}
+                      >
                         {m.noi_dung}
                       </div>
                     )}
@@ -517,7 +591,12 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
             <FileIcon className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="truncate">{file.name}</span>
             <span className="text-muted-foreground">({(file.size / 1024).toFixed(0)} KB)</span>
-            <Button size="icon" variant="ghost" className="ml-auto h-6 w-6" onClick={() => setFile(null)}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="ml-auto h-6 w-6"
+              onClick={() => setFile(null)}
+            >
               <X className="h-3 w-3" />
             </Button>
           </div>
@@ -533,7 +612,9 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
                 const f = e.target.files?.[0];
                 if (!f) return;
                 if (!isAllowedFile(f)) {
-                  toast.error("File không hợp lệ", { description: "Chỉ nhận ảnh, PDF, Office; tối đa 20MB." });
+                  toast.error("File không hợp lệ", {
+                    description: "Chỉ nhận ảnh, PDF, Office; tối đa 20MB.",
+                  });
                   e.target.value = "";
                   return;
                 }
@@ -549,10 +630,19 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
             rows={1}
             className="max-h-28 min-h-[36px] resize-none"
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+              }
             }}
           />
-          <Button onClick={send} disabled={sending || (!input.trim() && !file)} size="icon" className="h-9 w-9 shrink-0 rounded-full" aria-label="Gửi">
+          <Button
+            onClick={send}
+            disabled={sending || (!input.trim() && !file)}
+            size="icon"
+            className="h-9 w-9 shrink-0 rounded-full"
+            aria-label="Gửi"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
@@ -562,15 +652,28 @@ function MessageThread({ convId, title, onBack }: { convId: string; title: strin
 }
 
 function FileAttachment({
-  name, size, mime, signedUrl, mine,
+  name,
+  size,
+  mime,
+  signedUrl,
+  mine,
 }: {
-  name: string; size: number; mime: string; signedUrl: string | undefined; mine: boolean;
+  name: string;
+  size: number;
+  mime: string;
+  signedUrl: string | undefined;
+  mine: boolean;
 }) {
   const isImage = mime.startsWith("image/");
   if (isImage && signedUrl) {
     return (
       <a href={signedUrl} target="_blank" rel="noreferrer">
-        <img src={signedUrl} alt={name} className="max-h-56 rounded-lg border border-border object-cover" loading="lazy" />
+        <img
+          src={signedUrl}
+          alt={name}
+          className="max-h-56 rounded-lg border border-border object-cover"
+          loading="lazy"
+        />
       </a>
     );
   }
@@ -582,7 +685,9 @@ function FileAttachment({
       download={name}
       className={cn(
         "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-colors",
-        mine ? "border-primary/20 bg-primary/5 hover:bg-primary/10" : "border-border bg-secondary/70 hover:bg-secondary",
+        mine
+          ? "border-primary/20 bg-primary/5 hover:bg-primary/10"
+          : "border-border bg-secondary/70 hover:bg-secondary",
       )}
     >
       {isImage ? <ImageIcon className="h-4 w-4" /> : <FileIcon className="h-4 w-4" />}
@@ -592,4 +697,3 @@ function FileAttachment({
     </a>
   );
 }
-

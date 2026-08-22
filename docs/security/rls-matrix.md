@@ -19,68 +19,68 @@ Ký hiệu: `A`=admin, `PKT`=phong_kt, `PT`=phu_trach_dv (theo đơn vị), `KTV
 
 ### Cụm tài sản & vận hành (đã kiểm định ở `rls_cross_unit.sql`)
 
-| Bảng | SELECT | INSERT | UPDATE | DELETE |
-|---|---|---|---|---|
-| `thiet_bi` | A/PKT: all; PT/KTV: theo đơn vị | A/PKT | A/PKT | A |
-| `su_co` | A/PKT: all; PT/KTV: theo đơn vị tài sản | A/PKT/PT/KTV (đơn vị) | A/PKT + người tạo | A/PKT |
-| `bao_tri`, `cong_viec_bao_tri`, `hong_hoc` | như `su_co` | như `su_co` | như `su_co` | A/PKT |
-| `ban_giao`, `kiem_ke` | như `su_co` | A/PKT/PT/KTV | A/PKT | A |
-| `kho`, `kho_giao_dich` | như `su_co` (theo đơn vị kho) | A/PKT | A/PKT | A |
-| `vat_tu` | authenticated | A/PKT | A/PKT | A |
-| `thiet_bi_*` (media/kết nối/khe/vòng đời/đo đạc) | như `thiet_bi` | A/PKT | A/PKT + chủ dòng nếu có `created_by` | A/PKT |
+| Bảng                                             | SELECT                                  | INSERT                | UPDATE                               | DELETE |
+| ------------------------------------------------ | --------------------------------------- | --------------------- | ------------------------------------ | ------ |
+| `thiet_bi`                                       | A/PKT: all; PT/KTV: theo đơn vị         | A/PKT                 | A/PKT                                | A      |
+| `su_co`                                          | A/PKT: all; PT/KTV: theo đơn vị tài sản | A/PKT/PT/KTV (đơn vị) | A/PKT + người tạo                    | A/PKT  |
+| `bao_tri`, `cong_viec_bao_tri`, `hong_hoc`       | như `su_co`                             | như `su_co`           | như `su_co`                          | A/PKT  |
+| `ban_giao`, `kiem_ke`                            | như `su_co`                             | A/PKT/PT/KTV          | A/PKT                                | A      |
+| `kho`, `kho_giao_dich`                           | như `su_co` (theo đơn vị kho)           | A/PKT                 | A/PKT                                | A      |
+| `vat_tu`                                         | authenticated                           | A/PKT                 | A/PKT                                | A      |
+| `thiet_bi_*` (media/kết nối/khe/vòng đời/đo đạc) | như `thiet_bi`                          | A/PKT                 | A/PKT + chủ dòng nếu có `created_by` | A/PKT  |
 
 ### Cụm danh mục (`dm_*`)
 
-| Bảng | SELECT | INSERT/UPDATE/DELETE |
-|---|---|---|
-| `dm_don_vi`, `dm_he_thong`, `dm_linh_vuc`, `dm_loai_giay_phep`, `dm_loai_lien_ket`, `dm_loai_thiet_bi`, `dm_model`, `dm_nha_cung_cap`, `dm_nha_san_xuat`, `dm_nhom_he_thong`, `dm_noi_cap`, `dm_phan_loai`, `dm_to_chuc`, `dm_trang_thai_thiet_bi`, `dm_vi_tri`, `dm_danh_gia_nien_han` | authenticated | A/PKT |
+| Bảng                                                                                                                                                                                                                                                                                    | SELECT        | INSERT/UPDATE/DELETE |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | -------------------- |
+| `dm_don_vi`, `dm_he_thong`, `dm_linh_vuc`, `dm_loai_giay_phep`, `dm_loai_lien_ket`, `dm_loai_thiet_bi`, `dm_model`, `dm_nha_cung_cap`, `dm_nha_san_xuat`, `dm_nhom_he_thong`, `dm_noi_cap`, `dm_phan_loai`, `dm_to_chuc`, `dm_trang_thai_thiet_bi`, `dm_vi_tri`, `dm_danh_gia_nien_han` | authenticated | A/PKT                |
 
 ### Cụm form (mẫu bảo dưỡng)
 
-| Bảng | SELECT | Ghi |
-|---|---|---|
-| `form_template`, `form_template_version`, `form_template_include`, `form_template_he_thong`, `form_section`, `form_field`, `form_check_item`, `field_set`, `field_set_item`, `model_tai_lieu` | authenticated | A/PKT |
-| `form_submission`, `form_submission_item_result`, `form_submission_thiet_bi` | A/PKT: all; PT/KTV: theo đơn vị tài sản | A/PKT/PT/KTV (đơn vị) + chủ dòng |
+| Bảng                                                                                                                                                                                          | SELECT                                  | Ghi                              |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------- |
+| `form_template`, `form_template_version`, `form_template_include`, `form_template_he_thong`, `form_section`, `form_field`, `form_check_item`, `field_set`, `field_set_item`, `model_tai_lieu` | authenticated                           | A/PKT                            |
+| `form_submission`, `form_submission_item_result`, `form_submission_thiet_bi`                                                                                                                  | A/PKT: all; PT/KTV: theo đơn vị tài sản | A/PKT/PT/KTV (đơn vị) + chủ dòng |
 
 ### Cụm giấy phép & liên kết
 
-| Bảng | SELECT | Ghi |
-|---|---|---|
-| `giay_phep`, `giay_phep_khai_thac`, `he_thong_thanh_phan`, `he_thong_truong`, `lien_ket_he_thong`, `lien_ket_khe`, `gan_chuc_nang`, `gan_linh_kien` | authenticated | A/PKT |
-| `canh_bao_het_han_log` | A/PKT | System (trigger) |
+| Bảng                                                                                                                                                | SELECT        | Ghi              |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------- |
+| `giay_phep`, `giay_phep_khai_thac`, `he_thong_thanh_phan`, `he_thong_truong`, `lien_ket_he_thong`, `lien_ket_khe`, `gan_chuc_nang`, `gan_linh_kien` | authenticated | A/PKT            |
+| `canh_bao_het_han_log`                                                                                                                              | A/PKT         | System (trigger) |
 
 ### Cụm dự án & phối hợp
 
-| Bảng | SELECT | Ghi |
-|---|---|---|
-| `du_an`, `du_an_moc`, `du_an_cong_viec`, `du_an_cong_viec_phoi_hop` | A/PKT + participant | Chủ dự án + A/PKT |
-| `tickets`, `ticket_comment` | A/PKT + created_by/assigned_to | Chủ + A |
-| `conversations`, `conversation_participant`, `messages` | participant | participant |
-| `notifications` | U | U (đánh dấu đã đọc) |
+| Bảng                                                                | SELECT                         | Ghi                 |
+| ------------------------------------------------------------------- | ------------------------------ | ------------------- |
+| `du_an`, `du_an_moc`, `du_an_cong_viec`, `du_an_cong_viec_phoi_hop` | A/PKT + participant            | Chủ dự án + A/PKT   |
+| `tickets`, `ticket_comment`                                         | A/PKT + created_by/assigned_to | Chủ + A             |
+| `conversations`, `conversation_participant`, `messages`             | participant                    | participant         |
+| `notifications`                                                     | U                              | U (đánh dấu đã đọc) |
 
 ### Cụm sơ đồ & node
 
-| Bảng | SELECT | Ghi |
-|---|---|---|
+| Bảng                                                                                                                        | SELECT        | Ghi              |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------- |
 | `so_do_he_thong`, `so_do_tep_dinh_kem`, `so_do_thu_vien_hinh`, `cay_node_edit`, `cay_thay_doi`, `node_note`, `vi_tri_media` | authenticated | A/PKT + chủ dòng |
 
 ### Cụm hệ thống / bảo mật / cấu hình
 
-| Bảng | SELECT | Ghi |
-|---|---|---|
-| `profiles` | U + A/PKT | U + A |
-| `user_roles`, `user_scope`, `role_permission` | authenticated | A |
-| `nhan_vien` | authenticated | A/PKT |
-| `app_cai_dat`, `bang_cot_tuy_chinh` | authenticated | A + U |
-| `ai_config`, `ai_conversation`, `ai_message` | U | U |
-| `access_request` | U + A | U (tạo) + A (duyệt) |
-| `audit_log`, `auth_event_log`, `feature_usage_log`, `telegram_da_gui` | A | System |
-| `backup_lich_su` | A | A |
-| `import_batch`, `import_item`, `import_alias` | A/PKT + chủ batch | A/PKT + chủ batch |
-| `telegram_subscriber` | U + A | U + A |
-| `webauthn_credentials` | U | U |
-| `anomaly_alert`, `bao_tri_chinh_sach` | A/PKT | A/PKT |
-| `van_de` | A/PKT + đơn vị | A/PKT |
+| Bảng                                                                  | SELECT            | Ghi                 |
+| --------------------------------------------------------------------- | ----------------- | ------------------- |
+| `profiles`                                                            | U + A/PKT         | U + A               |
+| `user_roles`, `user_scope`, `role_permission`                         | authenticated     | A                   |
+| `nhan_vien`                                                           | authenticated     | A/PKT               |
+| `app_cai_dat`, `bang_cot_tuy_chinh`                                   | authenticated     | A + U               |
+| `ai_config`, `ai_conversation`, `ai_message`                          | U                 | U                   |
+| `access_request`                                                      | U + A             | U (tạo) + A (duyệt) |
+| `audit_log`, `auth_event_log`, `feature_usage_log`, `telegram_da_gui` | A                 | System              |
+| `backup_lich_su`                                                      | A                 | A                   |
+| `import_batch`, `import_item`, `import_alias`                         | A/PKT + chủ batch | A/PKT + chủ batch   |
+| `telegram_subscriber`                                                 | U + A             | U + A               |
+| `webauthn_credentials`                                                | U                 | U                   |
+| `anomaly_alert`, `bao_tri_chinh_sach`                                 | A/PKT             | A/PKT               |
+| `van_de`                                                              | A/PKT + đơn vị    | A/PKT               |
 
 ## Nguyên tắc chuẩn hoá (áp dụng ở migration `rls_hoan_thien`)
 

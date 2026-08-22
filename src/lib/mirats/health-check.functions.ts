@@ -39,7 +39,12 @@ function errInfo(e: any) {
   };
 }
 
-async function checkCloud(): Promise<{ ok: boolean; message: string; code: string | null; detail: JsonValue }> {
+async function checkCloud(): Promise<{
+  ok: boolean;
+  message: string;
+  code: string | null;
+  detail: JsonValue;
+}> {
   const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
   try {
     const { data, error } = await supabaseAdmin.storage.listBuckets();
@@ -59,7 +64,12 @@ async function checkCloud(): Promise<{ ok: boolean; message: string; code: strin
   }
 }
 
-async function checkR2(): Promise<{ ok: boolean; message: string; code: string | null; detail: JsonValue }> {
+async function checkR2(): Promise<{
+  ok: boolean;
+  message: string;
+  code: string | null;
+  detail: JsonValue;
+}> {
   const { getR2Settings, getR2Client, resetR2Cache } = await import("./r2.server");
   resetR2Cache();
   const s = await getR2Settings(true);
@@ -69,13 +79,22 @@ async function checkR2(): Promise<{ ok: boolean; message: string; code: string |
   if (!s.secretAccessKey) missing.push("Secret Access Key");
   if (!s.bucketName) missing.push("Bucket");
   if (missing.length) {
-    return { ok: false, message: `Thiếu tham số: ${missing.join(", ")}`, code: "CONFIG_MISSING", detail: { missing } };
+    return {
+      ok: false,
+      message: `Thiếu tham số: ${missing.join(", ")}`,
+      code: "CONFIG_MISSING",
+      detail: { missing },
+    };
   }
   try {
     const client = await getR2Client();
     const { ListObjectsV2Command } = await import("@aws-sdk/client-s3");
     const res = await client.send(
-      new ListObjectsV2Command({ Bucket: s.bucketName!, MaxKeys: 1, Prefix: s.keyPrefix ?? undefined }),
+      new ListObjectsV2Command({
+        Bucket: s.bucketName!,
+        MaxKeys: 1,
+        Prefix: s.keyPrefix ?? undefined,
+      }),
     );
     return {
       ok: true,
@@ -85,7 +104,12 @@ async function checkR2(): Promise<{ ok: boolean; message: string; code: string |
     };
   } catch (e: any) {
     const i = errInfo(e);
-    return { ok: false, message: i.message, code: i.code, detail: { ...i.detail, bucket: s.bucketName, source: s.source } };
+    return {
+      ok: false,
+      message: i.message,
+      code: i.code,
+      detail: { ...i.detail, bucket: s.bucketName, source: s.source },
+    };
   }
 }
 
@@ -107,12 +131,23 @@ async function logCheck(row: {
 export const runStorageHealthCheck = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ backend: z.enum(["cloud", "r2", "both"]).default("both"), nguon: z.string().max(50).default("manual") }).parse(input ?? {}),
+    z
+      .object({
+        backend: z.enum(["cloud", "r2", "both"]).default("both"),
+        nguon: z.string().max(50).default("manual"),
+      })
+      .parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const targets: ("cloud" | "r2")[] = data.backend === "both" ? ["cloud", "r2"] : [data.backend];
-    const results: { backend: "cloud" | "r2"; ok: boolean; message: string; latency_ms: number; error_code: string | null }[] = [];
+    const results: {
+      backend: "cloud" | "r2";
+      ok: boolean;
+      message: string;
+      latency_ms: number;
+      error_code: string | null;
+    }[] = [];
 
     for (const backend of targets) {
       const t0 = Date.now();
@@ -128,7 +163,13 @@ export const runStorageHealthCheck = createServerFn({ method: "POST" })
         nguon: data.nguon,
         checked_by: context.userId,
       });
-      results.push({ backend, ok: r.ok, message: r.message, latency_ms: latency, error_code: r.code });
+      results.push({
+        backend,
+        ok: r.ok,
+        message: r.message,
+        latency_ms: latency,
+        error_code: r.code,
+      });
     }
     return { results };
   });
@@ -137,7 +178,12 @@ export const runStorageHealthCheck = createServerFn({ method: "POST" })
 export const listStorageHealthChecks = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ backend: z.enum(["cloud", "r2", "all"]).default("all"), limit: z.number().int().min(1).max(200).default(50) }).parse(input ?? {}),
+    z
+      .object({
+        backend: z.enum(["cloud", "r2", "all"]).default("all"),
+        limit: z.number().int().min(1).max(200).default(50),
+      })
+      .parse(input ?? {}),
   )
   .handler(async ({ data, context }): Promise<HealthCheckRow[]> => {
     await assertAdmin(context);

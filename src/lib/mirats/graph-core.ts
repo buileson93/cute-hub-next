@@ -139,11 +139,7 @@ export interface HighlightSet {
  * Tô sáng hàng xóm bậc `radius` (mặc định 1) quanh `selectedId`.
  * Cạnh được tô sáng khi cả hai đầu nằm trong tập node tô sáng.
  */
-export function highlightNeighbors(
-  graph: CoreGraph,
-  selectedId: string,
-  radius = 1,
-): HighlightSet {
+export function highlightNeighbors(graph: CoreGraph, selectedId: string, radius = 1): HighlightSet {
   const adj = buildAdjacency(graph);
   const dist = neighborsWithin(adj, selectedId, radius);
   const nodes = new Set(dist.keys());
@@ -158,11 +154,7 @@ export function highlightNeighbors(
  * Ego-graph: đồ thị con gồm mọi node trong bán kính `radius` quanh `centerId`
  * và các cạnh có cả hai đầu nằm trong tập đó.
  */
-export function egoGraph(
-  graph: CoreGraph,
-  centerId: string,
-  radius: number,
-): CoreGraph {
+export function egoGraph(graph: CoreGraph, centerId: string, radius: number): CoreGraph {
   const adj = buildAdjacency(graph);
   const dist = neighborsWithin(adj, centerId, radius);
   const keep = new Set(dist.keys());

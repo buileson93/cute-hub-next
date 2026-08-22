@@ -9,7 +9,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import type { SuCo, BaoTri, HongHocThayThe, BanGiao } from "@/lib/mirats/types";
 import { fetchAllRows } from "./paginate";
-import { usePagedQuery, sel as pagedSel, type Filter as PagedFilter, type Sort as PagedSort, type TsSearch as PagedSearch } from "./paged";
+import {
+  usePagedQuery,
+  sel as pagedSel,
+  type Filter as PagedFilter,
+  type Sort as PagedSort,
+  type TsSearch as PagedSearch,
+} from "./paged";
 
 type Row = Record<string, unknown>;
 
@@ -52,10 +58,34 @@ function snap(r: Record<string, unknown>) {
 
 async function loadOperations(): Promise<OperationsData> {
   const [scRes, btRes, hhRes, bgRes] = await Promise.all([
-    fetchAllRows<Row>((from, to) => supabase.from("su_co").select("*").order("ngay_phat_hien", { ascending: false }).range(from, to)),
-    fetchAllRows<Row>((from, to) => supabase.from("bao_tri").select("*").order("ngay_bat_dau", { ascending: false }).range(from, to)),
-    fetchAllRows<Row>((from, to) => supabase.from("hong_hoc").select("*").order("ngay_hong", { ascending: false }).range(from, to)),
-    fetchAllRows<Row>((from, to) => supabase.from("ban_giao").select("*").order("ngay_nhan", { ascending: false }).range(from, to)),
+    fetchAllRows<Row>((from, to) =>
+      supabase
+        .from("su_co")
+        .select("*")
+        .order("ngay_phat_hien", { ascending: false })
+        .range(from, to),
+    ),
+    fetchAllRows<Row>((from, to) =>
+      supabase
+        .from("bao_tri")
+        .select("*")
+        .order("ngay_bat_dau", { ascending: false })
+        .range(from, to),
+    ),
+    fetchAllRows<Row>((from, to) =>
+      supabase
+        .from("hong_hoc")
+        .select("*")
+        .order("ngay_hong", { ascending: false })
+        .range(from, to),
+    ),
+    fetchAllRows<Row>((from, to) =>
+      supabase
+        .from("ban_giao")
+        .select("*")
+        .order("ngay_nhan", { ascending: false })
+        .range(from, to),
+    ),
   ]);
 
   const suCo: SuCo[] = scRes.map((r: Row) => ({

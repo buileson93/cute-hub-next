@@ -29,11 +29,15 @@ function coerce(field: FieldDef, raw: string): { value: unknown; error?: string 
   switch (field.kind) {
     case "int": {
       const n = parseInt(v.replace(/[^\d-]/g, ""), 10);
-      return Number.isFinite(n) ? { value: n } : { value: null, error: `"${field.label}" không phải số nguyên` };
+      return Number.isFinite(n)
+        ? { value: n }
+        : { value: null, error: `"${field.label}" không phải số nguyên` };
     }
     case "num": {
       const n = parseFloat(v.replace(",", "."));
-      return Number.isFinite(n) ? { value: n } : { value: null, error: `"${field.label}" không phải số` };
+      return Number.isFinite(n)
+        ? { value: n }
+        : { value: null, error: `"${field.label}" không phải số` };
     }
     case "date":
       return { value: toISODate(v) };
@@ -80,7 +84,10 @@ const InputSchema = z.object({
    * commit=true (lúc đó cha đã ghi thật nên chỉ mục nạp từ CSDL là đủ).
    */
   extraRefs: z
-    .record(z.string(), z.array(z.object({ ma: z.string().optional(), ten: z.string().optional() })))
+    .record(
+      z.string(),
+      z.array(z.object({ ma: z.string().optional(), ten: z.string().optional() })),
+    )
     .optional(),
   /**
    * Danh sách bảng "danh mục nền" (vd dm_phan_loai, dm_nhom_he_thong) mà admin
@@ -173,7 +180,9 @@ export const runBulkImport = createServerFn({ method: "POST" })
     let inheritTable = "";
     const inheritCols: string[] = [];
     if (ent.inheritFromRef) {
-      const rf = ent.fields.find((f) => f.key === ent.inheritFromRef!.field && f.kind === "ref" && f.ref);
+      const rf = ent.fields.find(
+        (f) => f.key === ent.inheritFromRef!.field && f.kind === "ref" && f.ref,
+      );
       if (rf?.ref) {
         inheritTable = rf.ref.table;
         inheritCols.push(...Object.values(ent.inheritFromRef.map));
@@ -188,10 +197,12 @@ export const runBulkImport = createServerFn({ method: "POST" })
       const nameCol = f.ref!.nameCol ?? "ten";
       const maSel = keyCol === "ma" ? "ma" : `ma:${keyCol}`;
       const tenSel = nameCol === "ten" ? "ten" : `ten:${nameCol}`;
-      const cols = table === inheritTable
-        ? ["id", maSel, tenSel, ...inheritCols]
-        : ["id", maSel, tenSel];
-      const { data: rows, error } = await supabase.from(table).select([...new Set(cols)].join(", ")).limit(20000);
+      const cols =
+        table === inheritTable ? ["id", maSel, tenSel, ...inheritCols] : ["id", maSel, tenSel];
+      const { data: rows, error } = await supabase
+        .from(table)
+        .select([...new Set(cols)].join(", "))
+        .limit(20000);
       if (error) throw new Error(error.message);
       const byMa = new Map<string, any>();
       const byTen = new Map<string, any>();
@@ -228,15 +239,17 @@ export const runBulkImport = createServerFn({ method: "POST" })
       }
     }
 
-
-
     // Gom danh mục cần tạo mới (khi tự tạo được).
-    const pendingRefCreate = new Map<string, Map<string, { ma: string; ten: string; extra?: Record<string, unknown> }>>();
+    const pendingRefCreate = new Map<
+      string,
+      Map<string, { ma: string; ten: string; extra?: Record<string, unknown> }>
+    >();
     // Đếm số ref đã DÙNG LẠI (khớp ma/ten sẵn có) theo bảng — để báo cáo import.
     const refReusedByTable = new Map<string, Set<string>>();
     // Nhãn hiển thị theo bảng ref (lấy từ FieldDef.label lần đầu gặp).
     const refLabelByTable = new Map<string, string>();
-    for (const f of refFields) if (!refLabelByTable.has(f.ref!.table)) refLabelByTable.set(f.ref!.table, f.label);
+    for (const f of refFields)
+      if (!refLabelByTable.has(f.ref!.table)) refLabelByTable.set(f.ref!.table, f.label);
 
     // Danh mục nền "guard" (nhóm phân loại / nhóm hệ thống) đang thiếu và CHƯA
     // được admin xác nhận cho tạo mới → gom lại để hỏi (table|value → {table,label,value}).
@@ -246,7 +259,9 @@ export const runBulkImport = createServerFn({ method: "POST" })
     // Tự sinh mã khi bản ghi không có mã (insert). Có mã & khớp → update.
     const usedKeys = new Set<string>();
     const autoPrefix =
-      ({ thiet_bi: "TB", dm_he_thong: "HT", dm_model: "MDL" } as Record<string, string>)[ent.table] ?? "REC";
+      ({ thiet_bi: "TB", dm_he_thong: "HT", dm_model: "MDL" } as Record<string, string>)[
+        ent.table
+      ] ?? "REC";
     const genBase = Date.now().toString(36).toUpperCase();
     let autoSeq = 0;
     const genKey = (prefix: string): string => {
@@ -263,7 +278,11 @@ export const runBulkImport = createServerFn({ method: "POST" })
     // lại cùng tên sẽ khớp mã cũ, không nhân bản).
     const nameKey = ent.fields.find((f) => f.key === "ten_thiet_bi" || f.key === "ten")?.key;
     const slugCode = (s: string) =>
-      noAccent(s).toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 48);
+      noAccent(s)
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 48);
 
     const preview: PreviewRow[] = [];
     const writes: Array<{ id?: string; payload: Record<string, unknown>; lapViTri?: string }> = [];
@@ -313,7 +332,14 @@ export const runBulkImport = createServerFn({ method: "POST" })
 
       // Bỏ qua dòng theo yêu cầu (mẫu đánh dấu skip/delete ở cột _action).
       if (metaAction === "skip" || metaAction === "delete") {
-        preview.push({ index: i, action: "skip", key: keyRaw, messages: [], warnings: [`Bỏ qua theo _action="${metaAction}"`], refCreations: [] });
+        preview.push({
+          index: i,
+          action: "skip",
+          key: keyRaw,
+          messages: [],
+          warnings: [`Bỏ qua theo _action="${metaAction}"`],
+          refCreations: [],
+        });
         continue;
       }
 
@@ -323,9 +349,21 @@ export const runBulkImport = createServerFn({ method: "POST" })
         const dbVerRaw = versionById.get(existId);
         if (fileVer && dbVerRaw) {
           const dbVer = new Date(dbVerRaw).toISOString();
-          const fileVerIso = (() => { const d = new Date(fileVer); return isNaN(d.getTime()) ? fileVer : d.toISOString(); })();
+          const fileVerIso = (() => {
+            const d = new Date(fileVer);
+            return isNaN(d.getTime()) ? fileVer : d.toISOString();
+          })();
           if (fileVerIso !== dbVer) {
-            preview.push({ index: i, action: "skip", key: keyRaw, messages: [], warnings: ["Xung đột: bản ghi đã bị sửa trong CSDL sau khi tải mẫu — bỏ qua (bật 'Ghi đè' để vẫn ghi)"], refCreations: [] });
+            preview.push({
+              index: i,
+              action: "skip",
+              key: keyRaw,
+              messages: [],
+              warnings: [
+                "Xung đột: bản ghi đã bị sửa trong CSDL sau khi tải mẫu — bỏ qua (bật 'Ghi đè' để vẫn ghi)",
+              ],
+              refCreations: [],
+            });
             continue;
           }
         }
@@ -345,13 +383,16 @@ export const runBulkImport = createServerFn({ method: "POST" })
           const idx = refIdx.get(f.ref.table)!;
           const norm = noAccent(val);
           let hit: any = null;
-          for (const by of f.ref.by) hit = hit ?? (by === "ma" ? idx.byMa.get(norm) : idx.byTen.get(norm));
+          for (const by of f.ref.by)
+            hit = hit ?? (by === "ma" ? idx.byMa.get(norm) : idx.byTen.get(norm));
           // Chống trùng: nếu chưa khớp chính xác, thử khớp "gần đúng" (bỏ dấu/khoảng trắng).
           if (!hit) {
             const tightHit = idx.byTight.get(tightKey(val));
             if (tightHit) {
               hit = tightHit;
-              warnings.push(`${f.label}: dùng danh mục sẵn có "${tightHit.ten ?? tightHit.ma}" (khớp gần đúng với "${val}") — tránh tạo trùng`);
+              warnings.push(
+                `${f.label}: dùng danh mục sẵn có "${tightHit.ten ?? tightHit.ma}" (khớp gần đúng với "${val}") — tránh tạo trùng`,
+              );
             }
           }
           if (hit) {
@@ -359,26 +400,37 @@ export const runBulkImport = createServerFn({ method: "POST" })
             // Ghi nhận DÙNG LẠI: khớp theo ma (chính xác) hoặc theo ten (đã bỏ dấu).
             if (hit.id !== "__pending__") {
               let s = refReusedByTable.get(f.ref.table);
-              if (!s) { s = new Set(); refReusedByTable.set(f.ref.table, s); }
+              if (!s) {
+                s = new Set();
+                refReusedByTable.set(f.ref.table, s);
+              }
               s.add(String(hit.id));
             }
             // Kế thừa phân lớp từ bản ghi cha (tài sản←hệ thống, hệ thống←nhóm).
             // CHỈ điền khi hàng chưa tự khai — không ghi đè giá trị khai tay.
             if (ent.inheritFromRef && ent.inheritFromRef.field === f.key) {
               for (const [dst, srcCol] of Object.entries(ent.inheritFromRef.map)) {
-                if (payload[dst] == null && (hit as any)[srcCol] != null) payload[dst] = (hit as any)[srcCol];
+                if (payload[dst] == null && (hit as any)[srcCol] != null)
+                  payload[dst] = (hit as any)[srcCol];
               }
             }
           } else if (idx.create) {
             // DANH MỤC NỀN (nhóm phân loại / nhóm hệ thống) đang thiếu: chỉ CẢNH
             // BÁO để admin biết, nhưng VẪN cho phép tạo mới và ghi bình thường.
             if (f.ref.guard && !allowSet.has(f.ref.table)) {
-              refConfirm.set(`${f.ref.table}|${norm}`, { table: f.ref.table, label: f.label, value: val });
+              refConfirm.set(`${f.ref.table}|${norm}`, {
+                table: f.ref.table,
+                label: f.label,
+                value: val,
+              });
               warnings.push(`Sẽ tạo mới ${f.label} "${val}" (chưa có trong CSDL)`);
             }
             // Đăng ký tạo mới danh mục.
             let bucket = pendingRefCreate.get(f.ref.table);
-            if (!bucket) { bucket = new Map(); pendingRefCreate.set(f.ref.table, bucket); }
+            if (!bucket) {
+              bucket = new Map();
+              pendingRefCreate.set(f.ref.table, bucket);
+            }
             if (!bucket.has(norm)) bucket.set(norm, { ma: val, ten: val });
             // Nếu đây là ref KẾ THỪA (vd Hệ thống → Nhóm hệ thống): gắn phân lớp
             // của dòng con vào danh mục cha SẮP TẠO, để nhóm không bị "chưa phân
@@ -386,7 +438,7 @@ export const runBulkImport = createServerFn({ method: "POST" })
             if (ent.inheritFromRef && ent.inheritFromRef.field === f.key) {
               const b = bucket.get(norm)!;
               for (const [dst, srcCol] of Object.entries(ent.inheritFromRef.map)) {
-                if (payload[dst] != null && (b.extra?.[srcCol] == null)) {
+                if (payload[dst] != null && b.extra?.[srcCol] == null) {
                   b.extra = { ...(b.extra ?? {}), [srcCol]: payload[dst] };
                 }
               }
@@ -403,7 +455,12 @@ export const runBulkImport = createServerFn({ method: "POST" })
         if (error) messages.push(error);
         // Bỏ qua "thiếu" cho chính cột mã khi mã đã tự sinh (bỏ trống mã = tạo mới).
         const isKeyField = col === ent.naturalKey;
-        if (f.required && !isUpdate && (value == null || value === "") && !(isKeyField && keyWasBlank)) {
+        if (
+          f.required &&
+          !isUpdate &&
+          (value == null || value === "") &&
+          !(isKeyField && keyWasBlank)
+        ) {
           messages.push(`Thiếu "${f.label}"`);
         }
         if (value != null) payload[col] = value;
@@ -429,19 +486,29 @@ export const runBulkImport = createServerFn({ method: "POST" })
           if (firstRow != null) warnings.push(`Serial trùng với dòng ${firstRow + 1} trong file`);
           else batchSerials.set(serialNorm, i);
           const dbMa = existingSerials.get(serialNorm);
-          if (dbMa && noAccent(dbMa) !== keyNorm) warnings.push(`Serial đã tồn tại ở tài sản "${dbMa}"`);
+          if (dbMa && noAccent(dbMa) !== keyNorm)
+            warnings.push(`Serial đã tồn tại ở tài sản "${dbMa}"`);
         }
         // 3) Mâu thuẫn với mẫu: khai nhà sản xuất/loại nhưng đã chọn mẫu (mẫu sẽ ghi đè).
         const hasModel = payload.model_id != null || "__ref__model_id__dm_model" in payload;
-        if (hasModel && ((raw["nha_san_xuat"] ?? "").trim() || (raw["loai_thiet_bi"] ?? "").trim())) {
-          warnings.push("Đã chọn mẫu — nhà sản xuất/chủng loại sẽ kế thừa từ mẫu, cột khai tay có thể bị bỏ qua");
+        if (
+          hasModel &&
+          ((raw["nha_san_xuat"] ?? "").trim() || (raw["loai_thiet_bi"] ?? "").trim())
+        ) {
+          warnings.push(
+            "Đã chọn mẫu — nhà sản xuất/chủng loại sẽ kế thừa từ mẫu, cột khai tay có thể bị bỏ qua",
+          );
         }
       }
 
       // Trường ảo "Lắp vào vị trí (thành phần)": lắp tài sản vào 1 thành phần
       // trong hệ thống sau khi ghi. Cần có hệ thống mới lắp được.
       const lapViTri = ent.table === "thiet_bi" ? (raw["lap_vi_tri"] ?? "").trim() : "";
-      if (lapViTri && payload.he_thong_id == null && !("__ref__he_thong_id__dm_he_thong" in payload)) {
+      if (
+        lapViTri &&
+        payload.he_thong_id == null &&
+        !("__ref__he_thong_id__dm_he_thong" in payload)
+      ) {
         warnings.push("Đã điền 'Lắp vào vị trí' nhưng thiếu Hệ thống — bỏ qua lắp đặt");
       }
 
@@ -451,12 +518,17 @@ export const runBulkImport = createServerFn({ method: "POST" })
       if (messages.length) {
         preview.push({ index: i, action: "error", key: keyRaw, messages, warnings, refCreations });
       } else {
-        preview.push({ index: i, action: existId ? "update" : "create", key: keyRaw, messages: [], warnings, refCreations });
+        preview.push({
+          index: i,
+          action: existId ? "update" : "create",
+          key: keyRaw,
+          messages: [],
+          warnings,
+          refCreations,
+        });
         writes.push({ id: existId, payload, lapViTri: lapViTri || undefined });
       }
     }
-
-
 
     const confirms = [...refConfirm.values()];
     // Tổng hợp DÙNG LẠI ref theo bảng (kèm nhãn để UI hiển thị).
@@ -477,13 +549,25 @@ export const runBulkImport = createServerFn({ method: "POST" })
     };
 
     if (!data.commit) {
-      return { committed: false, summary, preview, confirms, refReusedByTable: refReusedList, entity: ent.id, table: ent.table };
+      return {
+        committed: false,
+        summary,
+        preview,
+        confirms,
+        refReusedByTable: refReusedList,
+        entity: ent.id,
+        table: ent.table,
+      };
     }
 
     // 3. GHI THẬT — tạo danh mục thiếu trước, lấy id mới.
     const resolvedRef = new Map<string, Map<string, string>>(); // table -> norm -> id
     // Danh sách các bản ghi ref MỚI TẠO thật sự (để báo cáo cho UI, gồm cả link).
-    const refCreatedByTable: Array<{ table: string; label: string; items: Array<{ id: string; ma: string | null; ten: string }> }> = [];
+    const refCreatedByTable: Array<{
+      table: string;
+      label: string;
+      items: Array<{ id: string; ma: string | null; ten: string }>;
+    }> = [];
     for (const [table, bucket] of pendingRefCreate) {
       // Vị trí tự tạo → gắn vào cấp cha mặc định (nếu admin đã chọn) để không nằm rời.
       const parentId = table === "dm_vi_tri" && data.viTriParentId ? data.viTriParentId : null;
@@ -493,7 +577,10 @@ export const runBulkImport = createServerFn({ method: "POST" })
         return base;
       });
       if (!inserts.length) continue;
-      const { data: created, error } = await supabase.from(table).insert(inserts).select("id, ma, ten");
+      const { data: created, error } = await supabase
+        .from(table)
+        .insert(inserts)
+        .select("id, ma, ten");
       if (error) throw new Error(`Tạo danh mục ${table} lỗi: ${error.message}`);
       const map = new Map<string, string>();
       for (const r of created ?? []) {
@@ -504,10 +591,13 @@ export const runBulkImport = createServerFn({ method: "POST" })
       refCreatedByTable.push({
         table,
         label: refLabelByTable.get(table) ?? table,
-        items: ((created ?? []) as any[]).map((r) => ({ id: String(r.id), ma: r.ma ?? null, ten: String(r.ten ?? "") })),
+        items: ((created ?? []) as any[]).map((r) => ({
+          id: String(r.id),
+          ma: r.ma ?? null,
+          ten: String(r.ten ?? ""),
+        })),
       });
     }
-
 
     // Thay các placeholder __ref__ bằng id thật.
     for (const w of writes) {
@@ -521,8 +611,9 @@ export const runBulkImport = createServerFn({ method: "POST" })
       }
     }
 
-
-    let created = 0, updated = 0, lapped = 0;
+    let created = 0,
+      updated = 0,
+      lapped = 0;
     const errors: Array<{ key: string; message: string }> = [];
     for (let i = 0; i < writes.length; i++) {
       const w = writes[i];
@@ -533,13 +624,20 @@ export const runBulkImport = createServerFn({ method: "POST" })
           if (error) throw new Error(error.message);
           updated++;
         } else {
-          const { data: ins, error } = await supabase.from(ent.table).insert(w.payload).select("id").single();
+          const { data: ins, error } = await supabase
+            .from(ent.table)
+            .insert(w.payload)
+            .select("id")
+            .single();
           if (error) throw new Error(error.message);
           deviceId = (ins as any)?.id;
           created++;
         }
       } catch (e) {
-        errors.push({ key: String(w.payload[ent.naturalKey] ?? ""), message: (e as Error).message });
+        errors.push({
+          key: String(w.payload[ent.naturalKey] ?? ""),
+          message: (e as Error).message,
+        });
         continue;
       }
 
@@ -554,7 +652,8 @@ export const runBulkImport = createServerFn({ method: "POST" })
             .select("id, ten, ma_thanh_phan")
             .eq("he_thong_id", heThongId);
           let tpId: string | undefined = (tps ?? []).find(
-            (t: any) => noAccent(String(t.ten)) === tpNorm || noAccent(String(t.ma_thanh_phan)) === tpNorm,
+            (t: any) =>
+              noAccent(String(t.ten)) === tpNorm || noAccent(String(t.ma_thanh_phan)) === tpNorm,
           )?.id;
           // Chưa có → tạo thành phần mới (TPHT_…).
           if (!tpId) {
@@ -577,7 +676,10 @@ export const runBulkImport = createServerFn({ method: "POST" })
             lapped++;
           }
         } catch (e) {
-          errors.push({ key: String(w.payload[ent.naturalKey] ?? ""), message: `Lắp vào vị trí lỗi: ${(e as Error).message}` });
+          errors.push({
+            key: String(w.payload[ent.naturalKey] ?? ""),
+            message: `Lắp vào vị trí lỗi: ${(e as Error).message}`,
+          });
         }
       }
     }

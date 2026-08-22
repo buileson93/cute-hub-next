@@ -191,7 +191,9 @@ export function AnnotationManager({
               value={form.loai}
               onValueChange={(v) => setForm({ ...form, loai: v as AnnotationLoai })}
             >
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {(Object.keys(LOAI_META) as AnnotationLoai[]).map((k) => (
                   <SelectItem key={k} value={k}>
@@ -226,7 +228,9 @@ export function AnnotationManager({
           </div>
           <div className="col-span-2 flex items-center justify-end gap-2">
             {editing && (
-              <Button variant="ghost" size="sm" onClick={resetForm}>Huỷ sửa</Button>
+              <Button variant="ghost" size="sm" onClick={resetForm}>
+                Huỷ sửa
+              </Button>
             )}
             <Button size="sm" onClick={save} loading={saving} className="gap-1.5">
               {editing ? <Pencil className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
@@ -239,7 +243,9 @@ export function AnnotationManager({
           {isLoading ? (
             <div className="p-4 text-sm text-muted-foreground">Đang tải…</div>
           ) : !items.length ? (
-            <div className="p-4 text-sm text-muted-foreground">Chưa có ghi chú trong khoảng thời gian đang xem.</div>
+            <div className="p-4 text-sm text-muted-foreground">
+              Chưa có ghi chú trong khoảng thời gian đang xem.
+            </div>
           ) : (
             <ul className="divide-y">
               {items.map((a) => (
@@ -255,13 +261,29 @@ export function AnnotationManager({
                       <span>{new Date(a.thoi_diem).toLocaleString("vi-VN")}</span>
                     </div>
                     <div className="mt-0.5 truncate text-sm font-medium">{a.tieu_de}</div>
-                    {a.mo_ta && <div className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{a.mo_ta}</div>}
+                    {a.mo_ta && (
+                      <div className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                        {a.mo_ta}
+                      </div>
+                    )}
                   </div>
                   <div className="flex shrink-0 gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => edit(a)} aria-label="Sửa ghi chú">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => edit(a)}
+                      aria-label="Sửa ghi chú"
+                    >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remove(a)} aria-label="Xoá ghi chú">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => remove(a)}
+                      aria-label="Xoá ghi chú"
+                    >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>

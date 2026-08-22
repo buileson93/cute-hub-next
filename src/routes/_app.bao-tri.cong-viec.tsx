@@ -4,26 +4,59 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ClipboardList, Search, Loader2, RefreshCw, CheckCircle2, Play,
-  AlertTriangle, Gauge, TrendingUp, FileText,
+  ClipboardList,
+  Search,
+  Loader2,
+  RefreshCw,
+  CheckCircle2,
+  Play,
+  AlertTriangle,
+  Gauge,
+  TrendingUp,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/backend/client";
 import {
-  useCongViecBaoTri, useKpiBaoTri, useSinhPhieuDinhKy, useHoanThanhPhieu, useCapNhatPhieu,
-  hieuLucPhieu, UU_TIEN_META,
+  useCongViecBaoTri,
+  useKpiBaoTri,
+  useSinhPhieuDinhKy,
+  useHoanThanhPhieu,
+  useCapNhatPhieu,
+  hieuLucPhieu,
+  UU_TIEN_META,
 } from "@/lib/mirats/cong-viec-bao-tri";
 import { findOrphans } from "@/lib/mirats/bao-tri-consistency";
 import { VatTuTieuHaoInline } from "@/components/mirats/VatTuTieuHaoInline";
@@ -33,7 +66,11 @@ export const Route = createFileRoute("/_app/bao-tri/cong-viec")({
   head: () => ({
     meta: [
       { title: "Phiếu công việc & KPI bảo dưỡng — MIRATS" },
-      { name: "description", content: "Sinh phiếu công việc bảo dưỡng định kỳ từ chính sách PM, theo dõi tiến độ và KPI đúng hạn theo đơn vị." },
+      {
+        name: "description",
+        content:
+          "Sinh phiếu công việc bảo dưỡng định kỳ từ chính sách PM, theo dõi tiến độ và KPI đúng hạn theo đơn vị.",
+      },
       { property: "og:title", content: "Phiếu công việc & KPI bảo dưỡng — MIRATS" },
       { property: "og:description", content: "Chính sách bảo dưỡng → phiếu công việc → KPI." },
     ],
@@ -62,9 +99,18 @@ function CongViecPage() {
     const today = getTodayDateString();
     return {
       total: list.length,
-      done: list.filter((c) => phaseOf("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) === "closed").length,
-      open: list.filter((c) => isOpenStatus("cong_viec", normalizeLegacy("cong_viec", c.trang_thai))).length,
-      overdue: list.filter((c) => isOpenStatus("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) && c.ngay_den_han && c.ngay_den_han < today).length,
+      done: list.filter(
+        (c) => phaseOf("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) === "closed",
+      ).length,
+      open: list.filter((c) =>
+        isOpenStatus("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)),
+      ).length,
+      overdue: list.filter(
+        (c) =>
+          isOpenStatus("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) &&
+          c.ngay_den_han &&
+          c.ngay_den_han < today,
+      ).length,
     };
   }, [list]);
 
@@ -73,8 +119,9 @@ function CongViecPage() {
     queryKey: ["bao_tri", "orphan-check"],
     queryFn: async () => {
       const { fetchAllRows } = await import("@/lib/mirats/paginate");
-      return fetchAllRows<{ id: string; ma_bao_tri: string | null; thiet_bi_id: string | null }>((from, to) =>
-        supabase.from("bao_tri").select("id, ma_bao_tri, thiet_bi_id").range(from, to),
+      return fetchAllRows<{ id: string; ma_bao_tri: string | null; thiet_bi_id: string | null }>(
+        (from, to) =>
+          supabase.from("bao_tri").select("id, ma_bao_tri, thiet_bi_id").range(from, to),
       );
     },
     staleTime: 30_000,
@@ -124,7 +171,9 @@ function CongViecPage() {
   async function onSinh() {
     try {
       const n = await sinh.mutateAsync();
-      toast.success(n > 0 ? `Đã sinh ${n} phiếu công việc định kỳ` : "Không có tài sản nào đến hạn");
+      toast.success(
+        n > 0 ? `Đã sinh ${n} phiếu công việc định kỳ` : "Không có tài sản nào đến hạn",
+      );
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Không sinh được phiếu");
     }
@@ -153,17 +202,22 @@ function CongViecPage() {
     }
   }
 
-  type CongViecItem = typeof list[number];
+  type CongViecItem = (typeof list)[number];
 
   const columns: StdColumn<CongViecItem>[] = useMemo(() => {
     const base: StdColumn<CongViecItem>[] = [
       {
-        key: "ma_cong_viec", label: "Mã WO", filter: "text", sortable: true,
+        key: "ma_cong_viec",
+        label: "Mã WO",
+        filter: "text",
+        sortable: true,
         value: (c) => c.ma_cong_viec ?? "",
         cell: (c) => <span className="font-mono text-xs">{c.ma_cong_viec}</span>,
       },
       {
-        key: "thiet_bi", label: "Tài sản", filter: "text",
+        key: "thiet_bi",
+        label: "Tài sản",
+        filter: "text",
         value: (c) => `${c.thiet_bi?.ma_thiet_bi ?? ""} ${c.thiet_bi?.ten_thiet_bi ?? ""}`,
         cell: (c) => (
           <div className="max-w-[240px]">
@@ -173,12 +227,16 @@ function CongViecPage() {
         ),
       },
       {
-        key: "loai", label: "Loại", filter: "cat",
+        key: "loai",
+        label: "Loại",
+        filter: "cat",
         value: (c) => (c.loai === "CM" ? "Khắc phục" : "Định kỳ"),
         cell: (c) => <Badge variant="outline">{c.loai === "CM" ? "Khắc phục" : "Định kỳ"}</Badge>,
       },
       {
-        key: "uu_tien", label: "Ưu tiên", filter: "cat",
+        key: "uu_tien",
+        label: "Ưu tiên",
+        filter: "cat",
         value: (c) => (UU_TIEN_META[c.uu_tien] ?? UU_TIEN_META.TRUNG_BINH).label,
         cell: (c) => {
           const ut = UU_TIEN_META[c.uu_tien] ?? UU_TIEN_META.TRUNG_BINH;
@@ -186,12 +244,16 @@ function CongViecPage() {
         },
       },
       {
-        key: "ngay_den_han", label: "Đến hạn", sortable: true,
+        key: "ngay_den_han",
+        label: "Đến hạn",
+        sortable: true,
         value: (c) => c.ngay_den_han ?? "",
         cell: (c) => <span className="text-sm">{c.ngay_den_han ?? "—"}</span>,
       },
       {
-        key: "trang_thai", label: "Trạng thái", filter: "cat",
+        key: "trang_thai",
+        label: "Trạng thái",
+        filter: "cat",
         value: (c) => hieuLucPhieu(c).label,
         cell: (c) => {
           const hl = hieuLucPhieu(c);
@@ -201,32 +263,63 @@ function CongViecPage() {
     ];
     if (canManage) {
       base.push({
-        key: "actions", label: "", align: "right",
-        cell: (c) => isOpenStatus("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) ? (
-          <div className="flex justify-end gap-1">
-            {c.he_thong_id && (
-              <Button asChild size="sm" variant="ghost">
-                <Link to="/bao-tri/moi" search={{ heThong: c.he_thong_id, version: c.template_version_id ?? undefined, congViec: c.id }}>
-                  <FileText className="mr-1 h-3.5 w-3.5" />Lập biên bản
-                </Link>
+        key: "actions",
+        label: "",
+        align: "right",
+        cell: (c) =>
+          isOpenStatus("cong_viec", normalizeLegacy("cong_viec", c.trang_thai)) ? (
+            <div className="flex justify-end gap-1">
+              {c.he_thong_id && (
+                <Button asChild size="sm" variant="ghost">
+                  <Link
+                    to="/bao-tri/moi"
+                    search={{
+                      heThong: c.he_thong_id,
+                      version: c.template_version_id ?? undefined,
+                      congViec: c.id,
+                    }}
+                  >
+                    <FileText className="mr-1 h-3.5 w-3.5" />
+                    Lập biên bản
+                  </Link>
+                </Button>
+              )}
+              {normalizeLegacy("cong_viec", c.trang_thai) === "mo" && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={busy === c.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onBatDau(c.id);
+                  }}
+                >
+                  <Play className="mr-1 h-3.5 w-3.5" />
+                  Bắt đầu
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={busy === c.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setXong({ id: c.id, ma: c.ma_cong_viec ?? "" });
+                }}
+              >
+                {busy === c.id ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+                )}
+                Xong
               </Button>
-            )}
-            {normalizeLegacy("cong_viec", c.trang_thai) === "mo" && (
-              <Button size="sm" variant="ghost" disabled={busy === c.id} onClick={(e) => { e.stopPropagation(); onBatDau(c.id); }}>
-                <Play className="mr-1 h-3.5 w-3.5" />Bắt đầu
-              </Button>
-            )}
-            <Button size="sm" variant="ghost" disabled={busy === c.id} onClick={(e) => { e.stopPropagation(); setXong({ id: c.id, ma: c.ma_cong_viec ?? "" }); }}>
-              {busy === c.id ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="mr-1 h-3.5 w-3.5" />}
-              Xong
-            </Button>
-          </div>
-        ) : null,
+            </div>
+          ) : null,
       });
     }
     return base;
   }, [canManage, busy]);
-
 
   return (
     <div className="space-y-4">
@@ -237,13 +330,16 @@ function CongViecPage() {
         actions={
           canManage ? (
             <Button onClick={onSinh} disabled={sinh.isPending}>
-              {sinh.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+              {sinh.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
               Sinh phiếu định kỳ
             </Button>
           ) : null
         }
       />
-
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-4 py-3 text-sm">
         <Stat icon={ClipboardList} label="Tổng phiếu" value={stats.total} />
@@ -285,7 +381,8 @@ function CongViecPage() {
             {orphans.bienBanKhongThuocPhieu.length > 0 && (
               <div>
                 <div className="font-medium">
-                  Biên bản không thuộc phiếu công việc nào ({orphans.bienBanKhongThuocPhieu.length}):
+                  Biên bản không thuộc phiếu công việc nào ({orphans.bienBanKhongThuocPhieu.length}
+                  ):
                 </div>
                 <div className="flex flex-wrap gap-1 pt-1">
                   {orphans.bienBanKhongThuocPhieu.slice(0, 30).map((id) => (
@@ -319,10 +416,17 @@ function CongViecPage() {
                 <div className="flex flex-wrap gap-2">
                   <div className="relative">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Mã WO, tài sản..." className="h-9 w-56 pl-9" />
+                    <Input
+                      value={q}
+                      onChange={(e) => setQ(e.target.value)}
+                      placeholder="Mã WO, tài sản..."
+                      className="h-9 w-56 pl-9"
+                    />
                   </div>
                   <Select value={tt} onValueChange={setTt}>
-                    <SelectTrigger className="h-9 w-[150px]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-9 w-[150px]">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Mọi trạng thái</SelectItem>
                       <SelectItem value="MO">Đang mở</SelectItem>
@@ -341,14 +445,17 @@ function CongViecPage() {
                 columns={columns}
                 rows={filtered}
                 getRowId={(c) => c.id}
-                trangThai={{ dangTai: isLoading, loi: error ? String((error as Error).message ?? error) : null }}
+                trangThai={{
+                  dangTai: isLoading,
+                  loi: error ? String((error as Error).message ?? error) : null,
+                }}
                 emptyContent={
                   <div className="py-10 text-center text-muted-foreground">
-                    Chưa có phiếu công việc. {canManage && "Bấm “Sinh phiếu định kỳ” để tạo từ chính sách bảo dưỡng."}
+                    Chưa có phiếu công việc.{" "}
+                    {canManage && "Bấm “Sinh phiếu định kỳ” để tạo từ chính sách bảo dưỡng."}
                   </div>
                 }
               />
-
             </CardContent>
           </Card>
         </TabsContent>
@@ -356,8 +463,13 @@ function CongViecPage() {
         <TabsContent value="kpi" className="mt-3">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base"><Gauge className="h-4 w-4" /> KPI bảo dưỡng theo đơn vị</CardTitle>
-              <CardDescription>Tỉ lệ đúng hạn = phiếu hoàn thành trước/đúng ngày đến hạn / tổng phiếu đã hoàn thành.</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Gauge className="h-4 w-4" /> KPI bảo dưỡng theo đơn vị
+              </CardTitle>
+              <CardDescription>
+                Tỉ lệ đúng hạn = phiếu hoàn thành trước/đúng ngày đến hạn / tổng phiếu đã hoàn
+                thành.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {!kpi || kpi.length === 0 ? (
@@ -379,9 +491,13 @@ function CongViecPage() {
                     <TableBody>
                       {kpi.map((k) => (
                         <TableRow key={k.don_vi_id ?? "none"}>
-                          <TableCell className="font-medium">{k.don_vi_ten ?? "Chưa gán đơn vị"}</TableCell>
+                          <TableCell className="font-medium">
+                            {k.don_vi_ten ?? "Chưa gán đơn vị"}
+                          </TableCell>
                           <TableCell className="text-right">{k.tong_cong_viec}</TableCell>
-                          <TableCell className="text-right text-emerald-600">{k.da_hoan_thanh}</TableCell>
+                          <TableCell className="text-right text-emerald-600">
+                            {k.da_hoan_thanh}
+                          </TableCell>
                           <TableCell className="text-right text-sky-600">{k.dang_mo}</TableCell>
                           <TableCell className="text-right text-red-600">{k.qua_han}</TableCell>
                           <TableCell className="text-right">{k.hoan_thanh_dung_han}</TableCell>
@@ -403,12 +519,18 @@ function CongViecPage() {
       </Tabs>
 
       {/* Task 15 — Ghi vật tư tiêu hao trước khi hoàn thành phiếu */}
-      <Dialog open={!!xong} onOpenChange={(o) => { if (!o) setXong(null); }}>
+      <Dialog
+        open={!!xong}
+        onOpenChange={(o) => {
+          if (!o) setXong(null);
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Hoàn thành phiếu {xong?.ma}</DialogTitle>
             <DialogDescription>
-              Khai vật tư đã sử dụng (nếu có) — hệ thống sẽ tự tạo bút toán xuất kho và gắn với phiếu công việc này.
+              Khai vật tư đã sử dụng (nếu có) — hệ thống sẽ tự tạo bút toán xuất kho và gắn với
+              phiếu công việc này.
             </DialogDescription>
           </DialogHeader>
           {xong && (
@@ -422,7 +544,9 @@ function CongViecPage() {
             />
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setXong(null)}>Huỷ</Button>
+            <Button variant="outline" onClick={() => setXong(null)}>
+              Huỷ
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -430,7 +554,17 @@ function CongViecPage() {
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: React.ComponentType<{ className?: string }>; label: string; value: number; tone?: string }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: number;
+  tone?: string;
+}) {
   return (
     <div className="flex items-center gap-2">
       <Icon className={`h-4 w-4 ${tone ?? "text-muted-foreground"}`} />

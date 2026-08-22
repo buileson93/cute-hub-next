@@ -5,10 +5,16 @@ export const Route = createFileRoute("/_app/su-co/moi")({
   head: () => ({
     meta: [
       { title: "Báo cáo ban đầu sự cố — MIRATS" },
-      { name: "description", content: "Lập biên bản báo cáo ban đầu về sự cố kỹ thuật, ghi vào sổ lý lịch tài sản và hệ thống, xuất Word theo mẫu." },
+      {
+        name: "description",
+        content:
+          "Lập biên bản báo cáo ban đầu về sự cố kỹ thuật, ghi vào sổ lý lịch tài sản và hệ thống, xuất Word theo mẫu.",
+      },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { heThong?: string; thietBi?: string; from?: string; voice?: string } => ({
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { heThong?: string; thietBi?: string; from?: string; voice?: string } => ({
     heThong: typeof s.heThong === "string" ? s.heThong : undefined,
     thietBi: typeof s.thietBi === "string" ? s.thietBi : undefined,
     from: typeof s.from === "string" ? s.from : undefined,

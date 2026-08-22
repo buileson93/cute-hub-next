@@ -1,4 +1,16 @@
-import { Laptop, ShieldCheck, CheckCircle2, XCircle, AlertCircle, Info, Download, Filter, Search, User, Upload } from "lucide-react";
+import {
+  Laptop,
+  ShieldCheck,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Info,
+  Download,
+  Filter,
+  Search,
+  User,
+  Upload,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -6,7 +18,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { useState, useMemo } from "react";
@@ -18,7 +36,11 @@ export const Route = createFileRoute("/_app/thong-ke/laptop")({
   head: () => ({
     meta: [
       { title: "Thống kê Máy tính & Bản quyền — MIRATS" },
-      { name: "description", content: "Thống kê chi tiết máy tính (Laptop/PC) theo nhân viên và tình trạng bản quyền phần mềm." },
+      {
+        name: "description",
+        content:
+          "Thống kê chi tiết máy tính (Laptop/PC) theo nhân viên và tình trạng bản quyền phần mềm.",
+      },
     ],
   }),
 });
@@ -58,13 +80,14 @@ function MayTinhStatsPage() {
         .from("nhan_vien")
         .select("id, ma_nhan_vien, ho_ten, don_vi, chuc_vu")
         .order("ho_ten");
-      
+
       if (empErr) throw empErr;
 
       // 2. Lấy danh sách máy tính và phần mềm cấp phát
       const { data: assets, error: assetErr } = await supabase
         .from("thiet_bi")
-        .select(`
+        .select(
+          `
           id, ma_thiet_bi, ten_thiet_bi, ma_serial, nhan_vien_id,
           dm_loai_thiet_bi!inner(la_may_tinh),
           dm_model(ten),
@@ -72,9 +95,10 @@ function MayTinhStatsPage() {
             id, ngay_thu_hoi,
             phan_mem_ban_quyen(id, ten_phan_mem, ma_ban_quyen, so_ghe)
           )
-        `)
+        `,
+        )
         .eq("dm_loai_thiet_bi.la_may_tinh", true);
-      
+
       if (assetErr) throw assetErr;
 
       // Type cast to any because of complex joins not fully typed in Supabase client
@@ -85,16 +109,16 @@ function MayTinhStatsPage() {
         .from("phan_mem_ban_quyen_cap_phat")
         .select("ban_quyen_id")
         .is("ngay_thu_hoi", null);
-      
+
       if (countErr) throw countErr;
 
       const usageMap = new Map<string, number>();
-      (capPhatCount || []).forEach(cp => {
+      (capPhatCount || []).forEach((cp) => {
         usageMap.set(cp.ban_quyen_id, (usageMap.get(cp.ban_quyen_id) || 0) + 1);
       });
 
       // 4. Map dữ liệu
-      return (employees || []).map(emp => {
+      return (employees || []).map((emp) => {
         const empDevices = rawAssets
           .filter((a: any) => a.nhan_vien_id === emp.id)
           .map((a: any) => ({
@@ -110,8 +134,8 @@ function MayTinhStatsPage() {
                 ten_phan_mem: cp.phan_mem_ban_quyen.ten_phan_mem,
                 ma_ban_quyen: cp.phan_mem_ban_quyen.ma_ban_quyen,
                 so_ghe: cp.phan_mem_ban_quyen.so_ghe,
-                ghe_da_dung: usageMap.get(cp.phan_mem_ban_quyen.id) || 0
-              }))
+                ghe_da_dung: usageMap.get(cp.phan_mem_ban_quyen.id) || 0,
+              })),
           }));
 
         return {
@@ -120,22 +144,25 @@ function MayTinhStatsPage() {
           ho_ten: emp.ho_ten,
           don_vi: emp.don_vi,
           chuc_vu: emp.chuc_vu,
-          thiet_bi: empDevices
+          thiet_bi: empDevices,
         };
       });
-    }
+    },
   });
 
   const filteredStats = useMemo(() => {
-    return stats.filter(row => {
-      const matchText = !q || row.ho_ten.toLowerCase().includes(q.toLowerCase()) || row.ma_nhan_vien.toLowerCase().includes(q.toLowerCase());
+    return stats.filter((row) => {
+      const matchText =
+        !q ||
+        row.ho_ten.toLowerCase().includes(q.toLowerCase()) ||
+        row.ma_nhan_vien.toLowerCase().includes(q.toLowerCase());
       const matchUnit = unitFilter === "all" || row.don_vi === unitFilter;
       return matchText && matchUnit;
     });
   }, [stats, q, unitFilter]);
 
   const units = useMemo(() => {
-    const set = new Set(stats.map(s => s.don_vi).filter(Boolean));
+    const set = new Set(stats.map((s) => s.don_vi).filter(Boolean));
     return Array.from(set).sort();
   }, [stats]);
 
@@ -144,11 +171,11 @@ function MayTinhStatsPage() {
     let totalSoftware = 0;
     let employeesWithDevice = 0;
 
-    filteredStats.forEach(s => {
+    filteredStats.forEach((s) => {
       if (s.thiet_bi.length > 0) {
         employeesWithDevice++;
         assignedDevices += s.thiet_bi.length;
-        s.thiet_bi.forEach(l => {
+        s.thiet_bi.forEach((l) => {
           totalSoftware += l.software.length;
         });
       }
@@ -168,10 +195,12 @@ function MayTinhStatsPage() {
           </div>
           <div>
             <div className="font-bold text-sm">{row.ho_ten}</div>
-            <div className="text-[10px] text-muted-foreground uppercase font-mono">{row.ma_nhan_vien}</div>
+            <div className="text-[10px] text-muted-foreground uppercase font-mono">
+              {row.ma_nhan_vien}
+            </div>
           </div>
         </div>
-      )
+      ),
     },
     { key: "don_vi", label: "Đơn vị", filter: "cat" },
     {
@@ -190,7 +219,11 @@ function MayTinhStatsPage() {
                     <span className="font-bold">{l.ten_thiet_bi}</span>
                     <span className="text-muted-foreground font-mono">({l.ma_thiet_bi})</span>
                   </div>
-                  {l.ma_serial && <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">SN: {l.ma_serial}</Badge>}
+                  {l.ma_serial && (
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                      SN: {l.ma_serial}
+                    </Badge>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
@@ -203,12 +236,18 @@ function MayTinhStatsPage() {
                       const gheTrong = sw.so_ghe === null ? null : sw.so_ghe - sw.ghe_da_dung;
                       const hetGhe = gheTrong !== null && gheTrong <= 0;
                       return (
-                        <Badge key={sw.id} variant="outline" className="gap-1 bg-background text-[9px] px-1.5 py-0 flex flex-col items-start h-auto py-1">
+                        <Badge
+                          key={sw.id}
+                          variant="outline"
+                          className="gap-1 bg-background text-[9px] px-1.5 py-0 flex flex-col items-start h-auto py-1"
+                        >
                           <div className="flex items-center gap-1">
                             <ShieldCheck className="h-2.5 w-2.5 text-emerald-500" />
                             <span className="font-medium">{sw.ten_phan_mem}</span>
                           </div>
-                          <div className={`text-[8px] ${hetGhe ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
+                          <div
+                            className={`text-[8px] ${hetGhe ? "text-destructive font-bold" : "text-muted-foreground"}`}
+                          >
                             {sw.so_ghe === null ? "Ghế: ∞" : `Còn ${gheTrong}/${sw.so_ghe} ghế`}
                           </div>
                         </Badge>
@@ -220,8 +259,8 @@ function MayTinhStatsPage() {
             ))
           )}
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -232,7 +271,12 @@ function MayTinhStatsPage() {
         subtitle="Quản lý chi tiết tình trạng cấp phát thiết bị và phần mềm theo nhân sự"
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="gap-1.5 shadow-sm" onClick={() => setImportOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 shadow-sm"
+              onClick={() => setImportOpen(true)}
+            >
               <Upload className="h-4 w-4" /> Nhập Excel
             </Button>
             <Button variant="outline" size="sm" className="gap-1.5 shadow-sm">
@@ -245,36 +289,50 @@ function MayTinhStatsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="shadow-sm border-primary/10 bg-primary/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary">Nhân viên có máy</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary">
+              Nhân viên có máy
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-primary">{kpis.employeesWithDevice}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">Trong tổng số {filteredStats.length} nhân viên (theo bộ lọc)</div>
+            <div className="text-[10px] text-muted-foreground font-medium mt-1">
+              Trong tổng số {filteredStats.length} nhân viên (theo bộ lọc)
+            </div>
           </CardContent>
         </Card>
         <Card className="shadow-sm border-emerald-100 bg-emerald-50/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-emerald-700">Tổng máy tính đã gán</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+              Tổng máy tính đã gán
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-emerald-700">{kpis.assignedDevices}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">Máy tính (Laptop/PC) đang được nhân viên phụ trách</div>
+            <div className="text-[10px] text-muted-foreground font-medium mt-1">
+              Máy tính (Laptop/PC) đang được nhân viên phụ trách
+            </div>
           </CardContent>
         </Card>
         <Card className="shadow-sm border-amber-100 bg-amber-50/30">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-amber-700">Bản quyền đã cấp</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-amber-700">
+              Bản quyền đã cấp
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-amber-700">{kpis.totalSoftware}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">Giấy phép phần mềm đang hoạt động trên máy</div>
+            <div className="text-[10px] text-muted-foreground font-medium mt-1">
+              Giấy phép phần mềm đang hoạt động trên máy
+            </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 items-end">
         <div className="w-full md:max-w-sm space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Tìm kiếm nhân viên</label>
+          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+            Tìm kiếm nhân viên
+          </label>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -286,7 +344,9 @@ function MayTinhStatsPage() {
           </div>
         </div>
         <div className="w-full md:w-64 space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Lọc đơn vị</label>
+          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+            Lọc đơn vị
+          </label>
           <Select value={unitFilter} onValueChange={setUnitFilter}>
             <SelectTrigger className="bg-background shadow-sm">
               <div className="flex items-center gap-2">
@@ -296,8 +356,10 @@ function MayTinhStatsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả đơn vị</SelectItem>
-              {units.map(u => (
-                <SelectItem key={u} value={u || "khac"}>{u}</SelectItem>
+              {units.map((u) => (
+                <SelectItem key={u} value={u || "khac"}>
+                  {u}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -324,15 +386,13 @@ function MayTinhStatsPage() {
         <div className="space-y-1">
           <div className="text-sm font-bold text-blue-900">Mẹo vận hành</div>
           <p className="text-xs text-blue-800 leading-relaxed font-medium">
-            Sử dụng chức năng này để rà soát các máy tính (Laptop/PC) chưa được cài đặt phần mềm bản quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
+            Sử dụng chức năng này để rà soát các máy tính (Laptop/PC) chưa được cài đặt phần mềm bản
+            quyền cần thiết hoặc các bản quyền đã hết "ghế" (seats) để có kế hoạch gia hạn kịp thời.
           </p>
-      </div>
+        </div>
 
-      <AssetImportDialog 
-        open={importOpen} 
-        onOpenChange={setImportOpen} 
-      />
-    </div>
+        <AssetImportDialog open={importOpen} onOpenChange={setImportOpen} />
+      </div>
     </div>
   );
 }

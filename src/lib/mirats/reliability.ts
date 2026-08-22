@@ -34,12 +34,7 @@ export interface ReliabilityResult {
 const SECONDS_PER_HOUR = 3600;
 
 /** Cắt xén khoảng downtime vào cửa sổ quan sát. */
-function clip(
-  startMs: number,
-  endMs: number,
-  fromMs: number,
-  toMs: number,
-): number {
+function clip(startMs: number, endMs: number, fromMs: number, toMs: number): number {
   return Math.max(0, Math.min(endMs, toMs) - Math.max(startMs, fromMs)) / 1000;
 }
 
@@ -52,9 +47,14 @@ export function computeReliability(
   const toMs = window.to.getTime();
   if (toMs <= fromMs) {
     return {
-      mtbf_h: null, mttr_h: null, availability: null,
-      downtime_s: 0, failures: 0, failures_closed: 0,
-      uptime_s: 0, operational_s: Math.max(0, operationalSeconds),
+      mtbf_h: null,
+      mttr_h: null,
+      availability: null,
+      downtime_s: 0,
+      failures: 0,
+      failures_closed: 0,
+      uptime_s: 0,
+      operational_s: Math.max(0, operationalSeconds),
     };
   }
 
@@ -86,13 +86,19 @@ export function computeReliability(
   const uptime_s = Math.max(0, opSec - downtime_s);
 
   const mtbf_h = failures === 0 ? null : round(uptime_s / failures / SECONDS_PER_HOUR, 2);
-  const mttr_h = failures_closed === 0 ? null : round(mttrNumeratorSeconds / failures_closed / SECONDS_PER_HOUR, 2);
+  const mttr_h =
+    failures_closed === 0
+      ? null
+      : round(mttrNumeratorSeconds / failures_closed / SECONDS_PER_HOUR, 2);
   const availability = opSec === 0 ? null : round(Math.max(0, 1 - downtime_s / opSec), 4);
 
   return {
-    mtbf_h, mttr_h, availability,
+    mtbf_h,
+    mttr_h,
+    availability,
     downtime_s: Math.round(downtime_s),
-    failures, failures_closed,
+    failures,
+    failures_closed,
     uptime_s: Math.round(uptime_s),
     operational_s: Math.round(opSec),
   };
@@ -158,9 +164,7 @@ export function rangeHours(startIso: string, endIso: string): number {
 }
 
 /** Downtime (phút) của 1 sự cố: ưu tiên `thoi_gian_gian_doan`. */
-export function incidentDowntimeMinutes(
-  inc: ReliabilityIncident,
-): number | null {
+export function incidentDowntimeMinutes(inc: ReliabilityIncident): number | null {
   if (typeof inc.thoi_gian_gian_doan === "number" && inc.thoi_gian_gian_doan >= 0) {
     return inc.thoi_gian_gian_doan;
   }
@@ -198,7 +202,10 @@ export function availability(input: AvailabilityInput): KpiResult {
   const sources = incidents.map(toSource);
   if (assetCount <= 0 || windowHours <= 0) {
     return {
-      value: null, unit: "percent", sampleSize: incidents.length, sources,
+      value: null,
+      unit: "percent",
+      sampleSize: incidents.length,
+      sources,
       insufficient: true,
       reason: "Chưa đủ dữ liệu tài sản/cửa sổ thời gian để tính availability",
     };
@@ -235,8 +242,12 @@ export function mttr(incidents: readonly ReliabilityIncident[]): KpiResult {
   }
   if (n === 0) {
     return {
-      value: null, unit: "min", sampleSize: 0, sources: [],
-      insufficient: true, reason: "Chưa có sự cố đủ mốc thời gian để tính MTTR",
+      value: null,
+      unit: "min",
+      sampleSize: 0,
+      sources: [],
+      insufficient: true,
+      reason: "Chưa có sự cố đủ mốc thời gian để tính MTTR",
     };
   }
   return {
@@ -260,9 +271,12 @@ export function mtbf(incidents: readonly ReliabilityIncident[]): KpiResult {
     .sort((a, b) => a.t - b.t);
   if (stamps.length < 2) {
     return {
-      value: null, unit: "day", sampleSize: stamps.length,
+      value: null,
+      unit: "day",
+      sampleSize: stamps.length,
       sources: stamps.map((s) => toSource(s.inc)),
-      insufficient: true, reason: "Cần ≥ 2 sự cố có ngày phát hiện để tính MTBF",
+      insufficient: true,
+      reason: "Cần ≥ 2 sự cố có ngày phát hiện để tính MTBF",
     };
   }
   let sumMs = 0;
@@ -289,12 +303,19 @@ export function formatKpiValue(
   if (!res || res.value == null) return "Chưa đủ dữ liệu";
   if (customFmt) return customFmt(res.value);
   switch (res.unit) {
-    case "percent": return `${res.value.toFixed(2)}%`;
-    case "min": return `${res.value.toFixed(1)} phút`;
-    case "hour": return `${res.value.toFixed(1)} giờ`;
-    case "day": return `${res.value.toFixed(1)} ngày`;
-    case "count": return `${res.value}`;
-    case "per-year": return `${res.value.toFixed(2)}/năm`;
-    default: return `${res.value}`;
+    case "percent":
+      return `${res.value.toFixed(2)}%`;
+    case "min":
+      return `${res.value.toFixed(1)} phút`;
+    case "hour":
+      return `${res.value.toFixed(1)} giờ`;
+    case "day":
+      return `${res.value.toFixed(1)} ngày`;
+    case "count":
+      return `${res.value}`;
+    case "per-year":
+      return `${res.value.toFixed(2)}/năm`;
+    default:
+      return `${res.value}`;
   }
 }

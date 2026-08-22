@@ -6,9 +6,16 @@ import { ThietBiBanQuyen } from "@/components/mirats/ThietBiBanQuyen";
 import { DeviceDetailTabProps } from "./types";
 import { Badge } from "@/components/ui/badge";
 
-export default function TabCauHinh({ 
-  tb, ma, canManage, canEdit, vaiTroList, TelemetryPanel, AllocationPanel, donViTenMap 
-}: DeviceDetailTabProps & { TelemetryPanel?: any, AllocationPanel?: any, donViTenMap?: any }) {
+export default function TabCauHinh({
+  tb,
+  ma,
+  canManage,
+  canEdit,
+  vaiTroList,
+  TelemetryPanel,
+  AllocationPanel,
+  donViTenMap,
+}: DeviceDetailTabProps & { TelemetryPanel?: any; AllocationPanel?: any; donViTenMap?: any }) {
   return (
     <Tabs defaultValue="linhkien" className="w-full">
       <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto gap-1 bg-muted/30 p-1 rounded-2xl">
@@ -36,17 +43,25 @@ export default function TabCauHinh({
       <TabsContent value="vaitro" className="mt-4">
         <div className="space-y-3">
           {vaiTroList.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">Tài sản chưa được lắp vào thành phần hệ thống nào.</p>
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Tài sản chưa được lắp vào thành phần hệ thống nào.
+            </p>
           ) : (
             vaiTroList.map((r) => (
-              <div key={r.gan_id} className="flex items-center justify-between rounded-2xl border p-4 bg-card shadow-sm ring-1 ring-border/50">
+              <div
+                key={r.gan_id}
+                className="flex items-center justify-between rounded-2xl border p-4 bg-card shadow-sm ring-1 ring-border/50"
+              >
                 <div>
                   <div className="font-bold text-[13px] text-foreground">{r.ten_thanh_phan}</div>
                   <div className="text-xs text-muted-foreground mt-1 font-mono">
                     {r.ma_thanh_phan} {r.ten_he_thong ? `· ${r.ten_he_thong}` : ""}
                   </div>
                 </div>
-                <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+                <Badge
+                  variant="secondary"
+                  className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                >
                   Đang đảm nhận
                 </Badge>
               </div>
@@ -55,7 +70,10 @@ export default function TabCauHinh({
           {vaiTroList.length >= 2 && (
             <div className="rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-[13px] text-amber-700 dark:text-amber-400 flex items-start gap-3 ring-1 ring-amber-500/20">
               <span className="shrink-0 text-base">⚠</span>
-              <span><strong>Đa vai trò:</strong> Tài sản này đang phục vụ song song cho {vaiTroList.length} thành phần khác nhau. Hãy cẩn trọng khi thay thế hoặc sửa chữa.</span>
+              <span>
+                <strong>Đa vai trò:</strong> Tài sản này đang phục vụ song song cho{" "}
+                {vaiTroList.length} thành phần khác nhau. Hãy cẩn trọng khi thay thế hoặc sửa chữa.
+              </span>
             </div>
           )}
         </div>
@@ -65,7 +83,9 @@ export default function TabCauHinh({
         {TelemetryPanel ? (
           <TelemetryPanel thietBiId={tb.id} canManage={canEdit} />
         ) : (
-          <p className="py-8 text-center text-sm text-muted-foreground italic">Component TelemetryPanel chưa sẵn sàng.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground italic">
+            Component TelemetryPanel chưa sẵn sàng.
+          </p>
         )}
       </TabsContent>
 
@@ -77,7 +97,9 @@ export default function TabCauHinh({
         {AllocationPanel ? (
           <AllocationPanel thietBiId={tb.id} donViTenMap={donViTenMap} />
         ) : (
-          <p className="py-8 text-center text-sm text-muted-foreground italic">Component AllocationPanel chưa sẵn sàng.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground italic">
+            Component AllocationPanel chưa sẵn sàng.
+          </p>
         )}
       </TabsContent>
     </Tabs>

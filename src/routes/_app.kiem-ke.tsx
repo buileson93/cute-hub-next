@@ -248,7 +248,8 @@ function KiemKePage() {
                     />
                     <Link
                       to="/thiet-bi/$maThietBi"
-                      params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                      params={{ maThietBi: dev.ma_thiet_bi }}
+                      search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                       className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                     >
                       Chi tiết <ExternalLink className="h-3 w-3" />
@@ -266,37 +267,101 @@ function KiemKePage() {
           getRowId={(dev) => dev.id}
           requireFilterToShow={false}
           rowClassName={(dev) => (trangThaiHan(dev.ngay_kiem_ke_ke_tiep).qua ? "bg-red-50/50" : "")}
-          emptyContent={<div className="py-8 text-center text-sm text-muted-foreground">Không có tài sản đến hạn.</div>}
+          emptyContent={
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              Không có tài sản đến hạn.
+            </div>
+          }
           columns={[
-            { key: "ma_thiet_bi", label: "Mã tài sản", filter: "text", value: (d) => d.ma_thiet_bi, cell: (d) => <span className="font-mono text-xs">{d.ma_thiet_bi}</span> },
-            { key: "ten", label: "Tên tài sản", filter: "text", value: (d) => d.ten_thiet_bi || d.ma_thiet_bi, cell: (d) => <span className="max-w-[16rem] truncate">{d.ten_thiet_bi || d.ma_thiet_bi}</span> },
-            { key: "vi_tri", label: "Vị trí", filter: "text", value: (d) => d.vi_tri ?? "", cell: (d) => <span className="max-w-[12rem] truncate text-muted-foreground">{d.vi_tri || "—"}</span> },
             {
-              key: "don_vi", label: "Đơn vị", filter: "cat",
-              value: (d) => (d.don_vi_id ? donViMap.get(d.don_vi_id)?.ten ?? "" : ""),
-              cell: (d) => { const dv = d.don_vi_id ? donViMap.get(d.don_vi_id) : null; return <span className="max-w-[12rem] truncate text-muted-foreground">{dv?.ten || "—"}</span>; },
+              key: "ma_thiet_bi",
+              label: "Mã tài sản",
+              filter: "text",
+              value: (d) => d.ma_thiet_bi,
+              cell: (d) => <span className="font-mono text-xs">{d.ma_thiet_bi}</span>,
             },
             {
-              key: "han", label: "Hạn kế tiếp", sortable: true,
+              key: "ten",
+              label: "Tên tài sản",
+              filter: "text",
+              value: (d) => d.ten_thiet_bi || d.ma_thiet_bi,
+              cell: (d) => (
+                <span className="max-w-[16rem] truncate">{d.ten_thiet_bi || d.ma_thiet_bi}</span>
+              ),
+            },
+            {
+              key: "vi_tri",
+              label: "Vị trí",
+              filter: "text",
+              value: (d) => d.vi_tri ?? "",
+              cell: (d) => (
+                <span className="max-w-[12rem] truncate text-muted-foreground">
+                  {d.vi_tri || "—"}
+                </span>
+              ),
+            },
+            {
+              key: "don_vi",
+              label: "Đơn vị",
+              filter: "cat",
+              value: (d) => (d.don_vi_id ? (donViMap.get(d.don_vi_id)?.ten ?? "") : ""),
+              cell: (d) => {
+                const dv = d.don_vi_id ? donViMap.get(d.don_vi_id) : null;
+                return (
+                  <span className="max-w-[12rem] truncate text-muted-foreground">
+                    {dv?.ten || "—"}
+                  </span>
+                );
+              },
+            },
+            {
+              key: "han",
+              label: "Hạn kế tiếp",
+              sortable: true,
               value: (d) => d.ngay_kiem_ke_ke_tiep ?? "",
-              cell: (d) => <span className="whitespace-nowrap text-muted-foreground">{d.ngay_kiem_ke_ke_tiep ? new Date(d.ngay_kiem_ke_ke_tiep).toLocaleDateString("vi-VN") : "—"}</span>,
+              cell: (d) => (
+                <span className="whitespace-nowrap text-muted-foreground">
+                  {d.ngay_kiem_ke_ke_tiep
+                    ? new Date(d.ngay_kiem_ke_ke_tiep).toLocaleDateString("vi-VN")
+                    : "—"}
+                </span>
+              ),
             },
             {
-              key: "trang_thai", label: "Trạng thái", filter: "cat",
+              key: "trang_thai",
+              label: "Trạng thái",
+              filter: "cat",
               value: (d) => trangThaiHan(d.ngay_kiem_ke_ke_tiep).label,
-              cell: (d) => { const st = trangThaiHan(d.ngay_kiem_ke_ke_tiep); return <Badge variant="outline" className={cn("border-transparent", st.cls)}>{st.label}</Badge>; },
+              cell: (d) => {
+                const st = trangThaiHan(d.ngay_kiem_ke_ke_tiep);
+                return (
+                  <Badge variant="outline" className={cn("border-transparent", st.cls)}>
+                    {st.label}
+                  </Badge>
+                );
+              },
             },
             {
-              key: "actions", label: "Thao tác", align: "right",
+              key: "actions",
+              label: "Thao tác",
+              align: "right",
               cell: (dev) => (
                 <div className="flex items-center justify-end gap-2">
                   <KiemKeDialog
-                    thietBi={{ maThietBi: dev.ma_thiet_bi, ten: dev.ten_thiet_bi || dev.ma_thiet_bi }}
+                    thietBi={{
+                      maThietBi: dev.ma_thiet_bi,
+                      ten: dev.ten_thiet_bi || dev.ma_thiet_bi,
+                    }}
                     canManage={canManage}
                     pending={busyId === dev.id}
                     onSubmit={(input) => handleSubmit(dev, input)}
                   />
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                  <Link
+                    to="/thiet-bi/$maThietBi"
+                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
                     Chi tiết <ExternalLink className="h-3 w-3" />
                   </Link>
                 </div>
@@ -305,7 +370,6 @@ function KiemKePage() {
           ]}
         />
       )}
-
     </div>
   );
 }

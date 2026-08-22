@@ -27,7 +27,6 @@ export type ColumnPrefs = {
   layoutMode?: "fluid" | "auto" | "custom";
 };
 
-
 const LS_PREFIX = "mirats:colprefs:v2:";
 
 /** Hợp nhất thứ tự đã lưu với danh sách key hiện có (thêm key mới vào cuối,
@@ -75,7 +74,6 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       setLayoutModeState(p?.layoutMode ?? "fluid");
       setActivePreset(p?.presetId);
       setIsCustomized(p?.customized ?? false);
-
     };
 
     // 1) localStorage
@@ -85,7 +83,10 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
         applyPrefs(JSON.parse(rawV2) as ColumnPrefs);
       } else {
         // Fallback sang v1 nếu chưa có v2
-        const rawV1 = typeof window !== "undefined" ? window.localStorage.getItem("mirats:colprefs:" + tableKey) : null;
+        const rawV1 =
+          typeof window !== "undefined"
+            ? window.localStorage.getItem("mirats:colprefs:" + tableKey)
+            : null;
         if (rawV1) {
           const v1 = JSON.parse(rawV1) as ColumnPrefs;
           applyPrefs({ ...v1, customized: true });
@@ -102,7 +103,10 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       const { data: sess } = await supabase.auth.getSession();
       const uid = sess.session?.user?.id ?? null;
       userIdRef.current = uid;
-      if (!uid) { if (!cancelled) setReady(true); return; }
+      if (!uid) {
+        if (!cancelled) setReady(true);
+        return;
+      }
       const { data } = await supabase
         .from("bang_cot_tuy_chinh")
         .select("cau_hinh")
@@ -113,67 +117,132 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       const cfg = (data?.cau_hinh ?? null) as ColumnPrefs | null;
       if (cfg && (cfg.order?.length || cfg.hidden) && !isDirtyRef.current) applyPrefs(cfg);
       setReady(true);
-    })().catch(() => { if (!cancelled) setReady(true); });
+    })().catch(() => {
+      if (!cancelled) setReady(true);
+    });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableKey, allKeysSig, defHiddenSig]);
 
   // Lưu (debounce) vào localStorage + tài khoản.
-  const persist = useCallback((next: ColumnPrefs) => {
-    isDirtyRef.current = true;
-    try { window.localStorage.setItem(lsKey, JSON.stringify(next)); } catch { /* ignore */ }
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      isDirtyRef.current = false;
-      const uid = userIdRef.current;
-      if (!uid) return;
-      supabase
-        .from("bang_cot_tuy_chinh")
-        .upsert({ user_id: uid, bang_key: tableKey, cau_hinh: next }, { onConflict: "user_id,bang_key" })
-        .then(() => { /* im lặng */ });
-    }, 600);
-  }, [lsKey, tableKey]);
+  const persist = useCallback(
+    (next: ColumnPrefs) => {
+      isDirtyRef.current = true;
+      try {
+        window.localStorage.setItem(lsKey, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        isDirtyRef.current = false;
+        const uid = userIdRef.current;
+        if (!uid) return;
+        supabase
+          .from("bang_cot_tuy_chinh")
+          .upsert(
+            { user_id: uid, bang_key: tableKey, cau_hinh: next },
+            { onConflict: "user_id,bang_key" },
+          )
+          .then(() => {
+            /* im lặng */
+          });
+      }, 600);
+    },
+    [lsKey, tableKey],
+  );
 
-  const setOrder = useCallback((next: string[]) => {
-    const reconciled = reconcileOrder(next, allKeys);
-    setOrderState(reconciled);
-    setIsCustomized(true);
-    persist({ order: reconciled, hidden: [...hidden], widths, presetId: activePreset, customized: true, layoutMode });
-  }, [allKeys, persist, activePreset, hidden, widths]);
+  const setOrder = useCallback(
+    (next: string[]) => {
+      const reconciled = reconcileOrder(next, allKeys);
+      setOrderState(reconciled);
+      setIsCustomized(true);
+      persist({
+        order: reconciled,
+        hidden: [...hidden],
+        widths,
+        presetId: activePreset,
+        customized: true,
+        layoutMode,
+      });
+    },
+    [allKeys, persist, activePreset, hidden, widths],
+  );
 
-  const setWidth = useCallback((key: string, w: number) => {
-    const nextWidths = { ...widths, [key]: Math.round(w) };
-    setWidthsState(nextWidths);
-    setIsCustomized(true);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true, layoutMode });
+  const setWidth = useCallback(
+    (key: string, w: number) => {
+      const nextWidths = { ...widths, [key]: Math.round(w) };
+      setWidthsState(nextWidths);
+      setIsCustomized(true);
+      persist({
+        order,
+        hidden: [...hidden],
+        widths: nextWidths,
+        presetId: activePreset,
+        customized: true,
+        layoutMode,
+      });
+    },
+    [widths, order, hidden, persist, activePreset],
+  );
 
-  }, [widths, order, hidden, persist, activePreset]);
+  const resetWidth = useCallback(
+    (key: string) => {
+      const nextWidths = { ...widths };
+      delete nextWidths[key];
+      setWidthsState(nextWidths);
+      persist({
+        order,
+        hidden: [...hidden],
+        widths: nextWidths,
+        presetId: activePreset,
+        customized: true,
+        layoutMode,
+      });
+    },
+    [widths, order, hidden, persist, activePreset],
+  );
 
-  const resetWidth = useCallback((key: string) => {
-    const nextWidths = { ...widths };
-    delete nextWidths[key];
-    setWidthsState(nextWidths);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true, layoutMode });
-  }, [widths, order, hidden, persist, activePreset]);
+  const toggle = useCallback(
+    (key: string) => {
+      const nextHidden = new Set(hidden);
+      nextHidden.has(key) ? nextHidden.delete(key) : nextHidden.add(key);
+      setHiddenState(nextHidden);
+      setIsCustomized(true);
+      persist({
+        order,
+        hidden: [...nextHidden],
+        widths,
+        presetId: activePreset,
+        customized: true,
+        layoutMode,
+      });
+    },
+    [hidden, order, widths, persist, activePreset],
+  );
 
-  const toggle = useCallback((key: string) => {
-    const nextHidden = new Set(hidden);
-    nextHidden.has(key) ? nextHidden.delete(key) : nextHidden.add(key);
-    setHiddenState(nextHidden);
-    setIsCustomized(true);
-    persist({ order, hidden: [...nextHidden], widths, presetId: activePreset, customized: true, layoutMode });
-  }, [hidden, order, widths, persist, activePreset]);
-
-  const setHidden = useCallback((keys: string[]) => {
-    const next = new Set(keys);
-    setHiddenState(next);
-    setIsCustomized(true);
-    setOrderState((o) => {
-      persist({ order: o, hidden: [...next], widths, presetId: activePreset, customized: true, layoutMode });
-      return o;
-    });
-  }, [persist, activePreset, widths, layoutMode]);
+  const setHidden = useCallback(
+    (keys: string[]) => {
+      const next = new Set(keys);
+      setHiddenState(next);
+      setIsCustomized(true);
+      setOrderState((o) => {
+        persist({
+          order: o,
+          hidden: [...next],
+          widths,
+          presetId: activePreset,
+          customized: true,
+          layoutMode,
+        });
+        return o;
+      });
+    },
+    [persist, activePreset, widths, layoutMode],
+  );
 
   const reset = useCallback(() => {
     const o = reconcileOrder(undefined, allKeys);
@@ -186,29 +255,58 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
     persist({ order: o, hidden: [...h], widths: {}, customized: false, layoutMode: "fluid" });
   }, [allKeys, defaultHidden, persist]);
 
-  const setPreset = useCallback((presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
-    const reconciledOrder = reconcileOrder(orderKeys ?? allKeys, allKeys);
-    const hiddenKeys = allKeys.filter(k => k !== "actions" && !visibleKeys.includes(k));
-    const nextHidden = new Set(hiddenKeys);
+  const setPreset = useCallback(
+    (presetId: string, visibleKeys: string[], orderKeys?: string[]) => {
+      const reconciledOrder = reconcileOrder(orderKeys ?? allKeys, allKeys);
+      const hiddenKeys = allKeys.filter((k) => k !== "actions" && !visibleKeys.includes(k));
+      const nextHidden = new Set(hiddenKeys);
 
-    setOrderState(reconciledOrder);
-    setHiddenState(nextHidden);
-    setActivePreset(presetId);
-    setIsCustomized(false);
-    persist({ order: reconciledOrder, hidden: [...nextHidden], presetId, customized: false, layoutMode });
-  }, [allKeys, persist]);
+      setOrderState(reconciledOrder);
+      setHiddenState(nextHidden);
+      setActivePreset(presetId);
+      setIsCustomized(false);
+      persist({
+        order: reconciledOrder,
+        hidden: [...nextHidden],
+        presetId,
+        customized: false,
+        layoutMode,
+      });
+    },
+    [allKeys, persist],
+  );
 
-  const setLayoutMode = useCallback((mode: "fluid" | "auto" | "custom") => {
-    setLayoutModeState(mode);
-    setIsCustomized(true);
-    persist({ order, hidden: [...hidden], widths, presetId: activePreset, customized: true, layoutMode: mode });
-  }, [order, hidden, widths, activePreset, persist]);
+  const setLayoutMode = useCallback(
+    (mode: "fluid" | "auto" | "custom") => {
+      setLayoutModeState(mode);
+      setIsCustomized(true);
+      persist({
+        order,
+        hidden: [...hidden],
+        widths,
+        presetId: activePreset,
+        customized: true,
+        layoutMode: mode,
+      });
+    },
+    [order, hidden, widths, activePreset, persist],
+  );
 
-  const setWidthsBatch = useCallback((nextWidths: Record<string, number>) => {
-    setWidthsState(nextWidths);
-    setIsCustomized(true);
-    persist({ order, hidden: [...hidden], widths: nextWidths, presetId: activePreset, customized: true, layoutMode });
-  }, [order, hidden, activePreset, persist, layoutMode]);
+  const setWidthsBatch = useCallback(
+    (nextWidths: Record<string, number>) => {
+      setWidthsState(nextWidths);
+      setIsCustomized(true);
+      persist({
+        order,
+        hidden: [...hidden],
+        widths: nextWidths,
+        presetId: activePreset,
+        customized: true,
+        layoutMode,
+      });
+    },
+    [order, hidden, activePreset, persist, layoutMode],
+  );
 
   const isHidden = useCallback((key: string) => hidden.has(key), [hidden]);
 
@@ -232,7 +330,24 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       isHidden,
       setPreset,
     }),
-    [order, hidden, widths, layoutMode, ready, activePreset, isCustomized, setOrder, setWidth, setWidthsBatch, resetWidth, toggle, setHidden, setLayoutMode, reset, isHidden, setPreset],
+    [
+      order,
+      hidden,
+      widths,
+      layoutMode,
+      ready,
+      activePreset,
+      isCustomized,
+      setOrder,
+      setWidth,
+      setWidthsBatch,
+      resetWidth,
+      toggle,
+      setHidden,
+      setLayoutMode,
+      reset,
+      isHidden,
+      setPreset,
+    ],
   );
 }
-

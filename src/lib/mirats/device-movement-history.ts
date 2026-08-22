@@ -59,7 +59,9 @@ export function useDeviceMovementHistory(deviceMa?: string | null) {
 
       const { data, error } = await sb
         .from("cay_thay_doi")
-        .select("id, payload, snapshot_cu, mo_ta, trang_thai, da_ap_dung, da_hoan_tac, nguoi_tao, created_at")
+        .select(
+          "id, payload, snapshot_cu, mo_ta, trang_thai, da_ap_dung, da_hoan_tac, nguoi_tao, created_at",
+        )
         .eq("loai", "move_device")
         .order("created_at", { ascending: false })
         .limit(500);
@@ -87,7 +89,11 @@ export function useDeviceMovementHistory(deviceMa?: string | null) {
           .from("profiles")
           .select("id, ho_ten, email")
           .in("id", actorIds);
-        for (const p of (profs ?? []) as Array<{ id: string; ho_ten: string | null; email: string }>) {
+        for (const p of (profs ?? []) as Array<{
+          id: string;
+          ho_ten: string | null;
+          email: string;
+        }>) {
           actorMap.set(p.id, p.ho_ten?.trim() || p.email || "—");
         }
       }
@@ -101,7 +107,7 @@ export function useDeviceMovementHistory(deviceMa?: string | null) {
 
         const detach = payload.detach === true;
         const fromHtId = firstSnapshotHt(r.snapshot_cu);
-        const toHtId = detach ? null : ((payload.to_ht_id as string) || null);
+        const toHtId = detach ? null : (payload.to_ht_id as string) || null;
 
         let action: MovementAction;
         if (detach || (!toHtId && fromHtId)) action = "go";
@@ -114,7 +120,7 @@ export function useDeviceMovementHistory(deviceMa?: string | null) {
           action,
           fromHtId,
           toHtId,
-          actorName: r.nguoi_tao ? actorMap.get(r.nguoi_tao) ?? "—" : "—",
+          actorName: r.nguoi_tao ? (actorMap.get(r.nguoi_tao) ?? "—") : "—",
           createdAt: r.created_at,
           moTa: r.mo_ta,
           daHoanTac: r.da_hoan_tac === true,

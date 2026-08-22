@@ -8,7 +8,7 @@ async function importEmployees() {
   const workbook = xlsx.read(fileBuffer, { type: "buffer" });
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
-  
+
   const rows: any[][] = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
   console.log(`Found ${rows.length} raw rows.`);
 
@@ -30,28 +30,28 @@ async function importEmployees() {
       continue;
     }
 
-    let phone = sdt ? String(sdt).trim() : null;
+    const phone = sdt ? String(sdt).trim() : null;
     let dob = null;
     if (dobRaw) {
-      if (typeof dobRaw === 'number') {
+      if (typeof dobRaw === "number") {
         const d = new Date((dobRaw - 25569) * 86400 * 1000);
-        dob = d.toISOString().split('T')[0];
+        dob = d.toISOString().split("T")[0];
       } else {
         const d = new Date(dobRaw);
         if (!isNaN(d.getTime())) {
-          dob = d.toISOString().split('T')[0];
+          dob = d.toISOString().split("T")[0];
         }
       }
     }
 
     employees.push({
-      ma_nhan_vien: `NV_${String(employees.length + 1).padStart(4, '0')}`,
+      ma_nhan_vien: `NV_${String(employees.length + 1).padStart(4, "0")}`,
       ho_ten: String(hoTen).trim(),
       chuc_vu: chucVu ? String(chucVu).trim() : null,
       don_vi: currentDonVi,
       dien_thoai: phone,
       ngay_sinh: dob,
-      hoat_dong: true
+      hoat_dong: true,
     });
   }
 
@@ -63,7 +63,7 @@ async function importEmployees() {
     const { error } = await supabaseAdmin
       .from("nhan_vien")
       .upsert(chunk, { onConflict: "ma_nhan_vien" });
-    
+
     if (error) {
       console.error(`Error importing chunk starting at ${i}:`, error.message);
     } else {

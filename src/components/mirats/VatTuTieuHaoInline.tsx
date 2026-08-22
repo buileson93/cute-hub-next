@@ -9,7 +9,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Plus, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/backend/client";
 import { ghiTieuHao, type DongTieuHao, type LienKetTieuHao } from "@/lib/mirats/kho-tieu-hao";
@@ -27,7 +33,12 @@ interface DongForm extends DongTieuHao {
   key: string;
 }
 
-const _newRow = (): DongForm => ({ key: crypto.randomUUID(), vat_tu_id: "", kho_id: "", so_luong: 1 });
+const _newRow = (): DongForm => ({
+  key: crypto.randomUUID(),
+  vat_tu_id: "",
+  kho_id: "",
+  so_luong: 1,
+});
 
 export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
   const [rows, setRows] = useState<DongForm[]>([_newRow()]);
@@ -41,7 +52,6 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
     },
     staleTime: 30_000,
   });
-
 
   const { data: vatTuList } = useQuery({
     queryKey: ["vat_tu", "pick"],
@@ -118,35 +128,51 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
             <div key={r.key} className="grid grid-cols-[1fr_1fr_90px_36px] items-end gap-2">
               <div>
                 <Label className="text-[11px] text-muted-foreground">Vật tư</Label>
-                <Select value={r.vat_tu_id} onValueChange={(v) => update(r.key, { vat_tu_id: v, don_gia: vatTuList?.find((x) => x.id === v)?.don_gia ?? undefined })}>
-                  <SelectTrigger className="h-9"><SelectValue placeholder="Chọn vật tư" /></SelectTrigger>
+                <Select
+                  value={r.vat_tu_id}
+                  onValueChange={(v) =>
+                    update(r.key, {
+                      vat_tu_id: v,
+                      don_gia: vatTuList?.find((x) => x.id === v)?.don_gia ?? undefined,
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Chọn vật tư" />
+                  </SelectTrigger>
                   <SelectContent>
                     {(vatTuList ?? []).map((v) => {
-                      const stk = tonKhoModel?.find(t => t.model_id === v.model_id);
+                      const stk = tonKhoModel?.find((t) => t.model_id === v.model_id);
                       const tonText = stk ? ` (Còn ${stk.combined_total})` : "";
                       return (
                         <SelectItem key={v.id} value={v.id}>
-                          <span className="font-mono text-xs mr-1">{v.ma_vat_tu}</span> {v.ten}{tonText}
+                          <span className="font-mono text-xs mr-1">{v.ma_vat_tu}</span> {v.ten}
+                          {tonText}
                         </SelectItem>
                       );
                     })}
-
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="text-[11px] text-muted-foreground">Kho xuất</Label>
                 <Select value={r.kho_id} onValueChange={(v) => update(r.key, { kho_id: v })}>
-                  <SelectTrigger className="h-9"><SelectValue placeholder="Chọn kho" /></SelectTrigger>
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Chọn kho" />
+                  </SelectTrigger>
                   <SelectContent>
                     {(khoList ?? []).map((k) => (
-                      <SelectItem key={k.id} value={k.id}>{k.ten}</SelectItem>
+                      <SelectItem key={k.id} value={k.id}>
+                        {k.ten}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-[11px] text-muted-foreground">SL{vt?.don_vi_tinh ? ` (${vt.don_vi_tinh})` : ""}</Label>
+                <Label className="text-[11px] text-muted-foreground">
+                  SL{vt?.don_vi_tinh ? ` (${vt.don_vi_tinh})` : ""}
+                </Label>
                 <Input
                   type="number"
                   min={0}
@@ -156,7 +182,13 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
                   onChange={(e) => update(r.key, { so_luong: Number(e.target.value) })}
                 />
               </div>
-              <Button type="button" size="icon" variant="ghost" className="h-9 w-9" onClick={() => remove(r.key)}>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="h-9 w-9"
+                onClick={() => remove(r.key)}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>

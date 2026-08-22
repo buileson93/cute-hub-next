@@ -241,7 +241,11 @@ export const publishFormVersion = createServerFn({ method: "POST" })
 
     const { error: eUpd } = await context.supabase
       .from("form_template_version")
-      .update({ compiled_schema: compiled, status: "published", updated_at: new Date().toISOString() })
+      .update({
+        compiled_schema: compiled,
+        status: "published",
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", data.versionId);
     if (eUpd) throw new Error(eUpd.message);
 

@@ -14,9 +14,7 @@ export const Route = createFileRoute("/api/public/hooks/reliability-report")({
           const expectedCron = process.env.CRON_SECRET;
           const expectedKey = process.env.SUPABASE_PUBLISHABLE_KEY;
           const providedCron =
-            request.headers.get("x-cron-secret") ??
-            request.headers.get("X-Cron-Secret") ??
-            "";
+            request.headers.get("x-cron-secret") ?? request.headers.get("X-Cron-Secret") ?? "";
           const providedKey = request.headers.get("apikey") ?? "";
           const okCron = !!expectedCron && providedCron === expectedCron;
           const okKey = !!expectedKey && providedKey === expectedKey;

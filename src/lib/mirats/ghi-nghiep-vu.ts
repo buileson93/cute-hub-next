@@ -40,12 +40,7 @@ const NHAN_LOAI: Record<LoaiNghiepVu, string> = {
   HONG_HOC: "Hỏng hóc",
 };
 
-const TRANG_THAI_THANH_LY = new Set([
-  "THANH_LY",
-  "thanh_ly",
-  "Thanh lý",
-  "DA_THANH_LY",
-]);
+const TRANG_THAI_THANH_LY = new Set(["THANH_LY", "thanh_ly", "Thanh lý", "DA_THANH_LY"]);
 
 export function validateKhai(i: KhaiNghiepVuInput, now: Date = new Date()): KetQuaValidate {
   const loi: string[] = [];

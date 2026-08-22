@@ -89,7 +89,7 @@ export function ListToolbar({
 
         {filters.map((f) => {
           const cur = state.filters[f.id];
-          const val = Array.isArray(cur) ? cur[0] ?? "all" : (cur as string) ?? "all";
+          const val = Array.isArray(cur) ? (cur[0] ?? "all") : ((cur as string) ?? "all");
           return (
             <Select
               key={f.id}
@@ -121,7 +121,12 @@ export function ListToolbar({
         <div className="ml-auto flex items-center gap-2">
           {extra}
           {onExport && (
-            <Button variant="outline" size="sm" onClick={onExport} className="gap-1 border-primary/20 hover:bg-primary/5 shadow-none">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onExport}
+              className="gap-1 border-primary/20 hover:bg-primary/5 shadow-none"
+            >
               <Download className="h-4 w-4" />
               Xuất
             </Button>
@@ -136,10 +141,14 @@ export function ListToolbar({
             const def = filters.find((f) => f.id === k);
             const label = def?.label ?? k;
             const val = Array.isArray(v) ? v.join(", ") : String(v);
-            const shown =
-              def?.options.find((o) => o.value === val)?.label ?? val;
+            const shown = def?.options.find((o) => o.value === val)?.label ?? val;
             return (
-              <Badge key={k} variant="secondary" size="sm" className="gap-1 font-medium bg-secondary/50">
+              <Badge
+                key={k}
+                variant="secondary"
+                size="sm"
+                className="gap-1 font-medium bg-secondary/50"
+              >
                 {label}: {shown}
                 <button
                   type="button"

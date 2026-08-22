@@ -111,10 +111,7 @@ export function planImportDacTinh(input: PlanInput): ImportPlan {
   const operations: ImportPlanOp[] = [];
   for (const [model_id, { model_ma, ids }] of nextByModel) {
     const prev = existingLinks.get(model_id) ?? new Set<string>();
-    const { toInsert, toDelete } = diffModelDacTinh(
-      Array.from(prev),
-      Array.from(ids),
-    );
+    const { toInsert, toDelete } = diffModelDacTinh(Array.from(prev), Array.from(ids));
     // Vẫn giữ op rỗng để phía UI đếm "đã xử lý idempotent" nếu cần.
     operations.push({ model_id, model_ma, toInsert, toDelete });
   }
@@ -129,7 +126,9 @@ export interface ExportModelRow {
   model_ma: string;
   dac_tinh_codes: readonly string[];
 }
-export function serializeExport(rows: readonly ExportModelRow[]): Array<{ model_ma: string; dac_tinh: string }> {
+export function serializeExport(
+  rows: readonly ExportModelRow[],
+): Array<{ model_ma: string; dac_tinh: string }> {
   return rows.map((r) => ({
     model_ma: r.model_ma,
     dac_tinh: serializeDacTinhCell(r.dac_tinh_codes),

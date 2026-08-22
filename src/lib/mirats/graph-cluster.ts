@@ -40,9 +40,7 @@ export interface ClusterEdge extends CoreEdge {
  */
 export const NO_ORG = "__none__";
 
-export function groupNodesByOrg(
-  nodes: ClusterNode[],
-): Map<string, string[]> {
+export function groupNodesByOrg(nodes: ClusterNode[]): Map<string, string[]> {
   const g = new Map<string, string[]>();
   for (const n of nodes) {
     const key = n.to_chuc_id ?? NO_ORG;

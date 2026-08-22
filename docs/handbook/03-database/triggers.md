@@ -9,9 +9,9 @@ FROM information_schema.triggers WHERE trigger_schema='public' ORDER BY tbl, tri
 
 ## Trigger hiện có (theo query gần nhất)
 
-| Bảng | Trigger | Sự kiện | Timing | Function |
-|---|---|---|---|---|
-| `audit_log` | `trg_audit_bulk_delete` | INSERT | AFTER | (thu dọn audit_log) |
+| Bảng        | Trigger                 | Sự kiện | Timing | Function            |
+| ----------- | ----------------------- | ------- | ------ | ------------------- |
+| `audit_log` | `trg_audit_bulk_delete` | INSERT  | AFTER  | (thu dọn audit_log) |
 
 > Ghi chú: nhiều trigger cũ (sync 3 lớp, cập nhật `updated_at`, sync đơn vị/vị trí) có thể đã được inline hoá vào RPC hoặc bị gỡ. **Khi thêm trigger mới, cập nhật bảng trên**.
 

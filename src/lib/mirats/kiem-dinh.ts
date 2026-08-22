@@ -73,8 +73,7 @@ export function trangThaiHetHan(
 /** Chọn chứng chỉ mới nhất (ưu tiên ngay_het_han, rồi ngay_bat_dau). */
 export function chungChiMoiNhat(ds: ChungChi[]): ChungChi | null {
   if (!ds || ds.length === 0) return null;
-  const key = (c: ChungChi): string =>
-    c.ngay_het_han ?? c.ngay_bat_dau ?? "0000-00-00";
+  const key = (c: ChungChi): string => c.ngay_het_han ?? c.ngay_bat_dau ?? "0000-00-00";
   let best = ds[0];
   for (let i = 1; i < ds.length; i++) {
     if (key(ds[i]) > key(best)) best = ds[i];

@@ -11,10 +11,13 @@ export interface OcrProviderOptions {
 export interface OcrProvider {
   readonly id: string;
   readonly label: string;
-  
+
   isSupported(capabilities: DeviceCapabilities): Promise<boolean>;
   warmup(options?: OcrProviderOptions): Promise<void>;
-  recognize(input: Blob | ImageData | HTMLCanvasElement, options?: OcrProviderOptions): Promise<OcrPageResult>;
+  recognize(
+    input: Blob | ImageData | HTMLCanvasElement,
+    options?: OcrProviderOptions,
+  ): Promise<OcrPageResult>;
   dispose(): Promise<void>;
 }
 

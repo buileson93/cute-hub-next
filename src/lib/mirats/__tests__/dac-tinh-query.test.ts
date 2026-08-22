@@ -24,13 +24,23 @@ function makeClient(opts: MockOptions = {}) {
   let selectCols: string | null = null;
   let countOpt: string | null = null;
 
-  const builder: DacTinhClient["from"] extends (...args: any) => infer B ? never : never = null as never;
+  const builder: DacTinhClient["from"] extends (...args: any) => infer B ? never : never =
+    null as never;
   void builder;
 
   const chain = {
-    range(from: number, to: number) { calls.push({ op: "range", from, to }); return chain; },
-    eq(column: string, value: string) { calls.push({ op: "eq", column, value }); return chain; },
-    or(filter: string) { calls.push({ op: "or", filter }); return chain; },
+    range(from: number, to: number) {
+      calls.push({ op: "range", from, to });
+      return chain;
+    },
+    eq(column: string, value: string) {
+      calls.push({ op: "eq", column, value });
+      return chain;
+    },
+    or(filter: string) {
+      calls.push({ op: "or", filter });
+      return chain;
+    },
     order(column: string, o: { ascending?: boolean; nullsFirst?: boolean } = {}) {
       calls.push({
         op: "order",
@@ -41,11 +51,17 @@ function makeClient(opts: MockOptions = {}) {
       return chain;
     },
     // Thenable — cho phép `await` trực tiếp trên builder.
-    then<T>(onFulfilled: (r: { data: DacTinhPageRow[] | null; error: unknown; count: number | null }) => T) {
+    then<T>(
+      onFulfilled: (r: {
+        data: DacTinhPageRow[] | null;
+        error: unknown;
+        count: number | null;
+      }) => T,
+    ) {
       return Promise.resolve({
         data: opts.data ?? [],
         error: opts.error ?? null,
-        count: opts.count ?? (opts.data?.length ?? 0),
+        count: opts.count ?? opts.data?.length ?? 0,
       }).then(onFulfilled);
     },
   };
@@ -73,8 +89,11 @@ describe("fetchDacTinhPage — phân trang / filter / sort server-side", () => {
   test("range đúng công thức (trang-1)*kichThuoc..+size-1", async () => {
     const { client, calls } = makeClient({ count: 100 });
     await fetchDacTinhPage(client, {
-      trang: 3, kichThuoc: 25, q: "",
-      sortField: "", sortDir: "asc",
+      trang: 3,
+      kichThuoc: 25,
+      q: "",
+      sortField: "",
+      sortDir: "asc",
     });
     const range = calls.find((c) => c.op === "range");
     expect(range).toEqual({ op: "range", from: 50, to: 74 });
@@ -83,8 +102,11 @@ describe("fetchDacTinhPage — phân trang / filter / sort server-side", () => {
   test("tìm kiếm q → .or('ma.ilike.%kw%,ten.ilike.%kw%,mo_ta.ilike.%kw%'), có escape", async () => {
     const { client, calls } = makeClient();
     await fetchDacTinhPage(client, {
-      trang: 1, kichThuoc: 10, q: " 50%_evil, ",
-      sortField: "", sortDir: "asc",
+      trang: 1,
+      kichThuoc: 10,
+      q: " 50%_evil, ",
+      sortField: "",
+      sortDir: "asc",
     });
     const or = calls.find((c) => c.op === "or") as Extract<Call, { op: "or" }>;
     expect(or.filter).toBe("ma.ilike.%50evil%,ten.ilike.%50evil%,mo_ta.ilike.%50evil%");
@@ -92,13 +114,25 @@ describe("fetchDacTinhPage — phân trang / filter / sort server-side", () => {
 
   test("q rỗng → không .or", async () => {
     const { client, calls } = makeClient();
-    await fetchDacTinhPage(client, { trang: 1, kichThuoc: 10, q: "   ", sortField: "", sortDir: "asc" });
+    await fetchDacTinhPage(client, {
+      trang: 1,
+      kichThuoc: 10,
+      q: "   ",
+      sortField: "",
+      sortDir: "asc",
+    });
     expect(calls.find((c) => c.op === "or")).toBeUndefined();
   });
 
   test("sort mặc định (sortField rỗng) → thu_tu asc nulls last, ma asc", async () => {
     const { client, calls } = makeClient();
-    await fetchDacTinhPage(client, { trang: 1, kichThuoc: 10, q: "", sortField: "", sortDir: "asc" });
+    await fetchDacTinhPage(client, {
+      trang: 1,
+      kichThuoc: 10,
+      q: "",
+      sortField: "",
+      sortDir: "asc",
+    });
     const orders = calls.filter((c) => c.op === "order") as Extract<Call, { op: "order" }>[];
     expect(orders).toEqual([
       { op: "order", column: "thu_tu", ascending: true, nullsFirst: false },
@@ -108,7 +142,13 @@ describe("fetchDacTinhPage — phân trang / filter / sort server-side", () => {
 
   test("sort thu_tu desc → order('thu_tu', desc, nullsFirst:false) + tie-breaker ma asc", async () => {
     const { client, calls } = makeClient();
-    await fetchDacTinhPage(client, { trang: 1, kichThuoc: 10, q: "", sortField: "thu_tu", sortDir: "desc" });
+    await fetchDacTinhPage(client, {
+      trang: 1,
+      kichThuoc: 10,
+      q: "",
+      sortField: "thu_tu",
+      sortDir: "desc",
+    });
     const orders = calls.filter((c) => c.op === "order") as Extract<Call, { op: "order" }>[];
     expect(orders).toEqual([
       { op: "order", column: "thu_tu", ascending: false, nullsFirst: false },
@@ -118,14 +158,26 @@ describe("fetchDacTinhPage — phân trang / filter / sort server-side", () => {
 
   test("sort field không thuộc whitelist → rơi về default", async () => {
     const { client, calls } = makeClient();
-    await fetchDacTinhPage(client, { trang: 1, kichThuoc: 10, q: "", sortField: "mo_ta", sortDir: "asc" });
+    await fetchDacTinhPage(client, {
+      trang: 1,
+      kichThuoc: 10,
+      q: "",
+      sortField: "mo_ta",
+      sortDir: "asc",
+    });
     const orders = calls.filter((c) => c.op === "order") as Extract<Call, { op: "order" }>[];
     expect(orders.map((o) => o.column)).toEqual(["thu_tu", "ma"]);
   });
 
   test("select cols + count=exact được truyền", async () => {
     const { client, getSelect } = makeClient();
-    await fetchDacTinhPage(client, { trang: 1, kichThuoc: 10, q: "", sortField: "", sortDir: "asc" });
+    await fetchDacTinhPage(client, {
+      trang: 1,
+      kichThuoc: 10,
+      q: "",
+      sortField: "",
+      sortDir: "asc",
+    });
     const { selectCols, countOpt } = getSelect();
     expect(selectCols).toContain("thu_tu");
     expect(countOpt).toBe("exact");
@@ -138,8 +190,11 @@ describe("fetchDacTinhPage — phân trang / filter / sort server-side", () => {
     ];
     const { client } = makeClient({ data: rows, count: 42 });
     const res = await fetchDacTinhPage(client, {
-      trang: 2, kichThuoc: 25, q: "vhf",
-      sortField: "thu_tu", sortDir: "asc",
+      trang: 2,
+      kichThuoc: 25,
+      q: "vhf",
+      sortField: "thu_tu",
+      sortDir: "asc",
     });
     expect(res.tong).toBe(42);
     expect(res.rows).toEqual(rows);

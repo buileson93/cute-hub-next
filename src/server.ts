@@ -72,7 +72,6 @@
     g.cancelAnimationFrame = (id: any) => clearTimeout(id);
   }
 
-
   // Defining `window` above makes isomorphic libs (e.g. the Supabase browser
   // client) take their browser path, which reads bare `localStorage`. Provide a
   // real, in-memory Storage polyfill so `getItem` returns `null` (not a proxy)

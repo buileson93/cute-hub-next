@@ -63,19 +63,21 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const parsed = z.object({
-        email: z.string().trim().email("Email không hợp lệ"),
-        password: z.string().min(1, "Nhập mật khẩu"),
-      }).safeParse({ email, password });
+      const parsed = z
+        .object({
+          email: z.string().trim().email("Email không hợp lệ"),
+          password: z.string().min(1, "Nhập mật khẩu"),
+        })
+        .safeParse({ email, password });
       if (!parsed.success) {
         toast.error(parsed.error.issues[0].message);
         return;
       }
       const { error } = await supabase.auth.signInWithPassword(parsed.data);
       if (error) {
-        toast.error(error.message === "Invalid login credentials"
-          ? "Sai email hoặc mật khẩu"
-          : error.message);
+        toast.error(
+          error.message === "Invalid login credentials" ? "Sai email hoặc mật khẩu" : error.message,
+        );
         return;
       }
       // Server đã xác nhận phiên mới — reset đồng hồ idle ngay tại đây
@@ -92,11 +94,13 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const parsed = z.object({
-        fullName: z.string().trim().min(2, "Nhập họ tên"),
-        email: z.string().trim().email("Email không hợp lệ"),
-        password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
-      }).safeParse({ fullName, email, password });
+      const parsed = z
+        .object({
+          fullName: z.string().trim().min(2, "Nhập họ tên"),
+          email: z.string().trim().email("Email không hợp lệ"),
+          password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
+        })
+        .safeParse({ fullName, email, password });
       if (!parsed.success) {
         toast.error(parsed.error.issues[0].message);
         return;
@@ -160,10 +164,11 @@ function AuthPage() {
   const busy = loading || passkeyLoading;
   const reduce = useReducedMotion();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  const enter = !mounted || reduce
-    ? {}
-    : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 } };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  const enter =
+    !mounted || reduce ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 } };
   const showPasskey = passkeySupported && isMobile;
 
   return (
@@ -221,38 +226,58 @@ function AuthPage() {
                   onSubmit={handleSignIn}
                 >
                   <div className="space-y-6">
-                    <Field id="email" label="Email" type="email" autoComplete="email"
-                      value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
-                    <Field id="password" label="Mật khẩu" type="password" autoComplete="current-password"
-                      value={password} onChange={setPassword} disabled={busy}
+                    <Field
+                      id="email"
+                      label="Email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={setEmail}
+                      disabled={busy}
+                      placeholder="ten@example.com"
+                    />
+                    <Field
+                      id="password"
+                      label="Mật khẩu"
+                      type="password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={setPassword}
+                      disabled={busy}
                       rightSlot={
-                        <a href="/forgot-password" data-command-ignore className="text-xs font-medium text-muted-foreground hover:text-[#0074e2]">
+                        <a
+                          href="/forgot-password"
+                          data-command-ignore
+                          className="text-xs font-medium text-muted-foreground hover:text-[#0074e2]"
+                        >
                           Quên mật khẩu?
                         </a>
-                      } />
+                      }
+                    />
                     <button
                       type="submit"
                       disabled={busy}
-                      style={{ 
-                        display: 'flex', 
-                        height: '56px', 
-                        width: '100%', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        backgroundColor: '#0074e2',
-                        color: 'white',
-                        fontSize: '17px',
-                        fontWeight: 'bold',
-                        borderRadius: '16px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        boxShadow: '0 20px 25px -5px rgba(0, 116, 226, 0.2), 0 8px 10px -6px rgba(0, 116, 226, 0.2)'
+                      style={{
+                        display: "flex",
+                        height: "56px",
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#0074e2",
+                        color: "white",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        borderRadius: "16px",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        boxShadow:
+                          "0 20px 25px -5px rgba(0, 116, 226, 0.2), 0 8px 10px -6px rgba(0, 116, 226, 0.2)",
                       }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0066c7'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#0074e2'}
-                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#0066c7")}
+                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#0074e2")}
+                      onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
+                      onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     >
                       {loading ? (
                         <Loader2 className="mr-3 h-5.5 w-5.5 animate-spin" />
@@ -273,35 +298,60 @@ function AuthPage() {
                   onSubmit={handleSignUp}
                 >
                   <div className="space-y-6">
-                    <Field id="fullName" label="Họ và tên" type="text" autoComplete="name"
-                      value={fullName} onChange={setFullName} disabled={busy} placeholder="Nguyễn Văn A" />
-                    <Field id="email" label="Email" type="email" autoComplete="email"
-                      value={email} onChange={setEmail} disabled={busy} placeholder="ten@example.com" />
-                    <Field id="password" label="Mật khẩu" type="password" autoComplete="new-password"
-                      value={password} onChange={setPassword} disabled={busy} placeholder="Tối thiểu 8 ký tự" />
+                    <Field
+                      id="fullName"
+                      label="Họ và tên"
+                      type="text"
+                      autoComplete="name"
+                      value={fullName}
+                      onChange={setFullName}
+                      disabled={busy}
+                      placeholder="Nguyễn Văn A"
+                    />
+                    <Field
+                      id="email"
+                      label="Email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={setEmail}
+                      disabled={busy}
+                      placeholder="ten@example.com"
+                    />
+                    <Field
+                      id="password"
+                      label="Mật khẩu"
+                      type="password"
+                      autoComplete="new-password"
+                      value={password}
+                      onChange={setPassword}
+                      disabled={busy}
+                      placeholder="Tối thiểu 8 ký tự"
+                    />
                     <button
                       type="submit"
                       disabled={busy}
-                      style={{ 
-                        display: 'flex', 
-                        height: '56px', 
-                        width: '100%', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        backgroundColor: '#0074e2',
-                        color: 'white',
-                        fontSize: '17px',
-                        fontWeight: 'bold',
-                        borderRadius: '16px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        boxShadow: '0 20px 25px -5px rgba(0, 116, 226, 0.2), 0 8px 10px -6px rgba(0, 116, 226, 0.2)'
+                      style={{
+                        display: "flex",
+                        height: "56px",
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#0074e2",
+                        color: "white",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        borderRadius: "16px",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        boxShadow:
+                          "0 20px 25px -5px rgba(0, 116, 226, 0.2), 0 8px 10px -6px rgba(0, 116, 226, 0.2)",
                       }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0066c7'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#0074e2'}
-                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#0066c7")}
+                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#0074e2")}
+                      onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
+                      onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     >
                       {loading ? (
                         <Loader2 className="mr-3 h-5.5 w-5.5 animate-spin" />
@@ -311,7 +361,8 @@ function AuthPage() {
                       Đăng ký
                     </button>
                     <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
-                      Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>. Quản trị viên sẽ kích hoạt và gán vai trò.
+                      Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>.
+                      Quản trị viên sẽ kích hoạt và gán vai trò.
                     </p>
                   </div>
                 </motion.form>
@@ -322,7 +373,9 @@ function AuthPage() {
               <>
                 <div className="my-6 flex items-center gap-3">
                   <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">HOẶC</span>
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                    HOẶC
+                  </span>
                   <div className="h-px flex-1 bg-border" />
                 </div>
                 <Button
@@ -332,9 +385,11 @@ function AuthPage() {
                   onClick={handlePasskey}
                   disabled={busy}
                 >
-                  {passkeyLoading
-                    ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    : <ScanFace className="mr-2 h-5 w-5 text-[#0074e2] transition-transform group-hover:scale-110" />}
+                  {passkeyLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <ScanFace className="mr-2 h-5 w-5 text-[#0074e2] transition-transform group-hover:scale-110" />
+                  )}
                   Đăng nhập bằng FaceID / Vân tay
                 </Button>
               </>
@@ -352,16 +407,32 @@ function AuthPage() {
 }
 
 function Field({
-  id, label, type, value, onChange, disabled, placeholder, autoComplete, rightSlot,
+  id,
+  label,
+  type,
+  value,
+  onChange,
+  disabled,
+  placeholder,
+  autoComplete,
+  rightSlot,
 }: {
-  id: string; label: string; type: string; value: string;
-  onChange: (v: string) => void; disabled?: boolean;
-  placeholder?: string; autoComplete?: string; rightSlot?: React.ReactNode;
+  id: string;
+  label: string;
+  type: string;
+  value: string;
+  onChange: (v: string) => void;
+  disabled?: boolean;
+  placeholder?: string;
+  autoComplete?: string;
+  rightSlot?: React.ReactNode;
 }) {
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between px-0.5">
-        <Label htmlFor={id} className="text-[15px] font-bold text-foreground/90">{label}</Label>
+        <Label htmlFor={id} className="text-[15px] font-bold text-foreground/90">
+          {label}
+        </Label>
         {rightSlot}
       </div>
       <input

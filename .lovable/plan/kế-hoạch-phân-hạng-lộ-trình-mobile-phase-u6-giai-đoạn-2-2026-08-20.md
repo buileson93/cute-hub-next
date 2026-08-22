@@ -24,5 +24,6 @@ Phạm vi: Chỉ tạo file `docs/ui/phan-hang-mobile.md`, không sửa code `sr
    - Liệt kê các route cần ý kiến từ dữ liệu truy cập thực tế của người dùng.
 
 ## Chi tiết kỹ thuật
+
 - File đầu ra: `docs/ui/phan-hang-mobile.md`.
 - Sử dụng dữ liệu từ `rg` và `find` để kiểm tra sự tồn tại của `StandardTable` và thẻ `form`.

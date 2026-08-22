@@ -87,12 +87,37 @@ describe("cong-viec-state — KPI theo đơn vị", () => {
   const today = "2026-07-13";
   const rows: CongViecKpiRow[] = [
     // đơn vị A: 1 hoàn thành đúng hạn, 1 hoàn thành trễ, 1 đang mở quá hạn, 1 đang mở còn hạn
-    { don_vi_id_snapshot: "A", trang_thai: "HOAN_THANH", ngay_den_han: "2026-07-10", ngay_hoan_thanh: "2026-07-09" },
-    { don_vi_id_snapshot: "A", trang_thai: "HOAN_THANH", ngay_den_han: "2026-07-05", ngay_hoan_thanh: "2026-07-12" },
-    { don_vi_id_snapshot: "A", trang_thai: "MO", ngay_den_han: "2026-07-01", ngay_hoan_thanh: null },
-    { don_vi_id_snapshot: "A", trang_thai: "DANG_LAM", ngay_den_han: "2026-07-20", ngay_hoan_thanh: null },
+    {
+      don_vi_id_snapshot: "A",
+      trang_thai: "HOAN_THANH",
+      ngay_den_han: "2026-07-10",
+      ngay_hoan_thanh: "2026-07-09",
+    },
+    {
+      don_vi_id_snapshot: "A",
+      trang_thai: "HOAN_THANH",
+      ngay_den_han: "2026-07-05",
+      ngay_hoan_thanh: "2026-07-12",
+    },
+    {
+      don_vi_id_snapshot: "A",
+      trang_thai: "MO",
+      ngay_den_han: "2026-07-01",
+      ngay_hoan_thanh: null,
+    },
+    {
+      don_vi_id_snapshot: "A",
+      trang_thai: "DANG_LAM",
+      ngay_den_han: "2026-07-20",
+      ngay_hoan_thanh: null,
+    },
     // đơn vị B: 1 hoàn thành đúng hạn
-    { don_vi_id_snapshot: "B", trang_thai: "HOAN_THANH", ngay_den_han: "2026-07-13", ngay_hoan_thanh: "2026-07-13" },
+    {
+      don_vi_id_snapshot: "B",
+      trang_thai: "HOAN_THANH",
+      ngay_den_han: "2026-07-13",
+      ngay_hoan_thanh: "2026-07-13",
+    },
   ];
 
   it("tính đúng tổng, hoàn thành, đang mở, quá hạn, đúng hạn và tỉ lệ", () => {
@@ -113,7 +138,14 @@ describe("cong-viec-state — KPI theo đơn vị", () => {
 
   it("đơn vị chưa có phiếu hoàn thành -> tỉ lệ null", () => {
     const kpi = computeKpiBaoTri(
-      [{ don_vi_id_snapshot: "C", trang_thai: "MO", ngay_den_han: "2026-07-01", ngay_hoan_thanh: null }],
+      [
+        {
+          don_vi_id_snapshot: "C",
+          trang_thai: "MO",
+          ngay_den_han: "2026-07-01",
+          ngay_hoan_thanh: null,
+        },
+      ],
       today,
     );
     expect(kpi[0].ty_le_dung_han).toBeNull();

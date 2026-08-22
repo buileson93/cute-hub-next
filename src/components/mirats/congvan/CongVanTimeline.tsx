@@ -5,8 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
-  type CongVanLinkRow, type CongVanRow, type CongVanTepRow,
-  LIEN_KET_META, LOAI_META, TRANG_THAI_META, cvMoc, fmtDate,
+  type CongVanLinkRow,
+  type CongVanRow,
+  type CongVanTepRow,
+  LIEN_KET_META,
+  LOAI_META,
+  TRANG_THAI_META,
+  cvMoc,
+  fmtDate,
 } from "./types";
 import { buildGraph, chainColor, effectiveEdges, gapDays, isOverdue, relatedIds } from "./chains";
 
@@ -17,7 +23,10 @@ const HEADER_H = 34;
 const CHAIN_GAP = 18;
 
 export function CongVanTimeline({
-  congVans, links, teps, onOpen,
+  congVans,
+  links,
+  teps,
+  onOpen,
 }: {
   congVans: CongVanRow[];
   links: CongVanLinkRow[];
@@ -60,7 +69,14 @@ export function CongVanTimeline({
     }
     const x = (cv: CongVanRow) =>
       PAD_X + (max === min ? 0 : ((cvMoc(cv).getTime() - min) / (max - min)) * track);
-    return { min, max, width, height: y + 16, x, top: (cv: CongVanRow) => tops.get(cv.id) ?? HEADER_H };
+    return {
+      min,
+      max,
+      width,
+      height: y + 16,
+      x,
+      top: (cv: CongVanRow) => tops.get(cv.id) ?? HEADER_H,
+    };
   }, [rows]);
 
   const tepCount = useMemo(() => {
@@ -70,10 +86,7 @@ export function CongVanTimeline({
   }, [teps]);
 
   const active = focusId ?? hoverId;
-  const highlight = useMemo(
-    () => (active ? relatedIds(graph, active) : null),
-    [graph, active],
-  );
+  const highlight = useMemo(() => (active ? relatedIds(graph, active) : null), [graph, active]);
 
   if (!rows.length || !geom) {
     return (
@@ -86,7 +99,9 @@ export function CongVanTimeline({
   const byId = new Map(congVans.map((r) => [r.id, r]));
   const drawEdges = edges
     .map((l) => ({ l, a: byId.get(l.tu_id), b: byId.get(l.den_id) }))
-    .filter((e): e is { l: (typeof edges)[number]; a: CongVanRow; b: CongVanRow } => !!e.a && !!e.b);
+    .filter(
+      (e): e is { l: (typeof edges)[number]; a: CongVanRow; b: CongVanRow } => !!e.a && !!e.b,
+    );
 
   const dim = (id: string) => !!highlight && !highlight.has(id);
   const focusRow = focusId ? byId.get(focusId) : null;
@@ -118,8 +133,12 @@ export function CongVanTimeline({
           );
         })}
         {focusRow && (
-          <Button size="sm" variant="ghost" className="ml-auto h-6 px-2 text-[11px]"
-            onClick={() => setFocusId(null)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="ml-auto h-6 px-2 text-[11px]"
+            onClick={() => setFocusId(null)}
+          >
             <X className="mr-1 h-3 w-3" /> Bỏ tiêu điểm {focusRow.so_cong_van}
           </Button>
         )}
@@ -135,9 +154,20 @@ export function CongVanTimeline({
           </div>
 
           {/* Đường nối phụ thuộc */}
-          <svg className="pointer-events-none absolute inset-0" width={geom.width} height={geom.height}>
+          <svg
+            className="pointer-events-none absolute inset-0"
+            width={geom.width}
+            height={geom.height}
+          >
             <defs>
-              <marker id="cv-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <marker
+                id="cv-arrow"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
                 <path d="M0,0 L6,3 L0,6 Z" className="fill-current" />
               </marker>
             </defs>
@@ -207,7 +237,10 @@ export function CongVanTimeline({
                       <div className="flex items-center gap-2">
                         <span className={cn("h-2 w-2 shrink-0 rounded-full", meta.dot)} />
                         <span className="truncate text-sm font-semibold">{cv.so_cong_van}</span>
-                        <Badge variant="outline" className={cn("ml-auto shrink-0 text-[10px]", meta.tone)}>
+                        <Badge
+                          variant="outline"
+                          className={cn("ml-auto shrink-0 text-[10px]", meta.tone)}
+                        >
                           {meta.short}
                         </Badge>
                       </div>
@@ -219,14 +252,20 @@ export function CongVanTimeline({
                         {fmtDate(cv.ngay_ban_hanh ?? cv.ngay_tiep_nhan)}
                         {files > 0 && (
                           <span className="ml-auto inline-flex items-center gap-1">
-                            <Paperclip className="h-3 w-3" />{files}
+                            <Paperclip className="h-3 w-3" />
+                            {files}
                           </span>
                         )}
                       </div>
                       <div className="mt-1.5 flex items-center gap-1.5">
-                        <Badge variant="outline" className={cn("text-[10px]", st.tone)}>{st.label}</Badge>
+                        <Badge variant="outline" className={cn("text-[10px]", st.tone)}>
+                          {st.label}
+                        </Badge>
                         {late && (
-                          <Badge variant="outline" className="border-rose-200 bg-rose-50 text-[10px] text-rose-700">
+                          <Badge
+                            variant="outline"
+                            className="border-rose-200 bg-rose-50 text-[10px] text-rose-700"
+                          >
                             <AlertTriangle className="mr-0.5 h-2.5 w-2.5" /> quá hạn
                           </Badge>
                         )}
@@ -249,12 +288,18 @@ export function CongVanTimeline({
                 </HoverCardTrigger>
                 <HoverCardContent align="start" className="w-80 text-xs">
                   <div className="text-sm font-semibold">{cv.so_cong_van}</div>
-                  <div className="mt-0.5 text-muted-foreground">{cv.trich_yeu || "(chưa có trích yếu)"}</div>
+                  <div className="mt-0.5 text-muted-foreground">
+                    {cv.trich_yeu || "(chưa có trích yếu)"}
+                  </div>
                   <dl className="mt-2 grid grid-cols-2 gap-1">
-                    <dt className="text-muted-foreground">Ban hành</dt><dd>{fmtDate(cv.ngay_ban_hanh)}</dd>
-                    <dt className="text-muted-foreground">Tiếp nhận</dt><dd>{fmtDate(cv.ngay_tiep_nhan)}</dd>
+                    <dt className="text-muted-foreground">Ban hành</dt>
+                    <dd>{fmtDate(cv.ngay_ban_hanh)}</dd>
+                    <dt className="text-muted-foreground">Tiếp nhận</dt>
+                    <dd>{fmtDate(cv.ngay_tiep_nhan)}</dd>
                     <dt className="text-muted-foreground">Hạn phúc đáp</dt>
-                    <dd className={late ? "font-medium text-rose-600" : ""}>{fmtDate(cv.han_phuc_dap)}</dd>
+                    <dd className={late ? "font-medium text-rose-600" : ""}>
+                      {fmtDate(cv.han_phuc_dap)}
+                    </dd>
                     <dt className="text-muted-foreground">Cơ quan</dt>
                     <dd className="truncate">{cv.co_quan_ban_hanh || cv.co_quan_nhan || "—"}</dd>
                   </dl>
@@ -287,7 +332,9 @@ export function CongVanTimeline({
                     </div>
                   )}
                   {preds.length === 0 && succs.length === 0 && (
-                    <div className="mt-2 text-muted-foreground">Chưa liên kết với công văn nào.</div>
+                    <div className="mt-2 text-muted-foreground">
+                      Chưa liên kết với công văn nào.
+                    </div>
                   )}
                 </HoverCardContent>
               </HoverCard>

@@ -1,22 +1,81 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  ReactFlow, ReactFlowProvider, Background, Controls, MiniMap, Panel,
-  addEdge, useNodesState, useEdgesState, useReactFlow, Handle, Position, MarkerType,
-  BaseEdge, getSmoothStepPath, ConnectionMode, getNodesBounds, getViewportForBounds,
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  Controls,
+  MiniMap,
+  Panel,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  useReactFlow,
+  Handle,
+  Position,
+  MarkerType,
+  BaseEdge,
+  getSmoothStepPath,
+  ConnectionMode,
+  getNodesBounds,
+  getViewportForBounds,
   NodeResizer,
-  type Node, type Edge, type Connection, type NodeTypes, type NodeProps,
-  type EdgeProps, type EdgeTypes,
+  type Node,
+  type Edge,
+  type Connection,
+  type NodeTypes,
+  type NodeProps,
+  type EdgeProps,
+  type EdgeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
 // html-to-image is lazy-loaded on export (GĐ1-06 perf)
 import {
-  ArrowLeft, HardDrive, Network, Type, Save, Trash2, ExternalLink,
-  ChevronsUpDown, Loader2, Plus, Paperclip, Upload, Download, File as FileIcon, Image as ImageIcon,
-  Images, ImageOff, Spline, Check, StickyNote, Square, Circle, Diamond, Palette, Shapes,
-  Link2, GitFork, Waypoints, MapPin, Activity, Boxes, Undo2, Redo2, ImageDown, LayoutGrid,
+  ArrowLeft,
+  HardDrive,
+  Network,
+  Type,
+  Save,
+  Trash2,
+  ExternalLink,
+  ChevronsUpDown,
+  Loader2,
+  Plus,
+  Paperclip,
+  Upload,
+  Download,
+  File as FileIcon,
+  Image as ImageIcon,
+  Images,
+  ImageOff,
+  Spline,
+  Check,
+  StickyNote,
+  Square,
+  Circle,
+  Diamond,
+  Palette,
+  Shapes,
+  Link2,
+  GitFork,
+  Waypoints,
+  MapPin,
+  Activity,
+  Boxes,
+  Undo2,
+  Redo2,
+  ImageDown,
+  LayoutGrid,
 } from "lucide-react";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
@@ -32,17 +91,32 @@ import { InfoHint } from "@/components/mirats/InfoHint";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import {
-  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
-  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
-  HoverCard, HoverCardContent, HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { ThietBi, HeThong } from "@/lib/mirats/types";
 import { cn } from "@/lib/utils";
@@ -61,14 +135,14 @@ export const Route = createFileRoute("/_app/so-do/$id")({
 
 /**
  * HydrationSafeEditor
- * 
- * Bọc Editor bằng một lớp bảo vệ Hydration để tránh lỗi XYFlow/DOM 
+ *
+ * Bọc Editor bằng một lớp bảo vệ Hydration để tránh lỗi XYFlow/DOM
  * truy cập window/document sớm trong quá trình SSR.
  */
 function SoDoEditorPage() {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
-  
+
   if (!isClient) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -76,12 +150,11 @@ function SoDoEditorPage() {
       </div>
     );
   }
-  
+
   return <SoDoEditorContent />;
 }
 
 // Dữ liệu và cấu hình cho Editor
-
 
 const BUCKET = "so-do-tep";
 const LIB_BUCKET = "so-do-thu-vien";
@@ -105,7 +178,14 @@ const isShape = (k: ElementKind): k is ShapeKind => (SHAPE_KINDS as string[]).in
 
 /** Bảng màu FigJam cho ghi chú dán & hình khối. */
 const SHAPE_COLORS = [
-  "#fde68a", "#fca5a5", "#a7f3d0", "#93c5fd", "#c4b5fd", "#f9a8d4", "#e2e8f0", "#fdba74",
+  "#fde68a",
+  "#fca5a5",
+  "#a7f3d0",
+  "#93c5fd",
+  "#c4b5fd",
+  "#f9a8d4",
+  "#e2e8f0",
+  "#fdba74",
 ];
 
 /** Tự động bố trí node bằng dagre để tránh chồng lấn. */
@@ -146,7 +226,11 @@ type SoDoRow = {
 
 /* ===================== Xem trước liên kết ===================== */
 
-type DiagramLite = { id: string; ten: string; du_lieu: { nodes: ElementNodeType[]; edges: Edge[] } | null };
+type DiagramLite = {
+  id: string;
+  ten: string;
+  du_lieu: { nodes: ElementNodeType[]; edges: Edge[] } | null;
+};
 
 type PreviewApi = {
   getDevice: (ma: string) => ThietBi | undefined;
@@ -162,7 +246,12 @@ function DiagramThumb({ data, className }: { data: DiagramLite["du_lieu"]; class
   const edges = data?.edges ?? [];
   if (!nodes.length) {
     return (
-      <div className={cn("grid place-items-center rounded-md border bg-muted/30 text-[10px] text-muted-foreground", className)}>
+      <div
+        className={cn(
+          "grid place-items-center rounded-md border bg-muted/30 text-[10px] text-muted-foreground",
+          className,
+        )}
+      >
         Sơ đồ trống
       </div>
     );
@@ -170,23 +259,51 @@ function DiagramThumb({ data, className }: { data: DiagramLite["du_lieu"]; class
   const pts = nodes.map((n) => ({ id: n.id, x: n.position.x, y: n.position.y }));
   const xs = pts.map((p) => p.x);
   const ys = pts.map((p) => p.y);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const minX = Math.min(...xs),
+    maxX = Math.max(...xs);
+  const minY = Math.min(...ys),
+    maxY = Math.max(...ys);
   const pad = 40;
   const w = Math.max(1, maxX - minX) + pad * 2;
   const h = Math.max(1, maxY - minY) + pad * 2;
   const pos = new Map(pts.map((p) => [p.id, { x: p.x - minX + pad, y: p.y - minY + pad }]));
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className={cn("rounded-md border bg-muted/20", className)} preserveAspectRatio="xMidYMid meet">
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      className={cn("rounded-md border bg-muted/20", className)}
+      preserveAspectRatio="xMidYMid meet"
+    >
       {edges.map((e, i) => {
         const s = pos.get(e.source);
         const t = pos.get(e.target);
         if (!s || !t) return null;
-        return <line key={e.id ?? i} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="var(--muted-foreground)" strokeWidth={3} opacity={0.5} />;
+        return (
+          <line
+            key={e.id ?? i}
+            x1={s.x}
+            y1={s.y}
+            x2={t.x}
+            y2={t.y}
+            stroke="var(--muted-foreground)"
+            strokeWidth={3}
+            opacity={0.5}
+          />
+        );
       })}
       {pts.map((p) => {
         const c = pos.get(p.id)!;
-        return <rect key={p.id} x={c.x - 26} y={c.y - 14} width={52} height={28} rx={6} fill="var(--primary)" opacity={0.85} />;
+        return (
+          <rect
+            key={p.id}
+            x={c.x - 26}
+            y={c.y - 14}
+            width={52}
+            height={28}
+            rx={6}
+            fill="var(--primary)"
+            opacity={0.85}
+          />
+        );
       })}
     </svg>
   );
@@ -211,12 +328,48 @@ const KIND_META: Record<CardKind, { label: string; icon: typeof HardDrive; cls: 
 /** Thư viện hình khối mặc định (kèm sẵn) dùng cho các phần tử sơ đồ. */
 type LibItem = { key: string; ten: string; nhom: string; url: string; kw: string[] };
 const DEFAULT_LIB: LibItem[] = [
-  { key: "may-tinh", ten: "Máy tính", nhom: "CNTT", url: imgMayTinh, kw: ["máy tính", "may tinh", "computer", "pc", "workstation", "desktop"] },
-  { key: "switch", ten: "Switch mạng", nhom: "Mạng", url: imgSwitch, kw: ["switch", "chuyển mạch", "chuyen mach"] },
-  { key: "router", ten: "Router", nhom: "Mạng", url: imgRouter, kw: ["router", "định tuyến", "dinh tuyen", "modem"] },
-  { key: "server", ten: "Máy chủ", nhom: "CNTT", url: imgServer, kw: ["server", "máy chủ", "may chu", "rack"] },
-  { key: "may-uhf", ten: "Máy UHF", nhom: "Vô tuyến", url: imgUhf, kw: ["uhf", "vhf", "bộ đàm", "bo dam", "radio", "vô tuyến", "vo tuyen", "transceiver"] },
-  { key: "antenna", ten: "Anten", nhom: "Vô tuyến", url: imgAntenna, kw: ["anten", "antenna", "tháp", "thap", "mast", "phát sóng"] },
+  {
+    key: "may-tinh",
+    ten: "Máy tính",
+    nhom: "CNTT",
+    url: imgMayTinh,
+    kw: ["máy tính", "may tinh", "computer", "pc", "workstation", "desktop"],
+  },
+  {
+    key: "switch",
+    ten: "Switch mạng",
+    nhom: "Mạng",
+    url: imgSwitch,
+    kw: ["switch", "chuyển mạch", "chuyen mach"],
+  },
+  {
+    key: "router",
+    ten: "Router",
+    nhom: "Mạng",
+    url: imgRouter,
+    kw: ["router", "định tuyến", "dinh tuyen", "modem"],
+  },
+  {
+    key: "server",
+    ten: "Máy chủ",
+    nhom: "CNTT",
+    url: imgServer,
+    kw: ["server", "máy chủ", "may chu", "rack"],
+  },
+  {
+    key: "may-uhf",
+    ten: "Máy UHF",
+    nhom: "Vô tuyến",
+    url: imgUhf,
+    kw: ["uhf", "vhf", "bộ đàm", "bo dam", "radio", "vô tuyến", "vo tuyen", "transceiver"],
+  },
+  {
+    key: "antenna",
+    ten: "Anten",
+    nhom: "Vô tuyến",
+    url: imgAntenna,
+    kw: ["anten", "antenna", "tháp", "thap", "mast", "phát sóng"],
+  },
 ];
 
 /** Gợi ý hình mặc định theo tên/chủng loại. */
@@ -231,7 +384,10 @@ function useInlineLabel(id: string, label: string) {
   const rf = useReactFlow();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(label);
-  const start = () => { setDraft(label); setEditing(true); };
+  const start = () => {
+    setDraft(label);
+    setEditing(true);
+  };
   const commit = () => {
     setEditing(false);
     rf.setNodes((nds) =>
@@ -268,7 +424,11 @@ function ElementNode({ id, data, selected }: NodeProps<ElementNodeType>) {
 
   const open = () => {
     if (data.kind === "thiet_bi" && data.ref) {
-      nav({ to: "/thiet-bi/$maThietBi", params: { maThietBi: data.ref }, search: { tab: "tong-quan", doc: undefined, q: undefined } });
+      nav({
+        to: "/thiet-bi/$maThietBi",
+        params: { maThietBi: data.ref },
+        search: { tab: "tong-quan", doc: undefined, q: undefined },
+      });
     } else if (data.kind === "he_thong") {
       nav({ to: "/he-thong/cay" });
     }
@@ -300,7 +460,12 @@ function ElementNode({ id, data, selected }: NodeProps<ElementNodeType>) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); commit(); } }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              commit();
+            }
+          }}
           className="nodrag mt-1 w-full resize-none rounded border border-primary/40 bg-background p-1 text-sm outline-none"
           rows={2}
         />
@@ -335,7 +500,10 @@ function ElementNode({ id, data, selected }: NodeProps<ElementNodeType>) {
 
 /** Thẻ xem trước liên kết: thông tin tài sản/hệ thống + ảnh thu nhỏ sơ đồ liên quan. */
 function LinkPreview({
-  kind, refId, onOpen, children,
+  kind,
+  refId,
+  onOpen,
+  children,
 }: {
   kind: CardKind;
   refId: string;
@@ -356,11 +524,19 @@ function LinkPreview({
             <div className="flex items-center gap-1.5 text-sm font-semibold">
               <HardDrive className="h-4 w-4 text-primary" /> {device.ten}
             </div>
-            <p className="text-xs text-muted-foreground">{device.ma_thiet_bi} · {device.loai}</p>
+            <p className="text-xs text-muted-foreground">
+              {device.ma_thiet_bi} · {device.loai}
+            </p>
             <div className="grid grid-cols-2 gap-1.5 pt-1 text-xs">
-              <span className="flex items-center gap-1"><Activity className="h-3 w-3 opacity-60" /> {device.trang_thai}</span>
-              <span className="flex items-center gap-1"><Boxes className="h-3 w-3 opacity-60" /> {device.tinh_trang_ky_thuat}</span>
-              <span className="col-span-2 flex items-center gap-1"><MapPin className="h-3 w-3 opacity-60" /> {device.vi_tri}</span>
+              <span className="flex items-center gap-1">
+                <Activity className="h-3 w-3 opacity-60" /> {device.trang_thai}
+              </span>
+              <span className="flex items-center gap-1">
+                <Boxes className="h-3 w-3 opacity-60" /> {device.tinh_trang_ky_thuat}
+              </span>
+              <span className="col-span-2 flex items-center gap-1">
+                <MapPin className="h-3 w-3 opacity-60" /> {device.vi_tri}
+              </span>
             </div>
           </div>
         )}
@@ -369,9 +545,13 @@ function LinkPreview({
             <div className="flex items-center gap-1.5 text-sm font-semibold">
               <Network className="h-4 w-4 text-blue-500" /> {system.ten}
             </div>
-            <p className="text-xs text-muted-foreground">{system.ma} · {system.nhom}</p>
+            <p className="text-xs text-muted-foreground">
+              {system.ma} · {system.nhom}
+            </p>
             <div className="flex items-center gap-3 pt-1 text-xs">
-              <span className="flex items-center gap-1"><Activity className="h-3 w-3 opacity-60" /> {system.trang_thai}</span>
+              <span className="flex items-center gap-1">
+                <Activity className="h-3 w-3 opacity-60" /> {system.trang_thai}
+              </span>
               <span>Đưa vào: {system.nam_dua_vao}</span>
             </div>
             {diagrams.length > 0 && (
@@ -408,10 +588,17 @@ function LinkPreview({
   );
 }
 
-
 /** Hình khối FigJam: ghi chú dán, chữ nhật, elip, thoi — chữ sửa tại chỗ. */
 function ShapeNode({
-  kind, label, color, selected, editing, draft, setDraft, start, commit,
+  kind,
+  label,
+  color,
+  selected,
+  editing,
+  draft,
+  setDraft,
+  start,
+  commit,
 }: {
   kind: ShapeKind;
   label: string;
@@ -430,7 +617,12 @@ function ShapeNode({
       value={draft}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={commit}
-      onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); commit(); } }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          commit();
+        }
+      }}
       className="nodrag h-full w-full resize-none border-none bg-transparent text-center text-sm text-slate-900 outline-none"
     />
   ) : (
@@ -454,10 +646,18 @@ function ShapeNode({
 
   if (kind === "diamond") {
     return (
-      <div className={cn("relative grid h-full min-h-[96px] w-full min-w-[96px] place-items-center", ring)}>
+      <div
+        className={cn(
+          "relative grid h-full min-h-[96px] w-full min-w-[96px] place-items-center",
+          ring,
+        )}
+      >
         {resizer}
         <NodeHandles />
-        <div className="absolute inset-3 rotate-45 rounded-md border-2 border-black/10 shadow-sm" style={{ background: color }} />
+        <div
+          className="absolute inset-3 rotate-45 rounded-md border-2 border-black/10 shadow-sm"
+          style={{ background: color }}
+        />
         <div className="relative z-10 grid place-items-center">{label_ui}</div>
       </div>
     );
@@ -481,7 +681,6 @@ function ShapeNode({
     </div>
   );
 }
-
 
 /** Chấm nối trên cả 4 cạnh — kéo từ bất kỳ chấm nào sang chấm của khối khác để vẽ đường nối. */
 function NodeHandles() {
@@ -508,25 +707,33 @@ function NodeHandles() {
 
 const nodeTypes: NodeTypes = { element: ElementNode };
 
-
 /* ========================= Thư viện đường nối ========================= */
 
-type EdgeKind =
-  | "cap_mang"
-  | "cap_quang"
-  | "cap_dien"
-  | "song_vo_tuyen"
-  | "cap_dong_truc"
-  | "logic";
+type EdgeKind = "cap_mang" | "cap_quang" | "cap_dien" | "song_vo_tuyen" | "cap_dong_truc" | "logic";
 
 const EDGE_META: Record<
   EdgeKind,
-  { label: string; color: string; width: number; dash?: string; animated?: boolean; wave?: boolean; arrow?: boolean }
+  {
+    label: string;
+    color: string;
+    width: number;
+    dash?: string;
+    animated?: boolean;
+    wave?: boolean;
+    arrow?: boolean;
+  }
 > = {
   cap_mang: { label: "Cáp mạng", color: "#64748b", width: 2 },
   cap_quang: { label: "Cáp quang", color: "#06b6d4", width: 2.5, animated: true },
   cap_dien: { label: "Cáp điện", color: "#f59e0b", width: 2.75 },
-  song_vo_tuyen: { label: "Sóng vô tuyến", color: "#3b82f6", width: 2, wave: true, animated: true, arrow: false },
+  song_vo_tuyen: {
+    label: "Sóng vô tuyến",
+    color: "#3b82f6",
+    width: 2,
+    wave: true,
+    animated: true,
+    arrow: false,
+  },
   cap_dong_truc: { label: "Cáp đồng trục", color: "#a855f7", width: 2, dash: "7 4" },
   logic: { label: "Liên kết logic", color: "#94a3b8", width: 1.6, dash: "2 5" },
 };
@@ -543,7 +750,9 @@ function edgeTypeFor(kind: EdgeKind): "wave" | "styled" {
 
 function makeMarker(kind: EdgeKind) {
   const m = EDGE_META[kind];
-  return m.arrow === false ? undefined : { type: MarkerType.ArrowClosed, color: m.color, width: 18, height: 18 };
+  return m.arrow === false
+    ? undefined
+    : { type: MarkerType.ArrowClosed, color: m.color, width: 18, height: 18 };
 }
 
 /** Đường nối thẳng dạng sóng (mô phỏng sóng vô tuyến). */
@@ -569,11 +778,25 @@ function wavePath(sx: number, sy: number, tx: number, ty: number): string {
 }
 
 function StyledEdge({
-  id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data, markerEnd,
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  data,
+  markerEnd,
 }: EdgeProps) {
   const m = EDGE_META[edgeKindOf(data)];
   const [path] = getSmoothStepPath({
-    sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, borderRadius: 10,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    borderRadius: 10,
   });
   const dash = m.dash ?? (m.animated ? "8 6" : undefined);
   return (
@@ -612,8 +835,6 @@ function WaveEdge({ id, sourceX, sourceY, targetX, targetY, data, markerEnd }: E
 
 const edgeTypes: EdgeTypes = { styled: StyledEdge, wave: WaveEdge };
 
-
-
 function SoDoEditorContent() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
@@ -639,9 +860,14 @@ function SoDoEditorContent() {
           <Network className="h-8 w-8 opacity-60" />
           <p className="font-medium text-foreground">Trình vẽ sơ đồ cần màn hình lớn</p>
           <p className="max-w-sm text-sm">
-            Sơ đồ hệ thống dùng thao tác kéo–thả và khung nhìn rộng, nên chỉ dùng được trên máy tính bảng hoặc máy tính. Vui lòng mở trên màn hình lớn hơn để chỉnh sửa.
+            Sơ đồ hệ thống dùng thao tác kéo–thả và khung nhìn rộng, nên chỉ dùng được trên máy tính
+            bảng hoặc máy tính. Vui lòng mở trên màn hình lớn hơn để chỉnh sửa.
           </p>
-          <Button asChild variant="outline"><Link to="/so-do"><ArrowLeft className="mr-2 h-4 w-4" /> Về danh sách</Link></Button>
+          <Button asChild variant="outline">
+            <Link to="/so-do">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Về danh sách
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     );
@@ -655,7 +881,11 @@ function SoDoEditorContent() {
       <Card>
         <CardContent className="flex flex-col items-center gap-3 py-16 text-center text-muted-foreground">
           <p>Không tìm thấy sơ đồ hoặc bạn không có quyền truy cập.</p>
-          <Button asChild variant="outline"><Link to="/so-do"><ArrowLeft className="mr-2 h-4 w-4" /> Về danh sách</Link></Button>
+          <Button asChild variant="outline">
+            <Link to="/so-do">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Về danh sách
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     );
@@ -719,8 +949,13 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (!(e.ctrlKey || e.metaKey)) return;
       const k = e.key.toLowerCase();
-      if (k === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
-      else if ((k === "z" && e.shiftKey) || k === "y") { e.preventDefault(); redo(); }
+      if (k === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((k === "z" && e.shiftKey) || k === "y") {
+        e.preventDefault();
+        redo();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -728,15 +963,24 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
 
   /* ----- Xuất sơ đồ ra ảnh PNG ----- */
   const exportPng = useCallback(async () => {
-    if (!nodes.length) { toast.info("Sơ đồ trống, chưa có gì để xuất"); return; }
+    if (!nodes.length) {
+      toast.info("Sơ đồ trống, chưa có gì để xuất");
+      return;
+    }
     const bounds = getNodesBounds(nodes);
     const pad = 48;
     const imageWidth = Math.min(4096, Math.max(640, Math.ceil(bounds.width) + pad * 2));
     const imageHeight = Math.min(4096, Math.max(480, Math.ceil(bounds.height) + pad * 2));
     const vp = getViewportForBounds(bounds, imageWidth, imageHeight, 0.2, 2, 0.1);
-    if (typeof document === 'undefined') { toast.error("Môi trường không hỗ trợ xuất ảnh"); return; }
+    if (typeof document === "undefined") {
+      toast.error("Môi trường không hỗ trợ xuất ảnh");
+      return;
+    }
     const el = document.querySelector<HTMLElement>(".react-flow__viewport");
-    if (!el) { toast.error("Không tìm thấy khung sơ đồ"); return; }
+    if (!el) {
+      toast.error("Không tìm thấy khung sơ đồ");
+      return;
+    }
     const { toPng } = await import("html-to-image");
     toPng(el, {
       backgroundColor: "#ffffff",
@@ -750,7 +994,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       },
     })
       .then((dataUrl) => {
-        if (typeof document !== 'undefined') {
+        if (typeof document !== "undefined") {
           const a = document.createElement("a");
           a.download = `${(row.ten || "so-do").replace(/[^\w\-]+/g, "_")}.png`;
           a.href = dataUrl;
@@ -764,22 +1008,30 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
   /* ----- Tự động bố trí node ----- */
   const autoLayout = useCallback(
     (dir: "TB" | "LR") => {
-      if (!nodes.length) { toast.info("Sơ đồ trống"); return; }
+      if (!nodes.length) {
+        toast.info("Sơ đồ trống");
+        return;
+      }
       snapshot();
       setNodes(autoLayoutNodes(rf.getNodes() as ElementNodeType[], edges, dir));
       toast.success("Đã tự động bố trí sơ đồ");
-      if (typeof window !== 'undefined') window.setTimeout(() => rf.fitView({ padding: 0.2, duration: 400 }), 80);
+      if (typeof window !== "undefined")
+        window.setTimeout(() => rf.fitView({ padding: 0.2, duration: 400 }), 80);
     },
     [nodes, edges, snapshot, setNodes, rf],
   );
-
 
   const onConnect = useCallback(
     (c: Connection) => {
       snapshot();
       setEdges((eds) =>
         addEdge(
-          { ...c, type: edgeTypeFor(edgeKind), data: { kind: edgeKind }, markerEnd: makeMarker(edgeKind) },
+          {
+            ...c,
+            type: edgeTypeFor(edgeKind),
+            data: { kind: edgeKind },
+            markerEnd: makeMarker(edgeKind),
+          },
           eds,
         ),
       );
@@ -801,7 +1053,7 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
   });
 
   const previewApi = useMemo<PreviewApi | null>(() => {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const deviceMap = new Map(scope.thietBi.map((t) => [t.ma_thiet_bi, t]));
     const systemMap = new Map(scope.heThong.map((h) => [h.ma, h]));
     const diagBySystem = new Map<string, DiagramLite[]>();
@@ -842,7 +1094,10 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
         const add = selected
           .filter((n) => !exists.has(`${n.id}->${targetId}`))
           .map((n) => makeEdge(n.id, targetId, edgeKind));
-        if (!add.length) { toast.info("Các khối đã được nối tới đích"); return eds; }
+        if (!add.length) {
+          toast.info("Các khối đã được nối tới đích");
+          return eds;
+        }
         toast.success(`Đã nối ${add.length} khối tới đích`);
         return [...eds, ...add];
       });
@@ -857,14 +1112,21 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       const ordered = nodes
         .filter((n) => n.selected)
         .sort((a, b) => a.position.y - b.position.y || a.position.x - b.position.x);
-      if (ordered.length < 2) { toast.info("Chọn ít nhất 2 khối để nối chuỗi"); return eds; }
+      if (ordered.length < 2) {
+        toast.info("Chọn ít nhất 2 khối để nối chuỗi");
+        return eds;
+      }
       const exists = new Set(eds.map((e) => `${e.source}->${e.target}`));
       const add: Edge[] = [];
       for (let i = 0; i < ordered.length - 1; i++) {
-        const s = ordered[i].id, t = ordered[i + 1].id;
+        const s = ordered[i].id,
+          t = ordered[i + 1].id;
         if (!exists.has(`${s}->${t}`)) add.push(makeEdge(s, t, edgeKind));
       }
-      if (!add.length) { toast.info("Các khối đã được nối chuỗi"); return eds; }
+      if (!add.length) {
+        toast.info("Các khối đã được nối chuỗi");
+        return eds;
+      }
       toast.success(`Đã nối chuỗi ${add.length} đường`);
       return [...eds, ...add];
     });
@@ -879,7 +1141,12 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
         snapshot();
         return eds.map((e) =>
           e.selected
-            ? { ...e, type: edgeTypeFor(kind), data: { ...(e.data ?? {}), kind }, markerEnd: makeMarker(kind) }
+            ? {
+                ...e,
+                type: edgeTypeFor(kind),
+                data: { ...(e.data ?? {}), kind },
+                markerEnd: makeMarker(kind),
+              }
             : e,
         );
       });
@@ -888,7 +1155,13 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
   );
 
   const addNode = useCallback(
-    (kind: ElementKind, label: string, ref: string | null, img: string | null = null, color: string | null = null) => {
+    (
+      kind: ElementKind,
+      label: string,
+      ref: string | null,
+      img: string | null = null,
+      color: string | null = null,
+    ) => {
       snapshot();
       const n = idc.current++;
       const node: ElementNodeType = {
@@ -920,7 +1193,6 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     [setNodes, snapshot],
   );
 
-
   /** Gán / gỡ hình cho các khối đang được chọn. */
   const applyImage = useCallback(
     (url: string | null) => {
@@ -942,19 +1214,32 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
   const saveM = useMutation({
     mutationFn: async () => {
       const cleanNodes = nodes.map((nd) => ({
-        id: nd.id, type: nd.type, position: nd.position, data: nd.data,
+        id: nd.id,
+        type: nd.type,
+        position: nd.position,
+        data: nd.data,
       }));
       const cleanEdges = edges.map((e) => ({
-        id: e.id, source: e.source, target: e.target,
-        type: e.type, data: e.data, label: e.label, markerEnd: e.markerEnd,
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        type: e.type,
+        data: e.data,
+        label: e.label,
+        markerEnd: e.markerEnd,
       }));
       const { error } = await supabase
         .from("so_do_he_thong")
-        .update({ du_lieu: { nodes: cleanNodes, edges: cleanEdges } as unknown as Record<string, never> })
+        .update({
+          du_lieu: { nodes: cleanNodes, edges: cleanEdges } as unknown as Record<string, never>,
+        })
         .eq("id", row.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Đã lưu sơ đồ"); onSaved(); },
+    onSuccess: () => {
+      toast.success("Đã lưu sơ đồ");
+      onSaved();
+    },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không lưu được"),
   });
 
@@ -967,7 +1252,9 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     snapshot();
     if (selectedIds.length) {
       setNodes((nds) => nds.filter((n) => !n.selected));
-      setEdges((eds) => eds.filter((e) => !selectedIds.includes(e.source) && !selectedIds.includes(e.target)));
+      setEdges((eds) =>
+        eds.filter((e) => !selectedIds.includes(e.source) && !selectedIds.includes(e.target)),
+      );
     }
     if (selectedEdgeIds.length) setEdges((eds) => eds.filter((e) => !e.selected));
   };
@@ -976,7 +1263,9 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <Button asChild variant="ghost" size="sm" className="astryx-control">
-          <Link to="/so-do"><ArrowLeft className="mr-1 h-4 w-4" /> Danh sách</Link>
+          <Link to="/so-do">
+            <ArrowLeft className="mr-1 h-4 w-4" /> Danh sách
+          </Link>
         </Button>
         <div className="mr-auto flex min-w-0 flex-wrap items-center gap-2">
           <h1 className="astryx-heading-2 truncate">{row.ten}</h1>
@@ -989,14 +1278,31 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
             </Link>
           )}
           <InfoHint>
-            Kéo thả để di chuyển node. Ctrl+Z / Ctrl+Shift+Z để hoàn tác / làm lại. Nối cạnh bằng cách kéo từ điểm neo bên cạnh node.
+            Kéo thả để di chuyển node. Ctrl+Z / Ctrl+Shift+Z để hoàn tác / làm lại. Nối cạnh bằng
+            cách kéo từ điểm neo bên cạnh node.
           </InfoHint>
         </div>
 
-        <Button variant="outline" size="icon" className="astryx-control h-9 w-9" onClick={undo} disabled={!canUndo} title="Hoàn tác (Ctrl+Z)" aria-label="Undo2">
+        <Button
+          variant="outline"
+          size="icon"
+          className="astryx-control h-9 w-9"
+          onClick={undo}
+          disabled={!canUndo}
+          title="Hoàn tác (Ctrl+Z)"
+          aria-label="Undo2"
+        >
           <Undo2 className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="icon" className="astryx-control h-9 w-9" onClick={redo} disabled={!canRedo} title="Làm lại (Ctrl+Shift+Z)" aria-label="Redo2">
+        <Button
+          variant="outline"
+          size="icon"
+          className="astryx-control h-9 w-9"
+          onClick={redo}
+          disabled={!canRedo}
+          title="Làm lại (Ctrl+Shift+Z)"
+          aria-label="Redo2"
+        >
           <Redo2 className="h-4 w-4" />
         </Button>
         <Separator orientation="vertical" className="mx-1 hidden h-6 sm:block" />
@@ -1033,12 +1339,16 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
           <Trash2 className="mr-1 h-4 w-4" /> Xoá
         </Button>
         <Button size="sm" onClick={() => saveM.mutate()} disabled={saveM.isPending}>
-          {saveM.isPending ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Lưu
+          {saveM.isPending ? (
+            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-1 h-4 w-4" />
+          )}{" "}
+          Lưu
         </Button>
       </div>
 
       <div className="h-[calc(100dvh-220px)] min-h-[480px] w-full overflow-hidden rounded-xl border bg-muted/20">
-
         <PreviewContext.Provider value={previewApi}>
           <ReactFlow
             nodes={nodes}
@@ -1078,8 +1388,13 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
                   const nm = l.split(" · ")[1] ?? v;
                   addNode("thiet_bi", nm, v, matchDefaultImg(`${nm} ${tb?.loai ?? ""}`));
                 }}
-                onAddSystem={(v, l) => addNode("he_thong", l.split(" · ")[1] ?? v, v, matchDefaultImg(l))}
-                devices={scope.thietBi.map((t) => ({ value: t.ma_thiet_bi, label: `${t.ma_thiet_bi} · ${t.ten}` }))}
+                onAddSystem={(v, l) =>
+                  addNode("he_thong", l.split(" · ")[1] ?? v, v, matchDefaultImg(l))
+                }
+                devices={scope.thietBi.map((t) => ({
+                  value: t.ma_thiet_bi,
+                  label: `${t.ma_thiet_bi} · ${t.ten}`,
+                }))}
                 systems={scope.heThong.map((h) => ({ value: h.ma, label: `${h.ma} · ${h.ten}` }))}
                 selectedNodes={nodes
                   .filter((n) => n.selected)
@@ -1092,15 +1407,16 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
         </PreviewContext.Provider>
       </div>
 
-
-
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-lg border bg-card/50 px-3 py-2">
         <span className="text-xs font-semibold text-muted-foreground">Chú giải đường nối:</span>
         {EDGE_KINDS.map((k) => (
           <span key={k} className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <svg width="26" height="10" className="shrink-0">
               <line
-                x1="1" y1="5" x2="25" y2="5"
+                x1="1"
+                y1="5"
+                x2="25"
+                y2="5"
                 stroke={EDGE_META[k].color}
                 strokeWidth={EDGE_META[k].width}
                 strokeDasharray={EDGE_META[k].dash}
@@ -1112,9 +1428,10 @@ function Editor({ row, onSaved }: { row: SoDoRow; onSaved: () => void }) {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Chọn “Loại đường nối” rồi kéo từ chấm nối ở bất kỳ cạnh nào của một phần tử sang chấm nối của phần tử khác để vẽ đường.
-        Muốn đổi kiểu một đường có sẵn: chọn đường đó rồi bấm lại “Loại đường nối”.
-        Chọn một khối rồi mở “Thư viện hình” để gán hình minh hoạ (máy tính, switch, máy UHF…) hoặc tải hình mới. Nhớ bấm Lưu.
+        Chọn “Loại đường nối” rồi kéo từ chấm nối ở bất kỳ cạnh nào của một phần tử sang chấm nối
+        của phần tử khác để vẽ đường. Muốn đổi kiểu một đường có sẵn: chọn đường đó rồi bấm lại
+        “Loại đường nối”. Chọn một khối rồi mở “Thư viện hình” để gán hình minh hoạ (máy tính,
+        switch, máy UHF…) hoặc tải hình mới. Nhớ bấm Lưu.
       </p>
     </div>
   );
@@ -1184,7 +1501,10 @@ function AttachmentsButton({ soDoId }: { soDoId: string }) {
 
   const openFile = async (t: TepRow) => {
     const { data, error } = await storage.from(BUCKET).createSignedUrl(t.duong_dan, 3600);
-    if (error || !data) { toast.error("Không mở được tệp"); return; }
+    if (error || !data) {
+      toast.error("Không mở được tệp");
+      return;
+    }
     window.open(data.signedUrl, "_blank", "noopener");
   };
 
@@ -1194,7 +1514,10 @@ function AttachmentsButton({ soDoId }: { soDoId: string }) {
       const { error } = await supabase.from("so_do_tep_dinh_kem").delete().eq("id", t.id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: qkey }); toast.success("Đã xoá tệp"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qkey });
+      toast.success("Đã xoá tệp");
+    },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không xoá được"),
   });
 
@@ -1203,13 +1526,19 @@ function AttachmentsButton({ soDoId }: { soDoId: string }) {
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
           <Paperclip className="mr-1 h-4 w-4" /> Đính kèm
-          {count > 0 && <Badge variant="secondary" className="ml-1.5 px-1.5">{count}</Badge>}
+          {count > 0 && (
+            <Badge variant="secondary" className="ml-1.5 px-1.5">
+              {count}
+            </Badge>
+          )}
         </Button>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col sm:max-w-md">
         <SheetHeader>
           <SheetTitle>Tệp đính kèm</SheetTitle>
-          <SheetDescription>Đính kèm bản vẽ dạng file (ảnh, PDF, draw.io, tài liệu…) cho sơ đồ này.</SheetDescription>
+          <SheetDescription>
+            Đính kèm bản vẽ dạng file (ảnh, PDF, draw.io, tài liệu…) cho sơ đồ này.
+          </SheetDescription>
         </SheetHeader>
 
         <input
@@ -1220,7 +1549,11 @@ function AttachmentsButton({ soDoId }: { soDoId: string }) {
           onChange={(e) => handleFiles(e.target.files)}
         />
         <Button className="mt-4" onClick={() => inputRef.current?.click()} disabled={uploading}>
-          {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+          {uploading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="mr-2 h-4 w-4" />
+          )}
           Tải lên tệp
         </Button>
 
@@ -1243,22 +1576,35 @@ function AttachmentsButton({ soDoId }: { soDoId: string }) {
                   >
                     <div className="truncate text-sm font-medium hover:underline">{t.ten_tep}</div>
                     <div className="text-xs text-muted-foreground">
-                      {formatSize(t.kich_thuoc)} · {new Date(t.created_at).toLocaleDateString("vi-VN")}
+                      {formatSize(t.kich_thuoc)} ·{" "}
+                      {new Date(t.created_at).toLocaleDateString("vi-VN")}
                     </div>
                   </button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openFile(t)}>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                    onClick={() => openFile(t)}
+                  >
                     <Download className="h-4 w-4" />
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" aria-label="Xoá">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        aria-label="Xoá"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Xoá tệp “{t.ten_tep}”?</AlertDialogTitle>
-                        <AlertDialogDescription>Hành động này không thể hoàn tác.</AlertDialogDescription>
+                        <AlertDialogDescription>
+                          Hành động này không thể hoàn tác.
+                        </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Huỷ</AlertDialogCancel>
@@ -1276,7 +1622,14 @@ function AttachmentsButton({ soDoId }: { soDoId: string }) {
   );
 }
 
-type ThuVienRow = { id: string; ten: string; nhom: string | null; duong_dan: string; created_by: string; created_at: string };
+type ThuVienRow = {
+  id: string;
+  ten: string;
+  nhom: string | null;
+  duong_dan: string;
+  created_by: string;
+  created_at: string;
+};
 
 /** Thư viện hình khối: hình có sẵn + hình do người dùng tải lên, gán cho khối đang chọn. */
 function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
@@ -1298,9 +1651,10 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
       if (error) throw error;
       const rows = (data ?? []) as ThuVienRow[];
       if (rows.length === 0) return [] as (ThuVienRow & { url: string })[];
-      const { data: signed } = await storage
-        .from(LIB_BUCKET)
-        .createSignedUrls(rows.map((r) => r.duong_dan), LIB_URL_TTL);
+      const { data: signed } = await storage.from(LIB_BUCKET).createSignedUrls(
+        rows.map((r) => r.duong_dan),
+        LIB_URL_TTL,
+      );
       const map = new Map((signed ?? []).map((s) => [s.path ?? "", s.signedUrl]));
       return rows.map((r) => ({ ...r, url: map.get(r.duong_dan) ?? "" }));
     },
@@ -1311,7 +1665,10 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
     setUploading(true);
     try {
       for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) { toast.error(`"${file.name}" không phải hình ảnh`); continue; }
+        if (!file.type.startsWith("image/")) {
+          toast.error(`"${file.name}" không phải hình ảnh`);
+          continue;
+        }
         const safe = file.name.replace(/[^\w.\-]+/g, "_");
         const path = `${user.id}/${Date.now()}_${safe}`;
         const up = await storage.from(LIB_BUCKET).upload(path, file, { upsert: false });
@@ -1322,7 +1679,10 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
           duong_dan: path,
           created_by: user.id,
         });
-        if (ins.error) { await storage.from(LIB_BUCKET).remove([path]); throw ins.error; }
+        if (ins.error) {
+          await storage.from(LIB_BUCKET).remove([path]);
+          throw ins.error;
+        }
       }
       toast.success("Đã tải hình lên thư viện");
       qc.invalidateQueries({ queryKey: qkey });
@@ -1340,7 +1700,10 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
       const { error } = await supabase.from("so_do_thu_vien_hinh").delete().eq("id", r.id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: qkey }); toast.success("Đã xoá hình"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: qkey });
+      toast.success("Đã xoá hình");
+    },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không xoá được"),
   });
 
@@ -1361,11 +1724,21 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
           </SheetDescription>
         </SheetHeader>
 
-        <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
-          onChange={(e) => handleFiles(e.target.files)} />
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(e) => handleFiles(e.target.files)}
+        />
         <div className="mt-4 flex gap-2">
           <Button className="flex-1" onClick={() => inputRef.current?.click()} disabled={uploading}>
-            {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+            {uploading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="mr-2 h-4 w-4" />
+            )}
             Tải hình lên
           </Button>
           <Button variant="outline" onClick={() => onPick(null)}>
@@ -1374,7 +1747,9 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
         </div>
 
         <div className="mt-4 flex-1 overflow-y-auto pr-1">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hình có sẵn</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Hình có sẵn
+          </p>
           <div className="grid grid-cols-2 @sm:grid-cols-3 gap-2">
             {DEFAULT_LIB.map((it) => (
               <button
@@ -1383,13 +1758,22 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
                 onClick={() => onPick(it.url)}
                 className="flex flex-col items-center gap-1 rounded-lg border p-2 hover:border-primary hover:bg-primary/5"
               >
-                <img src={it.url} alt={it.ten} loading="lazy" className="h-14 w-14 object-contain" />
-                <span className="line-clamp-1 text-center text-[11px] text-muted-foreground">{it.ten}</span>
+                <img
+                  src={it.url}
+                  alt={it.ten}
+                  loading="lazy"
+                  className="h-14 w-14 object-contain"
+                />
+                <span className="line-clamp-1 text-center text-[11px] text-muted-foreground">
+                  {it.ten}
+                </span>
               </button>
             ))}
           </div>
 
-          <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hình tải lên</p>
+          <p className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Hình tải lên
+          </p>
           {libQ.isLoading ? (
             <Skeleton className="h-20 w-full" />
           ) : uploaded.length === 0 ? (
@@ -1406,8 +1790,15 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
                     onClick={() => r.url && onPick(r.url)}
                     className="flex flex-col items-center gap-1"
                   >
-                    <img src={r.url} alt={r.ten} loading="lazy" className="h-14 w-14 object-contain" />
-                    <span className="line-clamp-1 text-center text-[11px] text-muted-foreground">{r.ten}</span>
+                    <img
+                      src={r.url}
+                      alt={r.ten}
+                      loading="lazy"
+                      className="h-14 w-14 object-contain"
+                    />
+                    <span className="line-clamp-1 text-center text-[11px] text-muted-foreground">
+                      {r.ten}
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -1450,7 +1841,10 @@ function EdgeKindPicker({ value, onPick }: { value: EdgeKind; onPick: (k: EdgeKi
             <button
               key={k}
               type="button"
-              onClick={() => { onPick(k); setOpen(false); }}
+              onClick={() => {
+                onPick(k);
+                setOpen(false);
+              }}
               className={cn(
                 "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent",
                 k === value && "bg-accent",
@@ -1458,7 +1852,10 @@ function EdgeKindPicker({ value, onPick }: { value: EdgeKind; onPick: (k: EdgeKi
             >
               <svg width="30" height="12" className="shrink-0">
                 <line
-                  x1="1" y1="6" x2="29" y2="6"
+                  x1="1"
+                  y1="6"
+                  x2="29"
+                  y2="6"
                   stroke={m.color}
                   strokeWidth={m.width}
                   strokeDasharray={m.dash}
@@ -1483,10 +1880,23 @@ function ToolDivider() {
 }
 
 function ToolButton({
-  icon: Icon, title, onClick,
-}: { icon: typeof HardDrive; title: string; onClick: () => void }) {
+  icon: Icon,
+  title,
+  onClick,
+}: {
+  icon: typeof HardDrive;
+  title: string;
+  onClick: () => void;
+}) {
   return (
-    <Button variant="ghost" size="icon" className="h-9 w-9" title={title} onClick={onClick} aria-label="Icon">
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-9 w-9"
+      title={title}
+      onClick={onClick}
+      aria-label="Icon"
+    >
       <Icon className="h-4 w-4" />
     </Button>
   );
@@ -1494,7 +1904,10 @@ function ToolButton({
 
 /** Nút icon mở danh sách tìm kiếm (tài sản / hệ thống). */
 function ToolPicker({
-  icon: Icon, title, items, onPick,
+  icon: Icon,
+  title,
+  items,
+  onPick,
 }: {
   icon: typeof HardDrive;
   title: string;
@@ -1519,7 +1932,10 @@ function ToolPicker({
                 <CommandItem
                   key={it.value}
                   value={it.label}
-                  onSelect={() => { onPick(it.value, it.label); setOpen(false); }}
+                  onSelect={() => {
+                    onPick(it.value, it.label);
+                    setOpen(false);
+                  }}
                 >
                   <Plus className="mr-2 h-3.5 w-3.5 opacity-60" />
                   <span className="truncate">{it.label}</span>
@@ -1544,7 +1960,13 @@ function ShapesPicker({ onAdd }: { onAdd: (k: ShapeKind) => void }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9" title="Hình khối" aria-label="Shapes">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+          title="Hình khối"
+          aria-label="Shapes"
+        >
           <Shapes className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
@@ -1557,7 +1979,10 @@ function ShapesPicker({ onAdd }: { onAdd: (k: ShapeKind) => void }) {
               size="icon"
               className="h-10 w-10"
               title={o.label}
-              onClick={() => { onAdd(o.kind); setOpen(false); }}
+              onClick={() => {
+                onAdd(o.kind);
+                setOpen(false);
+              }}
             >
               <o.icon className="h-5 w-5" />
             </Button>
@@ -1573,18 +1998,29 @@ function ColorPicker({ onPick }: { onPick: (c: string) => void }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9" title="Màu nền khối đang chọn" aria-label="Palette">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+          title="Màu nền khối đang chọn"
+          aria-label="Palette"
+        >
           <Palette className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-2" side="top" align="center">
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Màu nền</p>
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Màu nền
+        </p>
         <div className="grid grid-cols-4 gap-1.5">
           {SHAPE_COLORS.map((c) => (
             <button
               key={c}
               type="button"
-              onClick={() => { onPick(c); setOpen(false); }}
+              onClick={() => {
+                onPick(c);
+                setOpen(false);
+              }}
               className="h-7 w-7 rounded-md border border-black/10 transition-transform hover:scale-110"
               style={{ background: c }}
               aria-label={`Màu ${c}`}
@@ -1598,7 +2034,9 @@ function ColorPicker({ onPick }: { onPick: (c: string) => void }) {
 
 /** Nối nhiều khối: chọn 2+ khối rồi nối chùm tới 1 đích hoặc nối chuỗi. */
 function MultiLinkButton({
-  selectedNodes, onLinkToTarget, onLinkChain,
+  selectedNodes,
+  onLinkToTarget,
+  onLinkChain,
 }: {
   selectedNodes: { id: string; label: string }[];
   onLinkToTarget: (targetId: string) => void;
@@ -1614,7 +2052,9 @@ function MultiLinkButton({
           size="icon"
           className="h-9 w-9"
           title={enabled ? "Nối nhiều khối đã chọn" : "Chọn ít nhất 2 khối để nối"}
-          disabled={!enabled} aria-label="GitFork">
+          disabled={!enabled}
+          aria-label="GitFork"
+        >
           <GitFork className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
@@ -1624,7 +2064,10 @@ function MultiLinkButton({
         </p>
         <button
           type="button"
-          onClick={() => { onLinkChain(); setOpen(false); }}
+          onClick={() => {
+            onLinkChain();
+            setOpen(false);
+          }}
           className="mb-1 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent"
         >
           <Waypoints className="h-4 w-4 opacity-70" />
@@ -1638,7 +2081,10 @@ function MultiLinkButton({
             <button
               key={n.id}
               type="button"
-              onClick={() => { onLinkToTarget(n.id); setOpen(false); }}
+              onClick={() => {
+                onLinkToTarget(n.id);
+                setOpen(false);
+              }}
               className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent"
             >
               <Link2 className="h-3.5 w-3.5 opacity-70" />
@@ -1652,8 +2098,18 @@ function MultiLinkButton({
 }
 
 function FigJamToolbar({
-  edgeKind, onEdgeKind, onColor, onAddShape, onAddText, onAddDevice, onAddSystem, devices, systems,
-  selectedNodes, onLinkToTarget, onLinkChain,
+  edgeKind,
+  onEdgeKind,
+  onColor,
+  onAddShape,
+  onAddText,
+  onAddDevice,
+  onAddSystem,
+  devices,
+  systems,
+  selectedNodes,
+  onLinkToTarget,
+  onLinkChain,
 }: {
   edgeKind: EdgeKind;
   onEdgeKind: (k: EdgeKind) => void;

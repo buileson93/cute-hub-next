@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  validateChungChi,
-  trangThaiHetHan,
-  chungChiMoiNhat,
-  type ChungChi,
-} from "../kiem-dinh";
+import { validateChungChi, trangThaiHetHan, chungChiMoiNhat, type ChungChi } from "../kiem-dinh";
 
 describe("validateChungChi", () => {
   const ok: ChungChi = {

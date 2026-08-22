@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix"> {
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
   unit?: string;
@@ -10,12 +10,12 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, prefix, suffix, unit, ...props }, ref) => {
     return (
-      <div 
+      <div
         className={cn(
           "astryx-input-wrapper group flex items-center w-full rounded-md border border-input bg-background shadow-none transition-all focus-within:ring-1 focus-within:ring-ring focus-within:border-ring disabled:cursor-not-allowed disabled:opacity-50",
           "h-7 data-[density=comfortable]:h-8 data-[density=spacious]:h-9",
           props["aria-invalid"] && "border-destructive focus-within:ring-destructive",
-          className
+          className,
         )}
       >
         {prefix && (
@@ -28,7 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className={cn(
             "flex h-full w-full bg-transparent px-2 py-1 text-[13px] placeholder:text-muted-foreground/50 focus-visible:outline-none disabled:cursor-not-allowed",
             "file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground",
-            type === "number" && "font-mono tabular-nums"
+            type === "number" && "font-mono tabular-nums",
           )}
           ref={ref}
           {...props}
@@ -45,7 +45,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 Input.displayName = "Input";
 

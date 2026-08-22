@@ -12,17 +12,25 @@ import { diffModelDacTinh } from "../dac-tinh";
 /** Bảng M:N giả lập với ràng buộc unique(model_id, dac_tinh_id). */
 class FakeModelDacTinhTable {
   private rows = new Set<string>();
-  key(m: string, d: string) { return `${m}::${d}`; }
-  size() { return this.rows.size; }
+  key(m: string, d: string) {
+    return `${m}::${d}`;
+  }
+  size() {
+    return this.rows.size;
+  }
   list(modelId: string): string[] {
     const prefix = `${modelId}::`;
-    return [...this.rows].filter((k) => k.startsWith(prefix)).map((k) => k.slice(prefix.length)).sort();
+    return [...this.rows]
+      .filter((k) => k.startsWith(prefix))
+      .map((k) => k.slice(prefix.length))
+      .sort();
   }
   insert(modelId: string, dacTinhIds: string[]) {
     // Ràng buộc UNIQUE — chèn lặp lại sẽ ném lỗi như Postgres.
     for (const d of dacTinhIds) {
       const k = this.key(modelId, d);
-      if (this.rows.has(k)) throw new Error(`duplicate key value violates unique constraint (${modelId}, ${d})`);
+      if (this.rows.has(k))
+        throw new Error(`duplicate key value violates unique constraint (${modelId}, ${d})`);
       this.rows.add(k);
     }
   }
@@ -32,11 +40,7 @@ class FakeModelDacTinhTable {
 }
 
 /** Đúng luồng ở _app.danh-muc.model.tsx: đọc prev → diff → delete → insert. */
-async function apDungDongBoDacTinh(
-  bang: FakeModelDacTinhTable,
-  modelId: string,
-  next: string[],
-) {
+async function apDungDongBoDacTinh(bang: FakeModelDacTinhTable, modelId: string, next: string[]) {
   const prev = bang.list(modelId);
   const { toInsert, toDelete } = diffModelDacTinh(prev, next);
   if (toDelete.length) bang.delete(modelId, toDelete);
@@ -48,7 +52,9 @@ describe("Đồng bộ dm_model_dac_tinh (M:N) — integration", () => {
   const MODEL = "model-A";
   let bang: FakeModelDacTinhTable;
 
-  beforeEach(() => { bang = new FakeModelDacTinhTable(); });
+  beforeEach(() => {
+    bang = new FakeModelDacTinhTable();
+  });
 
   it("chọn lần đầu: chỉ INSERT, không DELETE", async () => {
     const r = await apDungDongBoDacTinh(bang, MODEL, ["dt1", "dt2"]);

@@ -4,14 +4,14 @@ Verified "Column Display" (Cột hiển thị) button is working correctly. It i
 
 ## Phase 1 Survey: Code Columns Identification
 
-| Column | File / Line | State | Entry Point? | Recommendation |
-| :--- | :--- | :--- | :--- | :--- |
-| **Mã thành phần** | `ThanhPhanTable.tsx:540` | `defaultHidden: true` | No | Keep hidden. Already correctly implemented. |
-| **Mã tài sản** | `ThanhPhanTable.tsx:837` | **Visible** | No | **Set defaultHidden: true**. Link is already on "Tên tài sản" (Line 855). |
-| **Mã** | `CatalogTable.tsx:508` | **Visible** | No | **Set defaultHidden: true**. Used in generic catalogs (NSX, NCC, etc.). |
-| **P/N** | `ThietBiAllFields.tsx:...` (via `_app.danh-muc.thiet-bi.tsx`) | `defaultHidden: true` | No | Keep hidden. |
-| **Mã Bravo** | `_app.danh-muc.thiet-bi.tsx:932` (export) | `defaultHidden: true` | No | Keep hidden. |
-| **Mã vai trò (ht)** | `_app.danh-muc.thiet-bi.tsx:649` | **Visible** | No | **Keep Visible**. It shows "Hệ thống" name/code, which is high-level info. |
+| Column              | File / Line                                                   | State                 | Entry Point? | Recommendation                                                             |
+| :------------------ | :------------------------------------------------------------ | :-------------------- | :----------- | :------------------------------------------------------------------------- |
+| **Mã thành phần**   | `ThanhPhanTable.tsx:540`                                      | `defaultHidden: true` | No           | Keep hidden. Already correctly implemented.                                |
+| **Mã tài sản**      | `ThanhPhanTable.tsx:837`                                      | **Visible**           | No           | **Set defaultHidden: true**. Link is already on "Tên tài sản" (Line 855).  |
+| **Mã**              | `CatalogTable.tsx:508`                                        | **Visible**           | No           | **Set defaultHidden: true**. Used in generic catalogs (NSX, NCC, etc.).    |
+| **P/N**             | `ThietBiAllFields.tsx:...` (via `_app.danh-muc.thiet-bi.tsx`) | `defaultHidden: true` | No           | Keep hidden.                                                               |
+| **Mã Bravo**        | `_app.danh-muc.thiet-bi.tsx:932` (export)                     | `defaultHidden: true` | No           | Keep hidden.                                                               |
+| **Mã vai trò (ht)** | `_app.danh-muc.thiet-bi.tsx:649`                              | **Visible**           | No           | **Keep Visible**. It shows "Hệ thống" name/code, which is high-level info. |
 
 ### Verification of Specific Requests
 

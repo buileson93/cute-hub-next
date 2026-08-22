@@ -34,7 +34,9 @@ describe("OfflineQueue — hàng chờ ghi offline (N11)", () => {
     const done = await q.flushOnce();
     expect(done).toBeGreaterThanOrEqual(1);
     // gọi liên tục cho tới khi hết
-    while ((await q.flushOnce()) > 0) { /* drain */ }
+    while ((await q.flushOnce()) > 0) {
+      /* drain */
+    }
     const items = await q.list();
     expect(items.every((i) => i.status === "done")).toBe(true);
     expect(handler).toHaveBeenCalledTimes(2);
@@ -48,9 +50,14 @@ describe("OfflineQueue — hàng chờ ghi offline (N11)", () => {
     const storage = createMemoryStorage();
     const uploadHandler = vi.fn(ok);
     const linkHandler = vi.fn(ok);
-    const q = new OfflineQueue(storage, {
-      attach_upload: uploadHandler, attach_link: linkHandler,
-    }, { concurrency: 5 });
+    const q = new OfflineQueue(
+      storage,
+      {
+        attach_upload: uploadHandler,
+        attach_link: linkHandler,
+      },
+      { concurrency: 5 },
+    );
     const up = await q.enqueue({ op: "attach_upload", payload: { blob_id: "b1" } });
     await q.enqueue({ op: "attach_link", payload: { blob_id: "b1" }, depends_on: [up.id] });
 
@@ -74,9 +81,13 @@ describe("OfflineQueue — hàng chờ ghi offline (N11)", () => {
     });
     // now cố định + dịch chuyển thời gian giả để không phải sleep thật.
     let t = new Date("2026-01-01T00:00:00Z").getTime();
-    const q = new OfflineQueue(storage, { su_co_create: handler }, {
-      now: () => new Date(t),
-    });
+    const q = new OfflineQueue(
+      storage,
+      { su_co_create: handler },
+      {
+        now: () => new Date(t),
+      },
+    );
     await q.enqueue({ op: "su_co_create", payload: {} });
 
     await q.flushOnce();
@@ -98,12 +109,18 @@ describe("OfflineQueue — hàng chờ ghi offline (N11)", () => {
 
   it("failure ceiling: sau maxAttempts → status 'failed'", async () => {
     const storage = createMemoryStorage();
-    const handler = vi.fn(async () => { throw new Error("nope"); });
-    let t = new Date("2026-01-01T00:00:00Z").getTime();
-    const q = new OfflineQueue(storage, { su_co_create: handler }, {
-      now: () => new Date(t),
-      maxAttempts: 3,
+    const handler = vi.fn(async () => {
+      throw new Error("nope");
     });
+    let t = new Date("2026-01-01T00:00:00Z").getTime();
+    const q = new OfflineQueue(
+      storage,
+      { su_co_create: handler },
+      {
+        now: () => new Date(t),
+        maxAttempts: 3,
+      },
+    );
     await q.enqueue({ op: "su_co_create", payload: {} });
     for (let i = 0; i < 5; i += 1) {
       await q.flushOnce();
@@ -117,9 +134,12 @@ describe("OfflineQueue — hàng chờ ghi offline (N11)", () => {
 
   it("conflict: handler trả { conflict, server_state } → item 'conflict', không retry", async () => {
     const storage = createMemoryStorage();
-    const handler = vi.fn(async (): Promise<HandlerReturn> => ({
-      conflict: true, server_state: { trang_thai: "hoan_thanh" },
-    }));
+    const handler = vi.fn(
+      async (): Promise<HandlerReturn> => ({
+        conflict: true,
+        server_state: { trang_thai: "hoan_thanh" },
+      }),
+    );
     const q = new OfflineQueue(storage, { su_co_transition: handler });
     await q.enqueue({ op: "su_co_transition", payload: { from_state: "dang_xu_ly" } });
     await q.flushOnce();

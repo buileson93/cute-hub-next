@@ -2,12 +2,34 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
-  ArrowLeft, ShieldAlert, Loader2, Search, RefreshCw, Plus, Trash2, Pencil,
-  KeyRound, Link2, ChevronRight, ChevronDown, Database, Network,
+  ArrowLeft,
+  ShieldAlert,
+  Loader2,
+  Search,
+  RefreshCw,
+  Plus,
+  Trash2,
+  Pencil,
+  KeyRound,
+  Link2,
+  ChevronRight,
+  ChevronDown,
+  Database,
+  Network,
 } from "lucide-react";
 import {
-  ReactFlow, Background, Controls, MiniMap, MarkerType, Position, Handle, Panel,
-  type Node as RFNode, type Edge as RFEdge, type NodeProps, type NodeTypes,
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  MarkerType,
+  Position,
+  Handle,
+  Panel,
+  type Node as RFNode,
+  type Edge as RFEdge,
+  type NodeProps,
+  type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
@@ -18,13 +40,30 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -39,7 +78,10 @@ export const Route = createFileRoute("/admin/schema")({
   head: () => ({
     meta: [
       { title: "Sơ đồ CSDL — MIRATS" },
-      { name: "description", content: "Xem cây quan hệ cơ sở dữ liệu và thêm/sửa cột cho bảng nghiệp vụ." },
+      {
+        name: "description",
+        content: "Xem cây quan hệ cơ sở dữ liệu và thêm/sửa cột cho bảng nghiệp vụ.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -48,12 +90,22 @@ export const Route = createFileRoute("/admin/schema")({
 
 // ============ Types ============
 type Col = {
-  name: string; type: string; udt: string;
-  nullable: boolean; default: string | null;
-  position: number; is_pk: boolean;
+  name: string;
+  type: string;
+  udt: string;
+  nullable: boolean;
+  default: string | null;
+  position: number;
+  is_pk: boolean;
 };
 type Tbl = { table_name: string; columns: Col[] };
-type FK = { from_table: string; from_column: string; to_table: string; to_column: string; constraint: string };
+type FK = {
+  from_table: string;
+  from_column: string;
+  to_table: string;
+  to_column: string;
+  constraint: string;
+};
 type Schema = { tables: Tbl[]; foreign_keys: FK[] };
 
 // ============ Human labels ============
@@ -146,26 +198,89 @@ const GROUP_OF = (t: string): string => {
   if (t.startsWith("giay_phep")) return "Giấy phép";
   if (t.startsWith("du_an")) return "Dự án";
   if (t.startsWith("so_do") || t === "cay_node_edit") return "Sơ đồ";
-  if (["conversations", "conversation_participant", "messages", "notifications"].includes(t)) return "Trao đổi";
+  if (["conversations", "conversation_participant", "messages", "notifications"].includes(t))
+    return "Trao đổi";
   if (t.startsWith("ticket")) return "Hỗ trợ";
   if (t.startsWith("ai_")) return "Trợ lý AI";
   if (["profiles", "user_roles", "audit_log"].includes(t)) return "Hệ thống";
   return "Khác";
 };
 const GROUP_COLOR: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  "Tài sản":  { bg: "bg-sky-50",     border: "border-sky-300",     text: "text-sky-900",     dot: "bg-sky-500" },
-  "Giấy phép": { bg: "bg-emerald-50", border: "border-emerald-300", text: "text-emerald-900", dot: "bg-emerald-500" },
-  "Biểu mẫu":  { bg: "bg-violet-50",  border: "border-violet-300",  text: "text-violet-900",  dot: "bg-violet-500" },
-  "Danh mục":  { bg: "bg-amber-50",   border: "border-amber-300",   text: "text-amber-900",   dot: "bg-amber-500" },
-  "Dự án":     { bg: "bg-rose-50",    border: "border-rose-300",    text: "text-rose-900",    dot: "bg-rose-500" },
-  "Sơ đồ":     { bg: "bg-teal-50",    border: "border-teal-300",    text: "text-teal-900",    dot: "bg-teal-500" },
-  "Trao đổi":  { bg: "bg-cyan-50",    border: "border-cyan-300",    text: "text-cyan-900",    dot: "bg-cyan-500" },
-  "Hỗ trợ":    { bg: "bg-orange-50",  border: "border-orange-300",  text: "text-orange-900",  dot: "bg-orange-500" },
-  "Trợ lý AI": { bg: "bg-fuchsia-50", border: "border-fuchsia-300", text: "text-fuchsia-900", dot: "bg-fuchsia-500" },
-  "Hệ thống":  { bg: "bg-slate-50",   border: "border-slate-300",   text: "text-slate-900",   dot: "bg-slate-500" },
-  "Khác":      { bg: "bg-slate-50",   border: "border-slate-300",   text: "text-slate-900",   dot: "bg-slate-400" },
+  "Tài sản": { bg: "bg-sky-50", border: "border-sky-300", text: "text-sky-900", dot: "bg-sky-500" },
+  "Giấy phép": {
+    bg: "bg-emerald-50",
+    border: "border-emerald-300",
+    text: "text-emerald-900",
+    dot: "bg-emerald-500",
+  },
+  "Biểu mẫu": {
+    bg: "bg-violet-50",
+    border: "border-violet-300",
+    text: "text-violet-900",
+    dot: "bg-violet-500",
+  },
+  "Danh mục": {
+    bg: "bg-amber-50",
+    border: "border-amber-300",
+    text: "text-amber-900",
+    dot: "bg-amber-500",
+  },
+  "Dự án": {
+    bg: "bg-rose-50",
+    border: "border-rose-300",
+    text: "text-rose-900",
+    dot: "bg-rose-500",
+  },
+  "Sơ đồ": {
+    bg: "bg-teal-50",
+    border: "border-teal-300",
+    text: "text-teal-900",
+    dot: "bg-teal-500",
+  },
+  "Trao đổi": {
+    bg: "bg-cyan-50",
+    border: "border-cyan-300",
+    text: "text-cyan-900",
+    dot: "bg-cyan-500",
+  },
+  "Hỗ trợ": {
+    bg: "bg-orange-50",
+    border: "border-orange-300",
+    text: "text-orange-900",
+    dot: "bg-orange-500",
+  },
+  "Trợ lý AI": {
+    bg: "bg-fuchsia-50",
+    border: "border-fuchsia-300",
+    text: "text-fuchsia-900",
+    dot: "bg-fuchsia-500",
+  },
+  "Hệ thống": {
+    bg: "bg-slate-50",
+    border: "border-slate-300",
+    text: "text-slate-900",
+    dot: "bg-slate-500",
+  },
+  Khác: {
+    bg: "bg-slate-50",
+    border: "border-slate-300",
+    text: "text-slate-900",
+    dot: "bg-slate-400",
+  },
 };
-const GROUP_ORDER = ["Tài sản", "Giấy phép", "Biểu mẫu", "Dự án", "Sơ đồ", "Trao đổi", "Hỗ trợ", "Danh mục", "Trợ lý AI", "Hệ thống", "Khác"];
+const GROUP_ORDER = [
+  "Tài sản",
+  "Giấy phép",
+  "Biểu mẫu",
+  "Dự án",
+  "Sơ đồ",
+  "Trao đổi",
+  "Hỗ trợ",
+  "Danh mục",
+  "Trợ lý AI",
+  "Hệ thống",
+  "Khác",
+];
 
 const EDITABLE_TABLE = (t: string) =>
   /^(dm_|thiet_bi|giay_phep|form_)/.test(t) && !["audit_log", "profiles", "user_roles"].includes(t);
@@ -190,10 +305,21 @@ function typeVi(col: Col): string {
 
 /** Diễn giải ý nghĩa của cột bằng ngôn ngữ đời thường. */
 const COL_HINT: Record<string, string> = {
-  created_at: "Ngày tạo", updated_at: "Ngày cập nhật", last_message_at: "Tin nhắn gần nhất",
-  email: "Địa chỉ email", ho_ten: "Họ tên", active: "Đang hoạt động", role: "Vai trò",
-  noi_dung: "Nội dung", tieu_de: "Tiêu đề", mo_ta: "Mô tả", trang_thai: "Trạng thái",
-  ten: "Tên", ma: "Mã", so_luong: "Số lượng", tien_do: "Tiến độ (%)",
+  created_at: "Ngày tạo",
+  updated_at: "Ngày cập nhật",
+  last_message_at: "Tin nhắn gần nhất",
+  email: "Địa chỉ email",
+  ho_ten: "Họ tên",
+  active: "Đang hoạt động",
+  role: "Vai trò",
+  noi_dung: "Nội dung",
+  tieu_de: "Tiêu đề",
+  mo_ta: "Mô tả",
+  trang_thai: "Trạng thái",
+  ten: "Tên",
+  ma: "Mã",
+  so_luong: "Số lượng",
+  tien_do: "Tiến độ (%)",
 };
 function colHint(col: Col, tbl: string, fks: FK[]): string {
   if (col.is_pk) return "Khoá chính — định danh mỗi dòng";
@@ -214,15 +340,15 @@ function colHint(col: Col, tbl: string, fks: FK[]): string {
 }
 
 const ALLOWED_TYPES = [
-  { v: "text",        label: "Chuỗi (text)" },
-  { v: "integer",     label: "Số nguyên (integer)" },
-  { v: "bigint",      label: "Số nguyên lớn (bigint)" },
-  { v: "numeric",     label: "Số thập phân (numeric)" },
-  { v: "boolean",     label: "Đúng/Sai (boolean)" },
-  { v: "date",        label: "Ngày (date)" },
+  { v: "text", label: "Chuỗi (text)" },
+  { v: "integer", label: "Số nguyên (integer)" },
+  { v: "bigint", label: "Số nguyên lớn (bigint)" },
+  { v: "numeric", label: "Số thập phân (numeric)" },
+  { v: "boolean", label: "Đúng/Sai (boolean)" },
+  { v: "date", label: "Ngày (date)" },
   { v: "timestamptz", label: "Ngày giờ (timestamptz)" },
-  { v: "uuid",        label: "UUID" },
-  { v: "jsonb",       label: "JSON (jsonb)" },
+  { v: "uuid", label: "UUID" },
+  { v: "jsonb", label: "JSON (jsonb)" },
 ];
 
 // ============ Data hook ============
@@ -244,11 +370,11 @@ function AdminSchemaPage() {
   const { loading, session, hasRole } = useSession();
   const isAdmin = hasRole("admin");
   const isMobile = useIsMobile();
-  
+
   if (isMobile) {
     return (
       <AppShell>
-        <DesktopOnly 
+        <DesktopOnly
           featureName="Sơ đồ CSDL & Quản trị Schema"
           reason="Việc quản trị lược đồ cơ sở dữ liệu và xem sơ đồ quan hệ (ERD) cần không gian màn hình lớn để hiển thị các bảng và đường nối phức tạp. Hãy thực hiện thao tác này trên máy tính để tránh sai sót dữ liệu."
         >
@@ -264,7 +390,13 @@ function AdminSchemaPage() {
   }, [loading, session, nav]);
 
   if (loading) {
-    return <AppShell><div className="flex items-center gap-2 p-8 text-slate-500"><Loader2 className="h-4 w-4 animate-spin" /> Đang tải…</div></AppShell>;
+    return (
+      <AppShell>
+        <div className="flex items-center gap-2 p-8 text-slate-500">
+          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
+        </div>
+      </AppShell>
+    );
   }
   if (!isAdmin) {
     return (
@@ -278,7 +410,12 @@ function AdminSchemaPage() {
               <CardDescription>Chỉ tài khoản Admin mới truy cập được sơ đồ CSDL.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild variant="outline"><Link to="/"><ArrowLeft className="h-4 w-4 mr-2" />Về trang chính</Link></Button>
+              <Button asChild variant="outline">
+                <Link to="/">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Về trang chính
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -294,10 +431,17 @@ function AdminSchemaPage() {
               <CardTitle className="flex items-center gap-2">
                 <Database className="h-5 w-5 text-indigo-600" /> Cần màn hình lớn
               </CardTitle>
-              <CardDescription>Sơ đồ CSDL dùng khung nhìn rộng, vui lòng mở trên máy tính để xem đầy đủ.</CardDescription>
+              <CardDescription>
+                Sơ đồ CSDL dùng khung nhìn rộng, vui lòng mở trên máy tính để xem đầy đủ.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild variant="outline"><Link to="/"><ArrowLeft className="h-4 w-4 mr-2" />Về trang chính</Link></Button>
+              <Button asChild variant="outline">
+                <Link to="/">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Về trang chính
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -320,20 +464,26 @@ function SchemaWorkspace() {
 
   const visibleTables = useMemo(() => {
     const kw = q.trim().toLowerCase();
-    return tables.filter(t => {
+    return tables.filter((t) => {
       const g = GROUP_OF(t.table_name);
       if (groupFilter === "__biz__" && g === "Hệ thống") return false;
       if (groupFilter !== "__all__" && groupFilter !== "__biz__" && g !== groupFilter) return false;
       if (!kw) return true;
       if (t.table_name.toLowerCase().includes(kw)) return true;
       if (tableVi(t.table_name).toLowerCase().includes(kw)) return true;
-      if (t.columns.some(c => c.name.toLowerCase().includes(kw))) return true;
+      if (t.columns.some((c) => c.name.toLowerCase().includes(kw))) return true;
       return false;
     });
   }, [tables, q, groupFilter]);
 
-  const visibleNames = useMemo(() => new Set(visibleTables.map(t => t.table_name)), [visibleTables]);
-  const visibleFks = useMemo(() => fks.filter(f => visibleNames.has(f.from_table) && visibleNames.has(f.to_table)), [fks, visibleNames]);
+  const visibleNames = useMemo(
+    () => new Set(visibleTables.map((t) => t.table_name)),
+    [visibleTables],
+  );
+  const visibleFks = useMemo(
+    () => fks.filter((f) => visibleNames.has(f.from_table) && visibleNames.has(f.to_table)),
+    [fks, visibleNames],
+  );
 
   return (
     <AppShell>
@@ -362,13 +512,15 @@ function SchemaWorkspace() {
                 <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <Input
                   value={q}
-                  onChange={e => setQ(e.target.value)}
+                  onChange={(e) => setQ(e.target.value)}
                   placeholder="Tìm bảng hoặc tên cột…"
                   className="pl-9"
                 />
               </div>
               <Select value={groupFilter} onValueChange={setGroupFilter}>
-                <SelectTrigger className="w-full sm:w-[220px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-full sm:w-[220px]">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__biz__">Chỉ bảng nghiệp vụ</SelectItem>
                   <SelectItem value="__all__">Tất cả bảng</SelectItem>
@@ -388,22 +540,35 @@ function SchemaWorkspace() {
 
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
               {Object.entries(GROUP_COLOR).map(([g, c]) => (
-                <span key={g} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border">
+                <span
+                  key={g}
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border"
+                >
                   <span className={cn("h-2 w-2 rounded-full", c.dot)} /> {g}
                 </span>
               ))}
-              <span className="text-slate-500 ml-2">{visibleTables.length} bảng · {visibleFks.length} quan hệ</span>
+              <span className="text-slate-500 ml-2">
+                {visibleTables.length} bảng · {visibleFks.length} quan hệ
+              </span>
             </div>
           </CardContent>
         </Card>
 
         {isLoading ? (
-          <div className="flex items-center gap-2 p-8 text-slate-500"><Loader2 className="h-4 w-4 animate-spin" /> Đang tải lược đồ…</div>
+          <div className="flex items-center gap-2 p-8 text-slate-500">
+            <Loader2 className="h-4 w-4 animate-spin" /> Đang tải lược đồ…
+          </div>
         ) : (
           <Tabs defaultValue="graph" className="w-full">
             <TabsList>
-              <TabsTrigger value="graph"><Network className="h-4 w-4 mr-1.5" />Sơ đồ</TabsTrigger>
-              <TabsTrigger value="tree"><Database className="h-4 w-4 mr-1.5" />Cây bảng</TabsTrigger>
+              <TabsTrigger value="graph">
+                <Network className="h-4 w-4 mr-1.5" />
+                Sơ đồ
+              </TabsTrigger>
+              <TabsTrigger value="tree">
+                <Database className="h-4 w-4 mr-1.5" />
+                Cây bảng
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="graph" className="mt-3">
@@ -420,7 +585,10 @@ function SchemaWorkspace() {
               <SchemaTree
                 tables={visibleTables}
                 fks={visibleFks}
-                onAdd={(t) => { setAddTable(t); setAddOpen(true); }}
+                onAdd={(t) => {
+                  setAddTable(t);
+                  setAddOpen(true);
+                }}
                 onChanged={() => qc.invalidateQueries({ queryKey: ["admin-schema"] })}
               />
             </TabsContent>
@@ -432,7 +600,7 @@ function SchemaWorkspace() {
         open={addOpen}
         onOpenChange={setAddOpen}
         table={addTable}
-        tables={tables.map(t => t.table_name).filter(EDITABLE_TABLE)}
+        tables={tables.map((t) => t.table_name).filter(EDITABLE_TABLE)}
         onDone={() => qc.invalidateQueries({ queryKey: ["admin-schema"] })}
       />
     </AppShell>
@@ -476,8 +644,16 @@ function TableGraphNode({ data, selected }: NodeProps) {
       )}
       style={{ width: NODE_W }}
     >
-      <Handle type="target" position={Position.Left} className="!h-2 !w-2 !border-0 !bg-slate-400" />
-      <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-0 !bg-slate-400" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="!h-2 !w-2 !border-0 !bg-slate-400"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="!h-2 !w-2 !border-0 !bg-slate-400"
+      />
       <button
         type="button"
         onClick={d.onToggle}
@@ -485,17 +661,26 @@ function TableGraphNode({ data, selected }: NodeProps) {
       >
         <div className="flex items-center gap-1.5">
           <span className={cn("h-2 w-2 rounded-full shrink-0", d.colorDot)} />
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 truncate">{d.group}</span>
-          {d.expanded
-            ? <ChevronDown className="ml-auto h-3.5 w-3.5 text-slate-400 shrink-0" />
-            : <ChevronRight className="ml-auto h-3.5 w-3.5 text-slate-400 shrink-0" />}
+          <span className="text-[10px] uppercase tracking-wider text-slate-500 truncate">
+            {d.group}
+          </span>
+          {d.expanded ? (
+            <ChevronDown className="ml-auto h-3.5 w-3.5 text-slate-400 shrink-0" />
+          ) : (
+            <ChevronRight className="ml-auto h-3.5 w-3.5 text-slate-400 shrink-0" />
+          )}
         </div>
         <div className="font-semibold text-sm leading-tight truncate">{d.viName}</div>
         <div className="text-[11px] font-mono text-slate-500 truncate">{d.rawName}</div>
-        <div className="mt-0.5 text-[11px] text-slate-500">{d.colCount} cột · {d.fkCount} liên kết</div>
+        <div className="mt-0.5 text-[11px] text-slate-500">
+          {d.colCount} cột · {d.fkCount} liên kết
+        </div>
       </button>
       {d.expanded && (
-        <div className="border-t bg-slate-50/40 overflow-auto" style={{ maxHeight: EXPANDED_MAX - HEAD_H }}>
+        <div
+          className="border-t bg-slate-50/40 overflow-auto"
+          style={{ maxHeight: EXPANDED_MAX - HEAD_H }}
+        >
           {d.columns.map((col) => (
             <div
               key={col.name}
@@ -516,11 +701,7 @@ function TableGraphNode({ data, selected }: NodeProps) {
 
 const schemaNodeTypes: NodeTypes = { table: TableGraphNode };
 
-function layoutWithDagre(
-  rawNodes: RFNode[],
-  rawEdges: RFEdge[],
-  heightOf: (id: string) => number,
-) {
+function layoutWithDagre(rawNodes: RFNode[], rawEdges: RFEdge[], heightOf: (id: string) => number) {
   const g = new dagre.graphlib.Graph({ multigraph: true });
   g.setGraph({
     rankdir: "LR",
@@ -553,7 +734,8 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);
@@ -566,8 +748,12 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
     const rawNodes: RFNode[] = tables.map((t) => {
       const g = GROUP_OF(t.table_name);
       const c = GROUP_COLOR[g] ?? GROUP_COLOR.Khác;
-      const fkColSet = new Set(fks.filter((f) => f.from_table === t.table_name).map((f) => f.from_column));
-      const fkCount = fks.filter((f) => f.from_table === t.table_name || f.to_table === t.table_name).length;
+      const fkColSet = new Set(
+        fks.filter((f) => f.from_table === t.table_name).map((f) => f.from_column),
+      );
+      const fkCount = fks.filter(
+        (f) => f.from_table === t.table_name || f.to_table === t.table_name,
+      ).length;
       const data: GNodeData = {
         group: g,
         viName: tableVi(t.table_name),
@@ -590,7 +776,10 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
     });
 
     const rawEdges: RFEdge[] = fks
-      .filter((f) => tableSet.has(f.from_table) && tableSet.has(f.to_table) && f.from_table !== f.to_table)
+      .filter(
+        (f) =>
+          tableSet.has(f.from_table) && tableSet.has(f.to_table) && f.from_table !== f.to_table,
+      )
       .map((f, i) => ({
         id: `${f.constraint}-${i}`,
         source: f.from_table,
@@ -628,10 +817,22 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
     >
       <Panel position="top-right">
         <div className="flex items-center gap-1 rounded-md border bg-white/95 p-1 shadow-sm backdrop-blur">
-          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setAll(true, names)} disabled={expanded.size === names.length && names.length > 0}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 text-xs"
+            onClick={() => setAll(true, names)}
+            disabled={expanded.size === names.length && names.length > 0}
+          >
             Mở tất cả
           </Button>
-          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setAll(false, names)} disabled={expanded.size === 0}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 text-xs"
+            onClick={() => setAll(false, names)}
+            disabled={expanded.size === 0}
+          >
             Thu gọn
           </Button>
         </div>
@@ -648,12 +849,17 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
   );
 }
 
-
 // ============ Tree view ============
 function SchemaTree({
-  tables, fks, onAdd, onChanged,
+  tables,
+  fks,
+  onAdd,
+  onChanged,
 }: {
-  tables: Tbl[]; fks: FK[]; onAdd: (t: string) => void; onChanged: () => void;
+  tables: Tbl[];
+  fks: FK[];
+  onAdd: (t: string) => void;
+  onChanged: () => void;
 }) {
   const grouped = useMemo(() => {
     const m: Record<string, Tbl[]> = {};
@@ -664,32 +870,52 @@ function SchemaTree({
 
   return (
     <div className="space-y-3">
-      {order.filter(g => grouped[g]?.length).map(g => (
-        <Card key={g}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <span className={cn("h-2.5 w-2.5 rounded-full", GROUP_COLOR[g].dot)} />
-              {g} <span className="text-slate-400 font-normal">· {grouped[g].length} bảng</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-2">
-            {grouped[g].sort((a, b) => a.table_name.localeCompare(b.table_name)).map(t => (
-              <TableNode key={t.table_name} tbl={t} fks={fks} onAdd={onAdd} onChanged={onChanged} />
-            ))}
-          </CardContent>
-        </Card>
-      ))}
-      {tables.length === 0 && <div className="text-sm text-slate-500 p-4">Không có bảng nào phù hợp bộ lọc.</div>}
+      {order
+        .filter((g) => grouped[g]?.length)
+        .map((g) => (
+          <Card key={g}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <span className={cn("h-2.5 w-2.5 rounded-full", GROUP_COLOR[g].dot)} />
+                {g} <span className="text-slate-400 font-normal">· {grouped[g].length} bảng</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 space-y-2">
+              {grouped[g]
+                .sort((a, b) => a.table_name.localeCompare(b.table_name))
+                .map((t) => (
+                  <TableNode
+                    key={t.table_name}
+                    tbl={t}
+                    fks={fks}
+                    onAdd={onAdd}
+                    onChanged={onChanged}
+                  />
+                ))}
+            </CardContent>
+          </Card>
+        ))}
+      {tables.length === 0 && (
+        <div className="text-sm text-slate-500 p-4">Không có bảng nào phù hợp bộ lọc.</div>
+      )}
     </div>
   );
 }
 
 function TableNode({
-  tbl, fks, onAdd, onChanged,
-}: { tbl: Tbl; fks: FK[]; onAdd: (t: string) => void; onChanged: () => void }) {
+  tbl,
+  fks,
+  onAdd,
+  onChanged,
+}: {
+  tbl: Tbl;
+  fks: FK[];
+  onAdd: (t: string) => void;
+  onChanged: () => void;
+}) {
   const [open, setOpen] = useState(false);
-  const outFk = fks.filter(f => f.from_table === tbl.table_name);
-  const inFk = fks.filter(f => f.to_table === tbl.table_name);
+  const outFk = fks.filter((f) => f.from_table === tbl.table_name);
+  const inFk = fks.filter((f) => f.to_table === tbl.table_name);
   const editable = EDITABLE_TABLE(tbl.table_name);
 
   return (
@@ -698,22 +924,32 @@ function TableNode({
         <div className="flex items-center gap-2 p-2 sm:p-3">
           <CollapsibleTrigger asChild>
             <button className="flex items-center gap-2 flex-1 min-w-0 text-left">
-              {open ? <ChevronDown className="h-4 w-4 text-slate-400" /> : <ChevronRight className="h-4 w-4 text-slate-400" />}
+              {open ? (
+                <ChevronDown className="h-4 w-4 text-slate-400" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              )}
               <div className="min-w-0">
                 <div className="font-medium text-sm truncate">{tableVi(tbl.table_name)}</div>
-                <div className="text-[11px] font-mono text-slate-500 truncate">{tbl.table_name}</div>
+                <div className="text-[11px] font-mono text-slate-500 truncate">
+                  {tbl.table_name}
+                </div>
               </div>
             </button>
           </CollapsibleTrigger>
-          <Badge variant="outline" className="hidden sm:inline-flex">{tbl.columns.length} cột</Badge>
-          {(outFk.length + inFk.length) > 0 && (
+          <Badge variant="outline" className="hidden sm:inline-flex">
+            {tbl.columns.length} cột
+          </Badge>
+          {outFk.length + inFk.length > 0 && (
             <Badge variant="outline" className="hidden md:inline-flex bg-slate-50">
-              <Link2 className="h-3 w-3 mr-1" />{outFk.length + inFk.length}
+              <Link2 className="h-3 w-3 mr-1" />
+              {outFk.length + inFk.length}
             </Badge>
           )}
           {editable && (
             <Button size="sm" variant="outline" onClick={() => onAdd(tbl.table_name)}>
-              <Plus className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Thêm cột</span>
+              <Plus className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Thêm cột</span>
             </Button>
           )}
         </div>
@@ -737,8 +973,15 @@ function TableNode({
                   </tr>
                 </thead>
                 <tbody>
-                  {tbl.columns.map(col => (
-                    <ColumnRow key={col.name} tbl={tbl.table_name} col={col} fks={fks} editable={editable} onChanged={onChanged} />
+                  {tbl.columns.map((col) => (
+                    <ColumnRow
+                      key={col.name}
+                      tbl={tbl.table_name}
+                      col={col}
+                      fks={fks}
+                      editable={editable}
+                      onChanged={onChanged}
+                    />
                   ))}
                 </tbody>
               </table>
@@ -747,13 +990,19 @@ function TableNode({
               <div className="grid gap-3 md:grid-cols-2 text-xs">
                 {outFk.length > 0 && (
                   <div className="rounded-md border bg-sky-50/50 p-2">
-                    <div className="font-medium text-slate-700 mb-1.5">Bảng này liên kết tới ({outFk.length})</div>
+                    <div className="font-medium text-slate-700 mb-1.5">
+                      Bảng này liên kết tới ({outFk.length})
+                    </div>
                     <ul className="space-y-1">
-                      {outFk.map(f => (
+                      {outFk.map((f) => (
                         <li key={f.constraint} className="flex items-center gap-1.5">
-                          <span className="text-slate-500">Mỗi {tableVi(tbl.table_name).toLowerCase()} gắn với một</span>
+                          <span className="text-slate-500">
+                            Mỗi {tableVi(tbl.table_name).toLowerCase()} gắn với một
+                          </span>
                           <span className="font-medium">{tableVi(f.to_table)}</span>
-                          <span className="font-mono text-slate-400 text-[10px]">({f.from_column})</span>
+                          <span className="font-mono text-slate-400 text-[10px]">
+                            ({f.from_column})
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -761,13 +1010,17 @@ function TableNode({
                 )}
                 {inFk.length > 0 && (
                   <div className="rounded-md border bg-emerald-50/50 p-2">
-                    <div className="font-medium text-slate-700 mb-1.5">Được các bảng khác dùng ({inFk.length})</div>
+                    <div className="font-medium text-slate-700 mb-1.5">
+                      Được các bảng khác dùng ({inFk.length})
+                    </div>
                     <ul className="space-y-1">
-                      {inFk.map(f => (
+                      {inFk.map((f) => (
                         <li key={f.constraint} className="flex items-center gap-1.5">
                           <span className="font-medium">{tableVi(f.from_table)}</span>
                           <span className="text-slate-500">tham chiếu đến bảng này</span>
-                          <span className="font-mono text-slate-400 text-[10px]">({f.from_column})</span>
+                          <span className="font-mono text-slate-400 text-[10px]">
+                            ({f.from_column})
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -783,23 +1036,39 @@ function TableNode({
 }
 
 function ColumnRow({
-  tbl, col, fks, editable, onChanged,
-}: { tbl: string; col: Col; fks: FK[]; editable: boolean; onChanged: () => void }) {
+  tbl,
+  col,
+  fks,
+  editable,
+  onChanged,
+}: {
+  tbl: string;
+  col: Col;
+  fks: FK[];
+  editable: boolean;
+  onChanged: () => void;
+}) {
   const [renameOpen, setRenameOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
   const [newName, setNewName] = useState(col.name);
   const isCore = ["id", "created_at", "updated_at"].includes(col.name);
-  const isFk = fks.some(f => f.from_table === tbl && f.from_column === col.name);
+  const isFk = fks.some((f) => f.from_table === tbl && f.from_column === col.name);
   const canModify = editable && !isCore && !col.is_pk;
 
   const rename = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.rpc("admin_rename_column", {
-        _table: tbl, _old: col.name, _new: newName.trim(),
+        _table: tbl,
+        _old: col.name,
+        _new: newName.trim(),
       });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success(`Đã đổi tên "${col.name}" → "${newName}"`); setRenameOpen(false); onChanged(); },
+    onSuccess: () => {
+      toast.success(`Đã đổi tên "${col.name}" → "${newName}"`);
+      setRenameOpen(false);
+      onChanged();
+    },
     onError: (e: Error) => toast.error(e.message),
   });
   const drop = useMutation({
@@ -807,7 +1076,11 @@ function ColumnRow({
       const { error } = await supabase.rpc("admin_drop_column", { _table: tbl, _column: col.name });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success(`Đã xoá cột "${col.name}"`); setDropOpen(false); onChanged(); },
+    onSuccess: () => {
+      toast.success(`Đã xoá cột "${col.name}"`);
+      setDropOpen(false);
+      onChanged();
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -821,20 +1094,44 @@ function ColumnRow({
         </div>
       </td>
       <td className="py-1.5 pr-3 text-xs text-slate-600">{colHint(col, tbl, fks) || "—"}</td>
-      <td className="py-1.5 pr-3 text-xs text-slate-600" title={col.udt || col.type}>{typeVi(col)}</td>
-      <td className="py-1.5 pr-3 text-xs">
-        {col.nullable ? <span className="text-slate-400">không</span> : <span className="text-rose-600 font-medium">có</span>}
+      <td className="py-1.5 pr-3 text-xs text-slate-600" title={col.udt || col.type}>
+        {typeVi(col)}
       </td>
-      <td className="py-1.5 pr-3 font-mono text-xs text-slate-500 max-w-[220px] truncate" title={col.default ?? ""}>
+      <td className="py-1.5 pr-3 text-xs">
+        {col.nullable ? (
+          <span className="text-slate-400">không</span>
+        ) : (
+          <span className="text-rose-600 font-medium">có</span>
+        )}
+      </td>
+      <td
+        className="py-1.5 pr-3 font-mono text-xs text-slate-500 max-w-[220px] truncate"
+        title={col.default ?? ""}
+      >
         {col.default ?? "—"}
       </td>
       <td className="py-1.5 text-right">
         {canModify && !isFk && (
           <div className="inline-flex gap-1">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setNewName(col.name); setRenameOpen(true); }} aria-label="Đổi tên cột">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7"
+              onClick={() => {
+                setNewName(col.name);
+                setRenameOpen(true);
+              }}
+              aria-label="Đổi tên cột"
+            >
               <Pencil className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-600 hover:text-rose-700" onClick={() => setDropOpen(true)} aria-label="Xoá cột">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 text-rose-600 hover:text-rose-700"
+              onClick={() => setDropOpen(true)}
+              aria-label="Xoá cột"
+            >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -846,18 +1143,28 @@ function ColumnRow({
           <DialogHeader>
             <DialogTitle>Đổi tên cột</DialogTitle>
             <DialogDescription>
-              Đổi tên cột <span className="font-mono">{col.name}</span> trong bảng <span className="font-mono">{tbl}</span>.
-              Lưu ý: code phía frontend đang dùng tên cũ sẽ bị lỗi cho đến khi cập nhật.
+              Đổi tên cột <span className="font-mono">{col.name}</span> trong bảng{" "}
+              <span className="font-mono">{tbl}</span>. Lưu ý: code phía frontend đang dùng tên cũ
+              sẽ bị lỗi cho đến khi cập nhật.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <Label>Tên mới</Label>
-            <Input value={newName} onChange={e => setNewName(e.target.value.toLowerCase())} placeholder="ten_cot_moi" />
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value.toLowerCase())}
+              placeholder="ten_cot_moi"
+            />
             <p className="text-xs text-slate-500">Chỉ dùng chữ thường, số, và dấu gạch dưới.</p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRenameOpen(false)}>Huỷ</Button>
-            <Button onClick={() => rename.mutate()} disabled={rename.isPending || !newName || newName === col.name}>
+            <Button variant="outline" onClick={() => setRenameOpen(false)}>
+              Huỷ
+            </Button>
+            <Button
+              onClick={() => rename.mutate()}
+              disabled={rename.isPending || !newName || newName === col.name}
+            >
               {rename.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Đổi tên
             </Button>
           </DialogFooter>
@@ -869,13 +1176,19 @@ function ColumnRow({
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá cột "{col.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              Toàn bộ dữ liệu trong cột này của bảng <span className="font-mono">{tbl}</span> sẽ bị xoá vĩnh viễn.
-              Thao tác này không thể khôi phục.
+              Toàn bộ dữ liệu trong cột này của bảng <span className="font-mono">{tbl}</span> sẽ bị
+              xoá vĩnh viễn. Thao tác này không thể khôi phục.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Huỷ</AlertDialogCancel>
-            <AlertDialogAction className="bg-rose-600 hover:bg-rose-700" onClick={(e) => { e.preventDefault(); drop.mutate(); }}>
+            <AlertDialogAction
+              className="bg-rose-600 hover:bg-rose-700"
+              onClick={(e) => {
+                e.preventDefault();
+                drop.mutate();
+              }}
+            >
               {drop.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Xoá cột
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -887,10 +1200,17 @@ function ColumnRow({
 
 // ============ Add column dialog ============
 function AddColumnDialog({
-  open, onOpenChange, table, tables, onDone,
+  open,
+  onOpenChange,
+  table,
+  tables,
+  onDone,
 }: {
-  open: boolean; onOpenChange: (b: boolean) => void;
-  table: string | null; tables: string[]; onDone: () => void;
+  open: boolean;
+  onOpenChange: (b: boolean) => void;
+  table: string | null;
+  tables: string[];
+  onDone: () => void;
 }) {
   const [tbl, setTbl] = useState<string>("");
   const [name, setName] = useState("");
@@ -901,19 +1221,29 @@ function AddColumnDialog({
   useEffect(() => {
     if (open) {
       setTbl(table ?? tables[0] ?? "");
-      setName(""); setType("text"); setNullable(true); setDef("");
+      setName("");
+      setType("text");
+      setNullable(true);
+      setDef("");
     }
   }, [open, table, tables]);
 
   const add = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.rpc("admin_add_column", {
-        _table: tbl, _column: name.trim(), _type: type,
-        _nullable: nullable, _default: def.trim() || undefined,
+        _table: tbl,
+        _column: name.trim(),
+        _type: type,
+        _nullable: nullable,
+        _default: def.trim() || undefined,
       });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success(`Đã thêm cột "${name}" vào ${tableVi(tbl)}`); onOpenChange(false); onDone(); },
+    onSuccess: () => {
+      toast.success(`Đã thêm cột "${name}" vào ${tableVi(tbl)}`);
+      onOpenChange(false);
+      onDone();
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -923,18 +1253,27 @@ function AddColumnDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Plus className="h-4 w-4" /> Thêm cột mới</DialogTitle>
-          <DialogDescription>Cột sẽ được thêm ngay vào bảng. Nên đặt "cho phép rỗng" hoặc có giá trị mặc định nếu bảng đã có dữ liệu.</DialogDescription>
+          <DialogTitle className="flex items-center gap-2">
+            <Plus className="h-4 w-4" /> Thêm cột mới
+          </DialogTitle>
+          <DialogDescription>
+            Cột sẽ được thêm ngay vào bảng. Nên đặt "cho phép rỗng" hoặc có giá trị mặc định nếu
+            bảng đã có dữ liệu.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
           <div>
             <Label>Bảng</Label>
             <Select value={tbl} onValueChange={setTbl}>
-              <SelectTrigger><SelectValue placeholder="Chọn bảng…" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn bảng…" />
+              </SelectTrigger>
               <SelectContent>
-                {tables.sort().map(t => (
-                  <SelectItem key={t} value={t}>{tableVi(t)} <span className="text-slate-400 font-mono ml-2">{t}</span></SelectItem>
+                {tables.sort().map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {tableVi(t)} <span className="text-slate-400 font-mono ml-2">{t}</span>
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -945,17 +1284,27 @@ function AddColumnDialog({
               <Label>Tên cột</Label>
               <Input
                 value={name}
-                onChange={e => setName(e.target.value.toLowerCase())}
+                onChange={(e) => setName(e.target.value.toLowerCase())}
                 placeholder="vi_du_ten_cot"
               />
-              {name && !nameValid && <p className="text-xs text-rose-600 mt-1">Chỉ dùng chữ thường, số, gạch dưới; bắt đầu bằng chữ.</p>}
+              {name && !nameValid && (
+                <p className="text-xs text-rose-600 mt-1">
+                  Chỉ dùng chữ thường, số, gạch dưới; bắt đầu bằng chữ.
+                </p>
+              )}
             </div>
             <div>
               <Label>Kiểu dữ liệu</Label>
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {ALLOWED_TYPES.map(t => <SelectItem key={t.v} value={t.v}>{t.label}</SelectItem>)}
+                  {ALLOWED_TYPES.map((t) => (
+                    <SelectItem key={t.v} value={t.v}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -971,16 +1320,23 @@ function AddColumnDialog({
 
           <div>
             <Label>Giá trị mặc định (tuỳ chọn)</Label>
-            <Input value={def} onChange={e => setDef(e.target.value)} placeholder="VD: '' cho text, 0 cho số, false, now(), gen_random_uuid()" />
+            <Input
+              value={def}
+              onChange={(e) => setDef(e.target.value)}
+              placeholder="VD: '' cho text, 0 cho số, false, now(), gen_random_uuid()"
+            />
             <p className="text-xs text-slate-500 mt-1">
-              Nhập biểu thức SQL. Ví dụ: <code className="font-mono">'chưa xác định'</code>, <code className="font-mono">0</code>,
-              <code className="font-mono"> false</code>, <code className="font-mono">now()</code>.
+              Nhập biểu thức SQL. Ví dụ: <code className="font-mono">'chưa xác định'</code>,{" "}
+              <code className="font-mono">0</code>,<code className="font-mono"> false</code>,{" "}
+              <code className="font-mono">now()</code>.
             </p>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Huỷ
+          </Button>
           <Button onClick={() => add.mutate()} disabled={!tbl || !nameValid || add.isPending}>
             {add.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Thêm cột
           </Button>

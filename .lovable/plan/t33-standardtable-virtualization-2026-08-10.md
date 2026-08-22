@@ -7,9 +7,11 @@ type: feature
 # T33 — StandardTable Virtualization
 
 ## Problem
+
 Currently, `StandardTable.tsx` renders all rows as DOM elements using `rows.map()`. For large datasets (e.g., 3000 rows with 27 columns), this creates >80,000 DOM elements, causing significant performance lag during scrolling and filtering.
 
 ## Verification & Baseline (Step 1)
+
 - **Tool**: Playwright script to measure FPS while scrolling `/he-thong/thanh-phan`.
 - **Measurement**: Report baseline FPS before any virtualization changes.
 - **Decision**: If FPS is already ~60 and scrolling is smooth, virtualization will be deferred. However, given the "80,000 elements" estimation, it is likely necessary.
@@ -17,6 +19,7 @@ Currently, `StandardTable.tsx` renders all rows as DOM elements using `rows.map(
 ## Implementation Plan (Step 2)
 
 ### 1. `src/components/mirats/StandardTable.tsx`
+
 - **Import**: `useVirtualizer` from `@tanstack/react-virtual`.
 - **Virtualizer Setup**:
   - Target: The `Card` element with `overflow-auto` (the scroll container).
@@ -33,6 +36,7 @@ Currently, `StandardTable.tsx` renders all rows as DOM elements using `rows.map(
   - Verify `toggleRow` uses IDs (it does). Since state is outside the DOM, virtualization will not lose selection.
 
 ## Verification Plan
+
 1. **Performance**: Measure FPS after implementation and compare with baseline.
 2. **Persistence**: Select rows, scroll away, scroll back, and verify selection remains.
 3. **Export**: Verify CSV export still includes all rows, not just virtualized ones.
@@ -40,5 +44,6 @@ Currently, `StandardTable.tsx` renders all rows as DOM elements using `rows.map(
 5. **Quality**: `npx tsc --noEmit` and `npm run test`.
 
 ## Constraints
+
 - Do not use fixed heights if `measureElement` can handle it.
 - Keep Card/Mobile layout separate.

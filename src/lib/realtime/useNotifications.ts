@@ -44,7 +44,12 @@ export function useNotifications(userId: string | null) {
       ch = freshChannel(`notif:${userId}`)
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userId}`,
+          },
           (payload) => {
             const n = payload.new as Notification;
             setItems((prev) => [n, ...prev].slice(0, 50));
@@ -69,10 +74,7 @@ export function useNotifications(userId: string | null) {
     // Optimistic: cập nhật UI trước, rollback nếu lỗi.
     const snapshot = items;
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: now } : n)));
-    const { error } = await supabase
-      .from("notifications")
-      .update({ read_at: now })
-      .eq("id", id);
+    const { error } = await supabase.from("notifications").update({ read_at: now }).eq("id", id);
     if (error) {
       setItems(snapshot);
       toast.error("Không đánh dấu được thông báo — đã hoàn tác");

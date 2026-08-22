@@ -14,19 +14,18 @@ export function useRealtimeStatus() {
   useEffect(() => {
     const channel = supabase.channel("realtime-healthcheck");
 
-    channel
-      .subscribe((newStatus) => {
-        if (newStatus === "SUBSCRIBED") {
-          setStatus("connected");
-          setUseFallback(false);
-        } else if (newStatus === "CLOSED") {
-          setStatus("disconnected");
-          setUseFallback(true);
-        } else if (newStatus === "CHANNEL_ERROR") {
-          setStatus("error");
-          setUseFallback(true);
-        }
-      });
+    channel.subscribe((newStatus) => {
+      if (newStatus === "SUBSCRIBED") {
+        setStatus("connected");
+        setUseFallback(false);
+      } else if (newStatus === "CLOSED") {
+        setStatus("disconnected");
+        setUseFallback(true);
+      } else if (newStatus === "CHANNEL_ERROR") {
+        setStatus("error");
+        setUseFallback(true);
+      }
+    });
 
     return () => {
       supabase.removeChannel(channel);

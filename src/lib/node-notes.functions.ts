@@ -9,9 +9,7 @@ const NodeTypeEnum = z.enum(["he_thong", "thanh_phan"]);
 // -----------------------------------------------------------------------------
 export const getNodeNote = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i) =>
-    z.object({ node_type: NodeTypeEnum, node_id: z.string().min(1) }).parse(i),
-  )
+  .inputValidator((i) => z.object({ node_type: NodeTypeEnum, node_id: z.string().min(1) }).parse(i))
   .handler(async ({ data, context }) => {
     const { data: row, error } = await context.supabase
       .from("node_note")
@@ -81,7 +79,14 @@ export const searchNotes = createServerFn({ method: "GET" })
   .inputValidator((i) => z.object({ q: z.string().max(200) }).parse(i))
   .handler(async ({ data, context }) => {
     const q = data.q.trim();
-    if (!q) return [] as Array<{ node_type: "he_thong" | "thanh_phan"; node_id: string; ten: string; snippet: string; updated_at: string }>;
+    if (!q)
+      return [] as Array<{
+        node_type: "he_thong" | "thanh_phan";
+        node_id: string;
+        ten: string;
+        snippet: string;
+        updated_at: string;
+      }>;
     const like = `%${q.replace(/[%_]/g, (s) => `\\${s}`)}%`;
     const { data: rows, error } = await context.supabase
       .from("node_note")
@@ -90,17 +95,28 @@ export const searchNotes = createServerFn({ method: "GET" })
       .order("updated_at", { ascending: false })
       .limit(30);
     if (error) throw new Error(error.message);
-    const items = (rows ?? []) as Array<{ node_type: "he_thong" | "thanh_phan"; node_id: string; noi_dung: string; updated_at: string }>;
+    const items = (rows ?? []) as Array<{
+      node_type: "he_thong" | "thanh_phan";
+      node_id: string;
+      noi_dung: string;
+      updated_at: string;
+    }>;
     // Nạp tên các node kèm theo (2 truy vấn nhỏ, batch id).
     const htIds = items.filter((r) => r.node_type === "he_thong").map((r) => r.node_id);
     const tpIds = items.filter((r) => r.node_type === "thanh_phan").map((r) => r.node_id);
     const tenMap = new Map<string, string>();
     if (htIds.length) {
-      const { data: hts } = await context.supabase.from("dm_he_thong").select("id, ten").in("id", htIds);
+      const { data: hts } = await context.supabase
+        .from("dm_he_thong")
+        .select("id, ten")
+        .in("id", htIds);
       for (const r of hts ?? []) tenMap.set(`he_thong:${r.id}`, r.ten as string);
     }
     if (tpIds.length) {
-      const { data: tps } = await context.supabase.from("he_thong_thanh_phan").select("id, ten").in("id", tpIds);
+      const { data: tps } = await context.supabase
+        .from("he_thong_thanh_phan")
+        .select("id, ten")
+        .in("id", tpIds);
       for (const r of tps ?? []) tenMap.set(`thanh_phan:${r.id}`, r.ten as string);
     }
     // Tạo snippet ~140 ký tự xung quanh vị trí khớp đầu tiên.
@@ -109,7 +125,10 @@ export const searchNotes = createServerFn({ method: "GET" })
       const idx = r.noi_dung.toLowerCase().indexOf(lower);
       const start = Math.max(0, idx - 40);
       const end = Math.min(r.noi_dung.length, (idx >= 0 ? idx : 0) + 100);
-      const snippet = (start > 0 ? "…" : "") + r.noi_dung.slice(start, end).replace(/\s+/g, " ") + (end < r.noi_dung.length ? "…" : "");
+      const snippet =
+        (start > 0 ? "…" : "") +
+        r.noi_dung.slice(start, end).replace(/\s+/g, " ") +
+        (end < r.noi_dung.length ? "…" : "");
       return {
         node_type: r.node_type,
         node_id: r.node_id,
@@ -120,15 +139,12 @@ export const searchNotes = createServerFn({ method: "GET" })
     });
   });
 
-
 // -----------------------------------------------------------------------------
 // deleteNodeNote — xoá (chỉ admin, RLS đảm nhiệm)
 // -----------------------------------------------------------------------------
 export const deleteNodeNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i) =>
-    z.object({ node_type: NodeTypeEnum, node_id: z.string().min(1) }).parse(i),
-  )
+  .inputValidator((i) => z.object({ node_type: NodeTypeEnum, node_id: z.string().min(1) }).parse(i))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("node_note")

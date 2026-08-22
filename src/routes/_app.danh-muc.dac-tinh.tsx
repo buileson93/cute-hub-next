@@ -23,7 +23,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { fetchDacTinhPage, type DacTinhPageParams } from "@/lib/mirats/dac-tinh-query";
 import { MauChip, MauSwatchPicker } from "@/components/mirats/MauChip";
@@ -48,7 +52,9 @@ interface Row {
   so_dung: number;
 }
 
-async function fetchPage(params: DacTinhPageParams): Promise<{ rows: Omit<Row, "so_dung">[]; tong: number }> {
+async function fetchPage(
+  params: DacTinhPageParams,
+): Promise<{ rows: Omit<Row, "so_dung">[]; tong: number }> {
   const { rows, tong } = await fetchDacTinhPage(supabase as never, params);
   return {
     rows: rows.map((r) => ({
@@ -74,26 +80,38 @@ async function fetchSoDung(): Promise<Map<string, number>> {
   return m;
 }
 
-async function fetchModelsByTag(dacTinhId: string): Promise<Array<{ id: string; ma: string | null; ten: string; p_n: string | null }>> {
+async function fetchModelsByTag(
+  dacTinhId: string,
+): Promise<Array<{ id: string; ma: string | null; ten: string; p_n: string | null }>> {
   const { data, error } = await supabase
     .from("dm_model_dac_tinh")
     .select("dm_model:model_id(id, ma, ten, p_n)")
     .eq("dac_tinh_id", dacTinhId);
   if (error) throw error;
-  type Joined = { dm_model: { id: string; ma: string | null; ten: string; p_n: string | null } | null };
+  type Joined = {
+    dm_model: { id: string; ma: string | null; ten: string; p_n: string | null } | null;
+  };
   return ((data ?? []) as unknown as Joined[])
     .map((r) => r.dm_model)
     .filter((m): m is NonNullable<Joined["dm_model"]> => !!m)
     .sort((a, b) => a.ten.localeCompare(b.ten, "vi"));
 }
 
-interface FormValues { ten: string; mo_ta: string; thu_tu: string; mau: string | null; }
+interface FormValues {
+  ten: string;
+  mo_ta: string;
+  thu_tu: string;
+  mau: string | null;
+}
 const EMPTY: FormValues = { ten: "", mo_ta: "", thu_tu: "", mau: "xam" };
 
 const schema = z.object({
   ten: z.string().trim().min(1, "Tên không được để trống"),
   mo_ta: z.string().max(500, "Mô tả tối đa 500 ký tự").optional().default(""),
-  thu_tu: z.string().trim().refine((v) => v === "" || /^-?\d+$/.test(v), "Thứ tự phải là số nguyên"),
+  thu_tu: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || /^-?\d+$/.test(v), "Thứ tự phải là số nguyên"),
   mau: z.string().nullable(),
 });
 
@@ -139,7 +157,11 @@ function DacTinhPage() {
   const [delTarget, setDelTarget] = React.useState<Row | null>(null);
   const [usageTarget, setUsageTarget] = React.useState<Row | null>(null);
 
-  function openAdd() { setEditing(null); setValues(EMPTY); setFormOpen(true); }
+  function openAdd() {
+    setEditing(null);
+    setValues(EMPTY);
+    setFormOpen(true);
+  }
   function openEdit(row: Row) {
     setEditing(row);
     setValues({
@@ -179,7 +201,8 @@ function DacTinhPage() {
   const deleteMut = useMutation({
     mutationFn: async (row: Row) => {
       if (!canWrite) throw new Error("Bạn không có quyền xoá nhãn tài sản.");
-      if (row.so_dung > 0) throw new Error(`Nhãn tài sản đang được ${row.so_dung} model sử dụng — không thể xoá`);
+      if (row.so_dung > 0)
+        throw new Error(`Nhãn tài sản đang được ${row.so_dung} model sử dụng — không thể xoá`);
       const { error } = await supabase.from("dm_dac_tinh").delete().eq("id", row.id);
       if (error) throw error;
     },
@@ -188,28 +211,40 @@ function DacTinhPage() {
 
   const columns: StdColumn<Row>[] = [
     {
-      key: "ma", label: "Mã", sortable: true,
+      key: "ma",
+      label: "Mã",
+      sortable: true,
       value: (r) => r.ma,
       cell: (r) => <span className="font-mono text-xs text-muted-foreground">{r.ma}</span>,
     },
     {
-      key: "ten", label: "Tên", sortable: true,
+      key: "ten",
+      label: "Tên",
+      sortable: true,
       value: (r) => r.ten,
       cell: (r) => <MauChip ten={r.ten} mau={r.mau} />,
     },
     {
-      key: "thu_tu", label: "Thứ tự", sortable: true, align: "right",
+      key: "thu_tu",
+      label: "Thứ tự",
+      sortable: true,
+      align: "right",
       value: (r) => r.thu_tu ?? "",
       sortValue: (r) => (r.thu_tu ?? Number.POSITIVE_INFINITY) as number,
       cell: (r) => <span className="tabular-nums text-muted-foreground">{r.thu_tu ?? "—"}</span>,
     },
     {
-      key: "mo_ta", label: "Mô tả",
+      key: "mo_ta",
+      label: "Mô tả",
       value: (r) => r.mo_ta ?? "",
-      cell: (r) => <span className="line-clamp-2 text-sm text-muted-foreground">{r.mo_ta ?? "—"}</span>,
+      cell: (r) => (
+        <span className="line-clamp-2 text-sm text-muted-foreground">{r.mo_ta ?? "—"}</span>
+      ),
     },
     {
-      key: "so_dung", label: "Đang dùng", align: "right",
+      key: "so_dung",
+      label: "Đang dùng",
+      align: "right",
       value: (r) => r.so_dung,
       sortValue: (r) => r.so_dung,
       cell: (r) => (
@@ -227,14 +262,23 @@ function DacTinhPage() {
       ),
     },
     {
-      key: "actions", label: "", align: "right",
+      key: "actions",
+      label: "",
+      align: "right",
       cell: (r) => (
         <div className="flex justify-end gap-1">
-          <Button size="sm" variant="ghost" disabled={!canWrite} onClick={() => openEdit(r)} aria-label={`Sửa ${r.ten}`}>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={!canWrite}
+            onClick={() => openEdit(r)}
+            aria-label={`Sửa ${r.ten}`}
+          >
             <Pencil className="h-3.5 w-3.5" />
           </Button>
           <Button
-            size="sm" variant="ghost"
+            size="sm"
+            variant="ghost"
             disabled={!canWrite || r.so_dung > 0}
             onClick={() => setDelTarget(r)}
             aria-label={`Xoá ${r.ten}`}
@@ -257,11 +301,12 @@ function DacTinhPage() {
         subtitle="tag đa trị — mã tự sinh, không mang ý nghĩa"
         actions={
           canWrite ? (
-            <Button size="sm" onClick={openAdd}><Plus className="mr-1 h-4 w-4" /> Thêm nhãn tài sản</Button>
+            <Button size="sm" onClick={openAdd}>
+              <Plus className="mr-1 h-4 w-4" /> Thêm nhãn tài sản
+            </Button>
           ) : null
         }
       />
-
 
       <ListToolbar controls={controls} filters={[]} placeholder="Tìm theo mã / tên / mô tả…" />
 
@@ -276,7 +321,6 @@ function DacTinhPage() {
         trangThai={{ dangTai: pageQ.isFetching, loi: pageQ.error ? String(pageQ.error) : null }}
         pagination={{ controls, tong }}
       />
-
 
       <UsageDialog target={usageTarget} onClose={() => setUsageTarget(null)} />
 
@@ -297,12 +341,24 @@ function DacTinhPage() {
             )}
             <div className="space-y-1 md:col-span-2">
               <Label htmlFor="dt-ten">Tên *</Label>
-              <Input id="dt-ten" value={values.ten} onChange={(e) => setValues((v) => ({ ...v, ten: e.target.value }))} disabled={disabled} placeholder="VD: Máy thu, Máy phát, VHF…" />
+              <Input
+                id="dt-ten"
+                value={values.ten}
+                onChange={(e) => setValues((v) => ({ ...v, ten: e.target.value }))}
+                disabled={disabled}
+                placeholder="VD: Máy thu, Máy phát, VHF…"
+              />
               {errors.ten && <p className="text-xs text-red-600">{errors.ten}</p>}
             </div>
             <div className="space-y-1">
               <Label htmlFor="dt-thutu">Thứ tự</Label>
-              <Input id="dt-thutu" value={values.thu_tu} onChange={(e) => setValues((v) => ({ ...v, thu_tu: e.target.value }))} disabled={disabled} placeholder="Để trống nếu chưa cần sắp" />
+              <Input
+                id="dt-thutu"
+                value={values.thu_tu}
+                onChange={(e) => setValues((v) => ({ ...v, thu_tu: e.target.value }))}
+                disabled={disabled}
+                placeholder="Để trống nếu chưa cần sắp"
+              />
               {errors.thu_tu && <p className="text-xs text-red-600">{errors.thu_tu}</p>}
             </div>
             <div className="space-y-1 md:col-span-2">
@@ -318,7 +374,13 @@ function DacTinhPage() {
             </div>
             <div className="space-y-1 md:col-span-2">
               <Label htmlFor="dt-mota">Mô tả</Label>
-              <Textarea id="dt-mota" rows={2} value={values.mo_ta} onChange={(e) => setValues((v) => ({ ...v, mo_ta: e.target.value }))} disabled={disabled} />
+              <Textarea
+                id="dt-mota"
+                rows={2}
+                value={values.mo_ta}
+                onChange={(e) => setValues((v) => ({ ...v, mo_ta: e.target.value }))}
+                disabled={disabled}
+              />
               {errors.mo_ta && <p className="text-xs text-red-600">{errors.mo_ta}</p>}
             </div>
           </div>
@@ -327,10 +389,13 @@ function DacTinhPage() {
         renderPreview={(p) => (
           <div className="rounded-md border bg-muted/30 p-3 text-sm">
             {p.mode === "create" ? "Sẽ tạo mới" : "Sẽ cập nhật"} nhãn tài sản{" "}
-            <span className="font-medium">{p.ten}</span>{p.mode === "create" && " (mã sẽ được sinh tự động)"}.
+            <span className="font-medium">{p.ten}</span>
+            {p.mode === "create" && " (mã sẽ được sinh tự động)"}.
           </div>
         )}
-        onConfirm={async (v) => { await saveMut.mutateAsync(v); }}
+        onConfirm={async (v) => {
+          await saveMut.mutateAsync(v);
+        }}
         submitLabel={editing ? "Lưu thay đổi" : "Tạo mới"}
         successMessage={editing ? "Đã cập nhật nhãn tài sản" : "Đã tạo nhãn tài sản"}
       />
@@ -345,15 +410,24 @@ function DacTinhPage() {
             delTarget.so_dung > 0 ? (
               <div className="flex items-center gap-2 text-red-600">
                 <Loader2 className="h-4 w-4 shrink-0" />
-                Không thể xoá — nhãn tài sản <b>{delTarget.ten}</b> đang được <b>{delTarget.so_dung}</b> model sử dụng.
+                Không thể xoá — nhãn tài sản <b>{delTarget.ten}</b> đang được{" "}
+                <b>{delTarget.so_dung}</b> model sử dụng.
               </div>
             ) : (
-              <>Xoá nhãn tài sản <b>{delTarget.ten}</b>? Hành động này không thể hoàn tác.</>
+              <>
+                Xoá nhãn tài sản <b>{delTarget.ten}</b>? Hành động này không thể hoàn tác.
+              </>
             )
-          ) : ""
+          ) : (
+            ""
+          )
         }
         confirmLabel="Xoá"
-        onConfirm={async () => { if (!delTarget) return; await deleteMut.mutateAsync(delTarget); setDelTarget(null); }}
+        onConfirm={async () => {
+          if (!delTarget) return;
+          await deleteMut.mutateAsync(delTarget);
+          setDelTarget(null);
+        }}
         successMessage="Đã xoá nhãn tài sản"
       />
     </div>
@@ -373,8 +447,7 @@ function UsageDialog({ target, onClose }: { target: Row | null; onClose: () => v
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
-            Mẫu đang dùng nhãn tài sản{" "}
-            {target && <span className="font-medium">{target.ten}</span>}
+            Mẫu đang dùng nhãn tài sản {target && <span className="font-medium">{target.ten}</span>}
           </DialogTitle>
           <DialogDescription>
             Tổng: <b>{target?.so_dung ?? 0}</b> mẫu. Bỏ gán ở từng Mẫu trước khi xoá nhãn tài sản.
@@ -386,13 +459,17 @@ function UsageDialog({ target, onClose }: { target: Row | null; onClose: () => v
               <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
             </div>
           ) : models.length === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">Chưa mẫu nào dùng nhãn tài sản này.</div>
+            <div className="p-6 text-center text-sm text-muted-foreground">
+              Chưa mẫu nào dùng nhãn tài sản này.
+            </div>
           ) : (
             <ul className="divide-y">
               {models.map((m) => (
                 <li key={m.id} className="flex items-center gap-3 px-3 py-2 text-sm">
                   <span className="min-w-0 flex-1 truncate font-medium">{m.ten}</span>
-                  {m.p_n && <span className="font-mono text-xs text-muted-foreground">P/N: {m.p_n}</span>}
+                  {m.p_n && (
+                    <span className="font-mono text-xs text-muted-foreground">P/N: {m.p_n}</span>
+                  )}
                   {m.ma && <span className="font-mono text-xs text-muted-foreground">{m.ma}</span>}
                 </li>
               ))}

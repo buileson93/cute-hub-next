@@ -14,7 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { useReferenceOptions } from "@/lib/mirats/reference-sources";
@@ -33,7 +37,12 @@ export interface DynamicFieldsFormProps {
 }
 
 export function DynamicFieldsForm({
-  specs, value, onChange, showErrors, disabled, className,
+  specs,
+  value,
+  onChange,
+  showErrors,
+  disabled,
+  className,
 }: DynamicFieldsFormProps) {
   // Prefill mac_dinh cho các field chưa có giá trị (chỉ khi thiếu key).
   useEffect(() => {
@@ -62,7 +71,11 @@ export function DynamicFieldsForm({
           <div key={s.field_key} className="space-y-1.5">
             <Label htmlFor={id} className="text-[11px] flex items-center gap-1">
               {s.nhan}
-              {s.bat_buoc && <span className="text-destructive" aria-hidden="true">*</span>}
+              {s.bat_buoc && (
+                <span className="text-destructive" aria-hidden="true">
+                  *
+                </span>
+              )}
             </Label>
 
             {s.kieu === "textarea" ? (
@@ -75,13 +88,19 @@ export function DynamicFieldsForm({
                 className="min-h-16 text-xs"
               />
             ) : s.kieu === "select" ? (
-              <Select value={val || undefined} disabled={disabled} onValueChange={(v) => patch(s.field_key, v)}>
+              <Select
+                value={val || undefined}
+                disabled={disabled}
+                onValueChange={(v) => patch(s.field_key, v)}
+              >
                 <SelectTrigger id={id} className="h-8 text-xs" aria-invalid={!!err}>
                   <SelectValue placeholder="— Chọn —" />
                 </SelectTrigger>
                 <SelectContent>
                   {s.tuy_chon.map((opt) => (
-                    <SelectItem key={opt} value={opt} className="text-xs">{opt}</SelectItem>
+                    <SelectItem key={opt} value={opt} className="text-xs">
+                      {opt}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -108,7 +127,9 @@ export function DynamicFieldsForm({
               <p className="text-[10px] text-muted-foreground">{s.help_text}</p>
             )}
             {err && (
-              <p role="alert" className="text-[10px] text-destructive">{err}</p>
+              <p role="alert" className="text-[10px] text-destructive">
+                {err}
+              </p>
             )}
           </div>
         );
@@ -125,7 +146,10 @@ function stripUndefined(v: FormValues): FormValues {
 
 /** Ô chọn giá trị từ bảng danh mục (kieu="reference") — dropdown có tìm kiếm. */
 function ReferenceField({
-  source, value, disabled, onChange,
+  source,
+  value,
+  disabled,
+  onChange,
 }: {
   source?: string;
   value: string;
@@ -134,7 +158,9 @@ function ReferenceField({
 }) {
   const { data: options, isLoading } = useReferenceOptions(source);
   if (!source) {
-    return <p className="text-[10px] text-destructive">Trường liên kết CSDL chưa chọn nguồn danh mục.</p>;
+    return (
+      <p className="text-[10px] text-destructive">Trường liên kết CSDL chưa chọn nguồn danh mục.</p>
+    );
   }
   return (
     <Combobox
@@ -148,4 +174,3 @@ function ReferenceField({
     />
   );
 }
-

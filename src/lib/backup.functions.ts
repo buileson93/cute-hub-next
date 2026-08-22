@@ -5,7 +5,10 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 const BUCKET = "database-backups";
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data: isAdmin, error } = await supabase.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
   if (error) throw new Error(error.message);
   if (!isAdmin) throw new Error("Forbidden: chỉ Admin được thực hiện");
 }
@@ -16,7 +19,7 @@ async function logBackupAction(supabaseAdmin: any, userId: string, action: strin
     action,
     entity: "backup",
     detail,
-    severity: "info"
+    severity: "info",
   });
 }
 
@@ -42,7 +45,7 @@ export const runBackup = createServerFn({ method: "POST" })
         ghi_chu: z.string().max(500).optional(),
         include_storage: z.boolean().default(true),
       })
-      .parse(input ?? {})
+      .parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -68,7 +71,10 @@ export const runBackup = createServerFn({ method: "POST" })
       includeStorage: data.include_storage,
     });
 
-    await logBackupAction(supabaseAdmin, context.userId, "run_backup", { loai: data.loai, dich: data.dich });
+    await logBackupAction(supabaseAdmin, context.userId, "run_backup", {
+      loai: data.loai,
+      dich: data.dich,
+    });
     return result;
   });
 
@@ -145,7 +151,9 @@ export const restoreFromBackup = createServerFn({ method: "POST" })
     if (error || !rec?.file_path) throw new Error("Không tìm thấy tệp backup");
 
     const { createAdminStorage } = await import("@/lib/storage/server");
-    const { data: blob, error: dErr } = await createAdminStorage(supabaseAdmin).from(BUCKET).download(rec.file_path);
+    const { data: blob, error: dErr } = await createAdminStorage(supabaseAdmin)
+      .from(BUCKET)
+      .download(rec.file_path);
     if (dErr || !blob) throw new Error("Tải tệp backup lỗi: " + (dErr?.message ?? ""));
     const buf = new Uint8Array(await blob.arrayBuffer());
     const { extractDumpData } = await import("@/lib/backup.server");
@@ -171,7 +179,7 @@ export const restoreFromUpload = createServerFn({ method: "POST" })
         // "text" = nội dung JSON thô; "base64" = tệp nhị phân (.zip/.gz) mã hoá base64
         encoding: z.enum(["text", "base64"]).default("text"),
       })
-      .parse(input)
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -197,9 +205,12 @@ export const restoreFromUpload = createServerFn({ method: "POST" })
     }
 
     if (!payload || typeof payload !== "object") throw new Error("Tệp backup không hợp lệ");
-    const { data: result, error } = await context.supabase.rpc("admin_restore_database", { payload });
+    const { data: result, error } = await context.supabase.rpc("admin_restore_database", {
+      payload,
+    });
     if (error) throw new Error("Khôi phục lỗi: " + error.message);
-    await logBackupAction(supabaseAdmin, context.userId, "restore_upload", { filename: data.filename });
+    await logBackupAction(supabaseAdmin, context.userId, "restore_upload", {
+      filename: data.filename,
+    });
     return result;
   });
-

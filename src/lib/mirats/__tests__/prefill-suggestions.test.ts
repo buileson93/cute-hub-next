@@ -21,7 +21,9 @@ describe("pickLastKipTruc", () => {
   it("returns null when nothing usable", () => {
     expect(pickLastKipTruc([])).toBeNull();
     expect(
-      pickLastKipTruc([{ bao_cao_ban_dau: { kip_truc: [{ ho_ten: "  ", chuc_vu: "", nang_dinh: "" }] } }]),
+      pickLastKipTruc([
+        { bao_cao_ban_dau: { kip_truc: [{ ho_ten: "  ", chuc_vu: "", nang_dinh: "" }] } },
+      ]),
     ).toBeNull();
   });
 });

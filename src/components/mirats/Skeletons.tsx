@@ -68,13 +68,7 @@ export function DrawerSkeleton({ className }: { className?: string }) {
   );
 }
 
-export function ListSkeleton({
-  items = 5,
-  className,
-}: {
-  items?: number;
-  className?: string;
-}) {
+export function ListSkeleton({ items = 5, className }: { items?: number; className?: string }) {
   return (
     <div
       role="status"
@@ -95,13 +89,7 @@ export function ListSkeleton({
   );
 }
 
-export function CardGridSkeleton({
-  items = 6,
-  className,
-}: {
-  items?: number;
-  className?: string;
-}) {
+export function CardGridSkeleton({ items = 6, className }: { items?: number; className?: string }) {
   return (
     <div
       role="status"

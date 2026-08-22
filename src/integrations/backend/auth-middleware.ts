@@ -5,7 +5,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import type { Database } from "@/integrations/supabase/types";
 
-
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
     try {
@@ -18,21 +17,36 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
 
       if (!request?.headers) {
         return next({
-          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
+          context: {
+            supabase: null as any,
+            userId: null as any,
+            claims: null as any,
+            unauthenticated: true,
+          },
         });
       }
 
       const authHeader = request.headers.get("authorization");
       if (!authHeader?.startsWith("Bearer ")) {
         return next({
-          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
+          context: {
+            supabase: null as any,
+            userId: null as any,
+            claims: null as any,
+            unauthenticated: true,
+          },
         });
       }
 
       const token = authHeader.slice("Bearer ".length);
       if (!token || token.split(".").length !== 3) {
         return next({
-          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
+          context: {
+            supabase: null as any,
+            userId: null as any,
+            claims: null as any,
+            unauthenticated: true,
+          },
         });
       }
 
@@ -47,7 +61,12 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       const { data, error } = await supabase.auth.getClaims(token);
       if (error || !data?.claims?.sub) {
         return next({
-          context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
+          context: {
+            supabase: null as any,
+            userId: null as any,
+            claims: null as any,
+            unauthenticated: true,
+          },
         });
       }
 
@@ -62,9 +81,13 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
     } catch (err) {
       console.error("requireSupabaseAuth unexpected error:", err);
       return next({
-        context: { supabase: null as any, userId: null as any, claims: null as any, unauthenticated: true },
+        context: {
+          supabase: null as any,
+          userId: null as any,
+          claims: null as any,
+          unauthenticated: true,
+        },
       });
     }
   },
 );
-

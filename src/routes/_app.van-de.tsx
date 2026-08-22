@@ -15,13 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Bug, Plus, AlertTriangle, ArrowUpRight, Search } from "lucide-react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { toast } from "sonner";
@@ -47,7 +41,6 @@ const TRANG_THAI: Record<string, string> = {
   da_khac_phuc: "Đã khắc phục",
   dong: "Đã đóng",
 };
-
 
 const MUC_DO: Record<string, string> = {
   thap: "Thấp",
@@ -109,7 +102,15 @@ function VanDePage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [originalStatus, setOriginalStatus] = useState<string>("moi");
   const [actions, setActions] = useState<CongViecMini[]>([]);
-  const [linkedSuCo, setLinkedSuCo] = useState<Array<{ ma_su_co: string; hien_tuong: string; trang_thai: string; ngay_phat_hien: string; muc_do: string }>>([]);
+  const [linkedSuCo, setLinkedSuCo] = useState<
+    Array<{
+      ma_su_co: string;
+      hien_tuong: string;
+      trang_thai: string;
+      ngay_phat_hien: string;
+      muc_do: string;
+    }>
+  >([]);
   const [form, setForm] = useState({ ...empty });
   const [saving, setSaving] = useState(false);
 
@@ -119,8 +120,13 @@ function VanDePage() {
     setLoading(true);
     try {
       const { fetchAllRows } = await import("@/lib/mirats/paginate");
-      const data = await fetchAllRows<unknown>((from, to) =>
-        supabase.from("v_van_de").select("*").order("created_at", { ascending: false }).range(from, to) as unknown as PromiseLike<{ data: unknown[] | null; error: unknown }>,
+      const data = await fetchAllRows<unknown>(
+        (from, to) =>
+          supabase
+            .from("v_van_de")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .range(from, to) as unknown as PromiseLike<{ data: unknown[] | null; error: unknown }>,
       );
       setRows(data as VanDe[]);
     } catch (e) {
@@ -155,7 +161,9 @@ function VanDePage() {
 
   const stats = useMemo(() => {
     const open = rows.filter((r) => r.trang_thai !== "dong").length;
-    const critical = rows.filter((r) => r.muc_do === "nghiem_trong" && r.trang_thai !== "dong").length;
+    const critical = rows.filter(
+      (r) => r.muc_do === "nghiem_trong" && r.trang_thai !== "dong",
+    ).length;
     return { total: rows.length, open, critical };
   }, [rows]);
 
@@ -243,7 +251,6 @@ function VanDePage() {
     load();
   }
 
-
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6 lg:p-8">
       <PageHeader
@@ -266,7 +273,9 @@ function VanDePage() {
           { label: "Nghiêm trọng", value: stats.critical },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-card p-4">
-            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</div>
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              {s.label}
+            </div>
             <div className="mt-1 text-2xl font-bold">{s.value}</div>
           </div>
         ))}
@@ -302,7 +311,8 @@ function VanDePage() {
           <div className="p-8 text-center text-sm text-muted-foreground">Đang tải…</div>
         ) : filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-muted-foreground">
-            Chưa có vấn đề nào. {canWrite && "Nhấn “Tạo vấn đề” để bắt đầu phân tích nguyên nhân gốc."}
+            Chưa có vấn đề nào.{" "}
+            {canWrite && "Nhấn “Tạo vấn đề” để bắt đầu phân tích nguyên nhân gốc."}
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -317,9 +327,16 @@ function VanDePage() {
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[11px] text-muted-foreground">{r.ma_van_de}</span>
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {r.ma_van_de}
+                    </span>
                     <StatusBadge domain="van_de" code={r.trang_thai} className="text-[10px]" />
-                    <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", MUC_DO_COLOR[r.muc_do])}>
+                    <span
+                      className={cn(
+                        "rounded px-1.5 py-0.5 text-[10px] font-medium",
+                        MUC_DO_COLOR[r.muc_do],
+                      )}
+                    >
                       {MUC_DO[r.muc_do] ?? r.muc_do}
                     </span>
                   </div>
@@ -371,7 +388,10 @@ function VanDePage() {
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Mức độ">
-                <Select value={form.muc_do} onValueChange={(v) => setForm((f) => ({ ...f, muc_do: v }))}>
+                <Select
+                  value={form.muc_do}
+                  onValueChange={(v) => setForm((f) => ({ ...f, muc_do: v }))}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -385,7 +405,10 @@ function VanDePage() {
                 </Select>
               </Field>
               <Field label="Trạng thái">
-                <Select value={form.trang_thai} onValueChange={(v) => setForm((f) => ({ ...f, trang_thai: v }))}>
+                <Select
+                  value={form.trang_thai}
+                  onValueChange={(v) => setForm((f) => ({ ...f, trang_thai: v }))}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -455,8 +478,12 @@ function VanDePage() {
                         >
                           {s.ma_su_co}
                         </Link>
-                        <span className="min-w-0 flex-1 truncate text-muted-foreground">{s.hien_tuong}</span>
-                        <span className="shrink-0 rounded bg-muted px-1 text-[10px]">{s.trang_thai}</span>
+                        <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                          {s.hien_tuong}
+                        </span>
+                        <span className="shrink-0 rounded bg-muted px-1 text-[10px]">
+                          {s.trang_thai}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -466,7 +493,9 @@ function VanDePage() {
             <Field label="Hệ thống liên quan">
               <Select
                 value={form.he_thong_id || "none"}
-                onValueChange={(v) => setForm((f) => ({ ...f, he_thong_id: v === "none" ? "" : v }))}
+                onValueChange={(v) =>
+                  setForm((f) => ({ ...f, he_thong_id: v === "none" ? "" : v }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Không liên kết" />

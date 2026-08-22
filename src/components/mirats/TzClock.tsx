@@ -53,7 +53,9 @@ export function TzClock() {
           <span
             className={cn(
               "rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold",
-              tz === "UTC" ? "bg-secondary text-muted-foreground" : "bg-[#0074e2]/10 text-[#0074e2]",
+              tz === "UTC"
+                ? "bg-secondary text-muted-foreground"
+                : "bg-[#0074e2]/10 text-[#0074e2]",
             )}
           >
             {TZ_LABEL[tz]}

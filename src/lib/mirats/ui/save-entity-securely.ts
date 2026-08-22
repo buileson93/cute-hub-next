@@ -2,11 +2,19 @@ import { supabase } from "@/integrations/backend/client";
 import { createChangeRequest } from "@/lib/mirats/ghi-nghiep-vu-actions";
 import { CayKind } from "@/lib/mirats/ui/inline-edit";
 
-const TABLE_MAP: Record<string, { table: string; keyCol: string; nameCol: string; proposeLoai: string }> = {
+const TABLE_MAP: Record<
+  string,
+  { table: string; keyCol: string; nameCol: string; proposeLoai: string }
+> = {
   pl: { table: "dm_phan_loai", keyCol: "id", nameCol: "ten", proposeLoai: "dm.propose_new" },
   nh: { table: "dm_nhom_he_thong", keyCol: "id", nameCol: "ten", proposeLoai: "dm.propose_new" },
   ht: { table: "dm_he_thong", keyCol: "id", nameCol: "ten", proposeLoai: "he_thong.propose_field" },
-  tb: { table: "thiet_bi", keyCol: "ma_thiet_bi", nameCol: "ten_thiet_bi", proposeLoai: "thiet_bi.propose_field" },
+  tb: {
+    table: "thiet_bi",
+    keyCol: "ma_thiet_bi",
+    nameCol: "ten_thiet_bi",
+    proposeLoai: "thiet_bi.propose_field",
+  },
 };
 
 /**
@@ -30,10 +38,9 @@ export async function saveEntityFieldSecurely(args: {
   if (args.isDraft) {
     const { error } = await supabase
       .from("cay_node_edit")
-      .upsert(
-        { kind: args.kind, ma: args.id, ten: String(args.value || "").trim() } as never,
-        { onConflict: "kind,ma" }
-      );
+      .upsert({ kind: args.kind, ma: args.id, ten: String(args.value || "").trim() } as never, {
+        onConflict: "kind,ma",
+      });
     if (error) throw error;
     return { success: true, mode: "draft" };
   }
@@ -48,27 +55,22 @@ export async function saveEntityFieldSecurely(args: {
 
   if (isAdmin) {
     // Admin ghi trực tiếp vào bảng gốc
-    const value = typeof args.value === 'string' ? args.value.trim() : args.value;
+    const value = typeof args.value === "string" ? args.value.trim() : args.value;
     if (targetField === config.nameCol && !value) {
       throw new Error("Tên không được để trống");
     }
 
-    const { error } = await (supabase
-      .from(config.table as any)
-      .update({ [targetField]: value } as any) as any)
-      .eq(config.keyCol, args.id);
-    
+    const { error } = await (
+      supabase.from(config.table as any).update({ [targetField]: value } as any) as any
+    ).eq(config.keyCol, args.id);
+
     if (error) throw error;
 
     // QUAN TRỌNG: Nếu đổi tên cho node thật -> Xoá triệt để override ở cay_node_edit
     // để đảm bảo SSoT bảng gốc thắng khi hiển thị.
     if (targetField === config.nameCol) {
       await Promise.all([
-        supabase
-          .from("cay_node_edit")
-          .delete()
-          .eq("kind", args.kind)
-          .eq("ma", args.id),
+        supabase.from("cay_node_edit").delete().eq("kind", args.kind).eq("ma", args.id),
         // Nếu có key ten_mindmap trong du_lieu JSON, ta cũng nên dọn (nếu schema cho phép)
         // Hiện tại ta ưu tiên xoá bản ghi cay_node_edit trước.
       ]);
@@ -78,7 +80,10 @@ export async function saveEntityFieldSecurely(args: {
   } else {
     // KTV tạo đề xuất thay đổi
     await createChangeRequest({
-      loai: config.proposeLoai as "thiet_bi.propose_field" | "he_thong.propose_field" | "dm.propose_new",
+      loai: config.proposeLoai as
+        | "thiet_bi.propose_field"
+        | "he_thong.propose_field"
+        | "dm.propose_new",
       entity_id: args.id,
       noi_dung: {
         field: targetField,
@@ -92,11 +97,11 @@ export async function saveEntityFieldSecurely(args: {
 }
 
 /** @deprecated Dùng saveEntityFieldSecurely */
-export const saveCellSecurely = (args: any) => 
-  saveEntityFieldSecurely({ 
-    kind: "tb", 
-    id: args.maThietBi, 
-    field: args.field, 
-    value: args.value, 
-    userRoles: args.userRoles 
+export const saveCellSecurely = (args: any) =>
+  saveEntityFieldSecurely({
+    kind: "tb",
+    id: args.maThietBi,
+    field: args.field,
+    value: args.value,
+    userRoles: args.userRoles,
   });

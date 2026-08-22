@@ -1,20 +1,20 @@
 export function renderErrorPage(error?: any): string {
-  let errorMsg = 'Unknown error';
-  let stack = '';
-  let name = 'Error';
-  
+  let errorMsg = "Unknown error";
+  let stack = "";
+  let name = "Error";
+
   if (error instanceof Error) {
     errorMsg = error.message;
-    stack = error.stack || '';
+    stack = error.stack || "";
     name = error.name;
-  } else if (error && typeof error === 'object') {
+  } else if (error && typeof error === "object") {
     try {
       errorMsg = JSON.stringify(error, null, 2);
     } catch {
       errorMsg = String(error);
     }
   } else {
-    errorMsg = String(error || 'Unknown error');
+    errorMsg = String(error || "Unknown error");
   }
 
   return `<!doctype html>
@@ -49,11 +49,15 @@ export function renderErrorPage(error?: any): string {
         <span class="label">Chi tiết:</span>
         <pre>${errorMsg}</pre>
         
-        ${stack ? `
+        ${
+          stack
+            ? `
         <div style="margin-top: 1.5rem;">
           <span class="label">Stack Trace:</span>
           <pre>${stack}</pre>
-        </div>` : ''}
+        </div>`
+            : ""
+        }
       </div>
 
       <div class="actions">

@@ -35,7 +35,10 @@ export const Route = createFileRoute("/api/backup-run")({
         const userId = claims?.claims?.sub as string | undefined;
         if (cErr || !userId) return Response.json({ error: "Phiên không hợp lệ" }, { status: 401 });
 
-        const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: userId, _role: "admin" });
+        const { data: isAdmin } = await userClient.rpc("has_role", {
+          _user_id: userId,
+          _role: "admin",
+        });
         if (!isAdmin) return Response.json({ error: "Chỉ Admin được sao lưu" }, { status: 403 });
 
         let body: any = {};
@@ -44,9 +47,8 @@ export const Route = createFileRoute("/api/backup-run")({
         } catch {
           body = {};
         }
-        const dich: ("storage" | "gdrive" | "s3")[] = Array.isArray(body?.dich) && body.dich.length
-          ? body.dich
-          : ["storage"];
+        const dich: ("storage" | "gdrive" | "s3")[] =
+          Array.isArray(body?.dich) && body.dich.length ? body.dich : ["storage"];
 
         const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
         const { performBackup } = await import("@/lib/backup.server");

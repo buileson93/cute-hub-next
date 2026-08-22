@@ -73,32 +73,32 @@ export function nextStates(from: string | null | undefined): SuCoTrangThai[] {
 // Backfill giá trị cũ về enum mới (dùng ở migration + UI đọc bản ghi legacy).
 // ---------------------------------------------------------------------------
 const LEGACY_MAP: Record<string, SuCoTrangThai> = {
-  "moi": "bao_cao",
-  "mới": "bao_cao",
-  "new": "bao_cao",
-  "bao_cao": "bao_cao",
-  "tiep_nhan": "tiep_nhan",
+  moi: "bao_cao",
+  mới: "bao_cao",
+  new: "bao_cao",
+  bao_cao: "bao_cao",
+  tiep_nhan: "tiep_nhan",
   "đã tiếp nhận": "tiep_nhan",
-  "dang_xu_ly": "dang_xu_ly",
+  dang_xu_ly: "dang_xu_ly",
   "đang xử lý": "dang_xu_ly",
-  "in_progress": "dang_xu_ly",
-  "cho_vat_tu": "cho_vat_tu",
+  in_progress: "dang_xu_ly",
+  cho_vat_tu: "cho_vat_tu",
   "chờ vật tư": "cho_vat_tu",
-  "hoan_thanh": "hoan_thanh",
+  hoan_thanh: "hoan_thanh",
   "hoàn thành xử lý": "hoan_thanh",
-  "da_khac_phuc": "hoan_thanh",
+  da_khac_phuc: "hoan_thanh",
   "đã khắc phục": "hoan_thanh",
-  "resolved": "hoan_thanh",
-  "nghiem_thu": "nghiem_thu",
+  resolved: "hoan_thanh",
+  nghiem_thu: "nghiem_thu",
   "đã nghiệm thu": "nghiem_thu",
-  "dong": "nghiem_thu",
-  "đóng": "nghiem_thu",
-  "closed": "nghiem_thu",
-  "da_dong": "nghiem_thu",
-  "huy": "huy",
-  "huỷ": "huy",
-  "hủy": "huy",
-  "cancelled": "huy",
+  dong: "nghiem_thu",
+  đóng: "nghiem_thu",
+  closed: "nghiem_thu",
+  da_dong: "nghiem_thu",
+  huy: "huy",
+  huỷ: "huy",
+  hủy: "huy",
+  cancelled: "huy",
   "hoàn thành": "hoan_thanh",
 };
 
@@ -163,9 +163,7 @@ export function computeMetrics(lich_su: readonly LichSuBuoc[]): TimeMetrics {
   const response =
     firstBaoCao && firstTiepNhan ? diffMinutes(firstBaoCao.at, firstTiepNhan.at) : null;
   const repair =
-    firstTiepNhan && lastHoanThanh
-      ? diffMinutes(firstTiepNhan.at, lastHoanThanh.at)
-      : null;
+    firstTiepNhan && lastHoanThanh ? diffMinutes(firstTiepNhan.at, lastHoanThanh.at) : null;
 
   // Downtime: đi qua các đoạn dang_xu_ly → hoan_thanh (chấp nhận cho_vat_tu xen giữa).
   let downtimeCounted = 0;
@@ -194,8 +192,7 @@ export function computeMetrics(lich_su: readonly LichSuBuoc[]): TimeMetrics {
   }
 
   const downtime = hasCompletedSegment ? downtimeCounted : null;
-  const wrench =
-    downtime === null ? null : Math.max(0, downtime - waitTotal);
+  const wrench = downtime === null ? null : Math.max(0, downtime - waitTotal);
 
   return {
     response_time_phut: response,

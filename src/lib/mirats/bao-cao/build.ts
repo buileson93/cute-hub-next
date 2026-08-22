@@ -9,7 +9,10 @@ import { DEFAULT_NGAY_SAP_HET_HAN } from "@/lib/mirats/han-canh-bao";
 const nowIso = () => new Date().toISOString();
 
 /** Số ngày còn lại tới mốc `ngay` (âm nếu đã qua). */
-export function soNgayConLai(ngay: string | null | undefined, moc: Date = new Date()): number | null {
+export function soNgayConLai(
+  ngay: string | null | undefined,
+  moc: Date = new Date(),
+): number | null {
   if (!ngay) return null;
   const d = new Date(ngay);
   if (isNaN(d.getTime())) return null;
@@ -18,12 +21,17 @@ export function soNgayConLai(ngay: string | null | undefined, moc: Date = new Da
 }
 
 // ---------- 1) Lý lịch tài sản ----------
-export function buildBaoCaoLyLichThietBi(nguon: NguonBaoCao, opts?: { thietBiMa?: string; donVi?: string }): BaoCaoData {
+export function buildBaoCaoLyLichThietBi(
+  nguon: NguonBaoCao,
+  opts?: { thietBiMa?: string; donVi?: string },
+): BaoCaoData {
   const tb = (nguon.thiet_bi ?? []).find(
     (x) => !opts?.thietBiMa || x.ma === opts.thietBiMa || x.id === opts.thietBiMa,
   );
   const tbId = tb?.id ?? opts?.thietBiMa ?? "";
-  const bt = (nguon.bao_tri ?? []).filter((x) => x.thiet_bi_id === tbId || x.thiet_bi_ma === tb?.ma);
+  const bt = (nguon.bao_tri ?? []).filter(
+    (x) => x.thiet_bi_id === tbId || x.thiet_bi_ma === tb?.ma,
+  );
   const sc = (nguon.su_co ?? []).filter((x) => x.thiet_bi_id === tbId || x.thiet_bi_ma === tb?.ma);
 
   const bangTB: BaoCaoBang = {
@@ -127,7 +135,11 @@ export function buildBaoCaoBaoDuongKy(
       nguoi_thuc_hien: x.nguoi_thuc_hien ?? "",
       trang_thai_duyet: x.trang_thai_duyet ?? "",
     })),
-    tom_tat: { thiet_bi_ma: "TỔNG", thiet_bi_ten: `${rows.length} lượt`, ket_qua: `${daDuyet} đã duyệt` },
+    tom_tat: {
+      thiet_bi_ma: "TỔNG",
+      thiet_bi_ten: `${rows.length} lượt`,
+      ket_qua: `${daDuyet} đã duyệt`,
+    },
   };
 
   return {
@@ -143,7 +155,11 @@ export function buildBaoCaoBaoDuongKy(
     kpi: [
       { ma: "tong_luot", nhan: "Tổng lượt bảo dưỡng", gia_tri: rows.length },
       { ma: "da_duyet", nhan: "Đã duyệt", gia_tri: daDuyet },
-      { ma: "ty_le_duyet", nhan: "Tỷ lệ duyệt (%)", gia_tri: rows.length ? Math.round((daDuyet / rows.length) * 100) : 0 },
+      {
+        ma: "ty_le_duyet",
+        nhan: "Tỷ lệ duyệt (%)",
+        gia_tri: rows.length ? Math.round((daDuyet / rows.length) * 100) : 0,
+      },
     ],
   };
 }
@@ -159,12 +175,12 @@ export function buildBaoCaoSapHetHan(
   const gp = (nguon.giay_phep ?? [])
     .map((x) => ({ ...x, con_lai: soNgayConLai(x.han_gp ?? null, moc) }))
     .filter((x) => x.con_lai !== null && x.con_lai >= 0 && x.con_lai <= nguong)
-    .sort((a, b) => (a.con_lai! - b.con_lai!));
+    .sort((a, b) => a.con_lai! - b.con_lai!);
 
   const tb = (nguon.thiet_bi ?? [])
     .map((x) => ({ ...x, con_lai: soNgayConLai(x.ngay_kiem_ke_ke_tiep ?? null, moc) }))
     .filter((x) => x.con_lai !== null && x.con_lai >= 0 && x.con_lai <= nguong)
-    .sort((a, b) => (a.con_lai! - b.con_lai!));
+    .sort((a, b) => a.con_lai! - b.con_lai!);
 
   const bangGP: BaoCaoBang = {
     ma: "giay_phep",

@@ -146,14 +146,14 @@ describe("canEdit — khoá sau khi duyệt", () => {
     ).toBe(false);
   });
   it("nhap: owner được sửa", () => {
-    expect(
-      canEdit({ currentState: "nhap", roles: ["ktv"], userId: "u1", ownerId: "u1" }),
-    ).toBe(true);
+    expect(canEdit({ currentState: "nhap", roles: ["ktv"], userId: "u1", ownerId: "u1" })).toBe(
+      true,
+    );
   });
   it("nhap: người khác (ktv) không được sửa", () => {
-    expect(
-      canEdit({ currentState: "nhap", roles: ["ktv"], userId: "uX", ownerId: "u1" }),
-    ).toBe(false);
+    expect(canEdit({ currentState: "nhap", roles: ["ktv"], userId: "uX", ownerId: "u1" })).toBe(
+      false,
+    );
   });
   it("cho_duyet: chỉ vai trò duyệt được sửa", () => {
     expect(
@@ -164,23 +164,38 @@ describe("canEdit — khoá sau khi duyệt", () => {
     ).toBe(true);
   });
   it("tu_choi: owner sửa lại được", () => {
-    expect(
-      canEdit({ currentState: "tu_choi", roles: ["ktv"], userId: "u1", ownerId: "u1" }),
-    ).toBe(true);
+    expect(canEdit({ currentState: "tu_choi", roles: ["ktv"], userId: "u1", ownerId: "u1" })).toBe(
+      true,
+    );
   });
 });
 
 describe("signHash — chữ ký điện tử", () => {
   it("cùng payload → cùng hash", async () => {
-    const p = { userId: "u1", entityId: "BB_1", state: "da_duyet" as const, timestamp: "2026-01-01T00:00:00Z" };
+    const p = {
+      userId: "u1",
+      entityId: "BB_1",
+      state: "da_duyet" as const,
+      timestamp: "2026-01-01T00:00:00Z",
+    };
     const h1 = await signHash(p);
     const h2 = await signHash(p);
     expect(h1).toBe(h2);
     expect(h1).toHaveLength(64); // SHA-256 hex
   });
   it("khác payload → khác hash", async () => {
-    const h1 = await signHash({ userId: "u1", entityId: "BB_1", state: "da_duyet", timestamp: "2026-01-01T00:00:00Z" });
-    const h2 = await signHash({ userId: "u2", entityId: "BB_1", state: "da_duyet", timestamp: "2026-01-01T00:00:00Z" });
+    const h1 = await signHash({
+      userId: "u1",
+      entityId: "BB_1",
+      state: "da_duyet",
+      timestamp: "2026-01-01T00:00:00Z",
+    });
+    const h2 = await signHash({
+      userId: "u2",
+      entityId: "BB_1",
+      state: "da_duyet",
+      timestamp: "2026-01-01T00:00:00Z",
+    });
     expect(h1).not.toBe(h2);
   });
 });

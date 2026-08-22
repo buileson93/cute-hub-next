@@ -6,14 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 
 export const Route = createFileRoute("/_app/su-co/import-history")({
   head: () => ({
     meta: [
       { title: "Lịch sử nhập báo cáo tuần · Sự cố" },
-      { name: "description", content: "Xem lại các lần nhập báo cáo tuần sự cố: số văn bản, đơn vị, số dòng tạo được, trạng thái xử lý và lỗi nếu có." },
+      {
+        name: "description",
+        content:
+          "Xem lại các lần nhập báo cáo tuần sự cố: số văn bản, đơn vị, số dòng tạo được, trạng thái xử lý và lỗi nếu có.",
+      },
       { property: "og:title", content: "Lịch sử nhập báo cáo tuần · Sự cố" },
       { property: "og:description", content: "Nhật ký batch import báo cáo tuần từ DOCX." },
     ],
@@ -69,7 +78,9 @@ function ImportHistoryPage() {
     <div className="mx-auto max-w-6xl space-y-4 p-4">
       <div className="flex items-center gap-2">
         <Button asChild variant="ghost" size="sm">
-          <Link to="/su-co"><ArrowLeft className="mr-1 h-4 w-4" /> Nhật ký sự cố</Link>
+          <Link to="/su-co">
+            <ArrowLeft className="mr-1 h-4 w-4" /> Nhật ký sự cố
+          </Link>
         </Button>
         <h1 className="text-lg font-semibold">Lịch sử nhập báo cáo tuần</h1>
       </div>
@@ -89,7 +100,11 @@ function ImportHistoryPage() {
             <div className="p-6 text-sm text-destructive">Lỗi: {(error as Error).message}</div>
           ) : rows.length === 0 ? (
             <div className="p-6 text-sm text-muted-foreground">
-              Chưa có phiên nhập nào. Mở <Link to="/su-co" className="text-primary underline">Nhật ký sự cố</Link> và bấm "Nhập báo cáo tuần" để bắt đầu.
+              Chưa có phiên nhập nào. Mở{" "}
+              <Link to="/su-co" className="text-primary underline">
+                Nhật ký sự cố
+              </Link>{" "}
+              và bấm "Nhập báo cáo tuần" để bắt đầu.
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -122,9 +137,16 @@ function ImportHistoryPage() {
                             ? `${r.tuan_tu_ngay} → ${r.tuan_den_ngay}`
                             : "—"}
                         </TableCell>
-                        <TableCell className="max-w-[220px] truncate text-xs" title={r.file_name ?? ""}>
+                        <TableCell
+                          className="max-w-[220px] truncate text-xs"
+                          title={r.file_name ?? ""}
+                        >
                           {r.file_name ?? "(dán text)"}
-                          {r.file_size ? <span className="ml-1 text-muted-foreground">· {(r.file_size / 1024).toFixed(0)}KB</span> : null}
+                          {r.file_size ? (
+                            <span className="ml-1 text-muted-foreground">
+                              · {(r.file_size / 1024).toFixed(0)}KB
+                            </span>
+                          ) : null}
                         </TableCell>
                         <TableCell className="text-right text-xs tabular-nums">
                           <span className="font-semibold">{r.n_incidents_created}</span>
@@ -140,7 +162,11 @@ function ImportHistoryPage() {
                               <CheckCircle2 className="h-3 w-3" /> Thành công
                             </Badge>
                           ) : (
-                            <Badge variant="destructive" className="gap-1" title={r.error_message ?? ""}>
+                            <Badge
+                              variant="destructive"
+                              className="gap-1"
+                              title={r.error_message ?? ""}
+                            >
                               <AlertTriangle className="h-3 w-3" /> {r.status}
                             </Badge>
                           )}

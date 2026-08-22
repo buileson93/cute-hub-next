@@ -18,11 +18,14 @@ describe("MIRATS Typography Scale Integrity", () => {
     Object.entries(TYPO).forEach(([level, classes]) => {
       const pxMatches = classes.match(/text-\[(\d+)px\]/g);
       if (pxMatches) {
-        pxMatches.forEach(match => {
+        pxMatches.forEach((match) => {
           const sizeMatch = match.match(/\d+/);
           if (sizeMatch) {
             const size = parseInt(sizeMatch[0]);
-            expect(size, `Level ${level} has size ${size}px which is < 11px`).toBeGreaterThanOrEqual(11);
+            expect(
+              size,
+              `Level ${level} has size ${size}px which is < 11px`,
+            ).toBeGreaterThanOrEqual(11);
           }
         });
       }
@@ -31,10 +34,12 @@ describe("MIRATS Typography Scale Integrity", () => {
 
   it("should have at least one data-[density=comfortable] variant for each level", () => {
     Object.entries(TYPO).forEach(([level, classes]) => {
-      // MONO might inherit and not have its own density if it's just a style modifier, 
+      // MONO might inherit and not have its own density if it's just a style modifier,
       // but the requirement says "Each level has at least one comfortable variant".
       // Note: UI_DENSITY.TEXT_BODY and TEXT_LABEL do have density variants.
-      expect(classes, `Level ${level} missing comfortable density variant`).toContain("data-[density=comfortable]");
+      expect(classes, `Level ${level} missing comfortable density variant`).toContain(
+        "data-[density=comfortable]",
+      );
     });
   });
 

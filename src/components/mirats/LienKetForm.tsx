@@ -14,7 +14,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import type { AddLienKetInput, LoaiLienKet } from "@/lib/mirats/lien-ket";
@@ -37,8 +41,17 @@ export interface LienKetFormValues {
 }
 
 const EMPTY: LienKetFormValues = {
-  nguonId: "", dichId: "", loaiId: "", lop: "logic", huong: "mot_chieu",
-  gdNguon: "", gdDich: "", giaoThuc: "", vaiTro: "", moTa: "", ghiChu: "",
+  nguonId: "",
+  dichId: "",
+  loaiId: "",
+  lop: "logic",
+  huong: "mot_chieu",
+  gdNguon: "",
+  gdDich: "",
+  giaoThuc: "",
+  vaiTro: "",
+  moTa: "",
+  ghiChu: "",
 };
 
 /** Kiểm tra thuần: trả lỗi chặn (nguồn≠đích) và cảnh báo (trùng cạnh hiệu lực). */
@@ -53,12 +66,11 @@ export function kiemTraLienKet(
   let canhBao: string | null = null;
   if (!loi && v.nguonId && v.dichId && v.loaiId) {
     const trung = existingEdges.some(
-      (e) =>
-        e.nguon_id === v.nguonId &&
-        e.dich_id === v.dichId &&
-        e.loai_lien_ket_id === v.loaiId,
+      (e) => e.nguon_id === v.nguonId && e.dich_id === v.dichId && e.loai_lien_ket_id === v.loaiId,
     );
-    if (trung) canhBao = "Liên kết này đã tồn tại (trùng cạnh đang hiệu lực). Bạn vẫn có thể lưu nếu chủ đích.";
+    if (trung)
+      canhBao =
+        "Liên kết này đã tồn tại (trùng cạnh đang hiệu lực). Bạn vẫn có thể lưu nếu chủ đích.";
   }
   return { loi, canhBao };
 }
@@ -74,7 +86,13 @@ interface LienKetFormProps {
 }
 
 export function LienKetForm({
-  heThongOptions, loaiList, existingEdges, onSubmit, onCancel, submitting, defaultValues,
+  heThongOptions,
+  loaiList,
+  existingEdges,
+  onSubmit,
+  onCancel,
+  submitting,
+  defaultValues,
 }: LienKetFormProps) {
   const [v, setV] = useState<LienKetFormValues>({ ...EMPTY, ...defaultValues });
   const set = <K extends keyof LienKetFormValues>(k: K, val: LienKetFormValues[K]) =>
@@ -105,11 +123,21 @@ export function LienKetForm({
     <div className="grid gap-3 py-2">
       <div className="grid gap-1.5">
         <Label>Hệ thống nguồn</Label>
-        <Combobox options={heThongOptions} value={v.nguonId} onChange={(x) => set("nguonId", x)} placeholder="Chọn hệ thống nguồn…" />
+        <Combobox
+          options={heThongOptions}
+          value={v.nguonId}
+          onChange={(x) => set("nguonId", x)}
+          placeholder="Chọn hệ thống nguồn…"
+        />
       </div>
       <div className="grid gap-1.5">
         <Label>Hệ thống đích</Label>
-        <Combobox options={heThongOptions} value={v.dichId} onChange={(x) => set("dichId", x)} placeholder="Chọn hệ thống đích…" />
+        <Combobox
+          options={heThongOptions}
+          value={v.dichId}
+          onChange={(x) => set("dichId", x)}
+          placeholder="Chọn hệ thống đích…"
+        />
       </div>
 
       {loi && (
@@ -118,7 +146,10 @@ export function LienKetForm({
         </p>
       )}
       {canhBao && (
-        <p role="status" className="flex items-center gap-1.5 rounded-md border border-amber-300/60 bg-amber-50/50 px-2 py-1 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+        <p
+          role="status"
+          className="flex items-center gap-1.5 rounded-md border border-amber-300/60 bg-amber-50/50 px-2 py-1 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400"
+        >
           <AlertTriangle className="h-3.5 w-3.5" /> {canhBao}
         </p>
       )}
@@ -127,12 +158,18 @@ export function LienKetForm({
         <div className="grid gap-1.5">
           <Label>Loại liên kết</Label>
           <Select value={v.loaiId} onValueChange={(x) => set("loaiId", x)}>
-            <SelectTrigger aria-label="Loại liên kết"><SelectValue placeholder="Chọn loại…" /></SelectTrigger>
+            <SelectTrigger aria-label="Loại liên kết">
+              <SelectValue placeholder="Chọn loại…" />
+            </SelectTrigger>
             <SelectContent>
               {loaiList.map((l) => (
                 <SelectItem key={l.id} value={l.id}>
                   <span className="flex items-center gap-2">
-                    <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: l.mau_sac }} aria-hidden />
+                    <span
+                      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: l.mau_sac }}
+                      aria-hidden
+                    />
                     {l.ten}
                   </span>
                 </SelectItem>
@@ -143,7 +180,9 @@ export function LienKetForm({
         <div className="grid gap-1.5">
           <Label>Lớp</Label>
           <Select value={v.lop} onValueChange={(x) => set("lop", x as Lop)}>
-            <SelectTrigger aria-label="Lớp"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Lớp">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="logic">Logic</SelectItem>
               <SelectItem value="vat_ly">Vật lý</SelectItem>
@@ -156,7 +195,9 @@ export function LienKetForm({
         <div className="grid gap-1.5">
           <Label>Hướng</Label>
           <Select value={v.huong} onValueChange={(x) => set("huong", x as Huong)}>
-            <SelectTrigger aria-label="Hướng"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Hướng">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="mot_chieu">Một chiều</SelectItem>
               <SelectItem value="hai_chieu">Hai chiều</SelectItem>
@@ -165,8 +206,13 @@ export function LienKetForm({
         </div>
         <div className="grid gap-1.5">
           <Label>Vai trò dự phòng</Label>
-          <Select value={v.vaiTro || NONE} onValueChange={(x) => set("vaiTro", x === NONE ? "" : (x as "chinh" | "du_phong"))}>
-            <SelectTrigger aria-label="Vai trò dự phòng"><SelectValue placeholder="Không xác định" /></SelectTrigger>
+          <Select
+            value={v.vaiTro || NONE}
+            onValueChange={(x) => set("vaiTro", x === NONE ? "" : (x as "chinh" | "du_phong"))}
+          >
+            <SelectTrigger aria-label="Vai trò dự phòng">
+              <SelectValue placeholder="Không xác định" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value={NONE}>Không xác định</SelectItem>
               <SelectItem value="chinh">Chính</SelectItem>
@@ -179,20 +225,36 @@ export function LienKetForm({
       <div className="grid grid-cols-2 gap-3">
         <div className="grid gap-1.5">
           <Label>Giao diện nguồn</Label>
-          <Input value={v.gdNguon} onChange={(e) => set("gdNguon", e.target.value)} placeholder="E1/IP…" />
+          <Input
+            value={v.gdNguon}
+            onChange={(e) => set("gdNguon", e.target.value)}
+            placeholder="E1/IP…"
+          />
         </div>
         <div className="grid gap-1.5">
           <Label>Giao diện đích</Label>
-          <Input value={v.gdDich} onChange={(e) => set("gdDich", e.target.value)} placeholder="E1/IP…" />
+          <Input
+            value={v.gdDich}
+            onChange={(e) => set("gdDich", e.target.value)}
+            placeholder="E1/IP…"
+          />
         </div>
       </div>
       <div className="grid gap-1.5">
         <Label>Giao thức</Label>
-        <Input value={v.giaoThuc} onChange={(e) => set("giaoThuc", e.target.value)} placeholder="VoIP/E1…" />
+        <Input
+          value={v.giaoThuc}
+          onChange={(e) => set("giaoThuc", e.target.value)}
+          placeholder="VoIP/E1…"
+        />
       </div>
       <div className="grid gap-1.5">
         <Label>Mô tả tín hiệu</Label>
-        <Input value={v.moTa} onChange={(e) => set("moTa", e.target.value)} placeholder="Kết nối thoại VHF vào VCCS…" />
+        <Input
+          value={v.moTa}
+          onChange={(e) => set("moTa", e.target.value)}
+          placeholder="Kết nối thoại VHF vào VCCS…"
+        />
       </div>
       <div className="grid gap-1.5">
         <Label>Ghi chú</Label>
@@ -200,7 +262,11 @@ export function LienKetForm({
       </div>
 
       <div className="mt-1 flex justify-end gap-2">
-        {onCancel && <Button variant="outline" onClick={onCancel}>Hủy</Button>}
+        {onCancel && (
+          <Button variant="outline" onClick={onCancel}>
+            Hủy
+          </Button>
+        )}
         <Button onClick={submit} disabled={disabled}>
           {submitting && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
           Lưu liên kết

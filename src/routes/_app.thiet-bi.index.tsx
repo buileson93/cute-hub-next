@@ -2,8 +2,22 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { useMemo, useRef, useState, useEffect } from "react";
 import {
-  Search, HardDrive, Loader2, Building2, Layers, Network,
-  Wrench, AlertTriangle, Repeat, BookOpen, PackageCheck, UserCheck, Archive, Cpu, ChevronRight, Monitor
+  Search,
+  HardDrive,
+  Loader2,
+  Building2,
+  Layers,
+  Network,
+  Wrench,
+  AlertTriangle,
+  Repeat,
+  BookOpen,
+  PackageCheck,
+  UserCheck,
+  Archive,
+  Cpu,
+  ChevronRight,
+  Monitor,
 } from "lucide-react";
 import { PageBody } from "@/components/mirats/PageBody";
 
@@ -15,11 +29,15 @@ import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
 
-
 import { DataState } from "@/components/mirats/DataState";
 import { cn } from "@/lib/utils";
 import { useScope } from "@/lib/mirats/scope";
-import { useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice } from "@/lib/mirats/db-taxonomy";
+import {
+  useDbTaxonomy,
+  useSystemNameOverrides,
+  useDeviceNameOverrides,
+  type DbDevice,
+} from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
@@ -32,7 +50,11 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   head: () => ({
     meta: [
       { title: "Sổ lý lịch — MIRATS" },
-      { name: "description", content: "Sổ lý lịch theo cây phân cấp đơn vị → phân loại → hệ thống → thành phần hệ thống." },
+      {
+        name: "description",
+        content:
+          "Sổ lý lịch theo cây phân cấp đơn vị → phân loại → hệ thống → thành phần hệ thống.",
+      },
       { property: "og:title", content: "Sổ lý lịch — MIRATS" },
       { property: "og:description", content: "M2 — Sổ lý lịch." },
     ],
@@ -40,7 +62,11 @@ export const Route = createFileRoute("/_app/thiet-bi/")({
   component: ThietBiPage,
 });
 
-interface Hist { bt: number; sc: number; hh: number }
+interface Hist {
+  bt: number;
+  sc: number;
+  hh: number;
+}
 const EMPTY_HIST: Hist = { bt: 0, sc: 0, hh: 0 };
 
 interface TreeNode {
@@ -79,7 +105,6 @@ function ThietBiPage() {
     if (search.q) setQuery(search.q);
   }, [search.q]);
 
-
   const [focused, setFocused] = useState(false);
   const [onlyAllocated, setOnlyAllocated] = useState(false);
   const [showRetired, setShowRetired] = useState(false);
@@ -116,14 +141,15 @@ function ThietBiPage() {
     if (!showRetired) list = list.filter((t) => !isRetiredStatus(t.trang_thai));
     if (onlyAllocated) list = list.filter((t) => t._capPhatTrangThai === "da_cap_phat");
     if (!q) return list;
-    return list.filter((t) =>
-      t.ma_thiet_bi.toLowerCase().includes(q) ||
-      tbName(t).toLowerCase().includes(q) ||
-      t.serial.toLowerCase().includes(q) ||
-      t.model.toLowerCase().includes(q) ||
-      t.nha_san_xuat.toLowerCase().includes(q) ||
-      (t._nguoiGiu ?? "").toLowerCase().includes(q) ||
-      htName(t._htId, t._htTen).toLowerCase().includes(q)
+    return list.filter(
+      (t) =>
+        t.ma_thiet_bi.toLowerCase().includes(q) ||
+        tbName(t).toLowerCase().includes(q) ||
+        t.serial.toLowerCase().includes(q) ||
+        t.model.toLowerCase().includes(q) ||
+        t.nha_san_xuat.toLowerCase().includes(q) ||
+        (t._nguoiGiu ?? "").toLowerCase().includes(q) ||
+        htName(t._htId, t._htTen).toLowerCase().includes(q),
     );
   }, [devices, query, htName, tbName, onlyAllocated, showRetired]);
 
@@ -146,7 +172,8 @@ function ThietBiPage() {
     return { sysHits, devHits: filtered.slice(0, 8), devTotal: filtered.length };
   }, [query, devices, filtered, htName]);
 
-  const openDropdown = focused && !!suggestions && (suggestions.sysHits.length > 0 || suggestions.devHits.length > 0);
+  const openDropdown =
+    focused && !!suggestions && (suggestions.sysHits.length > 0 || suggestions.devHits.length > 0);
   const { data: viTriByHt } = useAllViTriChucNang();
 
   const tree = useMemo<TreeNode[]>(() => {
@@ -164,7 +191,16 @@ function ThietBiPage() {
     ): TreeNode => {
       let n = parent.get(key);
       if (!n) {
-        n = { key, label, sub: [], devices: [], count: 0, hist: { bt: 0, sc: 0, hh: 0 }, kind, sysId };
+        n = {
+          key,
+          label,
+          sub: [],
+          devices: [],
+          count: 0,
+          hist: { bt: 0, sc: 0, hh: 0 },
+          kind,
+          sysId,
+        };
         parent.set(key, n);
       }
       return n;
@@ -178,7 +214,9 @@ function ThietBiPage() {
       for (const d of devs) {
         const h = histMap.get(d.ma_thiet_bi) ?? EMPTY_HIST;
         n.count++;
-        n.hist.bt += h.bt; n.hist.sc += h.sc; n.hist.hh += h.hh;
+        n.hist.bt += h.bt;
+        n.hist.sc += h.sc;
+        n.hist.hh += h.hh;
       }
     };
 
@@ -202,13 +240,17 @@ function ThietBiPage() {
       const htId = gan?.htId || d._htId || "__no_ht__";
       const tpId = gan?.tpId || "__none__";
       let m = devByHtTp.get(htId);
-      if (!m) { m = new Map(); devByHtTp.set(htId, m); }
+      if (!m) {
+        m = new Map();
+        devByHtTp.set(htId, m);
+      }
       const arr = m.get(tpId) ?? [];
-      arr.push(d); m.set(tpId, arr);
+      arr.push(d);
+      m.set(tpId, arr);
     }
 
     const dvIdByMa = new Map(taxo.donViList.map((d) => [d.ma, d.id]));
-    const htDvFallback = new Map<string, string>(); 
+    const htDvFallback = new Map<string, string>();
     for (const d of taxo.devices) {
       if (!d._htId || !d.don_vi) continue;
       const dvId = dvIdByMa.get(d.don_vi);
@@ -228,7 +270,8 @@ function ThietBiPage() {
       if (!inScope(dvId)) continue;
       const dvMa = donViMaMap.get(dvId) || "__no_dv__";
       const dvTen = donViTenMap.get(dvId);
-      const dvLabel = dvMa === "__no_dv__" ? "(Chưa gán đơn vị)" : `${dvMa}${dvTen ? " — " + dvTen : ""}`;
+      const dvLabel =
+        dvMa === "__no_dv__" ? "(Chưa gán đơn vị)" : `${dvMa}${dvTen ? " — " + dvTen : ""}`;
       const dvNode = ensure(dvRoots, dvMa, dvLabel, "dv");
       const plId = h.phanLoaiId || "_";
       const plLabel = taxo.plNameMap.get(plId) ?? "(Chưa phân loại)";
@@ -238,7 +281,12 @@ function ThietBiPage() {
       const tps = tpByHt.get(h.id) ?? [];
       for (const tp of tps) {
         const tpDevices = devByHtTp.get(h.id)?.get(tp.id) ?? [];
-        const tpNode = ensure(subMap(htNode), `tp:${tp.id}`, tp.ten || tp.ma_thanh_phan || "(Thành phần)", "tp");
+        const tpNode = ensure(
+          subMap(htNode),
+          `tp:${tp.id}`,
+          tp.ten || tp.ma_thanh_phan || "(Thành phần)",
+          "tp",
+        );
         tpNode.tpId = tp.id;
         tpNode.devices.push(...tpDevices);
         accumulate(tpNode, tpDevices);
@@ -278,7 +326,9 @@ function ThietBiPage() {
     const finalize = (n: TreeNode): TreeNode => {
       const anyN = n as TreeNode & { _m?: Map<string, TreeNode> };
       if (anyN._m) {
-        n.sub = [...anyN._m.values()].map(finalize).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "vi"));
+        n.sub = [...anyN._m.values()]
+          .map(finalize)
+          .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "vi"));
         delete anyN._m;
       }
       n.devices.sort((a, b) => a.ma_thiet_bi.localeCompare(b.ma_thiet_bi, "vi"));
@@ -287,16 +337,21 @@ function ThietBiPage() {
     return [...dvRoots.values()].map(finalize).sort((a, b) => a.label.localeCompare(b.label, "vi"));
   }, [taxo, filtered, histMap, htName, viTriByHt, scopeAll, donViCode]);
 
-
-  const state = isLoading ? "loading" : error ? "error" : filtered.length === 0 ? "empty" : "success";
+  const state = isLoading
+    ? "loading"
+    : error
+      ? "error"
+      : filtered.length === 0
+        ? "empty"
+        : "success";
   const isFiltering = query.trim() !== "" || onlyAllocated || showRetired;
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   const mobileTps = useMemo(() => {
     const list: TreeNode[] = [];
     const walk = (nodes: TreeNode[]) => {
       for (const n of nodes) {
-        if (n.kind === 'tp' && n.count > 0) list.push(n);
+        if (n.kind === "tp" && n.count > 0) list.push(n);
         if (n.sub.length) walk(n.sub);
       }
     };
@@ -312,7 +367,9 @@ function ThietBiPage() {
         subtitle="Đơn vị → Phân loại → Hệ thống → Thành phần"
         actions={
           <div className="flex items-center gap-1.5">
-            <AppTooltip noiDung={onlyAllocated ? "Bỏ lọc cấp phát" : "Chỉ hiện tài sản đang cấp phát"}>
+            <AppTooltip
+              noiDung={onlyAllocated ? "Bỏ lọc cấp phát" : "Chỉ hiện tài sản đang cấp phát"}
+            >
               <Button
                 variant={onlyAllocated ? "default" : "outline"}
                 size="sm"
@@ -323,7 +380,11 @@ function ThietBiPage() {
               </Button>
             </AppTooltip>
             {retiredCount > 0 && (
-              <AppTooltip noiDung={showRetired ? "Ẩn tài sản nghỉ KT" : `Hiện ${retiredCount} tài sản nghỉ KT`}>
+              <AppTooltip
+                noiDung={
+                  showRetired ? "Ẩn tài sản nghỉ KT" : `Hiện ${retiredCount} tài sản nghỉ KT`
+                }
+              >
                 <Button
                   variant={showRetired ? "secondary" : "outline"}
                   size="sm"
@@ -339,8 +400,13 @@ function ThietBiPage() {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => { if (blurTimer.current) clearTimeout(blurTimer.current); setFocused(true); }}
-                onBlur={() => { blurTimer.current = setTimeout(() => setFocused(false), 150); }}
+                onFocus={() => {
+                  if (blurTimer.current) clearTimeout(blurTimer.current);
+                  setFocused(true);
+                }}
+                onBlur={() => {
+                  blurTimer.current = setTimeout(() => setFocused(false), 150);
+                }}
                 placeholder="Tìm mã, tên tài sản..."
                 className="h-8 border-none bg-transparent pl-8 text-xs focus-visible:ring-0"
               />
@@ -353,12 +419,19 @@ function ThietBiPage() {
                         <button
                           key={s.id}
                           type="button"
-                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/he-thong/$id", params: { id: s.id } }); }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setQuery("");
+                            setFocused(false);
+                            navigate({ to: "/he-thong/$id", params: { id: s.id } });
+                          }}
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <BookOpen className="h-4 w-4 shrink-0 text-primary" />
                           <span className="min-w-0 flex-1 truncate font-medium">{s.ten}</span>
-                          <span className="astryx-badge astryx-badge-primary astryx-number">{s.count} TB</span>
+                          <span className="astryx-badge astryx-badge-primary astryx-number">
+                            {s.count} TB
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -370,16 +443,29 @@ function ThietBiPage() {
                         <button
                           key={d.id}
                           type="button"
-                          onMouseDown={(e) => { e.preventDefault(); setQuery(""); setFocused(false); navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: d.ma_thiet_bi }, search: { tab: "tong-quan", doc: undefined, q: undefined } }); }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setQuery("");
+                            setFocused(false);
+                            navigate({
+                              to: "/thiet-bi/$maThietBi",
+                              params: { maThietBi: d.ma_thiet_bi },
+                              search: { tab: "tong-quan", doc: undefined, q: undefined },
+                            });
+                          }}
                           className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                         >
                           <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="truncate font-medium">{tbName(d)}</span>
-                              <span className="astryx-number text-[10px] opacity-60">{d.ma_thiet_bi}</span>
+                              <span className="astryx-number text-[10px] opacity-60">
+                                {d.ma_thiet_bi}
+                              </span>
                             </div>
-                            <div className="astryx-text-muted text-[10px]">{htName(d._htId, d._htTen)}</div>
+                            <div className="astryx-text-muted text-[10px]">
+                              {htName(d._htId, d._htTen)}
+                            </div>
                           </div>
                         </button>
                       ))}
@@ -402,7 +488,9 @@ function ThietBiPage() {
               ? "Thử thay đổi từ khoá hoặc xoá các bộ lọc để tìm kiếm rộng hơn."
               : "Hệ thống chưa có dữ liệu tài sản nào được đăng ký."
           }
-          onRetry={() => { if (typeof window !== 'undefined') window.location.reload(); }}
+          onRetry={() => {
+            if (typeof window !== "undefined") window.location.reload();
+          }}
           emptyAction={
             isFiltering ? (
               <Button
@@ -421,12 +509,14 @@ function ThietBiPage() {
         >
           {isMobile ? (
             <div className="grid grid-cols-1 gap-4 p-4">
-              {mobileTps.map(n => (
+              {mobileTps.map((n) => (
                 <Card key={n.key} className="relative overflow-hidden border-l-4 border-l-primary">
                   <CardContent className="p-4 space-y-2">
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-sm">{n.label}</h3>
-                      <Badge variant="outline" className="text-[10px]">{n.count} TB</Badge>
+                      <Badge variant="outline" className="text-[10px]">
+                        {n.count} TB
+                      </Badge>
                     </div>
                     <div className="flex gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
@@ -439,7 +529,9 @@ function ThietBiPage() {
                     <div className="pt-2 border-t mt-2 flex justify-between items-center">
                       <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
                       <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
-                         <Link to="/thiet-bi" search={{ q: n.label }}>Khám phá <ChevronRight className="w-3 h-3" /></Link>
+                        <Link to="/thiet-bi" search={{ q: n.label }}>
+                          Khám phá <ChevronRight className="w-3 h-3" />
+                        </Link>
                       </Button>
                     </div>
                   </CardContent>

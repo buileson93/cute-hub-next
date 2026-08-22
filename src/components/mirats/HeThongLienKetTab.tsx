@@ -7,12 +7,17 @@
 // ============================================================================
 
 import { useMemo, useState } from "react";
-import { Link2, ArrowRight, ArrowLeftRight, AlertTriangle, Loader2, ShieldAlert } from "lucide-react";
+import {
+  Link2,
+  ArrowRight,
+  ArrowLeftRight,
+  AlertTriangle,
+  Loader2,
+  ShieldAlert,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  useLienKetCuaHeThong, usePhanTichTacDong, LOP_LABEL,
-} from "@/lib/mirats/lien-ket";
+import { useLienKetCuaHeThong, usePhanTichTacDong, LOP_LABEL } from "@/lib/mirats/lien-ket";
 import { LOAI_LIEN_KET_LABEL, type DoThiRow, type LoaiLienKetMa } from "@/lib/mirats/system-graph";
 
 /**
@@ -37,9 +42,15 @@ function LienKetItem({ r, heThongId, all }: { r: DoThiRow; heThongId: string; al
   const missingBackup = thieuDuPhong(r, heThongId, all);
   return (
     <li className="flex flex-wrap items-center gap-2 rounded-md border p-2 text-sm">
-      <Badge variant="outline">{LOAI_LIEN_KET_LABEL[r.loai_ma as LoaiLienKetMa] ?? r.loai_ma}</Badge>
+      <Badge variant="outline">
+        {LOAI_LIEN_KET_LABEL[r.loai_ma as LoaiLienKetMa] ?? r.loai_ma}
+      </Badge>
       <span className="text-muted-foreground">
-        {r.huong === "hai_chieu" ? <ArrowLeftRight className="inline h-3.5 w-3.5" /> : <ArrowRight className="inline h-3.5 w-3.5" />}
+        {r.huong === "hai_chieu" ? (
+          <ArrowLeftRight className="inline h-3.5 w-3.5" />
+        ) : (
+          <ArrowRight className="inline h-3.5 w-3.5" />
+        )}
       </span>
       <span className="font-medium">{other}</span>
       <span className="text-xs text-muted-foreground">· {LOP_LABEL[r.lop]}</span>
@@ -50,7 +61,11 @@ function LienKetItem({ r, heThongId, all }: { r: DoThiRow; heThongId: string; al
       )}
       {r.giao_thuc && <span className="text-xs text-muted-foreground">· {r.giao_thuc}</span>}
       {missingBackup && (
-        <Badge variant="destructive" className="gap-1 text-[10px]" title="Liên kết chính chưa có liên kết dự phòng tương ứng">
+        <Badge
+          variant="destructive"
+          className="gap-1 text-[10px]"
+          title="Liên kết chính chưa có liên kết dự phòng tương ứng"
+        >
           <ShieldAlert className="h-3 w-3" /> Thiếu dự phòng
         </Badge>
       )}
@@ -74,7 +89,11 @@ export function LienKetGroups({ heThongId, rows }: { heThongId: string; rows: Do
   }, [rows, heThongId]);
 
   if (rows.length === 0) {
-    return <p className="text-sm text-muted-foreground">Hệ thống này chưa có liên kết nào tới hệ thống khác.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">
+        Hệ thống này chưa có liên kết nào tới hệ thống khác.
+      </p>
+    );
   }
 
   return (
@@ -87,7 +106,9 @@ export function LienKetGroups({ heThongId, rows }: { heThongId: string; rows: Do
           <p className="text-xs text-muted-foreground">Không có liên kết đi ra.</p>
         ) : (
           <ul className="space-y-2">
-            {diRa.map((r) => <LienKetItem key={r.id} r={r} heThongId={heThongId} all={rows} />)}
+            {diRa.map((r) => (
+              <LienKetItem key={r.id} r={r} heThongId={heThongId} all={rows} />
+            ))}
           </ul>
         )}
       </section>
@@ -99,7 +120,9 @@ export function LienKetGroups({ heThongId, rows }: { heThongId: string; rows: Do
           <p className="text-xs text-muted-foreground">Không có liên kết đi vào.</p>
         ) : (
           <ul className="space-y-2">
-            {diVao.map((r) => <LienKetItem key={r.id} r={r} heThongId={heThongId} all={rows} />)}
+            {diVao.map((r) => (
+              <LienKetItem key={r.id} r={r} heThongId={heThongId} all={rows} />
+            ))}
           </ul>
         )}
       </section>
@@ -122,7 +145,11 @@ export function HeThongLienKetTab({ heThongId }: { heThongId: string }) {
   }, [rows]);
 
   if (isLoading) {
-    return <div className="flex items-center gap-2 p-4 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Đang tải liên kết…</div>;
+    return (
+      <div className="flex items-center gap-2 p-4 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" /> Đang tải liên kết…
+      </div>
+    );
   }
 
   return (
@@ -132,7 +159,8 @@ export function HeThongLienKetTab({ heThongId }: { heThongId: string }) {
           <Link2 className="h-4 w-4 text-primary" /> {rows.length} liên kết đi/đến
         </div>
         <Button size="sm" variant="outline" onClick={() => setShowImpact((v) => !v)}>
-          <AlertTriangle className="mr-1 h-4 w-4" /> {showImpact ? "Ẩn phân tích" : "Phân tích tác động"}
+          <AlertTriangle className="mr-1 h-4 w-4" />{" "}
+          {showImpact ? "Ẩn phân tích" : "Phân tích tác động"}
         </Button>
       </div>
 
@@ -145,11 +173,16 @@ export function HeThongLienKetTab({ heThongId }: { heThongId: string }) {
             {isFetching && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           </div>
           {impact.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Không có hệ thống nào bị ảnh hưởng theo luồng tín hiệu / phụ thuộc dịch vụ.</p>
+            <p className="text-xs text-muted-foreground">
+              Không có hệ thống nào bị ảnh hưởng theo luồng tín hiệu / phụ thuộc dịch vụ.
+            </p>
           ) : (
             <ul className="space-y-1">
               {impact.map((i) => (
-                <li key={i.he_thong_id} className="flex items-center justify-between rounded border bg-background px-2 py-1 text-xs">
+                <li
+                  key={i.he_thong_id}
+                  className="flex items-center justify-between rounded border bg-background px-2 py-1 text-xs"
+                >
                   <span>{i.ten ?? tenMap.get(i.he_thong_id) ?? i.he_thong_id}</span>
                   <Badge variant="secondary">bậc {i.do_sau}</Badge>
                 </li>

@@ -39,13 +39,18 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
     const extraActions = actions.slice(2);
 
     return (
-      <div className={cn("fixed inset-x-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300", UI_DENSITY.FLOATING_BOTTOM_MOBILE)}>
+      <div
+        className={cn(
+          "fixed inset-x-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300",
+          UI_DENSITY.FLOATING_BOTTOM_MOBILE,
+        )}
+      >
         <div className="bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-2xl flex items-center justify-between gap-3 border border-white/10">
           <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20 rounded-full" 
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20 rounded-full"
               onClick={onClear}
               aria-label="Bỏ chọn tất cả"
             >
@@ -53,7 +58,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
             </Button>
             <span className="text-sm font-bold whitespace-nowrap">Đã chọn {selectedCount}</span>
           </div>
-          
+
           <div className="flex items-center gap-1">
             {primaryActions.map((action, idx) => (
               <Button
@@ -66,7 +71,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
                 {action.label}
               </Button>
             ))}
-            
+
             {extraActions.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -95,7 +100,7 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
     );
   }
 
-  // Phiên bản Desktop: Thanh ngang chuẩn StandardTable (tích hợp sẵn bên trong StandardTable thường là tốt nhất, 
+  // Phiên bản Desktop: Thanh ngang chuẩn StandardTable (tích hợp sẵn bên trong StandardTable thường là tốt nhất,
   // nhưng đây là bản standalone nếu cần dùng ngoài)
   return (
     <div className="flex items-center gap-3 bg-muted/40 px-3 py-1.5 rounded-md border animate-in fade-in duration-200">
@@ -111,7 +116,8 @@ export function BulkActionBar({ selectedCount, onClear, actions }: BulkActionBar
             size="sm"
             className={cn(
               "h-8 text-xs shadow-none",
-              (action.variant === "outline" || !action.variant) && "border-primary/20 hover:bg-primary/5"
+              (action.variant === "outline" || !action.variant) &&
+                "border-primary/20 hover:bg-primary/5",
             )}
             onClick={action.onClick}
           >

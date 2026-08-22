@@ -59,9 +59,7 @@ describe("mapChangeEventForLayer — gắn nhãn chỉ-đọc cho field xuyên l
     at: "2026-07-01T10:00:00Z",
     action: "update",
     userName: "Admin",
-    changes: [
-      { key: "ma_serial", label: "Số serial", from: "SN-1", to: "SN-2" },
-    ],
+    changes: [{ key: "ma_serial", label: "Số serial", from: "SN-1", to: "SN-2" }],
   };
 
   it("khi field thuộc layer đúng → không thêm tiền tố", () => {

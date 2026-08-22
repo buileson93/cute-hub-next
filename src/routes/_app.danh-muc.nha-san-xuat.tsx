@@ -10,7 +10,11 @@ export const Route = createFileRoute("/_app/danh-muc/nha-san-xuat")({
   head: () => ({
     meta: [
       { title: "Nhà sản xuất — Danh mục MIRATS" },
-      { name: "description", content: "Danh mục nhà sản xuất (manufacturers): quản lý tập trung để chọn nhanh khi khai tài sản và model." },
+      {
+        name: "description",
+        content:
+          "Danh mục nhà sản xuất (manufacturers): quản lý tập trung để chọn nhanh khi khai tài sản và model.",
+      },
     ],
   }),
   component: () => (
@@ -27,4 +31,3 @@ export const Route = createFileRoute("/_app/danh-muc/nha-san-xuat")({
     />
   ),
 });
-

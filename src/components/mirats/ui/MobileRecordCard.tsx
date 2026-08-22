@@ -46,7 +46,7 @@ export function MobileRecordCard<T>({
       className={cn(
         "relative cursor-pointer transition-colors hover:bg-muted/50 overflow-hidden",
         isSelected && "border-primary bg-primary/5 shadow-sm shadow-primary/10",
-        rowClassName?.(row)
+        rowClassName?.(row),
       )}
       onClick={() => onRowClick?.(row)}
     >
@@ -64,13 +64,15 @@ export function MobileRecordCard<T>({
                       : "text-[12px] text-muted-foreground truncate"
                   }
                 >
-                  {col.render ? col.render(row) : col.cell ? col.cell(row) : String(col.value?.(row) ?? "")}
+                  {col.render
+                    ? col.render(row)
+                    : col.cell
+                      ? col.cell(row)
+                      : String(col.value?.(row) ?? "")}
                 </div>
               ))}
               {primaryCols.length === 0 && (
-                <div className="font-semibold text-sm truncate">
-                  {String(rowId)}
-                </div>
+                <div className="font-semibold text-sm truncate">{String(rowId)}</div>
               )}
             </div>
             {selectable && (

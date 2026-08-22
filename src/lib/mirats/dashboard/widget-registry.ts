@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type WidgetType = 
+export type WidgetType =
   | "reliability-kpi"
   | "mttr-kpi"
   | "mtbf-kpi"
@@ -27,7 +27,10 @@ export interface DashboardWidgetConfig {
   title: string;
 }
 
-export const AVAILABLE_WIDGETS: Record<WidgetType, { title: string; defaultWidth: number; icon: string }> = {
+export const AVAILABLE_WIDGETS: Record<
+  WidgetType,
+  { title: string; defaultWidth: number; icon: string }
+> = {
   "reliability-kpi": { title: "Độ sẵn sàng vận hành", defaultWidth: 6, icon: "entity.security" },
   "mttr-kpi": { title: "Thời gian khắc phục (MTTR)", defaultWidth: 6, icon: "status.power" },
   "mtbf-kpi": { title: "Khoảng cách sự cố (MTBF)", defaultWidth: 6, icon: "entity.securityAlert" },
@@ -42,11 +45,18 @@ export const AVAILABLE_WIDGETS: Record<WidgetType, { title: string; defaultWidth
   "pm-overdue-kpi": { title: "PM Quá hạn", defaultWidth: 4, icon: "status.danger" },
   "asset-type-bar": { title: "Phân loại hệ thống", defaultWidth: 6, icon: "entity.system" },
   "su-co-heatmap": { title: "Bản đồ nhiệt sự cố", defaultWidth: 12, icon: "entity.chart" },
-  "top-he-thong-su-co": { title: "Top hệ thống nhiều sự cố", defaultWidth: 6, icon: "entity.system" },
-  "top-thiet-bi-hong-lap": { title: "Top thiết bị hỏng lặp", defaultWidth: 6, icon: "entity.asset" },
+  "top-he-thong-su-co": {
+    title: "Top hệ thống nhiều sự cố",
+    defaultWidth: 6,
+    icon: "entity.system",
+  },
+  "top-thiet-bi-hong-lap": {
+    title: "Top thiết bị hỏng lặp",
+    defaultWidth: 6,
+    icon: "entity.asset",
+  },
   "expiry-timeline": { title: "Lộ trình hết hạn", defaultWidth: 12, icon: "entity.history" },
 };
-
 
 export const DEFAULT_HOME_LAYOUT: DashboardWidgetConfig[] = [
   { id: "w1", type: "reliability-kpi", w: 6, title: "Độ sẵn sàng" },

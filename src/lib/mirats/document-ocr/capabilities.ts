@@ -17,7 +17,7 @@ export type DeviceCapabilities = z.infer<typeof DeviceCapabilitiesSchema>;
 
 export async function detectCapabilities(): Promise<DeviceCapabilities> {
   const isBrowser = typeof window !== "undefined";
-  
+
   // Default for non-browser environments
   if (!isBrowser) {
     return {
@@ -36,8 +36,10 @@ export async function detectCapabilities(): Promise<DeviceCapabilities> {
   const hasWebGPU = "gpu" in navigator;
   const hasOffscreenCanvas = "OffscreenCanvas" in window;
   const hasCreateImageBitmap = "createImageBitmap" in window;
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
+
   // Network/Data saving
   const nav = navigator as any;
   const saveData = nav.connection?.saveData === true;
@@ -45,7 +47,10 @@ export async function detectCapabilities(): Promise<DeviceCapabilities> {
   // WASM SIMD Detection (Checking for a small SIMD-based WASM module execution)
   let hasWasmSimd = false;
   try {
-    const simdBytecode = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11]);
+    const simdBytecode = new Uint8Array([
+      0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253,
+      15, 253, 98, 11,
+    ]);
     hasWasmSimd = await WebAssembly.validate(simdBytecode);
   } catch {
     hasWasmSimd = false;

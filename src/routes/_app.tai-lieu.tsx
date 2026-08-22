@@ -45,7 +45,7 @@ function SnippetHighlight({ text }: { text: string }) {
   return (
     <span>
       {parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
+        if (part.startsWith("**") && part.endsWith("**")) {
           return (
             <span key={i} className="bg-yellow-200 text-yellow-900 font-medium px-0.5 rounded">
               {part.slice(2, -2)}
@@ -63,12 +63,12 @@ function TaiLieuLibraryPage() {
   const [searchTerm, setSearchTerm] = useState(initialQ);
   const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [selectedDocData, setSelectedDocData] = useState<{ id: string; page?: number } | null>(
-    initialDoc ? { id: initialDoc } : null
+    initialDoc ? { id: initialDoc } : null,
   );
   const [viewerOpen, setViewerOpen] = useState(!!initialDoc);
-  
+
   const { search: searchOcr, isReady: ocrReady } = useOcrSearch();
-  
+
   const { data: allDocs, isLoading } = useQuery({
     queryKey: ["all_tai_lieu"],
     queryFn: async () => {
@@ -81,70 +81,81 @@ function TaiLieuLibraryPage() {
         supabase
           .from("model_tai_lieu")
           .select("*, model:model_id(ten, ma), tai_lieu_ocr(status)")
-          .order("created_at", { ascending: false })
+          .order("created_at", { ascending: false }),
       ]);
 
       if (thietBiTep.error) throw thietBiTep.error;
       if (modelTep.error) throw modelTep.error;
 
       const combined: TaiLieuRow[] = [
-        ...(thietBiTep.data || []).map(d => ({
+        ...(thietBiTep.data || []).map((d) => ({
           ...d,
           sourceType: "thiet_bi" as const,
           sourceName: d.thiet_bi?.ten_thiet_bi || d.thiet_bi?.ma_thiet_bi || "Tài sản",
           sourceCode: d.thiet_bi?.ma_thiet_bi || "",
-          to: `/thiet-bi/${d.thiet_bi?.ma_thiet_bi}?tab=phap-ly`
+          to: `/thiet-bi/${d.thiet_bi?.ma_thiet_bi}?tab=phap-ly`,
         })),
-        ...(modelTep.data || []).map(m => ({
+        ...(modelTep.data || []).map((m) => ({
           ...m,
           sourceType: "model" as const,
           sourceName: m.model?.ten || m.model?.ma || "Model",
           sourceCode: m.model?.ma || "",
-          to: "#"
-        }))
+          to: "#",
+        })),
       ];
 
       return combined;
-    }
+    },
   });
 
   const filteredDocs = useMemo(() => {
     if (!allDocs) return [];
-    
-    let base = allDocs;
-    
-    // Status filters
-    if (activeFilter === 'indexed') base = base.filter(d => (d as any).tai_lieu_ocr?.some((o: any) => o.status === 'completed'));
-    if (activeFilter === 'ocr_pending') base = base.filter(d => (d as any).tai_lieu_ocr?.some((o: any) => o.status === 'processing' || o.status === 'pending'));
-    if (activeFilter === 'ocr_error') base = base.filter(d => (d as any).tai_lieu_ocr?.some((o: any) => o.status === 'failed'));
 
-    if (!searchTerm.trim()) return base.map(d => ({ ...d, ocrResults: [] }));
+    let base = allDocs;
+
+    // Status filters
+    if (activeFilter === "indexed")
+      base = base.filter((d) =>
+        (d as any).tai_lieu_ocr?.some((o: any) => o.status === "completed"),
+      );
+    if (activeFilter === "ocr_pending")
+      base = base.filter((d) =>
+        (d as any).tai_lieu_ocr?.some(
+          (o: any) => o.status === "processing" || o.status === "pending",
+        ),
+      );
+    if (activeFilter === "ocr_error")
+      base = base.filter((d) => (d as any).tai_lieu_ocr?.some((o: any) => o.status === "failed"));
+
+    if (!searchTerm.trim()) return base.map((d) => ({ ...d, ocrResults: [] }));
 
     // Use OCR engine if ready
     if (ocrReady) {
       const ocrResults = searchOcr(searchTerm);
       // Group results by sourceId
       const grouped = new Map<string, any[]>();
-      ocrResults.forEach(r => {
+      ocrResults.forEach((r) => {
         if (!grouped.has(r.sourceId)) grouped.set(r.sourceId, []);
         grouped.get(r.sourceId)!.push(r);
       });
 
-      return base.map(doc => {
-        const matches = grouped.get(doc.id) || [];
-        const lowerQ = searchTerm.toLowerCase();
-        const metaMatch = 
-          doc.file_name?.toLowerCase().includes(lowerQ) || 
-          doc.mo_ta?.toLowerCase().includes(lowerQ) ||
-          doc.sourceName?.toLowerCase().includes(lowerQ) ||
-          doc.sourceCode?.toLowerCase().includes(lowerQ);
-        
-        return {
-          ...doc,
-          ocrResults: matches,
-          isMetaMatch: metaMatch
-        };
-      }).filter(d => d.isMetaMatch || d.ocrResults.length > 0)
+      return base
+        .map((doc) => {
+          const matches = grouped.get(doc.id) || [];
+          const lowerQ = searchTerm.toLowerCase();
+          const metaMatch =
+            doc.file_name?.toLowerCase().includes(lowerQ) ||
+            doc.mo_ta?.toLowerCase().includes(lowerQ) ||
+            doc.sourceName?.toLowerCase().includes(lowerQ) ||
+            doc.sourceCode?.toLowerCase().includes(lowerQ);
+
+          return {
+            ...doc,
+            ocrResults: matches,
+            isMetaMatch: metaMatch,
+          };
+        })
+        .filter((d) => d.isMetaMatch || d.ocrResults.length > 0)
         .sort((a, b) => {
           if (a.isMetaMatch && !b.isMetaMatch) return -1;
           if (!a.isMetaMatch && b.isMetaMatch) return 1;
@@ -154,17 +165,20 @@ function TaiLieuLibraryPage() {
 
     // Fallback to basic search
     const lowerQ = searchTerm.toLowerCase();
-    return base.filter(d => 
-      d.file_name?.toLowerCase().includes(lowerQ) || 
-      d.mo_ta?.toLowerCase().includes(lowerQ) ||
-      d.sourceName?.toLowerCase().includes(lowerQ) ||
-      d.sourceCode?.toLowerCase().includes(lowerQ)
-    ).map(d => ({ ...d, ocrResults: [] }));
+    return base
+      .filter(
+        (d) =>
+          d.file_name?.toLowerCase().includes(lowerQ) ||
+          d.mo_ta?.toLowerCase().includes(lowerQ) ||
+          d.sourceName?.toLowerCase().includes(lowerQ) ||
+          d.sourceCode?.toLowerCase().includes(lowerQ),
+      )
+      .map((d) => ({ ...d, ocrResults: [] }));
   }, [allDocs, searchTerm, activeFilter, ocrReady, searchOcr]);
 
-  const selectedDoc = useMemo(() => 
-    allDocs?.find(d => d.id === selectedDocData?.id), 
-    [allDocs, selectedDocData]
+  const selectedDoc = useMemo(
+    () => allDocs?.find((d) => d.id === selectedDocData?.id),
+    [allDocs, selectedDocData],
   );
 
   const columns: DataTableColumn<TaiLieuRow>[] = [
@@ -178,7 +192,7 @@ function TaiLieuLibraryPage() {
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-red-500 shrink-0" />
             <div className="min-w-0">
-              <button 
+              <button
                 className="font-medium hover:underline text-left block truncate"
                 onClick={() => {
                   setSelectedDocData({ id: row.id });
@@ -188,15 +202,20 @@ function TaiLieuLibraryPage() {
                 {row.file_name}
               </button>
             </div>
-            {row.tai_lieu_ocr?.[0]?.status === 'completed' && (
-              <Badge variant="outline" className="text-[9px] h-4 px-1 bg-green-50 text-green-700 border-green-200">OCR</Badge>
+            {row.tai_lieu_ocr?.[0]?.status === "completed" && (
+              <Badge
+                variant="outline"
+                className="text-[9px] h-4 px-1 bg-green-50 text-green-700 border-green-200"
+              >
+                OCR
+              </Badge>
             )}
           </div>
           {row.ocrResults?.length > 0 && (
             <div className="ml-6 space-y-1">
               {row.ocrResults.slice(0, 2).map((res: any, idx: number) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="text-[10px] text-muted-foreground italic cursor-pointer hover:text-foreground line-clamp-1 bg-muted/30 px-1.5 py-0.5 rounded"
                   onClick={() => {
                     setSelectedDocData({ id: row.id, page: res.page });
@@ -212,7 +231,7 @@ function TaiLieuLibraryPage() {
             <div className="ml-6 text-[10px] text-muted-foreground truncate">{row.mo_ta}</div>
           )}
         </div>
-      )
+      ),
     },
     {
       header: "Nguồn gốc",
@@ -232,7 +251,7 @@ function TaiLieuLibraryPage() {
             <span className="text-[10px] font-mono text-muted-foreground">{row.sourceCode}</span>
           )}
         </div>
-      )
+      ),
     },
     {
       header: "Kích thước",
@@ -243,7 +262,7 @@ function TaiLieuLibraryPage() {
         <span className="text-[11px] text-muted-foreground">
           {row.kich_thuoc ? (row.kich_thuoc / 1024).toFixed(1) + " KB" : "-"}
         </span>
-      )
+      ),
     },
     {
       header: "Ngày tải",
@@ -254,7 +273,7 @@ function TaiLieuLibraryPage() {
         <span className="text-[11px] text-muted-foreground">
           {new Date(row.created_at).toLocaleDateString("vi-VN")}
         </span>
-      )
+      ),
     },
     {
       key: "actions",
@@ -263,27 +282,38 @@ function TaiLieuLibraryPage() {
       width: 120,
       align: "center",
       render: (row: TaiLieuRow) => (
-        <DocActions row={row} onOpenViewer={() => {
-          setSelectedDocData({ id: row.id });
-          setViewerOpen(true);
-        }} />
-      )
-    }
+        <DocActions
+          row={row}
+          onOpenViewer={() => {
+            setSelectedDocData({ id: row.id });
+            setViewerOpen(true);
+          }}
+        />
+      ),
+    },
   ];
 
   return (
     <div className="flex flex-1 flex-col">
-      <PageHeader 
-        title="Thư viện tài liệu" 
-        icon={FileText} 
+      <PageHeader
+        title="Thư viện tài liệu"
+        icon={FileText}
         actions={
           <div className="flex items-center gap-3">
             <Tabs value={activeFilter} onValueChange={setActiveFilter} className="h-8">
               <TabsList className="h-8">
-                <TabsTrigger value="all" className="text-[10px] px-2 h-7">Tất cả</TabsTrigger>
-                <TabsTrigger value="indexed" className="text-[10px] px-2 h-7">Đã OCR</TabsTrigger>
-                <TabsTrigger value="ocr_pending" className="text-[10px] px-2 h-7">Đang xử lý</TabsTrigger>
-                <TabsTrigger value="ocr_error" className="text-[10px] px-2 h-7">Lỗi OCR</TabsTrigger>
+                <TabsTrigger value="all" className="text-[10px] px-2 h-7">
+                  Tất cả
+                </TabsTrigger>
+                <TabsTrigger value="indexed" className="text-[10px] px-2 h-7">
+                  Đã OCR
+                </TabsTrigger>
+                <TabsTrigger value="ocr_pending" className="text-[10px] px-2 h-7">
+                  Đang xử lý
+                </TabsTrigger>
+                <TabsTrigger value="ocr_error" className="text-[10px] px-2 h-7">
+                  Lỗi OCR
+                </TabsTrigger>
               </TabsList>
             </Tabs>
             <div className="relative w-64">
@@ -292,13 +322,13 @@ function TaiLieuLibraryPage() {
                 placeholder="Tìm tên file, mô tả, nội dung..."
                 className="h-8 pl-8 text-xs"
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
         }
       />
-      
+
       <PageBody>
         <DataTableCore
           rows={filteredDocs}
@@ -320,14 +350,17 @@ function TaiLieuLibraryPage() {
   );
 }
 
-function DocActions({ row, onOpenViewer }: { row: TaiLieuRow, onOpenViewer: () => void }) {
+function DocActions({ row, onOpenViewer }: { row: TaiLieuRow; onOpenViewer: () => void }) {
   const [url, setUrl] = useState<string | null>(null);
   const canDownload = useCanDownloadAttachments();
 
   useMemo(() => {
-    storage.from(row.bucket).createSignedUrl(row.file_path, 3600).then(({ data }) => {
-      setUrl(data?.signedUrl ?? null);
-    });
+    storage
+      .from(row.bucket)
+      .createSignedUrl(row.file_path, 3600)
+      .then(({ data }) => {
+        setUrl(data?.signedUrl ?? null);
+      });
   }, [row.bucket, row.file_path]);
 
   return (
@@ -338,11 +371,15 @@ function DocActions({ row, onOpenViewer }: { row: TaiLieuRow, onOpenViewer: () =
       {url && (
         <>
           <Button asChild size="icon" variant="ghost" className="h-7 w-7">
-            <a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-3.5 w-3.5" /></a>
+            <a href={url} target="_blank" rel="noreferrer">
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
           </Button>
           {canDownload && (
             <Button asChild size="icon" variant="ghost" className="h-7 w-7">
-              <a href={url} download={row.file_name}><Download className="h-3.5 w-3.5" /></a>
+              <a href={url} download={row.file_name}>
+                <Download className="h-3.5 w-3.5" />
+              </a>
             </Button>
           )}
         </>
@@ -351,16 +388,29 @@ function DocActions({ row, onOpenViewer }: { row: TaiLieuRow, onOpenViewer: () =
   );
 }
 
-function DocViewerWrapper({ open, onOpenChange, doc, initialPage }: { open: boolean, onOpenChange: (v: boolean) => void, doc: any, initialPage?: number }) {
+function DocViewerWrapper({
+  open,
+  onOpenChange,
+  doc,
+  initialPage,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  doc: any;
+  initialPage?: number;
+}) {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useMemo(() => {
     setLoading(true);
-    storage.from(doc.bucket).createSignedUrl(doc.file_path, 3600).then(({ data }) => {
-      setUrl(data?.signedUrl ?? null);
-      setLoading(false);
-    });
+    storage
+      .from(doc.bucket)
+      .createSignedUrl(doc.file_path, 3600)
+      .then(({ data }) => {
+        setUrl(data?.signedUrl ?? null);
+        setLoading(false);
+      });
   }, [doc.bucket, doc.file_path]);
 
   return (

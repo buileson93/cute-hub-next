@@ -3,7 +3,13 @@ import { layersToStagedItems } from "@/lib/mirats/import-staging";
 import type { ParsedLayer } from "@/lib/mirats/allinone-template";
 
 function layer(sheet: string, entity: string, rows: Record<string, string>[]): ParsedLayer {
-  return { layer: { sheet, entity }, rows, unmapped: [], headers: [], meta: [] } as unknown as ParsedLayer;
+  return {
+    layer: { sheet, entity },
+    rows,
+    unmapped: [],
+    headers: [],
+    meta: [],
+  } as unknown as ParsedLayer;
 }
 
 describe("layersToStagedItems", () => {
@@ -13,7 +19,12 @@ describe("layersToStagedItems", () => {
       layer("Hệ thống", "he_thong", []),
     ]);
     expect(items).toHaveLength(2);
-    expect(items[0]).toMatchObject({ sheet: "Tài sản", entity: "thiet_bi", rowIndex: 1, status: "staged" });
+    expect(items[0]).toMatchObject({
+      sheet: "Tài sản",
+      entity: "thiet_bi",
+      rowIndex: 1,
+      status: "staged",
+    });
     expect(items[1].rowIndex).toBe(2);
     expect(items.every((i) => i.entity !== "he_thong")).toBe(true);
   });

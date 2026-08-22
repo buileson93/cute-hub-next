@@ -2,7 +2,18 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Users, Plus, Search, Pencil, Trash2, Mail, Phone, UserCircle, ShieldCheck, Download } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  Mail,
+  Phone,
+  UserCircle,
+  ShieldCheck,
+  Download,
+} from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -22,7 +33,10 @@ export const Route = createFileRoute("/_app/admin/nhan-vien")({
   head: () => ({
     meta: [
       { title: "Quản lý Nhân viên — Admin MIRATS" },
-      { name: "description", content: "Quản lý danh sách nhân viên công ty, gán vai trò và thông tin liên lạc." },
+      {
+        name: "description",
+        content: "Quản lý danh sách nhân viên công ty, gán vai trò và thông tin liên lạc.",
+      },
     ],
   }),
 });
@@ -90,12 +104,25 @@ function NhanVienAdminPage() {
       qc.invalidateQueries({ queryKey: ["nhan_vien"] });
       toast.success("Đã xoá nhân viên");
     },
-    onError: (e: any) => toast.error("Không thể xoá nhân viên (có thể đang được liên kết với dữ liệu khác)"),
+    onError: (e: any) =>
+      toast.error("Không thể xoá nhân viên (có thể đang được liên kết với dữ liệu khác)"),
   });
 
   const fields: SchemaField[] = [
-    { key: "ma_nhan_vien", type: "text", label: "Mã nhân viên", required: true, placeholder: "NV001..." },
-    { key: "ho_ten", type: "text", label: "Họ và tên", required: true, placeholder: "Nguyễn Văn A" },
+    {
+      key: "ma_nhan_vien",
+      type: "text",
+      label: "Mã nhân viên",
+      required: true,
+      placeholder: "NV001...",
+    },
+    {
+      key: "ho_ten",
+      type: "text",
+      label: "Họ và tên",
+      required: true,
+      placeholder: "Nguyễn Văn A",
+    },
     { key: "don_vi", type: "text", label: "Đơn vị / Phòng ban", placeholder: "Phòng Kỹ thuật" },
     { key: "chuc_vu", type: "text", label: "Chức vụ", placeholder: "Kỹ sư" },
     { key: "email", type: "text", label: "Email", placeholder: "example@vatm.vn" },
@@ -143,7 +170,9 @@ function NhanVienAdminPage() {
       key: "hoat_dong",
       label: "Trạng thái",
       cell: (row) => (
-        <div className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${row.hoat_dong ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <div
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${row.hoat_dong ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+        >
           {row.hoat_dong ? "Đang làm việc" : "Nghỉ việc"}
         </div>
       ),
@@ -155,9 +184,9 @@ function NhanVienAdminPage() {
       align: "right",
       cell: (row) => (
         <div className="flex justify-end gap-1">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             aria-label="Xuất báo cáo cá nhân"
             title="Xuất báo cáo phần mềm"
             onClick={() => {
@@ -167,21 +196,32 @@ function NhanVienAdminPage() {
           >
             <Download className="h-4 w-4 text-emerald-600" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             aria-label="Xem phần mềm nhân viên"
             title="Xem phần mềm"
             onClick={() => setSoftwareSheet({ id: row.id, ten: row.ho_ten })}
           >
             <ShieldCheck className="h-4 w-4 text-primary" />
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Chỉnh sửa thông tin nhân viên" onClick={() => setEditing(row)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Chỉnh sửa thông tin nhân viên"
+            onClick={() => setEditing(row)}
+          >
             <Pencil className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Xoá nhân viên" className="text-destructive" onClick={() => {
-            if (confirm(`Xoá nhân viên ${row.ho_ten}?`)) deleteMut.mutate(row.id);
-          }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Xoá nhân viên"
+            className="text-destructive"
+            onClick={() => {
+              if (confirm(`Xoá nhân viên ${row.ho_ten}?`)) deleteMut.mutate(row.id);
+            }}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -189,7 +229,10 @@ function NhanVienAdminPage() {
     },
   ];
 
-  if (!isAdmin) return <div className="p-8 text-center text-muted-foreground">Bạn không có quyền quản trị viên.</div>;
+  if (!isAdmin)
+    return (
+      <div className="p-8 text-center text-muted-foreground">Bạn không có quyền quản trị viên.</div>
+    );
 
   return (
     <PageFrame density="comfortable">
@@ -197,10 +240,7 @@ function NhanVienAdminPage() {
         icon={Users}
         title="Quản lý Nhân viên"
         subtitle={`${nhanVien.length} nhân viên trong hệ thống`}
-        breadcrumbs={[
-          { label: "Quản trị", to: "/admin/forms" },
-          { label: "Nhân viên" }
-        ]}
+        breadcrumbs={[{ label: "Quản trị", to: "/admin/forms" }, { label: "Nhân viên" }]}
         actions={
           <Button onClick={() => setEditing("new")} className="gap-2">
             <Plus className="h-4 w-4" /> Thêm nhân viên

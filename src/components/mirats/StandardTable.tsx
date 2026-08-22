@@ -3,7 +3,14 @@ import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TableSkeleton } from "@/components/mirats/Skeletons";
 import { EmptyState } from "@/components/mirats/EmptyState";
 import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
@@ -14,15 +21,10 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { 
-  GripVertical, 
-  ChevronRight, ChevronDown, MoreVertical 
-} from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical } from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
-
-
 
 import { Button } from "@/components/ui/button";
 import {
@@ -53,22 +55,20 @@ import { Check, X as XIcon } from "lucide-react";
 import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { calculateCompleteness } from "@/lib/mirats/completeness";
 
-
-
-export type ColumnType = 
-  | "id" 
-  | "status" 
-  | "taxonomy" 
-  | "user" 
-  | "number" 
-  | "currency" 
-  | "percent" 
+export type ColumnType =
+  | "id"
+  | "status"
+  | "taxonomy"
+  | "user"
+  | "number"
+  | "currency"
+  | "percent"
   | "completeness"
-  | "date" 
-  | "expiring" 
-  | "boolean" 
-  | "path" 
-  | "longtext" 
+  | "date"
+  | "expiring"
+  | "boolean"
+  | "path"
+  | "longtext"
   | "actions";
 
 export interface ColumnDef<T> {
@@ -102,13 +102,8 @@ export interface ColumnDef<T> {
   minW?: string;
 }
 
-
 /** @deprecated Use ColumnDef instead */
 export type StdColumn<T> = ColumnDef<T>;
-
-
-
-
 
 export interface StandardTableProps<T> {
   className?: string;
@@ -130,22 +125,26 @@ export interface StandardTableProps<T> {
   loadingContent?: React.ReactNode;
   onRowClick?: (r: T) => void;
   rowClassName?: (r: T) => string;
-  toolbarRight?: React.ReactNode | ((ctx: { 
-    filteredRows: T[]; 
-    visibleColumns: ColumnDef<T>[];
-    allColumns: ColumnDef<T>[];
-    pageRows: T[];
-    selectedRows: T[];
-    clear: () => void;
-  }) => React.ReactNode);
-  toolbarLeft?: React.ReactNode | ((ctx: { 
-    filteredRows: T[]; 
-    visibleColumns: ColumnDef<T>[];
-    allColumns: ColumnDef<T>[];
-    pageRows: T[];
-    selectedRows: T[];
-    clear: () => void;
-  }) => React.ReactNode);
+  toolbarRight?:
+    | React.ReactNode
+    | ((ctx: {
+        filteredRows: T[];
+        visibleColumns: ColumnDef<T>[];
+        allColumns: ColumnDef<T>[];
+        pageRows: T[];
+        selectedRows: T[];
+        clear: () => void;
+      }) => React.ReactNode);
+  toolbarLeft?:
+    | React.ReactNode
+    | ((ctx: {
+        filteredRows: T[];
+        visibleColumns: ColumnDef<T>[];
+        allColumns: ColumnDef<T>[];
+        pageRows: T[];
+        selectedRows: T[];
+        clear: () => void;
+      }) => React.ReactNode);
   bulkActions?: (ctx: {
     selectedRows: T[];
     visibleColumns: ColumnDef<T>[];
@@ -160,9 +159,6 @@ export interface StandardTableProps<T> {
     icon?: any;
     variant?: "default" | "outline" | "destructive";
   }[];
-
-
-
 
   pagination?: any;
   clientPagination?: any;
@@ -179,9 +175,6 @@ export interface StandardTableProps<T> {
   expandable?: boolean;
   renderExpansion?: (row: T) => React.ReactNode;
 }
-
-
-
 
 export function StandardTableInner<T>({
   className,
@@ -207,7 +200,6 @@ export function StandardTableInner<T>({
   bulkActions,
   bulkActionsActions,
 
-
   tableKey,
   countUnit = "bản ghi",
   requireFilterToShow,
@@ -226,8 +218,6 @@ export function StandardTableInner<T>({
   const selected = selectedProp ?? selection;
   const setSelected = setSelectedProp ?? setSelection;
 
-
-
   const [containerWidth, setContainerWidth] = useState(0);
   const [liveAnnouncement, setLiveAnnouncement] = useState("");
   const parentRef = useRef<HTMLDivElement>(null);
@@ -235,7 +225,7 @@ export function StandardTableInner<T>({
 
   useEffect(() => {
     if (typeof window === "undefined" || !parentRef.current || !window.ResizeObserver) return;
-    
+
     let frameId: number;
     const observer = new window.ResizeObserver((entries) => {
       window.cancelAnimationFrame(frameId);
@@ -245,7 +235,7 @@ export function StandardTableInner<T>({
         }
       });
     });
-    
+
     observer.observe(parentRef.current);
     return () => {
       observer.disconnect();
@@ -254,7 +244,7 @@ export function StandardTableInner<T>({
   }, []);
 
   const toggleExpand = useCallback((rid: string) => {
-    setExpandedRows(prev => {
+    setExpandedRows((prev) => {
       const next = new Set(prev);
       if (next.has(rid)) next.delete(rid);
       else next.add(rid);
@@ -262,32 +252,28 @@ export function StandardTableInner<T>({
     });
   }, []);
 
-
-
-
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [internalReorder, setInternalReorder] = useState(false);
   const reorder = (editMode || internalReorder) && !hideReorderToggle;
-  
-
 
   // --- Tầng 1: Column Prefs (User Settings) ---
-  const allKeys = useMemo(() => columns.map(c => c.key), [columns]);
-  const defaultHidden = useMemo(() => 
-    columns.filter(c => c.defaultHidden).map(c => c.key), 
-    [columns]
+  const allKeys = useMemo(() => columns.map((c) => c.key), [columns]);
+  const defaultHidden = useMemo(
+    () => columns.filter((c) => c.defaultHidden).map((c) => c.key),
+    [columns],
   );
-  
+
   const prefs = useColumnPrefs(tableKey || "default", allKeys, defaultHidden);
-  
+
   // Nối presets vào useColumnPrefs khi component mount/update
   useEffect(() => {
     if (presets && prefs.setPreset && prefs.ready) {
-      const currentPreset = presets.find(p => p.id === activePreset);
+      const currentPreset = presets.find((p) => p.id === activePreset);
       if (currentPreset && !prefs.isCustomized && prefs.activePreset !== activePreset) {
-        let visibleKeys = currentPreset.columns || currentPreset.cot || currentPreset.visibleKeys || [];
+        let visibleKeys =
+          currentPreset.columns || currentPreset.cot || currentPreset.visibleKeys || [];
         if (currentPreset.id === "day-du" && visibleKeys.length === 0) {
           visibleKeys = allKeys;
         }
@@ -308,11 +294,11 @@ export function StandardTableInner<T>({
   // Sắp xếp cột theo thứ tự người dùng đã chọn
   const sortedColumns = useMemo(() => {
     // Adapter cho ColumnDef: map label -> header, cell -> render, minW -> minWidth
-    const normalized = columns.map(c => ({
+    const normalized = columns.map((c) => ({
       ...c,
       header: c.header ?? c.label,
       render: c.render ?? c.cell,
-      minWidth: c.minWidth ?? (c.minW ? parseMinW(c.minW) : undefined)
+      minWidth: c.minWidth ?? (c.minW ? parseMinW(c.minW) : undefined),
     }));
 
     const withPriority = normalized.map((c, idx) => {
@@ -321,7 +307,7 @@ export function StandardTableInner<T>({
       const isCore = ["ma", "ten", "ma_thiet_bi", "ten_thiet_bi"].includes(c.key.toLowerCase());
       if (isCore || idx < 2) priority = "primary";
       else if (idx < 5) priority = "secondary";
-      
+
       return { ...c, priority };
     });
 
@@ -339,35 +325,31 @@ export function StandardTableInner<T>({
       if (viewMode === "tablet" && c.priority === "detail") return false;
 
       if (!c.hideBelow) return true;
-      const threshold = typeof c.hideBelow === "number" 
-        ? c.hideBelow 
-        : (BP_PX as any)[c.hideBelow] || BP_PX.md;
-      
+      const threshold =
+        typeof c.hideBelow === "number" ? c.hideBelow : (BP_PX as any)[c.hideBelow] || BP_PX.md;
+
       // Responsive hideBelow không làm mất cột sticky hoặc action
-      if (c.sticky || c.key === 'actions') return true;
+      if (c.sticky || c.key === "actions") return true;
 
       const isShown = containerWidth >= threshold;
-      
+
       if (viewMode === "tablet" && c.priority === "detail") return false;
-      
+
       return isShown;
     });
   }, [sortedColumns, tableKey, prefs.hidden, containerWidth, viewMode]);
 
-
-
   // Sync visible keys ra ngoài nếu có yêu cầu
   useEffect(() => {
     if (onColumnsChange) {
-      onColumnsChange(shownCols.map(c => c.key));
+      onColumnsChange(shownCols.map((c) => c.key));
     }
   }, [shownCols, onColumnsChange]);
 
-
-  // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định, 
+  // Cột xuất tệp: Luôn lấy tất cả các cột không ẩn cố định,
   // bỏ qua Tầng 2 (hideBelow) nhưng vẫn áp dụng Tầng 1 (User Prefs) và Tầng 3 (Hardcoded hidden)
   const exportCols = useMemo(() => {
-    return sortedColumns.filter(c => {
+    return sortedColumns.filter((c) => {
       // Tầng 1: Người dùng ẩn cột cố tình -> Ẩn cả trong tệp xuất
       if (tableKey && (prefs.hidden as Set<string>).has(c.key)) return false;
 
@@ -378,13 +360,16 @@ export function StandardTableInner<T>({
       return true;
     });
   }, [sortedColumns, tableKey, prefs.hidden]);
-  const getRowIdInternal = useCallback((r: T): string => {
-    const id = getRowId ? getRowId(r) : (r as any).id;
-    if (!id && process.env.NODE_ENV === 'development') {
-      console.warn("StandardTable: Row missing unique ID. Keys might be unstable.", r);
-    }
-    return String(id || '');
-  }, [getRowId]);
+  const getRowIdInternal = useCallback(
+    (r: T): string => {
+      const id = getRowId ? getRowId(r) : (r as any).id;
+      if (!id && process.env.NODE_ENV === "development") {
+        console.warn("StandardTable: Row missing unique ID. Keys might be unstable.", r);
+      }
+      return String(id || "");
+    },
+    [getRowId],
+  );
 
   const toggleRow = (id: string) => {
     if (!setSelected) return;
@@ -402,14 +387,14 @@ export function StandardTableInner<T>({
 
   const renderToolbar = (
     toolbar: React.ReactNode | ((ctx: any) => React.ReactNode),
-    ctx: { 
-      filteredRows: T[]; 
+    ctx: {
+      filteredRows: T[];
       visibleColumns: ColumnDef<T>[];
       allColumns: ColumnDef<T>[];
       pageRows: T[];
       selectedRows: T[];
       clear: () => void;
-    }
+    },
   ) => {
     if (typeof toolbar === "function") {
       return toolbar(ctx);
@@ -419,9 +404,8 @@ export function StandardTableInner<T>({
 
   const selectedRows = useMemo(() => {
     if (!selected) return [];
-    return rows.filter(r => selected.has(getRowIdInternal(r)));
+    return rows.filter((r) => selected.has(getRowIdInternal(r)));
   }, [rows, selected, getRowIdInternal]);
-
 
   const colText = useCallback((col: ColumnDef<T>, row: T): string => {
     const v = col.value ? col.value(row) : "";
@@ -465,28 +449,33 @@ export function StandardTableInner<T>({
     return map;
   }, [columns, rows, matchesFilters, colText]);
 
-  const filtered = useMemo(
-    () => rows.filter((r) => matchesFilters(r)),
-    [rows, matchesFilters],
-  );
+  const filtered = useMemo(() => rows.filter((r) => matchesFilters(r)), [rows, matchesFilters]);
 
   const hasFilter = useMemo(() => {
     return columns.some((c) =>
-      c.filter === "cat" ? (catFilters[c.key]?.size ?? 0) > 0
-        : (textFilters[c.key] ?? "").trim().length > 0
+      c.filter === "cat"
+        ? (catFilters[c.key]?.size ?? 0) > 0
+        : (textFilters[c.key] ?? "").trim().length > 0,
     );
   }, [columns, catFilters, textFilters]);
 
-  const sortableKey = useCallback((c: ColumnDef<T>) => c.sortable ?? !!(c.sortValue || c.value), []);
-  const cycleSort = useCallback((key: string) => setSort((prev) => {
-    if (!prev || prev.key !== key) return { key, dir: "asc" };
-    if (prev.dir === "asc") return { key, dir: "desc" };
-    return null;
-  }), []);
+  const sortableKey = useCallback(
+    (c: ColumnDef<T>) => c.sortable ?? !!(c.sortValue || c.value),
+    [],
+  );
+  const cycleSort = useCallback(
+    (key: string) =>
+      setSort((prev) => {
+        if (!prev || prev.key !== key) return { key, dir: "asc" };
+        if (prev.dir === "asc") return { key, dir: "desc" };
+        return null;
+      }),
+    [],
+  );
 
   const sorted = useMemo(() => {
     if (!sort) return filtered;
-    const col = columns.find(c => c.key === sort.key);
+    const col = columns.find((c) => c.key === sort.key);
     if (!col) return filtered;
     const get = (r: T) => {
       const v = col.sortValue ? col.sortValue(r) : col.value ? col.value(r) : "";
@@ -494,7 +483,8 @@ export function StandardTableInner<T>({
     };
     const dir = sort.dir === "asc" ? 1 : -1;
     return [...filtered].sort((a, b) => {
-      const va = get(a), vb = get(b);
+      const va = get(a),
+        vb = get(b);
       if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
       return String(va).localeCompare(String(vb), "vi", { numeric: true }) * dir;
     });
@@ -507,7 +497,7 @@ export function StandardTableInner<T>({
   useEffect(() => {
     const count = fullDisplay.length;
     notifyFilteredTotal?.(count);
-    
+
     // Task 25: Thông báo số dòng thay đổi cho screen reader
     if (hasFilter) {
       setLiveAnnouncement(`Tìm thấy ${count} ${countUnit}`);
@@ -524,10 +514,8 @@ export function StandardTableInner<T>({
     return fullDisplay.slice(start, start + pageSize);
   }, [fullDisplay, clientPagination]);
 
-  
-
   const toggleCat = (key: string, val: string) => {
-    setCatFilters(prev => {
+    setCatFilters((prev) => {
       const next = new Map(Object.entries(prev).map(([k, v]) => [k, new Set(v)]));
       const s = next.get(key) || new Set<string>();
       if (s.has(val)) s.delete(val);
@@ -538,7 +526,7 @@ export function StandardTableInner<T>({
   };
 
   const clearCat = (key: string) => {
-    setCatFilters(prev => {
+    setCatFilters((prev) => {
       const { [key]: _, ...rest } = prev;
       return rest;
     });
@@ -550,18 +538,17 @@ export function StandardTableInner<T>({
   };
 
   const removeFilter = (key: string) => {
-    setCatFilters(prev => {
+    setCatFilters((prev) => {
       const { [key]: _, ...rest } = prev;
       return rest;
     });
-    setTextFilters(prev => {
+    setTextFilters((prev) => {
       const { [key]: _, ...rest } = prev;
       return rest;
     });
   };
 
-
-  const isTest = typeof window !== 'undefined' && (window as any).process?.env?.NODE_ENV === 'test';
+  const isTest = typeof window !== "undefined" && (window as any).process?.env?.NODE_ENV === "test";
   const [density] = useDensity();
 
   const estimateRowHeight = useMemo(() => {
@@ -591,58 +578,53 @@ export function StandardTableInner<T>({
     rowVirtualizer.measure();
   }, [expandedRows, rowVirtualizer]);
 
-
-
-
-
-
-
-
-
-
-
   const virtualRows = rowVirtualizer.getVirtualItems();
 
   // Force render all items in JSDOM tests since scrolling/sizing is broken
-  const displayItems = isTest ? display.map((d, index) => ({
-    index,
-    start: index * estimateRowHeight,
-    size: estimateRowHeight,
-    end: (index + 1) * estimateRowHeight,
-    lane: 0,
-    key: index,
-  })) : virtualRows;
+  const displayItems = isTest
+    ? display.map((d, index) => ({
+        index,
+        start: index * estimateRowHeight,
+        size: estimateRowHeight,
+        end: (index + 1) * estimateRowHeight,
+        lane: 0,
+        key: index,
+      }))
+    : virtualRows;
 
   const totalSize = rowVirtualizer.getTotalSize();
   const paddingTop = displayItems.length > 0 ? displayItems[0]?.start || 0 : 0;
   const paddingBottom =
-    displayItems.length > 0
-      ? totalSize - (displayItems[displayItems.length - 1]?.end || 0)
-      : 0;
-
+    displayItems.length > 0 ? totalSize - (displayItems[displayItems.length - 1]?.end || 0) : 0;
 
   // --- Kéo đổi độ rộng cột ---
   const isDragging = useRef<string | null>(null);
   const startX = useRef(0);
   const startW = useRef(0);
 
-  const onHandleMouseDown = useCallback((e: React.MouseEvent, key: string, currentWidth: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    isDragging.current = key;
-    startX.current = e.pageX;
-    startW.current = currentWidth;
-    document.body.style.cursor = "col-resize";
-    document.addEventListener("mousemove", onHandleMouseMove);
-    document.addEventListener("mouseup", onHandleMouseUp);
-  }, []);
+  const onHandleMouseDown = useCallback(
+    (e: React.MouseEvent, key: string, currentWidth: number) => {
+      e.preventDefault();
+      e.stopPropagation();
+      isDragging.current = key;
+      startX.current = e.pageX;
+      startW.current = currentWidth;
+      document.body.style.cursor = "col-resize";
+      document.addEventListener("mousemove", onHandleMouseMove);
+      document.addEventListener("mouseup", onHandleMouseUp);
+    },
+    [],
+  );
 
-  const onHandleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging.current) return;
-    const delta = e.pageX - startX.current;
-    const nextW = Math.max(60, startW.current + delta);
-    prefs.setWidth(isDragging.current, nextW);
-  }, [prefs]);
+  const onHandleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      const delta = e.pageX - startX.current;
+      const nextW = Math.max(60, startW.current + delta);
+      prefs.setWidth(isDragging.current, nextW);
+    },
+    [prefs],
+  );
 
   const onHandleMouseUp = useCallback(() => {
     isDragging.current = null;
@@ -659,31 +641,31 @@ export function StandardTableInner<T>({
   };
 
   const resetAllWidths = () => {
-    allKeys.forEach(k => prefs.resetWidth(k));
+    allKeys.forEach((k) => prefs.resetWidth(k));
   };
 
   const renderGlobalState = () => {
     if (trangThai.loi) {
-      return errorContent ?? (
-        <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-          <div className="text-sm text-destructive font-medium">
-            {String(trangThai.loi)}
+      return (
+        errorContent ?? (
+          <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
+            <div className="text-sm text-destructive font-medium">{String(trangThai.loi)}</div>
+            {trangThai.loi.retry && (
+              <Button variant="outline" size="sm" onClick={trangThai.loi.retry}>
+                Thử lại
+              </Button>
+            )}
           </div>
-          {trangThai.loi.retry && (
-            <Button variant="outline" size="sm" onClick={trangThai.loi.retry}>
-              Thử lại
-            </Button>
-          )}
-        </div>
+        )
       );
     }
-
-
 
     if (trangThai.dangTai) {
       return (
         <div className="p-4 border rounded-lg bg-card">
-          {loadingContent ?? <TableSkeleton cols={isMobile ? 1 : shownCols.length} rows={isMobile ? 3 : 6} />}
+          {loadingContent ?? (
+            <TableSkeleton cols={isMobile ? 1 : shownCols.length} rows={isMobile ? 3 : 6} />
+          )}
         </div>
       );
     }
@@ -692,13 +674,29 @@ export function StandardTableInner<T>({
       return (
         <div className="py-20 border rounded-lg bg-card">
           <EmptyState
-            title={hasFilter ? "Không có dòng nào khớp bộ lọc" : (gated ? "Vui lòng chọn bộ lọc để xem dữ liệu" : (emptyContent ? undefined : emptyText))}
-            description={hasFilter ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật" : (typeof emptyContent === "string" ? emptyContent : undefined)}
-            action={hasFilter ? (
-              <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
-                Xoá tất cả bộ lọc
-              </Button>
-            ) : undefined}
+            title={
+              hasFilter
+                ? "Không có dòng nào khớp bộ lọc"
+                : gated
+                  ? "Vui lòng chọn bộ lọc để xem dữ liệu"
+                  : emptyContent
+                    ? undefined
+                    : emptyText
+            }
+            description={
+              hasFilter
+                ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật"
+                : typeof emptyContent === "string"
+                  ? emptyContent
+                  : undefined
+            }
+            action={
+              hasFilter ? (
+                <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
+                  Xoá tất cả bộ lọc
+                </Button>
+              ) : undefined
+            }
             live="polite"
           />
           {!hasFilter && typeof emptyContent !== "string" && emptyContent}
@@ -712,7 +710,7 @@ export function StandardTableInner<T>({
   /** Tự động render ô dựa trên `type` */
   function renderAutoCell(c: ColumnDef<T>, r: T) {
     const val = c.value?.(r);
-    
+
     // Nếu không có value thì trả về null
     if (val === undefined || val === null) return KHONG_CO;
 
@@ -721,12 +719,12 @@ export function StandardTableInner<T>({
     switch (c.type) {
       case "id":
         return <CodeBadge code={String(val)} title={String(val)} />;
-      
+
       case "status":
         // status-registry cần DomainKey, ở đây ta chưa biết domain chính xác.
         // Ta sẽ dùng StatusBadge với domain mặc định hoặc suy luận.
         // Nếu val là object có domain và code thì dùng.
-        if (typeof val === 'object' && val !== null && 'domain' in val) {
+        if (typeof val === "object" && val !== null && "domain" in val) {
           const v = val as any;
           return <StatusBadge domain={v.domain} code={v.code} />;
         }
@@ -735,7 +733,7 @@ export function StandardTableInner<T>({
 
       case "taxonomy":
         // val có thể là { ten, mau }
-        if (typeof val === 'object' && val !== null) {
+        if (typeof val === "object" && val !== null) {
           const v = val as any;
           return <MauChip ten={v.ten} mau={v.mau} />;
         }
@@ -743,15 +741,15 @@ export function StandardTableInner<T>({
 
       case "user":
         // val có thể là { ho_ten, email, avatar_url }
-        if (typeof val === 'object' && val !== null) {
+        if (typeof val === "object" && val !== null) {
           const v = val as any;
           return (
             <div className="flex items-center gap-2">
-              <UserAvatar 
-                name={v.ho_ten || v.ten} 
-                email={v.email} 
-                url={v.avatar_url || v.url} 
-                className="h-6 w-6" 
+              <UserAvatar
+                name={v.ho_ten || v.ten}
+                email={v.email}
+                url={v.avatar_url || v.url}
+                className="h-6 w-6"
               />
               <span className="truncate text-[12px]">{v.ho_ten || v.ten || "—"}</span>
             </div>
@@ -765,10 +763,18 @@ export function StandardTableInner<T>({
         );
 
       case "number":
-        return <span className="tabular-nums font-mono text-right w-full block pr-1">{fmtSo(Number(val))}</span>;
+        return (
+          <span className="tabular-nums font-mono text-right w-full block pr-1">
+            {fmtSo(Number(val))}
+          </span>
+        );
 
       case "currency":
-        return <span className="tabular-nums font-mono text-right w-full block pr-1">{fmtVND(Number(val))}</span>;
+        return (
+          <span className="tabular-nums font-mono text-right w-full block pr-1">
+            {fmtVND(Number(val))}
+          </span>
+        );
 
       case "percent":
         const p = Number(val);
@@ -790,12 +796,20 @@ export function StandardTableInner<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-[11px] tabular-nums font-mono text-right w-full block pr-1 opacity-80">{fmtNgay(val)}</span>
+            <span className="text-[11px] tabular-nums font-mono text-right w-full block pr-1 opacity-80">
+              {fmtNgay(val)}
+            </span>
           </AppTooltip>
         );
 
       case "expiring":
-        return <StatusBadge domain="expiry" code={getExpiryCode(Number(val))} label={getExpiryLabel(Number(val), true)} />;
+        return (
+          <StatusBadge
+            domain="expiry"
+            code={getExpiryCode(Number(val))}
+            label={getExpiryLabel(Number(val), true)}
+          />
+        );
 
       case "boolean":
         return (
@@ -823,7 +837,7 @@ export function StandardTableInner<T>({
             <div
               className={cn(
                 "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
-                (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
+                (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate",
               )}
             >
               {String(val)}
@@ -841,7 +855,7 @@ export function StandardTableInner<T>({
           <div
             className={cn(
               "text-[12px] break-words [overflow-wrap:anywhere] [word-break:break-word]",
-              (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate"
+              (c.lineClamp ?? 1) > 1 ? `line-clamp-${c.lineClamp}` : "truncate",
             )}
             title={String(val)}
           >
@@ -857,7 +871,6 @@ export function StandardTableInner<T>({
     return renderAutoCell(c, r);
   }
 
-
   return (
     <div className="space-y-1">
       {/* Vùng ẩn thông báo trạng thái cho screen reader */}
@@ -868,28 +881,28 @@ export function StandardTableInner<T>({
       {(toolbarRight || toolbarLeft || (selectable && selectedRows.length > 0)) && (
         <div className="flex items-center justify-between gap-1 px-0">
           <div className="flex items-center gap-1">
-            {toolbarLeft && renderToolbar(toolbarLeft, { 
-              filteredRows: fullDisplay, 
-              visibleColumns: shownCols,
-              allColumns: exportCols,
-              pageRows: display,
-              selectedRows,
-              clear: clearSelection
-            })}
-            {selectable && (selectedRows?.length ?? 0) > 0 && (bulkActions || bulkActionsActions) && (
-              bulkActions ? (bulkActions as any)({
-                selectedRows,
+            {toolbarLeft &&
+              renderToolbar(toolbarLeft, {
+                filteredRows: fullDisplay,
                 visibleColumns: shownCols,
                 allColumns: exportCols,
-                filteredRows: fullDisplay,
                 pageRows: display,
-                clear: clearSelection
-              }) : null
-            )}
-
-
-
-
+                selectedRows,
+                clear: clearSelection,
+              })}
+            {selectable &&
+              (selectedRows?.length ?? 0) > 0 &&
+              (bulkActions || bulkActionsActions) &&
+              (bulkActions
+                ? (bulkActions as any)({
+                    selectedRows,
+                    visibleColumns: shownCols,
+                    allColumns: exportCols,
+                    filteredRows: fullDisplay,
+                    pageRows: display,
+                    clear: clearSelection,
+                  })
+                : null)}
           </div>
           <div className="flex items-center gap-1">
             {tableKey && (
@@ -908,29 +921,37 @@ export function StandardTableInner<T>({
                       <div className="p-2 space-y-4">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold">Bộ lọc & Sắp xếp</span>
-                          <Button variant="ghost" size="sm" onClick={clearAllFilters} className="h-8 px-3 text-[11px] uppercase font-bold text-destructive gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearAllFilters}
+                            className="h-8 px-3 text-[11px] uppercase font-bold text-destructive gap-2"
+                          >
                             <Icon name="action.close" size="tiny" />
                             <span>Xoá hết</span>
                           </Button>
                         </div>
-                        
+
                         {/* Mobile Column Filters */}
                         <div className="space-y-3">
-                          {columns.filter(c => c.filter).map(c => (
-                            <ColFilter
-                              key={c.key}
-                              type={c.filter || "text"}
-                               label={c.header || c.label || ""}
-                              catValues={catValues[c.key] || []}
-                              catSel={catFilters[c.key] || new Set()}
-                              onToggleCat={(val) => toggleCat(c.key, val)}
-                              onClearCat={() => clearCat(c.key)}
-                              textVal={textFilters[c.key] || ""}
-                              onText={(val) => setTextFilters(prev => ({ ...prev, [c.key]: val }))}
-                            />
-                          ))}
+                          {columns
+                            .filter((c) => c.filter)
+                            .map((c) => (
+                              <ColFilter
+                                key={c.key}
+                                type={c.filter || "text"}
+                                label={c.header || c.label || ""}
+                                catValues={catValues[c.key] || []}
+                                catSel={catFilters[c.key] || new Set()}
+                                onToggleCat={(val) => toggleCat(c.key, val)}
+                                onClearCat={() => clearCat(c.key)}
+                                textVal={textFilters[c.key] || ""}
+                                onText={(val) =>
+                                  setTextFilters((prev) => ({ ...prev, [c.key]: val }))
+                                }
+                              />
+                            ))}
                         </div>
-
                       </div>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -940,10 +961,9 @@ export function StandardTableInner<T>({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <DropdownMenuTrigger asChild>
-
-                            <Button 
-                              variant="outline" 
-                              size="default" 
+                            <Button
+                              variant="outline"
+                              size="default"
                               className="h-auto w-auto p-1.5 ml-1 border-primary/20 hover:bg-primary/5 hover:border-primary/40 shadow-none"
                               disabled={!prefs.ready}
                             >
@@ -958,9 +978,13 @@ export function StandardTableInner<T>({
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel className="flex items-center justify-between">
                         <span>Hiển thị cột</span>
-                        <Icon name="table.settings" size="small" className="text-muted-foreground/50" />
+                        <Icon
+                          name="table.settings"
+                          size="small"
+                          className="text-muted-foreground/50"
+                        />
                       </DropdownMenuLabel>
-                      
+
                       {presets && presets.length > 0 && (
                         <>
                           <DropdownMenuSeparator />
@@ -972,20 +996,27 @@ export function StandardTableInner<T>({
                             <DropdownMenuPortal>
                               <DropdownMenuSubContent className="w-48">
                                 {presets.map((p) => (
-                                  <DropdownMenuItem 
-                                    key={p.id} 
+                                  <DropdownMenuItem
+                                    key={p.id}
                                     className="text-xs flex flex-col items-start gap-0.5"
                                     onClick={() => {
                                       const keys = p.columns || p.cot || p.visibleKeys || [];
-                                      const finalKeys = (p.id === "day-du" && keys.length === 0) ? allKeys : keys;
+                                      const finalKeys =
+                                        p.id === "day-du" && keys.length === 0 ? allKeys : keys;
                                       prefs.setPreset(p.id, finalKeys, p.orderKeys || finalKeys);
                                     }}
                                   >
                                     <div className="flex items-center w-full">
                                       <span className="font-medium">{p.ten || p.label}</span>
-                                      {prefs.activePreset === p.id && <Check className="ml-auto h-3 w-3 text-primary" />}
+                                      {prefs.activePreset === p.id && (
+                                        <Check className="ml-auto h-3 w-3 text-primary" />
+                                      )}
                                     </div>
-                                    {p.moTa && <span className="text-[10px] text-muted-foreground leading-tight">{p.moTa}</span>}
+                                    {p.moTa && (
+                                      <span className="text-[10px] text-muted-foreground leading-tight">
+                                        {p.moTa}
+                                      </span>
+                                    )}
                                   </DropdownMenuItem>
                                 ))}
                               </DropdownMenuSubContent>
@@ -995,54 +1026,75 @@ export function StandardTableInner<T>({
                       )}
 
                       <DropdownMenuSeparator />
-                      
+
                       {/* Nhóm các cột theo 'group' nếu có, hoặc không nhóm */}
                       {Object.entries(
-                        sortedColumns.reduce((acc, col) => {
-                          const g = col.group || "Khác";
-                          if (!acc[g]) acc[g] = [];
-                          acc[g].push(col);
-                          return acc;
-                        }, {} as Record<string, StdColumn<T>[]>)
+                        sortedColumns.reduce(
+                          (acc, col) => {
+                            const g = col.group || "Khác";
+                            if (!acc[g]) acc[g] = [];
+                            acc[g].push(col);
+                            return acc;
+                          },
+                          {} as Record<string, StdColumn<T>[]>,
+                        ),
                       ).map(([group, cols], idx, arr) => (
                         <div key={group}>
-                          {group !== "Khác" && <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">{group}</DropdownMenuLabel>}
+                          {group !== "Khác" && (
+                            <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-2">
+                              {group}
+                            </DropdownMenuLabel>
+                          )}
                           {cols.map((col) => {
                             const isCurrentlyVisible = !prefs.isHidden(col.key);
-                            
+
                             // NGUYÊN NHÂN 1: Xác định cột có đang bị ẩn do bề rộng màn hình không
                             let isHiddenByWidth = false;
                             let thresholdLabel = "";
                             if (col.hideBelow) {
-                              const threshold = typeof col.hideBelow === "number" 
-                                ? col.hideBelow 
-                                : (BP_PX as any)[col.hideBelow] || BP_PX.md;
+                              const threshold =
+                                typeof col.hideBelow === "number"
+                                  ? col.hideBelow
+                                  : (BP_PX as any)[col.hideBelow] || BP_PX.md;
                               isHiddenByWidth = containerWidth < threshold;
-                              thresholdLabel = typeof col.hideBelow === "string" ? col.hideBelow : `${threshold}px`;
+                              thresholdLabel =
+                                typeof col.hideBelow === "string"
+                                  ? col.hideBelow
+                                  : `${threshold}px`;
                             }
 
                             // Chặn việc ẩn cột cuối cùng
-                            const canToggle = !isCurrentlyVisible || (allKeys.length - prefs.hidden.size > 1);
-                            
+                            const canToggle =
+                              !isCurrentlyVisible || allKeys.length - prefs.hidden.size > 1;
+
                             return (
                               <DropdownMenuCheckboxItem
                                 key={col.key}
                                 checked={isCurrentlyVisible}
                                 onCheckedChange={() => prefs.toggle(col.key)}
-                                 onSelect={(e: Event) => e.preventDefault()}
+                                onSelect={(e: Event) => e.preventDefault()}
                                 disabled={!canToggle}
                                 className="flex items-center justify-between gap-2"
                               >
-                                <span className={cn(
-                                  isHiddenByWidth && isCurrentlyVisible && "text-muted-foreground/60",
-                                  col.inherited && "italic text-muted-foreground/80 flex items-center gap-1.5"
-                                )}>
-                                  {col.inherited && <Icon name="entity.asset" size="tiny" className="opacity-60" />}
+                                <span
+                                  className={cn(
+                                    isHiddenByWidth &&
+                                      isCurrentlyVisible &&
+                                      "text-muted-foreground/60",
+                                    col.inherited &&
+                                      "italic text-muted-foreground/80 flex items-center gap-1.5",
+                                  )}
+                                >
+                                  {col.inherited && (
+                                    <Icon name="entity.asset" size="tiny" className="opacity-60" />
+                                  )}
                                   {col.header || col.label}
                                 </span>
-                                
+
                                 {isHiddenByWidth && isCurrentlyVisible && (
-                                  <AppTooltip noiDung={`Cột này đang tạm ẩn do màn hình hẹp (< ${thresholdLabel}). Hãy mở rộng trình duyệt hoặc xem ở dòng mở rộng.`}>
+                                  <AppTooltip
+                                    noiDung={`Cột này đang tạm ẩn do màn hình hẹp (< ${thresholdLabel}). Hãy mở rộng trình duyệt hoặc xem ở dòng mở rộng.`}
+                                  >
                                     <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[9px] font-bold uppercase tracking-tighter">
                                       <Icon name="status.warning" size="tiny" />
                                       Hẹp
@@ -1057,7 +1109,7 @@ export function StandardTableInner<T>({
                       ))}
 
                       <DropdownMenuSeparator />
-                      <DropdownMenuCheckboxItem 
+                      <DropdownMenuCheckboxItem
                         className="text-primary focus:text-primary font-medium"
                         onSelect={(e: Event) => {
                           e.preventDefault();
@@ -1076,7 +1128,10 @@ export function StandardTableInner<T>({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className={cn("h-7 w-7 ml-0.5 transition-colors", internalReorder && "text-primary bg-primary/10")}
+                        className={cn(
+                          "h-7 w-7 ml-0.5 transition-colors",
+                          internalReorder && "text-primary bg-primary/10",
+                        )}
                         onClick={() => setInternalReorder(!internalReorder)}
                       >
                         <GripVertical className="h-4 w-4" />
@@ -1085,13 +1140,23 @@ export function StandardTableInner<T>({
                     </AppTooltip>
                   )}
                   <AppTooltip noiDung="Tự căn theo nội dung">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 ml-0.5" onClick={autoFitWidths}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 ml-0.5"
+                      onClick={autoFitWidths}
+                    >
                       <Icon name="table.maximize" size="small" />
                       <span className="sr-only">Tự căn</span>
                     </Button>
                   </AppTooltip>
                   <AppTooltip noiDung="Đặt lại độ rộng mọi cột">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-destructive/70 hover:text-destructive" onClick={resetAllWidths}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 ml-0.5 text-destructive/70 hover:text-destructive"
+                      onClick={resetAllWidths}
+                    >
                       <Icon name="table.reset" size="small" />
                       <span className="sr-only">Đặt lại độ rộng</span>
                     </Button>
@@ -1099,34 +1164,43 @@ export function StandardTableInner<T>({
                 </div>
               </>
             )}
-            {toolbarRight && renderToolbar(toolbarRight, { 
-              filteredRows: fullDisplay, 
-              visibleColumns: shownCols,
-              allColumns: exportCols,
-              pageRows: display,
-              selectedRows,
-              clear: clearSelection
-            })}
+            {toolbarRight &&
+              renderToolbar(toolbarRight, {
+                filteredRows: fullDisplay,
+                visibleColumns: shownCols,
+                allColumns: exportCols,
+                pageRows: display,
+                selectedRows,
+                clear: clearSelection,
+              })}
           </div>
         </div>
       )}
 
-
       {hasFilter && (
         <div className="flex flex-wrap items-center gap-2 px-1">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Đang lọc:</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Đang lọc:
+          </span>
           {Object.entries(textFilters).map(([key, val]) => {
             if (!val) return null;
-            const col = columns.find(c => c.key === key);
+            const col = columns.find((c) => c.key === key);
             return (
-              <Badge key={key} variant="secondary" size="sm" className="gap-1 px-2 py-0.5 h-6 font-medium bg-secondary/50">
+              <Badge
+                key={key}
+                variant="secondary"
+                size="sm"
+                className="gap-1 px-2 py-0.5 h-6 font-medium bg-secondary/50"
+              >
                 <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{val}</span>
-                <button 
-                  onClick={() => setTextFilters(prev => {
-                    const { [key]: _, ...rest } = prev;
-                    return rest;
-                  })}
+                <button
+                  onClick={() =>
+                    setTextFilters((prev) => {
+                      const { [key]: _, ...rest } = prev;
+                      return rest;
+                    })
+                  }
                   className="hover:text-destructive transition-colors"
                 >
                   <Icon name="action.close" size="tiny" />
@@ -1136,12 +1210,17 @@ export function StandardTableInner<T>({
           })}
           {Object.entries(catFilters).map(([key, sel]) => {
             if (!sel || sel.size === 0) return null;
-            const col = columns.find(c => c.key === key);
+            const col = columns.find((c) => c.key === key);
             return (
-              <Badge key={key} variant="secondary" size="sm" className="gap-1 px-2 py-0.5 h-6 font-medium bg-secondary/50">
+              <Badge
+                key={key}
+                variant="secondary"
+                size="sm"
+                className="gap-1 px-2 py-0.5 h-6 font-medium bg-secondary/50"
+              >
                 <span className="text-muted-foreground">{col?.header || col?.label}:</span>
                 <span className="truncate max-w-[120px]">{Array.from(sel).join(", ")}</span>
-                <button 
+                <button
                   onClick={() => clearCat(key)}
                   className="hover:text-destructive transition-colors"
                 >
@@ -1150,9 +1229,9 @@ export function StandardTableInner<T>({
               </Badge>
             );
           })}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={clearAllFilters}
             className="h-7 px-3 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/60 hover:text-destructive gap-2"
           >
@@ -1164,7 +1243,7 @@ export function StandardTableInner<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {renderGlobalState() || (
+          {renderGlobalState() ||
             display.map((r, idx) => {
               const rid = getRowIdInternal(r);
               return (
@@ -1185,73 +1264,77 @@ export function StandardTableInner<T>({
                   toolbarRight={toolbarRight}
                 />
               );
-            })
-          )}
+            })}
         </div>
       ) : (
-        <Card ref={parentRef} className={cn("relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto", maxHeightClass, className)}>
-          <Table className={cn(
-            "border-separate border-spacing-0 caption-bottom min-w-full",
-            density === "compact" && "text-[12px]",
-            density === "comfortable" && "text-[13px]",
-            density === "spacious" && "text-[14px]",
-            prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed"
-          )}>
+        <Card
+          ref={parentRef}
+          className={cn(
+            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto",
+            maxHeightClass,
+            className,
+          )}
+        >
+          <Table
+            className={cn(
+              "border-separate border-spacing-0 caption-bottom min-w-full",
+              density === "compact" && "text-[12px]",
+              density === "comfortable" && "text-[13px]",
+              density === "spacious" && "text-[14px]",
+              prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed",
+            )}
+          >
             <colgroup>
-              {viewMode === "tablet" && (
-                <col style={{ width: 40, minWidth: 40 }} />
-              )}
-              {selectable && (
-                <col style={{ width: 40, minWidth: 40 }} />
-              )}
+              {viewMode === "tablet" && <col style={{ width: 40, minWidth: 40 }} />}
+              {selectable && <col style={{ width: 40, minWidth: 40 }} />}
 
-              {shownCols.map(c => {
+              {shownCols.map((c) => {
                 const savedW = prefs.widths[c.key];
                 const w = savedW || c.width || (c.minW ? parseMinW(c.minW) : 100);
                 const min = c.minWidth || (c.minW ? parseMinW(c.minW) : 100);
-                
+
                 return (
-                  <col 
-                    key={c.key} 
-                    style={{ 
-                      width: w, 
+                  <col
+                    key={c.key}
+                    style={{
+                      width: w,
                       minWidth: min,
-                      maxWidth: c.maxWidth 
-                    }} 
+                      maxWidth: c.maxWidth,
+                    }}
                   />
                 );
               })}
             </colgroup>
 
             <TableHeader className="bg-muted/30 sticky top-0 z-20 shadow-sm shadow-border/50">
-              <TableRow className={cn(
-                "hover:bg-transparent border-b border-border/60",
-                UI_DENSITY.TABLE_ROW_H,
-                "astryx-table-header"
-              )}>
+              <TableRow
+                className={cn(
+                  "hover:bg-transparent border-b border-border/60",
+                  UI_DENSITY.TABLE_ROW_H,
+                  "astryx-table-header",
+                )}
+              >
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
                     {/* Placeholder for expansion column header */}
                   </TableHead>
                 )}
                 {selectable && (
-                  <TableHead 
+                  <TableHead
                     scope="col"
                     className={cn(
                       "sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0",
-                      viewMode === "tablet" && "left-10"
+                      viewMode === "tablet" && "left-10",
                     )}
                   >
                     <div className="flex h-full w-full items-center justify-center">
-                      <Checkbox 
-
-
+                      <Checkbox
                         checked={
                           filtered.length > 0 && selected?.size === filtered.length
                             ? true
                             : (selected?.size ?? 0) > 0
-                            ? "indeterminate"
-                            : false
+                              ? "indeterminate"
+                              : false
                         }
                         onCheckedChange={(checked) => {
                           if (checked) setSelected?.(new Set(filtered.map(getRowIdInternal)));
@@ -1263,10 +1346,13 @@ export function StandardTableInner<T>({
                   </TableHead>
                 )}
 
-
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
-                  const minWVal = c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : "100px";
+                  const minWVal = c.minW
+                    ? c.minW.includes("[")
+                      ? c.minW.match(/\[(.*?)\]/)?.[1]
+                      : c.minW
+                    : "100px";
                   const currentWidth = savedW || parseInt(minWVal || "100") || 120;
                   const canSort = sortableKey(c);
                   const sortActive = sort?.key === c.key;
@@ -1275,41 +1361,59 @@ export function StandardTableInner<T>({
                     <TableHead
                       key={c.key}
                       scope="col"
-                      aria-sort={sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"}
+                      aria-sort={
+                        sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"
+                      }
                       className={cn(
                         "group relative bg-muted/30 border-r border-border/50 last:border-r-0 p-0",
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
                         c.align === "right" && "text-right",
-                        sortActive && "bg-primary/5"
+                        sortActive && "bg-primary/5",
                       )}
-                      style={{ 
-                        height: "100%"
+                      style={{
+                        height: "100%",
                       }}
                     >
-                      <div className={cn("flex items-center gap-1 h-full w-full", c.align === "right" && "justify-end", c.align === "center" && "justify-center")}>
+                      <div
+                        className={cn(
+                          "flex items-center gap-1 h-full w-full",
+                          c.align === "right" && "justify-end",
+                          c.align === "center" && "justify-center",
+                        )}
+                      >
                         {reorder && (
                           <div
                             className="h-6 w-4 flex items-center justify-center cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
                             draggable
                             onDragStart={(e) => {
                               e.dataTransfer.setData("text/plain", c.key);
-                              e.currentTarget.parentElement?.parentElement?.classList.add("opacity-50");
+                              e.currentTarget.parentElement?.parentElement?.classList.add(
+                                "opacity-50",
+                              );
                             }}
                             onDragEnd={(e) => {
-                              e.currentTarget.parentElement?.parentElement?.classList.remove("opacity-50");
+                              e.currentTarget.parentElement?.parentElement?.classList.remove(
+                                "opacity-50",
+                              );
                             }}
                             onDragOver={(e) => {
                               e.preventDefault();
-                              e.currentTarget.parentElement?.parentElement?.classList.add("bg-primary/10");
+                              e.currentTarget.parentElement?.parentElement?.classList.add(
+                                "bg-primary/10",
+                              );
                             }}
                             onDragLeave={(e) => {
-                              e.currentTarget.parentElement?.parentElement?.classList.remove("bg-primary/10");
+                              e.currentTarget.parentElement?.parentElement?.classList.remove(
+                                "bg-primary/10",
+                              );
                             }}
                             onDrop={(e) => {
                               e.preventDefault();
-                              e.currentTarget.parentElement?.parentElement?.classList.remove("bg-primary/10");
+                              e.currentTarget.parentElement?.parentElement?.classList.remove(
+                                "bg-primary/10",
+                              );
                               const fromKey = e.dataTransfer.getData("text/plain");
                               const toKey = c.key;
                               if (fromKey && fromKey !== toKey) {
@@ -1322,7 +1426,6 @@ export function StandardTableInner<T>({
                                   prefs.setOrder(newOrder);
                                 }
                               }
-
                             }}
                           >
                             <GripVertical className="h-3 w-3" />
@@ -1335,24 +1438,32 @@ export function StandardTableInner<T>({
                             onClick={() => cycleSort(c.key)}
                             className={cn(
                               "group inline-flex min-w-0 items-center gap-1.5 rounded-md hover:bg-accent/50 hover:text-foreground transition-all focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none h-full px-2 py-1",
-                              c.align === "center" ? "justify-center w-full" : c.align === "right" ? "justify-end w-full text-right" : "justify-start text-left w-full"
+                              c.align === "center"
+                                ? "justify-center w-full"
+                                : c.align === "right"
+                                  ? "justify-end w-full text-right"
+                                  : "justify-start text-left w-full",
                             )}
-
-
                             title={`Sắp xếp theo ${c.label}`}
                             aria-label={`Sắp xếp theo ${c.label}`}
                           >
                             <span className="truncate">{c.label}</span>
                             {sortActive ? (
-                              sort!.dir === "asc"
-                                ? <Icon name="table.sortAsc" size="tiny" className="text-primary" />
-                                : <Icon name="table.sortDesc" size="tiny" className="text-primary" />
+                              sort!.dir === "asc" ? (
+                                <Icon name="table.sortAsc" size="tiny" className="text-primary" />
+                              ) : (
+                                <Icon name="table.sortDesc" size="tiny" className="text-primary" />
+                              )
                             ) : (
-                              <Icon name="table.sortNone" size="tiny" className="text-muted-foreground/30 group-hover:text-muted-foreground/60" />
+                              <Icon
+                                name="table.sortNone"
+                                size="tiny"
+                                className="text-muted-foreground/30 group-hover:text-muted-foreground/60"
+                              />
                             )}
                           </button>
                         ) : (
-                           <span className="truncate">{c.header || c.label || ""}</span>
+                          <span className="truncate">{c.header || c.label || ""}</span>
                         )}
 
                         {c.filter && (
@@ -1381,7 +1492,10 @@ export function StandardTableInner<T>({
                           if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
                             e.preventDefault();
                             const step = e.shiftKey ? 32 : 8;
-                            const nextW = Math.max(60, currentWidth + (e.key === "ArrowRight" ? step : -step));
+                            const nextW = Math.max(
+                              60,
+                              currentWidth + (e.key === "ArrowRight" ? step : -step),
+                            );
                             prefs.setWidth(c.key, nextW);
                           }
                         }}
@@ -1395,16 +1509,26 @@ export function StandardTableInner<T>({
             <TableBody>
               {renderGlobalState() ? (
                 <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} className="p-0 border-0">
+                  <TableCell
+                    colSpan={
+                      shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
+                    }
+                    className="p-0 border-0"
+                  >
                     {renderGlobalState()}
                   </TableCell>
                 </TableRow>
               ) : (
-
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingTop}px` }} className="p-0 border-0 pointer-events-none" />
+                      <TableCell
+                        colSpan={
+                          shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
+                        }
+                        style={{ height: `${paddingTop}px` }}
+                        className="p-0 border-0 pointer-events-none"
+                      />
                     </TableRow>
                   )}
 
@@ -1412,9 +1536,9 @@ export function StandardTableInner<T>({
                     const r = rows[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
-  /** Tự động render ô dựa trên `type` */
+                    /** Tự động render ô dựa trên `type` */
 
-  return (
+                    return (
                       <React.Fragment key={rid}>
                         <TableRow
                           data-index={virtualRow.index}
@@ -1423,17 +1547,20 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60", 
-                            (onRowClick || selectable) && "cursor-pointer", 
-                            isSel && "bg-[#0074e2]/5", 
+                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60",
+                            (onRowClick || selectable) && "cursor-pointer",
+                            isSel && "bg-[#0074e2]/5",
                             expandedRows.has(rid) && "bg-muted/40",
                             UI_DENSITY.TABLE_ROW_H,
-                            rowClassName?.(r)
+                            rowClassName?.(r),
                           )}
                           onClick={() => onRowClick?.(r)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
-                              if ((e.target as HTMLElement).tagName !== "BUTTON" && (e.target as HTMLElement).tagName !== "INPUT") {
+                              if (
+                                (e.target as HTMLElement).tagName !== "BUTTON" &&
+                                (e.target as HTMLElement).tagName !== "INPUT"
+                              ) {
                                 e.preventDefault();
                                 onRowClick?.(r);
                               }
@@ -1443,12 +1570,23 @@ export function StandardTableInner<T>({
                         >
                           {viewMode === "tablet" && (
                             <TableCell
-                              onClick={(e) => { e.stopPropagation(); toggleExpand(rid); }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleExpand(rid);
+                              }}
                               className="sticky left-0 z-10 bg-card border-r border-border/30 p-0 text-center"
                             >
                               <div className="flex h-full w-full items-center justify-center">
-                                <Button variant="ghost" size="icon" className="h-6 w-6 text-[#0074e2] hover:bg-[#0074e2]/10">
-                                  {expandedRows.has(rid) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-[#0074e2] hover:bg-[#0074e2]/10"
+                                >
+                                  {expandedRows.has(rid) ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                  ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                  )}
                                 </Button>
                               </div>
                             </TableCell>
@@ -1458,13 +1596,15 @@ export function StandardTableInner<T>({
                               onClick={(e) => e.stopPropagation()}
                               className={cn(
                                 "sticky left-0 z-10 bg-card border-r border-border/30 p-0",
-                                viewMode === "tablet" && "left-10"
+                                viewMode === "tablet" && "left-10",
                               )}
                             >
                               <div className="flex h-full w-full items-center justify-center">
-                                <Checkbox checked={isSel} onCheckedChange={() => toggleRow(rid)} aria-label={`Chọn dòng ${rid}`} />
-
-
+                                <Checkbox
+                                  checked={isSel}
+                                  onCheckedChange={() => toggleRow(rid)}
+                                  aria-label={`Chọn dòng ${rid}`}
+                                />
                               </div>
                             </TableCell>
                           )}
@@ -1472,42 +1612,72 @@ export function StandardTableInner<T>({
                           {shownCols.map((c, colIdx) => {
                             const savedW = prefs.widths[c.key];
                             return (
-                                <TableCell
-                                  key={c.key}
-                                  scope={colIdx === 0 ? "row" : undefined}
+                              <TableCell
+                                key={c.key}
+                                scope={colIdx === 0 ? "row" : undefined}
                                 className={cn(
                                   c.cellClassName,
                                   "astryx-table-cell",
-                                  (c.type === "number" || c.type === "currency" || c.type === "percent") && "astryx-table-cell-numeric",
-                                  density === "compact" ? "px-1 py-0.5" : density === "comfortable" ? "px-1.5 py-0.5" : "px-3 py-1.5",
-                                  c.sticky && "sticky left-0 z-10 bg-card border-r border-border/30",
+                                  (c.type === "number" ||
+                                    c.type === "currency" ||
+                                    c.type === "percent") &&
+                                    "astryx-table-cell-numeric",
+                                  density === "compact"
+                                    ? "px-1 py-0.5"
+                                    : density === "comfortable"
+                                      ? "px-1.5 py-0.5"
+                                      : "px-3 py-1.5",
+                                  c.sticky &&
+                                    "sticky left-0 z-10 bg-card border-r border-border/30",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
                                   c.align === "right" && "text-right tabular-nums",
-                                  c.inherited && "bg-amber-50/50 dark:bg-amber-950/20"
+                                  c.inherited && "bg-amber-50/50 dark:bg-amber-950/20",
                                 )}
-                                style={{ 
-                                  width: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined),
-                                  minWidth: savedW ? `${savedW}px` : (c.minW ? (c.minW.includes('[') ? c.minW.match(/\[(.*?)\]/)?.[1] : c.minW) : undefined)
+                                style={{
+                                  width: savedW
+                                    ? `${savedW}px`
+                                    : c.minW
+                                      ? c.minW.includes("[")
+                                        ? c.minW.match(/\[(.*?)\]/)?.[1]
+                                        : c.minW
+                                      : undefined,
+                                  minWidth: savedW
+                                    ? `${savedW}px`
+                                    : c.minW
+                                      ? c.minW.includes("[")
+                                        ? c.minW.match(/\[(.*?)\]/)?.[1]
+                                        : c.minW
+                                      : undefined,
                                 }}
                               >
-                              <div className="truncate w-full max-w-full">{renderCellContent(c, r)}</div>
-                            </TableCell>
-                          )})}
+                                <div className="truncate w-full max-w-full">
+                                  {renderCellContent(c, r)}
+                                </div>
+                              </TableCell>
+                            );
+                          })}
                         </TableRow>
-                        
+
                         {/* Dòng mở rộng (Expandable Row Content) */}
                         {expandedRows.has(rid) && (
                           <TableRow className="bg-muted/10 border-b border-border/20">
-                            <TableCell 
-                              colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)}
+                            <TableCell
+                              colSpan={
+                                shownCols.length +
+                                (selectable ? 1 : 0) +
+                                (viewMode === "tablet" ? 1 : 0)
+                              }
                               className="p-4"
                             >
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1 duration-200">
                                 {sortedColumns
-                                  .filter(c => !shownCols.find(sc => sc.key === c.key)) // Lấy các cột đang bị ẩn
-                                  .map(col => (
-                                    <div key={col.key} className="flex flex-col gap-1 min-w-0 text-left">
+                                  .filter((c) => !shownCols.find((sc) => sc.key === c.key)) // Lấy các cột đang bị ẩn
+                                  .map((col) => (
+                                    <div
+                                      key={col.key}
+                                      className="flex flex-col gap-1 min-w-0 text-left"
+                                    >
                                       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
                                         {col.header || col.label}
                                       </span>
@@ -1524,13 +1694,17 @@ export function StandardTableInner<T>({
                     );
                   })}
 
-
                   {paddingBottom > 0 && (
                     <TableRow className="hover:bg-transparent">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)} style={{ height: `${paddingBottom}px` }} className="p-0 border-0 pointer-events-none" />
+                      <TableCell
+                        colSpan={
+                          shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
+                        }
+                        style={{ height: `${paddingBottom}px` }}
+                        className="p-0 border-0 pointer-events-none"
+                      />
                     </TableRow>
                   )}
-
                 </>
               )}
             </TableBody>
@@ -1572,18 +1746,31 @@ function ColFilter({
           size="icon"
           className={cn(
             "h-6 w-6 ml-auto shrink-0 transition-colors",
-            active ? "text-[#0074e2] bg-[#0074e2]/10" : "text-muted-foreground/30 hover:text-[#0074e2] hover:bg-[#0074e2]/5"
+            active
+              ? "text-[#0074e2] bg-[#0074e2]/10"
+              : "text-muted-foreground/30 hover:text-[#0074e2] hover:bg-[#0074e2]/5",
           )}
           onClick={(e) => {
             e.stopPropagation();
           }}
         >
-          <Icon name={active ? "table.filterActive" : "table.filter"} size="tiny" className={cn(active && "fill-current")} />
+          <Icon
+            name={active ? "table.filterActive" : "table.filter"}
+            size="tiny"
+            className={cn(active && "fill-current")}
+          />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-64 p-2 shadow-xl border-border/50" onClick={(e) => e.stopPropagation()} side="bottom">
+      <DropdownMenuContent
+        align="start"
+        className="w-64 p-2 shadow-xl border-border/50"
+        onClick={(e) => e.stopPropagation()}
+        side="bottom"
+      >
         <div className="flex items-center justify-between mb-2 px-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc: {label}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Bộ lọc: {label}
+          </span>
           {active && (
             <Button
               variant="ghost"
@@ -1602,7 +1789,11 @@ function ColFilter({
         {type === "text" ? (
           <div className="space-y-2">
             <div className="relative">
-              <Icon name="action.search" size="small" className="absolute left-2 top-2.5 text-muted-foreground" />
+              <Icon
+                name="action.search"
+                size="small"
+                className="absolute left-2 top-2.5 text-muted-foreground"
+              />
               <Input
                 autoFocus
                 placeholder="Tìm nội dung..."
@@ -1618,7 +1809,11 @@ function ColFilter({
         ) : (
           <div className="space-y-2">
             <div className="relative">
-              <Icon name="action.search" size="small" className="absolute left-2 top-2.5 text-muted-foreground" />
+              <Icon
+                name="action.search"
+                size="small"
+                className="absolute left-2 top-2.5 text-muted-foreground"
+              />
               <Input
                 autoFocus
                 placeholder="Tìm giá trị..."
@@ -1639,7 +1834,11 @@ function ColFilter({
                     className="text-sm py-1.5 px-2 cursor-pointer flex items-center justify-between"
                   >
                     <span className="truncate mr-2">{v.value}</span>
-                    <Badge variant="outline" size="sm" className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30">
+                    <Badge
+                      variant="outline"
+                      size="sm"
+                      className="text-[9px] font-mono font-medium ml-auto px-1 h-4 bg-muted/30"
+                    >
                       {v.count}
                     </Badge>
                   </DropdownMenuCheckboxItem>
@@ -1657,24 +1856,26 @@ function ColFilter({
   );
 }
 
-
 export function StandardTable<T>(props: StandardTableProps<T>) {
   const [internalSelected, setInternalSelected] = useState<Set<string>>(new Set());
-  const allKeys = useMemo(() => props.columns.map(c => c.key), [props.columns]);
-  
+  const allKeys = useMemo(() => props.columns.map((c) => c.key), [props.columns]);
+
   // Adapter cho selection state
   const selected = props.selected ?? props.selection ?? internalSelected;
   const setSelected = props.setSelected ?? props.setSelection ?? setInternalSelected;
 
-  const getRowIdInternal = useCallback((row: T) => {
-    if (props.getRowId) return props.getRowId(row);
-    const r = row as any;
-    return String(r.id || r.uuid || r.ma || r.ma_thiet_bi || '');
-  }, [props.getRowId]);
+  const getRowIdInternal = useCallback(
+    (row: T) => {
+      if (props.getRowId) return props.getRowId(row);
+      const r = row as any;
+      return String(r.id || r.uuid || r.ma || r.ma_thiet_bi || "");
+    },
+    [props.getRowId],
+  );
 
   const selectedRows = useMemo(() => {
     if (!selected || selected.size === 0) return [];
-    return props.rows.filter(r => selected.has(getRowIdInternal(r)));
+    return props.rows.filter((r) => selected.has(getRowIdInternal(r)));
   }, [props.rows, selected, getRowIdInternal]);
 
   const clearSelection = () => {
@@ -1683,27 +1884,22 @@ export function StandardTable<T>(props: StandardTableProps<T>) {
 
   return (
     <div className="flex flex-col h-full relative">
-      <StandardTableInner 
-        {...props} 
-        selected={selected} 
-        setSelected={setSelected} 
-      />
-      
-      {(props.selectable || props.selected || props.selection) && selectedRows.length > 0 && props.bulkActionsActions && (
-        <BulkActionBar 
-          selectedCount={selectedRows.length} 
-          onClear={clearSelection}
-          actions={props.bulkActionsActions.map(a => ({ 
-            label: a.label,
-            icon: a.icon as any,
-            variant: a.variant as any,
-            onClick: () => a.onClick(selectedRows) 
-          }))}
-        />
-      )}
+      <StandardTableInner {...props} selected={selected} setSelected={setSelected} />
+
+      {(props.selectable || props.selected || props.selection) &&
+        selectedRows.length > 0 &&
+        props.bulkActionsActions && (
+          <BulkActionBar
+            selectedCount={selectedRows.length}
+            onClear={clearSelection}
+            actions={props.bulkActionsActions.map((a) => ({
+              label: a.label,
+              icon: a.icon as any,
+              variant: a.variant as any,
+              onClick: () => a.onClick(selectedRows),
+            }))}
+          />
+        )}
     </div>
   );
 }
-
-
-

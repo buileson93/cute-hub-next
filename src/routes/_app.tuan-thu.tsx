@@ -77,12 +77,7 @@ function TuanThuPage() {
         title="Tuân thủ"
         help="Cảnh báo hết hạn theo ngưỡng 30/15/7 ngày (nguồn: bảng thông báo)."
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isRefetching}
-          >
+          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
             {isRefetching ? "Đang tải…" : "Tải lại"}
           </Button>
         }
@@ -167,7 +162,11 @@ function TuanThuPage() {
       </Card>
 
       <p className="text-xs text-muted-foreground">
-        Xem chi tiết ở trang <Link to="/thong-bao" className="underline">Thông báo</Link>.
+        Xem chi tiết ở trang{" "}
+        <Link to="/thong-bao" className="underline">
+          Thông báo
+        </Link>
+        .
       </p>
     </div>
   );
@@ -192,9 +191,7 @@ function KpiCard({
           {icon}
         </div>
         <div
-          className={`text-2xl font-bold ${
-            tone === "critical" && value > 0 ? "text-red-600" : ""
-          }`}
+          className={`text-2xl font-bold ${tone === "critical" && value > 0 ? "text-red-600" : ""}`}
         >
           {value}
         </div>

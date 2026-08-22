@@ -72,16 +72,17 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between font-normal", !value && "text-muted-foreground", className)}
+          className={cn(
+            "w-full justify-between font-normal",
+            !value && "text-muted-foreground",
+            className,
+          )}
         >
           <span className="truncate">{displayLabel || placeholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="w-[--radix-popover-trigger-width] min-w-[220px] p-0"
-        align="start"
-      >
+      <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[220px] p-0" align="start">
         <Command shouldFilter={!allowCustom}>
           <CommandInput
             placeholder={searchPlaceholder}
@@ -116,9 +117,7 @@ export function Combobox({
                 ? options.filter((o) => {
                     const q = normalize(query);
                     if (!q) return true;
-                    return (
-                      normalize(o.label).includes(q) || normalize(o.hint ?? "").includes(q)
-                    );
+                    return normalize(o.label).includes(q) || normalize(o.hint ?? "").includes(q);
                   })
                 : options
               ).map((o) => (
@@ -132,10 +131,17 @@ export function Combobox({
                     setQuery("");
                   }}
                 >
-                  <Check className={cn("h-4 w-4 shrink-0", value === o.value ? "opacity-100" : "opacity-0")} />
+                  <Check
+                    className={cn(
+                      "h-4 w-4 shrink-0",
+                      value === o.value ? "opacity-100" : "opacity-0",
+                    )}
+                  />
                   <span className="min-w-0 flex-1 truncate text-left">{o.label}</span>
                   {o.hint && (
-                    <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{o.hint}</span>
+                    <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+                      {o.hint}
+                    </span>
                   )}
                 </CommandItem>
               ))}

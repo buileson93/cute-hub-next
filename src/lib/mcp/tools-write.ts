@@ -23,9 +23,15 @@ export const createSuCo = defineTool({
     nguyen_nhan: z.string().optional(),
     bien_phap_xu_ly: z.string().optional(),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   handler: async (input, ctx) => {
-    const auth = requireAuth(ctx); if (auth) return auth;
+    const auth = requireAuth(ctx);
+    if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("agent_add_su_co", {
       p_he_thong: input.he_thong,
       p_hien_tuong: input.hien_tuong,
@@ -58,9 +64,15 @@ export const createBaoTri = defineTool({
     ngay_hoan_thanh: z.string().optional(),
     ket_qua: z.string().optional(),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   handler: async (input, ctx) => {
-    const auth = requireAuth(ctx); if (auth) return auth;
+    const auth = requireAuth(ctx);
+    if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("agent_add_bao_tri", {
       p_he_thong: input.he_thong,
       p_mo_ta_cong_viec: input.mo_ta_cong_viec,
@@ -91,9 +103,15 @@ export const createHongHoc = defineTool({
     phuong_an: z.string().optional(),
     thiet_bi_thay_the: z.string().optional().describe("Tên/mã tài sản dùng thay thế"),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   handler: async (input, ctx) => {
-    const auth = requireAuth(ctx); if (auth) return auth;
+    const auth = requireAuth(ctx);
+    if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("agent_add_hong_hoc", {
       p_thiet_bi_hong: input.thiet_bi_hong,
       p_mo_ta_hong_hoc: input.mo_ta_hong_hoc,
@@ -120,9 +138,15 @@ export const ghiKiemKe = defineTool({
     anh_url: z.string().optional(),
     ghi_chu: z.string().optional(),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   handler: async (input, ctx) => {
-    const auth = requireAuth(ctx); if (auth) return auth;
+    const auth = requireAuth(ctx);
+    if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("ghi_kiem_ke", {
       _thiet_bi_id: input.thiet_bi_id,
       _tinh_trang: input.tinh_trang,
@@ -144,9 +168,15 @@ export const closeVanDe = defineTool({
     id: z.string().uuid(),
     ghi_chu: z.string().optional(),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+  },
   handler: async ({ id, ghi_chu }, ctx) => {
-    const auth = requireAuth(ctx); if (auth) return auth;
+    const auth = requireAuth(ctx);
+    if (auth) return auth;
     const { data, error } = await supabaseForUser(ctx).rpc("dong_van_de", {
       p_id: id,
       p_ghi_chu: ghi_chu ?? null,

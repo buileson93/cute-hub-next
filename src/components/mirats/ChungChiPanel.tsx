@@ -13,20 +13,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
 import { fmtNgay } from "@/lib/mirats/format";
 import {
-  validateChungChi, trangThaiHetHan,
-  LOAI_CHUNG_NHAN, type LoaiChungNhan,
+  validateChungChi,
+  trangThaiHetHan,
+  LOAI_CHUNG_NHAN,
+  type LoaiChungNhan,
 } from "@/lib/mirats/kiem-dinh";
 import {
-  useChungChiByDevice, useInvalidateChungChi, type ChungChiRow,
+  useChungChiByDevice,
+  useInvalidateChungChi,
+  type ChungChiRow,
 } from "@/lib/mirats/db-chung-chi";
 import { canWrite } from "@/lib/mirats/quyen";
 import type { AppRole } from "@/hooks/use-session";
@@ -114,15 +127,20 @@ export function ChungChiPanel({ thietBiId, cheDo, roles, compact }: Props) {
                   </div>
                   <div className="flex items-center gap-1">
                     {c.ngay_het_han && (
-                      <StatusBadge 
-                        domain="expiry" 
-                        code={getExpiryCode(tt.soNgay)} 
-                        label={getExpiryLabel(tt.soNgay)} 
+                      <StatusBadge
+                        domain="expiry"
+                        code={getExpiryCode(tt.soNgay)}
+                        label={getExpiryLabel(tt.soNgay)}
                       />
                     )}
                     {writable && !compact && (
                       <>
-                        <Button size="icon" variant="ghost" onClick={() => openEdit(c)} aria-label="Sửa">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => openEdit(c)}
+                          aria-label="Sửa"
+                        >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
                         <Button size="icon" variant="ghost" onClick={() => xoa(c)} aria-label="Xoá">
@@ -151,7 +169,12 @@ export function ChungChiPanel({ thietBiId, cheDo, roles, compact }: Props) {
 }
 
 function ChungChiDialog({
-  open, onOpenChange, thietBiId, cheDo, editing, onSaved,
+  open,
+  onOpenChange,
+  thietBiId,
+  cheDo,
+  editing,
+  onSaved,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -161,8 +184,7 @@ function ChungChiDialog({
   onSaved: () => void;
 }) {
   const defaultLoai: LoaiChungNhan =
-    editing?.loai
-      ?? (cheDo === "HIEU_CHUAN" ? "HIEU_CHUAN" : "KIEM_DINH");
+    editing?.loai ?? (cheDo === "HIEU_CHUAN" ? "HIEU_CHUAN" : "KIEM_DINH");
   const [loai, setLoai] = React.useState<LoaiChungNhan>(defaultLoai);
   const [so, setSo] = React.useState(editing?.so_giay_chung_nhan ?? "");
   const [batDau, setBatDau] = React.useState(editing?.ngay_bat_dau ?? "");
@@ -212,13 +234,17 @@ function ChungChiDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Sửa chứng chỉ" : "Thêm chứng chỉ KĐ/HC"}</DialogTitle>
-          <DialogDescription>Nhập thông tin giấy chứng nhận kiểm định hoặc hiệu chuẩn.</DialogDescription>
+          <DialogDescription>
+            Nhập thông tin giấy chứng nhận kiểm định hoặc hiệu chuẩn.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-3 py-2">
           <div className="grid gap-1.5">
             <Label>Loại</Label>
             <Select value={loai} onValueChange={(v) => setLoai(v as LoaiChungNhan)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {LOAI_CHUNG_NHAN.map((l) => (
                   <SelectItem key={l} value={l}>
@@ -230,7 +256,11 @@ function ChungChiDialog({
           </div>
           <div className="grid gap-1.5">
             <Label>Số giấy chứng nhận *</Label>
-            <Input value={so} onChange={(e) => setSo(e.target.value)} placeholder="VD: KĐ/2026/001" />
+            <Input
+              value={so}
+              onChange={(e) => setSo(e.target.value)}
+              placeholder="VD: KĐ/2026/001"
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
@@ -248,7 +278,9 @@ function ChungChiDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>Huỷ</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>
+            Huỷ
+          </Button>
           <Button onClick={luu} disabled={busy}>
             {busy && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
             Lưu

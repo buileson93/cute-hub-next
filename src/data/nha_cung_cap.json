@@ -1,1 +1,8 @@
-[{"ten": "Hymetco"}, {"ten": "Hoàng Giang"}, {"ten": "VTD"}, {"ten": "Thiên Long"}, {"ten": "AIC"}, {"ten": "VNPT Technology"}]
+[
+  { "ten": "Hymetco" },
+  { "ten": "Hoàng Giang" },
+  { "ten": "VTD" },
+  { "ten": "Thiên Long" },
+  { "ten": "AIC" },
+  { "ten": "VNPT Technology" }
+]

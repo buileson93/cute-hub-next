@@ -8,7 +8,9 @@ import { supabase } from "@/integrations/backend/client";
 vi.mock("@/integrations/backend/client", () => ({
   supabase: {
     auth: {
-      getSession: vi.fn(() => Promise.resolve({ data: { session: { user: { id: "test-user" } } } })),
+      getSession: vi.fn(() =>
+        Promise.resolve({ data: { session: { user: { id: "test-user" } } } }),
+      ),
     },
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -34,7 +36,7 @@ describe("useColumnPrefs", () => {
 
   it("should initialize with default values", async () => {
     const { result } = renderHook(() => useColumnPrefs("test-table", allKeys, defaultHidden));
-    
+
     expect(result.current.order).toEqual(["col1", "col2", "actions"]);
     expect(result.current.hidden.has("col2")).toBe(true);
     expect(result.current.hidden.has("col1")).toBe(false);
@@ -48,11 +50,11 @@ describe("useColumnPrefs", () => {
     });
 
     expect(result.current.hidden.has("col1")).toBe(true);
-    
+
     act(() => {
       result.current.toggle("col1");
     });
-    
+
     expect(result.current.hidden.has("col1")).toBe(false);
   });
 

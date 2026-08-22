@@ -9,12 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { ZodSchema } from "zod";
 import { useQuery } from "@tanstack/react-query";
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,9 +38,9 @@ type Common = {
 };
 
 export type SchemaField =
-  | (Common & { 
-      type: "text" | "textarea" | "date" | "password"; 
-      placeholder?: string; 
+  | (Common & {
+      type: "text" | "textarea" | "date" | "password";
+      placeholder?: string;
       colSpan?: 1 | 2;
       wizardStep?: number; // wizard step
       priority?: "core" | "later";
@@ -60,8 +55,8 @@ export type SchemaField =
       wizardStep?: number;
       priority?: "core" | "later";
     })
-  | (Common & { 
-      type: "switch"; 
+  | (Common & {
+      type: "switch";
       colSpan?: 1 | 2;
       wizardStep?: number;
       priority?: "core" | "later";
@@ -93,7 +88,6 @@ export type SchemaField =
       wizardStep?: number;
       priority?: "core" | "later";
     });
-
 
 export interface SchemaDialogProps<TValues extends Record<string, unknown>> {
   open: boolean;
@@ -131,7 +125,12 @@ function coerceForParse(fields: SchemaField[], values: Record<string, unknown>) 
       const raw = draft[f.key];
       if (raw === "" || raw == null) draft[f.key] = undefined;
       else draft[f.key] = Number(raw);
-    } else if (f.type === "text" || f.type === "textarea" || f.type === "date" || f.type === "password") {
+    } else if (
+      f.type === "text" ||
+      f.type === "textarea" ||
+      f.type === "date" ||
+      f.type === "password"
+    ) {
       if (typeof draft[f.key] === "string") {
         draft[f.key] = (draft[f.key] as string).trim();
       }
@@ -199,10 +198,10 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
   const [busy, setBusy] = useState(false);
   const [asyncOpts, setAsyncOpts] = useState<Record<string, SchemaOption[]>>({});
   const [asyncErr, setAsyncErr] = useState<Record<string, string | null>>({});
-  
+
   // Wizard state
-  const hasWizard = useMemo(() => fields.some(f => f.wizardStep), [fields]);
-  const maxStep = useMemo(() => Math.max(...fields.map(f => f.wizardStep || 1), 1), [fields]);
+  const hasWizard = useMemo(() => fields.some((f) => f.wizardStep), [fields]);
+  const maxStep = useMemo(() => Math.max(...fields.map((f) => f.wizardStep || 1), 1), [fields]);
   const [step, setStep] = useState(1);
 
   useEffect(() => {
@@ -240,11 +239,11 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
         if (!map[key]) map[key] = iss.message;
       }
       setErrors(map);
-      
+
       // Tìm bước đầu tiên có lỗi để nhảy về
       if (hasWizard) {
         const firstErrorKey = parsed.error.issues[0].path[0];
-        const errorField = fields.find(f => f.key === firstErrorKey);
+        const errorField = fields.find((f) => f.key === firstErrorKey);
         if (errorField?.wizardStep) setStep(errorField.wizardStep);
       }
       return;
@@ -261,7 +260,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
 
   const currentFields = useMemo(() => {
     if (!hasWizard) return fields;
-    return fields.filter(f => (f.wizardStep || 1) === step);
+    return fields.filter((f) => (f.wizardStep || 1) === step);
   }, [fields, hasWizard, step]);
 
   return (
@@ -275,11 +274,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
       <div
         className="flex flex-col h-full"
         onKeyDown={(e) => {
-          if (
-            e.key === "Enter" &&
-            !e.shiftKey &&
-            (e.target as HTMLElement).tagName === "INPUT"
-          ) {
+          if (e.key === "Enter" && !e.shiftKey && (e.target as HTMLElement).tagName === "INPUT") {
             e.preventDefault();
             if (hasWizard && step < maxStep) {
               setStep((s) => s + 1);
@@ -289,12 +284,11 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
           }
         }}
       >
-
         {hasWizard && wizardSteps && (
           <div className="py-2">
-            <FormWizardSteps 
-              currentStep={step} 
-              steps={wizardSteps.map((s, i) => ({ id: i + 1, title: s }))} 
+            <FormWizardSteps
+              currentStep={step}
+              steps={wizardSteps.map((s, i) => ({ id: i + 1, title: s }))}
             />
           </div>
         )}
@@ -311,7 +305,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               "aria-required": req || undefined,
               "aria-describedby": describedBy,
             } as const;
-            
+
             const labelNode = (
               <Label htmlFor={`sd-${f.key}`}>
                 {f.label}
@@ -353,7 +347,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   disabled={f.disabled}
                   onChange={(e) => setValue(f.key, e.target.value)}
                   {...commonAria}
-                />
+                />,
               );
             }
             if (f.type === "number") {
@@ -369,7 +363,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   disabled={f.disabled}
                   onChange={(e) => setValue(f.key, e.target.value)}
                   {...commonAria}
-                />
+                />,
               );
             }
             if (f.type === "textarea") {
@@ -382,12 +376,18 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   disabled={f.disabled}
                   onChange={(e) => setValue(f.key, e.target.value)}
                   {...commonAria}
-                />
+                />,
               );
             }
             if (f.type === "switch") {
               return (
-                <label key={f.key} className={cn("flex items-center gap-2 text-sm pt-4", f.colSpan === 2 ? "md:col-span-2" : "")}>
+                <label
+                  key={f.key}
+                  className={cn(
+                    "flex items-center gap-2 text-sm pt-4",
+                    f.colSpan === 2 ? "md:col-span-2" : "",
+                  )}
+                >
                   <Switch
                     id={`sd-${f.key}`}
                     checked={Boolean(values[f.key])}
@@ -407,7 +407,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   onChange: (v) => setValue(f.key, v),
                   values,
                   error: err ?? undefined,
-                })
+                }),
               );
             }
 
@@ -416,7 +416,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
             const opts: SchemaOption[] = selectField.options ?? asyncOpts[selectField.key] ?? [];
             const EMPTY_SENTINEL = "__sd_empty__";
             const currentVal = (values[selectField.key] as string) ?? "";
-            
+
             const inner =
               selectField.type === "combobox" ? (
                 <Combobox
@@ -429,9 +429,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               ) : (
                 <Select
                   value={currentVal || (selectField.emptyOptionLabel ? EMPTY_SENTINEL : "")}
-                  onValueChange={(v) =>
-                    setValue(selectField.key, v === EMPTY_SENTINEL ? "" : v)
-                  }
+                  onValueChange={(v) => setValue(selectField.key, v === EMPTY_SENTINEL ? "" : v)}
                   disabled={selectField.disabled}
                 >
                   <SelectTrigger id={`sd-${selectField.key}`} {...commonAria}>
@@ -439,9 +437,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   </SelectTrigger>
                   <SelectContent>
                     {selectField.emptyOptionLabel && (
-                      <SelectItem value={EMPTY_SENTINEL}>
-                        {selectField.emptyOptionLabel}
-                      </SelectItem>
+                      <SelectItem value={EMPTY_SENTINEL}>{selectField.emptyOptionLabel}</SelectItem>
                     )}
                     {opts.map((o) => (
                       <SelectItem key={o.value} value={o.value}>
@@ -451,7 +447,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                   </SelectContent>
                 </Select>
               );
-              
+
             return wrap(
               <>
                 {selectField.loadOptions && (
@@ -460,18 +456,20 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
                     values={values}
                     onLoaded={(list) =>
                       setAsyncOpts((prev) =>
-                        prev[selectField.key] === list ? prev : { ...prev, [selectField.key]: list }
+                        prev[selectField.key] === list
+                          ? prev
+                          : { ...prev, [selectField.key]: list },
                       )
                     }
                     onError={(msg) =>
                       setAsyncErr((prev) =>
-                        prev[selectField.key] === msg ? prev : { ...prev, [selectField.key]: msg }
+                        prev[selectField.key] === msg ? prev : { ...prev, [selectField.key]: msg },
                       )
                     }
                   />
                 )}
                 {inner}
-              </>
+              </>,
             );
           })}
         </div>
@@ -481,7 +479,7 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
         <DialogFooter className="flex-row justify-between sm:justify-between border-t pt-4">
           <div className="flex gap-2">
             {hasWizard && step > 1 && (
-              <Button variant="outline" onClick={() => setStep(s => s - 1)} disabled={busy}>
+              <Button variant="outline" onClick={() => setStep((s) => s - 1)} disabled={busy}>
                 Quay lại
               </Button>
             )}
@@ -489,12 +487,10 @@ export function SchemaDialog<TValues extends Record<string, unknown>>({
               Huỷ
             </Button>
           </div>
-          
+
           <div className="flex gap-2">
             {hasWizard && step < maxStep ? (
-              <Button onClick={() => setStep(s => s + 1)}>
-                Tiếp tục
-              </Button>
+              <Button onClick={() => setStep((s) => s + 1)}>Tiếp tục</Button>
             ) : (
               <Button
                 onClick={submit}

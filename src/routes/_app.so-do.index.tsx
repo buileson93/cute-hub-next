@@ -4,7 +4,15 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Waypoints, Plus, Trash2, Building2, Clock, Loader2, Network, Check, ChevronsUpDown,
+  Waypoints,
+  Plus,
+  Trash2,
+  Building2,
+  Clock,
+  Loader2,
+  Network,
+  Check,
+  ChevronsUpDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
@@ -17,19 +25,41 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Combobox } from "@/components/mirats/Combobox";
 import {
-  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -39,7 +69,10 @@ export const Route = createFileRoute("/_app/so-do/")({
   head: () => ({
     meta: [
       { title: "Sơ đồ hệ thống — Tài sản MIRATS" },
-      { name: "description", content: "Vẽ sơ đồ hệ thống, gắn hệ thống/đơn vị và đính kèm bản vẽ file." },
+      {
+        name: "description",
+        content: "Vẽ sơ đồ hệ thống, gắn hệ thống/đơn vị và đính kèm bản vẽ file.",
+      },
     ],
   }),
   component: SoDoListPage,
@@ -78,7 +111,7 @@ function SoDoListPage() {
   const [open, setOpen] = useState(false);
   const [ten, setTen] = useState("");
   const [moTa, setMoTa] = useState("");
-  const [donViMa, setDonViMa] = useState<string>(scopeAll ? "" : donViCode ?? "");
+  const [donViMa, setDonViMa] = useState<string>(scopeAll ? "" : (donViCode ?? ""));
   const [heThongMa, setHeThongMa] = useState<string>("");
 
   // Hệ thống lọc theo đơn vị đang chọn (nếu có).
@@ -89,8 +122,8 @@ function SoDoListPage() {
 
   const createM = useMutation({
     mutationFn: async () => {
-      const dv = scopeAll ? (donViMa || null) : (donViCode ?? null);
-      const ht = heThongMa ? scope.heThong.find((h) => h.ma === heThongMa) ?? null : null;
+      const dv = scopeAll ? donViMa || null : (donViCode ?? null);
+      const ht = heThongMa ? (scope.heThong.find((h) => h.ma === heThongMa) ?? null) : null;
       const { data, error } = await supabase
         .from("so_do_he_thong")
         .insert({
@@ -111,7 +144,10 @@ function SoDoListPage() {
       qc.invalidateQueries({ queryKey: ["so_do_he_thong"] });
       toast.success("Đã tạo sơ đồ mới");
       setOpen(false);
-      setTen(""); setMoTa(""); setDonViMa(scopeAll ? "" : donViCode ?? ""); setHeThongMa("");
+      setTen("");
+      setMoTa("");
+      setDonViMa(scopeAll ? "" : (donViCode ?? ""));
+      setHeThongMa("");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không tạo được sơ đồ"),
   });
@@ -139,26 +175,38 @@ function SoDoListPage() {
           help="Vẽ sơ đồ, gắn hệ thống & đơn vị, liên kết phần tử tới tài sản và đính kèm file bản vẽ. Tab 'Đấu nối' là bảng dữ liệu chuẩn về kết nối vật lý/logic giữa tài sản."
         />
 
-
-
-
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" /> Sơ đồ mới</Button>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Sơ đồ mới
+            </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Tạo sơ đồ hệ thống</DialogTitle>
-              <DialogDescription>Sơ đồ thuộc phạm vi đơn vị — chỉ đơn vị đó (cùng Phòng KT/Admin) xem được.</DialogDescription>
+              <DialogDescription>
+                Sơ đồ thuộc phạm vi đơn vị — chỉ đơn vị đó (cùng Phòng KT/Admin) xem được.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="ten">Tên sơ đồ</Label>
-                <Input id="ten" value={ten} onChange={(e) => setTen(e.target.value)} placeholder="VD: Sơ đồ hệ thống điện T1" />
+                <Input
+                  id="ten"
+                  value={ten}
+                  onChange={(e) => setTen(e.target.value)}
+                  placeholder="VD: Sơ đồ hệ thống điện T1"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="mota">Mô tả</Label>
-                <Textarea id="mota" value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} placeholder="Tuỳ chọn" />
+                <Textarea
+                  id="mota"
+                  value={moTa}
+                  onChange={(e) => setMoTa(e.target.value)}
+                  rows={2}
+                  placeholder="Tuỳ chọn"
+                />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
@@ -166,14 +214,24 @@ function SoDoListPage() {
                   {scopeAll ? (
                     <Combobox
                       value={donViMa}
-                      onChange={(v) => { setDonViMa(v); setHeThongMa(""); }}
+                      onChange={(v) => {
+                        setDonViMa(v);
+                        setHeThongMa("");
+                      }}
                       placeholder="Chọn đơn vị (tuỳ chọn)"
                       searchPlaceholder="Tìm đơn vị…"
-                      options={scope.donVi.map((d) => ({ value: d.ma, label: `${d.ma} — ${d.ten}` }))}
+                      options={scope.donVi.map((d) => ({
+                        value: d.ma,
+                        label: `${d.ma} — ${d.ten}`,
+                      }))}
                     />
                   ) : (
                     <Input
-                      value={donViMap.get(donViCode ?? "") ? `${donViCode} — ${donViMap.get(donViCode!)!.ten}` : (donViCode ?? "Không xác định")}
+                      value={
+                        donViMap.get(donViCode ?? "")
+                          ? `${donViCode} — ${donViMap.get(donViCode!)!.ten}`
+                          : (donViCode ?? "Không xác định")
+                      }
                       disabled
                     />
                   )}
@@ -189,7 +247,9 @@ function SoDoListPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>Huỷ</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Huỷ
+              </Button>
               <Button onClick={() => createM.mutate()} disabled={!canCreate || createM.isPending}>
                 {createM.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Tạo
               </Button>
@@ -200,11 +260,11 @@ function SoDoListPage() {
 
       <SoDoTabs />
 
-
-
       {listQ.isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[0, 1, 2].map((i) => <Skeleton key={i} className="h-32" />)}
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
         </div>
       ) : (listQ.data ?? []).length === 0 ? (
         <Card>
@@ -232,27 +292,40 @@ function SoDoListPage() {
                       </Badge>
                     )}
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                      <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{dv ? dv.ma : (sd.don_vi_ma || "Chung")}</span>
-                      <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{new Date(sd.updated_at).toLocaleDateString("vi-VN")}</span>
+                      <span className="flex items-center gap-1">
+                        <Building2 className="h-3.5 w-3.5" />
+                        {dv ? dv.ma : sd.don_vi_ma || "Chung"}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" />
+                        {new Date(sd.updated_at).toLocaleDateString("vi-VN")}
+                      </span>
                     </div>
                   </CardContent>
                 </Link>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
-                      size="icon" variant="ghost"
-                      className="absolute right-2 top-2 h-8 w-8 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive" aria-label="Xoá">
+                      size="icon"
+                      variant="ghost"
+                      className="absolute right-2 top-2 h-8 w-8 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive"
+                      aria-label="Xoá"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Xoá sơ đồ “{sd.ten}”?</AlertDialogTitle>
-                      <AlertDialogDescription>Hành động này không thể hoàn tác.</AlertDialogDescription>
+                      <AlertDialogDescription>
+                        Hành động này không thể hoàn tác.
+                      </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Huỷ</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => deleteM.mutate(sd.id)}>Xoá</AlertDialogAction>
+                      <AlertDialogAction onClick={() => deleteM.mutate(sd.id)}>
+                        Xoá
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -292,7 +365,13 @@ function HeThongPicker({
           <CommandList>
             <CommandEmpty>Không có hệ thống phù hợp.</CommandEmpty>
             <CommandGroup>
-              <CommandItem value="__none__" onSelect={() => { onChange(""); setOpen(false); }}>
+              <CommandItem
+                value="__none__"
+                onSelect={() => {
+                  onChange("");
+                  setOpen(false);
+                }}
+              >
                 <Check className={cn("mr-2 h-4 w-4", value === "" ? "opacity-100" : "opacity-0")} />
                 Không gắn
               </CommandItem>
@@ -300,10 +379,17 @@ function HeThongPicker({
                 <CommandItem
                   key={o.ma}
                   value={`${o.ma} ${o.ten}`}
-                  onSelect={() => { onChange(o.ma); setOpen(false); }}
+                  onSelect={() => {
+                    onChange(o.ma);
+                    setOpen(false);
+                  }}
                 >
-                  <Check className={cn("mr-2 h-4 w-4", value === o.ma ? "opacity-100" : "opacity-0")} />
-                  <span className="truncate">{o.ma} — {o.ten}</span>
+                  <Check
+                    className={cn("mr-2 h-4 w-4", value === o.ma ? "opacity-100" : "opacity-0")}
+                  />
+                  <span className="truncate">
+                    {o.ma} — {o.ten}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

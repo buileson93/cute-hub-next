@@ -9,8 +9,7 @@ import {
 
 describe("parseDacTinhCell", () => {
   test("tách theo ';', trim, uppercase, dedupe, bỏ rỗng", () => {
-    expect(parseDacTinhCell(" thu; PHAT ;vhf; ; THU ;phat"))
-      .toEqual(["THU", "PHAT", "VHF"]);
+    expect(parseDacTinhCell(" thu; PHAT ;vhf; ; THU ;phat")).toEqual(["THU", "PHAT", "VHF"]);
   });
   test("null/undefined/empty → []", () => {
     expect(parseDacTinhCell(null)).toEqual([]);
@@ -22,8 +21,7 @@ describe("parseDacTinhCell", () => {
 
 describe("serializeDacTinhCell", () => {
   test("sort để roundtrip ổn định + uppercase + dedupe", () => {
-    expect(serializeDacTinhCell(["VHF", "thu", "PHAT", "vhf"]))
-      .toBe("PHAT;THU;VHF");
+    expect(serializeDacTinhCell(["VHF", "thu", "PHAT", "vhf"])).toBe("PHAT;THU;VHF");
   });
 });
 
@@ -95,8 +93,15 @@ describe("planImportDacTinh — cảnh báo mã lạ, bỏ qua model lạ, idemp
 
 describe("Roundtrip export → parse → apply → không thay đổi", () => {
   test("export rồi parse phải cho ra cùng set, chạy import 2 lần idempotent", () => {
-    const modelIdByMa = new Map([["M1", "model-1"], ["M2", "model-2"]]);
-    const tagIdByMa = new Map([["THU", "t1"], ["PHAT", "t2"], ["VHF", "t3"]]);
+    const modelIdByMa = new Map([
+      ["M1", "model-1"],
+      ["M2", "model-2"],
+    ]);
+    const tagIdByMa = new Map([
+      ["THU", "t1"],
+      ["PHAT", "t2"],
+      ["VHF", "t3"],
+    ]);
 
     // Snapshot hiện tại của DB (existingLinks) — nguồn sự thật.
     const existingLinks = new Map<string, Set<string>>([
@@ -116,7 +121,8 @@ describe("Roundtrip export → parse → apply → không thay đổi", () => {
     // 2) Import lại chính file vừa export
     const plan1 = planImportDacTinh({
       rows: cells.map((c) => ({ model_ma: c.model_ma, dac_tinh: c.dac_tinh })),
-      modelIdByMa, tagIdByMa,
+      modelIdByMa,
+      tagIdByMa,
       existingLinks: existingLinks as unknown as Map<string, Set<string>>,
     });
     // Tất cả op phải rỗng — không thay đổi loại, không nhân đôi
@@ -130,7 +136,8 @@ describe("Roundtrip export → parse → apply → không thay đổi", () => {
     // 3) Chạy lần 2 với snapshot y hệt → vẫn idempotent
     const plan2 = planImportDacTinh({
       rows: cells.map((c) => ({ model_ma: c.model_ma, dac_tinh: c.dac_tinh })),
-      modelIdByMa, tagIdByMa,
+      modelIdByMa,
+      tagIdByMa,
       existingLinks: existingLinks as unknown as Map<string, Set<string>>,
     });
     for (const op of plan2.operations) {

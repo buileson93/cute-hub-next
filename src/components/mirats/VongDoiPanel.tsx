@@ -9,17 +9,27 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Check, Clock, PlayCircle, PauseCircle, ShieldCheck, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
-  SU_CO_WORKFLOW_STATES, SU_CO_TRANG_THAI_LABEL,
-  nextStates, normalizeWorkflowState, computeMetrics,
+  SU_CO_WORKFLOW_STATES,
+  SU_CO_TRANG_THAI_LABEL,
+  nextStates,
+  normalizeWorkflowState,
+  computeMetrics,
   type SuCoTrangThai,
 } from "@/lib/mirats/su-co-workflow";
 import {
-  useSuCoLichSu, useSuCoTransition, toLichSuBuoc,
+  useSuCoLichSu,
+  useSuCoTransition,
+  toLichSuBuoc,
   type DoiTuongBang,
 } from "@/lib/mirats/su-co-workflow-client";
 import { useSession } from "@/hooks/use-session";
@@ -36,7 +46,12 @@ const ICON: Record<SuCoTrangThai, typeof Check> = {
 
 /** Chuỗi 6 trạng thái chính (loại trừ `huy` — hiển thị riêng nếu đang ở đó). */
 const MAIN_FLOW: SuCoTrangThai[] = [
-  "bao_cao", "tiep_nhan", "dang_xu_ly", "cho_vat_tu", "hoan_thanh", "nghiem_thu",
+  "bao_cao",
+  "tiep_nhan",
+  "dang_xu_ly",
+  "cho_vat_tu",
+  "hoan_thanh",
+  "nghiem_thu",
 ];
 
 function fmtPhut(v: number | null): string {
@@ -100,7 +115,11 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center gap-2">
           <Clock className="h-4 w-4" /> Vòng đời sự cố (N6)
-          {showHuy && <Badge variant="destructive" className="ml-auto">Đã huỷ</Badge>}
+          {showHuy && (
+            <Badge variant="destructive" className="ml-auto">
+              Đã huỷ
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -112,11 +131,17 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
             const isCur = s === current;
             return (
               <div key={s} className="flex items-center shrink-0">
-                <div className={`flex flex-col items-center gap-1 min-w-[92px] ${isCur ? "text-primary" : done ? "text-emerald-600" : "text-muted-foreground"}`}>
-                  <div className={`rounded-full border-2 h-8 w-8 flex items-center justify-center ${isCur ? "border-primary bg-primary/10" : done ? "border-emerald-600 bg-emerald-50" : "border-slate-300 bg-slate-50"}`}>
+                <div
+                  className={`flex flex-col items-center gap-1 min-w-[92px] ${isCur ? "text-primary" : done ? "text-emerald-600" : "text-muted-foreground"}`}
+                >
+                  <div
+                    className={`rounded-full border-2 h-8 w-8 flex items-center justify-center ${isCur ? "border-primary bg-primary/10" : done ? "border-emerald-600 bg-emerald-50" : "border-slate-300 bg-slate-50"}`}
+                  >
                     <Icon className="h-4 w-4" />
                   </div>
-                  <div className="text-[10px] text-center leading-tight px-1">{SU_CO_TRANG_THAI_LABEL[s]}</div>
+                  <div className="text-[10px] text-center leading-tight px-1">
+                    {SU_CO_TRANG_THAI_LABEL[s]}
+                  </div>
                 </div>
                 {i < MAIN_FLOW.length - 1 && (
                   <div className={`h-[2px] w-8 ${done ? "bg-emerald-600" : "bg-slate-300"}`} />
@@ -130,12 +155,15 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
         <div className="flex flex-wrap gap-2">
           {cans.length === 0 && (
             <div className="text-xs text-muted-foreground">
-              {current === "huy" ? "Đã huỷ — không có hành động tiếp theo." : "Đã kết thúc — chỉ admin mới có thể mở lại."}
+              {current === "huy"
+                ? "Đã huỷ — không có hành động tiếp theo."
+                : "Đã kết thúc — chỉ admin mới có thể mở lại."}
             </div>
           )}
           {cans.map((to) => {
             const enabled = allowByRole(to);
-            const variant = to === "huy" ? "destructive" : to === "nghiem_thu" ? "default" : "secondary";
+            const variant =
+              to === "huy" ? "destructive" : to === "nghiem_thu" ? "default" : "secondary";
             return (
               <Button
                 key={to}
@@ -173,7 +201,10 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
                     {new Date(r.at).toLocaleString("vi-VN")}
                   </span>{" "}
                   <span className="font-medium">
-                    {r.tu_trang_thai ? SU_CO_TRANG_THAI_LABEL[r.tu_trang_thai as SuCoTrangThai] ?? r.tu_trang_thai : "—"}
+                    {r.tu_trang_thai
+                      ? (SU_CO_TRANG_THAI_LABEL[r.tu_trang_thai as SuCoTrangThai] ??
+                        r.tu_trang_thai)
+                      : "—"}
                     {" → "}
                     {SU_CO_TRANG_THAI_LABEL[r.den_trang_thai as SuCoTrangThai] ?? r.den_trang_thai}
                   </span>
@@ -203,7 +234,9 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
             rows={3}
           />
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setConfirmDen(null)}>Huỷ</Button>
+            <Button variant="ghost" onClick={() => setConfirmDen(null)}>
+              Huỷ
+            </Button>
             <Button
               onClick={() => confirmDen && submit(confirmDen)}
               disabled={transition.isPending}

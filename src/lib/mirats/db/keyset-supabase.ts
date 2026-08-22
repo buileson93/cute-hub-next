@@ -26,7 +26,7 @@ export interface KeysetPage<T> {
 
 export async function fetchKeyset<T extends Record<string, unknown>>(
   client: SupabaseClient,
-  cfg: KeysetFetchConfig
+  cfg: KeysetFetchConfig,
 ): Promise<KeysetPage<T>> {
   const dir = cfg.dir ?? "desc";
   const kichThuoc = cfg.kichThuoc ?? 50;
@@ -48,7 +48,7 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
       // (sortField, id) op (lastValue, lastId)
       const encoded = typeof lastValue === "string" ? `"${lastValue}"` : String(lastValue);
       q = q.or(
-        `${cfg.sortField}.${op}.${encoded},and(${cfg.sortField}.eq.${encoded},id.${op}.${lastId})`
+        `${cfg.sortField}.${op}.${encoded},and(${cfg.sortField}.eq.${encoded},id.${op}.${lastId})`,
       );
     }
   }

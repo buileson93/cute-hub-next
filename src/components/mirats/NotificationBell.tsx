@@ -44,7 +44,6 @@ export function NotificationBell() {
             {unread > 0 ? `${unread} thông báo chưa đọc` : ""}
           </span>
         </motion.button>
-
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
@@ -96,7 +95,9 @@ export function NotificationBell() {
                       <div className="text-sm font-medium">{n.tieu_de}</div>
                     )}
                     {n.noi_dung && (
-                      <div className="mt-0.5 truncate text-xs text-muted-foreground">{n.noi_dung}</div>
+                      <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                        {n.noi_dung}
+                      </div>
                     )}
                     <div className="mt-1 text-[10.5px] text-muted-foreground/70">
                       {formatDT(n.created_at)}

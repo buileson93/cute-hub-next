@@ -5,7 +5,10 @@
 // ============================================================================
 import { supabase } from "@/integrations/backend/client";
 import type { ChecklistSection } from "@/lib/mirats/checklist";
-import { serializeItemOptions, type ChecklistItemOptions } from "@/lib/mirats/checklist-item-options";
+import {
+  serializeItemOptions,
+  type ChecklistItemOptions,
+} from "@/lib/mirats/checklist-item-options";
 
 export type DesignerItem = ChecklistSection["items"][number] & {
   // options luôn tồn tại trong designer (khác optional trên ChecklistItem).
@@ -28,24 +31,64 @@ export function validateChecklist(sections: readonly DesignerSection[]): Checkli
   const secCodes = new Set<string>();
   const itemCodes = new Set<string>();
   sections.forEach((s, si) => {
-    if (!s.ma_section?.trim()) out.push({ level: "error", section_index: si, message: `Nhóm #${si + 1}: thiếu mã` });
-    else if (secCodes.has(s.ma_section)) out.push({ level: "error", section_index: si, message: `Trùng mã nhóm: ${s.ma_section}` });
+    if (!s.ma_section?.trim())
+      out.push({ level: "error", section_index: si, message: `Nhóm #${si + 1}: thiếu mã` });
+    else if (secCodes.has(s.ma_section))
+      out.push({ level: "error", section_index: si, message: `Trùng mã nhóm: ${s.ma_section}` });
     else secCodes.add(s.ma_section);
-    if (!s.ten?.trim()) out.push({ level: "warning", section_index: si, message: `Nhóm ${s.ma_section}: chưa đặt tên` });
-    if (s.items.length === 0) out.push({ level: "warning", section_index: si, message: `Nhóm ${s.ma_section}: chưa có hạng mục` });
+    if (!s.ten?.trim())
+      out.push({
+        level: "warning",
+        section_index: si,
+        message: `Nhóm ${s.ma_section}: chưa đặt tên`,
+      });
+    if (s.items.length === 0)
+      out.push({
+        level: "warning",
+        section_index: si,
+        message: `Nhóm ${s.ma_section}: chưa có hạng mục`,
+      });
     s.items.forEach((it, ii) => {
-      if (!it.item_code?.trim()) out.push({ level: "error", section_index: si, item_index: ii, message: `Hạng mục #${ii + 1}: thiếu mã` });
-      else if (itemCodes.has(it.item_code)) out.push({ level: "error", section_index: si, item_index: ii, message: `Trùng mã hạng mục: ${it.item_code}` });
+      if (!it.item_code?.trim())
+        out.push({
+          level: "error",
+          section_index: si,
+          item_index: ii,
+          message: `Hạng mục #${ii + 1}: thiếu mã`,
+        });
+      else if (itemCodes.has(it.item_code))
+        out.push({
+          level: "error",
+          section_index: si,
+          item_index: ii,
+          message: `Trùng mã hạng mục: ${it.item_code}`,
+        });
       else itemCodes.add(it.item_code);
-      if (!it.ten?.trim()) out.push({ level: "warning", section_index: si, item_index: ii, message: `${it.item_code}: chưa đặt tên` });
+      if (!it.ten?.trim())
+        out.push({
+          level: "warning",
+          section_index: si,
+          item_index: ii,
+          message: `${it.item_code}: chưa đặt tên`,
+        });
       if (it.result_kind === "so") {
         const { tieu_chuan_min: mn, tieu_chuan_max: mx } = it.options;
         if (mn != null && mx != null && mn > mx) {
-          out.push({ level: "error", section_index: si, item_index: ii, message: `${it.item_code}: ngưỡng min > max` });
+          out.push({
+            level: "error",
+            section_index: si,
+            item_index: ii,
+            message: `${it.item_code}: ngưỡng min > max`,
+          });
         }
       }
       if (it.result_kind === "chon" && (it.options.choices ?? []).length === 0) {
-        out.push({ level: "warning", section_index: si, item_index: ii, message: `${it.item_code}: chưa có lựa chọn` });
+        out.push({
+          level: "warning",
+          section_index: si,
+          item_index: ii,
+          message: `${it.item_code}: chưa có lựa chọn`,
+        });
       }
     });
   });
@@ -77,7 +120,10 @@ export async function saveChecklistDesigner(
     col_layout: 1,
     repeatable: false,
   }));
-  const { data: insSecs, error: e1 } = await supabase.from("form_section").insert(secRows).select("id, ma_section");
+  const { data: insSecs, error: e1 } = await supabase
+    .from("form_section")
+    .insert(secRows)
+    .select("id, ma_section");
   if (e1) throw e1;
   const idByMa = new Map((insSecs ?? []).map((r) => [r.ma_section as string, r.id as string]));
 
@@ -113,7 +159,7 @@ export async function saveChecklistDesigner(
         result_kind: it.result_kind,
         don_vi: it.don_vi ?? null,
         tieu_chuan: it.tieu_chuan ?? null,
-      tuy_chon: (serializeItemOptions({
+        tuy_chon: (serializeItemOptions({
           ...it.options,
           // đảm bảo choices cho kiểu "chon" đồng bộ từ tuy_chon phẳng.
           choices: it.options.choices ?? it.tuy_chon ?? null,
@@ -121,8 +167,8 @@ export async function saveChecklistDesigner(
         bat_buoc: !!it.bat_buoc,
         position: si * 1000 + ii,
         metric_key: it.metric_key ?? null,
-        nguong_min: it.nguong_min ?? (it.options.tieu_chuan_min ?? null),
-        nguong_max: it.nguong_max ?? (it.options.tieu_chuan_max ?? null),
+        nguong_min: it.nguong_min ?? it.options.tieu_chuan_min ?? null,
+        nguong_max: it.nguong_max ?? it.options.tieu_chuan_max ?? null,
         nguong_op: it.nguong_op ?? null,
         chu_ky: it.chu_ky ?? null,
       });

@@ -2,7 +2,11 @@
 // Client-side helpers backed by Supabase (RLS applies as caller).
 import { supabase } from "@/integrations/backend/client";
 
-export interface KipTrucRow { ho_ten: string; chuc_vu: string; nang_dinh: string }
+export interface KipTrucRow {
+  ho_ten: string;
+  chuc_vu: string;
+  nang_dinh: string;
+}
 
 export interface SuCoJson {
   bao_cao_ban_dau?: {
@@ -27,10 +31,7 @@ export function pickLastKipTruc(rows: SuCoJson[]): KipTrucRow[] | null {
  * Pick the most-frequent non-empty biện pháp among su_co rows whose payload
  * `thanh_phan_list` intersects with any of `thanhPhanIds`.
  */
-export function pickBienPhapForComponents(
-  rows: SuCoJson[],
-  thanhPhanIds: string[],
-): string | null {
+export function pickBienPhapForComponents(rows: SuCoJson[], thanhPhanIds: string[]): string | null {
   if (!thanhPhanIds.length) return null;
   const wanted = new Set(thanhPhanIds);
   const freq = new Map<string, number>();
@@ -44,7 +45,11 @@ export function pickBienPhapForComponents(
   }
   let best: string | null = null;
   let max = 0;
-  for (const [k, v] of freq) if (v > max) { max = v; best = k; }
+  for (const [k, v] of freq)
+    if (v > max) {
+      max = v;
+      best = k;
+    }
   return best;
 }
 

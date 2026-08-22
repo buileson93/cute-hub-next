@@ -13,12 +13,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
-  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/backend/client";
 import { renameEntity } from "@/lib/mirats/rename-entity";
@@ -32,7 +43,10 @@ export const Route = createFileRoute("/_app/danh-muc/he-thong")({
   head: () => ({
     meta: [
       { title: "Hệ thống — Danh mục MIRATS" },
-      { name: "description", content: "Danh mục hệ thống kỹ thuật đọc trực tiếp từ cơ sở dữ liệu." },
+      {
+        name: "description",
+        content: "Danh mục hệ thống kỹ thuật đọc trực tiếp từ cơ sở dữ liệu.",
+      },
     ],
   }),
   component: HeThongPage,
@@ -43,7 +57,7 @@ type Row = {
   ma: string;
   ten: string;
   phanLoai: string;
-  
+
   donVi: string;
   gpSo: string;
   soTb: number;
@@ -90,24 +104,37 @@ function HeThongPage() {
     mutationFn: async (list: Row[]) => {
       const removable = list.filter((r) => r.soTb === 0);
       const blocked = list.length - removable.length;
-      if (removable.length === 0) throw new Error("Các hệ thống đã chọn đều còn tài sản — không thể xoá.");
+      if (removable.length === 0)
+        throw new Error("Các hệ thống đã chọn đều còn tài sản — không thể xoá.");
       for (const r of removable) {
-        const { error } = await supabase.rpc("dm_xoa_an_toan" as never, { _bang: "dm_he_thong", _id: r.id } as never);
+        const { error } = await supabase.rpc(
+          "dm_xoa_an_toan" as never,
+          { _bang: "dm_he_thong", _id: r.id } as never,
+        );
         if (error) throw error;
       }
       return { deleted: removable.length, blocked };
     },
     onSuccess: ({ deleted, blocked }) => {
       invalidateTaxonomy(qc);
-      setDelTargets(null); setDelReason("");
-      toast.success(`Đã xoá ${deleted} hệ thống${blocked ? ` · bỏ qua ${blocked} còn tài sản` : ""}.`);
+      setDelTargets(null);
+      setDelReason("");
+      toast.success(
+        `Đã xoá ${deleted} hệ thống${blocked ? ` · bỏ qua ${blocked} còn tài sản` : ""}.`,
+      );
     },
     onError: (e) => toast.error((e as Error).message),
   });
 
   const toggleActiveMut = useMutation({
     mutationFn: async ({ list, active }: { list: Row[]; active: boolean }) => {
-      const { error } = await supabase.from("dm_he_thong").update({ active }).in("id", list.map((r) => r.id));
+      const { error } = await supabase
+        .from("dm_he_thong")
+        .update({ active })
+        .in(
+          "id",
+          list.map((r) => r.id),
+        );
       if (error) throw error;
       return list.length;
     },
@@ -133,7 +160,9 @@ function HeThongPage() {
         actions={
           canManage ? (
             <label className="inline-flex items-center gap-2 rounded-md border bg-card px-2.5 py-1.5 text-xs">
-              <Wrench className={`h-3.5 w-3.5 ${editOn ? "text-primary" : "text-muted-foreground"}`} />
+              <Wrench
+                className={`h-3.5 w-3.5 ${editOn ? "text-primary" : "text-muted-foreground"}`}
+              />
               Chế độ chỉnh sửa
               <Switch checked={editMode} onCheckedChange={setEditMode} />
             </label>
@@ -141,8 +170,9 @@ function HeThongPage() {
         }
       />
 
-
-      {error && <div className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</div>}
+      {error && (
+        <div className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</div>
+      )}
 
       {!error && (
         <StandardTable<Row>
@@ -153,84 +183,191 @@ function HeThongPage() {
           emptyText="Không có hệ thống phù hợp."
           countUnit="hệ thống"
           selectable={editOn}
-          bulkActions={editOn ? ({ selectedRows, clear }) => (
-            <div className="flex items-center gap-1.5">
-              <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: true })}>
-                <Power className="h-3.5 w-3.5" /> Kích hoạt
-              </Button>
-              <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: false })}>
-                <PowerOff className="h-3.5 w-3.5" /> Tạm dừng
-              </Button>
-              <Button size="sm" variant="destructive" className="h-7 gap-1" onClick={() => setDelTargets(selectedRows)}>
-                <Trash2 className="h-3.5 w-3.5" /> Xoá ({selectedRows.length})
-              </Button>
-              <Button size="sm" variant="ghost" className="h-7" onClick={clear}>Bỏ chọn</Button>
-            </div>
-          ) : undefined}
-          columns={[
-            { key: "ma", label: "Mã", minW: "min-w-[110px]", filter: "text", value: (r) => r.ma,
-              cell: (r) => <span className="font-mono text-xs text-muted-foreground">{r.ma || "—"}</span> },
-            { key: "ten", label: "Tên hệ thống", minW: "min-w-[240px]", filter: "text", value: (r) => r.ten,
-              cell: (r) => <span className="font-medium">{r.ten}</span> },
-            { key: "phanLoai", label: "Phân loại nhóm", minW: "min-w-[180px]", filter: "cat", value: (r) => r.phanLoai },
-            { key: "donVi", label: "Đơn vị", minW: "min-w-[180px]", filter: "cat", value: (r) => r.donVi },
-            { key: "gpSo", label: "Giấy phép", minW: "min-w-[120px]", filter: "text", value: (r) => r.gpSo,
-              cell: (r) => r.gpSo ? <span className="font-mono text-xs text-muted-foreground">{r.gpSo}</span> : <span className="text-xs text-muted-foreground">—</span> },
-            { key: "soTb", label: "Tài sản", align: "center", value: (r) => r.soTb,
-              cell: (r) => r.soTb > 0
-                ? <Badge variant="secondary" className="gap-1 text-[11px]"><Boxes className="h-3 w-3" /> {r.soTb.toLocaleString("vi-VN")}</Badge>
-                : <span className="text-xs text-muted-foreground">0</span> },
-            ...(canManage ? [{
-              key: "actions", label: "", align: "right" as const,
-              cell: (r: Row) => (
-                <div className="flex items-center justify-end gap-0.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                  <Button size="icon" variant="ghost" aria-label="Chỉnh sửa hệ thống" className="h-7 w-7" onClick={() => setEditing(r)} title="Sửa thông tin">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  {editOn && (
+          bulkActions={
+            editOn
+              ? ({ selectedRows, clear }) => (
+                  <div className="flex items-center gap-1.5">
                     <Button
-                      size="icon" variant="ghost" aria-label="Xoá hệ thống"
-                      className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => setDelTargets([r])}
-                      title={r.soTb > 0 ? `Còn ${r.soTb} tài sản — không thể xoá` : "Xoá hệ thống"}
-                      disabled={r.soTb > 0}
+                      size="sm"
+                      variant="outline"
+                      className="h-7 gap-1"
+                      onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: true })}
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Power className="h-3.5 w-3.5" /> Kích hoạt
                     </Button>
-                  )}
-                </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 gap-1"
+                      onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: false })}
+                    >
+                      <PowerOff className="h-3.5 w-3.5" /> Tạm dừng
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="h-7 gap-1"
+                      onClick={() => setDelTargets(selectedRows)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Xoá ({selectedRows.length})
+                    </Button>
+                    <Button size="sm" variant="ghost" className="h-7" onClick={clear}>
+                      Bỏ chọn
+                    </Button>
+                  </div>
+                )
+              : undefined
+          }
+          columns={[
+            {
+              key: "ma",
+              label: "Mã",
+              minW: "min-w-[110px]",
+              filter: "text",
+              value: (r) => r.ma,
+              cell: (r) => (
+                <span className="font-mono text-xs text-muted-foreground">{r.ma || "—"}</span>
               ),
-            }] : []),
+            },
+            {
+              key: "ten",
+              label: "Tên hệ thống",
+              minW: "min-w-[240px]",
+              filter: "text",
+              value: (r) => r.ten,
+              cell: (r) => <span className="font-medium">{r.ten}</span>,
+            },
+            {
+              key: "phanLoai",
+              label: "Phân loại nhóm",
+              minW: "min-w-[180px]",
+              filter: "cat",
+              value: (r) => r.phanLoai,
+            },
+            {
+              key: "donVi",
+              label: "Đơn vị",
+              minW: "min-w-[180px]",
+              filter: "cat",
+              value: (r) => r.donVi,
+            },
+            {
+              key: "gpSo",
+              label: "Giấy phép",
+              minW: "min-w-[120px]",
+              filter: "text",
+              value: (r) => r.gpSo,
+              cell: (r) =>
+                r.gpSo ? (
+                  <span className="font-mono text-xs text-muted-foreground">{r.gpSo}</span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                ),
+            },
+            {
+              key: "soTb",
+              label: "Tài sản",
+              align: "center",
+              value: (r) => r.soTb,
+              cell: (r) =>
+                r.soTb > 0 ? (
+                  <Badge variant="secondary" className="gap-1 text-[11px]">
+                    <Boxes className="h-3 w-3" /> {r.soTb.toLocaleString("vi-VN")}
+                  </Badge>
+                ) : (
+                  <span className="text-xs text-muted-foreground">0</span>
+                ),
+            },
+            ...(canManage
+              ? [
+                  {
+                    key: "actions",
+                    label: "",
+                    align: "right" as const,
+                    cell: (r: Row) => (
+                      <div
+                        className="flex items-center justify-end gap-0.5 whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          aria-label="Chỉnh sửa hệ thống"
+                          className="h-7 w-7"
+                          onClick={() => setEditing(r)}
+                          title="Sửa thông tin"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        {editOn && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            aria-label="Xoá hệ thống"
+                            className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => setDelTargets([r])}
+                            title={
+                              r.soTb > 0 ? `Còn ${r.soTb} tài sản — không thể xoá` : "Xoá hệ thống"
+                            }
+                            disabled={r.soTb > 0}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
+                    ),
+                  },
+                ]
+              : []),
           ]}
         />
       )}
 
-      {editing && (
-        <HeThongDialog row={editing} onClose={() => setEditing(null)} />
-      )}
+      {editing && <HeThongDialog row={editing} onClose={() => setEditing(null)} />}
 
-      <AlertDialog open={!!delTargets} onOpenChange={(o) => { if (!o) { setDelTargets(null); setDelReason(""); } }}>
+      <AlertDialog
+        open={!!delTargets}
+        onOpenChange={(o) => {
+          if (!o) {
+            setDelTargets(null);
+            setDelReason("");
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá hệ thống?</AlertDialogTitle>
             <AlertDialogDescription>
-              Sẽ xoá <b>{delTargets?.filter((r) => r.soTb === 0).length ?? 0}</b> hệ thống chưa có tài sản.
+              Sẽ xoá <b>{delTargets?.filter((r) => r.soTb === 0).length ?? 0}</b> hệ thống chưa có
+              tài sản.
               {delTargets && delTargets.some((r) => r.soTb > 0) && (
-                <> Bỏ qua <b>{delTargets.filter((r) => r.soTb > 0).length}</b> hệ thống còn tài sản.</>
-              )}
-              {" "}Thao tác này không thể hoàn tác.
+                <>
+                  {" "}
+                  Bỏ qua <b>{delTargets.filter((r) => r.soTb > 0).length}</b> hệ thống còn tài sản.
+                </>
+              )}{" "}
+              Thao tác này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="space-y-1">
             <Label htmlFor="ht-del-reason">Lý do (tuỳ chọn)</Label>
-            <Textarea id="ht-del-reason" rows={2} value={delReason} onChange={(e) => setDelReason(e.target.value)} placeholder="VD: nhập nhầm, gộp vào hệ thống khác…" />
+            <Textarea
+              id="ht-del-reason"
+              rows={2}
+              value={delReason}
+              onChange={(e) => setDelReason(e.target.value)}
+              placeholder="VD: nhập nhầm, gộp vào hệ thống khác…"
+            />
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={delMut.isPending}>Huỷ</AlertDialogCancel>
             <AlertDialogAction
               disabled={delMut.isPending || !delTargets?.length}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(e) => { e.preventDefault(); if (delTargets) delMut.mutate(delTargets); }}
+              onClick={(e) => {
+                e.preventDefault();
+                if (delTargets) delMut.mutate(delTargets);
+              }}
             >
               {delMut.isPending && <Loader2 className="mr-1 h-4 w-4 animate-spin" />} Xoá
             </AlertDialogAction>
@@ -253,17 +390,27 @@ function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
   // Nạp mô tả & trạng thái từ dm_he_thong khi mở.
   useEffect(() => {
     let cancelled = false;
-    supabase.from("dm_he_thong").select("mo_ta,active").eq("id", row.id).single().then(({ data }) => {
-      if (cancelled || !data) return;
-      setMoTa((data as { mo_ta: string | null }).mo_ta ?? "");
-      setActive((data as { active: boolean }).active ?? true);
-      setLoaded(true);
-    });
-    return () => { cancelled = true; };
+    supabase
+      .from("dm_he_thong")
+      .select("mo_ta,active")
+      .eq("id", row.id)
+      .single()
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        setMoTa((data as { mo_ta: string | null }).mo_ta ?? "");
+        setActive((data as { active: boolean }).active ?? true);
+        setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [row.id]);
 
   async function save() {
-    if (!ten.trim()) { toast.error("Vui lòng nhập tên hệ thống."); return; }
+    if (!ten.trim()) {
+      toast.error("Vui lòng nhập tên hệ thống.");
+      return;
+    }
     setSaving(true);
     try {
       // Đổi tên qua SSoT chung (ghi thẳng dm_he_thong.ten).
@@ -298,20 +445,35 @@ function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
         </div>
         <div className="space-y-1.5">
           <Label>Số giấy phép</Label>
-          <Input value={gpSo} onChange={(e) => setGpSo(e.target.value)} className="font-mono" placeholder="VD: GP-123/…" />
+          <Input
+            value={gpSo}
+            onChange={(e) => setGpSo(e.target.value)}
+            className="font-mono"
+            placeholder="VD: GP-123/…"
+          />
         </div>
         <div className="space-y-1.5">
           <Label>Mô tả</Label>
-          <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} disabled={!loaded} placeholder={loaded ? "Ghi chú (không bắt buộc)…" : "Đang tải…"} />
+          <Textarea
+            value={moTa}
+            onChange={(e) => setMoTa(e.target.value)}
+            rows={2}
+            disabled={!loaded}
+            placeholder={loaded ? "Ghi chú (không bắt buộc)…" : "Đang tải…"}
+          />
         </div>
         <div className="flex items-center gap-2">
           <Switch checked={active} onCheckedChange={setActive} id="ht-active" disabled={!loaded} />
-          <Label htmlFor="ht-active" className="cursor-pointer">Đang sử dụng</Label>
+          <Label htmlFor="ht-active" className="cursor-pointer">
+            Đang sử dụng
+          </Label>
         </div>
       </div>
 
       <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={onClose} disabled={saving}>Huỷ</Button>
+        <Button variant="outline" onClick={onClose} disabled={saving}>
+          Huỷ
+        </Button>
         <Button onClick={save} disabled={saving} className="gap-1.5">
           {saving && <Loader2 className="h-4 w-4 animate-spin" />} Lưu
         </Button>

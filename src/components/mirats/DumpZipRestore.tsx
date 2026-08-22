@@ -15,13 +15,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  restoreDumpChunk, restoreDumpBegin, restoreDumpFinish, canRestoreDump,
+  restoreDumpChunk,
+  restoreDumpBegin,
+  restoreDumpFinish,
+  canRestoreDump,
 } from "@/lib/dump-restore.functions";
 import { useSession } from "@/hooks/use-session";
-
 
 type Goi = { filename: string; data: Record<string, any[]> };
 
@@ -132,14 +139,19 @@ export function DumpZipRestore() {
         let napBang = 0;
         let bogua: string | null = null;
         if (rows.length === 0) {
-          const r: any = await chunkFn({ data: { table: t.name, rows: [], truncate: true, runId } });
+          const r: any = await chunkFn({
+            data: { table: t.name, rows: [], truncate: true, runId },
+          });
           if (r?.skipped) bogua = r.reason ?? "bỏ qua";
         }
         for (let i = 0; i < rows.length; i += LO) {
           const r: any = await chunkFn({
             data: { table: t.name, rows: rows.slice(i, i + LO), truncate: i === 0, runId },
           });
-          if (r?.skipped) { bogua = r.reason ?? "bỏ qua"; break; }
+          if (r?.skipped) {
+            bogua = r.reason ?? "bỏ qua";
+            break;
+          }
           napBang += r?.rows ?? 0;
           setMsg(`Bảng ${t.name}: ${Math.min(i + LO, rows.length)}/${rows.length} dòng`);
         }
@@ -147,7 +159,10 @@ export function DumpZipRestore() {
         if (bogua) boQua.push(t.name);
         setLogs((l) => [
           bogua
-            ? { t: `${t.name} — bỏ qua (bảng được bảo vệ: tài khoản/phân quyền/nhật ký)`, ok: false }
+            ? {
+                t: `${t.name} — bỏ qua (bảng được bảo vệ: tài khoản/phân quyền/nhật ký)`,
+                ok: false,
+              }
             : { t: `${t.name} — nạp ${napBang} dòng`, ok: true },
           ...l,
         ]);
@@ -156,8 +171,12 @@ export function DumpZipRestore() {
       setMsg("Hoàn tất");
       await finishFn({
         data: {
-          runId, ok: true, filename: goi.filename,
-          tables: bang.length, rows: tongNap, skipped: boQua,
+          runId,
+          ok: true,
+          filename: goi.filename,
+          tables: bang.length,
+          rows: tongNap,
+          skipped: boQua,
         },
       });
       toast.success(`Đã phục hồi ${bang.length} bảng · ${tongNap.toLocaleString("vi-VN")} dòng.`);
@@ -169,8 +188,13 @@ export function DumpZipRestore() {
       if (runId) {
         await finishFn({
           data: {
-            runId, ok: false, filename: goi.filename,
-            tables: daXong, rows: tongNap, skipped: boQua, error: String(loi).slice(0, 1000),
+            runId,
+            ok: false,
+            filename: goi.filename,
+            tables: daXong,
+            rows: tongNap,
+            skipped: boQua,
+            error: String(loi).slice(0, 1000),
           },
         }).catch(() => {});
       }
@@ -188,42 +212,53 @@ export function DumpZipRestore() {
           className="gap-1.5"
           onClick={() => fileRef.current?.click()}
           disabled={running || dangKiemTraQuyen || !laAdmin}
-          title={!laAdmin && !dangKiemTraQuyen ? "Chỉ tài khoản Admin được phục hồi CSDL" : undefined}
+          title={
+            !laAdmin && !dangKiemTraQuyen ? "Chỉ tài khoản Admin được phục hồi CSDL" : undefined
+          }
         >
-          {!laAdmin && !dangKiemTraQuyen ? <Lock className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+          {!laAdmin && !dangKiemTraQuyen ? (
+            <Lock className="h-4 w-4" />
+          ) : (
+            <Upload className="h-4 w-4" />
+          )}
           Chọn gói .zip để phục hồi
         </Button>
-        <Badge variant="outline" className="gap-1"><FileArchive className="h-3 w-3" /> Chỉ Admin</Badge>
+        <Badge variant="outline" className="gap-1">
+          <FileArchive className="h-3 w-3" /> Chỉ Admin
+        </Badge>
       </div>
 
       {!dangKiemTraQuyen && !laAdmin && (
         <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
           <Lock className="mt-0.5 h-4 w-4 shrink-0" />
           <span>
-            Tài khoản của bạn không có vai trò <b>Admin</b> nên không thể phục hồi CSDL. Hãy liên hệ quản trị viên
-            hệ thống nếu cần thực hiện thao tác này.
+            Tài khoản của bạn không có vai trò <b>Admin</b> nên không thể phục hồi CSDL. Hãy liên hệ
+            quản trị viên hệ thống nếu cần thực hiện thao tác này.
           </span>
         </div>
       )}
 
       <p className="text-[11px] text-muted-foreground">
-        Chấp nhận gói <code>.zip</code> do “Tải .zip dump về máy” hoặc trang Sao lưu tạo ra. Tài khoản, phân quyền,
-        nhật ký và tin nhắn luôn được giữ nguyên (không ghi đè). Mọi lần phục hồi đều được ghi vào nhật ký kiểm toán
-        (ai thực hiện, tệp nào, bảng nào, lúc nào).
+        Chấp nhận gói <code>.zip</code> do “Tải .zip dump về máy” hoặc trang Sao lưu tạo ra. Tài
+        khoản, phân quyền, nhật ký và tin nhắn luôn được giữ nguyên (không ghi đè). Mọi lần phục hồi
+        đều được ghi vào nhật ký kiểm toán (ai thực hiện, tệp nào, bảng nào, lúc nào).
       </p>
-
 
       {running && (
         <div className="space-y-1">
           <Progress value={pct} />
-          <p className="text-xs text-muted-foreground">{pct}% — {msg}</p>
+          <p className="text-xs text-muted-foreground">
+            {pct}% — {msg}
+          </p>
         </div>
       )}
 
       {logs.length > 0 && (
         <div className="max-h-56 overflow-auto rounded-md border bg-muted/30 p-2 text-[11px] leading-5">
           {logs.map((l, i) => (
-            <div key={i} className={l.ok ? "text-muted-foreground" : "text-amber-600"}>{l.t}</div>
+            <div key={i} className={l.ok ? "text-muted-foreground" : "text-amber-600"}>
+              {l.t}
+            </div>
           ))}
         </div>
       )}
@@ -252,14 +287,21 @@ export function DumpZipRestore() {
           <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
-              Dữ liệu hiện tại của các bảng nghiệp vụ trên sẽ bị <b>xoá và ghi đè</b> bằng nội dung trong gói.
-              Thao tác <b>không thể hoàn tác</b> — nên tạo một bản dump mới trước khi phục hồi.
+              Dữ liệu hiện tại của các bảng nghiệp vụ trên sẽ bị <b>xoá và ghi đè</b> bằng nội dung
+              trong gói. Thao tác <b>không thể hoàn tác</b> — nên tạo một bản dump mới trước khi
+              phục hồi.
             </span>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setGoi(null)}>Huỷ</Button>
-            <Button className="bg-amber-600 hover:bg-amber-700" onClick={phucHoi} disabled={running}>
+            <Button variant="outline" onClick={() => setGoi(null)}>
+              Huỷ
+            </Button>
+            <Button
+              className="bg-amber-600 hover:bg-amber-700"
+              onClick={phucHoi}
+              disabled={running}
+            >
               {running && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Phục hồi ngay
             </Button>
           </DialogFooter>

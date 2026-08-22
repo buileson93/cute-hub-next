@@ -4,8 +4,21 @@
 // ============================================================================
 import { Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/mirats/EmptyState";
@@ -46,7 +59,9 @@ export function SuCoDrillDialog({
         </DialogHeader>
         {isLoading ? (
           <div className="space-y-2">
-            {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-full" />
+            ))}
           </div>
         ) : !rows?.length ? (
           <EmptyState title="Không có sự cố" description={emptyDescription} />
@@ -72,9 +87,13 @@ export function SuCoDrillDialog({
                       {s.ngay_phat_hien ? new Date(s.ngay_phat_hien).toLocaleString("vi-VN") : "—"}
                     </TableCell>
                     {showMucDo && (
-                      <TableCell><Badge variant="outline">{s.muc_do ?? "—"}</Badge></TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{s.muc_do ?? "—"}</Badge>
+                      </TableCell>
                     )}
-                    <TableCell><Badge variant="secondary">{s.trang_thai ?? "—"}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{s.trang_thai ?? "—"}</Badge>
+                    </TableCell>
                     <TableCell>
                       <Link
                         to="/su-co/$maSuCo"

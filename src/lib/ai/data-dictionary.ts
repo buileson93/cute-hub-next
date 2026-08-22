@@ -24,10 +24,14 @@ export const TERMINOLOGY_MAP: ReadonlyArray<{
   { ui: "Tài sản", table: "thiet_bi", legacyUi: "Thiết bị", note: "Bảng trung tâm — asset vật lý" },
   { ui: "Model", table: "dm_model", legacyUi: "Mẫu thiết bị" },
   { ui: "Chủng loại", table: "dm_loai_thiet_bi", legacyUi: "Loại thiết bị" },
-  { ui: "Nhãn thiết bị", table: "dm_dac_tinh", legacyUi: "Đặc tính", note: "Tag đa trị M:N với Model" },
+  {
+    ui: "Nhãn thiết bị",
+    table: "dm_dac_tinh",
+    legacyUi: "Đặc tính",
+    note: "Tag đa trị M:N với Model",
+  },
   { ui: "Trạng thái tài sản", table: "dm_trang_thai_thiet_bi", legacyUi: "Trạng thái thiết bị" },
 ];
-
 
 export type ColumnSpec = {
   name: string;
@@ -55,7 +59,10 @@ export const BUSINESS_TABLES: TableSpec[] = [
     desc: "Tài sản kỹ thuật (bảng trung tâm)",
     columns: [
       { name: "id", desc: "UUID" },
-      { name: "ma_thiet_bi", desc: "Mã định danh duy nhất, bất biến (dạng TB-000123, số tuần tự tự sinh). KHÔNG mã hoá đơn vị/vị trí/hệ thống — điều chuyển hay thay thế không đổi mã. Đơn vị/hệ thống đang lắp nằm ở các cột riêng (don_vi_id, he_thong_id)." },
+      {
+        name: "ma_thiet_bi",
+        desc: "Mã định danh duy nhất, bất biến (dạng TB-000123, số tuần tự tự sinh). KHÔNG mã hoá đơn vị/vị trí/hệ thống — điều chuyển hay thay thế không đổi mã. Đơn vị/hệ thống đang lắp nằm ở các cột riêng (don_vi_id, he_thong_id).",
+      },
       { name: "ma_tai_san_bravo", desc: "Mã tài sản Bravo (cột vật lý cố định)" },
       { name: "ten_thiet_bi", desc: "Tên tài sản" },
       { name: "model", desc: "Model" },
@@ -234,10 +241,7 @@ export const BUSINESS_TABLES: TableSpec[] = [
       { name: "form_submission_id", desc: "Biểu mẫu", enumOf: "form_submission" },
       { name: "thiet_bi_id", desc: "Tài sản", enumOf: "thiet_bi" },
     ],
-    relations: [
-      "form_submission_id -> form_submission.id",
-      "thiet_bi_id -> thiet_bi.id",
-    ],
+    relations: ["form_submission_id -> form_submission.id", "thiet_bi_id -> thiet_bi.id"],
   },
 
   // ── System / hỗ trợ ──────────────────────────────────────
@@ -320,7 +324,10 @@ export const BUSINESS_TABLES: TableSpec[] = [
     name: "so_do_tep_dinh_kem",
     group: "system",
     desc: "Tệp đính kèm sơ đồ",
-    columns: [{ name: "id", desc: "UUID" }, { name: "so_do_id", desc: "Sơ đồ", enumOf: "so_do_he_thong" }],
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "so_do_id", desc: "Sơ đồ", enumOf: "so_do_he_thong" },
+    ],
     relations: ["so_do_id -> so_do_he_thong.id"],
   },
   {
@@ -344,7 +351,10 @@ export const BUSINESS_TABLES: TableSpec[] = [
     name: "cay_node_edit",
     group: "system",
     desc: "Ghi đè tổ chức cây hệ thống (di chuyển node, đổi tên)",
-    columns: [{ name: "id", desc: "UUID" }, { name: "ten", desc: "Tên hiển thị" }],
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ten", desc: "Tên hiển thị" },
+    ],
   },
   {
     name: "he_thong_truong",
@@ -360,40 +370,149 @@ export const BUSINESS_TABLES: TableSpec[] = [
     name: "profiles",
     group: "system",
     desc: "Hồ sơ người dùng",
-    columns: [{ name: "id", desc: "UUID user" }, { name: "full_name", desc: "Họ tên" }],
+    columns: [
+      { name: "id", desc: "UUID user" },
+      { name: "full_name", desc: "Họ tên" },
+    ],
   },
   {
     name: "user_roles",
     group: "system",
     desc: "Vai trò người dùng (admin/moderator/user)",
-    columns: [{ name: "user_id", desc: "User" }, { name: "role", desc: "Vai trò" }],
+    columns: [
+      { name: "user_id", desc: "User" },
+      { name: "role", desc: "Vai trò" },
+    ],
   },
   {
     name: "audit_log",
     group: "system",
     desc: "Nhật ký thay đổi dữ liệu (rollback)",
-    columns: [{ name: "id", desc: "UUID" }, { name: "table_name", desc: "Bảng bị thay đổi" }],
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "table_name", desc: "Bảng bị thay đổi" },
+    ],
   },
 
   // ── Master data (danh mục nền dm_*) ──────────────────────
-  { name: "dm_don_vi", group: "master", desc: "Danh mục Đơn vị", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_he_thong", group: "master", desc: "Danh mục Hệ thống", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }, { name: "ma_tai_san_bravo", desc: "Mã tài sản Bravo (cột vật lý cố định)" }] },
-  { name: "dm_nhom_he_thong", group: "master", desc: "Danh mục Nhóm hệ thống", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  
-  { name: "dm_vi_tri", group: "master", desc: "Danh mục Vị trí", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_loai_thiet_bi", group: "master", desc: "Danh mục Chủng loại", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_trang_thai_thiet_bi", group: "master", desc: "Danh mục Trạng thái tài sản", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_nha_san_xuat", group: "master", desc: "Danh mục Nhà sản xuất", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_nha_cung_cap", group: "master", desc: "Danh mục Nhà cung cấp", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_noi_cap", group: "master", desc: "Danh mục Nơi cấp", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_loai_giay_phep", group: "master", desc: "Danh mục Loại giấy phép", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
-  { name: "dm_danh_gia_nien_han", group: "master", desc: "Danh mục Đánh giá niên hạn", columns: [{ name: "id", desc: "UUID" }, { name: "ma", desc: "Mã" }, { name: "ten", desc: "Tên" }] },
+  {
+    name: "dm_don_vi",
+    group: "master",
+    desc: "Danh mục Đơn vị",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_he_thong",
+    group: "master",
+    desc: "Danh mục Hệ thống",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+      { name: "ma_tai_san_bravo", desc: "Mã tài sản Bravo (cột vật lý cố định)" },
+    ],
+  },
+  {
+    name: "dm_nhom_he_thong",
+    group: "master",
+    desc: "Danh mục Nhóm hệ thống",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+
+  {
+    name: "dm_vi_tri",
+    group: "master",
+    desc: "Danh mục Vị trí",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_loai_thiet_bi",
+    group: "master",
+    desc: "Danh mục Chủng loại",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_trang_thai_thiet_bi",
+    group: "master",
+    desc: "Danh mục Trạng thái tài sản",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_nha_san_xuat",
+    group: "master",
+    desc: "Danh mục Nhà sản xuất",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_nha_cung_cap",
+    group: "master",
+    desc: "Danh mục Nhà cung cấp",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_noi_cap",
+    group: "master",
+    desc: "Danh mục Nơi cấp",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_loai_giay_phep",
+    group: "master",
+    desc: "Danh mục Loại giấy phép",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
+  {
+    name: "dm_danh_gia_nien_han",
+    group: "master",
+    desc: "Danh mục Đánh giá niên hạn",
+    columns: [
+      { name: "id", desc: "UUID" },
+      { name: "ma", desc: "Mã" },
+      { name: "ten", desc: "Tên" },
+    ],
+  },
 ];
 
 /** Danh mục nền (dm_*) – dùng cho tool list_danh_muc để tra id. */
-export const DANH_MUC_TABLES: string[] = BUSINESS_TABLES.filter(
-  (t) => t.group === "master",
-).map((t) => t.name);
+export const DANH_MUC_TABLES: string[] = BUSINESS_TABLES.filter((t) => t.group === "master").map(
+  (t) => t.name,
+);
 
 export function getKnownTableNames(): string[] {
   return BUSINESS_TABLES.map((t) => t.name);
@@ -406,9 +525,7 @@ export function getTableSpec(name: string): TableSpec | undefined {
 /** Render bản đồ dữ liệu gọn cho system prompt. */
 export function renderSchemaForPrompt(): string {
   const lines = BUSINESS_TABLES.map((t) => {
-    const cols = t.columns
-      .map((c) => (c.enumOf ? `${c.name}(→${c.enumOf})` : c.name))
-      .join(", ");
+    const cols = t.columns.map((c) => (c.enumOf ? `${c.name}(→${c.enumOf})` : c.name)).join(", ");
     const fk = t.relations?.length ? ` | FK: ${t.relations.join("; ")}` : "";
     return `- ${t.name}: ${t.desc}. Cột: ${cols}${fk}`;
   });

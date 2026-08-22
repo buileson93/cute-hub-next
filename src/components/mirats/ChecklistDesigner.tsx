@@ -14,15 +14,28 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-  Plus, Trash2, ChevronUp, ChevronDown, ListChecks, Copy, Settings2, Undo2, Redo2,
+  Plus,
+  Trash2,
+  ChevronUp,
+  ChevronDown,
+  ListChecks,
+  Copy,
+  Settings2,
+  Undo2,
+  Redo2,
 } from "lucide-react";
 import { ChecklistRenderer } from "@/components/mirats/ChecklistRenderer";
 import type { ChecklistSection, ResultKind } from "@/lib/mirats/checklist";
 import {
-  DEFAULT_ITEM_OPTIONS, type ChecklistItemOptions,
+  DEFAULT_ITEM_OPTIONS,
+  type ChecklistItemOptions,
 } from "@/lib/mirats/checklist-item-options";
 import type { DesignerItem, DesignerSection } from "@/lib/mirats/checklist-designer-io";
 
@@ -62,7 +75,9 @@ function newItem(section: DesignerSection): DesignerItem {
 type Sel = { sec: number; item: number | null } | null;
 
 export function ChecklistDesigner({
-  sections, onChange, tplName,
+  sections,
+  onChange,
+  tplName,
 }: {
   sections: DesignerSection[];
   onChange: (next: DesignerSection[]) => void;
@@ -79,11 +94,14 @@ export function ChecklistDesigner({
   const [future, setFuture] = useState<DesignerSection[][]>([]);
   const skipHistoryRef = useRef(false);
 
-  const patch = useCallback((next: DesignerSection[]) => {
-    setHistory((h) => [...h, sections].slice(-50));
-    setFuture([]);
-    onChange(next);
-  }, [sections, onChange]);
+  const patch = useCallback(
+    (next: DesignerSection[]) => {
+      setHistory((h) => [...h, sections].slice(-50));
+      setFuture([]);
+      onChange(next);
+    },
+    [sections, onChange],
+  );
 
   const undo = useCallback(() => {
     if (history.length === 0) return;
@@ -109,9 +127,13 @@ export function ChecklistDesigner({
       if (!meta) return;
       const tag = (e.target as HTMLElement | null)?.tagName;
       // Cho phép Ctrl+Z ngay cả khi focus input để undo thao tác structural gần nhất.
-      if (e.key === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
-      else if ((e.key === "z" && e.shiftKey) || e.key === "y") { e.preventDefault(); redo(); }
-      else return;
+      if (e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+        e.preventDefault();
+        redo();
+      } else return;
       void tag;
     };
     window.addEventListener("keydown", onKey);
@@ -155,7 +177,10 @@ export function ChecklistDesigner({
     const s = sections[si];
     const src = s.items[ii];
     const clone: DesignerItem = { ...src, item_code: `${src.item_code}_copy`, position: ii + 1 };
-    const items = [...s.items.slice(0, ii + 1), clone, ...s.items.slice(ii + 1)].map((it, i) => ({ ...it, position: i }));
+    const items = [...s.items.slice(0, ii + 1), clone, ...s.items.slice(ii + 1)].map((it, i) => ({
+      ...it,
+      position: i,
+    }));
     patch(sections.map((x, i) => (i === si ? { ...x, items } : x)));
     setSel({ sec: si, item: ii + 1 });
   };
@@ -165,22 +190,29 @@ export function ChecklistDesigner({
     if (j < 0 || j >= s.items.length) return;
     const items = [...s.items];
     [items[ii], items[j]] = [items[j], items[ii]];
-    patch(sections.map((x, i) => (i === si ? { ...x, items: items.map((it, k) => ({ ...it, position: k })) } : x)));
+    patch(
+      sections.map((x, i) =>
+        i === si ? { ...x, items: items.map((it, k) => ({ ...it, position: k })) } : x,
+      ),
+    );
     setSel({ sec: si, item: j });
   };
   const patchItem = (si: number, ii: number, p: Partial<DesignerItem>) => {
-    patch(sections.map((s, i) => {
-      if (i !== si) return s;
-      const items = s.items.map((it, k) => (k === ii ? { ...it, ...p } : it));
-      return { ...s, items };
-    }));
+    patch(
+      sections.map((s, i) => {
+        if (i !== si) return s;
+        const items = s.items.map((it, k) => (k === ii ? { ...it, ...p } : it));
+        return { ...s, items };
+      }),
+    );
   };
   const patchOptions = (si: number, ii: number, p: Partial<ChecklistItemOptions>) => {
     const cur = sections[si].items[ii].options;
     patchItem(si, ii, { options: { ...cur, ...p } });
   };
 
-  const selectedItem = sel && sel.item != null ? sections[sel.sec]?.items[sel.item] ?? null : null;
+  const selectedItem =
+    sel && sel.item != null ? (sections[sel.sec]?.items[sel.item] ?? null) : null;
 
   const previewSections: ChecklistSection[] = useMemo(
     () => sections.map((s) => ({ ...s, items: s.items.map((it) => ({ ...it })) })),
@@ -195,7 +227,13 @@ export function ChecklistDesigner({
           <p className="flex items-center gap-1 text-xs font-semibold uppercase text-muted-foreground">
             <ListChecks className="h-3 w-3" /> Nhóm ({sections.length})
           </p>
-          <Button size="sm" variant="outline" className="h-7" onClick={addSection} data-testid="chk-add-section">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7"
+            onClick={addSection}
+            data-testid="chk-add-section"
+          >
             <Plus className="h-3 w-3" />
           </Button>
         </div>
@@ -204,21 +242,41 @@ export function ChecklistDesigner({
             const isSecSel = sel?.sec === si && sel.item == null;
             return (
               <div key={si} className={`rounded border ${isSecSel ? "border-primary" : ""}`}>
-                <div className={`flex items-center gap-1 border-b px-2 py-1 ${isSecSel ? "bg-primary/10" : "bg-secondary/40"}`}>
+                <div
+                  className={`flex items-center gap-1 border-b px-2 py-1 ${isSecSel ? "bg-primary/10" : "bg-secondary/40"}`}
+                >
                   <button
-                    type="button" onClick={() => setSel({ sec: si, item: null })}
+                    type="button"
+                    onClick={() => setSel({ sec: si, item: null })}
                     className="flex-1 truncate text-left text-xs font-semibold"
                   >
                     {s.ten}
-                    <span className="ml-1 font-mono text-[10px] text-muted-foreground">{s.ma_section}</span>
+                    <span className="ml-1 font-mono text-[10px] text-muted-foreground">
+                      {s.ma_section}
+                    </span>
                   </button>
-                  <button type="button" onClick={() => moveSection(si, -1)} className="rounded p-0.5 hover:bg-background" title="Lên">
+                  <button
+                    type="button"
+                    onClick={() => moveSection(si, -1)}
+                    className="rounded p-0.5 hover:bg-background"
+                    title="Lên"
+                  >
                     <ChevronUp className="h-3 w-3" />
                   </button>
-                  <button type="button" onClick={() => moveSection(si, 1)} className="rounded p-0.5 hover:bg-background" title="Xuống">
+                  <button
+                    type="button"
+                    onClick={() => moveSection(si, 1)}
+                    className="rounded p-0.5 hover:bg-background"
+                    title="Xuống"
+                  >
                     <ChevronDown className="h-3 w-3" />
                   </button>
-                  <button type="button" onClick={() => removeSection(si)} className="rounded p-0.5 hover:bg-background" title="Xoá nhóm">
+                  <button
+                    type="button"
+                    onClick={() => removeSection(si)}
+                    className="rounded p-0.5 hover:bg-background"
+                    title="Xoá nhóm"
+                  >
                     <Trash2 className="h-3 w-3 text-rose-600" />
                   </button>
                 </div>
@@ -228,27 +286,65 @@ export function ChecklistDesigner({
                     return (
                       <li key={ii}>
                         <button
-                          type="button" onClick={() => setSel({ sec: si, item: ii })}
+                          type="button"
+                          onClick={() => setSel({ sec: si, item: ii })}
                           className={`group flex w-full items-center gap-1 rounded px-2 py-1 text-left text-xs ${
                             isSel ? "bg-primary/10 text-primary" : "hover:bg-background"
                           }`}
                         >
                           <span className="flex-1 truncate">
-                            <span className="font-mono text-[10px] text-muted-foreground">{it.item_code}</span>
+                            <span className="font-mono text-[10px] text-muted-foreground">
+                              {it.item_code}
+                            </span>
                             <span className="ml-1">{it.ten}</span>
                           </span>
-                          <Badge variant="outline" className="h-4 shrink-0 px-1 text-[9px]">{it.result_kind}</Badge>
+                          <Badge variant="outline" className="h-4 shrink-0 px-1 text-[9px]">
+                            {it.result_kind}
+                          </Badge>
                           <span className="flex opacity-0 transition group-hover:opacity-100">
-                            <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); moveItem(si, ii, -1); }} className="rounded p-0.5 hover:bg-secondary">
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveItem(si, ii, -1);
+                              }}
+                              className="rounded p-0.5 hover:bg-secondary"
+                            >
                               <ChevronUp className="h-3 w-3" />
                             </span>
-                            <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); moveItem(si, ii, 1); }} className="rounded p-0.5 hover:bg-secondary">
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveItem(si, ii, 1);
+                              }}
+                              className="rounded p-0.5 hover:bg-secondary"
+                            >
                               <ChevronDown className="h-3 w-3" />
                             </span>
-                            <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); dupItem(si, ii); }} className="rounded p-0.5 hover:bg-secondary" title="Nhân bản">
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                dupItem(si, ii);
+                              }}
+                              className="rounded p-0.5 hover:bg-secondary"
+                              title="Nhân bản"
+                            >
                               <Copy className="h-3 w-3" />
                             </span>
-                            <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); removeItem(si, ii); }} className="rounded p-0.5 hover:bg-secondary">
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeItem(si, ii);
+                              }}
+                              className="rounded p-0.5 hover:bg-secondary"
+                            >
                               <Trash2 className="h-3 w-3 text-rose-600" />
                             </span>
                           </span>
@@ -258,7 +354,8 @@ export function ChecklistDesigner({
                   })}
                   <li>
                     <button
-                      type="button" onClick={() => addItem(si)}
+                      type="button"
+                      onClick={() => addItem(si)}
                       className="mt-0.5 flex w-full items-center justify-center gap-1 rounded border border-dashed px-2 py-1 text-[11px] text-muted-foreground hover:bg-background"
                     >
                       <Plus className="h-3 w-3" /> Thêm hạng mục
@@ -281,7 +378,9 @@ export function ChecklistDesigner({
         <div className="mx-auto max-w-3xl">
           <div className="mb-4 text-center">
             <h1 className="text-lg font-bold uppercase">{tplName || "Mẫu bảng kiểm"}</h1>
-            <p className="mt-1 text-[11px] text-muted-foreground">Xem trước theo giao diện lập phiếu — có thể điền thử.</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Xem trước theo giao diện lập phiếu — có thể điền thử.
+            </p>
           </div>
           {previewSections.length === 0 || previewSections.every((s) => s.items.length === 0) ? (
             <div className="rounded-md border border-dashed p-12 text-center text-sm text-muted-foreground">
@@ -298,7 +397,10 @@ export function ChecklistDesigner({
       </main>
 
       {/* RIGHT — inspector */}
-      <aside className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3" data-testid="chk-inspector">
+      <aside
+        className="min-h-0 overflow-y-auto border-l bg-muted/30 p-3"
+        data-testid="chk-inspector"
+      >
         <div className="mb-2 flex items-center gap-1">
           <Settings2 className="h-4 w-4 text-muted-foreground" />
           <p className="text-xs font-semibold uppercase text-muted-foreground">Thuộc tính</p>
@@ -325,21 +427,33 @@ export function ChecklistDesigner({
       <div className="pointer-events-none fixed bottom-4 left-1/2 z-30 -translate-x-1/2">
         <div className="pointer-events-auto flex items-center gap-1 rounded-full border bg-background/95 px-1.5 py-1 shadow-md backdrop-blur">
           <Button
-            variant="ghost" size="sm" className="h-7 px-2"
-            onClick={undo} disabled={history.length === 0}
-            title="Hoàn tác (Ctrl+Z)" data-testid="chk-undo"
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2"
+            onClick={undo}
+            disabled={history.length === 0}
+            title="Hoàn tác (Ctrl+Z)"
+            data-testid="chk-undo"
           >
             <Undo2 className="mr-1 h-3.5 w-3.5" /> Hoàn tác
-            {history.length > 0 && <span className="ml-1 text-[10px] text-muted-foreground">{history.length}</span>}
+            {history.length > 0 && (
+              <span className="ml-1 text-[10px] text-muted-foreground">{history.length}</span>
+            )}
           </Button>
           <div className="h-4 w-px bg-border" />
           <Button
-            variant="ghost" size="sm" className="h-7 px-2"
-            onClick={redo} disabled={future.length === 0}
-            title="Làm lại (Ctrl+Shift+Z)" data-testid="chk-redo"
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2"
+            onClick={redo}
+            disabled={future.length === 0}
+            title="Làm lại (Ctrl+Shift+Z)"
+            data-testid="chk-redo"
           >
             <Redo2 className="mr-1 h-3.5 w-3.5" /> Làm lại
-            {future.length > 0 && <span className="ml-1 text-[10px] text-muted-foreground">{future.length}</span>}
+            {future.length > 0 && (
+              <span className="ml-1 text-[10px] text-muted-foreground">{future.length}</span>
+            )}
           </Button>
         </div>
       </div>
@@ -348,7 +462,8 @@ export function ChecklistDesigner({
 }
 
 function SectionInspector({
-  section, onChange,
+  section,
+  onChange,
 }: {
   section: DesignerSection;
   onChange: (p: Partial<DesignerSection>) => void;
@@ -358,25 +473,36 @@ function SectionInspector({
       <div>
         <Label className="text-xs">Mã nhóm</Label>
         <Input
-          className="font-mono text-xs" value={section.ma_section}
+          className="font-mono text-xs"
+          value={section.ma_section}
           onChange={(e) => onChange({ ma_section: e.target.value.trim().toUpperCase() })}
           maxLength={40}
         />
       </div>
       <div>
         <Label className="text-xs">Tên nhóm</Label>
-        <Input value={section.ten} onChange={(e) => onChange({ ten: e.target.value })} maxLength={200} />
+        <Input
+          value={section.ten}
+          onChange={(e) => onChange({ ten: e.target.value })}
+          maxLength={200}
+        />
       </div>
       <div>
         <Label className="text-xs">Mô tả (không bắt buộc)</Label>
-        <Textarea rows={3} value={section.mo_ta ?? ""} onChange={(e) => onChange({ mo_ta: e.target.value || null })} />
+        <Textarea
+          rows={3}
+          value={section.mo_ta ?? ""}
+          onChange={(e) => onChange({ mo_ta: e.target.value || null })}
+        />
       </div>
     </div>
   );
 }
 
 function ItemInspector({
-  item, onPatchItem, onPatchOptions,
+  item,
+  onPatchItem,
+  onPatchOptions,
 }: {
   item: DesignerItem;
   onPatchItem: (p: Partial<DesignerItem>) => void;
@@ -388,14 +514,19 @@ function ItemInspector({
       <div>
         <Label className="text-xs">Mã hạng mục</Label>
         <Input
-          className="font-mono text-xs" value={item.item_code}
+          className="font-mono text-xs"
+          value={item.item_code}
           onChange={(e) => onPatchItem({ item_code: e.target.value.replace(/\s+/g, "_").trim() })}
           maxLength={40}
         />
       </div>
       <div>
         <Label className="text-xs">Tên hạng mục</Label>
-        <Input value={item.ten} onChange={(e) => onPatchItem({ ten: e.target.value })} maxLength={200} />
+        <Input
+          value={item.ten}
+          onChange={(e) => onPatchItem({ ten: e.target.value })}
+          maxLength={200}
+        />
       </div>
       <div>
         <Label className="text-xs">Nhóm lớn (subheader, VD "A. CẢM BIẾN")</Label>
@@ -417,11 +548,18 @@ function ItemInspector({
 
       <div>
         <Label className="text-xs">Kiểu kết quả</Label>
-        <Select value={item.result_kind} onValueChange={(v) => onPatchItem({ result_kind: v as ResultKind })}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+        <Select
+          value={item.result_kind}
+          onValueChange={(v) => onPatchItem({ result_kind: v as ResultKind })}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             {RESULT_KIND_OPTS.map((o) => (
-              <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>
+              <SelectItem key={o.v} value={o.v}>
+                {o.l}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -429,22 +567,34 @@ function ItemInspector({
 
       {item.result_kind === "so" && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Ngưỡng đo</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">
+            Ngưỡng đo
+          </p>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label className="text-xs">Min (≥)</Label>
               <Input
-                type="number" inputMode="decimal"
+                type="number"
+                inputMode="decimal"
                 value={opts.tieu_chuan_min == null ? "" : String(opts.tieu_chuan_min)}
-                onChange={(e) => onPatchOptions({ tieu_chuan_min: e.target.value === "" ? null : Number(e.target.value) })}
+                onChange={(e) =>
+                  onPatchOptions({
+                    tieu_chuan_min: e.target.value === "" ? null : Number(e.target.value),
+                  })
+                }
               />
             </div>
             <div>
               <Label className="text-xs">Max (≤)</Label>
               <Input
-                type="number" inputMode="decimal"
+                type="number"
+                inputMode="decimal"
                 value={opts.tieu_chuan_max == null ? "" : String(opts.tieu_chuan_max)}
-                onChange={(e) => onPatchOptions({ tieu_chuan_max: e.target.value === "" ? null : Number(e.target.value) })}
+                onChange={(e) =>
+                  onPatchOptions({
+                    tieu_chuan_max: e.target.value === "" ? null : Number(e.target.value),
+                  })
+                }
               />
             </div>
             <div className="col-span-2">
@@ -456,19 +606,28 @@ function ItemInspector({
               />
             </div>
           </div>
-          <p className="mt-1 text-[10px] text-muted-foreground">Giá trị đo ngoài ngưỡng sẽ tự chấm Không đạt.</p>
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            Giá trị đo ngoài ngưỡng sẽ tự chấm Không đạt.
+          </p>
         </div>
       )}
 
       {item.result_kind === "chon" && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">Lựa chọn (mỗi dòng 1 giá trị)</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">
+            Lựa chọn (mỗi dòng 1 giá trị)
+          </p>
           <Textarea
             rows={4}
             value={(opts.choices ?? item.tuy_chon ?? []).join("\n")}
-            onChange={(e) => onPatchOptions({
-              choices: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean),
-            })}
+            onChange={(e) =>
+              onPatchOptions({
+                choices: e.target.value
+                  .split("\n")
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              })
+            }
           />
         </div>
       )}
@@ -504,9 +663,13 @@ function ItemInspector({
               <Label className="text-xs">Phép so sánh ngưỡng</Label>
               <Select
                 value={item.nguong_op ?? "between"}
-                onValueChange={(v) => onPatchItem({ nguong_op: v as NonNullable<DesignerItem["nguong_op"]> })}
+                onValueChange={(v) =>
+                  onPatchItem({ nguong_op: v as NonNullable<DesignerItem["nguong_op"]> })
+                }
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="between">Trong khoảng [min, max]</SelectItem>
                   <SelectItem value="ge">Lớn hơn/bằng min (≥)</SelectItem>
@@ -520,9 +683,15 @@ function ItemInspector({
             <Label className="text-xs">Chu kỳ chuẩn</Label>
             <Select
               value={item.chu_ky ?? "_none"}
-              onValueChange={(v) => onPatchItem({ chu_ky: v === "_none" ? null : (v as NonNullable<DesignerItem["chu_ky"]>) })}
+              onValueChange={(v) =>
+                onPatchItem({
+                  chu_ky: v === "_none" ? null : (v as NonNullable<DesignerItem["chu_ky"]>),
+                })
+              }
             >
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="_none">— Không quy định —</SelectItem>
                 <SelectItem value="hang_ngay">Hàng ngày</SelectItem>

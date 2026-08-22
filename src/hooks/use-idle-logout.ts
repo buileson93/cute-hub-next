@@ -21,8 +21,13 @@ import {
 
 const CHANNEL_NAME = "mirats-activity";
 const ACTIVITY_EVENTS = [
-  "mousemove", "mousedown", "keydown", "touchstart",
-  "scroll", "focus", "visibilitychange",
+  "mousemove",
+  "mousedown",
+  "keydown",
+  "touchstart",
+  "scroll",
+  "focus",
+  "visibilitychange",
 ] as const;
 
 export function useIdleLogout(enabled: boolean, timeoutMs: number = 3 * 60 * 60 * 1000) {

@@ -96,11 +96,18 @@ function buildRows(
     .filter((s) => normalize(s.ten).includes(nq))
     .sort((a, b) => b.count - a.count || a.ten.localeCompare(b.ten, "vi"))
     .slice(0, 6)
-    .map((s) => ({ entity: "he_thong" as const, id: s.id, title: s.ten, subtitle: null, count: s.count, to: hitTo("he_thong", s.id, null) }));
+    .map((s) => ({
+      entity: "he_thong" as const,
+      id: s.id,
+      title: s.ten,
+      subtitle: null,
+      count: s.count,
+      to: hitTo("he_thong", s.id, null),
+    }));
 
   const rpcRows: SearchRow[] = rpcData.map((h) => ({
     ...h,
-    sysName: h.entity === "thiet_bi" ? devSys.get(h.id) ?? null : undefined,
+    sysName: h.entity === "thiet_bi" ? (devSys.get(h.id) ?? null) : undefined,
     to: hitTo(h.entity, h.id, h.subtitle),
   }));
 
@@ -164,7 +171,10 @@ export function useGlobalSearch(rawTerm: string): UseGlobalSearchResult {
   const { data: rpcData, isFetching } = useQuery({
     queryKey: ["global_search", debounced],
     queryFn: async (): Promise<RpcHit[]> => {
-      const { data, error } = await supabase.rpc("global_search", { _q: debounced, _limit: RESULT_LIMIT });
+      const { data, error } = await supabase.rpc("global_search", {
+        _q: debounced,
+        _limit: RESULT_LIMIT,
+      });
       if (error) throw error;
       return (data ?? []) as RpcHit[];
     },
@@ -225,7 +235,9 @@ export function Highlight({ text, query }: { text: string; query: string }): Rea
   return (
     <>
       {text.slice(0, start)}
-      <mark className="rounded-[2px] bg-primary/20 px-0.5 text-foreground">{text.slice(start, end + 1)}</mark>
+      <mark className="rounded-[2px] bg-primary/20 px-0.5 text-foreground">
+        {text.slice(start, end + 1)}
+      </mark>
       {text.slice(end + 1)}
     </>
   );

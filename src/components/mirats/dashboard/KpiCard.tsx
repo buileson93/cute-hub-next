@@ -10,7 +10,7 @@ export interface KpiCardProps {
   value: string | number;
   unit?: string;
   icon?: string;
-  status?: 'normal' | 'attention' | 'warning' | 'danger';
+  status?: "normal" | "attention" | "warning" | "danger";
   trend?: {
     value: number;
     isUp: boolean;
@@ -26,14 +26,13 @@ export function KpiCard({
   value,
   unit,
   icon,
-  status = 'normal',
+  status = "normal",
   trend,
   sparklineData,
   tooltip,
   isLoading,
   onClick,
 }: KpiCardProps) {
-  
   // Status colors mapped to semantic tokens or standardized opacity-based classes
   const statusColors = {
     normal: "astryx-status-normal",
@@ -56,18 +55,12 @@ export function KpiCard({
     danger: "bg-destructive/10 text-destructive",
   };
 
-
   return (
-    <Card 
-      className={cn("astryx-card", onClick && "cursor-pointer")}
-      onClick={onClick}
-    >
+    <Card className={cn("astryx-card", onClick && "cursor-pointer")} onClick={onClick}>
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-1.5">
-            <span className="astryx-text-label">
-              {label}
-            </span>
+            <span className="astryx-text-label">{label}</span>
             {tooltip && (
               <AppTooltip noiDung={tooltip}>
                 <div className="cursor-help">
@@ -84,24 +77,33 @@ export function KpiCard({
         </div>
 
         <div className="flex items-baseline gap-1 mt-1">
-          <div className={cn("text-2xl font-bold astryx-number tracking-tight", isLoading ? "animate-pulse text-muted" : textColors[status])}>
+          <div
+            className={cn(
+              "text-2xl font-bold astryx-number tracking-tight",
+              isLoading ? "animate-pulse text-muted" : textColors[status],
+            )}
+          >
             {isLoading ? "..." : value}
           </div>
 
           {unit && !isLoading && (
-            <div className="text-[11px] font-bold uppercase tracking-wider opacity-60">
-              {unit}
-            </div>
+            <div className="text-[11px] font-bold uppercase tracking-wider opacity-60">{unit}</div>
           )}
         </div>
 
-
         {trend && !isLoading && (
-          <div className={cn(
-            "text-[11px] font-bold mt-1 flex items-center gap-1",
-            trend.isUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
-          )}>
-            <Icon name={trend.isUp ? "entity.trendingUp" : "entity.trendingDown" as any} size="tiny" />
+          <div
+            className={cn(
+              "text-[11px] font-bold mt-1 flex items-center gap-1",
+              trend.isUp
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-red-600 dark:text-red-400",
+            )}
+          >
+            <Icon
+              name={trend.isUp ? "entity.trendingUp" : ("entity.trendingDown" as any)}
+              size="tiny"
+            />
             {trend.value}%
           </div>
         )}
@@ -110,16 +112,16 @@ export function KpiCard({
           <div className="h-8 mt-2 -mx-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={sparklineData}>
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="currentColor" 
-                  fill="currentColor" 
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="currentColor"
+                  fill="currentColor"
                   fillOpacity={0.1}
                   strokeWidth={1.5}
                   className={textColors[status]}
                   dot={false}
-                  activeDot={{ r: 3, fill: 'currentColor', stroke: '#fff', strokeWidth: 2 }}
+                  activeDot={{ r: 3, fill: "currentColor", stroke: "#fff", strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>

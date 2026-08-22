@@ -1,16 +1,31 @@
 import { Card } from "@/components/ui/card";
 import { ShieldCheck, Lock, KeyRound, FileClock, Check, Database } from "lucide-react";
 
-
 export function SecurityPolicies() {
   return (
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
         {[
-          { icon: KeyRound, title: "Xác thực", items: ["Tài khoản mới cần quản trị duyệt", "Khôi phục mật khẩu qua email có ghi log"] },
-          { icon: FileClock, title: "Kiểm toán", items: ["Ghi log mọi thao tác thêm/sửa/xoá", "Lưu dữ liệu trước/sau để hoàn tác"] },
-          { icon: Lock, title: "Bảo mật trường", items: ["Ẩn giá trị & chi phí với KTV, Read-only", "Trường nhạy cảm ghi log riêng"] },
-          { icon: Database, title: "Sao lưu & toàn vẹn", items: ["Sao lưu tự động theo lịch", "Ưu tiên archive thay vì xoá cứng"] },
+          {
+            icon: KeyRound,
+            title: "Xác thực",
+            items: ["Tài khoản mới cần quản trị duyệt", "Khôi phục mật khẩu qua email có ghi log"],
+          },
+          {
+            icon: FileClock,
+            title: "Kiểm toán",
+            items: ["Ghi log mọi thao tác thêm/sửa/xoá", "Lưu dữ liệu trước/sau để hoàn tác"],
+          },
+          {
+            icon: Lock,
+            title: "Bảo mật trường",
+            items: ["Ẩn giá trị & chi phí với KTV, Read-only", "Trường nhạy cảm ghi log riêng"],
+          },
+          {
+            icon: Database,
+            title: "Sao lưu & toàn vẹn",
+            items: ["Sao lưu tự động theo lịch", "Ưu tiên archive thay vì xoá cứng"],
+          },
         ].map((p) => {
           const Icon = p.icon;
           return (

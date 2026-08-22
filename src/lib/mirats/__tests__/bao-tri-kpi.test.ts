@@ -35,7 +35,12 @@ describe("pmOnTimeRate — nguồn KPI PM hoàn thành đúng hạn", () => {
 
   it("phiếu chưa hoàn thành không được tính vào mẫu đúng hạn", () => {
     const rows: PmWorkOrder[] = [
-      wo({ id: "a", trang_thai: "HOAN_THANH", ngay_den_han: "2026-01-10", ngay_hoan_thanh: "2026-01-09" }),
+      wo({
+        id: "a",
+        trang_thai: "HOAN_THANH",
+        ngay_den_han: "2026-01-10",
+        ngay_hoan_thanh: "2026-01-09",
+      }),
       wo({ id: "b", trang_thai: "DANG_LAM", ngay_den_han: "2026-01-10", ngay_hoan_thanh: null }),
       wo({ id: "c", trang_thai: "MO", ngay_den_han: "2026-01-10", ngay_hoan_thanh: null }),
     ];

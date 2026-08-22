@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-
 export interface PageHeaderProps {
   title: React.ReactNode;
   /** Breadcrumbs or parent context info */
@@ -97,31 +96,43 @@ export function PageHeader({
     );
   };
 
-
   return (
-    <div 
-      data-testid="page-header" 
+    <div
+      data-testid="page-header"
       className={cn(
         "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20",
         UI_DENSITY.CARD_HEADER,
-        className
+        className,
       )}
     >
       {/* 1. Breadcrumbs / Supporting - Ẩn trên Mobile để tiết kiệm chỗ */}
       {(breadcrumbs || supporting) && (
-        <div className={cn("hidden md:flex items-center gap-1.5 text-muted-foreground mb-0.5", TYPO.LABEL)}>
+        <div
+          className={cn(
+            "hidden md:flex items-center gap-1.5 text-muted-foreground mb-0.5",
+            TYPO.LABEL,
+          )}
+        >
           {breadcrumbs ? (
             <div className="flex items-center gap-1">
               {breadcrumbs.map((crumb, idx) => (
                 <React.Fragment key={idx}>
-                  <span className={cn(idx === breadcrumbs.length - 1 && "text-foreground font-semibold")}>
+                  <span
+                    className={cn(
+                      idx === breadcrumbs.length - 1 && "text-foreground font-semibold",
+                    )}
+                  >
                     {crumb.label}
                   </span>
-                  {idx < breadcrumbs.length - 1 && <ChevronRight className="h-2.5 w-2.5 opacity-50" />}
+                  {idx < breadcrumbs.length - 1 && (
+                    <ChevronRight className="h-2.5 w-2.5 opacity-50" />
+                  )}
                 </React.Fragment>
               ))}
             </div>
-          ) : supporting}
+          ) : (
+            supporting
+          )}
         </div>
       )}
 
@@ -138,13 +149,10 @@ export function PageHeader({
                 )}
               </div>
             )}
-            
+
             <h1
               data-testid="page-header-title"
-              className={cn(
-                "truncate text-foreground uppercase flex-1 min-w-0",
-                TYPO.H1
-              )}
+              className={cn("truncate text-foreground uppercase flex-1 min-w-0", TYPO.H1)}
             >
               {title}
             </h1>
@@ -152,12 +160,15 @@ export function PageHeader({
             {hasSubtitle && (
               <span
                 data-testid="page-header-subtitle"
-                className={cn("truncate text-muted-foreground font-normal normal-case hidden sm:inline-block", TYPO.LABEL)}
+                className={cn(
+                  "truncate text-muted-foreground font-normal normal-case hidden sm:inline-block",
+                  TYPO.LABEL,
+                )}
               >
                 {subtitle}
               </span>
             )}
-            
+
             {(help || description) && (
               <InfoHint>
                 <div className="space-y-1.5 p-1 max-w-xs">
@@ -173,8 +184,13 @@ export function PageHeader({
           </div>
 
           {/* 3. Description (Static view if needed outside tooltip) */}
-          <div className={cn("hidden data-[density=spacious]:block text-muted-foreground max-w-2xl", TYPO.BODY)}>
-            {typeof description === 'string' ? description : null}
+          <div
+            className={cn(
+              "hidden data-[density=spacious]:block text-muted-foreground max-w-2xl",
+              TYPO.BODY,
+            )}
+          >
+            {typeof description === "string" ? description : null}
           </div>
 
           {/* 4. Metadata / Status / Chips (Sticky area on Mobile) */}
@@ -189,7 +205,5 @@ export function PageHeader({
         {renderActions()}
       </div>
     </div>
-
   );
 }
-

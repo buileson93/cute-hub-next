@@ -30,7 +30,10 @@ function LegacyQrRedirect() {
     retry: false,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("thiet_bi").select("ma_thiet_bi").eq("id", id).maybeSingle();
+        .from("thiet_bi")
+        .select("ma_thiet_bi")
+        .eq("id", id)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -42,7 +45,9 @@ function LegacyQrRedirect() {
   if (authLoading || isLoading) {
     return (
       <div className="min-h-dvh flex items-center justify-center bg-slate-50">
-        <div className="flex items-center gap-2 text-slate-600"><Loader2 className="h-4 w-4 animate-spin" /> Đang tra mã…</div>
+        <div className="flex items-center gap-2 text-slate-600">
+          <Loader2 className="h-4 w-4 animate-spin" /> Đang tra mã…
+        </div>
       </div>
     );
   }
@@ -51,15 +56,26 @@ function LegacyQrRedirect() {
   }
   return (
     <div className="min-h-dvh flex items-center justify-center bg-slate-50 p-6">
-      <Card className="max-w-md w-full"><CardContent className="p-6 space-y-3 text-center">
-        <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
-          <QrCode className="h-6 w-6 text-slate-500" />
-        </div>
-        <h1 className="text-lg font-semibold">Không có quyền xem hoặc tài sản không tồn tại</h1>
-        <p className="text-sm text-slate-600">Mã tham chiếu <span className="font-mono">{id}</span> không truy cập được.</p>
-        {isError && <p className="text-xs text-red-600">Có lỗi kết nối. Kiểm tra mạng và thử lại.</p>}
-        <Button asChild variant="outline" size="sm"><Link to="/"><ArrowLeft className="h-4 w-4 mr-1.5" />Về trang chủ</Link></Button>
-      </CardContent></Card>
+      <Card className="max-w-md w-full">
+        <CardContent className="p-6 space-y-3 text-center">
+          <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+            <QrCode className="h-6 w-6 text-slate-500" />
+          </div>
+          <h1 className="text-lg font-semibold">Không có quyền xem hoặc tài sản không tồn tại</h1>
+          <p className="text-sm text-slate-600">
+            Mã tham chiếu <span className="font-mono">{id}</span> không truy cập được.
+          </p>
+          {isError && (
+            <p className="text-xs text-red-600">Có lỗi kết nối. Kiểm tra mạng và thử lại.</p>
+          )}
+          <Button asChild variant="outline" size="sm">
+            <Link to="/">
+              <ArrowLeft className="h-4 w-4 mr-1.5" />
+              Về trang chủ
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

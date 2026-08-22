@@ -7,7 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { getCroppedBlob, fileToDataUrl, type CropPixels } from "@/lib/mirats/crop-image";
 
@@ -38,9 +42,14 @@ export interface ImageCropDialogProps {
  * chọn tệp; zoom + tỉ lệ (mặc định vuông như avatar) và tùy chọn bo tròn.
  */
 export function ImageCropDialog({
-  open, onOpenChange, onConfirm,
-  title = "Chọn & cắt ảnh", maxMb = 5, withDescription = false,
-  outSize = 800, confirmLabel = "Cắt & dùng ảnh",
+  open,
+  onOpenChange,
+  onConfirm,
+  title = "Chọn & cắt ảnh",
+  maxMb = 5,
+  withDescription = false,
+  outSize = 800,
+  confirmLabel = "Cắt & dùng ảnh",
 }: ImageCropDialogProps) {
   const [src, setSrc] = useState<string | null>(null);
   const [origName, setOrigName] = useState("anh.png");
@@ -57,24 +66,39 @@ export function ImageCropDialog({
   const aspect = ASPECTS[aspectIdx].value;
 
   const reset = useCallback(() => {
-    setSrc(null); setOrigName("anh.png");
-    setCrop({ x: 0, y: 0 }); setZoom(1); setAspectIdx(0);
-    setRound(false); setAreaPx(null); setMoTa("");
+    setSrc(null);
+    setOrigName("anh.png");
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setAspectIdx(0);
+    setRound(false);
+    setAreaPx(null);
+    setMoTa("");
   }, []);
 
-  const loadFile = useCallback(async (f: File | null | undefined) => {
-    if (!f) return;
-    if (!f.type.startsWith("image/")) { toast.error("Chỉ nhận tệp ảnh"); return; }
-    if (f.size > maxMb * 1024 * 1024) { toast.error(`Ảnh vượt quá ${maxMb}MB`); return; }
-    try {
-      const dataUrl = await fileToDataUrl(f);
-      setSrc(dataUrl);
-      setOrigName(f.name || "anh.png");
-      setCrop({ x: 0, y: 0 }); setZoom(1);
-    } catch {
-      toast.error("Không đọc được ảnh");
-    }
-  }, [maxMb]);
+  const loadFile = useCallback(
+    async (f: File | null | undefined) => {
+      if (!f) return;
+      if (!f.type.startsWith("image/")) {
+        toast.error("Chỉ nhận tệp ảnh");
+        return;
+      }
+      if (f.size > maxMb * 1024 * 1024) {
+        toast.error(`Ảnh vượt quá ${maxMb}MB`);
+        return;
+      }
+      try {
+        const dataUrl = await fileToDataUrl(f);
+        setSrc(dataUrl);
+        setOrigName(f.name || "anh.png");
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+      } catch {
+        toast.error("Không đọc được ảnh");
+      }
+    },
+    [maxMb],
+  );
 
   // Dán ảnh từ clipboard khi dialog mở
   useEffect(() => {
@@ -85,7 +109,12 @@ export function ImageCropDialog({
       for (const it of items) {
         if (it.type.startsWith("image/")) {
           const f = it.getAsFile();
-          if (f) { e.preventDefault(); loadFile(f); toast.success("Đã dán ảnh từ clipboard"); return; }
+          if (f) {
+            e.preventDefault();
+            loadFile(f);
+            toast.success("Đã dán ảnh từ clipboard");
+            return;
+          }
         }
       }
     };
@@ -112,10 +141,17 @@ export function ImageCropDialog({
   }, [loadFile]);
 
   async function confirm() {
-    if (!src || !areaPx) { toast.error("Chưa chọn ảnh"); return; }
+    if (!src || !areaPx) {
+      toast.error("Chưa chọn ảnh");
+      return;
+    }
     setBusy(true);
     try {
-      const blob = await getCroppedBlob(src, areaPx, { outSize, mimeType: "image/webp", quality: 0.9 });
+      const blob = await getCroppedBlob(src, areaPx, {
+        outSize,
+        mimeType: "image/webp",
+        quality: 0.9,
+      });
       const base = origName.replace(/\.[^.]+$/, "") || "anh";
       const file = new File([blob], `${base}.webp`, { type: "image/webp" });
       await onConfirm(file, moTa.trim());
@@ -129,21 +165,42 @@ export function ImageCropDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) reset();
+      }}
+    >
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
 
         <input
-          ref={fileRef} type="file" accept="image/*" className="hidden"
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
           aria-label="Chọn ảnh"
-          onChange={(e) => { loadFile(e.target.files?.[0]); e.target.value = ""; }}
+          onChange={(e) => {
+            loadFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
         />
 
         {!src ? (
           <div
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => { e.preventDefault(); setDragOver(false); loadFile(e.dataTransfer.files?.[0]); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOver(false);
+              loadFile(e.dataTransfer.files?.[0]);
+            }}
             className={cn(
               "flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors",
               dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/30",
@@ -151,7 +208,8 @@ export function ImageCropDialog({
           >
             <ClipboardPaste className="h-8 w-8 text-muted-foreground" />
             <div className="text-sm text-muted-foreground">
-              Kéo-thả ảnh vào đây, hoặc <span className="font-medium text-foreground">dán (Ctrl+V)</span>
+              Kéo-thả ảnh vào đây, hoặc{" "}
+              <span className="font-medium text-foreground">dán (Ctrl+V)</span>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               <Button size="sm" variant="secondary" onClick={() => fileRef.current?.click()}>
@@ -182,7 +240,11 @@ export function ImageCropDialog({
             <div className="flex items-center gap-2">
               <CropIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
-                type="range" min={1} max={4} step={0.01} value={zoom}
+                type="range"
+                min={1}
+                max={4}
+                step={0.01}
+                value={zoom}
                 aria-label="Thu phóng"
                 onChange={(e) => setZoom(Number(e.target.value))}
                 className="h-2 w-full cursor-pointer accent-primary"
@@ -191,13 +253,25 @@ export function ImageCropDialog({
 
             <div className="flex flex-wrap gap-1.5">
               {ASPECTS.map((a, i) => (
-                <Button key={a.label} size="sm" variant={i === aspectIdx ? "default" : "outline"}
-                  className="h-7 text-xs" onClick={() => setAspectIdx(i)}>
+                <Button
+                  key={a.label}
+                  size="sm"
+                  variant={i === aspectIdx ? "default" : "outline"}
+                  className="h-7 text-xs"
+                  onClick={() => setAspectIdx(i)}
+                >
                   {a.label}
                 </Button>
               ))}
-              <Button size="sm" variant={round ? "default" : "outline"} className="h-7 text-xs"
-                onClick={() => { setRound((r) => !r); if (!round) setAspectIdx(0); }}>
+              <Button
+                size="sm"
+                variant={round ? "default" : "outline"}
+                className="h-7 text-xs"
+                onClick={() => {
+                  setRound((r) => !r);
+                  if (!round) setAspectIdx(0);
+                }}
+              >
                 Bo tròn (avatar)
               </Button>
               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={reset}>
@@ -208,15 +282,22 @@ export function ImageCropDialog({
             {withDescription && (
               <div>
                 <Label>Mô tả (tùy chọn)</Label>
-                <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}
-                  placeholder="VD: ảnh mặt trước, nhãn tài sản…" />
+                <Textarea
+                  value={moTa}
+                  onChange={(e) => setMoTa(e.target.value)}
+                  rows={2}
+                  maxLength={500}
+                  placeholder="VD: ảnh mặt trước, nhãn tài sản…"
+                />
               </div>
             )}
           </div>
         )}
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>Hủy</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>
+            Hủy
+          </Button>
           <Button onClick={confirm} disabled={busy || !src || !areaPx}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {confirmLabel}
           </Button>

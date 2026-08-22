@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
-  healthScore, tuoiThoConLai, namThayThe, phanTramTuoiTho, tuoiThietBiNam,
+  healthScore,
+  tuoiThoConLai,
+  namThayThe,
+  phanTramTuoiTho,
+  tuoiThietBiNam,
 } from "../lifecycle";
 
 const TODAY = new Date("2026-07-14T00:00:00Z");
@@ -14,10 +18,18 @@ describe("lifecycle — tuổi & tỷ lệ", () => {
   });
 
   it("phanTramTuoiTho trả null khi thiếu tuoiThoThietKe hoặc năm gốc", () => {
-    expect(phanTramTuoiTho({ namSanXuat: 2020, namKhaiThac: 2020, tuoiThoThietKe: null }, TODAY)).toBeNull();
-    expect(phanTramTuoiTho({ namSanXuat: null, namKhaiThac: null, tuoiThoThietKe: 10 }, TODAY)).toBeNull();
-    expect(phanTramTuoiTho({ namSanXuat: 2020, namKhaiThac: 2020, tuoiThoThietKe: 10 }, TODAY)).toBe(60);
-    expect(phanTramTuoiTho({ namSanXuat: 2000, namKhaiThac: 2000, tuoiThoThietKe: 10 }, TODAY)).toBe(100);
+    expect(
+      phanTramTuoiTho({ namSanXuat: 2020, namKhaiThac: 2020, tuoiThoThietKe: null }, TODAY),
+    ).toBeNull();
+    expect(
+      phanTramTuoiTho({ namSanXuat: null, namKhaiThac: null, tuoiThoThietKe: 10 }, TODAY),
+    ).toBeNull();
+    expect(
+      phanTramTuoiTho({ namSanXuat: 2020, namKhaiThac: 2020, tuoiThoThietKe: 10 }, TODAY),
+    ).toBe(60);
+    expect(
+      phanTramTuoiTho({ namSanXuat: 2000, namKhaiThac: 2000, tuoiThoThietKe: 10 }, TODAY),
+    ).toBe(100);
   });
 });
 
@@ -37,16 +49,25 @@ describe("lifecycle — tuoiThoConLai / namThayThe", () => {
 
 describe("lifecycle — healthScore", () => {
   it("tài sản mới, không sự cố → A", () => {
-    const r = healthScore({ namSanXuat: 2025, namKhaiThac: 2025, soSuCo: 0, tuoiThoThietKe: 10 }, TODAY);
+    const r = healthScore(
+      { namSanXuat: 2025, namKhaiThac: 2025, soSuCo: 0, tuoiThoThietKe: 10 },
+      TODAY,
+    );
     expect(r.loai).toBe("A");
     expect(r.score).toBeGreaterThanOrEqual(80);
   });
   it("tài sản cũ hết vòng đời → D", () => {
-    const r = healthScore({ namSanXuat: 2000, namKhaiThac: 2000, soSuCo: 5, tuoiThoThietKe: 10 }, TODAY);
+    const r = healthScore(
+      { namSanXuat: 2000, namKhaiThac: 2000, soSuCo: 5, tuoiThoThietKe: 10 },
+      TODAY,
+    );
     expect(r.loai).toBe("D");
   });
   it("thiếu tuoiThoThietKe không làm điểm về 0", () => {
-    const r = healthScore({ namSanXuat: null, namKhaiThac: null, soSuCo: 0, tuoiThoThietKe: null }, TODAY);
+    const r = healthScore(
+      { namSanXuat: null, namKhaiThac: null, soSuCo: 0, tuoiThoThietKe: null },
+      TODAY,
+    );
     expect(r.score).toBeGreaterThan(0);
   });
 });

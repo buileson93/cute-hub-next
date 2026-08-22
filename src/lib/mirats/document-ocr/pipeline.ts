@@ -16,9 +16,8 @@ export interface PipelineOptions {
   signal?: AbortSignal;
   language?: string;
   qualityProfile?: string;
-  startPage?: number; 
+  startPage?: number;
 }
-
 
 /**
  * The main OCR Pipeline for Vietnamese PDF documents.
@@ -26,9 +25,14 @@ export interface PipelineOptions {
 export class OcrPipeline {
   private extractor = new PdfExtractor();
 
-  async process(sourceType: string, sourceId: string, file: Blob, options: PipelineOptions = {}): Promise<OcrPageResult[]> {
+  async process(
+    sourceType: string,
+    sourceId: string,
+    file: Blob,
+    options: PipelineOptions = {},
+  ): Promise<OcrPageResult[]> {
     const { onProgress, signal, language = "vie+eng" } = options;
-    
+
     // Safety check for feature flag
     if (!isFeatureEnabled("documentOcrEnabled")) {
       console.log("OCR is disabled via feature flag.");
@@ -40,7 +44,7 @@ export class OcrPipeline {
       sourceType as OcrSourceType,
       sourceId,
       file,
-      language
+      language,
     );
 
     if (reuse.reused && reuse.artifact) {
@@ -48,15 +52,18 @@ export class OcrPipeline {
       return reuse.artifact.pages || [];
     }
 
-    let results: OcrPageResult[] = reuse.artifact?.pages || [];
-    
+    const results: OcrPageResult[] = reuse.artifact?.pages || [];
+
     try {
       const totalPages = await this.extractor.load(file);
-      
+
       // Choose quality profile based on device
-      const qualityProfile = options.qualityProfile || await adaptiveOcrSelector.getRecommendedQuality();
-      const config = QUALITY_PROFILES[qualityProfile as keyof typeof QUALITY_PROFILES] || QUALITY_PROFILES.balanced;
-      
+      const qualityProfile =
+        options.qualityProfile || (await adaptiveOcrSelector.getRecommendedQuality());
+      const config =
+        QUALITY_PROFILES[qualityProfile as keyof typeof QUALITY_PROFILES] ||
+        QUALITY_PROFILES.balanced;
+
       const startPage = options.startPage || 1;
 
       for (let i = startPage; i <= totalPages; i++) {
@@ -67,12 +74,12 @@ export class OcrPipeline {
 
         const startTime = Date.now();
         const pageData = await this.extractor.getPage(i);
-        
+
         // 1. Try Native Text Layer
         const classification = classifyPageText(pageData.text);
-        
+
         let finalResult: OcrPageResult;
-        
+
         if (!classification.needsOcr) {
           finalResult = {
             page: i,
@@ -80,45 +87,46 @@ export class OcrPipeline {
             rawText: pageData.text,
             confidence: 1.0,
             providerId: "pdf-native-text",
-            durationMs: Date.now() - startTime
+            durationMs: Date.now() - startTime,
           };
         } else {
           // 2. Perform OCR
           const canvas = document.createElement("canvas");
           try {
             await pageData.render(canvas, config.dpi);
-            
+
             if (config.preprocessing) {
               preprocessImage(canvas);
             }
-            
-            const provider = await adaptiveOcrSelector.selectBestProvider({ isPdf: true });
-            
-            // Re-check rollout logic
-            const actualOcrProvider = provider.id === 'pdf-text-layer' 
-              ? null // Should not happen if classification says needsOcr
-              : provider;
 
-            if (!actualOcrProvider || actualOcrProvider.id === 'pdf-text-layer') {
-               finalResult = {
-                  page: i,
-                  method: "text-layer",
-                  rawText: pageData.text,
-                  confidence: 0.5,
-                  providerId: "pdf-native-text-fallback",
-                  durationMs: Date.now() - startTime
-                };
+            const provider = await adaptiveOcrSelector.selectBestProvider({ isPdf: true });
+
+            // Re-check rollout logic
+            const actualOcrProvider =
+              provider.id === "pdf-text-layer"
+                ? null // Should not happen if classification says needsOcr
+                : provider;
+
+            if (!actualOcrProvider || actualOcrProvider.id === "pdf-text-layer") {
+              finalResult = {
+                page: i,
+                method: "text-layer",
+                rawText: pageData.text,
+                confidence: 0.5,
+                providerId: "pdf-native-text-fallback",
+                durationMs: Date.now() - startTime,
+              };
             } else {
               const ocrResult = await actualOcrProvider.recognize(canvas, {
                 language,
                 signal,
-                dpi: config.dpi
+                dpi: config.dpi,
               });
-              
+
               finalResult = {
                 ...ocrResult,
                 page: i,
-                durationMs: Date.now() - startTime
+                durationMs: Date.now() - startTime,
               };
 
               // Report runtime metrics for collective intelligence
@@ -128,22 +136,22 @@ export class OcrPipeline {
             disposeCanvas(canvas);
           }
         }
-        
+
         // 3. Post-processing
         finalResult.normalizedText = normalizeViForSearch(finalResult.rawText);
-        
+
         // Merge with existing partial results
-        const existingIdx = results.findIndex(r => r.page === i);
+        const existingIdx = results.findIndex((r) => r.page === i);
         if (existingIdx >= 0) {
           results[existingIdx] = finalResult;
         } else {
           results.push(finalResult);
         }
-        
+
         if (options.onPageCompleted) {
           options.onPageCompleted(i, finalResult);
         }
-        
+
         if (onProgress) {
           onProgress(i, totalPages, finalResult);
         }
@@ -153,10 +161,10 @@ export class OcrPipeline {
       results.sort((a, b) => a.page - b.page);
 
       // 4. Publish artifact if completed
-      const isComplete = results.length >= totalPages && results.every(r => !!r.rawText);
+      const isComplete = results.length >= totalPages && results.every((r) => !!r.rawText);
       if (isComplete) {
         const fileHash = await artifactRepository.calculateHash(file);
-        const fullText = results.map(r => r.rawText).join('\n');
+        const fullText = results.map((r) => r.rawText).join("\n");
         const avgConfidence = results.reduce((acc, r) => acc + r.confidence, 0) / results.length;
 
         artifactRepository.publishArtifact(sourceType as OcrSourceType, sourceId, {
@@ -171,15 +179,14 @@ export class OcrPipeline {
           full_text: fullText,
           normalized_text: normalizeViForSearch(fullText),
           average_confidence: avgConfidence,
-          status: 'completed',
-          quality_score: avgConfidence // Simple score for now
+          status: "completed",
+          quality_score: avgConfidence, // Simple score for now
         });
       }
-
     } finally {
       await this.extractor.close();
     }
-    
+
     return results;
   }
 }

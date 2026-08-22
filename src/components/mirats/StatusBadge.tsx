@@ -30,12 +30,12 @@ interface Props {
 
 export function StatusBadge({ domain, code, className, label, dotOnly }: Props) {
   // Ưu tiên dùng getStatusToken trực tiếp cho domain thiet_bi để dùng hệ thống token mới
-  const token = (['thiet_bi', 'ocr', 'connectivity', 'expiry'].includes(domain))
-    ? getStatusToken(domain, code ?? "") 
+  const token = ["thiet_bi", "ocr", "connectivity", "expiry"].includes(domain)
+    ? getStatusToken(domain, code ?? "")
     : getToken(domain, code ?? "");
-    
+
   const phase = phaseOf(domain as any, code ?? "");
-  
+
   if (!token && !phase) {
     return (
       <Badge variant="outline" className={cn(UNKNOWN_CLS, "font-medium", className)}>
@@ -49,12 +49,12 @@ export function StatusBadge({ domain, code, className, label, dotOnly }: Props) 
 
   if (dotOnly) {
     return (
-      <div className={cn("flex items-center gap-2", className)} title={label ?? token?.label ?? code ?? ""}>
-        <div 
-          className={cn(
-            "h-2 w-2 rounded-full shrink-0 transition-all",
-            colorClass
-          )} 
+      <div
+        className={cn("flex items-center gap-2", className)}
+        title={label ?? token?.label ?? code ?? ""}
+      >
+        <div
+          className={cn("h-2 w-2 rounded-full shrink-0 transition-all", colorClass)}
           aria-hidden="true"
         />
         {label && (
@@ -67,18 +67,17 @@ export function StatusBadge({ domain, code, className, label, dotOnly }: Props) 
   }
 
   return (
-    <Badge 
-      variant="outline" 
+    <Badge
+      variant="outline"
       className={cn("font-medium whitespace-nowrap gap-1.5 py-0.5", colorClass, className)}
       aria-label={label ?? token?.label ?? code ?? "Trạng thái"}
     >
       {token?.icon && <Icon name={token.icon} size="tiny" />}
-      {!token?.icon && token?.dot && <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", token.dot)} />}
+      {!token?.icon && token?.dot && (
+        <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", token.dot)} />
+      )}
       <span className="truncate">{label ?? token?.label ?? code}</span>
       {token?.kyHieu && <span className="sr-only">({token.kyHieu})</span>}
     </Badge>
   );
 }
-
-
-

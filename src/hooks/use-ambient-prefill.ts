@@ -13,7 +13,8 @@ const STALE = 60_000;
 export function usePrefillKipTruc(userDisplay: string) {
   return useQuery({
     queryKey: ["ambient-prefill", "kip-truc", userDisplay],
-    queryFn: async () => pickLastKipTruc(await fetchMyRecentSuCo(userDisplay)) as KipTrucRow[] | null,
+    queryFn: async () =>
+      pickLastKipTruc(await fetchMyRecentSuCo(userDisplay)) as KipTrucRow[] | null,
     enabled: !!userDisplay,
     staleTime: STALE,
   });

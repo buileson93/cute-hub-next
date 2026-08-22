@@ -87,48 +87,29 @@ describe("canRevokeRole — bảo vệ admin cuối", () => {
 
 describe("canSetActive — chống khoá admin cuối", () => {
   it("chặn khoá admin cuối", () => {
-    const r = canSetActive(
-      { actorId: admin2.userId, actorIsAdmin: true },
+    const r = canSetActive({ actorId: admin2.userId, actorIsAdmin: true }, admin, false, [
       admin,
-      false,
-      [admin, ktv]
-    );
+      ktv,
+    ]);
     expect(r.ok).toBe(false);
   });
   it("cho phép khoá admin khi còn admin khác active", () => {
-    const r = canSetActive(
-      { actorId: admin2.userId, actorIsAdmin: true },
+    const r = canSetActive({ actorId: admin2.userId, actorIsAdmin: true }, admin, false, [
       admin,
-      false,
-      [admin, admin2]
-    );
+      admin2,
+    ]);
     expect(r.ok).toBe(true);
   });
   it("chặn tự khoá bản thân nếu là admin cuối", () => {
-    const r = canSetActive(
-      { actorId: admin.userId, actorIsAdmin: true },
-      admin,
-      false,
-      [admin]
-    );
+    const r = canSetActive({ actorId: admin.userId, actorIsAdmin: true }, admin, false, [admin]);
     expect(r.ok).toBe(false);
   });
   it("chặn khi actor không phải admin", () => {
-    const r = canSetActive(
-      { actorId: "x", actorIsAdmin: false },
-      ktv,
-      false,
-      [admin, ktv]
-    );
+    const r = canSetActive({ actorId: "x", actorIsAdmin: false }, ktv, false, [admin, ktv]);
     expect(r.ok).toBe(false);
   });
   it("noop khi trạng thái không đổi", () => {
-    const r = canSetActive(
-      { actorId: admin.userId, actorIsAdmin: true },
-      ktv,
-      true,
-      [admin, ktv]
-    );
+    const r = canSetActive({ actorId: admin.userId, actorIsAdmin: true }, ktv, true, [admin, ktv]);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.code).toBe("NOOP");
   });

@@ -8,14 +8,21 @@ interface DistributionStatsProps {
 }
 
 const DON_VI_LABEL: Record<string, string> = {
-  CRA: "Cảng HK Cam Ranh", CLA: "Cảng HK Chu Lai", PBA: "Cảng HK Phú Bài",
-  PLK: "Cảng HK Pleiku", THO: "Cảng HK Thọ Xuân", PCA: "Cảng HK Phù Cát",
+  CRA: "Cảng HK Cam Ranh",
+  CLA: "Cảng HK Chu Lai",
+  PBA: "Cảng HK Phú Bài",
+  PLK: "Cảng HK Pleiku",
+  THO: "Cảng HK Thọ Xuân",
+  PCA: "Cảng HK Phù Cát",
 };
 
 const dvLabel = (ma: string) => DON_VI_LABEL[ma] ?? ma;
 
 export function DistributionStats({ stats }: DistributionStatsProps) {
-  const maxUnit = useMemo(() => stats ? Math.max(1, ...stats.units.map((u) => u.accounts)) : 1, [stats]);
+  const maxUnit = useMemo(
+    () => (stats ? Math.max(1, ...stats.units.map((u) => u.accounts)) : 1),
+    [stats],
+  );
 
   const entityCards = useMemo(() => {
     if (!stats) return [];
@@ -33,7 +40,6 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
 
   return (
     <div className="space-y-3">
-
       <div className="grid gap-3 lg:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
@@ -43,7 +49,9 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             {!stats || stats.units.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">Chưa có tài khoản nào gắn đơn vị.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Chưa có tài khoản nào gắn đơn vị.
+              </p>
             ) : (
               stats.units.map((u) => (
                 <div key={u.don_vi} className="space-y-1">
@@ -57,9 +65,9 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
                     </span>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                    <div 
-                      className="h-full bg-primary transition-all duration-500" 
-                      style={{ width: `${Math.round((u.accounts / maxUnit) * 100)}%` }} 
+                    <div
+                      className="h-full bg-primary transition-all duration-500"
+                      style={{ width: `${Math.round((u.accounts / maxUnit) * 100)}%` }}
                     />
                   </div>
                 </div>
@@ -79,7 +87,10 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
               {entityCards.map((e) => {
                 const Icon = e.icon;
                 return (
-                  <div key={e.label} className="rounded-lg border bg-muted/30 p-3 transition-colors hover:bg-muted/50">
+                  <div
+                    key={e.label}
+                    className="rounded-lg border bg-muted/30 p-3 transition-colors hover:bg-muted/50"
+                  >
                     <div className="flex items-center gap-1.5 text-[10.5px] uppercase tracking-wide text-muted-foreground">
                       <Icon className="h-3 w-3" /> {e.label}
                     </div>
@@ -97,12 +108,10 @@ export function DistributionStats({ stats }: DistributionStatsProps) {
       <div className="flex items-start gap-2 rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
-          Ràng buộc theo hàng: <span className="font-mono">don_vi = user.don_vi</span> cho dữ liệu nghiệp vụ; vai trò cấp công ty được bỏ qua.
+          Ràng buộc theo hàng: <span className="font-mono">don_vi = user.don_vi</span> cho dữ liệu
+          nghiệp vụ; vai trò cấp công ty được bỏ qua.
         </span>
       </div>
     </div>
-
   );
 }
-
-

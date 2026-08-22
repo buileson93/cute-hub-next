@@ -54,10 +54,15 @@ function ResetPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = z.object({
-      password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
-      confirm: z.string(),
-    }).refine((v) => v.password === v.confirm, { message: "Mật khẩu nhập lại không khớp", path: ["confirm"] })
+    const parsed = z
+      .object({
+        password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
+        confirm: z.string(),
+      })
+      .refine((v) => v.password === v.confirm, {
+        message: "Mật khẩu nhập lại không khớp",
+        path: ["confirm"],
+      })
       .safeParse({ password, confirm });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -65,16 +70,24 @@ function ResetPasswordPage() {
     }
     setLoading(true);
     try {
-      const { data: updated, error } = await supabase.auth.updateUser({ password: parsed.data.password });
+      const { data: updated, error } = await supabase.auth.updateUser({
+        password: parsed.data.password,
+      });
       if (error) {
         toast.error(error.message);
         return;
       }
       // Thu hồi mọi session cũ (invalidate old tokens) + ghi audit
       if (updated?.user?.id) {
-        try { await finalize({ data: { userId: updated.user.id } }); } catch (e) { console.error(e); }
+        try {
+          await finalize({ data: { userId: updated.user.id } });
+        } catch (e) {
+          console.error(e);
+        }
       }
-      toast.success("Đổi mật khẩu thành công. Mọi phiên đăng nhập cũ đã bị thu hồi, vui lòng đăng nhập lại.");
+      toast.success(
+        "Đổi mật khẩu thành công. Mọi phiên đăng nhập cũ đã bị thu hồi, vui lòng đăng nhập lại.",
+      );
       await supabase.auth.signOut();
       navigate({ to: "/auth" });
     } finally {
@@ -91,7 +104,9 @@ function ResetPasswordPage() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">MIRATS</div>
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Đặt lại mật khẩu</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              Đặt lại mật khẩu
+            </div>
           </div>
         </div>
 
@@ -99,7 +114,8 @@ function ResetPasswordPage() {
           <CardHeader>
             <CardTitle className="text-xl">Mật khẩu mới</CardTitle>
             <CardDescription>
-              Nhập mật khẩu mới cho tài khoản. Sau khi đổi thành công bạn sẽ được yêu cầu đăng nhập lại.
+              Nhập mật khẩu mới cho tài khoản. Sau khi đổi thành công bạn sẽ được yêu cầu đăng nhập
+              lại.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -123,21 +139,35 @@ function ResetPasswordPage() {
                 <div className="space-y-1.5">
                   <Label htmlFor="password">Mật khẩu mới</Label>
                   <Input
-                    id="password" type="password" autoComplete="new-password" required
-                    value={password} onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading} minLength={8}
+                    id="password"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    minLength={8}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="confirm">Nhập lại mật khẩu</Label>
                   <Input
-                    id="confirm" type="password" autoComplete="new-password" required
-                    value={confirm} onChange={(e) => setConfirm(e.target.value)}
-                    disabled={loading} minLength={8}
+                    id="confirm"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    disabled={loading}
+                    minLength={8}
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
+                  {loading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <KeyRound className="mr-2 h-4 w-4" />
+                  )}
                   Đặt lại mật khẩu
                 </Button>
               </form>

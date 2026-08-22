@@ -9,7 +9,10 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
  */
 
 async function assertAdmin(supabase: any, userId: string) {
-  const { data: isAdmin, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  const { data: isAdmin, error } = await supabase.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
   if (error) throw new Error(error.message);
   if (!isAdmin) throw new Error("Forbidden: chỉ Admin được thực hiện");
 }
@@ -20,7 +23,7 @@ async function logDumpAction(supabaseAdmin: any, userId: string, action: string,
     action,
     entity: "full_dump",
     detail,
-    severity: "info"
+    severity: "info",
   });
 }
 
@@ -83,7 +86,10 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
 
     // --- Kiểm kê R2 (theo sổ tệp r2_file) ---
     const r2: { key: string; size: number; ten_goc: string | null }[] = [];
-    const { data: r2rows } = await supabaseAdmin.from("r2_file").select("r2_key,kich_thuoc,ten_goc").limit(20000);
+    const { data: r2rows } = await supabaseAdmin
+      .from("r2_file")
+      .select("r2_key,kich_thuoc,ten_goc")
+      .limit(20000);
     for (const r of (r2rows ?? []) as any[]) {
       if (r.r2_key) r2.push({ key: r.r2_key, size: r.kich_thuoc ?? 0, ten_goc: r.ten_goc ?? null });
     }
@@ -92,7 +98,9 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
     try {
       const { data: u } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1 });
       authUsers = (u as any)?.total ?? 0;
-    } catch { /* bỏ qua */ }
+    } catch {
+      /* bỏ qua */
+    }
 
     const manifest = {
       created_at: new Date().toISOString(),
@@ -102,7 +110,10 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
       r2,
       auth_users: authUsers,
     };
-    await logDumpAction(supabaseAdmin, context.userId, "full_dump_manifest", { tableCount: tables.length, fileCount: storage.length + r2.length });
+    await logDumpAction(supabaseAdmin, context.userId, "full_dump_manifest", {
+      tableCount: tables.length,
+      fileCount: storage.length + r2.length,
+    });
     return manifest;
   });
 
@@ -110,14 +121,21 @@ export const fullDumpManifest = createServerFn({ method: "POST" })
 export const fullDumpTableChunk = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({ table: z.string().min(1).max(120), offset: z.number().int().min(0), limit: z.number().int().min(1).max(2000) }).parse(input)
+    z
+      .object({
+        table: z.string().min(1).max(120),
+        offset: z.number().int().min(0),
+        limit: z.number().int().min(1).max(2000),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/backend/admin.server");
     const supabaseAdmin = sbAdminTyped as any;
     const { data: allowed } = await supabaseAdmin.rpc("admin_list_backup_tables");
-    if (!(allowed ?? []).some((r: any) => r.table_name === data.table)) throw new Error("Bảng không hợp lệ");
+    if (!(allowed ?? []).some((r: any) => r.table_name === data.table))
+      throw new Error("Bảng không hợp lệ");
     const { data: rows, error } = await (supabaseAdmin as any)
       .from(data.table)
       .select("*")
@@ -154,7 +172,7 @@ export const fullDumpFileUrls = createServerFn({ method: "POST" })
         bucket: z.string().max(200).optional(),
         paths: z.array(z.string().min(1).max(1024)).min(1).max(50),
       })
-      .parse(input)
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
@@ -163,13 +181,14 @@ export const fullDumpFileUrls = createServerFn({ method: "POST" })
     if (data.source === "storage") {
       if (!data.bucket) throw new Error("Thiếu bucket");
       const { supabaseAdmin: sbAdminTyped } = await import("@/integrations/backend/admin.server");
-    const supabaseAdmin = sbAdminTyped as any;
+      const supabaseAdmin = sbAdminTyped as any;
       const { createAdminStorage } = await import("@/lib/storage/server");
       const { data: signed } = await createAdminStorage(supabaseAdmin)
         .from(data.bucket)
         .createSignedUrls(data.paths, 900);
       const map = new Map<string, string>();
-      for (const s of (signed ?? []) as any[]) if (s?.path && s?.signedUrl) map.set(s.path, s.signedUrl);
+      for (const s of (signed ?? []) as any[])
+        if (s?.path && s?.signedUrl) map.set(s.path, s.signedUrl);
       for (const p of data.paths) urls.push({ path: p, url: map.get(p) ?? null });
     } else {
       const { r2PresignGet } = await import("@/lib/mirats/r2.server");

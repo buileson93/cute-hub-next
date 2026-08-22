@@ -21,13 +21,10 @@ export function computePosition(
   gap = 8,
 ): ContextualPos {
   const spaceBelow = viewport.height - (anchor.top + anchor.height);
-  const placement: "below" | "above" =
-    spaceBelow >= toolbar.height + gap ? "below" : "above";
+  const placement: "below" | "above" = spaceBelow >= toolbar.height + gap ? "below" : "above";
 
   const top =
-    placement === "below"
-      ? anchor.top + anchor.height + gap
-      : anchor.top - toolbar.height - gap;
+    placement === "below" ? anchor.top + anchor.height + gap : anchor.top - toolbar.height - gap;
 
   let left = anchor.left + anchor.width / 2 - toolbar.width / 2;
   left = Math.max(gap, Math.min(left, viewport.width - toolbar.width - gap));

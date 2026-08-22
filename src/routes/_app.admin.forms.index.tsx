@@ -13,9 +13,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 
@@ -50,7 +70,9 @@ function AdminFormsPage() {
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    code: "", ten: "", mo_ta: "",
+    code: "",
+    ten: "",
+    mo_ta: "",
     nhom: "bien_ban",
     thiet_bi_mode: "none" as Template["thiet_bi_mode"],
     require_signature: true,
@@ -89,7 +111,14 @@ function AdminFormsPage() {
     onSuccess: (id) => {
       toast.success("Đã tạo mẫu");
       setOpen(false);
-      setForm({ code: "", ten: "", mo_ta: "", nhom: "bien_ban", thiet_bi_mode: "none", require_signature: true });
+      setForm({
+        code: "",
+        ten: "",
+        mo_ta: "",
+        nhom: "bien_ban",
+        thiet_bi_mode: "none",
+        require_signature: true,
+      });
       qc.invalidateQueries({ queryKey: ["admin-form-templates"] });
       nav({ to: "/admin/forms/$id", params: { id } });
     },
@@ -106,7 +135,11 @@ function AdminFormsPage() {
   });
 
   if (loading) {
-    return <div className="flex h-96 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
   }
   if (!canManage) {
     return (
@@ -127,46 +160,92 @@ function AdminFormsPage() {
         />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" />Tạo mẫu mới</Button>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Tạo mẫu mới
+            </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Tạo mẫu biên bản</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Tạo mẫu biên bản</DialogTitle>
+            </DialogHeader>
             <div className="space-y-3">
-              <div><Label>Mã mẫu (VD: BB_KIEM_TRA)</Label>
-                <Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} maxLength={40} /></div>
-              <div><Label>Tên mẫu</Label>
-                <Input value={form.ten} onChange={(e) => setForm({ ...form, ten: e.target.value })} maxLength={200} /></div>
-              <div><Label>Mô tả</Label>
-                <Textarea value={form.mo_ta} onChange={(e) => setForm({ ...form, mo_ta: e.target.value })} rows={2} maxLength={500} /></div>
-              <div><Label>Loại mẫu</Label>
+              <div>
+                <Label>Mã mẫu (VD: BB_KIEM_TRA)</Label>
+                <Input
+                  value={form.code}
+                  onChange={(e) => setForm({ ...form, code: e.target.value })}
+                  maxLength={40}
+                />
+              </div>
+              <div>
+                <Label>Tên mẫu</Label>
+                <Input
+                  value={form.ten}
+                  onChange={(e) => setForm({ ...form, ten: e.target.value })}
+                  maxLength={200}
+                />
+              </div>
+              <div>
+                <Label>Mô tả</Label>
+                <Textarea
+                  value={form.mo_ta}
+                  onChange={(e) => setForm({ ...form, mo_ta: e.target.value })}
+                  rows={2}
+                  maxLength={500}
+                />
+              </div>
+              <div>
+                <Label>Loại mẫu</Label>
                 <Select value={form.nhom} onValueChange={(v) => setForm({ ...form, nhom: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="bien_ban">Biên bản chung</SelectItem>
                     <SelectItem value="bao_duong">Phiếu bảo dưỡng</SelectItem>
                   </SelectContent>
                 </Select>
                 {form.nhom === "bao_duong" && (
-                  <p className="mt-1 text-xs text-muted-foreground">Sau khi tạo, vào phần chỉnh sửa để gắn mẫu này với các hệ thống cụ thể.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Sau khi tạo, vào phần chỉnh sửa để gắn mẫu này với các hệ thống cụ thể.
+                  </p>
                 )}
               </div>
-              <div><Label>Chế độ liên kết tài sản</Label>
-                <Select value={form.thiet_bi_mode} onValueChange={(v) => setForm({ ...form, thiet_bi_mode: v as Template["thiet_bi_mode"] })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+              <div>
+                <Label>Chế độ liên kết tài sản</Label>
+                <Select
+                  value={form.thiet_bi_mode}
+                  onValueChange={(v) =>
+                    setForm({ ...form, thiet_bi_mode: v as Template["thiet_bi_mode"] })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Không gắn tài sản</SelectItem>
                     <SelectItem value="single">1 tài sản</SelectItem>
                     <SelectItem value="multi">Nhiều tài sản</SelectItem>
                   </SelectContent>
-                </Select></div>
+                </Select>
+              </div>
               <div className="flex items-center gap-2">
-                <Switch checked={form.require_signature} onCheckedChange={(v) => setForm({ ...form, require_signature: v })} />
+                <Switch
+                  checked={form.require_signature}
+                  onCheckedChange={(v) => setForm({ ...form, require_signature: v })}
+                />
                 <Label>Có phần chữ ký</Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="ghost" onClick={() => setOpen(false)}>Huỷ</Button>
-              <Button onClick={() => createM.mutate()} disabled={!form.code.trim() || !form.ten.trim() || createM.isPending}>
+              <Button variant="ghost" onClick={() => setOpen(false)}>
+                Huỷ
+              </Button>
+              <Button
+                onClick={() => createM.mutate()}
+                disabled={!form.code.trim() || !form.ten.trim() || createM.isPending}
+              >
                 {createM.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Tạo
               </Button>
             </DialogFooter>
@@ -177,15 +256,22 @@ function AdminFormsPage() {
       <Card>
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex h-40 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>
+            <div className="flex h-40 items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
           ) : (
             <Table>
-              <TableHeader><TableRow>
-                <TableHead>Mã</TableHead><TableHead>Tên</TableHead>
-                <TableHead>Loại</TableHead>
-                <TableHead>Tài sản</TableHead><TableHead>Chữ ký</TableHead>
-                <TableHead>Trạng thái</TableHead><TableHead className="text-right">Hành động</TableHead>
-              </TableRow></TableHeader>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Mã</TableHead>
+                  <TableHead>Tên</TableHead>
+                  <TableHead>Loại</TableHead>
+                  <TableHead>Tài sản</TableHead>
+                  <TableHead>Chữ ký</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead className="text-right">Hành động</TableHead>
+                </TableRow>
+              </TableHeader>
               <TableBody>
                 {(templates ?? []).map((t) => (
                   <TableRow key={t.id}>
@@ -196,20 +282,37 @@ function AdminFormsPage() {
                         {t.nhom === "bao_duong" ? "Bảo dưỡng" : "Biên bản"}
                       </Badge>
                     </TableCell>
-                    <TableCell><Badge variant="outline">{t.thiet_bi_mode === "none" ? "—" : t.thiet_bi_mode === "single" ? "1 TB" : "Nhiều TB"}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {t.thiet_bi_mode === "none"
+                          ? "—"
+                          : t.thiet_bi_mode === "single"
+                            ? "1 TB"
+                            : "Nhiều TB"}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{t.require_signature ? "Có" : "Không"}</TableCell>
                     <TableCell>
-                      <Switch checked={t.active} onCheckedChange={(v) => toggleM.mutate({ id: t.id, active: v })} />
+                      <Switch
+                        checked={t.active}
+                        onCheckedChange={(v) => toggleM.mutate({ id: t.id, active: v })}
+                      />
                     </TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm">
-                        <Link to="/admin/forms/$id" params={{ id: t.id }}>Chỉnh sửa</Link>
+                        <Link to="/admin/forms/$id" params={{ id: t.id }}>
+                          Chỉnh sửa
+                        </Link>
                       </Button>
                     </TableCell>
                   </TableRow>
                 ))}
                 {(templates ?? []).length === 0 && (
-                  <TableRow><TableCell colSpan={7} className="py-8 text-center text-muted-foreground">Chưa có mẫu nào.</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                      Chưa có mẫu nào.
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>

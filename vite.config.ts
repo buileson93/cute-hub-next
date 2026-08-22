@@ -42,8 +42,6 @@ export default defineConfig({
       noExternal: ["@react-email/components"],
     },
 
-
-
     build: {
       rollupOptions: {
         output: {

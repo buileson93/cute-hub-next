@@ -50,7 +50,12 @@ export interface LinhKienRanh {
 }
 
 export interface KheLinhKienTree extends KheLinhKien {
-  linhKien: { linh_kien_id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null } | null;
+  linhKien: {
+    linh_kien_id: string;
+    ma_thiet_bi: string;
+    ten_thiet_bi: string | null;
+    ma_serial: string | null;
+  } | null;
 }
 
 const KEY = {
@@ -68,13 +73,17 @@ export function useKheLinhKien(thietBiId: string) {
       const [kheRes, ganRes] = await Promise.all([
         supabase
           .from("thiet_bi_khe_linh_kien")
-          .select("id, thiet_bi_id, ma_khe, ten, loai_thiet_bi_yeu_cau, khe_cha, bat_buoc, thu_tu, mo_ta, trang_thai, hieu_luc_tu, hieu_luc_den")
+          .select(
+            "id, thiet_bi_id, ma_khe, ten, loai_thiet_bi_yeu_cau, khe_cha, bat_buoc, thu_tu, mo_ta, trang_thai, hieu_luc_tu, hieu_luc_den",
+          )
           .eq("thiet_bi_id", thietBiId)
           .order("thu_tu", { ascending: true, nullsFirst: false })
           .order("ma_khe", { ascending: true }),
         supabase
           .from("gan_linh_kien")
-          .select("khe_id, linh_kien_id, thiet_bi_khe_linh_kien!inner(thiet_bi_id), linh_kien:linh_kien_id(ma_thiet_bi, ten_thiet_bi, ma_serial)")
+          .select(
+            "khe_id, linh_kien_id, thiet_bi_khe_linh_kien!inner(thiet_bi_id), linh_kien:linh_kien_id(ma_thiet_bi, ten_thiet_bi, ma_serial)",
+          )
           .is("den_ngay", null)
           .eq("thiet_bi_khe_linh_kien.thiet_bi_id", thietBiId),
       ]);
@@ -82,8 +91,13 @@ export function useKheLinhKien(thietBiId: string) {
       if (ganRes.error) throw ganRes.error;
       const byKhe = new Map<string, KheLinhKienTree["linhKien"]>();
       for (const g of (ganRes.data ?? []) as unknown as Array<{
-        khe_id: string; linh_kien_id: string;
-        linh_kien: { ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null } | null;
+        khe_id: string;
+        linh_kien_id: string;
+        linh_kien: {
+          ma_thiet_bi: string;
+          ten_thiet_bi: string | null;
+          ma_serial: string | null;
+        } | null;
       }>) {
         byKhe.set(g.khe_id, {
           linh_kien_id: g.linh_kien_id,
@@ -92,7 +106,10 @@ export function useKheLinhKien(thietBiId: string) {
           ma_serial: g.linh_kien?.ma_serial ?? null,
         });
       }
-      return ((kheRes.data ?? []) as KheLinhKien[]).map((k) => ({ ...k, linhKien: byKhe.get(k.id) ?? null }));
+      return ((kheRes.data ?? []) as KheLinhKien[]).map((k) => ({
+        ...k,
+        linhKien: byKhe.get(k.id) ?? null,
+      }));
     },
   });
 }
@@ -106,22 +123,34 @@ export function useLinhKienRanh() {
         supabase.from("gan_linh_kien").select("linh_kien_id").is("den_ngay", null),
         supabase
           .from("thiet_bi")
-          .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
+          .select(
+            "id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)",
+          )
           .eq("la_linh_kien", true)
           .order("ma_thiet_bi"),
       ]);
       if (busyRes.error) throw busyRes.error;
       if (tbRes.error) throw tbRes.error;
       const busy = new Set((busyRes.data ?? []).map((r) => r.linh_kien_id));
-      return ((tbRes.data ?? []) as unknown as Array<{
-        id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null;
-        loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null;
-        dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
-      }>)
+      return (
+        (tbRes.data ?? []) as unknown as Array<{
+          id: string;
+          ma_thiet_bi: string;
+          ten_thiet_bi: string | null;
+          ma_serial: string | null;
+          loai_thiet_bi_id: string | null;
+          don_vi_quan_ly_id: string | null;
+          dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
+        }>
+      )
         .filter((r) => !busy.has(r.id) && r.dm_trang_thai_thiet_bi?.ma !== "THANH_LY")
         .map((r) => ({
-          id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
-          loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
+          id: r.id,
+          ma_thiet_bi: r.ma_thiet_bi,
+          ten_thiet_bi: r.ten_thiet_bi,
+          ma_serial: r.ma_serial,
+          loai_thiet_bi_id: r.loai_thiet_bi_id,
+          don_vi_quan_ly_id: r.don_vi_quan_ly_id,
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
         }));
@@ -150,14 +179,20 @@ function useInvalidate(thietBiId: string) {
 export function useLuuKhe(thietBiId: string) {
   const invalidate = useInvalidate(thietBiId);
   return useMutation({
-    mutationFn: async (input: Partial<KheLinhKien> & { thiet_bi_id: string; ma_khe: string; ten: string }) => {
+    mutationFn: async (
+      input: Partial<KheLinhKien> & { thiet_bi_id: string; ma_khe: string; ten: string },
+    ) => {
       if (input.id) {
         const { id, ...rest } = input;
         const { error } = await supabase.from("thiet_bi_khe_linh_kien").update(rest).eq("id", id);
         if (error) throw error;
         return id;
       }
-      const { data, error } = await supabase.from("thiet_bi_khe_linh_kien").insert(input).select("id").single();
+      const { data, error } = await supabase
+        .from("thiet_bi_khe_linh_kien")
+        .insert(input)
+        .select("id")
+        .single();
       if (error) throw error;
       return data.id as string;
     },
@@ -169,7 +204,10 @@ export function useNgungKhe(thietBiId: string) {
   const invalidate = useInvalidate(thietBiId);
   return useMutation({
     mutationFn: async (kheId: string) => {
-      const { error } = await supabase.from("thiet_bi_khe_linh_kien").update({ trang_thai: "ngung" }).eq("id", kheId);
+      const { error } = await supabase
+        .from("thiet_bi_khe_linh_kien")
+        .update({ trang_thai: "ngung" })
+        .eq("id", kheId);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -182,7 +220,9 @@ export function useLapLinhKien(thietBiId: string) {
   return useMutation({
     mutationFn: async (p: { kheId: string; linhKienId: string; ghiChu?: string }) => {
       const { error } = await supabase.rpc("lap_linh_kien", {
-        p_khe_id: p.kheId, p_linh_kien_id: p.linhKienId, p_ghi_chu: p.ghiChu ?? undefined,
+        p_khe_id: p.kheId,
+        p_linh_kien_id: p.linhKienId,
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
     },
@@ -195,7 +235,9 @@ export function useThaoLinhKien(thietBiId: string) {
   return useMutation({
     mutationFn: async (p: { kheId: string; lyDo?: string; ghiChu?: string }) => {
       const { error } = await supabase.rpc("thao_linh_kien", {
-        p_khe_id: p.kheId, p_ly_do: p.lyDo ?? "tháo", p_ghi_chu: p.ghiChu ?? undefined,
+        p_khe_id: p.kheId,
+        p_ly_do: p.lyDo ?? "tháo",
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
     },
@@ -206,10 +248,17 @@ export function useThaoLinhKien(thietBiId: string) {
 export function useThayTheLinhKien(thietBiId: string) {
   const invalidate = useInvalidate(thietBiId);
   return useMutation({
-    mutationFn: async (p: { kheId: string; linhKienMoiId: string; hongHocId?: string | null; ghiChu?: string }) => {
+    mutationFn: async (p: {
+      kheId: string;
+      linhKienMoiId: string;
+      hongHocId?: string | null;
+      ghiChu?: string;
+    }) => {
       const { error } = await supabase.rpc("thay_the_linh_kien", {
-        p_khe_id: p.kheId, p_linh_kien_moi_id: p.linhKienMoiId,
-        p_hong_hoc_id: p.hongHocId ?? undefined, p_ghi_chu: p.ghiChu ?? undefined,
+        p_khe_id: p.kheId,
+        p_linh_kien_moi_id: p.linhKienMoiId,
+        p_hong_hoc_id: p.hongHocId ?? undefined,
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
     },
@@ -222,7 +271,9 @@ export function useDieuChuyenLinhKien(thietBiId: string) {
   return useMutation({
     mutationFn: async (p: { linhKienId: string; kheMoiId: string; ghiChu?: string }) => {
       const { error } = await supabase.rpc("dieu_chuyen_linh_kien", {
-        p_linh_kien_id: p.linhKienId, p_khe_moi_id: p.kheMoiId, p_ghi_chu: p.ghiChu ?? undefined,
+        p_linh_kien_id: p.linhKienId,
+        p_khe_moi_id: p.kheMoiId,
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
     },
@@ -250,7 +301,9 @@ export function useLyLichKhe(kheId: string | null) {
     queryFn: async (): Promise<LyLichKheRow[]> => {
       const { data, error } = await supabase
         .from("v_ly_lich_khe_linh_kien")
-        .select("gan_id, linh_kien_id, ma_thiet_bi, ten_linh_kien, ma_serial, tu_ngay, den_ngay, ly_do, hong_hoc_id")
+        .select(
+          "gan_id, linh_kien_id, ma_thiet_bi, ten_linh_kien, ma_serial, tu_ngay, den_ngay, ly_do, hong_hoc_id",
+        )
         .eq("khe_id", kheId!)
         .order("tu_ngay", { ascending: false });
       if (error) throw error;

@@ -1,6 +1,16 @@
 import { useEffect, useState, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Upload, Trash2, FileText, Loader2, Download, ExternalLink, Tag, Eye, RefreshCcw } from "lucide-react";
+import {
+  Upload,
+  Trash2,
+  FileText,
+  Loader2,
+  Download,
+  ExternalLink,
+  Tag,
+  Eye,
+  RefreshCcw,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
@@ -23,7 +33,12 @@ import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { MAX_MB } from "@/lib/mirats/storage-config";
 
@@ -78,7 +93,9 @@ export function ModelTaiLieu({ modelId }: { modelId: string }) {
     queryFn: async (): Promise<TaiLieuRow[]> => {
       const { data: rows, error: rowsError } = await supabase
         .from("model_tai_lieu")
-        .select("id, model_id, file_name, file_path, bucket, kich_thuoc, mime_type, loai_tai_lieu, mo_ta, created_at")
+        .select(
+          "id, model_id, file_name, file_path, bucket, kich_thuoc, mime_type, loai_tai_lieu, mo_ta, created_at",
+        )
         .eq("model_id", modelId)
         .order("created_at", { ascending: false });
 
@@ -90,11 +107,14 @@ export function ModelTaiLieu({ modelId }: { modelId: string }) {
         .from("tai_lieu_ocr")
         .select("source_id, status, processed_pages, page_count")
         .eq("source_type", "model_tai_lieu")
-        .in("source_id", rows.map(r => r.id));
+        .in(
+          "source_id",
+          rows.map((r) => r.id),
+        );
 
-      return rows.map(row => ({
+      return rows.map((row) => ({
         ...row,
-        tai_lieu_ocr: ocrData?.find(o => o.source_id === row.id) || null
+        tai_lieu_ocr: ocrData?.find((o) => o.source_id === row.id) || null,
       })) as TaiLieuRow[];
     },
   });
@@ -149,15 +169,28 @@ function useSignedUrl(bucket: string, path: string, expires = 3600) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let cancel = false;
-    storage.from(bucket).createSignedUrl(path, expires).then(({ data }) => {
-      if (!cancel) setUrl(data?.signedUrl ?? null);
-    });
-    return () => { cancel = true; };
+    storage
+      .from(bucket)
+      .createSignedUrl(path, expires)
+      .then(({ data }) => {
+        if (!cancel) setUrl(data?.signedUrl ?? null);
+      });
+    return () => {
+      cancel = true;
+    };
   }, [bucket, path, expires]);
   return url;
 }
 
-function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: boolean; onDelete: () => void }) {
+function DocRow({
+  row,
+  canManage,
+  onDelete,
+}: {
+  row: TaiLieuRow;
+  canManage: boolean;
+  onDelete: () => void;
+}) {
   const url = useSignedUrl(row.bucket, row.file_path);
   const [viewerOpen, setViewerOpen] = useState(false);
   const canDownload = useCanDownloadAttachments();
@@ -171,14 +204,20 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
               <Tag className="h-3 w-3" /> {row.loai_tai_lieu}
             </Badge>
             {row.tai_lieu_ocr && (
-              <StatusBadge 
+              <StatusBadge
                 domain="ocr"
-                code={row.tai_lieu_ocr.status} 
-                label={row.tai_lieu_ocr.status === 'ocr_running' ? `Đang xử lý (${row.tai_lieu_ocr.processed_pages}/${row.tai_lieu_ocr.page_count || '?'})` : undefined}
+                code={row.tai_lieu_ocr.status}
+                label={
+                  row.tai_lieu_ocr.status === "ocr_running"
+                    ? `Đang xử lý (${row.tai_lieu_ocr.processed_pages}/${row.tai_lieu_ocr.page_count || "?"})`
+                    : undefined
+                }
               />
             )}
           </div>
-          <div className="mt-0.5 truncate font-medium" title={row.file_name}>{row.file_name}</div>
+          <div className="mt-0.5 truncate font-medium" title={row.file_name}>
+            {row.file_name}
+          </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <span>{fmtSize(row.kich_thuoc)}</span>
             {row.mo_ta && <span className="truncate">· {row.mo_ta}</span>}
@@ -189,7 +228,12 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
         {url && (
           <>
             <AppTooltip noiDung="Xem trực tiếp trong trình duyệt">
-              <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setViewerOpen(true)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0"
+                onClick={() => setViewerOpen(true)}
+              >
                 <Eye className="h-4 w-4" />
                 <span className="sr-only">Xem</span>
               </Button>
@@ -218,13 +262,25 @@ function DocRow({ row, canManage, onDelete }: { row: TaiLieuRow; canManage: bool
           <>
             {row.tai_lieu_ocr?.status === "failed" && (
               <AppTooltip noiDung="Thử chạy lại OCR">
-                <Button size="sm" variant="ghost" onClick={() => {/* TODO: Implement retry */}} className="h-7 w-7 p-0">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    /* TODO: Implement retry */
+                  }}
+                  className="h-7 w-7 p-0"
+                >
                   <RefreshCcw className="h-4 w-4" />
                 </Button>
               </AppTooltip>
             )}
             <AppTooltip noiDung="Xoá tài liệu này">
-              <Button size="sm" variant="ghost" onClick={onDelete} className="h-7 w-7 p-0 text-red-600">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onDelete}
+                className="h-7 w-7 p-0 text-red-600"
+              >
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Xoá</span>
               </Button>
@@ -252,17 +308,22 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
   const [ocrEnabled, setOcrEnabled] = useState(true);
   const [ocrQuality, setOcrQuality] = useState<any>("auto");
   const [deviceTier, setDeviceTier] = useState<string | null>(null);
-  
-  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } = useOcrTask();
-  
+
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } =
+    useOcrTask();
+
   useEffect(() => {
     if (open) {
-      deviceProfiler.getProfile().then(p => setDeviceTier(p.tier));
+      deviceProfiler.getProfile().then((p) => setDeviceTier(p.tier));
     }
   }, [open]);
 
   const opts: ComboOption[] = LOAI_GOI_Y.map((v) => ({ value: v, label: v }));
-  const reset = () => { setFile(null); setLoai(""); setMoTa(""); };
+  const reset = () => {
+    setFile(null);
+    setLoai("");
+    setMoTa("");
+  };
 
   async function submit() {
     if (!file) return toast.error("Chưa chọn tệp");
@@ -275,34 +336,40 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
       const safeName = file.name.replace(/[^\w.\-]+/g, "_");
       const filePath = `${modelId}/${crypto.randomUUID()}-${safeName}`;
       const up = await storage.from(BUCKET).upload(filePath, file, {
-        cacheControl: "3600", upsert: false, contentType: file.type || undefined,
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || undefined,
       });
       if (up.error) throw up.error;
 
-      const { data: inserted, error } = await supabase.from("model_tai_lieu").insert({
-        model_id: modelId,
-        loai_tai_lieu: loai.trim(),
-        bucket: BUCKET,
-        file_path: filePath,
-        file_name: file.name,
-        mime_type: file.type || null,
-        kich_thuoc: file.size,
-        mo_ta: moTa.trim() || null,
-        uploaded_by: u.user?.id ?? null,
-      }).select("id").single();
+      const { data: inserted, error } = await supabase
+        .from("model_tai_lieu")
+        .insert({
+          model_id: modelId,
+          loai_tai_lieu: loai.trim(),
+          bucket: BUCKET,
+          file_path: filePath,
+          file_name: file.name,
+          mime_type: file.type || null,
+          kich_thuoc: file.size,
+          mo_ta: moTa.trim() || null,
+          uploaded_by: u.user?.id ?? null,
+        })
+        .select("id")
+        .single();
 
       if (error) {
         await storage.from(BUCKET).remove([filePath]);
         throw error;
       }
-      
+
       // OCR Flow
       if (ocrEnabled && file.type === "application/pdf" && isFeatureEnabled("documentOcrEnabled")) {
         const hash = await sha256Hex(file);
-        
+
         // Initial queue status
         await ocrRepository.queueOcr("model_tai_lieu", inserted.id, hash);
-        
+
         // Check cache/duplicate
         const existing = await ocrRepository.findExisting(hash);
         if (existing) {
@@ -312,21 +379,23 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
             normalized_text: existing.normalized_text,
             pages: existing.pages as any,
             processed_pages: existing.processed_pages,
-            page_count: existing.page_count
+            page_count: existing.page_count,
           });
           toast.success("Đã tìm thấy dữ liệu OCR cũ, tiết kiệm thời gian xử lý.");
         } else {
-          // Trigger pipeline in background (don't await fully if we want to allow dialog close, 
+          // Trigger pipeline in background (don't await fully if we want to allow dialog close,
           // but here we have the progress dialog open)
           startOcr(file, "model_tai_lieu", inserted.id, {
             quality: ocrQuality,
-            language: "vie+eng"
-          }).catch(err => console.error("OCR Pipeline Error:", err));
+            language: "vie+eng",
+          }).catch((err) => console.error("OCR Pipeline Error:", err));
         }
       }
 
       toast.success("Đã tải tài liệu lên");
-      setOpen(false); reset(); onDone();
+      setOpen(false);
+      reset();
+      onDone();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Tải lên thất bại");
     } finally {
@@ -335,7 +404,13 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (!v) reset();
+      }}
+    >
       <DialogTrigger asChild>
         <AppTooltip noiDung="Tải tài liệu mới lên cho model này">
           <Button size="sm" variant="outline" className="h-8 w-8 p-0">
@@ -345,7 +420,9 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
         </AppTooltip>
       </DialogTrigger>
       <DialogContent onClick={(e) => e.stopPropagation()}>
-        <DialogHeader><DialogTitle>Tải tài liệu cho model</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Tải tài liệu cho model</DialogTitle>
+        </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label>Loại / định nghĩa tài liệu *</Label>
@@ -362,12 +439,19 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
           <div className="space-y-1.5">
             <Label>Chọn tệp (tối đa {MAX_MB}MB)</Label>
             <Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-            <p className="text-[11px] text-muted-foreground">Hỗ trợ PDF, ảnh, tài liệu văn phòng, firmware…</p>
+            <p className="text-[11px] text-muted-foreground">
+              Hỗ trợ PDF, ảnh, tài liệu văn phòng, firmware…
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label>Mô tả (tuỳ chọn)</Label>
-            <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}
-              placeholder="VD: Datasheet phiên bản 2024, ngôn ngữ tiếng Anh…" />
+            <Textarea
+              value={moTa}
+              onChange={(e) => setMoTa(e.target.value)}
+              rows={2}
+              maxLength={500}
+              placeholder="VD: Datasheet phiên bản 2024, ngôn ngữ tiếng Anh…"
+            />
           </div>
           {isFeatureEnabled("documentOcrEnabled") && file?.type === "application/pdf" && (
             <OcrSettings
@@ -393,7 +477,9 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
           onCancel={() => cancelOcr("model_tai_lieu", "")} // We'll handle ID later
         />
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Huỷ</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>
+            Huỷ
+          </Button>
           <Button onClick={submit} disabled={busy || !file || !loai.trim()}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Tải lên
           </Button>

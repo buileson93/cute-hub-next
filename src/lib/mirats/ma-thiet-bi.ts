@@ -94,4 +94,3 @@ export async function sinhMaThanhPhanDuyNhat(prefix = "TPHT"): Promise<string> {
   }
   throw new Error("Không sinh được mã thành phần duy nhất, vui lòng thử lại");
 }
-

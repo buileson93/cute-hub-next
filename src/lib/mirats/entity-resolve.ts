@@ -126,9 +126,23 @@ export function resolveEntity(
   if (input.id) {
     const byId = candidates.filter((c) => c.id === input.id);
     if (byId.length === 1)
-      return { decision: "resolved", kind: "exact_id", confidence: 1, candidate: byId[0], candidates: byId, reason: "Khớp ID duy nhất" };
+      return {
+        decision: "resolved",
+        kind: "exact_id",
+        confidence: 1,
+        candidate: byId[0],
+        candidates: byId,
+        reason: "Khớp ID duy nhất",
+      };
     if (byId.length === 0)
-      return { decision: "needs_review", kind: "none", confidence: 0, candidate: null, candidates: [], reason: "ID không tồn tại" };
+      return {
+        decision: "needs_review",
+        kind: "none",
+        confidence: 0,
+        candidate: null,
+        candidates: [],
+        reason: "ID không tồn tại",
+      };
   }
 
   // 2) Khớp theo mã (khóa tự nhiên).
@@ -136,9 +150,23 @@ export function resolveEntity(
   if (maN) {
     const byMa = candidates.filter((c) => norm(c.ma) === maN);
     if (byMa.length === 1)
-      return { decision: "resolved", kind: "exact_code", confidence: 1, candidate: byMa[0], candidates: byMa, reason: "Khớp mã duy nhất" };
+      return {
+        decision: "resolved",
+        kind: "exact_code",
+        confidence: 1,
+        candidate: byMa[0],
+        candidates: byMa,
+        reason: "Khớp mã duy nhất",
+      };
     if (byMa.length > 1)
-      return { decision: "needs_review", kind: "exact_code", confidence: 1, candidate: null, candidates: byMa, reason: "Mã trùng ở nhiều bản ghi — cần xác nhận" };
+      return {
+        decision: "needs_review",
+        kind: "exact_code",
+        confidence: 1,
+        candidate: null,
+        candidates: byMa,
+        reason: "Mã trùng ở nhiều bản ghi — cần xác nhận",
+      };
   }
 
   // 3) Khớp serial + model + nhà sản xuất (bộ ba định danh tài sản).
@@ -146,15 +174,38 @@ export function resolveEntity(
   if (serialN) {
     const bySerial = candidates.filter((c) => norm(c.ma_serial) === serialN);
     if (input.model_id && input.nha_san_xuat_id) {
-      const triple = bySerial.filter((c) => c.model_id === input.model_id && c.nha_san_xuat_id === input.nha_san_xuat_id);
+      const triple = bySerial.filter(
+        (c) => c.model_id === input.model_id && c.nha_san_xuat_id === input.nha_san_xuat_id,
+      );
       if (triple.length === 1)
-        return { decision: "resolved", kind: "serial_model_mfr", confidence: 1, candidate: triple[0], candidates: triple, reason: "Khớp serial + model + nhà sản xuất duy nhất" };
+        return {
+          decision: "resolved",
+          kind: "serial_model_mfr",
+          confidence: 1,
+          candidate: triple[0],
+          candidates: triple,
+          reason: "Khớp serial + model + nhà sản xuất duy nhất",
+        };
       if (triple.length > 1)
-        return { decision: "needs_review", kind: "serial_model_mfr", confidence: 1, candidate: null, candidates: triple, reason: "Nhiều bản ghi cùng serial+model+NSX — cần xác nhận" };
+        return {
+          decision: "needs_review",
+          kind: "serial_model_mfr",
+          confidence: 1,
+          candidate: null,
+          candidates: triple,
+          reason: "Nhiều bản ghi cùng serial+model+NSX — cần xác nhận",
+        };
     }
     // Serial trùng nhưng model/NSX khác (hoặc thiếu) → nghi trùng, buộc review.
     if (bySerial.length >= 1)
-      return { decision: "needs_review", kind: "serial_model_mfr", confidence: 0.9, candidate: bySerial.length === 1 ? bySerial[0] : null, candidates: bySerial, reason: "Serial trùng nhưng chưa đủ model/NSX để chắc chắn" };
+      return {
+        decision: "needs_review",
+        kind: "serial_model_mfr",
+        confidence: 0.9,
+        candidate: bySerial.length === 1 ? bySerial[0] : null,
+        candidates: bySerial,
+        reason: "Serial trùng nhưng chưa đủ model/NSX để chắc chắn",
+      };
   }
 
   // 4) Khớp theo alias ĐÃ XÁC NHẬN (tên/mã đầu vào → bản ghi chuẩn).
@@ -166,7 +217,14 @@ export function resolveEntity(
     if (aliasKeys.includes(norm(entry.alias))) {
       const target = candidates.find((c) => c.id === entry.canonical_id) ?? null;
       if (target)
-        return { decision: "resolved", kind: "alias", confidence: 1, candidate: target, candidates: [target], reason: "Khớp alias đã xác nhận" };
+        return {
+          decision: "resolved",
+          kind: "alias",
+          confidence: 1,
+          candidate: target,
+          candidates: [target],
+          reason: "Khớp alias đã xác nhận",
+        };
     }
   }
 
@@ -204,7 +262,21 @@ export function resolveEntity(
 
   // 6) Không có ứng viên nào.
   if (opts.guard) {
-    return { decision: "needs_review", kind: "none", confidence: 0, candidate: null, candidates: [], reason: "Danh mục quan trọng: không tự tạo, cần xác nhận" };
+    return {
+      decision: "needs_review",
+      kind: "none",
+      confidence: 0,
+      candidate: null,
+      candidates: [],
+      reason: "Danh mục quan trọng: không tự tạo, cần xác nhận",
+    };
   }
-  return { decision: "create", kind: "none", confidence: 0, candidate: null, candidates: [], reason: "Không tìm thấy — tạo mới" };
+  return {
+    decision: "create",
+    kind: "none",
+    confidence: 0,
+    candidate: null,
+    candidates: [],
+    reason: "Không tìm thấy — tạo mới",
+  };
 }

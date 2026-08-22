@@ -15,16 +15,9 @@ import type { AppRole } from "@/hooks/use-session";
 import { statuses, storedValuesFor } from "@/lib/mirats/trang-thai";
 
 /** Mã trạng thái vấn đề (khớp cột van_de.trang_thai). */
-export type VanDeState =
-  | "moi"
-  | "dang_phan_tich"
-  | "da_xac_dinh"
-  | "da_khac_phuc"
-  | "dong";
+export type VanDeState = "moi" | "dang_phan_tich" | "da_xac_dinh" | "da_khac_phuc" | "dong";
 
-export const VAN_DE_STATES: VanDeState[] = statuses("van_de").map(
-  (s) => s.code as VanDeState,
-);
+export const VAN_DE_STATES: VanDeState[] = statuses("van_de").map((s) => s.code as VanDeState);
 
 /** "dong" là trạng thái kết thúc; còn lại coi như đang mở. */
 export function isVanDeClosed(trangThai: string | null | undefined): boolean {

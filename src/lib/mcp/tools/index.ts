@@ -41,7 +41,10 @@ export const searchGlobal = defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ q, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
-    const { data, error } = await supabaseForUser(ctx).rpc("global_search", { _q: q, _limit: limit });
+    const { data, error } = await supabaseForUser(ctx).rpc("global_search", {
+      _q: q,
+      _limit: limit,
+    });
     if (error) return errResult(error.message);
     return textResult({ hits: data ?? [] });
   },
@@ -63,9 +66,14 @@ export const listThietBi = defineTool({
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
     let q = supabaseForUser(ctx)
       .from("thiet_bi")
-      .select("id, ma_thiet_bi, ten_thiet_bi, model, ma_serial, vi_tri, trang_thai_id, don_vi_quan_ly_id, he_thong_id, han_bao_hanh")
+      .select(
+        "id, ma_thiet_bi, ten_thiet_bi, model, ma_serial, vi_tri, trang_thai_id, don_vi_quan_ly_id, he_thong_id, han_bao_hanh",
+      )
       .limit(limit);
-    if (keyword) q = q.or(`ten_thiet_bi.ilike.%${keyword}%,ma_thiet_bi.ilike.%${keyword}%,ma_serial.ilike.%${keyword}%`);
+    if (keyword)
+      q = q.or(
+        `ten_thiet_bi.ilike.%${keyword}%,ma_thiet_bi.ilike.%${keyword}%,ma_serial.ilike.%${keyword}%`,
+      );
     if (trang_thai_id) q = q.eq("trang_thai_id", trang_thai_id);
     if (don_vi_quan_ly_id) q = q.eq("don_vi_quan_ly_id", don_vi_quan_ly_id);
     if (he_thong_id) q = q.eq("he_thong_id", he_thong_id);
@@ -136,7 +144,9 @@ export const listFormSubmissions = defineTool({
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
     let q = supabaseForUser(ctx)
       .from("form_submission")
-      .select("id, tieu_de, template_code, status, ky_bao_cao, submitted_at, reviewed_at, thiet_bi_id")
+      .select(
+        "id, tieu_de, template_code, status, ky_bao_cao, submitted_at, reviewed_at, thiet_bi_id",
+      )
       .order("created_at", { ascending: false })
       .limit(limit);
     if (status) q = q.eq("status", status);
@@ -159,7 +169,10 @@ export const countThietBiByTrangThai = defineTool({
     const sb = supabaseForUser(ctx);
     const { data, error } = await sb.rpc("rpc_count_thiet_bi_by_trang_thai");
     if (error) return errResult(error.message);
-    const payload = (data ?? { total: 0, by_trang_thai: {} }) as { total: number; by_trang_thai: Record<string, number> };
+    const payload = (data ?? { total: 0, by_trang_thai: {} }) as {
+      total: number;
+      by_trang_thai: Record<string, number>;
+    };
     return textResult({ total: payload.total, by_trang_thai: payload.by_trang_thai });
   },
 });
@@ -174,7 +187,8 @@ const filterSchema = z.object({
 export const describeSchema = defineTool({
   name: "describe_schema",
   title: "Mô tả lược đồ CSDL",
-  description: "Trả về danh sách bảng nghiệp vụ, cột, kiểu dữ liệu và khoá ngoại để hiểu cấu trúc trước khi truy vấn.",
+  description:
+    "Trả về danh sách bảng nghiệp vụ, cột, kiểu dữ liệu và khoá ngoại để hiểu cấu trúc trước khi truy vấn.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {
@@ -197,7 +211,10 @@ export const runSelectQuery = defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ sql, max_rows }, ctx) => {
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
-    const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", { _sql: sql, _max_rows: max_rows });
+    const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", {
+      _sql: sql,
+      _max_rows: max_rows,
+    });
     if (error) return errResult(error.message);
     return textResult(data);
   },
@@ -220,8 +237,17 @@ export const listTable = defineTool({
   handler: async ({ table, columns, filters, order_by, ascending, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
     try {
-      const sql = buildListSql(table, { columns, filters: filters as Filter[] | undefined, order_by, ascending, limit });
-      const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", { _sql: sql, _max_rows: limit });
+      const sql = buildListSql(table, {
+        columns,
+        filters: filters as Filter[] | undefined,
+        order_by,
+        ascending,
+        limit,
+      });
+      const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", {
+        _sql: sql,
+        _max_rows: limit,
+      });
       if (error) return errResult(error.message);
       return textResult(data);
     } catch (e) {
@@ -244,7 +270,10 @@ export const getRow = defineTool({
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
     try {
       const sql = buildGetRowSql(table, id_column, id_value);
-      const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", { _sql: sql, _max_rows: 1 });
+      const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", {
+        _sql: sql,
+        _max_rows: 1,
+      });
       if (error) return errResult(error.message);
       return textResult(data);
     } catch (e) {
@@ -267,7 +296,10 @@ export const countBy = defineTool({
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
     try {
       const sql = buildCountSql(table, group_by, filters as Filter[] | undefined);
-      const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", { _sql: sql, _max_rows: 200 });
+      const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", {
+        _sql: sql,
+        _max_rows: 200,
+      });
       if (error) return errResult(error.message);
       return textResult(data);
     } catch (e) {
@@ -279,12 +311,16 @@ export const countBy = defineTool({
 export const dashboardStats = defineTool({
   name: "dashboard_stats",
   title: "Thống kê tổng quan",
-  description: "Số liệu tổng quan: tài sản, giấy phép (và sắp hết hạn), biểu mẫu, tickets, dự án, sơ đồ.",
+  description:
+    "Số liệu tổng quan: tài sản, giấy phép (và sắp hết hạn), biểu mẫu, tickets, dự án, sơ đồ.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {
     if (!ctx.isAuthenticated()) return errResult("Chưa đăng nhập");
-    const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", { _sql: buildDashboardSql(), _max_rows: 1 });
+    const { data, error } = await supabaseForUser(ctx).rpc("ai_run_select", {
+      _sql: buildDashboardSql(),
+      _max_rows: 1,
+    });
     if (error) return errResult(error.message);
     return textResult(data);
   },
@@ -343,12 +379,20 @@ export const listDuAn = defineTool({
 export const listDanhMuc = defineTool({
   name: "list_danh_muc",
   title: "Danh sách danh mục nền",
-  description: "Liệt kê danh mục nền (đơn vị, hệ thống, vị trí, loại/ trạng thái tài sản, nhà sản xuất...). Dùng để tra id lọc tài sản.",
+  description:
+    "Liệt kê danh mục nền (đơn vị, hệ thống, vị trí, loại/ trạng thái tài sản, nhà sản xuất...). Dùng để tra id lọc tài sản.",
   inputSchema: {
     table: z.enum([
-      "dm_don_vi", "dm_he_thong", "dm_nhom_he_thong", "dm_vi_tri",
-      "dm_loai_thiet_bi", "dm_trang_thai_thiet_bi", "dm_nha_san_xuat",
-      "dm_nha_cung_cap", "dm_noi_cap", "dm_loai_giay_phep",
+      "dm_don_vi",
+      "dm_he_thong",
+      "dm_nhom_he_thong",
+      "dm_vi_tri",
+      "dm_loai_thiet_bi",
+      "dm_trang_thai_thiet_bi",
+      "dm_nha_san_xuat",
+      "dm_nha_cung_cap",
+      "dm_noi_cap",
+      "dm_loai_giay_phep",
     ]),
     limit: z.number().int().min(1).max(200).default(100),
   },

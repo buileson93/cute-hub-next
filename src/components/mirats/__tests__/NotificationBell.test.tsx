@@ -17,9 +17,30 @@ vi.mock("@/hooks/use-session", () => ({
 
 const state = {
   items: [
-    { id: "1", tieu_de: "Sự cố mới", noi_dung: "ADS-B mất tín hiệu", link: null, read_at: null, created_at: new Date().toISOString() },
-    { id: "2", tieu_de: "PM đến hạn", noi_dung: null, link: null, read_at: null, created_at: new Date().toISOString() },
-    { id: "3", tieu_de: "GP hết hạn", noi_dung: null, link: null, read_at: null, created_at: new Date().toISOString() },
+    {
+      id: "1",
+      tieu_de: "Sự cố mới",
+      noi_dung: "ADS-B mất tín hiệu",
+      link: null,
+      read_at: null,
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: "2",
+      tieu_de: "PM đến hạn",
+      noi_dung: null,
+      link: null,
+      read_at: null,
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: "3",
+      tieu_de: "GP hết hạn",
+      noi_dung: null,
+      link: null,
+      read_at: null,
+      created_at: new Date().toISOString(),
+    },
   ],
   unread: 3,
   markRead: vi.fn(),

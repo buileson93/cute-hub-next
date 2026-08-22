@@ -25,7 +25,9 @@ export const listImportAliases = createServerFn({ method: "GET" })
     const { supabase } = context;
     let q = supabase
       .from("import_alias")
-      .select("id, entity, scope, source, alias, alias_norm, canonical_id, canonical_key, confirmed_by, confirmed_at")
+      .select(
+        "id, entity, scope, source, alias, alias_norm, canonical_id, canonical_key, confirmed_by, confirmed_at",
+      )
       .eq("entity", data.entity)
       .limit(20000);
     if (data.scope != null) q = q.eq("scope", data.scope);
@@ -72,12 +74,16 @@ export const saveImportAlias = createServerFn({ method: "POST" })
       .select("id")
       .eq("entity", data.entity)
       .eq("alias_norm", alias_norm);
-    existingQ = data.scope == null ? existingQ.is("scope", null) : existingQ.eq("scope", data.scope);
+    existingQ =
+      data.scope == null ? existingQ.is("scope", null) : existingQ.eq("scope", data.scope);
     const { data: found, error: findErr } = await existingQ.maybeSingle();
     if (findErr) throw new Error(findErr.message);
 
     if (found) {
-      const { error } = await supabase.from("import_alias").update(payload as never).eq("id", (found as any).id);
+      const { error } = await supabase
+        .from("import_alias")
+        .update(payload as never)
+        .eq("id", (found as any).id);
       if (error) throw new Error(error.message);
       return { id: (found as any).id as string };
     }

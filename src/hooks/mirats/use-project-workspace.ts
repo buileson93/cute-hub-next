@@ -8,7 +8,11 @@ export function useProjectWorkspace(projectId: string) {
   const projectQuery = useQuery({
     queryKey: ["du-an", projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("du_an").select("*").eq("id", projectId).maybeSingle();
+      const { data, error } = await supabase
+        .from("du_an")
+        .select("*")
+        .eq("id", projectId)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -17,7 +21,11 @@ export function useProjectWorkspace(projectId: string) {
   const milestonesQuery = useQuery({
     queryKey: ["du-an-moc", projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("du_an_moc").select("*").eq("du_an_id", projectId).order("thu_tu");
+      const { data, error } = await supabase
+        .from("du_an_moc")
+        .select("*")
+        .eq("du_an_id", projectId)
+        .order("thu_tu");
       if (error) throw error;
       return data || [];
     },
@@ -26,7 +34,11 @@ export function useProjectWorkspace(projectId: string) {
   const tasksQuery = useQuery({
     queryKey: ["du-an-cv", projectId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("du_an_cong_viec").select("*").eq("du_an_id", projectId).order("created_at");
+      const { data, error } = await supabase
+        .from("du_an_cong_viec")
+        .select("*")
+        .eq("du_an_id", projectId)
+        .order("created_at");
       if (error) throw error;
       return data || [];
     },

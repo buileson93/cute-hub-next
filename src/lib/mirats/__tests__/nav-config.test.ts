@@ -27,7 +27,6 @@ describe("nav-config — navGroups()", () => {
     }
   });
 
-
   it("badgeKey chỉ nhận giá trị hợp lệ (nếu có)", () => {
     const allowed = new Set(["su_co_mo", "sap_het_han", "hong_hoc_mo", "kd_hc_sap_het_han"]);
     for (const g of groups) {
@@ -56,7 +55,12 @@ describe("nav-config — navGroups()", () => {
 
 describe("nav-config — isActive()", () => {
   const item = (route: string, exact = false): NavItem => ({
-    key: route, nhan: "x", icon: "Circle", route, nhom: "g", exact,
+    key: route,
+    nhan: "x",
+    icon: "Circle",
+    route,
+    nhom: "g",
+    exact,
   });
 
   it("khớp chính xác khi cùng đường dẫn", () => {

@@ -1,5 +1,12 @@
 import { useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +30,9 @@ import {
  * - RLS + `canManage` chặn ghi phía server (kiểm tra client thêm để tránh gọi vô ích).
  */
 export function ModelDacTinhIODialog({
-  open, onOpenChange, canManage,
+  open,
+  onOpenChange,
+  canManage,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -86,7 +95,9 @@ export function ModelDacTinhIODialog({
     const { modelIdByMa, modelMaById, tagMaById, existingLinks } = dataQ.data;
     const rows = Array.from(modelIdByMa.entries()).map(([, id]) => ({
       model_ma: modelMaById.get(id)!,
-      dac_tinh_codes: Array.from(existingLinks.get(id) ?? []).map((tid) => tagMaById.get(tid)!).filter(Boolean),
+      dac_tinh_codes: Array.from(existingLinks.get(id) ?? [])
+        .map((tid) => tagMaById.get(tid)!)
+        .filter(Boolean),
     }));
     rows.sort((a, b) => a.model_ma.localeCompare(b.model_ma));
     const serialized = serializeExport(rows);
@@ -105,7 +116,9 @@ export function ModelDacTinhIODialog({
 
   // Parse CSV thô (đơn giản, hỗ trợ quote "..").
   const { parsedRows, legacyHeader, hasHeader } = useMemo<{
-    parsedRows: ImportRow[]; legacyHeader: boolean; hasHeader: boolean;
+    parsedRows: ImportRow[];
+    legacyHeader: boolean;
+    hasHeader: boolean;
   }>(() => {
     if (!csv.trim()) return { parsedRows: [], legacyHeader: false, hasHeader: false };
     // Bỏ dòng meta `#...` (chú thích/phiên bản/timestamp) và dòng trắng.
@@ -113,7 +126,8 @@ export function ModelDacTinhIODialog({
     if (!lines.length) return { parsedRows: [], legacyHeader: false, hasHeader: false };
     // Bỏ header nếu match — chấp nhận cả tên mới `nhan_thiet_bi` và tên cũ `dac_tinh`.
     const first = splitCsvLine(lines[0]).map((s) => s.trim().toLowerCase());
-    const isHeader = first[0] === "model_ma" || first[1] === "nhan_thiet_bi" || first[1] === "dac_tinh";
+    const isHeader =
+      first[0] === "model_ma" || first[1] === "nhan_thiet_bi" || first[1] === "dac_tinh";
     const legacy = isHeader && first[1] === "dac_tinh";
     const startIdx = isHeader ? 1 : 0;
     const out: ImportRow[] = [];
@@ -124,7 +138,6 @@ export function ModelDacTinhIODialog({
     }
     return { parsedRows: out, legacyHeader: legacy, hasHeader: isHeader };
   }, [csv]);
-
 
   const plan = useMemo(() => {
     if (!dataQ.data || !parsedRows.length) return null;
@@ -138,7 +151,9 @@ export function ModelDacTinhIODialog({
 
   const stats = useMemo(() => {
     if (!plan) return null;
-    let ins = 0, del = 0, noop = 0;
+    let ins = 0,
+      del = 0,
+      noop = 0;
     for (const op of plan.operations) {
       ins += op.toInsert.length;
       del += op.toDelete.length;
@@ -196,7 +211,7 @@ export function ModelDacTinhIODialog({
     },
   });
 
-  const canApply = canManage && !!plan && !!stats && (stats.ins + stats.del) > 0;
+  const canApply = canManage && !!plan && !!stats && stats.ins + stats.del > 0;
 
   return (
     <ResponsiveDialog
@@ -206,121 +221,141 @@ export function ModelDacTinhIODialog({
       description="CSV 2 cột: model_ma,nhan_thiet_bi (tương thích tên cũ dac_tinh). Nhiều mã nhãn tài sản tách bởi ;. Import idempotent — chạy lại cùng file không nhân đôi bản ghi."
       className="max-w-3xl"
     >
-
-        <div className="grid gap-4">
-          {/* Export */}
-          <section className="rounded-lg border p-3">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <Download className="h-4 w-4" /> Xuất dữ liệu hiện tại
-                </div>
-                <div className="text-[11px] text-muted-foreground font-mono">
-                  schema {EXPORT_SCHEMA_VERSION} · cột: {EXPORT_COLUMNS.join(", ")} · {exportMeta.stamp}
-                </div>
+      <div className="grid gap-4">
+        {/* Export */}
+        <section className="rounded-lg border p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Download className="h-4 w-4" /> Xuất dữ liệu hiện tại
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline" size="sm"
-                  disabled={!exportCsv}
-                  onClick={() => { navigator.clipboard.writeText(exportCsv); toast.success("Đã copy CSV"); }}
-                >
-                  <Copy className="mr-1.5 h-4 w-4" /> Copy
-                </Button>
-                <Button
-                  variant="outline" size="sm"
-                  disabled={!exportCsv}
-                  onClick={() => downloadCsv(exportCsv, `nhan_thiet_bi_theo_mau_${exportMeta.stamp.replace(/[:T]/g, "-")}.csv`)}
-                >
-                  <Download className="mr-1.5 h-4 w-4" /> Tải .csv
-
-                </Button>
+              <div className="text-[11px] text-muted-foreground font-mono">
+                schema {EXPORT_SCHEMA_VERSION} · cột: {EXPORT_COLUMNS.join(", ")} ·{" "}
+                {exportMeta.stamp}
               </div>
             </div>
-            {dataQ.isLoading ? (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3 w-3 animate-spin" /> Đang tải…</div>
-            ) : (
-              <Textarea readOnly value={exportCsv} className="h-28 font-mono text-xs" />
-            )}
-          </section>
-
-          {/* Import */}
-          <section className="rounded-lg border p-3">
-            <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-              <Upload className="h-4 w-4" /> Dán CSV để nhập
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!exportCsv}
+                onClick={() => {
+                  navigator.clipboard.writeText(exportCsv);
+                  toast.success("Đã copy CSV");
+                }}
+              >
+                <Copy className="mr-1.5 h-4 w-4" /> Copy
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!exportCsv}
+                onClick={() =>
+                  downloadCsv(
+                    exportCsv,
+                    `nhan_thiet_bi_theo_mau_${exportMeta.stamp.replace(/[:T]/g, "-")}.csv`,
+                  )
+                }
+              >
+                <Download className="mr-1.5 h-4 w-4" /> Tải .csv
+              </Button>
             </div>
-            <Textarea
-              value={csv}
-              onChange={(e) => setCsv(e.target.value)}
-              placeholder={"model_ma,nhan_thiet_bi\nAWOS-001,THU;PHAT;VHF"}
-              className="h-32 font-mono text-xs"
-            />
-            {legacyHeader && (
-              <div className="mt-2 flex items-start gap-1.5 rounded border border-sky-300 bg-sky-50 p-2 text-xs text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200">
-                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <div>
-                  Phát hiện header cũ <code>dac_tinh</code> — đã tự động map sang{" "}
-                  <code>nhan_thiet_bi</code>. File vẫn nhập bình thường, khuyến nghị đổi header
-                  ở lần sau.
-                </div>
+          </div>
+          {dataQ.isLoading ? (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" /> Đang tải…
+            </div>
+          ) : (
+            <Textarea readOnly value={exportCsv} className="h-28 font-mono text-xs" />
+          )}
+        </section>
+
+        {/* Import */}
+        <section className="rounded-lg border p-3">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium">
+            <Upload className="h-4 w-4" /> Dán CSV để nhập
+          </div>
+          <Textarea
+            value={csv}
+            onChange={(e) => setCsv(e.target.value)}
+            placeholder={"model_ma,nhan_thiet_bi\nAWOS-001,THU;PHAT;VHF"}
+            className="h-32 font-mono text-xs"
+          />
+          {legacyHeader && (
+            <div className="mt-2 flex items-start gap-1.5 rounded border border-sky-300 bg-sky-50 p-2 text-xs text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <div>
+                Phát hiện header cũ <code>dac_tinh</code> — đã tự động map sang{" "}
+                <code>nhan_thiet_bi</code>. File vẫn nhập bình thường, khuyến nghị đổi header ở lần
+                sau.
               </div>
-            )}
-            {parsedRows.length > 0 && (
-              <div className="mt-2 text-xs text-muted-foreground">
-                Đã đọc <b className="text-foreground">{parsedRows.length}</b> dòng
-                {hasHeader ? " (bỏ header)" : " (không có header)"}
-                {legacyHeader && " · header cũ dac_tinh"}
+            </div>
+          )}
+          {parsedRows.length > 0 && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              Đã đọc <b className="text-foreground">{parsedRows.length}</b> dòng
+              {hasHeader ? " (bỏ header)" : " (không có header)"}
+              {legacyHeader && " · header cũ dac_tinh"}
+            </div>
+          )}
+          {plan && stats && (
+            <div className="mt-2 grid gap-2">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <Badge variant="secondary">Mẫu xử lý: {stats.models}</Badge>
+                <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                  + {stats.ins} chèn
+                </Badge>
+                <Badge className="bg-rose-500/15 text-rose-700 dark:text-rose-300">
+                  − {stats.del} xoá
+                </Badge>
+                <Badge variant="outline">{stats.noop} không đổi</Badge>
               </div>
-            )}
-            {plan && stats && (
-              <div className="mt-2 grid gap-2">
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <Badge variant="secondary">Mẫu xử lý: {stats.models}</Badge>
-                  <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">+ {stats.ins} chèn</Badge>
-                  <Badge className="bg-rose-500/15 text-rose-700 dark:text-rose-300">− {stats.del} xoá</Badge>
-                  <Badge variant="outline">{stats.noop} không đổi</Badge>
-                </div>
-                {(plan.unknownTags.length > 0 || plan.missingModels.length > 0) && (
-                  <ScrollArea className="max-h-40 rounded border bg-amber-50 p-2 text-xs dark:bg-amber-950/30">
-                    <div className="flex items-start gap-1.5 text-amber-800 dark:text-amber-200">
-                      <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      <div className="grid gap-1">
-                        {plan.missingModels.length > 0 && (
-                          <div><b>Mẫu không tồn tại (bỏ qua):</b> {plan.missingModels.join(", ")}</div>
-                        )}
-                        {plan.unknownTags.length > 0 && (
-                          <div>
-                            <b>Mã nhãn tài sản lạ (bỏ qua):</b>{" "}
-                            {plan.unknownTags.map((u, i) => (
-                              <span key={i} className="mr-1">{u.model_ma}/<code>{u.ma}</code></span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+              {(plan.unknownTags.length > 0 || plan.missingModels.length > 0) && (
+                <ScrollArea className="max-h-40 rounded border bg-amber-50 p-2 text-xs dark:bg-amber-950/30">
+                  <div className="flex items-start gap-1.5 text-amber-800 dark:text-amber-200">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <div className="grid gap-1">
+                      {plan.missingModels.length > 0 && (
+                        <div>
+                          <b>Mẫu không tồn tại (bỏ qua):</b> {plan.missingModels.join(", ")}
+                        </div>
+                      )}
+                      {plan.unknownTags.length > 0 && (
+                        <div>
+                          <b>Mã nhãn tài sản lạ (bỏ qua):</b>{" "}
+                          {plan.unknownTags.map((u, i) => (
+                            <span key={i} className="mr-1">
+                              {u.model_ma}/<code>{u.ma}</code>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </ScrollArea>
-                )}
-              </div>
-            )}
-            {!canManage && (
-              <div className="mt-2 text-xs text-muted-foreground">Chỉ xem — bạn không có quyền canManage để ghi.</div>
-            )}
-          </section>
-        </div>
+                  </div>
+                </ScrollArea>
+              )}
+            </div>
+          )}
+          {!canManage && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              Chỉ xem — bạn không có quyền canManage để ghi.
+            </div>
+          )}
+        </section>
+      </div>
 
-        <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Đóng</Button>
-          <Button
-            disabled={!canApply || applyMut.isPending}
-            onClick={() => applyMut.mutate()}
-          >
-            {applyMut.isPending && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
-            Áp dụng
-          </Button>
-        </DialogFooter>
-      </ResponsiveDialog>
-    );
-  }
+      <DialogFooter className="mt-4">
+        <Button variant="outline" onClick={() => onOpenChange(false)}>
+          Đóng
+        </Button>
+        <Button disabled={!canApply || applyMut.isPending} onClick={() => applyMut.mutate()}>
+          {applyMut.isPending && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+          Áp dụng
+        </Button>
+      </DialogFooter>
+    </ResponsiveDialog>
+  );
+}
 
 // ------------ helpers ------------
 function csvCell(s: string) {
@@ -329,17 +364,22 @@ function csvCell(s: string) {
 }
 function splitCsvLine(line: string): string[] {
   const out: string[] = [];
-  let cur = "", inQ = false;
+  let cur = "",
+    inQ = false;
   for (let i = 0; i < line.length; i++) {
     const c = line[i];
     if (inQ) {
-      if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; }
-      else if (c === '"') inQ = false;
+      if (c === '"' && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (c === '"') inQ = false;
       else cur += c;
     } else {
       if (c === '"') inQ = true;
-      else if (c === ",") { out.push(cur); cur = ""; }
-      else cur += c;
+      else if (c === ",") {
+        out.push(cur);
+        cur = "";
+      } else cur += c;
     }
   }
   out.push(cur);
@@ -351,6 +391,8 @@ function downloadCsv(text: string, filename: string) {
   const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = filename; a.click();
+  a.href = url;
+  a.download = filename;
+  a.click();
   URL.revokeObjectURL(url);
 }

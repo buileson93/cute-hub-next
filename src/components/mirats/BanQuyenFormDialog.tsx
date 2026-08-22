@@ -8,7 +8,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Laptop, Calendar, User, Info, X } from "lucide-react";
-import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/mirats/SchemaDialog";
+import {
+  SchemaDialog,
+  type SchemaField,
+  type SchemaOption,
+} from "@/components/mirats/SchemaDialog";
 import { supabase } from "@/integrations/backend/client";
 import type { BanQuyenRow } from "@/lib/mirats/ban-quyen";
 import { useSession } from "@/hooks/use-session";
@@ -93,12 +97,14 @@ export function BanQuyenFormDialog({
         .limit(50);
 
       if (assignSearch) {
-        query = query.or(`ten_thiet_bi.ilike.%${assignSearch}%,ma_thiet_bi.ilike.%${assignSearch}%`);
+        query = query.or(
+          `ten_thiet_bi.ilike.%${assignSearch}%,ma_thiet_bi.ilike.%${assignSearch}%`,
+        );
       }
 
       const { data, error } = await query;
       if (error) throw error;
-      
+
       return (data ?? []).map((r) => ({
         value: r.id,
         label: `${r.ten_thiet_bi ?? r.ma_thiet_bi} · ${r.ma_thiet_bi}`,
@@ -129,9 +135,27 @@ export function BanQuyenFormDialog({
   );
 
   const fields: SchemaField[] = [
-    { key: "ma_ban_quyen", type: "text", label: "Mã bản quyền", required: false, placeholder: "Bỏ trống để tự sinh (BQ_XXXXXXXX)", help: "Mã định danh duy nhất trong hệ thống" },
-    { key: "ten_phan_mem", type: "text", label: "Tên phần mềm", required: true, placeholder: "VD: Windows 11 Pro" },
-    { key: "nha_phat_hanh", type: "text", label: "Nhà phát hành", placeholder: "Microsoft, Autodesk…" },
+    {
+      key: "ma_ban_quyen",
+      type: "text",
+      label: "Mã bản quyền",
+      required: false,
+      placeholder: "Bỏ trống để tự sinh (BQ_XXXXXXXX)",
+      help: "Mã định danh duy nhất trong hệ thống",
+    },
+    {
+      key: "ten_phan_mem",
+      type: "text",
+      label: "Tên phần mềm",
+      required: true,
+      placeholder: "VD: Windows 11 Pro",
+    },
+    {
+      key: "nha_phat_hanh",
+      type: "text",
+      label: "Nhà phát hành",
+      placeholder: "Microsoft, Autodesk…",
+    },
     { key: "phien_ban", type: "text", label: "Phiên bản", placeholder: "2024, 11 Pro…" },
     {
       key: "loai_ban_quyen_id",
@@ -141,14 +165,33 @@ export function BanQuyenFormDialog({
       emptyOptionLabel: "— Không chọn —",
       loadOptions: loadOpts("dm_loai_ban_quyen"),
     },
-    { key: "so_ghe", type: "number", label: "Số ghế (seats)", help: "Bỏ trống = không giới hạn số máy cài", min: 1, step: 1 },
-    { key: "license_key", type: "password", label: "License key / mã kích hoạt", placeholder: "••••••••••••", colSpan: 2, help: "Thông tin này được ẩn để bảo mật. Chỉ người quản lý mới có quyền xem." },
-    
+    {
+      key: "so_ghe",
+      type: "number",
+      label: "Số ghế (seats)",
+      help: "Bỏ trống = không giới hạn số máy cài",
+      min: 1,
+      step: 1,
+    },
+    {
+      key: "license_key",
+      type: "password",
+      label: "License key / mã kích hoạt",
+      placeholder: "••••••••••••",
+      colSpan: 2,
+      help: "Thông tin này được ẩn để bảo mật. Chỉ người quản lý mới có quyền xem.",
+    },
+
     // Group: Thời hạn
     { key: "ngay_mua", type: "date", label: "Ngày mua" },
-    { key: "ngay_het_han", type: "date", label: "Ngày hết hạn", help: "Bỏ trống với bản quyền vĩnh viễn" },
+    {
+      key: "ngay_het_han",
+      type: "date",
+      label: "Ngày hết hạn",
+      help: "Bỏ trống với bản quyền vĩnh viễn",
+    },
     { key: "ngay_bat_dau", type: "date", label: "Ngày bắt đầu hiệu lực" },
-    
+
     // Group: Tài chính & Đơn vị
     { key: "gia_tri", type: "number", label: "Giá trị (VND)", min: 0, step: 1000 },
     { key: "so_hop_dong", type: "text", label: "Số hợp đồng", placeholder: "HĐ số…" },
@@ -190,7 +233,10 @@ export function BanQuyenFormDialog({
       };
 
       if (row) {
-        const { error } = await supabase.from("phan_mem_ban_quyen").update(payload).eq("id", row.id);
+        const { error } = await supabase
+          .from("phan_mem_ban_quyen")
+          .update(payload)
+          .eq("id", row.id);
         if (error) throw error;
         await import("@/lib/mirats/ban-quyen-detail").then((m) =>
           m.logBanQuyenAudit(row.id, "UPDATE", `Cập nhật thông tin bản quyền ${v.ten_phan_mem}`),
@@ -218,7 +264,9 @@ export function BanQuyenFormDialog({
               nguoi_cai: assigner || null,
             }));
 
-            const { error: cpErr } = await supabase.from("phan_mem_ban_quyen_cap_phat").insert(capPhatRows);
+            const { error: cpErr } = await supabase
+              .from("phan_mem_ban_quyen_cap_phat")
+              .insert(capPhatRows);
             if (cpErr) {
               // Nếu lỗi cấp phát (vd: hết ghế), ta vẫn giữ bản quyền nhưng báo lỗi
               toast.error(`Bản quyền đã tạo nhưng không thể cấp phát: ${cpErr.message}`);
@@ -226,7 +274,11 @@ export function BanQuyenFormDialog({
               // Ghi audit cho từng máy
               const m = await import("@/lib/mirats/ban-quyen-detail");
               for (const tbId of assignDevices) {
-                await m.logBanQuyenAudit(bq.id, "ASSIGN", `Cấp phát ngay khi tạo mới cho thiết bị ID: ${tbId}`);
+                await m.logBanQuyenAudit(
+                  bq.id,
+                  "ASSIGN",
+                  `Cấp phát ngay khi tạo mới cho thiết bị ID: ${tbId}`,
+                );
               }
               toast.success(`Đã tạo bản quyền và cấp phát cho ${assignDevices.length} máy`);
             }
@@ -243,7 +295,8 @@ export function BanQuyenFormDialog({
       }
       onOpenChange(false);
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không lưu được bản quyền"),
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Không lưu được bản quyền"),
   });
 
   if (!open) return null;
@@ -262,7 +315,9 @@ export function BanQuyenFormDialog({
       onSubmit={async (v) => {
         // Cảnh báo sớm nếu số máy chọn > số ghế
         if (v.so_ghe != null && assignDevices.length > v.so_ghe) {
-          toast.error(`Số máy chọn (${assignDevices.length}) vượt quá số ghế cho phép (${v.so_ghe})`);
+          toast.error(
+            `Số máy chọn (${assignDevices.length}) vượt quá số ghế cho phép (${v.so_ghe})`,
+          );
           return;
         }
         await save.mutateAsync(v);
@@ -344,8 +399,8 @@ export function BanQuyenFormDialog({
               <div className="flex items-start gap-2">
                 <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
                 <p>
-                  Bản quyền sẽ được tạo trước, sau đó hệ thống sẽ tự động gán vào các máy tính đã chọn. 
-                  Nếu số máy vượt quá "Số ghế", hệ thống sẽ báo lỗi khi lưu.
+                  Bản quyền sẽ được tạo trước, sau đó hệ thống sẽ tự động gán vào các máy tính đã
+                  chọn. Nếu số máy vượt quá "Số ghế", hệ thống sẽ báo lỗi khi lưu.
                 </p>
               </div>
             </div>

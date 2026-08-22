@@ -9,7 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { AssetPicker } from "@/components/mirats/AssetPicker";
 
@@ -24,7 +30,13 @@ export const Route = createFileRoute("/_app/ban-giao/moi")({
 
 const LOAI_OPTS = ["Cấp phát", "Thu hồi", "Luân chuyển", "Mượn tạm"] as const;
 
-interface NhanVienRow { id: string; ma_nhan_vien: string; ho_ten: string; don_vi: string | null; chuc_vu: string | null }
+interface NhanVienRow {
+  id: string;
+  ma_nhan_vien: string;
+  ho_ten: string;
+  don_vi: string | null;
+  chuc_vu: string | null;
+}
 
 function todayStr() {
   const d = new Date();
@@ -57,12 +69,22 @@ function BanGiaoMoiPage() {
       setLoadingLookup(true);
       const { fetchAllRows } = await import("@/lib/mirats/paginate");
       const [nvRes, glRows] = await Promise.all([
-        supabase.from("nhan_vien").select("id,ma_nhan_vien,ho_ten,don_vi,chuc_vu").eq("hoat_dong", true).order("ho_ten"),
-        fetchAllRows<{ thiet_bi_id: string; thanh_phan_id: string; he_thong_thanh_phan?: { ten_vi_tri?: string | null } | null }>(
-          (from, to) => supabase.from("gan_chuc_nang")
-            .select("thiet_bi_id,thanh_phan_id,he_thong_thanh_phan(ten_vi_tri)" as never)
-            .is("den_ngay", null)
-            .range(from, to) as never,
+        supabase
+          .from("nhan_vien")
+          .select("id,ma_nhan_vien,ho_ten,don_vi,chuc_vu")
+          .eq("hoat_dong", true)
+          .order("ho_ten"),
+        fetchAllRows<{
+          thiet_bi_id: string;
+          thanh_phan_id: string;
+          he_thong_thanh_phan?: { ten_vi_tri?: string | null } | null;
+        }>(
+          (from, to) =>
+            supabase
+              .from("gan_chuc_nang")
+              .select("thiet_bi_id,thanh_phan_id,he_thong_thanh_phan(ten_vi_tri)" as never)
+              .is("den_ngay", null)
+              .range(from, to) as never,
         ),
       ]);
       if (nvRes.data) setNhanVien(nvRes.data as NhanVienRow[]);
@@ -77,7 +99,8 @@ function BanGiaoMoiPage() {
   }, []);
 
   const selectedTB = useMemo(
-    () => thietBi.find((t) => (t as any).id === form.thiet_bi_id || t.ma_thiet_bi === form.thiet_bi_id),
+    () =>
+      thietBi.find((t) => (t as any).id === form.thiet_bi_id || t.ma_thiet_bi === form.thiet_bi_id),
     [thietBi, form.thiet_bi_id],
   );
 
@@ -100,8 +123,14 @@ function BanGiaoMoiPage() {
   );
 
   async function handleSave() {
-    if (!form.thiet_bi_id) { toast.error("Chọn tài sản"); return; }
-    if (!form.nguoi_nhan_id) { toast.error("Chọn người nhận"); return; }
+    if (!form.thiet_bi_id) {
+      toast.error("Chọn tài sản");
+      return;
+    }
+    if (!form.nguoi_nhan_id) {
+      toast.error("Chọn người nhận");
+      return;
+    }
     setSaving(true);
     try {
       const nvGiao = nhanVien.find((n) => n.id === form.nguoi_giao_id);
@@ -144,7 +173,6 @@ function BanGiaoMoiPage() {
         description="Lập phiếu bàn giao tài sản — chọn nhân viên từ danh mục để đối soát chính xác người giữ."
       />
 
-
       {conflict && (
         <div className="flex items-start gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
           <AlertTriangle className="h-4 w-4 mt-0.5 text-destructive" />
@@ -152,8 +180,14 @@ function BanGiaoMoiPage() {
             <div className="font-semibold text-destructive">Cảnh báo đối soát</div>
             <div className="text-muted-foreground">
               Tài sản này đang được lắp tại vị trí <strong>{conflict.viTri || "(không rõ)"}</strong>
-              {conflict.nguoiGiu ? <> — người giữ hiện tại: <strong>{conflict.nguoiGiu}</strong></> : null}.
-              Nếu vẫn tiếp tục bàn giao cho người khác, hãy đảm bảo đã cập nhật trạng thái lắp trước đó.
+              {conflict.nguoiGiu ? (
+                <>
+                  {" "}
+                  — người giữ hiện tại: <strong>{conflict.nguoiGiu}</strong>
+                </>
+              ) : null}
+              . Nếu vẫn tiếp tục bàn giao cho người khác, hãy đảm bảo đã cập nhật trạng thái lắp
+              trước đó.
             </div>
           </div>
         </div>
@@ -162,22 +196,39 @@ function BanGiaoMoiPage() {
       <Card>
         <CardHeader>
           <CardTitle>Thông tin phiếu</CardTitle>
-          <CardDescription>Nhân viên tham chiếu từ danh mục — không nhập tay để đảm bảo đối soát chính xác.</CardDescription>
+          <CardDescription>
+            Nhân viên tham chiếu từ danh mục — không nhập tay để đảm bảo đối soát chính xác.
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5">
             <Label>Loại bàn giao</Label>
-            <Select value={form.loai_ban_giao} onValueChange={(v) => setForm((f) => ({ ...f, loai_ban_giao: v as typeof form.loai_ban_giao }))}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.loai_ban_giao}
+              onValueChange={(v) =>
+                setForm((f) => ({ ...f, loai_ban_giao: v as typeof form.loai_ban_giao }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {LOAI_OPTS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                {LOAI_OPTS.map((l) => (
+                  <SelectItem key={l} value={l}>
+                    {l}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
             <Label>Ngày nhận</Label>
-            <Input type="date" value={form.ngay_nhan} onChange={(e) => setForm((f) => ({ ...f, ngay_nhan: e.target.value }))} />
+            <Input
+              type="date"
+              value={form.ngay_nhan}
+              onChange={(e) => setForm((f) => ({ ...f, ngay_nhan: e.target.value }))}
+            />
           </div>
 
           <div className="space-y-1.5 md:col-span-2">
@@ -196,7 +247,10 @@ function BanGiaoMoiPage() {
               onChange={(v) => setForm((f) => ({ ...f, nguoi_giao_id: v }))}
               placeholder={loadingLookup ? "Đang tải…" : "Chọn nhân viên…"}
               searchPlaceholder="Tìm nhân viên…"
-              options={nhanVien.map((n) => ({ value: n.id, label: `${n.ma_nhan_vien} — ${n.ho_ten}${n.don_vi ? ` (${n.don_vi})` : ""}` }))}
+              options={nhanVien.map((n) => ({
+                value: n.id,
+                label: `${n.ma_nhan_vien} — ${n.ho_ten}${n.don_vi ? ` (${n.don_vi})` : ""}`,
+              }))}
             />
           </div>
 
@@ -206,11 +260,18 @@ function BanGiaoMoiPage() {
               value={form.nguoi_nhan_id}
               onChange={(v) => {
                 const nv = nhanVien.find((n) => n.id === v);
-                setForm((f) => ({ ...f, nguoi_nhan_id: v, don_vi_nhan: f.don_vi_nhan || nv?.don_vi || "" }));
+                setForm((f) => ({
+                  ...f,
+                  nguoi_nhan_id: v,
+                  don_vi_nhan: f.don_vi_nhan || nv?.don_vi || "",
+                }));
               }}
               placeholder={loadingLookup ? "Đang tải…" : "Chọn nhân viên…"}
               searchPlaceholder="Tìm nhân viên…"
-              options={nhanVien.map((n) => ({ value: n.id, label: `${n.ma_nhan_vien} — ${n.ho_ten}${n.don_vi ? ` (${n.don_vi})` : ""}` }))}
+              options={nhanVien.map((n) => ({
+                value: n.id,
+                label: `${n.ma_nhan_vien} — ${n.ho_ten}${n.don_vi ? ` (${n.don_vi})` : ""}`,
+              }))}
             />
           </div>
 
@@ -227,20 +288,34 @@ function BanGiaoMoiPage() {
 
           <div className="space-y-1.5 md:col-span-2">
             <Label>Tình trạng khi nhận</Label>
-            <Input value={form.tinh_trang_khi_nhan} onChange={(e) => setForm((f) => ({ ...f, tinh_trang_khi_nhan: e.target.value }))} placeholder="Nguyên vẹn, hoạt động bình thường…" />
+            <Input
+              value={form.tinh_trang_khi_nhan}
+              onChange={(e) => setForm((f) => ({ ...f, tinh_trang_khi_nhan: e.target.value }))}
+              placeholder="Nguyên vẹn, hoạt động bình thường…"
+            />
           </div>
 
           <div className="space-y-1.5 md:col-span-2">
             <Label>Ghi chú</Label>
-            <Textarea rows={3} value={form.ghi_chu} onChange={(e) => setForm((f) => ({ ...f, ghi_chu: e.target.value }))} />
+            <Textarea
+              rows={3}
+              value={form.ghi_chu}
+              onChange={(e) => setForm((f) => ({ ...f, ghi_chu: e.target.value }))}
+            />
           </div>
         </CardContent>
       </Card>
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" asChild><Link to="/ban-giao">Huỷ</Link></Button>
+        <Button variant="outline" asChild>
+          <Link to="/ban-giao">Huỷ</Link>
+        </Button>
         <Button onClick={handleSave} disabled={saving}>
-          {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+          {saving ? (
+            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4 mr-1" />
+          )}
           Lưu phiếu
         </Button>
       </div>

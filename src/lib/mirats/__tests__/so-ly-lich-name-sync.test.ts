@@ -12,7 +12,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // mindmap) và Sổ lý lịch cùng đọc một nguồn tên.
 // ============================================================================
 
-type Row = { table: string; op: string; payload: Record<string, unknown>; match?: Record<string, unknown> };
+type Row = {
+  table: string;
+  op: string;
+  payload: Record<string, unknown>;
+  match?: Record<string, unknown>;
+};
 const calls: Row[] = [];
 
 function makeBuilder(table: string) {
@@ -100,9 +105,7 @@ describe("Sổ lý lịch — tên tài sản lấy từ bảng gốc, override 
   });
 
   it("ma_thiet_bi chưa tồn tại (node nháp) → giữ override", () => {
-    const rows = [
-      { ma: "TB_DRAFT_001", ten: "Máy nháp", du_lieu: null },
-    ];
+    const rows = [{ ma: "TB_DRAFT_001", ten: "Máy nháp", du_lieu: null }];
     const overrides = buildDeviceNameOverrideMap(rows, new Set(["TB_KHAC"]));
     expect(overrides.get("TB_DRAFT_001")).toBe("Máy nháp");
   });

@@ -8,7 +8,6 @@ import {
 } from "@/lib/mirats/offline-queue";
 import { offlineStorage } from "@/lib/mirats/indexeddb-storage";
 
-
 /**
  * N11 — Hook UI cho hàng chờ offline.
  *
@@ -29,22 +28,37 @@ class SessionStorageAdapter implements Storage {
     try {
       const raw = window.sessionStorage.getItem(this.key);
       return raw ? (JSON.parse(raw) as OutboxItem[]) : [];
-    } catch { return []; }
+    } catch {
+      return [];
+    }
   }
   private write(items: OutboxItem[]) {
     if (typeof window === "undefined") return;
-    try { window.sessionStorage.setItem(this.key, JSON.stringify(items)); } catch { /* ignore */ }
+    try {
+      window.sessionStorage.setItem(this.key, JSON.stringify(items));
+    } catch {
+      /* ignore */
+    }
   }
   async put(item: OutboxItem) {
     const list = this.read();
     const idx = list.findIndex((i) => i.id === item.id);
-    if (idx >= 0) list[idx] = item; else list.push(item);
+    if (idx >= 0) list[idx] = item;
+    else list.push(item);
     this.write(list);
   }
-  async get(id: string) { return this.read().find((i) => i.id === id); }
-  async list() { return this.read(); }
-  async remove(id: string) { this.write(this.read().filter((i) => i.id !== id)); }
-  async clear() { this.write([]); }
+  async get(id: string) {
+    return this.read().find((i) => i.id === id);
+  }
+  async list() {
+    return this.read();
+  }
+  async remove(id: string) {
+    this.write(this.read().filter((i) => i.id !== id));
+  }
+  async clear() {
+    this.write([]);
+  }
 }
 
 let sharedQueue: OfflineQueue | null = null;
@@ -81,7 +95,14 @@ interface CountSnapshot {
 }
 
 function countStatuses(items: OutboxItem[]): CountSnapshot {
-  const c: CountSnapshot = { pending: 0, in_flight: 0, failed: 0, conflict: 0, done: 0, total: items.length };
+  const c: CountSnapshot = {
+    pending: 0,
+    in_flight: 0,
+    failed: 0,
+    conflict: 0,
+    done: 0,
+    total: items.length,
+  };
   for (const i of items) {
     if (i.status === "pending") c.pending += 1;
     else if (i.status === "in_flight") c.in_flight += 1;
@@ -97,7 +118,12 @@ export function useOfflineStatus(): OfflineStatus {
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
   const [status, setStatus] = useState<CountSnapshot>({
-    pending: 0, in_flight: 0, failed: 0, conflict: 0, done: 0, total: 0,
+    pending: 0,
+    in_flight: 0,
+    failed: 0,
+    conflict: 0,
+    done: 0,
+    total: 0,
   });
   const prevRef = useRef<CountSnapshot | null>(null);
   const firstTickRef = useRef(true);

@@ -8,7 +8,7 @@ Repo hiện KHÔNG chứa `cron.schedule` trong migration (cố ý — URL host 
 2. Extension `pg_cron` + `pg_net` đã bật.
 3. Biết URL cố định của môi trường:
    - Production: `https://project--<project-id>.lovable.app`
-   - Preview:    `https://project--<project-id>-dev.lovable.app`
+   - Preview: `https://project--<project-id>-dev.lovable.app`
 
 ## SQL
 

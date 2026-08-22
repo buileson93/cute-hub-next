@@ -1,12 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  fmtVND,
-  fmtSo,
-  fmtNgay,
-  fmtNgayGio,
-  fmtDowntime,
-  KHONG_CO,
-} from "../format";
+import { fmtVND, fmtSo, fmtNgay, fmtNgayGio, fmtDowntime, KHONG_CO } from "../format";
 
 describe("format.ts", () => {
   it("null/undefined/NaN → em-dash", () => {

@@ -104,7 +104,7 @@ describe("buildKeysetQuery — chỉ select cột cần & không OFFSET", () => 
         sortField: "id",
         dir: "asc",
         kichThuoc: 10,
-      })
+      }),
     ).toThrow();
     expect(() =>
       buildKeysetQuery({
@@ -113,7 +113,7 @@ describe("buildKeysetQuery — chỉ select cột cần & không OFFSET", () => 
         sortField: "id",
         dir: "asc",
         kichThuoc: 10,
-      })
+      }),
     ).toThrow();
     expect(() =>
       buildKeysetQuery({
@@ -122,7 +122,7 @@ describe("buildKeysetQuery — chỉ select cột cần & không OFFSET", () => 
         sortField: "1; delete from x",
         dir: "asc",
         kichThuoc: 10,
-      })
+      }),
     ).toThrow();
   });
 
@@ -134,7 +134,7 @@ describe("buildKeysetQuery — chỉ select cột cần & không OFFSET", () => 
         sortField: "id",
         dir: "asc",
         kichThuoc: 10,
-      })
+      }),
     ).toThrow();
     expect(() =>
       buildKeysetQuery({
@@ -143,7 +143,7 @@ describe("buildKeysetQuery — chỉ select cột cần & không OFFSET", () => 
         sortField: "id",
         dir: "asc",
         kichThuoc: 0,
-      })
+      }),
     ).toThrow();
     expect(() =>
       buildKeysetQuery({
@@ -152,7 +152,7 @@ describe("buildKeysetQuery — chỉ select cột cần & không OFFSET", () => 
         sortField: "id",
         dir: "asc",
         kichThuoc: 10_000,
-      })
+      }),
     ).toThrow();
   });
 });

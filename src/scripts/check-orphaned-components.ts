@@ -16,7 +16,7 @@ const EXEMPT_LIST = [
   "NotificationBell.tsx",
   "QrScanButton.tsx",
   "TzClock.tsx",
-  "RecentPinnedRailButton.tsx"
+  "RecentPinnedRailButton.tsx",
 ];
 
 function checkOrphaned() {
@@ -35,7 +35,7 @@ function checkOrphaned() {
 
   if (orphaned.length > 0) {
     console.error("LỖI: Phát hiện các component mồ côi (không được import ở đâu):");
-    orphaned.forEach(p => console.error(` - ${path.relative(process.cwd(), p)}`));
+    orphaned.forEach((p) => console.error(` - ${path.relative(process.cwd(), p)}`));
     process.exit(1);
   } else {
     console.log("Tất cả component đều đang được sử dụng.");

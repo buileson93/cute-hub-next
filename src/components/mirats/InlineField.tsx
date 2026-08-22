@@ -18,9 +18,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/backend/client";
 
-import {
-  validateField, buildUpdatePayload, type Loai,
-} from "@/lib/mirats/ui/inline-edit";
+import { validateField, buildUpdatePayload, type Loai } from "@/lib/mirats/ui/inline-edit";
 import { canWrite, type Domain } from "@/lib/mirats/quyen";
 import type { AppRole } from "@/hooks/use-session";
 
@@ -52,7 +50,15 @@ export interface InlineFieldProps {
 }
 
 export function InlineField({
-  loai, id, field, giaTri, roles, truoc, invalidateKey, placeholder = "—", className,
+  loai,
+  id,
+  field,
+  giaTri,
+  roles,
+  truoc,
+  invalidateKey,
+  placeholder = "—",
+  className,
 }: InlineFieldProps) {
   const qc = useQueryClient();
   const [editing, setEditing] = React.useState(false);
@@ -143,8 +149,14 @@ export function InlineField({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") { e.preventDefault(); luu(); }
-            if (e.key === "Escape") { e.preventDefault(); huy(); }
+            if (e.key === "Enter") {
+              e.preventDefault();
+              luu();
+            }
+            if (e.key === "Escape") {
+              e.preventDefault();
+              huy();
+            }
           }}
           disabled={mutation.isPending}
           className="h-8 text-sm"
@@ -152,28 +164,32 @@ export function InlineField({
           aria-describedby={loi ? `${id}-${field}-err` : undefined}
         />
         {loi && (
-          <p
-            id={`${id}-${field}-err`}
-            className="mt-1 text-xs text-destructive"
-            role="alert"
-          >
+          <p id={`${id}-${field}-err`} className="mt-1 text-xs text-destructive" role="alert">
             {loi}
           </p>
         )}
       </div>
       <Button
-        type="button" size="icon" variant="ghost"
-        className="h-8 w-8" onClick={luu}
+        type="button"
+        size="icon"
+        variant="ghost"
+        className="h-8 w-8"
+        onClick={luu}
         disabled={mutation.isPending}
         aria-label="Lưu"
       >
-        {mutation.isPending
-          ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-          : <Check className="h-4 w-4" aria-hidden />}
+        {mutation.isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        ) : (
+          <Check className="h-4 w-4" aria-hidden />
+        )}
       </Button>
       <Button
-        type="button" size="icon" variant="ghost"
-        className="h-8 w-8" onClick={huy}
+        type="button"
+        size="icon"
+        variant="ghost"
+        className="h-8 w-8"
+        onClick={huy}
         disabled={mutation.isPending}
         aria-label="Huỷ"
       >

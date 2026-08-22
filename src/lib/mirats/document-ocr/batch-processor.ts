@@ -110,9 +110,14 @@ export class OcrBatchProcessor {
       }
 
       // Session page limit check
-      if (this.config.maxPagesPerSession && this.status.pagesInSession >= this.config.maxPagesPerSession) {
+      if (
+        this.config.maxPagesPerSession &&
+        this.status.pagesInSession >= this.config.maxPagesPerSession
+      ) {
         this.pause();
-        toast.success(`Đã hoàn thành giới hạn ${this.config.maxPagesPerSession} trang cho phiên này.`);
+        toast.success(
+          `Đã hoàn thành giới hạn ${this.config.maxPagesPerSession} trang cho phiên này.`,
+        );
         break;
       }
 
@@ -129,12 +134,12 @@ export class OcrBatchProcessor {
         console.error(`Failed to process ${item.fileName}:`, error);
         this.status.failed++;
         this.items.shift();
-        
+
         // Update DB status for failure
         await ocrRepository.upsertOcr(item.sourceType, item.sourceId, {
           status: "failed",
           error_code: this.mapErrorCode(error),
-          error_message: error.message
+          error_message: error.message,
         });
       }
 
@@ -146,7 +151,7 @@ export class OcrBatchProcessor {
   private async processItem(item: BatchItem) {
     // 1. Get signed URL
     const bucket = item.sourceType === "model_tai_lieu" ? "model-tai-lieu" : "thiet-bi-attachments";
-    
+
     const { data: fileData, error: fetchError } = await supabase
       .from(item.sourceType)
       .select("file_path")
@@ -179,7 +184,7 @@ export class OcrBatchProcessor {
           this.status.pagesInSession++;
           this.status.currentPage = page;
           this.notify();
-        }
+        },
       });
     } finally {
       URL.revokeObjectURL(objectUrl);
@@ -216,4 +221,3 @@ export class OcrBatchProcessor {
     this.stop();
   }
 }
-

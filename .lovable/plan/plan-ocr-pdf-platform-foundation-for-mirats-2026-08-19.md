@@ -14,10 +14,10 @@ I will verify the implementation against the requested requirements and finalize
 - [x] **RLS**: Implemented in migration with inheritance logic from source documents.
 - [x] **Feature Flags**: Added to `src/lib/mirats/feature-flags.ts`.
 - [x] **Modules**:
-    - `src/lib/mirats/document-ocr/types.ts`
-    - `src/lib/mirats/document-ocr/repository.ts`
-    - `src/lib/mirats/document-ocr/status.ts`
-    - `src/lib/mirats/document-ocr/config.ts`
+  - `src/lib/mirats/document-ocr/types.ts`
+  - `src/lib/mirats/document-ocr/repository.ts`
+  - `src/lib/mirats/document-ocr/status.ts`
+  - `src/lib/mirats/document-ocr/config.ts`
 - [x] **Idempotent Migration**: Yes, uses `CREATE TABLE IF NOT EXISTS` and `CREATE OR REPLACE FUNCTION`.
 - [x] **Cascade Delete**: Implemented via triggers in SQL.
 - [x] **Tests**: `src/lib/mirats/document-ocr/__tests__/ocr-logic.test.ts` exists.

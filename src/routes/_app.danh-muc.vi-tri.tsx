@@ -9,7 +9,11 @@ export const Route = createFileRoute("/_app/danh-muc/vi-tri")({
   head: () => ({
     meta: [
       { title: "Vị trí — Danh mục MIRATS" },
-      { name: "description", content: "Danh mục vị trí địa lý theo phân cấp (Đài, phòng…) đọc trực tiếp từ cơ sở dữ liệu." },
+      {
+        name: "description",
+        content:
+          "Danh mục vị trí địa lý theo phân cấp (Đài, phòng…) đọc trực tiếp từ cơ sở dữ liệu.",
+      },
     ],
   }),
   component: ViTriPage,
@@ -30,7 +34,6 @@ function ViTriPage() {
         icon={MapPin}
         namePlaceholder="VD: Đài KSKL Phú Bài, Phòng Tài sản…"
         hiddenCols={["ma", "mo_ta", "active"]}
-        
         extraRowActions={(r) => (
           <Button
             size="icon"

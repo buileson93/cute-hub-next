@@ -15,16 +15,16 @@ Một trang tổng quan duy nhất, tải nhanh (< 1.5s p95), truy vấn tổng 
 
 ## 3. Danh sách chỉ số (KPI cards)
 
-| Mã | Tên hiển thị | Nguồn | Định nghĩa |
-|---|---|---|---|
-| `tong_tai_san` | Tổng tài sản | `thiet_bi` | `count(*)` các thiết bị chưa xoá mềm, thuộc đơn vị lọc (join qua `dm_he_thong.don_vi_id` nếu cần). |
-| `dang_hoat_dong` | Đang hoạt động | `thiet_bi` × `dm_trang_thai_thiet_bi` | Trạng thái nhóm `hoat_dong`. |
-| `ngung_khai_thac` | Ngừng khai thác | `thiet_bi` × `dm_trang_thai_thiet_bi` | Trạng thái nhóm `ngung_khai_thac` / `hu_hong`. |
-| `su_co_mo` | Sự cố mở | `su_co` | Trạng thái ∈ {`bao_cao`,`tiep_nhan`,`dang_xu_ly`,`cho_vat_tu`} (theo N6). |
-| `pm_den_han` | PM đến hạn (≤7 ngày) | `pm_cong_viec` (N4) hoặc fallback `cong_viec_bao_tri` | `han_hoan_thanh` giữa hôm nay và +7 ngày, chưa hoàn thành. |
-| `pm_qua_han` | PM quá hạn | như trên | `han_hoan_thanh < today` và chưa hoàn thành. |
-| `sap_het_han` | Mục sắp hết hạn ≤30 ngày | `v_sap_het_han` (N5) | `days_left BETWEEN 0 AND 30`. |
-| `qua_han_giay_phep` | Giấy phép quá hạn | `v_giay_phep` (N5) | `days_left < 0`. |
+| Mã                  | Tên hiển thị             | Nguồn                                                 | Định nghĩa                                                                                         |
+| ------------------- | ------------------------ | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `tong_tai_san`      | Tổng tài sản             | `thiet_bi`                                            | `count(*)` các thiết bị chưa xoá mềm, thuộc đơn vị lọc (join qua `dm_he_thong.don_vi_id` nếu cần). |
+| `dang_hoat_dong`    | Đang hoạt động           | `thiet_bi` × `dm_trang_thai_thiet_bi`                 | Trạng thái nhóm `hoat_dong`.                                                                       |
+| `ngung_khai_thac`   | Ngừng khai thác          | `thiet_bi` × `dm_trang_thai_thiet_bi`                 | Trạng thái nhóm `ngung_khai_thac` / `hu_hong`.                                                     |
+| `su_co_mo`          | Sự cố mở                 | `su_co`                                               | Trạng thái ∈ {`bao_cao`,`tiep_nhan`,`dang_xu_ly`,`cho_vat_tu`} (theo N6).                          |
+| `pm_den_han`        | PM đến hạn (≤7 ngày)     | `pm_cong_viec` (N4) hoặc fallback `cong_viec_bao_tri` | `han_hoan_thanh` giữa hôm nay và +7 ngày, chưa hoàn thành.                                         |
+| `pm_qua_han`        | PM quá hạn               | như trên                                              | `han_hoan_thanh < today` và chưa hoàn thành.                                                       |
+| `sap_het_han`       | Mục sắp hết hạn ≤30 ngày | `v_sap_het_han` (N5)                                  | `days_left BETWEEN 0 AND 30`.                                                                      |
+| `qua_han_giay_phep` | Giấy phép quá hạn        | `v_giay_phep` (N5)                                    | `days_left < 0`.                                                                                   |
 
 Nếu N4/N5 chưa merge, dùng fallback nguồn cũ (`bao_tri`, `giay_phep_khai_thac`, `chung_chi_thiet_bi`). SPEC ghi rõ để không block N8.
 

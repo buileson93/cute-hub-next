@@ -9,17 +9,21 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { SchemaDialog, type SchemaField, type SchemaOption } from "@/components/mirats/SchemaDialog";
+import {
+  SchemaDialog,
+  type SchemaField,
+  type SchemaOption,
+} from "@/components/mirats/SchemaDialog";
 import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { calculateCompleteness } from "@/lib/mirats/completeness";
-import { CompatibilityManager, type CompatibilityItem } from "@/components/mirats/CompatibilityManager";
+import {
+  CompatibilityManager,
+  type CompatibilityItem,
+} from "@/components/mirats/CompatibilityManager";
 import { supabase } from "@/integrations/backend/client";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { useSession } from "@/hooks/use-session";
-
-
-
 
 const formSchema = z.object({
   ten_thiet_bi: z
@@ -46,35 +50,44 @@ const formSchema = z.object({
         he_thong_id: z.string(),
         phan_loai: z.string(),
         danh_gia: z.string(),
-      })
+      }),
     )
     .default([]),
   vai_tro: z.enum(["he_thong", "ccdc", "vat_tu"]).default("he_thong"),
 });
 
-
-
 type FormValues = z.infer<typeof formSchema>;
 
-type OptTable = "dm_loai_thiet_bi" | "dm_model" | "dm_trang_thai_thiet_bi" | "dm_he_thong" | "nhan_vien";
+type OptTable =
+  | "dm_loai_thiet_bi"
+  | "dm_model"
+  | "dm_trang_thai_thiet_bi"
+  | "dm_he_thong"
+  | "nhan_vien";
 
 function loadOpts(table: OptTable) {
   return {
     queryKey: ["tb-form-options", table] as unknown[],
     queryFn: async (): Promise<SchemaOption[]> => {
       const select = table === "nhan_vien" ? "id, ho_ten, ma_nhan_vien" : "id, ten, ma";
-      const { data, error } = await supabase.from(table).select(select).order(table === "nhan_vien" ? "ho_ten" : "ten");
+      const { data, error } = await supabase
+        .from(table)
+        .select(select)
+        .order(table === "nhan_vien" ? "ho_ten" : "ten");
       if (error) throw error;
-      return (data as any[] ?? []).map((row) => {
-
-        const label = row.ho_ten ? (row.ma_nhan_vien ? `${row.ho_ten} · ${row.ma_nhan_vien}` : row.ho_ten)
-          : (row.ma ? `${row.ten} · ${row.ma}` : row.ten!);
+      return ((data as any[]) ?? []).map((row) => {
+        const label = row.ho_ten
+          ? row.ma_nhan_vien
+            ? `${row.ho_ten} · ${row.ma_nhan_vien}`
+            : row.ho_ten
+          : row.ma
+            ? `${row.ten} · ${row.ma}`
+            : row.ten!;
         return { value: row.id, label };
       });
     },
   };
 }
-
 
 export function ThietBiFormDialog({
   open,
@@ -91,7 +104,6 @@ export function ThietBiFormDialog({
 }) {
   const qc = useQueryClient();
   const { roles } = useSession();
-
 
   // Prefetch options song song để select mở nhanh
   useQuery(loadOpts("dm_model"));
@@ -110,7 +122,6 @@ export function ThietBiFormDialog({
   const draftKey = `draft:thiet_bi:${device?.id || "new"}`;
   const [draft, setDraft] = useUserPref(draftKey, null);
 
-
   const defaultValues = useMemo<Partial<FormValues>>(
     () => ({
       ten_thiet_bi: device?.ten ?? "",
@@ -124,14 +135,12 @@ export function ThietBiFormDialog({
       ghi_chu: extra?.ghi_chu ?? "",
       he_thong_tuong_thich: extra?.thiet_bi_he_thong_tuong_thich ?? [],
       vai_tro: (device as any)?.vai_tro ?? "he_thong",
-      ...(draft as any || {}),
+      ...((draft as any) || {}),
     }),
-
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [device, open, draftKey],
   );
-
 
   const fields: SchemaField[] = useMemo(
     () => [
@@ -157,10 +166,10 @@ export function ThietBiFormDialog({
         wizardStep: 3,
         priority: "later",
       },
-      { 
-        key: "ma_serial", 
-        type: "text", 
-        label: "Số serial (S/N)", 
+      {
+        key: "ma_serial",
+        type: "text",
+        label: "Số serial (S/N)",
         placeholder: "SN-xxxx",
         wizardStep: 1,
         priority: "core",
@@ -215,10 +224,10 @@ export function ThietBiFormDialog({
         wizardStep: 3,
         priority: "later",
       },
-      { 
-        key: "ghi_chu", 
-        type: "textarea", 
-        label: "Ghi chú", 
+      {
+        key: "ghi_chu",
+        type: "textarea",
+        label: "Ghi chú",
         placeholder: "Thông tin bổ sung…",
         wizardStep: 3,
         priority: "later",
@@ -254,7 +263,6 @@ export function ThietBiFormDialog({
       },
     ],
     [mode, systemOptsQuery.data],
-
   );
 
   const save = useMutation({
@@ -269,9 +277,8 @@ export function ThietBiFormDialog({
           .select("ma_thiet_bi, ten_thiet_bi")
           .eq("ma_serial", sn)
           .limit(3);
-        const { data: dups } = mode === "edit" && device?.id
-          ? await q.neq("id", device.id)
-          : await q;
+        const { data: dups } =
+          mode === "edit" && device?.id ? await q.neq("id", device.id) : await q;
         if (dups && dups.length > 0) {
           const list = dups
             .map((r) => {
@@ -290,7 +297,8 @@ export function ThietBiFormDialog({
           .select("loai_thiet_bi_id")
           .eq("id", d.model_id)
           .maybeSingle();
-        inheritedLoaiId = (m as { loai_thiet_bi_id?: string | null } | null)?.loai_thiet_bi_id ?? null;
+        inheritedLoaiId =
+          (m as { loai_thiet_bi_id?: string | null } | null)?.loai_thiet_bi_id ?? null;
       }
       const payload: Record<string, unknown> = {
         ten_thiet_bi: d.ten_thiet_bi,
@@ -315,10 +323,10 @@ export function ThietBiFormDialog({
           return out;
         };
         payload.ma_thiet_bi = d.ma_thiet_bi?.trim() || genCode();
-        
+
         if (!isAdmin) {
           // KTV thêm mới -> tạo CR propose_new (giả định CR support tạo mới)
-          // Hoặc đơn giản là dùng RPC trung gian. 
+          // Hoặc đơn giản là dùng RPC trung gian.
           // Ở đây ta dùng saveCellSecurely cho edit, còn create vẫn để RLS lo nếu có policy.
           // Tạm thời nếu !isAdmin mà vẫn vào đây thì insert sẽ fail do RLS.
         }
@@ -335,12 +343,11 @@ export function ThietBiFormDialog({
         if (items.length > 0) {
           const { error: err2 } = await supabase
             .from("thiet_bi_he_thong_tuong_thich")
-            .insert(items.map(it => ({ ...it, thiet_bi_id: (inserted as any).id })));
+            .insert(items.map((it) => ({ ...it, thiet_bi_id: (inserted as any).id })));
           if (err2) toast.error("Không lưu được thông tin hệ thống tương thích");
         }
 
         return (inserted as { ma_thiet_bi: string }).ma_thiet_bi;
-
       } else {
         if (!device?.id) throw new Error("Thiếu id tài sản");
 
@@ -362,7 +369,6 @@ export function ThietBiFormDialog({
           .eq("id", device.id);
         if (error) throw error;
 
-
         // Sync bảng liên kết: Xoá cũ, thêm mới
         const { error: errDel } = await supabase
           .from("thiet_bi_he_thong_tuong_thich")
@@ -373,12 +379,11 @@ export function ThietBiFormDialog({
         if (items.length > 0) {
           const { error: errIns } = await supabase
             .from("thiet_bi_he_thong_tuong_thich")
-            .insert(items.map(it => ({ ...it, thiet_bi_id: device.id })));
+            .insert(items.map((it) => ({ ...it, thiet_bi_id: device.id })));
           if (errIns) toast.error("Không cập nhật được thông tin hệ thống tương thích");
         }
 
         return { ma: device.ma_thiet_bi, mode: "direct" };
-
       }
     },
     onSuccess: (res: any) => {
@@ -386,17 +391,15 @@ export function ThietBiFormDialog({
       qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
       // Thêm thông báo nếu là đề xuất
       if (res.mode === "proposed") {
-         toast.success(`Đã gửi đề xuất cập nhật tài sản ${ma} để Admin phê duyệt`);
+        toast.success(`Đã gửi đề xuất cập nhật tài sản ${ma} để Admin phê duyệt`);
       } else {
-         toast.success(mode === "create" ? `Đã thêm tài sản ${ma}` : "Đã cập nhật tài sản");
+        toast.success(mode === "create" ? `Đã thêm tài sản ${ma}` : "Đã cập nhật tài sản");
       }
       onSaved?.(ma);
       onOpenChange(false);
     },
 
-
-    onError: (e: unknown) =>
-      toast.error(e instanceof Error ? e.message : "Không lưu được tài sản"),
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không lưu được tài sản"),
   });
 
   // Force remount SchemaDialog khi mở lại với device khác để reset defaults
@@ -414,10 +417,10 @@ export function ThietBiFormDialog({
       title={
         <div className="flex items-center gap-3">
           {mode === "create" ? "Thêm tài sản mới" : "Sửa tài sản"}
-          <CompletenessRing 
-            value={calculateCompleteness("thiet_bi", defaultValues)} 
-            size={32} 
-            showText 
+          <CompletenessRing
+            value={calculateCompleteness("thiet_bi", defaultValues)}
+            size={32}
+            showText
           />
         </div>
       }
@@ -438,6 +441,5 @@ export function ThietBiFormDialog({
       }}
       wizardSteps={["Nhận dạng", "Vị trí", "Bổ sung"]}
     />
-
   );
 }

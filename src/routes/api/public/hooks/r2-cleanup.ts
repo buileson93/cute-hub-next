@@ -22,21 +22,33 @@ export const Route = createFileRoute("/api/public/hooks/r2-cleanup")({
           .limit(500);
         if (error) return Response.json({ ok: false, error: error.message }, { status: 500 });
 
-        let deleted = 0, aborted = 0, failed = 0;
+        let deleted = 0,
+          aborted = 0,
+          failed = 0;
         for (const row of expired ?? []) {
           try {
             const uploadId = (row.meta as any)?.uploadId;
-            if (uploadId) { try { await r2MultipartAbort(row.key, uploadId); aborted++; } catch {} }
-            try { await r2Delete(row.key); } catch {}
+            if (uploadId) {
+              try {
+                await r2MultipartAbort(row.key, uploadId);
+                aborted++;
+              } catch {}
+            }
+            try {
+              await r2Delete(row.key);
+            } catch {}
             await supabaseAdmin.from("r2_file").delete().eq("key", row.key);
             deleted++;
-          } catch { failed++; }
+          } catch {
+            failed++;
+          }
         }
 
         // Dọn log > 90 ngày
-        await supabaseAdmin.from("r2_access_log")
+        await supabaseAdmin
+          .from("r2_access_log")
           .delete()
-          .lt("created_at", new Date(Date.now() - 90*24*3600*1000).toISOString());
+          .lt("created_at", new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString());
 
         return Response.json({ ok: true, deleted, aborted, failed, checked: expired?.length ?? 0 });
       },

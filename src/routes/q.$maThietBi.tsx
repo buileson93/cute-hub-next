@@ -3,7 +3,15 @@ import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
-import { HardDrive, AlertTriangle, Settings, FileText, ChevronRight, Activity, Clock } from "lucide-react";
+import {
+  HardDrive,
+  AlertTriangle,
+  Settings,
+  FileText,
+  ChevronRight,
+  Activity,
+  Clock,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -21,10 +29,12 @@ function ThietBiQuickViewRoute() {
 
   const { ops, isLoading: opsLoading } = useOperationsData();
   const { suCo, baoTri, hongHoc } = ops;
-  
-  const filteredSuCo = suCo.filter(s => s.thiet_bi === ma || s.thiet_bi_id === asset?.id);
-  const filteredBaoTri = baoTri.filter(b => b.thiet_bi === ma || b.thiet_bi_id === asset?.id);
-  const filteredHongHoc = hongHoc.filter(h => h.thiet_bi_hong === ma || h.thiet_bi_hong_id === asset?.id);
+
+  const filteredSuCo = suCo.filter((s) => s.thiet_bi === ma || s.thiet_bi_id === asset?.id);
+  const filteredBaoTri = baoTri.filter((b) => b.thiet_bi === ma || b.thiet_bi_id === asset?.id);
+  const filteredHongHoc = hongHoc.filter(
+    (h) => h.thiet_bi_hong === ma || h.thiet_bi_hong_id === asset?.id,
+  );
 
   const isLoading = taxLoading || opsLoading;
 
@@ -50,9 +60,7 @@ function ThietBiQuickViewRoute() {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Không tìm thấy</AlertTitle>
-          <AlertDescription>
-            Tài sản mã "{ma}" không tồn tại trong hệ thống.
-          </AlertDescription>
+          <AlertDescription>Tài sản mã "{ma}" không tồn tại trong hệ thống.</AlertDescription>
         </Alert>
         <div className="mt-4">
           <Button onClick={() => navigate({ to: "/" })}>Quay lại trang chủ</Button>
@@ -64,11 +72,7 @@ function ThietBiQuickViewRoute() {
   return (
     <PageBody>
       <div className="flex flex-col gap-6">
-        <PageHeader 
-          title={asset.ten}
-          icon={HardDrive}
-          subtitle={asset.ma_thiet_bi}
-        />
+        <PageHeader title={asset.ten} icon={HardDrive} subtitle={asset.ma_thiet_bi} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
@@ -106,7 +110,9 @@ function ThietBiQuickViewRoute() {
           <div className="p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
             <div className="flex items-center gap-2 mb-2 text-muted-foreground">
               <Settings className="h-4 w-4" />
-              <span className="text-xs font-medium uppercase tracking-wider">Hỏng hóc/Thay thế</span>
+              <span className="text-xs font-medium uppercase tracking-wider">
+                Hỏng hóc/Thay thế
+              </span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold">{filteredHongHoc.length}</span>
@@ -123,9 +129,9 @@ function ThietBiQuickViewRoute() {
                   <Clock className="h-4 w-4 text-primary" />
                   Lịch sử vận hành
                 </h3>
-                <Link 
-                  to="/thiet-bi/$maThietBi" 
-                  params={{ maThietBi: asset.ma_thiet_bi }} 
+                <Link
+                  to="/thiet-bi/$maThietBi"
+                  params={{ maThietBi: asset.ma_thiet_bi }}
                   search={{ tab: "van-hanh", doc: undefined, q: undefined }}
                   className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
                 >
@@ -140,29 +146,47 @@ function ThietBiQuickViewRoute() {
                 ) : (
                   <div className="divide-y">
                     {[...filteredSuCo, ...filteredBaoTri]
-                      .sort((a, b) => new Date((b as any).ngay_phat_hien || (b as any).ngay_bat_dau).getTime() - new Date((a as any).ngay_phat_hien || (a as any).ngay_bat_dau).getTime())
+                      .sort(
+                        (a, b) =>
+                          new Date((b as any).ngay_phat_hien || (b as any).ngay_bat_dau).getTime() -
+                          new Date((a as any).ngay_phat_hien || (a as any).ngay_bat_dau).getTime(),
+                      )
                       .slice(0, 5)
                       .map((item, idx) => {
-                        const isSuCo = 'ma_su_co' in item;
+                        const isSuCo = "ma_su_co" in item;
                         return (
-                          <div key={idx} className="px-4 py-3 flex items-start gap-3 hover:bg-muted/20 transition-colors">
-                            <div className={cn(
-                              "mt-1 p-1 rounded-full",
-                              isSuCo ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
-                            )}>
-                              {isSuCo ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                          <div
+                            key={idx}
+                            className="px-4 py-3 flex items-start gap-3 hover:bg-muted/20 transition-colors"
+                          >
+                            <div
+                              className={cn(
+                                "mt-1 p-1 rounded-full",
+                                isSuCo ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600",
+                              )}
+                            >
+                              {isSuCo ? (
+                                <AlertTriangle className="h-3 w-3" />
+                              ) : (
+                                <Clock className="h-3 w-3" />
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-2">
                                 <span className="text-xs font-semibold truncate">
-                                  {isSuCo ? (item as any).hien_tuong : (item as any).mo_ta_cong_viec}
+                                  {isSuCo
+                                    ? (item as any).hien_tuong
+                                    : (item as any).mo_ta_cong_viec}
                                 </span>
                                 <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                                  {isSuCo ? (item as any).ngay_phat_hien : (item as any).ngay_bat_dau}
+                                  {isSuCo
+                                    ? (item as any).ngay_phat_hien
+                                    : (item as any).ngay_bat_dau}
                                 </span>
                               </div>
                               <div className="text-[10px] text-muted-foreground mt-0.5">
-                                {isSuCo ? 'Sự cố' : 'Bảo trì'} · {isSuCo ? (item as any).muc_do : (item as any).loai_bao_tri}
+                                {isSuCo ? "Sự cố" : "Bảo trì"} ·{" "}
+                                {isSuCo ? (item as any).muc_do : (item as any).loai_bao_tri}
                               </div>
                             </div>
                           </div>
@@ -185,31 +209,57 @@ function ThietBiQuickViewRoute() {
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-x-2 gap-y-3">
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Model</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Model
+                    </span>
                     <p className="text-xs font-medium truncate">{asset.model || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Serial</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Serial
+                    </span>
                     <p className="text-xs font-medium truncate">{asset.serial || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Hệ thống</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Hệ thống
+                    </span>
                     <p className="text-xs font-medium truncate">{asset._htTen || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Vị trí</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Vị trí
+                    </span>
                     <p className="text-xs font-medium truncate">{asset.vi_tri || "—"}</p>
                   </div>
                 </div>
-                
+
                 <div className="pt-2 flex flex-col gap-2">
-                  <Button asChild variant="outline" size="sm" className="w-full justify-start text-[11px] h-8">
-                    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: asset.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-[11px] h-8"
+                  >
+                    <Link
+                      to="/thiet-bi/$maThietBi"
+                      params={{ maThietBi: asset.ma_thiet_bi }}
+                      search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                    >
                       <HardDrive className="mr-2 h-3 w-3" /> Chi tiết tài sản
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="sm" className="w-full justify-start text-[11px] h-8">
-                    <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: asset.ma_thiet_bi }} search={{ tab: "ho-so", doc: undefined, q: undefined }}>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-[11px] h-8"
+                  >
+                    <Link
+                      to="/thiet-bi/$maThietBi"
+                      params={{ maThietBi: asset.ma_thiet_bi }}
+                      search={{ tab: "ho-so", doc: undefined, q: undefined }}
+                    >
                       <FileText className="mr-2 h-3 w-3" /> Hồ sơ kỹ thuật
                     </Link>
                   </Button>

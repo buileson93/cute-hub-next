@@ -31,13 +31,19 @@ function SignatureImg({ src, alt }: { src: SigLike; alt: string }) {
     if (isAttachment(src)) {
       setLoading(true);
       signedUrl(src.path)
-        .then((u) => { if (!cancelled) setResolved(u); })
-        .finally(() => { if (!cancelled) setLoading(false); });
+        .then((u) => {
+          if (!cancelled) setResolved(u);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
     } else {
       setResolved(null);
       setLoading(false);
     }
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [src]);
 
   if (loading) {
@@ -48,12 +54,28 @@ function SignatureImg({ src, alt }: { src: SigLike; alt: string }) {
     );
   }
   if (!resolved) {
-    return <div className="mt-2 flex h-14 items-center justify-center rounded border bg-muted/20 text-[11px] text-muted-foreground">Không tải được ảnh</div>;
+    return (
+      <div className="mt-2 flex h-14 items-center justify-center rounded border bg-muted/20 text-[11px] text-muted-foreground">
+        Không tải được ảnh
+      </div>
+    );
   }
-  return <img src={resolved} alt={alt} className="mt-2 h-14 w-full rounded border bg-white object-contain" />;
+  return (
+    <img
+      src={resolved}
+      alt={alt}
+      className="mt-2 h-14 w-full rounded border bg-white object-contain"
+    />
+  );
 }
 
-export function SignatureSlotsView({ slots, compact }: { slots: SignatureSlot[]; compact?: boolean }) {
+export function SignatureSlotsView({
+  slots,
+  compact,
+}: {
+  slots: SignatureSlot[];
+  compact?: boolean;
+}) {
   if (!slots || slots.length === 0) {
     return <span className="text-xs text-muted-foreground">Chưa có chữ ký.</span>;
   }
@@ -62,14 +84,28 @@ export function SignatureSlotsView({ slots, compact }: { slots: SignatureSlot[];
       {slots.map((s, i) => {
         const signed = !!s.signed_at;
         return (
-          <div key={s.key ?? i} className={`rounded border bg-background p-2 ${compact ? "w-44" : ""}`}>
+          <div
+            key={s.key ?? i}
+            className={`rounded border bg-background p-2 ${compact ? "w-44" : ""}`}
+          >
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="font-mono text-[10px]">#{i + 1}</Badge>
+              <Badge variant="outline" className="font-mono text-[10px]">
+                #{i + 1}
+              </Badge>
               <span className="truncate text-sm font-medium">{s.label}</span>
               {signed ? (
-                <Badge className="bg-primary text-primary-foreground"><Check className="mr-1 h-3 w-3" />Đã ký</Badge>
+                <Badge className="bg-primary text-primary-foreground">
+                  <Check className="mr-1 h-3 w-3" />
+                  Đã ký
+                </Badge>
               ) : (
-                <Badge variant="outline" className="bg-muted text-muted-foreground border-border shadow-none"><Clock className="mr-1 h-3 w-3" />Chờ ký</Badge>
+                <Badge
+                  variant="outline"
+                  className="bg-muted text-muted-foreground border-border shadow-none"
+                >
+                  <Clock className="mr-1 h-3 w-3" />
+                  Chờ ký
+                </Badge>
               )}
             </div>
             {signed && <SignatureImg src={s.data_url as SigLike} alt={`chữ ký ${s.label}`} />}
@@ -87,9 +123,16 @@ export function SignatureSlotsView({ slots, compact }: { slots: SignatureSlot[];
 }
 
 /** Ô chữ ký đơn (không cấu hình nhiều người). */
-export function SingleSignatureView({ value, signedAt }: { value: unknown; signedAt?: string | null }) {
+export function SingleSignatureView({
+  value,
+  signedAt,
+}: {
+  value: unknown;
+  signedAt?: string | null;
+}) {
   if (!value) return <span className="text-xs text-muted-foreground">Chưa ký.</span>;
-  const src = (typeof value === "string" || isAttachment(value as SigLike)) ? (value as SigLike) : null;
+  const src =
+    typeof value === "string" || isAttachment(value as SigLike) ? (value as SigLike) : null;
   if (!src) return <span className="text-xs text-muted-foreground">Chưa ký.</span>;
   return (
     <div className="inline-block rounded border bg-white p-1">

@@ -31,32 +31,45 @@ export function useColumnWidths(tableKey: string) {
     }
   }, [lsKey]);
 
-  const persist = useCallback((next: ColumnWidths) => {
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      try { window.localStorage.setItem(lsKey, JSON.stringify(next)); } catch { /* ignore */ }
-    }, 200);
-  }, [lsKey]);
+  const persist = useCallback(
+    (next: ColumnWidths) => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        try {
+          window.localStorage.setItem(lsKey, JSON.stringify(next));
+        } catch {
+          /* ignore */
+        }
+      }, 200);
+    },
+    [lsKey],
+  );
 
-  const setWidth = useCallback((key: string, w: number) => {
-    const clamped = Math.max(MIN_W, Math.min(MAX_W, Math.round(w)));
-    setWidths((prev) => {
-      if (prev[key] === clamped) return prev;
-      const next = { ...prev, [key]: clamped };
-      persist(next);
-      return next;
-    });
-  }, [persist]);
+  const setWidth = useCallback(
+    (key: string, w: number) => {
+      const clamped = Math.max(MIN_W, Math.min(MAX_W, Math.round(w)));
+      setWidths((prev) => {
+        if (prev[key] === clamped) return prev;
+        const next = { ...prev, [key]: clamped };
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
 
-  const resetWidth = useCallback((key: string) => {
-    setWidths((prev) => {
-      if (!(key in prev)) return prev;
-      const next = { ...prev };
-      delete next[key];
-      persist(next);
-      return next;
-    });
-  }, [persist]);
+  const resetWidth = useCallback(
+    (key: string) => {
+      setWidths((prev) => {
+        if (!(key in prev)) return prev;
+        const next = { ...prev };
+        delete next[key];
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
 
   const resetAll = useCallback(() => {
     setWidths({});

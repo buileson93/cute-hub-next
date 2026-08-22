@@ -164,7 +164,12 @@ export interface GiaoDichRow {
   ngay: string;
   ghi_chu: string | null;
   don_vi_id: string | null;
-  vat_tu?: { ten: string; ma_vat_tu: string | null; don_vi_tinh: string; model_id: string | null } | null;
+  vat_tu?: {
+    ten: string;
+    ma_vat_tu: string | null;
+    don_vi_tinh: string;
+    model_id: string | null;
+  } | null;
   kho?: { ten: string } | null;
 }
 
@@ -178,7 +183,6 @@ export interface TonKhoModelRow {
   bulk_quantity: number;
   combined_total: number;
 }
-
 
 // ---------------------------------------------------------------------------
 // Queries
@@ -362,7 +366,6 @@ export function useTonKhoModel(modelId?: string) {
     },
   });
 }
-
 
 // ---------------------------------------------------------------------------
 // Mutations

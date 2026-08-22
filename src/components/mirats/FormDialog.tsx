@@ -1,8 +1,12 @@
 import { useState } from "react";
 import type { ZodSchema } from "zod";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { NHAN } from "@/lib/mirats/tu-vung";
@@ -32,9 +36,18 @@ export interface FormDialogProps<TValues, TPreview> {
 type Step = "form" | "preview";
 
 export function FormDialog<TValues, TPreview>({
-  open, onOpenChange, title, description,
-  values, schema, renderForm, previewTacDong, renderPreview,
-  onConfirm, submitLabel = NHAN.luu, successMessage,
+  open,
+  onOpenChange,
+  title,
+  description,
+  values,
+  schema,
+  renderForm,
+  previewTacDong,
+  renderPreview,
+  onConfirm,
+  submitLabel = NHAN.luu,
+  successMessage,
 }: FormDialogProps<TValues, TPreview>) {
   const [step, setStep] = useState<Step>("form");
   const [errors, setErrors] = useState<Record<string, string>>({});

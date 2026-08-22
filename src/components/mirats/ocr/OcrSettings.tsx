@@ -54,7 +54,9 @@ export function OcrSettings({
         <div className="grid gap-2 pl-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Label htmlFor="ocr-quality" className="text-xs">Chế độ xử lý:</Label>
+              <Label htmlFor="ocr-quality" className="text-xs">
+                Chế độ xử lý:
+              </Label>
               <AppTooltip noiDung="Chất lượng cao hơn sẽ tốn nhiều tài nguyên hơn và lâu hơn.">
                 <Info className="h-3.5 w-3.5 text-muted-foreground" />
               </AppTooltip>
@@ -74,7 +76,7 @@ export function OcrSettings({
               </SelectContent>
             </Select>
           </div>
-          
+
           {quality === "auto" && deviceTier && (
             <p className="text-[10px] text-muted-foreground italic">
               * Tự động chọn dựa trên thiết bị ({deviceTier}). {autoReason}

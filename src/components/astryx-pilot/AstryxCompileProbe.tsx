@@ -3,7 +3,7 @@ import { neutralTheme } from "@astryxdesign/theme-neutral";
 
 /**
  * AstryxCompileProbe
- * 
+ *
  * This component is NOT imported into the main app.
  * It serves as a compile-time and SSR import probe to verify subpaths
  * and detect browser-only globals at module scope.

@@ -7,12 +7,14 @@ import { z } from "zod";
  * and handle Supabase auth/admin access.
  */
 export const getChangeLog = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ 
-    entity: z.string(), 
-    entityId: z.string().nullable() 
-  }))
+  .inputValidator(
+    z.object({
+      entity: z.string(),
+      entityId: z.string().nullable(),
+    }),
+  )
   .handler(async ({ data }) => {
     // This is a placeholder for the actual server-side logic
     // Implementation should be moved to a .server.ts file
-    return []; 
+    return [];
   });

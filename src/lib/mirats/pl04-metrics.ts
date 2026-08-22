@@ -28,8 +28,7 @@ export const PL04_METRIC_KEYS = {
   AVAILABILITY_6THANG: "availability_6thang",
 } as const;
 
-export type Pl04MetricKey =
-  (typeof PL04_METRIC_KEYS)[keyof typeof PL04_METRIC_KEYS];
+export type Pl04MetricKey = (typeof PL04_METRIC_KEYS)[keyof typeof PL04_METRIC_KEYS];
 
 /** 1 dòng metric snapshot để lưu vào form_submission_metric. */
 export type MetricSnapshot = {
@@ -58,10 +57,7 @@ function dayMs(v: string | null | undefined): number | null {
  * Cửa sổ 6 tháng (mặc định 180 ngày) kết thúc tại `endISO` (mặc định hôm nay).
  * Trả về chuỗi ISO đầy đủ để tính windowHours chính xác.
  */
-export function sixMonthWindow(
-  endISO?: string | null,
-  days = 180,
-): { start: string; end: string } {
+export function sixMonthWindow(endISO?: string | null, days = 180): { start: string; end: string } {
   const end = endISO ? new Date(endISO) : new Date();
   const start = new Date(end.getTime() - days * 86_400_000);
   return { start: start.toISOString(), end: end.toISOString() };

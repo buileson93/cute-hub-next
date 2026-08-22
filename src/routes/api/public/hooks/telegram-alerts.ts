@@ -12,9 +12,7 @@ export const Route = createFileRoute("/api/public/hooks/telegram-alerts")({
         try {
           const expected = process.env.CRON_SECRET;
           const provided =
-            request.headers.get("x-cron-secret") ??
-            request.headers.get("X-Cron-Secret") ??
-            "";
+            request.headers.get("x-cron-secret") ?? request.headers.get("X-Cron-Secret") ?? "";
           if (!expected || provided !== expected) {
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }

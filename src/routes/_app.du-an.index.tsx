@@ -9,10 +9,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
@@ -23,7 +34,11 @@ export const Route = createFileRoute("/_app/du-an/")({
   head: () => ({
     meta: [
       { title: "Dự án & Tiến độ — MIRATS" },
-      { name: "description", content: "Quản lý dự án theo mốc công việc, phân công tổ trưởng và theo dõi tiến độ Gantt/Kanban." },
+      {
+        name: "description",
+        content:
+          "Quản lý dự án theo mốc công việc, phân công tổ trưởng và theo dõi tiến độ Gantt/Kanban.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -31,11 +46,11 @@ export const Route = createFileRoute("/_app/du-an/")({
 });
 
 const TRANG_THAI: Record<string, { label: string; tone: string }> = {
-  moi:            { label: "Mới",              tone: "bg-slate-100 text-slate-700 border-slate-200" },
-  dang_thuc_hien: { label: "Đang thực hiện",   tone: "bg-sky-100 text-sky-700 border-sky-200" },
-  tam_dung:       { label: "Tạm dừng",         tone: "bg-amber-100 text-amber-700 border-amber-200" },
-  hoan_thanh:     { label: "Hoàn thành",       tone: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  huy:            { label: "Huỷ",              tone: "bg-rose-100 text-rose-700 border-rose-200" },
+  moi: { label: "Mới", tone: "bg-slate-100 text-slate-700 border-slate-200" },
+  dang_thuc_hien: { label: "Đang thực hiện", tone: "bg-sky-100 text-sky-700 border-sky-200" },
+  tam_dung: { label: "Tạm dừng", tone: "bg-amber-100 text-amber-700 border-amber-200" },
+  hoan_thanh: { label: "Hoàn thành", tone: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  huy: { label: "Huỷ", tone: "bg-rose-100 text-rose-700 border-rose-200" },
 };
 
 type DuAn = {
@@ -82,7 +97,10 @@ function DuAnListPage() {
       return data ?? [];
     },
   });
-  const donViMap = useMemo(() => Object.fromEntries((donVis ?? []).map((d) => [d.id, d.ten])), [donVis]);
+  const donViMap = useMemo(
+    () => Object.fromEntries((donVis ?? []).map((d) => [d.id, d.ten])),
+    [donVis],
+  );
 
   const filtered = useMemo(() => {
     const kw = q.trim().toLowerCase();
@@ -103,7 +121,8 @@ function DuAnListPage() {
                   <FolderKanban className="h-5 w-5 text-indigo-600" /> Dự án & Tiến độ
                 </CardTitle>
                 <CardDescription>
-                  Người quản lý tạo dự án và các mốc công việc chính. Tổ trưởng bổ sung công việc con và cập nhật tiến độ.
+                  Người quản lý tạo dự án và các mốc công việc chính. Tổ trưởng bổ sung công việc
+                  con và cập nhật tiến độ.
                 </CardDescription>
               </div>
               {canCreate && (
@@ -116,7 +135,12 @@ function DuAnListPage() {
           <CardContent className="pt-0">
             <div className="relative max-w-md">
               <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm dự án…" className="pl-9" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Tìm dự án…"
+                className="pl-9"
+              />
             </div>
           </CardContent>
         </Card>
@@ -136,16 +160,24 @@ function DuAnListPage() {
             {filtered.map((d) => {
               const tt = TRANG_THAI[d.trang_thai] ?? TRANG_THAI.moi;
               return (
-                <div 
-                  key={d.id} 
-                  onClick={() => nav({ to: "/du-an/$id", params: { id: d.id }, search: { view: "kanban", q: "" } as any })} 
+                <div
+                  key={d.id}
+                  onClick={() =>
+                    nav({
+                      to: "/du-an/$id",
+                      params: { id: d.id },
+                      search: { view: "kanban", q: "" } as any,
+                    })
+                  }
                   className="block cursor-pointer"
                 >
                   <Card className="hover:shadow-md hover:border-indigo-300 transition h-full">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-base leading-tight">{d.ten}</CardTitle>
-                        <Badge variant="outline" className={cn(tt.tone, "shrink-0")}>{tt.label}</Badge>
+                        <Badge variant="outline" className={cn(tt.tone, "shrink-0")}>
+                          {tt.label}
+                        </Badge>
                       </div>
                       {d.ma && <div className="text-[11px] font-mono text-slate-400">{d.ma}</div>}
                     </CardHeader>
@@ -153,14 +185,19 @@ function DuAnListPage() {
                       {d.mo_ta && <p className="text-xs text-slate-600 line-clamp-2">{d.mo_ta}</p>}
                       <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                         <Calendar className="h-3 w-3" />
-                        <span>{d.ngay_bat_dau ?? "—"} → {d.ngay_ket_thuc_du_kien ?? "—"}</span>
+                        <span>
+                          {d.ngay_bat_dau ?? "—"} → {d.ngay_ket_thuc_du_kien ?? "—"}
+                        </span>
                       </div>
                       {d.don_vi_id && (
-                        <div className="text-[11px] text-slate-500">Đơn vị: {donViMap[d.don_vi_id] ?? "—"}</div>
+                        <div className="text-[11px] text-slate-500">
+                          Đơn vị: {donViMap[d.don_vi_id] ?? "—"}
+                        </div>
                       )}
                       <div className="pt-1">
                         <div className="flex justify-between text-[11px] text-slate-500 mb-1">
-                          <span>Tiến độ</span><span>{d.tien_do}%</span>
+                          <span>Tiến độ</span>
+                          <span>{d.tien_do}%</span>
                         </div>
                         <Progress value={d.tien_do} className="h-1.5" />
                       </div>
@@ -184,7 +221,10 @@ function DuAnListPage() {
 }
 
 function CreateDuAnDialog({
-  open, onOpenChange, donVis, onDone,
+  open,
+  onOpenChange,
+  donVis,
+  onDone,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -193,8 +233,12 @@ function CreateDuAnDialog({
 }) {
   const { session } = useSession();
   const [form, setForm] = useState({
-    ma: "", ten: "", mo_ta: "",
-    don_vi_id: "", ngay_bat_dau: "", ngay_ket_thuc_du_kien: "",
+    ma: "",
+    ten: "",
+    mo_ta: "",
+    don_vi_id: "",
+    ngay_bat_dau: "",
+    ngay_ket_thuc_du_kien: "",
   });
 
   const create = useMutation({
@@ -218,7 +262,14 @@ function CreateDuAnDialog({
     onSuccess: () => {
       toast.success("Đã tạo dự án");
       onOpenChange(false);
-      setForm({ ma: "", ten: "", mo_ta: "", don_vi_id: "", ngay_bat_dau: "", ngay_ket_thuc_du_kien: "" });
+      setForm({
+        ma: "",
+        ten: "",
+        mo_ta: "",
+        don_vi_id: "",
+        ngay_bat_dau: "",
+        ngay_ket_thuc_du_kien: "",
+      });
       onDone();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -235,7 +286,11 @@ function CreateDuAnDialog({
           <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
             <div>
               <Label>Mã dự án</Label>
-              <Input value={form.ma} onChange={(e) => setForm({ ...form, ma: e.target.value })} placeholder="VD: DA-2026-01" />
+              <Input
+                value={form.ma}
+                onChange={(e) => setForm({ ...form, ma: e.target.value })}
+                placeholder="VD: DA-2026-01"
+              />
             </div>
             <div className="col-span-2">
               <Label>Tên dự án *</Label>
@@ -244,7 +299,11 @@ function CreateDuAnDialog({
           </div>
           <div>
             <Label>Mô tả</Label>
-            <Textarea rows={2} value={form.mo_ta} onChange={(e) => setForm({ ...form, mo_ta: e.target.value })} />
+            <Textarea
+              rows={2}
+              value={form.mo_ta}
+              onChange={(e) => setForm({ ...form, mo_ta: e.target.value })}
+            />
           </div>
           <div>
             <Label>Đơn vị</Label>
@@ -259,16 +318,26 @@ function CreateDuAnDialog({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Bắt đầu</Label>
-              <Input type="date" value={form.ngay_bat_dau} onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngay_bat_dau}
+                onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })}
+              />
             </div>
             <div>
               <Label>Kết thúc dự kiến</Label>
-              <Input type="date" value={form.ngay_ket_thuc_du_kien} onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })} />
+              <Input
+                type="date"
+                value={form.ngay_ket_thuc_du_kien}
+                onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })}
+              />
             </div>
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Huỷ</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Huỷ
+          </Button>
           <Button onClick={() => create.mutate()} disabled={create.isPending}>
             {create.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Tạo
           </Button>

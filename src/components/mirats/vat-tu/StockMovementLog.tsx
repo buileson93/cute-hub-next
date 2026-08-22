@@ -19,9 +19,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
       requireFilterToShow={false}
       trangThai={{ dangTai: isLoading }}
       emptyContent={
-        <div className="py-8 text-center text-sm text-muted-foreground">
-          Chưa có giao dịch nào.
-        </div>
+        <div className="py-8 text-center text-sm text-muted-foreground">Chưa có giao dịch nào.</div>
       }
       columns={[
         {
@@ -39,7 +37,9 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           hideBelow: "xl",
           priority: "secondary" as const,
           value: (g) => g.ngay,
-          cell: (g) => <span className="text-sm">{new Date(g.ngay).toLocaleDateString("vi-VN")}</span>,
+          cell: (g) => (
+            <span className="text-sm">{new Date(g.ngay).toLocaleDateString("vi-VN")}</span>
+          ),
         },
         {
           key: "vat_tu",

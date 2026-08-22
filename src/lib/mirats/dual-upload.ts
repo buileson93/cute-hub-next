@@ -43,10 +43,18 @@ async function uploadToR2(input: DualUploadInput, body: Blob, ct: string) {
   // Import động để tránh kéo server-fn stub vào loader không cần R2.
   const { r2GetUploadUrl, r2MarkReady } = await import("./r2.functions");
   const info = await r2GetUploadUrl({
-    data: { key: input.r2.keyHint, contentType: ct, size: body.size, originalName: input.file.name },
+    data: {
+      key: input.r2.keyHint,
+      contentType: ct,
+      size: body.size,
+      originalName: input.file.name,
+    },
   });
   const putRes = await fetch(info.url, { method: "PUT", headers: { "Content-Type": ct }, body });
-  if (!putRes.ok) throw new Error(`R2 PUT ${putRes.status}: ${await putRes.text().catch(() => putRes.statusText)}`);
+  if (!putRes.ok)
+    throw new Error(
+      `R2 PUT ${putRes.status}: ${await putRes.text().catch(() => putRes.statusText)}`,
+    );
   await r2MarkReady({ data: { key: info.key, size: body.size } });
   return { key: info.key };
 }
@@ -68,29 +76,44 @@ export async function dualUpload(input: DualUploadInput): Promise<DualUploadResu
     try {
       const { compressForUpload } = await import("@/lib/storage/compress");
       const c = await compressForUpload(input.file);
-      if (c.blob.size < input.file.size) { body = c.blob; ct = c.contentType; }
-    } catch { /* upload nguyên bản nếu nén lỗi */ }
+      if (c.blob.size < input.file.size) {
+        body = c.blob;
+        ct = c.contentType;
+      }
+    } catch {
+      /* upload nguyên bản nếu nén lỗi */
+    }
   }
 
   const jobs: Promise<void>[] = [];
   if (shouldUploadSupabase) {
     jobs.push(
       uploadToSupabase(input, body, ct)
-        .then((r) => { supabaseUrl = r.publicUrl; supabasePath = r.path; })
-        .catch((e: any) => { errors.push({ side: "supabase", message: e?.message ?? String(e) }); }),
+        .then((r) => {
+          supabaseUrl = r.publicUrl;
+          supabasePath = r.path;
+        })
+        .catch((e: any) => {
+          errors.push({ side: "supabase", message: e?.message ?? String(e) });
+        }),
     );
   }
   if (shouldUploadR2) {
     jobs.push(
       uploadToR2(input, body, ct)
-        .then((r) => { r2Key = r.key; })
-        .catch((e: any) => { errors.push({ side: "r2", message: e?.message ?? String(e) }); }),
+        .then((r) => {
+          r2Key = r.key;
+        })
+        .catch((e: any) => {
+          errors.push({ side: "r2", message: e?.message ?? String(e) });
+        }),
     );
   }
   await Promise.all(jobs);
 
   const okOn = (side: "supabase" | "r2") => (side === "supabase" ? !!supabaseUrl : !!r2Key);
-  const label = (side: "supabase" | "r2") => (side === "supabase" ? "Lovable Cloud" : "Cloudflare R2");
+  const label = (side: "supabase" | "r2") =>
+    side === "supabase" ? "Lovable Cloud" : "Cloudflare R2";
   const other: "supabase" | "r2" = config.primary === "supabase" ? "r2" : "supabase";
   const primaryErr = errors.find((e) => e.side === config.primary);
 
@@ -100,7 +123,8 @@ export async function dualUpload(input: DualUploadInput): Promise<DualUploadResu
       try {
         if (other === "supabase") {
           const r = await uploadToSupabase(input, body, ct);
-          supabaseUrl = r.publicUrl; supabasePath = r.path;
+          supabaseUrl = r.publicUrl;
+          supabasePath = r.path;
         } else {
           const r = await uploadToR2(input, body, ct);
           r2Key = r.key;
@@ -123,12 +147,13 @@ export async function dualUpload(input: DualUploadInput): Promise<DualUploadResu
       throw new Error(`Không ghi được tệp vào kho lưu trữ nào. ${detail}`);
     }
     if (primaryErr && config.dualWrite) {
-      toast.error(`Backend chính (${label(config.primary)}) lỗi: ${primaryErr.message}. Đang dùng bản sao còn lại.`);
+      toast.error(
+        `Backend chính (${label(config.primary)}) lỗi: ${primaryErr.message}. Đang dùng bản sao còn lại.`,
+      );
     }
   } else if (errors.length) {
     for (const e of errors) toast.warning(`Ghi song song: ${label(e.side)} lỗi — ${e.message}`);
   }
 
   return { primary: config.primary, supabaseUrl, supabasePath, r2Key, config, errors };
-
 }

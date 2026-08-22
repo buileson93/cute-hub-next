@@ -10,7 +10,27 @@
 import { useMemo, useState, useEffect, useRef, type ComponentType, type ReactNode } from "react";
 import { useSearch, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Loader2, Pencil, Trash2, Boxes, List, Network, ChevronRight, ChevronDown, ImageUp, X, Factory, GitMerge, Info, MapPin, Building2, Layers, Download } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Loader2,
+  Pencil,
+  Trash2,
+  Boxes,
+  List,
+  Network,
+  ChevronRight,
+  ChevronDown,
+  ImageUp,
+  X,
+  Factory,
+  GitMerge,
+  Info,
+  MapPin,
+  Building2,
+  Layers,
+  Download,
+} from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { toCsv } from "@/lib/mirats/import-config";
 
@@ -30,7 +50,12 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
-  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
@@ -86,7 +111,10 @@ type ParentOption = { id: string; ma: string | null; ten: string };
 
 /** Tạo mã danh mục từ tên (bỏ dấu, viết hoa, thay ký tự đặc biệt). */
 function slug(name: string): string {
-  const s = normalize(name).toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const s = normalize(name)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
   return s.slice(0, 40) || "DM_" + Date.now().toString(36).toUpperCase();
 }
 
@@ -98,7 +126,8 @@ function NameBadge({ name, id }: { name: string; id: string }) {
   const { backgroundColor, color } = hashPastel(id);
   return (
     <Badge
-      variant="outline" size="sm"
+      variant="outline"
+      size="sm"
       className="font-medium border-transparent transition-colors hover:brightness-95"
       style={{ backgroundColor, color }}
     >
@@ -170,11 +199,17 @@ export function CatalogTable({
   const [usageRow, setUsageRow] = useState<Row | null>(null);
   const hideCode = hiddenCols.includes("ma");
 
-  const { data: rows, isLoading, error } = useQuery({
+  const {
+    data: rows,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["catalog", table],
     queryFn: async (): Promise<Row[]> => {
       const cols =
-        (supportsParent ? "id,ma,ten,mo_ta,thu_tu,active,parent_id" : "id,ma,ten,mo_ta,thu_tu,active") +
+        (supportsParent
+          ? "id,ma,ten,mo_ta,thu_tu,active,parent_id"
+          : "id,ma,ten,mo_ta,thu_tu,active") +
         (supportsWebsite ? ",trang_web" : "") +
         (supportsXuatXu ? ",xuat_xu" : "") +
         (supportsGhiChu ? ",ghi_chu" : "") +
@@ -205,7 +240,6 @@ export function CatalogTable({
         if (batch.length < PAGE) break;
       }
 
-
       return ((data ?? []) as unknown as Record<string, unknown>[]).map((r) => ({
         id: r.id as string,
         ma: (r.ma as string) ?? null,
@@ -224,13 +258,15 @@ export function CatalogTable({
     },
   });
 
-
   const filtered = useMemo(() => {
     const nq = normalize(q);
     const all = rows ?? [];
     if (!nq) return all;
     const matched = all.filter(
-      (r) => normalize(r.ten).includes(nq) || normalize(r.ma ?? "").includes(nq) || normalize(r.mo_ta ?? "").includes(nq),
+      (r) =>
+        normalize(r.ten).includes(nq) ||
+        normalize(r.ma ?? "").includes(nq) ||
+        normalize(r.mo_ta ?? "").includes(nq),
     );
     if (!supportsParent) return matched;
     // Trong chế độ cây: giữ luôn tổ tiên của mỗi mục khớp để chúng hiển thị được.
@@ -290,19 +326,18 @@ export function CatalogTable({
     },
   });
 
-
-
-
-
-
   const delMut = useMutation({
     mutationFn: async (r: Row) => {
-      if (r.soThietBi > 0) throw new Error(`Không thể xoá: còn ${r.soThietBi} tài sản đang dùng "${r.ten}".`);
+      if (r.soThietBi > 0)
+        throw new Error(`Không thể xoá: còn ${r.soThietBi} tài sản đang dùng "${r.ten}".`);
       // DB-level guard: RPC dm_xoa_an_toan chặn xoá nếu còn tham chiếu (áp dụng cho
       // các bảng NSX/NCC/loại/model). Các danh mục khác dùng delete thường.
       const rpcTables = new Set(["dm_nha_san_xuat", "dm_nha_cung_cap", "dm_loai_thiet_bi"]);
       if (rpcTables.has(table)) {
-        const { error } = await supabase.rpc("dm_xoa_an_toan" as never, { _bang: table, _id: r.id } as never);
+        const { error } = await supabase.rpc(
+          "dm_xoa_an_toan" as never,
+          { _bang: table, _id: r.id } as never,
+        );
         if (error) throw error;
       } else {
         const { error } = await supabase.from(table).delete().eq("id", r.id);
@@ -322,16 +357,26 @@ export function CatalogTable({
     mutationFn: async (rows: Row[]) => {
       const removable = rows.filter((r) => r.soThietBi === 0);
       const blocked = rows.length - removable.length;
-      if (removable.length === 0) throw new Error("Các mục đã chọn đều còn tài sản đang dùng — không thể xoá.");
+      if (removable.length === 0)
+        throw new Error("Các mục đã chọn đều còn tài sản đang dùng — không thể xoá.");
       const rpcTables = new Set(["dm_nha_san_xuat", "dm_nha_cung_cap", "dm_loai_thiet_bi"]);
       if (rpcTables.has(table)) {
         // Gọi RPC lần lượt để trả về lỗi rõ ràng nếu bất kỳ mục nào bị chặn ở DB.
         for (const r of removable) {
-          const { error } = await supabase.rpc("dm_xoa_an_toan" as never, { _bang: table, _id: r.id } as never);
+          const { error } = await supabase.rpc(
+            "dm_xoa_an_toan" as never,
+            { _bang: table, _id: r.id } as never,
+          );
           if (error) throw error;
         }
       } else {
-        const { error } = await supabase.from(table).delete().in("id", removable.map((r) => r.id));
+        const { error } = await supabase
+          .from(table)
+          .delete()
+          .in(
+            "id",
+            removable.map((r) => r.id),
+          );
         if (error) throw error;
       }
       return { deleted: removable.length, blocked };
@@ -339,11 +384,12 @@ export function CatalogTable({
     onSuccess: ({ deleted, blocked }) => {
       qc.invalidateQueries({ queryKey: ["catalog", table] });
       invalidateTaxonomy(qc);
-      toast.success(`Đã xoá ${deleted} ${singular.toLowerCase()}${blocked > 0 ? ` · bỏ qua ${blocked} mục còn tài sản đang dùng` : ""}.`);
+      toast.success(
+        `Đã xoá ${deleted} ${singular.toLowerCase()}${blocked > 0 ? ` · bỏ qua ${blocked} mục còn tài sản đang dùng` : ""}.`,
+      );
     },
     onError: (e) => toast.error((e as Error).message),
   });
-
 
   // Gộp các mục đã chọn vào một mục đích. Ưu tiên RPC chung `merge_danh_muc`
   // (entity = tên bảng dm_*); fallback RPC per-table nếu caller còn truyền `mergeRpc`.
@@ -352,7 +398,10 @@ export function CatalogTable({
       const srcIds = sources.map((s) => s.id).filter((id) => id !== target.id);
       if (srcIds.length === 0) throw new Error("Không có mục nguồn để gộp.");
       if (mergeRpc) {
-        const { error } = await supabase.rpc(mergeRpc as never, { p_source_ids: srcIds, p_target_id: target.id } as never);
+        const { error } = await supabase.rpc(
+          mergeRpc as never,
+          { p_source_ids: srcIds, p_target_id: target.id } as never,
+        );
         if (error) throw error;
       } else {
         for (const dropId of srcIds) {
@@ -370,13 +419,14 @@ export function CatalogTable({
       qc.invalidateQueries({ queryKey: ["catalog", table] });
       invalidateTaxonomy(qc);
       setMergeList(null);
-      toast.success(`Đã gộp ${n} ${singular.toLowerCase()} vào mục giữ lại. Có thể hoàn tác trong 24 giờ.`);
+      toast.success(
+        `Đã gộp ${n} ${singular.toLowerCase()} vào mục giữ lại. Có thể hoàn tác trong 24 giờ.`,
+      );
     },
     onError: (e) => toast.error((e as Error).message),
   });
 
   const tong = rows?.length ?? 0;
-
 
   return (
     <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
@@ -390,7 +440,12 @@ export function CatalogTable({
             {headerActions}
             {canManage && (
               <AppTooltip noiDung="Gộp các mục trùng lặp (giữ nguyên liên kết)">
-                <Button size="sm" variant="outline" onClick={() => setPickMerge(true)} className="h-8 w-8 p-0">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setPickMerge(true)}
+                  className="h-8 w-8 p-0"
+                >
                   <GitMerge className="h-4 w-4" />
                   <span className="sr-only">Gộp trùng</span>
                 </Button>
@@ -408,25 +463,36 @@ export function CatalogTable({
         }
       />
 
-
-
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Tìm ${singular.toLowerCase()}, mã…`} className="pl-8" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={`Tìm ${singular.toLowerCase()}, mã…`}
+            className="pl-8"
+          />
         </div>
         {supportsParent && (
           <div className="inline-flex rounded-md border p-0.5">
             <AppTooltip noiDung="Xem dưới dạng sơ đồ phân cấp">
-              <Button size="sm" variant={view === "tree" ? "default" : "ghost"} className="h-8 w-8 p-0"
-                onClick={() => setView("tree")}>
+              <Button
+                size="sm"
+                variant={view === "tree" ? "default" : "ghost"}
+                className="h-8 w-8 p-0"
+                onClick={() => setView("tree")}
+              >
                 <Network className="h-3.5 w-3.5" />
                 <span className="sr-only">Sơ đồ cây</span>
               </Button>
             </AppTooltip>
             <AppTooltip noiDung="Xem dưới dạng bảng danh sách">
-              <Button size="sm" variant={view === "list" ? "default" : "ghost"} className="h-8 w-8 p-0"
-                onClick={() => setView("list")}>
+              <Button
+                size="sm"
+                variant={view === "list" ? "default" : "ghost"}
+                className="h-8 w-8 p-0"
+                onClick={() => setView("list")}
+              >
                 <List className="h-3.5 w-3.5" />
                 <span className="sr-only">Danh sách</span>
               </Button>
@@ -435,7 +501,9 @@ export function CatalogTable({
         )}
       </div>
 
-      {error && <p className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>}
+      {error && (
+        <p className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>
+      )}
 
       {!error && supportsParent && view === "tree" && !isLoading && (
         <DonViTree
@@ -453,7 +521,6 @@ export function CatalogTable({
       )}
 
       {!error && !(supportsParent && view === "tree") && (
-
         <StandardTable<Row>
           className="astryx-table"
           tableKey={`catalog:${table}`}
@@ -471,33 +538,32 @@ export function CatalogTable({
                 className="h-8 w-8 p-0"
                 disabled={ctx.filteredRows.length === 0}
                 onClick={() => {
-                const cols = ctx.visibleColumns.filter((c) => c.key !== "logo");
-                const headers = cols.map((c) => (c.label ?? c.key) as string);
-                const rows = ctx.filteredRows.map((r) => {
-                  const rec: Record<string, string> = {};
-                  cols.forEach((c, i) => {
-                    const v = c.value ? c.value(r) : "";
-                    rec[headers[i]] = v == null ? "" : String(v);
+                  const cols = ctx.visibleColumns.filter((c) => c.key !== "logo");
+                  const headers = cols.map((c) => (c.label ?? c.key) as string);
+                  const rows = ctx.filteredRows.map((r) => {
+                    const rec: Record<string, string> = {};
+                    cols.forEach((c, i) => {
+                      const v = c.value ? c.value(r) : "";
+                      rec[headers[i]] = v == null ? "" : String(v);
+                    });
+                    return rec;
                   });
-                  return rec;
-                });
-                const csv = toCsv(headers, rows);
-                const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `${table.replace(/^dm_/, "").replace(/_/g, "-")}-loc-${new Date().toISOString().slice(0, 10)}.csv`;
-                a.click();
-                URL.revokeObjectURL(url);
-                toast.success(`Đã xuất ${rows.length} dòng theo bộ lọc hiện tại.`);
-              }}
-            >
-              <Download className="h-3.5 w-3.5" />
-              <span className="sr-only">Xuất theo bộ lọc</span>
-            </Button>
-          </AppTooltip>
-        )}
-
+                  const csv = toCsv(headers, rows);
+                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `${table.replace(/^dm_/, "").replace(/_/g, "-")}-loc-${new Date().toISOString().slice(0, 10)}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast.success(`Đã xuất ${rows.length} dòng theo bộ lọc hiện tại.`);
+                }}
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span className="sr-only">Xuất theo bộ lọc</span>
+              </Button>
+            </AppTooltip>
+          )}
           bulkActions={({ selectedRows, clear }) => (
             <>
               <AppTooltip noiDung="Gộp các mục đã chọn thành một (giữ nguyên liên kết)">
@@ -520,12 +586,24 @@ export function CatalogTable({
                   disabled={bulkDelMut.isPending}
                   onClick={() => {
                     const removable = selectedRows.filter((r) => r.soThietBi === 0).length;
-                    if (removable === 0) { toast.error("Các mục đã chọn đều còn tài sản đang dùng — không thể xoá."); return; }
-                    if (!confirm(`Xoá ${removable} ${singular.toLowerCase()} đã chọn? Thao tác không thể hoàn tác.`)) return;
+                    if (removable === 0) {
+                      toast.error("Các mục đã chọn đều còn tài sản đang dùng — không thể xoá.");
+                      return;
+                    }
+                    if (
+                      !confirm(
+                        `Xoá ${removable} ${singular.toLowerCase()} đã chọn? Thao tác không thể hoàn tác.`,
+                      )
+                    )
+                      return;
                     bulkDelMut.mutate(selectedRows, { onSuccess: () => clear() });
                   }}
                 >
-                  {bulkDelMut.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                  {bulkDelMut.isPending ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-3.5 w-3.5" />
+                  )}
                   <span className="sr-only">Xoá đã chọn</span>
                 </Button>
               </AppTooltip>
@@ -534,108 +612,271 @@ export function CatalogTable({
           getRowId={(r) => r.id}
           rowClassName={(r) => (!r.active ? "opacity-50" : "")}
           emptyText={`Không có ${singular.toLowerCase()} phù hợp.`}
-          columns={([
-            ...(supportsLogo ? [{
-              key: "logo", label: "Logo", minW: "min-w-[56px]", align: "center" as const,
-              priority: "detail" as const,
-              cell: (r: Row) => {
-                const url = r.logo ? logoUrlMap?.get(r.logo) : undefined;
-                return (
-                  <div className="mx-auto h-8 w-8 overflow-hidden rounded border bg-white shadow-sm">
-                    <AspectRatio ratio={1 / 1}>
-                      {url ? (
-                        <img src={url} alt={r.ten} className="h-full w-full object-contain p-0.5" loading="lazy" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-muted/20">
-                          <Factory className="h-4 w-4 text-muted-foreground/20" />
-                        </div>
-                      )}
-                    </AspectRatio>
-                  </div>
-                );
+          columns={(
+            [
+              ...(supportsLogo
+                ? [
+                    {
+                      key: "logo",
+                      label: "Logo",
+                      minW: "min-w-[56px]",
+                      align: "center" as const,
+                      priority: "detail" as const,
+                      cell: (r: Row) => {
+                        const url = r.logo ? logoUrlMap?.get(r.logo) : undefined;
+                        return (
+                          <div className="mx-auto h-8 w-8 overflow-hidden rounded border bg-white shadow-sm">
+                            <AspectRatio ratio={1 / 1}>
+                              {url ? (
+                                <img
+                                  src={url}
+                                  alt={r.ten}
+                                  className="h-full w-full object-contain p-0.5"
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-muted/20">
+                                  <Factory className="h-4 w-4 text-muted-foreground/20" />
+                                </div>
+                              )}
+                            </AspectRatio>
+                          </div>
+                        );
+                      },
+                    },
+                  ]
+                : []),
+              {
+                key: "ma",
+                label: "Mã",
+                minW: "min-w-[100px]",
+                filter: "text",
+                value: (r) => r.ma ?? "",
+                defaultHidden: true,
+                priority: "secondary" as const,
+                cell: (r) =>
+                  r.ma ? (
+                    <CodeBadge code={r.ma} />
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  ),
               },
-            }] : []),
-            { key: "ma", label: "Mã", minW: "min-w-[100px]", filter: "text", value: (r) => r.ma ?? "",
-              defaultHidden: true, priority: "secondary" as const,
-              cell: (r) => r.ma ? <CodeBadge code={r.ma} /> : <span className="text-muted-foreground">—</span> },
-            { key: "ten", label: "Tên", minW: "min-w-[180px]", filter: "text", value: (r) => r.ten,
-              priority: "primary" as const,
-              cell: (r) => supportsMau
-                ? <MauChip ten={r.ten} mau={r.mau} />
-                : nameBadge
-                  ? <NameBadge name={r.ten} id={r.id || r.ten} />
-                  : <span className="font-medium">{r.ten}</span> },
-            { key: "mo_ta", label: "Mô tả", minW: "min-w-[200px]", filter: "text", value: (r) => r.mo_ta ?? "",
-              priority: "detail" as const,
-              cell: (r) => <span className="block max-w-md truncate text-muted-foreground" title={r.mo_ta ?? ""}>{r.mo_ta ?? "—"}</span> },
-            ...(supportsWebsite ? [{
-              key: "trang_web", label: "Trang web", minW: "min-w-[160px]", filter: "text" as const,
-              value: (r: Row) => r.trang_web ?? "", priority: "detail" as const,
-              cell: (r: Row) => r.trang_web
-                ? <a href={/^https?:\/\//.test(r.trang_web) ? r.trang_web : `https://${r.trang_web}`} target="_blank" rel="noreferrer" className="block max-w-[220px] truncate text-primary hover:underline" onClick={(e) => e.stopPropagation()} title={r.trang_web}>{r.trang_web.replace(/^https?:\/\//, "")}</a>
-                : <span className="text-xs text-muted-foreground">—</span>,
-            }] : []),
-            ...(supportsXuatXu ? [{
-              key: "xuat_xu", label: "Xuất xứ", minW: "min-w-[120px]", filter: "cat" as const,
-              value: (r: Row) => r.xuat_xu ?? "", priority: "detail" as const,
-              cell: (r: Row) => r.xuat_xu
-                ? <Badge variant="outline" className="text-[11px]">{r.xuat_xu}</Badge>
-                : <span className="text-xs text-muted-foreground">—</span>,
-            }] : []),
-            ...(supportsGhiChu ? [{
-              key: "ghi_chu", label: "Ghi chú", minW: "min-w-[200px]", filter: "text" as const,
-              value: (r: Row) => r.ghi_chu ?? "", priority: "detail" as const,
-              cell: (r: Row) => <span className="block max-w-md truncate text-muted-foreground" title={r.ghi_chu ?? ""}>{r.ghi_chu ?? "—"}</span>,
-            }] : []),
-            ...(supportsParent ? [{
-              key: "parent", label: "Trực thuộc", minW: "min-w-[160px]", filter: "cat" as const,
-              value: (r: Row) => (r.parent_id ? parentNameMap.get(r.parent_id) ?? "—" : "—"),
-              priority: "detail" as const,
-              cell: (r: Row) => r.parent_id
-                ? <Badge variant="outline" className="text-[11px]">{parentNameMap.get(r.parent_id) ?? "—"}</Badge>
-                : <span className="text-xs text-muted-foreground">—</span>,
-            }] : []),
-            { key: "soThietBi", label: "Tài sản", align: "center", value: (r) => r.soThietBi,
-              priority: "secondary" as const,
-              cell: (r) => r.soThietBi > 0
-                ? <button type="button" onClick={() => setUsageRow(r)} title={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`} className="inline-flex"><Badge variant="secondary" className="gap-1 text-[11px] transition-colors hover:bg-primary/15"><Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}</Badge></button>
-                : <span className="text-xs text-muted-foreground">0</span> },
-            { key: "active", label: "Trạng thái", align: "center", filter: "cat", value: (r) => (r.active ? "Đang dùng" : "Ẩn"),
-              priority: "secondary" as const,
-              cell: (r) => r.active
-                ? <Badge variant="outline" className="text-[11px]">Đang dùng</Badge>
-                : <Badge variant="outline" className="text-[11px] text-muted-foreground">Ẩn</Badge> },
-            {
-              key: "actions", label: "", align: "right" as const,
-              cell: (r: Row) => (
-                <div className="flex items-center justify-end gap-0.5 whitespace-nowrap">
-                  <AppTooltip noiDung={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`}>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setUsageRow(r)}>
-                      <Info className="h-3.5 w-3.5" />
-                      <span className="sr-only">Chi tiết tài sản</span>
-                    </Button>
-                  </AppTooltip>
-                  {extraRowActions?.(r)}
-                  {canManage && (
-                    <>
-                      <AppTooltip noiDung="Chỉnh sửa thông tin">
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(r)}>
-                          <Pencil className="h-3.5 w-3.5" />
-                          <span className="sr-only">Sửa</span>
-                        </Button>
-                      </AppTooltip>
-                      <AppTooltip noiDung="Xoá mục này">
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => delMut.mutate(r)}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span className="sr-only">Xoá</span>
-                        </Button>
-                      </AppTooltip>
-                    </>
-                  )}
-                </div>
-              ),
-            },
-          ] as StdColumn<Row>[]).filter((c) => !hiddenCols.includes(c.key))}
+              {
+                key: "ten",
+                label: "Tên",
+                minW: "min-w-[180px]",
+                filter: "text",
+                value: (r) => r.ten,
+                priority: "primary" as const,
+                cell: (r) =>
+                  supportsMau ? (
+                    <MauChip ten={r.ten} mau={r.mau} />
+                  ) : nameBadge ? (
+                    <NameBadge name={r.ten} id={r.id || r.ten} />
+                  ) : (
+                    <span className="font-medium">{r.ten}</span>
+                  ),
+              },
+              {
+                key: "mo_ta",
+                label: "Mô tả",
+                minW: "min-w-[200px]",
+                filter: "text",
+                value: (r) => r.mo_ta ?? "",
+                priority: "detail" as const,
+                cell: (r) => (
+                  <span
+                    className="block max-w-md truncate text-muted-foreground"
+                    title={r.mo_ta ?? ""}
+                  >
+                    {r.mo_ta ?? "—"}
+                  </span>
+                ),
+              },
+              ...(supportsWebsite
+                ? [
+                    {
+                      key: "trang_web",
+                      label: "Trang web",
+                      minW: "min-w-[160px]",
+                      filter: "text" as const,
+                      value: (r: Row) => r.trang_web ?? "",
+                      priority: "detail" as const,
+                      cell: (r: Row) =>
+                        r.trang_web ? (
+                          <a
+                            href={
+                              /^https?:\/\//.test(r.trang_web)
+                                ? r.trang_web
+                                : `https://${r.trang_web}`
+                            }
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block max-w-[220px] truncate text-primary hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                            title={r.trang_web}
+                          >
+                            {r.trang_web.replace(/^https?:\/\//, "")}
+                          </a>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        ),
+                    },
+                  ]
+                : []),
+              ...(supportsXuatXu
+                ? [
+                    {
+                      key: "xuat_xu",
+                      label: "Xuất xứ",
+                      minW: "min-w-[120px]",
+                      filter: "cat" as const,
+                      value: (r: Row) => r.xuat_xu ?? "",
+                      priority: "detail" as const,
+                      cell: (r: Row) =>
+                        r.xuat_xu ? (
+                          <Badge variant="outline" className="text-[11px]">
+                            {r.xuat_xu}
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        ),
+                    },
+                  ]
+                : []),
+              ...(supportsGhiChu
+                ? [
+                    {
+                      key: "ghi_chu",
+                      label: "Ghi chú",
+                      minW: "min-w-[200px]",
+                      filter: "text" as const,
+                      value: (r: Row) => r.ghi_chu ?? "",
+                      priority: "detail" as const,
+                      cell: (r: Row) => (
+                        <span
+                          className="block max-w-md truncate text-muted-foreground"
+                          title={r.ghi_chu ?? ""}
+                        >
+                          {r.ghi_chu ?? "—"}
+                        </span>
+                      ),
+                    },
+                  ]
+                : []),
+              ...(supportsParent
+                ? [
+                    {
+                      key: "parent",
+                      label: "Trực thuộc",
+                      minW: "min-w-[160px]",
+                      filter: "cat" as const,
+                      value: (r: Row) =>
+                        r.parent_id ? (parentNameMap.get(r.parent_id) ?? "—") : "—",
+                      priority: "detail" as const,
+                      cell: (r: Row) =>
+                        r.parent_id ? (
+                          <Badge variant="outline" className="text-[11px]">
+                            {parentNameMap.get(r.parent_id) ?? "—"}
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        ),
+                    },
+                  ]
+                : []),
+              {
+                key: "soThietBi",
+                label: "Tài sản",
+                align: "center",
+                value: (r) => r.soThietBi,
+                priority: "secondary" as const,
+                cell: (r) =>
+                  r.soThietBi > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => setUsageRow(r)}
+                      title={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`}
+                      className="inline-flex"
+                    >
+                      <Badge
+                        variant="secondary"
+                        className="gap-1 text-[11px] transition-colors hover:bg-primary/15"
+                      >
+                        <Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}
+                      </Badge>
+                    </button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">0</span>
+                  ),
+              },
+              {
+                key: "active",
+                label: "Trạng thái",
+                align: "center",
+                filter: "cat",
+                value: (r) => (r.active ? "Đang dùng" : "Ẩn"),
+                priority: "secondary" as const,
+                cell: (r) =>
+                  r.active ? (
+                    <Badge variant="outline" className="text-[11px]">
+                      Đang dùng
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[11px] text-muted-foreground">
+                      Ẩn
+                    </Badge>
+                  ),
+              },
+              {
+                key: "actions",
+                label: "",
+                align: "right" as const,
+                cell: (r: Row) => (
+                  <div className="flex items-center justify-end gap-0.5 whitespace-nowrap">
+                    <AppTooltip noiDung={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-muted-foreground hover:text-primary"
+                        onClick={() => setUsageRow(r)}
+                      >
+                        <Info className="h-3.5 w-3.5" />
+                        <span className="sr-only">Chi tiết tài sản</span>
+                      </Button>
+                    </AppTooltip>
+                    {extraRowActions?.(r)}
+                    {canManage && (
+                      <>
+                        <AppTooltip noiDung="Chỉnh sửa thông tin">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7"
+                            onClick={() => setEditing(r)}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            <span className="sr-only">Sửa</span>
+                          </Button>
+                        </AppTooltip>
+                        <AppTooltip noiDung="Xoá mục này">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 text-destructive"
+                            onClick={() => delMut.mutate(r)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span className="sr-only">Xoá</span>
+                          </Button>
+                        </AppTooltip>
+                      </>
+                    )}
+                  </div>
+                ),
+              },
+            ] as StdColumn<Row>[]
+          ).filter((c) => !hiddenCols.includes(c.key))}
         />
       )}
 
@@ -667,7 +908,10 @@ export function CatalogTable({
           rows={filtered}
           singular={singular}
           onClose={() => setPickMerge(false)}
-          onContinue={(sel) => { setPickMerge(false); setMergeList(sel); }}
+          onContinue={(sel) => {
+            setPickMerge(false);
+            setMergeList(sel);
+          }}
         />
       )}
 
@@ -728,7 +972,9 @@ function CatalogUsageDialog({
     queryFn: async (): Promise<UsageDevice[]> => {
       const { data, error } = await supabase
         .from("thiet_bi")
-        .select("id,ma_thiet_bi,ten_thiet_bi,ma_serial,vi_tri_id,don_vi_quan_ly_id,don_vi_id,he_thong_id,dm_vi_tri:vi_tri_id(ten),qly:don_vi_quan_ly_id(ten),dv:don_vi_id(ten),ht:he_thong_id(ten)")
+        .select(
+          "id,ma_thiet_bi,ten_thiet_bi,ma_serial,vi_tri_id,don_vi_quan_ly_id,don_vi_id,he_thong_id,dm_vi_tri:vi_tri_id(ten),qly:don_vi_quan_ly_id(ten),dv:don_vi_id(ten),ht:he_thong_id(ten)",
+        )
         .eq(usageColumn, rowId)
         .order("ma_thiet_bi");
       if (error) throw error;
@@ -765,7 +1011,9 @@ function CatalogUsageDialog({
           </DialogTitle>
           <DialogDescription>
             {rowTen} — {data?.length ?? 0} tài sản
-            {canEdit && (data?.length ?? 0) > 0 ? " · bấm một tài sản để sửa trường của tài sản đó" : ""}
+            {canEdit && (data?.length ?? 0) > 0
+              ? " · bấm một tài sản để sửa trường của tài sản đó"
+              : ""}
           </DialogDescription>
         </DialogHeader>
 
@@ -774,7 +1022,11 @@ function CatalogUsageDialog({
             <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
           </div>
         )}
-        {error && <p className="py-6 text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>}
+        {error && (
+          <p className="py-6 text-sm text-destructive">
+            Lỗi tải dữ liệu: {(error as Error).message}
+          </p>
+        )}
         {!isLoading && !error && (data?.length ?? 0) === 0 && (
           <EmptyState
             icon={Boxes}
@@ -789,7 +1041,9 @@ function CatalogUsageDialog({
                 <div key={unit}>
                   <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
                     <Building2 className="h-4 w-4 text-muted-foreground" /> {unit}
-                    <Badge variant="secondary" className="ml-1 text-[10px]">{list.length}</Badge>
+                    <Badge variant="secondary" className="ml-1 text-[10px]">
+                      {list.length}
+                    </Badge>
                   </div>
                   <div className="space-y-1">
                     {list.map((r) => {
@@ -797,7 +1051,11 @@ function CatalogUsageDialog({
                         <>
                           <span className="font-medium">{r.ten || "(Không tên)"}</span>
 
-                          {r.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {r.serial}</span>}
+                          {r.serial && (
+                            <span className="font-mono text-[11px] text-muted-foreground">
+                              S/N: {r.serial}
+                            </span>
+                          )}
                           {r.heThong && (
                             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                               <Layers className="h-3 w-3" /> {r.heThong}
@@ -808,23 +1066,31 @@ function CatalogUsageDialog({
                               <MapPin className="h-3 w-3" /> {r.viTri}
                             </span>
                           )}
-                          {canEdit && <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />}
+                          {canEdit && (
+                            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          )}
                         </>
                       );
-                      const base = "flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded border bg-muted/30 px-2.5 py-1.5 text-sm";
+                      const base =
+                        "flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded border bg-muted/30 px-2.5 py-1.5 text-sm";
                       return canEdit && r.ma ? (
                         <Link
                           key={r.id}
                           to="/he-thong/cay"
                           search={{ editTb: r.ma }}
                           onClick={onClose}
-                          className={cn(base, "transition-colors hover:border-primary/50 hover:bg-primary/5")}
+                          className={cn(
+                            base,
+                            "transition-colors hover:border-primary/50 hover:bg-primary/5",
+                          )}
                           title="Mở trình sửa trường của tài sản này"
                         >
                           {inner}
                         </Link>
                       ) : (
-                        <div key={r.id} className={base}>{inner}</div>
+                        <div key={r.id} className={base}>
+                          {inner}
+                        </div>
                       );
                     })}
                   </div>
@@ -835,7 +1101,9 @@ function CatalogUsageDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Đóng</Button>
+          <Button variant="outline" onClick={onClose}>
+            Đóng
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -877,9 +1145,19 @@ function DonViTree({
     <div className="overflow-auto rounded-lg border bg-card p-3 sm:p-5">
       <div className="space-y-1">
         {rootRows.map((r) => (
-          <DonViNode key={r.id} row={r} childrenMap={childrenMap} depth={0}
-            canManage={canManage} childLabel={childLabel} extraRowActions={extraRowActions} hideCode={hideCode}
-            onEdit={onEdit} onInfo={onInfo} onDelete={onDelete} />
+          <DonViNode
+            key={r.id}
+            row={r}
+            childrenMap={childrenMap}
+            depth={0}
+            canManage={canManage}
+            childLabel={childLabel}
+            extraRowActions={extraRowActions}
+            hideCode={hideCode}
+            onEdit={onEdit}
+            onInfo={onInfo}
+            onDelete={onDelete}
+          />
         ))}
       </div>
     </div>
@@ -887,7 +1165,16 @@ function DonViTree({
 }
 
 function DonViNode({
-  row, childrenMap, depth, canManage, childLabel, extraRowActions, hideCode, onEdit, onInfo, onDelete,
+  row,
+  childrenMap,
+  depth,
+  canManage,
+  childLabel,
+  extraRowActions,
+  hideCode,
+  onEdit,
+  onInfo,
+  onDelete,
 }: {
   row: Row;
   childrenMap: Map<string | null, Row[]>;
@@ -910,16 +1197,29 @@ function DonViNode({
         style={{ marginLeft: depth * 20 }}
       >
         {hasKids ? (
-          <button onClick={() => setOpen((v) => !v)}
+          <button
+            onClick={() => setOpen((v) => !v)}
             className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted"
-            title={open ? "Thu gọn" : "Mở rộng"}>
+            title={open ? "Thu gọn" : "Mở rộng"}
+          >
             {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </button>
         ) : (
           <span className="inline-block h-5 w-5 shrink-0" />
         )}
-        <span className={cn("h-2 w-2 shrink-0 rounded-full", depth === 0 ? "bg-primary" : "bg-muted-foreground/40")} />
-        <span className={cn("truncate", depth === 0 ? "font-semibold" : "font-medium", !row.active && "opacity-50")}>
+        <span
+          className={cn(
+            "h-2 w-2 shrink-0 rounded-full",
+            depth === 0 ? "bg-primary" : "bg-muted-foreground/40",
+          )}
+        />
+        <span
+          className={cn(
+            "truncate",
+            depth === 0 ? "font-semibold" : "font-medium",
+            !row.active && "opacity-50",
+          )}
+        >
           {row.ten}
         </span>
         {row.ma && !hideCode && <CodeBadge code={row.ma} className="mr-0.5" />}
@@ -929,11 +1229,18 @@ function DonViNode({
           </Badge>
         )}
         {hasKids && (
-          <span className="text-[11px] text-muted-foreground">· {kids.length} {childLabel} con</span>
+          <span className="text-[11px] text-muted-foreground">
+            · {kids.length} {childLabel} con
+          </span>
         )}
         <div className="ml-auto flex shrink-0 items-center gap-0.5">
           <AppTooltip noiDung={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}>
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => onInfo(row)}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7 text-muted-foreground hover:text-primary"
+              onClick={() => onInfo(row)}
+            >
               <Info className="h-3.5 w-3.5" />
               <span className="sr-only">Chi tiết tài sản</span>
             </Button>
@@ -948,7 +1255,12 @@ function DonViNode({
                 </Button>
               </AppTooltip>
               <AppTooltip noiDung="Xoá mục này">
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => onDelete(row)}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-destructive"
+                  onClick={() => onDelete(row)}
+                >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span className="sr-only">Xoá</span>
                 </Button>
@@ -960,9 +1272,19 @@ function DonViNode({
       {hasKids && open && (
         <div className="border-l border-dashed" style={{ marginLeft: depth * 20 + 12 }}>
           {kids.map((k) => (
-            <DonViNode key={k.id} row={k} childrenMap={childrenMap} depth={depth + 1}
-              canManage={canManage} childLabel={childLabel} extraRowActions={extraRowActions} hideCode={hideCode}
-              onEdit={onEdit} onInfo={onInfo} onDelete={onDelete} />
+            <DonViNode
+              key={k.id}
+              row={k}
+              childrenMap={childrenMap}
+              depth={depth + 1}
+              canManage={canManage}
+              childLabel={childLabel}
+              extraRowActions={extraRowActions}
+              hideCode={hideCode}
+              onEdit={onEdit}
+              onInfo={onInfo}
+              onDelete={onDelete}
+            />
           ))}
         </div>
       )}
@@ -1027,7 +1349,9 @@ function CatalogDialog({
     return findNearDuplicates(list, ten, { limit: 5 });
   }, [ten, siblings, value?.id]);
   // Reset "đã xác nhận vẫn tạo mới" khi user đổi tên (danh sách trùng đổi).
-  useEffect(() => { setDupAck(false); }, [ten]);
+  useEffect(() => {
+    setDupAck(false);
+  }, [ten]);
 
   // Loại trừ chính đơn vị đang sửa khỏi danh sách cấp trên (tránh tự trỏ vào mình).
   const chonCapTren = parentOptions.filter((o) => o.id !== value?.id);
@@ -1036,10 +1360,15 @@ function CatalogDialog({
   useEffect(() => {
     if (!supportsLogo || !value?.logo) return;
     let cancelled = false;
-    storage.from(LOGO_BUCKET).createSignedUrl(value.logo, 3600).then(({ data }) => {
-      if (!cancelled && data?.signedUrl) setLogoPreview(data.signedUrl);
-    });
-    return () => { cancelled = true; };
+    storage
+      .from(LOGO_BUCKET)
+      .createSignedUrl(value.logo, 3600)
+      .then(({ data }) => {
+        if (!cancelled && data?.signedUrl) setLogoPreview(data.signedUrl);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [supportsLogo, value?.logo]);
 
   // Ảnh preview cho tệp mới chọn.
@@ -1091,7 +1420,9 @@ function CatalogDialog({
     }
     // N1 — chặn khi có mục trùng gần đúng và user chưa xác nhận "vẫn tạo mới".
     if (!value && dupHits.length > 0 && !dupAck) {
-      toast.error("Có mục nghi trùng — vui lòng kiểm tra hoặc bấm \"Vẫn tạo mới\" bên dưới để tiếp tục.");
+      toast.error(
+        'Có mục nghi trùng — vui lòng kiểm tra hoặc bấm "Vẫn tạo mới" bên dưới để tiếp tục.',
+      );
       return;
     }
     setSaving(true);
@@ -1108,19 +1439,27 @@ function CatalogDialog({
       if (supportsXuatXu) payload.xuat_xu = xuatXu.trim() || null;
       if (supportsMau) payload.mau = mau ?? null;
 
-
       // Xử lý logo: tải ảnh mới (đã nén) lên storage, xoá ảnh cũ nếu cần.
       if (supportsLogo) {
         let nextLogo: string | null = logoPath;
         if (logoFile) {
           const ext = logoFile.name.split(".").pop() || "webp";
           const path = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-          const up = await storage.from(LOGO_BUCKET).upload(path, logoFile, { contentType: logoFile.type });
+          const up = await storage
+            .from(LOGO_BUCKET)
+            .upload(path, logoFile, { contentType: logoFile.type });
           if (up.error) throw up.error;
-          if (logoPath) await storage.from(LOGO_BUCKET).remove([logoPath]).catch(() => {});
+          if (logoPath)
+            await storage
+              .from(LOGO_BUCKET)
+              .remove([logoPath])
+              .catch(() => {});
           nextLogo = path;
         } else if (logoRemoved && logoPath) {
-          await storage.from(LOGO_BUCKET).remove([logoPath]).catch(() => {});
+          await storage
+            .from(LOGO_BUCKET)
+            .remove([logoPath])
+            .catch(() => {});
           nextLogo = null;
         }
         payload.logo = nextLogo;
@@ -1141,7 +1480,9 @@ function CatalogDialog({
         const { error } = await supabase.from(table).insert(payload as never);
         if (error) throw error;
       }
-      toast.success(value ? `Đã cập nhật ${singular.toLowerCase()}.` : `Đã thêm ${singular.toLowerCase()}.`);
+      toast.success(
+        value ? `Đã cập nhật ${singular.toLowerCase()}.` : `Đã thêm ${singular.toLowerCase()}.`,
+      );
       onSaved();
     } catch (e) {
       toast.error("Lưu thất bại: " + (e as Error).message);
@@ -1150,12 +1491,13 @@ function CatalogDialog({
     }
   }
 
-
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{value ? `Sửa ${singular.toLowerCase()}` : `Thêm ${singular.toLowerCase()}`}</DialogTitle>
+          <DialogTitle>
+            {value ? `Sửa ${singular.toLowerCase()}` : `Thêm ${singular.toLowerCase()}`}
+          </DialogTitle>
           <DialogDescription>
             Danh mục dùng để chọn nhanh khi khai tài sản (dropdown), đảm bảo dữ liệu nhất quán.
           </DialogDescription>
@@ -1164,7 +1506,12 @@ function CatalogDialog({
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label>Tên *</Label>
-            <Input value={ten} onChange={(e) => setTen(e.target.value)} placeholder={namePlaceholder} autoFocus />
+            <Input
+              value={ten}
+              onChange={(e) => setTen(e.target.value)}
+              placeholder={namePlaceholder}
+              autoFocus
+            />
             {dupHits.length > 0 && (
               <div className="rounded-md border border-amber-300/60 bg-amber-50 p-2 text-xs dark:border-amber-500/30 dark:bg-amber-500/10">
                 <div className="mb-1 flex items-center gap-1.5 font-medium text-amber-800 dark:text-amber-200">
@@ -1175,14 +1522,21 @@ function CatalogDialog({
                     <li key={h.id} className="flex items-center gap-2">
                       <span className="truncate">{h.ten}</span>
                       <Badge variant="outline" className="h-4 px-1 text-[10px]">
-                        {h.reason === "exact-normalized" ? "trùng" : h.reason === "contains" ? "chứa" : `${Math.round(h.score * 100)}%`}
+                        {h.reason === "exact-normalized"
+                          ? "trùng"
+                          : h.reason === "contains"
+                            ? "chứa"
+                            : `${Math.round(h.score * 100)}%`}
                       </Badge>
                     </li>
                   ))}
                 </ul>
                 {!value && (
                   <label className="mt-2 flex cursor-pointer items-center gap-1.5 text-amber-900 dark:text-amber-100">
-                    <Checkbox checked={dupAck} onCheckedChange={(checked) => setDupAck(!!checked)} />
+                    <Checkbox
+                      checked={dupAck}
+                      onCheckedChange={(checked) => setDupAck(!!checked)}
+                    />
                     <span>Vẫn tạo mới (đã kiểm tra, không phải bản trùng)</span>
                   </label>
                 )}
@@ -1190,12 +1544,24 @@ function CatalogDialog({
             )}
           </div>
           <div className="space-y-1.5">
-            <Label>Mã <span className="text-muted-foreground">(để trống sẽ tự tạo)</span></Label>
-            <Input value={ma} onChange={(e) => setMa(e.target.value)} placeholder="VD: HONEYWELL" className="font-mono" />
+            <Label>
+              Mã <span className="text-muted-foreground">(để trống sẽ tự tạo)</span>
+            </Label>
+            <Input
+              value={ma}
+              onChange={(e) => setMa(e.target.value)}
+              placeholder="VD: HONEYWELL"
+              className="font-mono"
+            />
           </div>
           <div className="space-y-1.5">
             <Label>Mô tả</Label>
-            <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} placeholder="Ghi chú (không bắt buộc)…" />
+            <Textarea
+              value={moTa}
+              onChange={(e) => setMoTa(e.target.value)}
+              rows={2}
+              placeholder="Ghi chú (không bắt buộc)…"
+            />
           </div>
           {supportsMau && (
             <div className="space-y-1.5">
@@ -1209,13 +1575,22 @@ function CatalogDialog({
           {supportsWebsite && (
             <div className="space-y-1.5">
               <Label>Trang web</Label>
-              <Input value={trangWeb} onChange={(e) => setTrangWeb(e.target.value)} placeholder="VD: https://www.honeywell.com" type="url" />
+              <Input
+                value={trangWeb}
+                onChange={(e) => setTrangWeb(e.target.value)}
+                placeholder="VD: https://www.honeywell.com"
+                type="url"
+              />
             </div>
           )}
           {supportsXuatXu && (
             <div className="space-y-1.5">
               <Label>Xuất xứ</Label>
-              <Input value={xuatXu} onChange={(e) => setXuatXu(e.target.value)} placeholder="VD: Mỹ, Đức, Nhật Bản…" />
+              <Input
+                value={xuatXu}
+                onChange={(e) => setXuatXu(e.target.value)}
+                placeholder="VD: Mỹ, Đức, Nhật Bản…"
+              />
             </div>
           )}
           {supportsLogo && (
@@ -1225,7 +1600,11 @@ function CatalogDialog({
                 <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border bg-muted">
                   <AspectRatio ratio={1 / 1}>
                     {logoPreview ? (
-                      <img src={logoPreview} alt="Logo" className="h-full w-full object-contain p-1" />
+                      <img
+                        src={logoPreview}
+                        alt="Logo"
+                        className="h-full w-full object-contain p-1"
+                      />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
                         <Factory className="h-6 w-6 text-muted-foreground/40" />
@@ -1239,10 +1618,18 @@ function CatalogDialog({
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => { void pickLogo(e.target.files?.[0]); e.target.value = ""; }}
+                    onChange={(e) => {
+                      void pickLogo(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
                   />
                   <div className="flex gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => logoInputRef.current?.click()}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => logoInputRef.current?.click()}
+                    >
                       <ImageUp className="mr-1.5 h-3.5 w-3.5" /> Chọn ảnh
                     </Button>
                     {logoPreview && (
@@ -1259,12 +1646,20 @@ function CatalogDialog({
           {supportsGhiChu && (
             <div className="space-y-1.5">
               <Label>Ghi chú</Label>
-              <Textarea value={ghiChu} onChange={(e) => setGhiChu(e.target.value)} rows={2} placeholder="Ghi chú thêm (không bắt buộc)…" />
+              <Textarea
+                value={ghiChu}
+                onChange={(e) => setGhiChu(e.target.value)}
+                rows={2}
+                placeholder="Ghi chú thêm (không bắt buộc)…"
+              />
             </div>
           )}
           {supportsParent && (
             <div className="space-y-1.5">
-              <Label>Trực thuộc <span className="text-muted-foreground">({singular.toLowerCase()} cấp trên)</span></Label>
+              <Label>
+                Trực thuộc{" "}
+                <span className="text-muted-foreground">({singular.toLowerCase()} cấp trên)</span>
+              </Label>
               <select
                 value={parentId}
                 onChange={(e) => setParentId(e.target.value)}
@@ -1273,7 +1668,8 @@ function CatalogDialog({
                 <option value="">— Không trực thuộc (cấp cao nhất) —</option>
                 {chonCapTren.map((o) => (
                   <option key={o.id} value={o.id}>
-                    {o.ten}{o.ma ? ` (${o.ma})` : ""}
+                    {o.ten}
+                    {o.ma ? ` (${o.ma})` : ""}
                   </option>
                 ))}
               </select>
@@ -1281,12 +1677,16 @@ function CatalogDialog({
           )}
           <div className="flex items-center gap-2">
             <Switch checked={active} onCheckedChange={setActive} id="cat-active" />
-            <Label htmlFor="cat-active" className="cursor-pointer">Đang sử dụng</Label>
+            <Label htmlFor="cat-active" className="cursor-pointer">
+              Đang sử dụng
+            </Label>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={saving}>Huỷ</Button>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
+            Huỷ
+          </Button>
           <Button onClick={save} disabled={saving} className="gap-1.5">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />} Lưu
           </Button>
@@ -1298,7 +1698,11 @@ function CatalogDialog({
 
 /** Hộp thoại: gộp nhiều mục đã chọn thành một mục giữ lại. */
 function MergeCatalogDialog({
-  rows, singular, pending, onClose, onMerge,
+  rows,
+  singular,
+  pending,
+  onClose,
+  onMerge,
 }: {
   rows: Row[];
   singular: string;
@@ -1319,7 +1723,8 @@ function MergeCatalogDialog({
             <GitMerge className="h-5 w-5 text-primary" /> Gộp {rows.length} {singular.toLowerCase()}
           </DialogTitle>
           <DialogDescription>
-            Chọn mục <b>giữ lại</b>. Toàn bộ tài sản, mục con và hình ảnh của các mục còn lại sẽ chuyển sang mục này, rồi các mục kia bị xoá. Thao tác không thể hoàn tác.
+            Chọn mục <b>giữ lại</b>. Toàn bộ tài sản, mục con và hình ảnh của các mục còn lại sẽ
+            chuyển sang mục này, rồi các mục kia bị xoá. Thao tác không thể hoàn tác.
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[50vh] space-y-1.5 overflow-auto py-1">
@@ -1348,13 +1753,19 @@ function MergeCatalogDialog({
           ))}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>Huỷ</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Huỷ
+          </Button>
           <Button
             className="gap-1.5"
             disabled={pending || !target}
             onClick={() => target && onMerge(target)}
           >
-            {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitMerge className="h-4 w-4" />}
+            {pending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <GitMerge className="h-4 w-4" />
+            )}
             Gộp vào mục giữ lại
           </Button>
         </DialogFooter>
@@ -1365,7 +1776,10 @@ function MergeCatalogDialog({
 
 /** Hộp thoại: chọn nhiều mục (trùng nhau) để gộp — dùng được ở cả sơ đồ cây. */
 function MergePickDialog({
-  rows, singular, onClose, onContinue,
+  rows,
+  singular,
+  onClose,
+  onContinue,
 }: {
   rows: Row[];
   singular: string;
@@ -1399,11 +1813,18 @@ function MergePickDialog({
         </DialogHeader>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Tìm ${singular.toLowerCase()}, mã…`} className="pl-8" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={`Tìm ${singular.toLowerCase()}, mã…`}
+            className="pl-8"
+          />
         </div>
         <div className="max-h-[50vh] space-y-1.5 overflow-auto py-1">
           {filtered.length === 0 && (
-            <p className="py-6 text-center text-sm text-muted-foreground">Không tìm thấy {singular.toLowerCase()}.</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Không tìm thấy {singular.toLowerCase()}.
+            </p>
           )}
           {filtered.map((r) => (
             <label
@@ -1413,10 +1834,7 @@ function MergePickDialog({
                 ids.has(r.id) ? "border-primary bg-primary/5" : "hover:bg-muted/40",
               )}
             >
-              <Checkbox
-                checked={ids.has(r.id)}
-                onCheckedChange={() => toggle(r.id)}
-              />
+              <Checkbox checked={ids.has(r.id)} onCheckedChange={() => toggle(r.id)} />
               <span className="truncate font-medium">{r.ten}</span>
               {r.ma && <CodeBadge code={r.ma} />}
               {r.soThietBi > 0 && (
@@ -1428,7 +1846,9 @@ function MergePickDialog({
           ))}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>Huỷ</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Huỷ
+          </Button>
           <Button
             className="gap-1.5"
             disabled={selected.length < 2}
