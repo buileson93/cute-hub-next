@@ -479,10 +479,27 @@
 .astryx-table-row {
   border-bottom: 0 !important;
   background-color: var(--color-background-surface);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+  
   &:hover {
-    background-color: var(--color-accent) !important;
+    background-color: var(--table-row-hover);
+  }
+
+  &[data-state="selected"],
+  &.selected {
+    background-color: var(--table-row-selected);
+    
+    &:hover {
+      background-color: var(--table-row-selected-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--table-row-focus-ring);
+    outline-offset: -2px;
   }
 }
+
 
 /* Numeric alignment helper */
 .astryx-table-cell-numeric {
