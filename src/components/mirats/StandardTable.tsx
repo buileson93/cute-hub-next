@@ -95,6 +95,10 @@ export interface ColumnDef<T> {
   sortValue?: (r: T) => any;
   group?: string;
   inherited?: boolean;
+  minW?: string;
+}
+
+export type StdColumn<T> = ColumnDef<T>;
 }
 
 interface StandardTableProps<T> {
@@ -150,7 +154,8 @@ export function StandardTable<T>({
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-  const density = useDensity();
+  const densityData = useDensity();
+  const density = typeof densityData === "string" ? densityData : densityData[0];
   const prefs = useColumnPrefs(prefKey || "standard-table", columns.map(c => c.key));
 
   const getRowIdInternal = useCallback(
