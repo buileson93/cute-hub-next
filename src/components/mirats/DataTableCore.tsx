@@ -311,7 +311,7 @@ export function DataTableCore<T>({
                   {selectable && (
                     <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
-                      className="w-10 px-2 text-center sticky left-0 z-20 bg-inherit border-l border-b border-r border-border/20 astryx-table-cell"
+                      className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20 astryx-table-cell"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
