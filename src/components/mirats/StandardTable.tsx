@@ -567,7 +567,8 @@ export function StandardTableInner<T>({
     estimateSize: () => estimateRowHeight,
     overscan: isTest ? 100 : 15,
     initialOffset: isTest ? 0 : undefined,
-    initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
+    initialRect: isTest ? { width: 1000, height: 100000 } : undefined, // Tăng height để chứa nhiều dòng trong test
+
     ...virtualizerOptions,
   });
 
