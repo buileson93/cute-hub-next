@@ -424,17 +424,6 @@
 }
 
 /* Bảng: Chuẩn hóa styles ô bảng thông qua các utility và skin, tránh ghi đè global bừa bãi */
-.astryx-table-cell {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  font-size: 13px;
-  font-weight: 500;
-  vertical-align: middle;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
 
 .astryx-table {
   border-collapse: separate;
