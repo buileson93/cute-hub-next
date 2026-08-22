@@ -1,32 +1,57 @@
-# Kế hoạch Phase 10H: Data Loading Optimization & Integrity
+# Phase 10H: Data Loading Optimization & Integrity
 
-Mục tiêu: Tối ưu hóa việc tải dữ liệu, loại bỏ việc nạp dữ liệu dư thừa trên toàn trang, và xử lý triệt để các trường hợp dữ liệu bị cắt âm thầm (silent truncation) thông qua chiến lược phân loại và benchmark cụ thể.
+Lập kế hoạch tối ưu hóa hiệu năng tải dữ liệu, loại bỏ hiện tượng nạp dư thừa (eager loading) và sửa lỗi cắt dữ liệu âm thầm (silent truncation).
 
-## 1. Inventory & Phân loại Query
-- Lập danh sách (inventory) cho 71 vị trí sử dụng `.slice/.limit` và 30 vị trí gọi `fetchAllRows`.
-- Phân loại từng query thành các nhóm:
-    - **Intentional bounded lookup**: Lookup có chủ đích giới hạn (như Top 5, Latest 10).
-    - **Server paged**: Phân trang phía server.
-    - **Infinite/Keyset**: Danh sách cuộn vô hạn hoặc dùng keyset pagination.
-    - **Export-only**: Chỉ dùng để xuất dữ liệu.
-    - **Bug silent truncation**: Các trường hợp giới hạn cứng gây mất dữ liệu không mong muốn.
+## Inventory & Phân loại
+Hiện tại hệ thống có khoảng 139 vị trí dùng `.limit()` và 338 vị trí dùng `.slice()`. `ScopeProvider` đang nạp hàng nghìn bản ghi vào bộ nhớ trình duyệt ngay khi khởi tạo route `/_app`.
 
-## 2. Tối ưu hóa ScopeProvider & Eager Loading
-- Loại bỏ việc nạp toàn bộ danh mục (operations, taxonomy, licenses) tại root hoặc trong các provider dùng chung trên mọi route.
-- Chuyển sang nạp dữ liệu ở cấp route (Route-level query) hoặc sử dụng Lazy Provider/Suspense.
-- Thực thi bộ lọc phía server (RLS hoặc query params) theo đơn vị trước khi gửi dữ liệu về trình duyệt.
+- **Intentional Bounded Lookup**: Các bảng danh mục nhỏ (đơn vị, nhóm hệ thống, trạng thái) - Giữ nguyên.
+- **Bug Silent Truncation**: Các query `fetchAllRows` hoặc `.limit(1000)` dùng cho dữ liệu lớn (Thiết bị, Sự cố, Bảo trì) - Chuyển sang Paged/Infinite.
+- **Server Paged**: Danh sách tài sản, lịch sử vận hành - Chuyển sang server-side pagination.
+- **Payload Hotspots**: `select *` trên bảng `thiet_bi` (nhiều cột JSON/text nặng) - Chuyển sang `TB_COLS` chọn lọc.
 
-## 3. Cải thiện Trải nghiệm Danh sách (User-facing Lists)
-- Hiển thị số lượng bản ghi hiện có / tổng số bản ghi (`loaded/total count`).
-- Đảm bảo logic Filter và Sort áp dụng trên toàn bộ phạm vi dữ liệu, không chỉ trên dữ liệu đã tải về client.
-- Áp dụng Keyset/Infinite scroll cho các danh sách lớn.
+## Các bước thực hiện
 
-## 4. Hotspot Payloads & Benchmark
-- Thay thế `select *` bằng danh sách các cột thực sự cần thiết tại các điểm nóng (high-traffic routes).
-- Thực hiện Benchmark (Query count, Bytes transferred, TTFB, Memory usage) trước và sau khi tối ưu trên một **Route Pilot** trước khi triển khai hàng loạt.
-- Xử lý Export lớn thông qua server-side job hoặc streaming thay vì nạp hàng chục nghìn dòng vào UI.
+### 1. Tối ưu ScopeProvider (Phá vỡ Bottleneck)
+- Loại bỏ việc nạp `useDbTaxonomy`, `useLicensesData`, và `useOperationsData` tại root `ScopeProvider`.
+- Thay bằng lazy fetching hoặc route-level queries. `ScopeProvider` chỉ giữ lại context về `donViCode` và `permissions`.
 
-## 5. Lộ trình Triển khai (Pilot & Rollout)
-- **Pilot**: Chọn một route phức tạp (ví dụ: `/thiet-bi` hoặc `/tai-lieu`) để áp dụng toàn bộ chuẩn 10H.
-- Kiểm tra tính đúng đắn của Filter/Sort/Export trên Pilot.
-- Đo đạc hiệu năng và so sánh với baseline trước khi áp dụng cho các route còn lại.
+### 2. Pilot Route Migration: Danh sách Thiết bị (`/_app.danh-muc.thiet-bi`)
+- Chuyển từ `useScope().thietBi` (nạp full memory) sang `useThietBiList` (paged server query).
+- Áp dụng `TB_COLS` để giảm kích thước payload.
+- Cập nhật UI hiển thị: "Đang hiển thị X trên tổng số Y tài sản".
+- Đảm bảo Filter/Sort chạy trên toàn bộ tập dữ liệu (server-side) thay vì lọc trên mảng memory.
+
+### 3. Cải thiện List UI & Infinite Scroll
+- Tích hợp `DataTableCore` với logic `onLoadMore` cho các danh sách lớn.
+- Loại bỏ các logic `.slice(0, 100)` cứng nhắc trong component con.
+
+### 4. Benchmark
+- Đo lường Query Count, Payload Bytes (gZIP), TTFB và Memory usage của route Pilot.
+- Rollout cho các route Sự cố, Bảo trì sau khi Pilot thành công.
+
+## Technical Details
+
+### New Service: `src/lib/mirats/db-thiet-bi.ts`
+Cung cấp `useThietBiList` với:
+- `range(from, to)` của Supabase.
+- `count: 'exact'` để lấy tổng số bản ghi.
+- Mapping type an toàn từ Database Row sang `ThietBi` UI interface.
+
+### Refactor `ScopeProvider`
+```typescript
+// src/lib/mirats/scope.tsx
+// CHỈ nạp taxonomy nhỏ (Đơn vị, Nhóm HT)
+const { data: baseTax } = useBaseTaxonomy(); 
+// KHÔNG nạp devices, suCo, baoTri, hongHoc...
+```
+
+## Kết quả cần đạt
+- Giảm 70-90% payload ban đầu khi vào trang Tổng quan.
+- Không còn lỗi mất dữ liệu khi số lượng tài sản vượt ngưỡng 1000.
+- Filter/Sort chính xác trên toàn bộ phạm vi dữ liệu của đơn vị.
+
+Commit:
+- perf(data): remove global eager data loads
+- fix(list): expose and remove silent truncation
+- perf(query): select only required columns
