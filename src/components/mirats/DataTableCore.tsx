@@ -119,7 +119,7 @@ export function DataTableCore<T>({
     hasMore,
     virtualize,
     rows.length,
-  ]);
+  ]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => {
     if (!fitViewport || !containerRef.current) return;
