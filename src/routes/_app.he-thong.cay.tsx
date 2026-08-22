@@ -217,9 +217,8 @@ function useTbMind(overrides: OverrideMap | undefined) {
 function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
-  const { roles } = useSession();
-  const isAdmin = roles.includes("admin");
   const canManage = useCan("he-thong-cay", "manage");
+
 
   const qc = useQueryClient();
 
