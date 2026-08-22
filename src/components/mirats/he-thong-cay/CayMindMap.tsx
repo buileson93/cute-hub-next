@@ -79,7 +79,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
+import { TruncatedNodeLabel } from "./TruncatedNodeLabel";
 import { useCayContext } from "./CayContext";
+
 import type {
   MindKind,
   MindData,
