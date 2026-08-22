@@ -190,7 +190,7 @@ function GiayPhepPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col p-4 md:p-6 gap-4">
       <PageHeader
         icon={ShieldCheck}
         title="Giấy phép & Tuân thủ"
