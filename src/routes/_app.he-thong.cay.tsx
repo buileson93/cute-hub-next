@@ -695,6 +695,8 @@ function HeThongCayPage() {
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
+                  canManageNodes={canManage}
+
                   onMoveSystem={(req) =>
                     nav({
                       to: "/he-thong/cay",
