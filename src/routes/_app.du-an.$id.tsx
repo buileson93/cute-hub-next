@@ -616,6 +616,7 @@ function DuAnDetailPage() {
                 </div>
               </div>
             </div>
+          </TabsContent>
         </Tabs>
       </div>
 
