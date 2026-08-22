@@ -153,11 +153,11 @@ function BanGiaoMoiPage() {
       };
       const { error } = await supabase.from("ban_giao").insert(payload);
       if (error) throw error;
-      toast.success(`Đã tạo phiếu bàn giao ${ma}`);
+      toast.success(`Đã tạo phiếu bàn giao ${ma} thành công`);
       qc.invalidateQueries({ queryKey: ["operations_data"] });
       navigate({ to: "/ban-giao" });
     } catch (e) {
-      toast.error(`Lỗi: ${(e as Error).message}`);
+      toast.error(`Lưu thất bại: ${(e as Error).message}`);
     } finally {
       setSaving(false);
     }

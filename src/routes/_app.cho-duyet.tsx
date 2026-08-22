@@ -192,7 +192,7 @@ function ChoDuyetPage() {
     setBusy(true);
     try {
       await rejectChangeRequest(rejectTarget.id, rejectReason.trim());
-      toast.success("Đã từ chối");
+      toast.success("Đã từ chối đề xuất");
       setRejectTarget(null);
       setRejectReason("");
       refetch();

@@ -78,7 +78,7 @@ function HistoryPage() {
       qc.invalidateQueries({ queryKey: ["form-versions", id] });
       qc.invalidateQueries({ queryKey: ["form-versions-history", id] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Khôi phục thất bại: " + e.message),
   });
 
   if (loading)
