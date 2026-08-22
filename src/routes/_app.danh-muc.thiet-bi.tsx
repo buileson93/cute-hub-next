@@ -1257,7 +1257,7 @@ function DanhMucThietBiPage() {
               />
             </div>
             <Select value={filterLoai} onValueChange={setFilterLoai}>
-              <SelectTrigger className="h-9 w-[190px]">
+              <SelectTrigger className="h-9 w-[190px]" aria-label="Lọc theo chủng loại">
                 <SelectValue placeholder="Chủng loại" />
               </SelectTrigger>
               <SelectContent>
