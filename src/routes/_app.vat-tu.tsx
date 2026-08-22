@@ -193,7 +193,7 @@ function VatTuPage() {
         <TabsContent value="canhbao" className="mt-4">
           <Card>
             <CardContent className="p-2">
-              <StandardTable
+              <StandardTable<CanhBaoRow>
                 tableKey="vat_tu_canhbao_list"
                 rows={canhBao.data ?? []}
                 getRowId={(r) => r.vat_tu_id}
