@@ -1533,7 +1533,7 @@ export function StandardTableInner<T>({
                   )}
 
                   {displayItems.map((virtualRow) => {
-                    const r = rows[virtualRow.index];
+                    const r = display[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
                     /** Tự động render ô dựa trên `type` */
