@@ -23,5 +23,7 @@ Convert the RPC functions to Views to support the standard `supabase.from()` syn
 - Check preview to confirm data loads correctly.
 
 ## Impact
-- **No data loss**: This is a structural change to how data is retrieved.
+- **An toàn dữ liệu**: Việc chuyển đổi RPC thành View chỉ thay đổi cách truy xuất dữ liệu (presentation layer), không xóa hay thay đổi dữ liệu gốc trong các bảng `thiet_bi`, `he_thong_thanh_phan`.
+- **Không mất dữ liệu**: Hoàn toàn không ảnh hưởng đến tính toàn vẹn của dữ liệu hiện có.
+- **Improved Tooling**: Views are better supported by Supabase generated types and filtering.
 - **Improved Tooling**: Views are better supported by Supabase generated types and filtering.
