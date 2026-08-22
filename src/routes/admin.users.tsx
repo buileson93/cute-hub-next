@@ -425,6 +425,7 @@ function UserForm({
 }) {
   const [email, setEmail] = useState(initial?.email ?? "");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [hoTen, setHoTen] = useState(initial?.ho_ten ?? "");
   const [donVi, setDonVi] = useState<string | null>(initial?.don_vi ?? null);
   const [roles, setRoles] = useState<AppRole[]>(initial?.roles ?? ["ktv"]);
