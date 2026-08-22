@@ -180,7 +180,7 @@ export function DataTableCore<T>({
         overflowY: 'auto'
       }}
     >
-      <Table
+      <Table className="flex flex-col"
         className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}
         style={{
           tableLayout: 'fixed',
