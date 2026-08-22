@@ -248,6 +248,7 @@ function DanhMucThietBiPage() {
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const isAdmin = hasRole("admin");
   const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-tb:edit-mode", false);
+  const [viewMode, setViewMode] = useUserPref<"table" | "grid">("danh-muc-tb:view-mode", "table");
   const editOn = canManage && editMode;
   const { submit, submitMany, hoanTac } = useCayRpc();
   const qc = useQueryClient();
