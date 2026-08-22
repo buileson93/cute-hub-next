@@ -220,7 +220,7 @@ export function DataTableCore<T>({
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody style={{ 
+        <TableBody className="flex flex-col" style={{ 
           height: virtualize ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
           position: 'relative',
         }}>
