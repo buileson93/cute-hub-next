@@ -75,7 +75,7 @@ function AccountPage() {
       toast.success("Đã cập nhật ảnh đại diện");
       refresh();
     } catch (e) {
-      toast.error("Tải ảnh thất bại", { description: (e as Error).message });
+      toast.error("Tải ảnh thất bại: " + (e as Error).message);
     } finally {
       setUploading(false);
     }
@@ -94,7 +94,7 @@ function AccountPage() {
       toast.success("Đã xoá ảnh đại diện");
       refresh();
     } catch (e) {
-      toast.error("Xoá thất bại", { description: (e as Error).message });
+      toast.error("Xoá thất bại: " + (e as Error).message);
     } finally {
       setUploading(false);
     }
@@ -117,7 +117,7 @@ function AccountPage() {
       toast.success("Đã lưu họ tên");
       refresh();
     } catch (e) {
-      toast.error("Lưu thất bại", { description: (e as Error).message });
+      toast.error("Lưu thất bại: " + (e as Error).message);
     } finally {
       setSavingName(false);
     }

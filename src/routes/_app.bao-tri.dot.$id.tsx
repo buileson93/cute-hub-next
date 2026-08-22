@@ -794,8 +794,9 @@ function AddHeThongDialog({
       setSel(new Set());
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Thêm hạng mục thất bại: " + e.message),
   });
+
   const available = (he_thongs ?? []).filter((h) => !existingHeThongIds.includes(h.id));
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
