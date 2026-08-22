@@ -163,6 +163,7 @@ export function HeThongLienKetTab({ heThongId }: { heThongId: string }) {
           <Link2 className="h-4 w-4 text-primary" /> {rows.length} liên kết đi/đến
         </div>
         {canManage && (
+
           <Button size="sm" variant="outline" onClick={() => setShowImpact((v) => !v)}>
             <AlertTriangle className="mr-1 h-4 w-4" />{" "}
             {showImpact ? "Ẩn phân tích" : "Phân tích tác động"}

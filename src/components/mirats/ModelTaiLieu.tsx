@@ -84,6 +84,7 @@ function fmtSize(n: number | null | undefined) {
 
 export function ModelTaiLieu({ modelId }: { modelId: string }) {
   const qc = useQueryClient();
+
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
 
@@ -196,18 +197,22 @@ function DocRow({
     useOcrTask();
   const [viewerOpen, setViewerOpen] = useState(false);
   const canDownload = useCanDownloadAttachments();
+  const qc = useQueryClient();
+
 
   async function handleRetry() {
+    if (!url) return;
     try {
-      const res = await fetch(url!);
+      const res = await fetch(url);
       if (!res.ok) throw new Error("Không thể tải tệp");
       const blob = await res.blob();
       await startOcr(blob, "model_tai_lieu", row.id);
-      onDelete(); // Just a way to trigger refresh
+      qc.invalidateQueries({ queryKey: ["model_tai_lieu", row.model_id] });
     } catch (e: any) {
       toast.error("Lỗi: " + e.message);
     }
   }
+
 
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">

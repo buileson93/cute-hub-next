@@ -55,6 +55,7 @@ export const UI_DENSITY = {
     "min-h-[44px] md:min-h-[2.25rem] md:data-[density=comfortable]:min-h-[2.5rem] md:data-[density=spacious]:min-h-[3rem]",
 
 
+
   CONTROL_PX: "px-4 md:px-3 md:data-[density=comfortable]:px-4 md:data-[density=spacious]:px-6",
   CONTROL_FS:
     "text-[12px] md:text-[12px] md:data-[density=comfortable]:text-[13px] md:data-[density=spacious]:text-[14px]",

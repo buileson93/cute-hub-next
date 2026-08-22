@@ -219,8 +219,9 @@ function useTbMind(overrides: OverrideMap | undefined) {
 function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
-  const canManage = useCan("he-thong-cay", "manage");
+  const canManageNodes = useCan("he-thong-cay", "manage");
   const canShare = useCan("he-thong-cay", "share");
+
 
 
 
@@ -549,7 +550,7 @@ function HeThongCayPage() {
                 setFocus({ ...it, nonce: Math.random() });
               }}
             />
-            {canManage && (
+            {canManageNodes && (
               <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
                 <Button
                   size="icon"
@@ -567,6 +568,7 @@ function HeThongCayPage() {
               </AppTooltip>
             )}
             {canShare && (
+
               <AppTooltip noiDung="Chia sẻ sơ đồ">
                 <Button
                   variant="outline"
@@ -673,13 +675,14 @@ function HeThongCayPage() {
                   nhLabel={nhMind}
                   htMind={htMind}
                   tbLabel={tbMind}
-                  canManage={canManage}
+                  canManage={canManageNodes}
+
                   onOpenEditor={onOpenEditor}
                   onHistory={onHistory}
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
-                  canManageNodes={canManage}
+                  canManageNodes={canManageNodes}
 
 
                   onRename={async (kind, ma, ten) =>
@@ -708,7 +711,8 @@ function HeThongCayPage() {
                   tree={viewTree as any}
                   posByHt={posByHt || new Map()}
                   scopeText="Cấu trúc CNS/ATM"
-                   canManage={canManage}
+                   canManage={canManageNodes}
+
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
@@ -717,7 +721,8 @@ function HeThongCayPage() {
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
-                  canManageNodes={canManage}
+                  canManageNodes={canManageNodes}
+
 
 
                   onMoveSystem={(req) =>
@@ -757,7 +762,8 @@ function HeThongCayPage() {
         nhLabel={nhMind}
         htLabel={htMind}
         tbMap={new Map(devices.map((d) => [d.ma_thiet_bi, d]))}
-        canManage={canManage}
+        canManage={canManageNodes}
+
         donViList={taxonomy?.donViList || []}
       />
 
@@ -775,7 +781,7 @@ function HeThongCayPage() {
           nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, editTb: undefined }) })
         }
         device={devices.find((d) => d.ma_thiet_bi === search.editTb) || null}
-        canManage={canManage}
+        canManage={canManageNodes}
         deviceName={(d) => d.ten || d.ma_thiet_bi}
         systemLabel={(d) => htNameMap.get(d.he_thong || "") || d.he_thong || ""}
         systemNameById={(id) => htNameMap.get(id || "") || id || ""}

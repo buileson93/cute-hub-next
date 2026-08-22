@@ -293,11 +293,13 @@ function ApiKeysManagement() {
               Tải và cài đặt Browser Extension từ cửa hàng ứng dụng để tự động hóa việc nhập hồ sơ,
               công văn và xử lý PDF.
             </p>
-            <Button variant="outline" size="sm" className="w-full gap-2" asChild>
-              <a href="#" target="_blank">
-                Tải Extension <ExternalLink className="h-3 w-3" />
-              </a>
+            <Button variant="outline" size="sm" className="w-full gap-2" disabled>
+              Chưa khả dụng <ExternalLink className="h-3 w-3" />
             </Button>
+            <p className="text-[10px] italic text-muted-foreground mt-1">
+              * Extension đang trong quá trình kiểm duyệt của Google/Microsoft.
+            </p>
+
           </CardContent>
         </Card>
       </div>
