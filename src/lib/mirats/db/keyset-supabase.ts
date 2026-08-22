@@ -22,7 +22,9 @@ export interface KeysetPage<T> {
   rows: T[];
   cursor: KeysetCursor | null;
   ket: boolean;
+  totalCount?: number;
 }
+
 
 export async function fetchKeyset<T extends Record<string, unknown>>(
   client: SupabaseClient,
@@ -34,7 +36,8 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
 
   let q = client
     .from(cfg.bang)
-    .select(cot.join(","))
+    .select(cot.join(","), { count: "planned" })
+
     .order(cfg.sortField, { ascending: dir === "asc" })
     .order("id", { ascending: dir === "asc" })
     .limit(kichThuoc);
@@ -53,12 +56,14 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
     }
   }
 
-  const { data, error } = await q;
+  const { data, count, error } = await q;
   if (error) throw error;
   const rows = (data ?? []) as unknown as T[];
   return {
     rows,
     cursor: nextCursor(rows, cfg.sortField),
     ket: rows.length < kichThuoc,
+    totalCount: count ?? undefined,
   };
 }
+

@@ -1,0 +1,1396 @@
+import { Link, useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Loader2, Search, X, Cpu, ExternalLink, Pencil, Check, XCircle, Unplug, Package, LayoutGrid, Copy, Download, Wrench, PackageOpen, X as XIcon, } from "lucide-react";
+import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
+import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
+import { useUserPref } from "@/hooks/use-user-pref";
+import { StandardTable } from "@/components/mirats/StandardTable";
+import { CodeBadge } from "@/components/mirats/CodeBadge";
+import { Combobox } from "@/components/mirats/Combobox";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { supabase } from "@/integrations/backend/client";
+import { useRealtimeTaxonomy } from "@/hooks/use-realtime-taxonomy";
+import { normalize } from "@/lib/mirats/global-search";
+import { useSession } from "@/hooks/use-session";
+import { canWrite } from "@/lib/mirats/quyen";
+import { useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
+import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
+import { BulkActionButton } from "@/components/mirats/BulkActionButton";
+import { TableExportDialog } from "@/components/mirats/TableExportDialog";
+import { THANH_PHAN_PRESETS } from "@/lib/mirats/ui/tp-presets";
+import { OperationDialog } from "@/components/mirats/OperationDialog";
+import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
+export function useInfiniteTaiSanRows(q = "", bucket = "all", enabled = true) {
+    return useInfiniteQuery({
+        queryKey: ["tai-san-thanh-phan-infinite", q, bucket],
+        enabled,
+        staleTime: 60000,
+        initialPageParam: null,
+        queryFn: async ({ pageParam }) => {
+            const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
+            const res = await fetchKeyset(supabase, {
+                bang: "rpc_tai_san_toan_cuc",
+                cot: [
+                    "id", "ma", "ten", "serial", "model", "modelId", "chungLoai", "nhaSanXuat",
+                    "nhaCungCap", "donViQuanLy", "trangThai", "viTri", "soThanhPhanDangGan",
+                    "danhSachThanhPhan", "danhSachHeThong", "pN", "maTaiSanBravo", "namSanXuat",
+                    "namKhaiThac", "ngayMua", "hanBaoHanh", "tyLeTuoiTho", "tinhTrangKyThuat",
+                    "cheDoKdHc", "ngayBaoTriGanNhat", "ngayBaoTriKeTiep", "soSuCo90n", "anomalyScore"
+                ],
+                sortField: "ma",
+                dir: "asc",
+                cursor: pageParam,
+                kichThuoc: 200,
+            });
+            return res;
+        },
+        getNextPageParam: (lastPage) => (lastPage.ket ? undefined : lastPage.cursor),
+    });
+}
+/** @deprecated dùng useInfiniteTaiSanRows */
+export function useTaiSanRows() {
+    const { data } = useInfiniteTaiSanRows("", "all", true);
+    const rows = useMemo(() => data?.pages.flatMap((p) => p.rows) ?? [], [data]);
+    return { data: rows, isLoading: false, error: null };
+}
+const TT_LABEL = { hoat_dong: "Hoạt động", ngung: "Đã ngừng" };
+export function useInfiniteThanhPhanRows(q = "", enabled = true) {
+    return useInfiniteQuery({
+        queryKey: ["thanh-phan-infinite", q],
+        enabled,
+        staleTime: 60000,
+        initialPageParam: null,
+        queryFn: async ({ pageParam }) => {
+            const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
+            const res = await fetchKeyset(supabase, {
+                bang: "rpc_thanh_phan_toan_cuc",
+                cot: [
+                    "id", "ma", "ten", "nhomHeThong", "phanLoai", "heThong", "heThongId",
+                    "viTriId", "loaiYeuCau", "viTri", "trangThai", "thietBiMa", "thietBiTen",
+                    "thietBiSerial", "model", "modelId", "chungLoai", "nhaSanXuat", "nhaCungCap",
+                    "daLap", "soThanhPhanCuaTaiSan", "taiSanTrangThai", "namSanXuat",
+                    "namKhaiThac", "ngayMua", "hanBaoHanh", "pN", "maTaiSanBravo", "tyLeTuoiTho",
+                    "tinhTrangKyThuat", "ngayBaoTriGanNhat", "ngayBaoTriKeTiep", "cheDoKdHc",
+                    "taiSanViTri", "taiSanDonViQuanLy", "anomalyScore"
+                ],
+                sortField: "ma",
+                dir: "asc",
+                cursor: pageParam,
+                kichThuoc: 200,
+            });
+            return res;
+        },
+        getNextPageParam: (lastPage) => (lastPage.ket ? undefined : lastPage.cursor),
+    });
+}
+/** @deprecated dùng useInfiniteThanhPhanRows */
+export function useThanhPhanRows() {
+    const { data } = useInfiniteThanhPhanRows("", true);
+    const rows = useMemo(() => data?.pages.flatMap((p) => p.rows) ?? [], [data]);
+    return { data: rows, isLoading: false, error: null };
+}
+// ---- Tiện ích thao tác hàng loạt trên dòng đã chọn ----
+function csvCell(v) {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+async function copyCodes(codes) {
+    const text = codes.filter(Boolean).join("\n");
+    try {
+        await navigator.clipboard.writeText(text);
+        toast.success(`Đã sao chép ${codes.length} mã.`);
+    }
+    catch {
+        toast.error("Trình duyệt không cho phép sao chép.");
+    }
+}
+/** Hook lấy toàn bộ danh mục model để dùng cho hover card */
+function useModelRegistry() {
+    return useQuery({
+        queryKey: ["dm_model_registry"],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("dm_model")
+                .select(`
+          id, ma, ten, so_model, p_n, hinh_anh, mo_ta, 
+          nsx:nha_san_xuat_id(ten), 
+          loai:loai_thiet_bi_id(ten)
+        `)
+                .eq("active", true);
+            if (error)
+                throw error;
+            const map = {};
+            (data ?? []).forEach((m) => {
+                map[m.id] = {
+                    id: m.id,
+                    ma: m.ma,
+                    ten: m.ten,
+                    so_model: m.so_model,
+                    p_n: m.p_n,
+                    hinh_anh: m.hinh_anh,
+                    mo_ta: m.mo_ta,
+                    nha_san_xuat: m.nsx?.ten || "",
+                    loai_thiet_bi: m.loai?.ten || "",
+                };
+            });
+            return map;
+        },
+        staleTime: 5 * 60000,
+    });
+}
+function ModelCell({ model, modelId, registry, }) {
+    if (!model)
+        return <span className="text-xs text-muted-foreground">—</span>;
+    const modelData = modelId ? registry[modelId] : null;
+    if (!modelData) {
+        return (<span title={model} className="line-clamp-2 break-words text-[12px] leading-snug">
+        {model}
+      </span>);
+    }
+    return (<EntityHoverCard loai="dm_model" row={modelData}>
+      <span className="line-clamp-2 cursor-pointer break-words text-[12px] leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
+        {model}
+      </span>
+    </EntityHoverCard>);
+}
+/** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
+const LY_DO_KHOA = "Vai trò của bạn chỉ được xem: cần quyền sửa dữ liệu Hệ thống kỹ thuật (Admin / Phòng KT / Phụ trách đơn vị) để đổi trạng thái hàng loạt.";
+/** Nội dung hộp thoại xác nhận đổi trạng thái hàng loạt. */
+function MoTaXacNhan({ rows, tt }) {
+    return (<>
+      <div>
+        Sẽ đặt trạng thái <b>{tt}</b> cho <b>{rows.length}</b> thành phần đã chọn (bao gồm cả dòng ở
+        các trang khác). Thao tác này ghi trực tiếp vào dữ liệu.
+      </div>
+      <div className="max-h-24 overflow-auto rounded bg-muted/50 p-2 font-mono text-[11px]">
+        {rows
+            .slice(0, 30)
+            .map((r) => r.ma)
+            .join(", ")}
+        {rows.length > 30 ? ` … (+${rows.length - 30})` : ""}
+      </div>
+    </>);
+}
+export function ThanhPhanTable({ hideHeader = false, tableKey = "he-thong:thanh-phan-toan-cuc", externalEditMode, }) {
+    const [q, setQ] = useState("");
+    const [viewMode, setViewMode] = useUserPref("thanh-phan:view-mode", "component");
+    const [bucket, setBucket] = useState("all");
+    const { data: rowsData, fetchNextPage: fetchNextTp, hasNextPage: hasNextTp, isFetchingNextPage: isFetchingTp, isLoading: loadingTp, error: errorTp, } = useInfiniteThanhPhanRows(q, viewMode === "component");
+    const { data: tsData, fetchNextPage: fetchNextTs, hasNextPage: hasNextTs, isFetchingNextPage: isFetchingTs, isLoading: loadingTsReal, error: errorTsReal, } = useInfiniteTaiSanRows(q, bucket, viewMode === "asset");
+    const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
+    const taiSanRows = useMemo(() => tsData?.pages.flatMap((p) => p.rows) ?? [], [tsData]);
+    const isLoading = loadingTp || loadingTsReal;
+    const error = errorTp || errorTsReal;
+    const { data: multiRoleMap } = useMultiRoleMap();
+    const [internalEditMode, setInternalEditMode] = useState(false);
+    const [searchExpanded, setSearchExpanded] = useState(false);
+    const searchInputRef = useRef(null);
+    const [selectedIds, setSelectedIds] = useState(new Set());
+    const [selectedTp, setSelectedTp] = useState(null);
+    const isExternalEdit = externalEditMode !== undefined;
+    const editMode = isExternalEdit ? externalEditMode : internalEditMode;
+    const setEditMode = isExternalEdit ? () => { } : setInternalEditMode;
+    const navigate = useNavigate();
+    const qc = useQueryClient();
+    useRealtimeTaxonomy();
+    const { roles } = useSession();
+    const allowEdit = canWrite("he_thong", roles);
+    const [bulkBusy, setBulkBusy] = useState(false);
+    async function bulkTrangThai(ids, trangThai, clear) {
+        if (ids.length === 0)
+            return;
+        setBulkBusy(true);
+        const { error: e } = await supabase
+            .from("he_thong_thanh_phan")
+            .update({ trang_thai: trangThai })
+            .in("id", ids);
+        setBulkBusy(false);
+        if (e) {
+            toast.error(e.message || "Không cập nhật được trạng thái hàng loạt.");
+            return;
+        }
+        toast.success(`Đã đặt ${ids.length} thành phần → ${TT_LABEL[trangThai]}.`);
+        clear();
+        qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
+    }
+    async function saveField(id, field, value) {
+        try {
+            if (field === "ten") {
+                const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
+                const res = await saveEntityFieldSecurely({
+                    kind: "tp", // Bảng này hiển thị thành phần hệ thống (he_thong_thanh_phan)
+                    id: id,
+                    field: "ten",
+                    value: value,
+                    userRoles: roles || [],
+                });
+                if (res.mode === "proposed") {
+                    toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
+                }
+                else {
+                    toast.success("Đã lưu tên thành công");
+                }
+            }
+            else {
+                // Các trường khác (như trạng thái) vẫn ghi trực tiếp hoặc qua logic riêng
+                const { error: e } = await supabase
+                    .from("he_thong_thanh_phan")
+                    .update({ trang_thai: value })
+                    .eq("id", id);
+                if (e)
+                    throw e;
+                toast.success("Đã cập nhật trạng thái");
+            }
+            qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] });
+        }
+        catch (error) {
+            toast.error(error.message || "Không lưu được thay đổi");
+            throw error;
+        }
+    }
+    const { data: modelRegistry = {} } = useModelRegistry();
+    const filtered = useMemo(() => {
+        const t = normalize(q).trim();
+        if (!t)
+            return rows;
+        return rows.filter((r) => normalize([
+            r.ma,
+            r.ten,
+            r.heThong,
+            r.thietBiMa,
+            r.thietBiTen,
+            r.thietBiSerial,
+            r.pN,
+            r.maTaiSanBravo,
+            r.viTri,
+        ].join(" ")).includes(t));
+    }, [rows, q]);
+    const filteredTaiSan = useMemo(() => {
+        const t = normalize(q).trim();
+        const inBucket = (n) => {
+            if (bucket === "all")
+                return true;
+            if (bucket === "0")
+                return n === 0;
+            if (bucket === "1")
+                return n === 1;
+            if (bucket === "2-3")
+                return n >= 2 && n <= 3;
+            return n > 3;
+        };
+        return taiSanRows.filter((r) => {
+            if (!inBucket(r.soThanhPhanDangGan))
+                return false;
+            if (!t)
+                return true;
+            return normalize([
+                r.ma,
+                r.ten,
+                r.serial,
+                r.model,
+                r.chungLoai,
+                r.nhaSanXuat,
+                r.nhaCungCap,
+                r.donViQuanLy,
+                r.viTri,
+                r.danhSachHeThong,
+                r.danhSachThanhPhan,
+                r.pN,
+                r.maTaiSanBravo,
+                r.namSanXuat,
+                r.namKhaiThac,
+                r.tinhTrangKyThuat,
+                r.cheDoKdHc,
+            ].join(" ")).includes(t);
+        });
+    }, [taiSanRows, q, bucket]);
+    const soLap = useMemo(() => filtered.filter((r) => r.daLap).length, [filtered]);
+    const soTaiSanCoLap = useMemo(() => filteredTaiSan.filter((r) => r.soThanhPhanDangGan > 0).length, [filteredTaiSan]);
+    const [totalTp, setTotalTp] = useState(0);
+    const [totalTs, setTotalTs] = useState(0);
+    useEffect(() => {
+        if (rowsData?.pages[0]?.totalCount !== undefined) {
+            setTotalTp(rowsData.pages[0].totalCount);
+        }
+    }, [rowsData]);
+    useEffect(() => {
+        if (tsData?.pages[0]?.totalCount !== undefined) {
+            setTotalTs(tsData.pages[0].totalCount);
+        }
+    }, [tsData]);
+    const ModeToggle = (<div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5 shrink-0">
+      <AppTooltip noiDung={`Theo thành phần (${rows.length.toLocaleString("vi-VN")})`}>
+        <Button size="sm" variant={viewMode === "component" ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => {
+            setViewMode("component");
+            setSelectedIds(new Set());
+        }}>
+          <LayoutGrid className="h-4 w-4"/>
+          <span className="sr-only">Theo thành phần</span>
+        </Button>
+      </AppTooltip>
+      <AppTooltip noiDung={`Theo tài sản (${taiSanRows.length.toLocaleString("vi-VN")})`}>
+        <Button size="sm" variant={viewMode === "asset" ? "default" : "ghost"} className="h-7 w-7 p-0" onClick={() => {
+            setViewMode("asset");
+            setSelectedIds(new Set());
+        }}>
+          <Package className="h-4 w-4"/>
+          <span className="sr-only">Theo tài sản</span>
+        </Button>
+      </AppTooltip>
+    </div>);
+    return (<div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-1 p-2"}>
+      {isLoading && (<div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin"/> Đang tải dữ liệu…
+        </div>)}
+      {error && (<div className="text-sm text-destructive">Lỗi tải dữ liệu: {error.message}</div>)}
+
+      {!isLoading && !error && viewMode === "component" && (<>
+          <StandardTable className="astryx-table" tableKey={tableKey} rows={filtered} trangThai={{ dangTai: loadingTp, loi: errorTp }} infiniteScroll={{
+                hasNextPage: hasNextTp,
+                fetchNextPage: fetchNextTp,
+                isFetchingNextPage: isFetchingTp,
+                totalCount: totalTp,
+            }} getRowId={(r) => r.id} selected={selectedIds} setSelected={setSelectedIds} requireFilterToShow={false} emptyText="Không có thành phần hệ thống phù hợp." countUnit="thành phần" maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined} selectable editMode={editMode} 
+        // activePreset="co-ban" (Bỏ ghim cứng để Reset hoạt động đúng)
+        presets={THANH_PHAN_PRESETS} bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear, }) => (<>
+                <BulkActionButton label="Đặt Hoạt động" icon={<Check className="h-3.5 w-3.5"/>} duocPhep={allowEdit} lyDoKhoa={LY_DO_KHOA} busy={bulkBusy} variant="outline" xacNhan={{
+                    tieuDe: "Đặt trạng thái Hoạt động?",
+                    moTa: <MoTaXacNhan rows={selectedRows} tt="Hoạt động"/>,
+                    nutXacNhan: "Đặt Hoạt động",
+                }} onRun={() => bulkTrangThai(selectedRows.map((r) => r.id), "hoat_dong", clear)}/>
+                <BulkActionButton label="Đặt Đã ngừng" icon={<XCircle className="h-3.5 w-3.5"/>} duocPhep={allowEdit} lyDoKhoa={LY_DO_KHOA} busy={bulkBusy} variant="outline" xacNhan={{
+                    tieuDe: "Đặt trạng thái Đã ngừng?",
+                    moTa: <MoTaXacNhan rows={selectedRows} tt="Đã ngừng"/>,
+                    nutXacNhan: "Đặt Đã ngừng",
+                    nguyHiem: true,
+                }} onRun={() => bulkTrangThai(selectedRows.map((r) => r.id), "ngung", clear)}/>
+                <BulkActionButton label="Sao chép mã" icon={<Copy className="h-3.5 w-3.5"/>} variant="outline" xacNhan={{
+                    tieuDe: "Sao chép mã các dòng đã chọn?",
+                    moTa: (<>
+                        Sẽ chép <b>{selectedRows.length}</b> mã thành phần vào bộ nhớ tạm.
+                      </>),
+                    nutXacNhan: "Sao chép",
+                }} onRun={() => copyCodes(selectedRows.map((r) => r.ma))}/>
+                <TableExportDialog ten="thanh-phan" countUnit="thành phần" visibleColumns={visibleColumns} allColumns={allColumns} rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }} trigger={<AppTooltip noiDung="Xuất dữ liệu ra file CSV">
+                      <Button size="sm" variant="outline" className="h-7 w-7 p-0">
+                        <Download className="h-3.5 w-3.5"/>
+                        <span className="sr-only">Xuất CSV…</span>
+                      </Button>
+                    </AppTooltip>}/>
+                <AppTooltip noiDung="Bỏ chọn tất cả">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
+                    <XIcon className="h-4 w-4"/>
+                    <span className="sr-only">Bỏ chọn</span>
+                  </Button>
+                </AppTooltip>
+              </>)} toolbarLeft={<div className="flex items-center gap-1.5">
+                {allowEdit && (<div className="flex items-center gap-1">
+                    {editMode && <KhaiThemCumButtons />}
+                    <AppTooltip noiDung={editMode
+                        ? "Hoàn tất chỉnh sửa"
+                        : "Bật chỉnh sửa nhanh: Tên, Trạng thái, Tài sản đang lắp"}>
+                      <Button size="sm" variant={editMode ? "default" : "outline"} className="h-7 w-7 p-0" onClick={() => setEditMode((v) => !v)}>
+                        {editMode ? <Check className="h-4 w-4"/> : <Pencil className="h-4 w-4"/>}
+                        <span className="sr-only">{editMode ? "Xong" : "Chỉnh sửa"}</span>
+                      </Button>
+                    </AppTooltip>
+                  </div>)}
+                {ModeToggle}
+                <div className="relative flex items-center">
+                  <Button variant="ghost" size="icon" className={cn("h-7 w-7 transition-all", searchExpanded || q ? "text-primary" : "text-muted-foreground")} onClick={() => {
+                    setSearchExpanded(!searchExpanded);
+                    if (!searchExpanded)
+                        setTimeout(() => searchInputRef.current?.focus(), 100);
+                }}>
+                    <Search className="h-3.5 w-3.5"/>
+                  </Button>
+                  {(searchExpanded || q) && (<div className="flex items-center">
+                      <Input ref={searchInputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder={viewMode === "component" ? "Tìm vai trò, tên…" : "Tìm tài sản…"} className="h-7 w-[180px] bg-background text-xs shadow-sm ml-1 pr-7"/>
+                      {q && (<button type="button" onClick={() => setQ("")} className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-20">
+                          <X className="h-3 w-3"/>
+                        </button>)}
+                    </div>)}
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
+                  <span className="tabular-nums">
+                    Đã tải {rows.length} {totalTp > 0 ? `/ ${totalTp.toLocaleString("vi-VN")}` : ""} thành phần
+                  </span>
+                </div>
+
+              </div>} columns={[
+                // ==== Cột thuộc THÀNH PHẦN HỆ THỐNG (không kế thừa) ====
+                {
+                    key: "ten",
+                    label: "Thành phần & Mã",
+                    minW: "min-w-[240px]",
+                    cellClassName: "max-w-[280px]",
+                    filter: "text",
+                    sticky: true,
+                    priority: "primary",
+                    value: (r) => [r.ten, r.ma].filter(Boolean).join(" "),
+                    cell: (r) => (<div className="group flex flex-col gap-0.5 cursor-pointer hover:bg-muted/30 p-1 rounded transition-colors" onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}>
+                    {editMode && allowEdit ? (<InlineTextEdit initial={r.ten} placeholder="Tên thành phần" onSave={(v) => saveField(r.id, "ten", v)}/>) : (<AppTooltip noiDung={r.ma ? `Mã thành phần: ${r.ma}` : undefined}>
+                        <span title={r.ten} className="line-clamp-2 break-words text-[12px] font-bold leading-snug">
+                          {r.ten || "—"}
+                        </span>
+                      </AppTooltip>)}
+                    {r.ma && (<div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <CodeBadge code={r.ma} className="w-fit bg-transparent border-transparent text-muted-foreground hover:bg-muted/50 transition-colors"/>
+                      </div>)}
+                  </div>),
+                },
+                {
+                    key: "heThong",
+                    label: "Hệ thống",
+                    minW: "min-w-[200px]",
+                    cellClassName: "max-w-[240px]",
+                    filter: "cat",
+                    priority: "secondary",
+                    value: (r) => r.heThong,
+                    cell: (r) => <span className="text-[12px] truncate">{r.heThong}</span>,
+                },
+                {
+                    key: "nhomHeThong",
+                    label: "Nhóm hệ thống",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    priority: "detail",
+                    value: (r) => r.nhomHeThong,
+                    hideBelow: "md",
+                    cell: (r) => <span className="text-[12px] truncate">{r.nhomHeThong}</span>,
+                },
+                {
+                    key: "phanLoai",
+                    label: "Phân loại hệ thống",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    priority: "detail",
+                    value: (r) => r.phanLoai,
+                    hideBelow: "md",
+                    cell: (r) => <span className="text-[12px] truncate">{r.phanLoai}</span>,
+                },
+                {
+                    key: "ma",
+                    label: "Mã thành phần",
+                    minW: "min-w-[140px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    priority: "detail",
+                    value: (r) => r.ma,
+                    cell: (r) => <CodeBadge code={r.ma}/>,
+                },
+                {
+                    key: "viTri",
+                    label: "Vị trí vật lý",
+                    minW: "min-w-[180px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "text",
+                    priority: "secondary",
+                    value: (r) => r.viTri,
+                    hideBelow: "lg",
+                    cell: (r) => editMode && allowEdit ? (<InlineViTriEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })}/>) : (<span title={r.viTri} className="line-clamp-2 break-words text-[12px]">
+                      {r.viTri || "—"}
+                    </span>),
+                },
+                {
+                    key: "loai",
+                    label: "Loại yêu cầu",
+                    minW: "min-w-[150px]",
+                    cellClassName: "max-w-[180px]",
+                    filter: "cat",
+                    priority: "detail",
+                    value: (r) => r.loaiYeuCau,
+                    hideBelow: "xl",
+                },
+                {
+                    key: "trangThai",
+                    label: "Trạng thái",
+                    minW: "min-w-[120px]",
+                    align: "center",
+                    filter: "cat",
+                    priority: "secondary",
+                    value: (r) => r.trangThai,
+                    cell: (r) => editMode && allowEdit ? (<Select value={r.trangThai === "Hoạt động"
+                            ? "hoat_dong"
+                            : r.trangThai === "Đã ngừng"
+                                ? "ngung"
+                                : ""} onValueChange={(v) => {
+                            void saveField(r.id, "trang_thai", v);
+                        }}>
+                      <SelectTrigger className="h-7 w-[130px] text-xs">
+                        <SelectValue placeholder="—"/>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hoat_dong">Hoạt động</SelectItem>
+                        <SelectItem value="ngung">Đã ngừng</SelectItem>
+                      </SelectContent>
+                    </Select>) : (<Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"} className="text-[10px]">
+                      {r.trangThai || "—"}
+                    </Badge>),
+                },
+                // ==== TÀI SẢN ĐANG LẮP + các cột KẾ THỪA từ tài sản ====
+                {
+                    key: "thietBi",
+                    label: "Tài sản & Mã",
+                    minW: "min-w-[240px]",
+                    cellClassName: "max-w-[280px]",
+                    filter: "text",
+                    value: (r) => [r.thietBiMa, r.thietBiTen, r.thietBiSerial].filter(Boolean).join(" "),
+                    cell: (r) => editMode && allowEdit ? (<InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-toan-cuc"] })}/>) : r.daLap ? ((() => {
+                        const mr = multiRoleMap?.byMa.get(r.thietBiMa);
+                        return (<div className="flex items-start gap-1.5">
+                          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.thietBiMa }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="group flex min-w-0 flex-1 items-start gap-1.5 rounded-sm hover:bg-primary/5 -mx-1 px-1 py-0.5" title="Mở sổ lý lịch tài sản">
+                            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                              <AppTooltip noiDung={r.thietBiMa ? `Mã tài sản: ${r.thietBiMa}` : undefined}>
+                                <span title={r.thietBiTen} className="line-clamp-2 break-words text-[12px] font-bold leading-snug group-hover:text-primary group-hover:underline">
+                                  {r.thietBiTen || "—"}
+                                </span>
+                              </AppTooltip>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <CodeBadge code={r.thietBiMa} className="w-fit"/>
+                                </div>
+                                {mr && (<MultiRoleBadge info={mr} currentThanhPhanId={r.id} compact side="left"/>)}
+                              </div>
+                            </div>
+                            <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"/>
+                          </Link>
+                        </div>);
+                    })()) : (<Badge variant="outline" className="h-10 w-full border-dashed border-muted-foreground/30 bg-muted/20 flex flex-col items-center justify-center gap-1 font-normal text-muted-foreground">
+                      <Unplug className="h-3.5 w-3.5 opacity-50"/>
+                      <span className="text-[10px] uppercase tracking-wider">Trống</span>
+                    </Badge>),
+                },
+                {
+                    key: "soThanhPhanCuaTaiSan",
+                    label: "Đa vai trò",
+                    minW: "min-w-[170px]",
+                    filter: "cat",
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => (r.daLap ? String(r.soThanhPhanCuaTaiSan) : ""),
+                    cell: (r) => !r.daLap ? (<span className="text-xs text-muted-foreground">—</span>) : r.soThanhPhanCuaTaiSan > 1 ? (<Badge className="gap-1 bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 dark:text-amber-400">
+                      <Cpu className="h-3 w-3"/>
+                      {r.soThanhPhanCuaTaiSan} thành phần
+                    </Badge>) : (<Badge variant="outline" className="gap-1 text-muted-foreground">
+                      <Cpu className="h-3 w-3"/>1 thành phần
+                    </Badge>),
+                },
+                {
+                    key: "serial",
+                    label: "Số serial",
+                    minW: "min-w-[130px]",
+                    filter: "text",
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.thietBiSerial,
+                    cell: (r) => r.thietBiSerial ? (<span className="font-mono text-xs text-muted-foreground">
+                      {r.thietBiSerial}
+                    </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "model",
+                    label: "Model",
+                    minW: "min-w-[150px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    hideBelow: "lg",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.model,
+                    cell: (r) => (<ModelCell model={r.model} modelId={r.modelId} registry={modelRegistry}/>),
+                },
+                {
+                    key: "chungLoai",
+                    label: "Chủng loại",
+                    minW: "min-w-[150px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.chungLoai,
+                    cell: (r) => r.chungLoai ? (<span title={r.chungLoai} className="line-clamp-2 break-words text-[12px] leading-snug">
+                      {r.chungLoai}
+                    </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "nhaSanXuat",
+                    label: "Nhà sản xuất",
+                    minW: "min-w-[170px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.nhaSanXuat,
+                    cell: (r) => r.nhaSanXuat ? (<span title={r.nhaSanXuat} className="line-clamp-2 break-words text-[12px] leading-snug">
+                      {r.nhaSanXuat}
+                    </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "nhaCungCap",
+                    label: "Nhà cung cấp",
+                    minW: "min-w-[170px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.nhaCungCap,
+                    cell: (r) => r.nhaCungCap ? (<span title={r.nhaCungCap} className="line-clamp-2 break-words text-[12px] leading-snug">
+                      {r.nhaCungCap}
+                    </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "pN",
+                    label: "P/N",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.pN,
+                    cell: (r) => r.pN ? (<span className="font-mono text-xs">{r.pN}</span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "maTaiSanBravo",
+                    label: "Mã Bravo",
+                    minW: "min-w-[130px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.maTaiSanBravo,
+                    cell: (r) => r.maTaiSanBravo ? (<span className="font-mono text-xs text-muted-foreground">
+                      {r.maTaiSanBravo}
+                    </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "taiSanTrangThai",
+                    label: "Trạng thái tài sản",
+                    minW: "min-w-[140px]",
+                    align: "center",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.taiSanTrangThai,
+                    cell: (r) => r.taiSanTrangThai ? (<Badge variant="outline" className="text-[10px]">
+                      {r.taiSanTrangThai}
+                    </Badge>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "namSanXuat",
+                    label: "Năm SX",
+                    minW: "min-w-[90px]",
+                    align: "center",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.namSanXuat,
+                    sortValue: (r) => Number(r.namSanXuat) || 0,
+                },
+                {
+                    key: "namKhaiThac",
+                    label: "Năm khai thác",
+                    minW: "min-w-[120px]",
+                    align: "center",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.namKhaiThac,
+                    sortValue: (r) => Number(r.namKhaiThac) || 0,
+                },
+                {
+                    key: "ngayMua",
+                    label: "Ngày mua",
+                    minW: "min-w-[110px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.ngayMua,
+                },
+                {
+                    key: "hanBaoHanh",
+                    label: "Hạn bảo hành",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.hanBaoHanh,
+                },
+                {
+                    key: "tyLeTuoiTho",
+                    label: "% Tuổi thọ",
+                    minW: "min-w-[110px]",
+                    align: "right",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.tyLeTuoiTho,
+                    sortValue: (r) => parseFloat(r.tyLeTuoiTho) || 0,
+                },
+                {
+                    key: "tinhTrangKyThuat",
+                    label: "Tình trạng kỹ thuật",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.tinhTrangKyThuat,
+                    cell: (r) => r.tinhTrangKyThuat ? (<span title={r.tinhTrangKyThuat} className="line-clamp-2 break-words text-[12px] leading-snug">
+                      {r.tinhTrangKyThuat}
+                    </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "cheDoKdHc",
+                    label: "Chế độ KD/HC",
+                    minW: "min-w-[130px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.cheDoKdHc,
+                },
+                {
+                    key: "ngayBaoTriGanNhat",
+                    label: "BT gần nhất",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.ngayBaoTriGanNhat,
+                },
+                {
+                    key: "ngayBaoTriKeTiep",
+                    label: "BT kế tiếp",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.ngayBaoTriKeTiep,
+                },
+                {
+                    key: "taiSanViTri",
+                    label: "Vị trí tài sản",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.taiSanViTri,
+                },
+                {
+                    key: "taiSanDonViQuanLy",
+                    label: "ĐVQL tài sản",
+                    minW: "min-w-[140px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    inherited: true,
+                    group: "Tài sản",
+                    value: (r) => r.taiSanDonViQuanLy,
+                },
+                {
+                    key: "actions",
+                    label: "Hành động",
+                    minW: "min-w-[150px]",
+                    align: "center",
+                    hideBelow: "md",
+                    value: () => "",
+                    cell: (r) => (<Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={(e) => {
+                            e.stopPropagation();
+                            // Điều hướng sang cây hệ thống và mở Sheet chi tiết dùng chung.
+                            // Có tài sản → dùng editTb hiện có; chưa lắp → chỉ mở cây tại focus mặc định.
+                            navigate({
+                                to: "/he-thong/cay",
+                                search: r.daLap && r.thietBiMa ? { editTb: r.thietBiMa } : {},
+                            });
+                        }} title="Mở Sheet chi tiết trong cây hệ thống (dùng chung với view Danh sách/Sơ đồ)">
+                    <ExternalLink className="h-3.5 w-3.5"/> Mở chi tiết
+                  </Button>),
+                },
+            ]}/>
+
+          {selectedTp && (<ThanhPhanChiTietDialog viTri={{
+                    id: selectedTp.row.id,
+                    ma_thanh_phan: selectedTp.row.ma,
+                    ten: selectedTp.row.ten,
+                    he_thong_id: selectedTp.row.heThongId,
+                    loai_thiet_bi_yeu_cau: selectedTp.row.modelId,
+                    trang_thai: selectedTp.row.trangThai === "Đã ngừng" ? "ngung" : "hoat_dong",
+                    bat_buoc: false,
+                    device: selectedTp.row.daLap
+                        ? {
+                            thiet_bi_id: "", // RPC doesn't provide asset ID
+                            ma_thiet_bi: selectedTp.row.thietBiMa,
+                            ten_thiet_bi: selectedTp.row.thietBiTen,
+                            ma_serial: selectedTp.row.thietBiSerial,
+                        }
+                        : null,
+                }} heThongId={selectedTp.heThongId} canManage={allowEdit} onClose={() => setSelectedTp(null)} onOpenDevice={(ma) => navigate({
+                    to: "/thiet-bi/$maThietBi",
+                    params: { maThietBi: ma },
+                    search: { tab: "tong-quan", doc: undefined, q: undefined },
+                })}/>)}
+        </>)}
+
+      {loadingTsReal && viewMode === "asset" && (<div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin"/> Đang tải dữ liệu tài sản…
+        </div>)}
+      {errorTsReal && viewMode === "asset" && (<div className="text-sm text-destructive">
+          Lỗi tải tài sản: {errorTsReal.message}
+        </div>)}
+
+      {!loadingTsReal && !errorTsReal && viewMode === "asset" && (<StandardTable tableKey={`${tableKey}:tai-san`} rows={taiSanRows} trangThai={{ dangTai: loadingTsReal, loi: errorTsReal }} infiniteScroll={{
+                hasNextPage: hasNextTs,
+                fetchNextPage: fetchNextTs,
+                isFetchingNextPage: isFetchingTs,
+                totalCount: totalTs,
+            }} getRowId={(r) => r.id} selected={selectedIds} setSelected={setSelectedIds} requireFilterToShow={false} emptyText="Không có tài sản phù hợp." countUnit="tài sản" maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined} selectable bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear, }) => (<>
+              <BulkActionButton label="Sao chép mã" icon={<Copy className="h-3.5 w-3.5"/>} variant="outline" xacNhan={{
+                    tieuDe: "Sao chép mã các tài sản đã chọn?",
+                    moTa: (<>
+                      Sẽ chép <b>{selectedRows.length}</b> mã tài sản vào bộ nhớ tạm.
+                    </>),
+                    nutXacNhan: "Sao chép",
+                }} onRun={() => copyCodes(selectedRows.map((r) => r.ma))}/>
+              <TableExportDialog ten="tai-san" countUnit="tài sản" visibleColumns={visibleColumns} allColumns={allColumns} rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }} trigger={<AppTooltip noiDung="Xuất dữ liệu ra file CSV">
+                    <Button size="sm" variant="outline" className="h-7 w-7 p-0">
+                      <Download className="h-3.5 w-3.5"/>
+                      <span className="sr-only">Xuất CSV…</span>
+                    </Button>
+                  </AppTooltip>}/>
+              <AppTooltip noiDung="Bỏ chọn">
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
+                  <XIcon className="h-4 w-4"/>
+                  <span className="sr-only">Bỏ chọn</span>
+                </Button>
+              </AppTooltip>
+            </>)} toolbarLeft={<div className="flex items-center gap-1.5">
+              {ModeToggle}
+              <div className="relative flex items-center">
+                <Button variant="ghost" size="icon" className={cn("h-7 w-7 transition-all", searchExpanded || q ? "text-primary" : "text-muted-foreground")} onClick={() => {
+                    setSearchExpanded(!searchExpanded);
+                    if (!searchExpanded)
+                        setTimeout(() => searchInputRef.current?.focus(), 100);
+                }}>
+                  <Search className="h-3.5 w-3.5"/>
+                </Button>
+                {(searchExpanded || q) && (<div className="flex items-center">
+                    <Input ref={searchInputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm tài sản…" className="h-7 w-[180px] bg-background text-xs shadow-sm ml-1 pr-7"/>
+                    {q && (<button type="button" onClick={() => setQ("")} className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-20">
+                        <X className="h-3 w-3"/>
+                      </button>)}
+                  </div>)}
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Select value={bucket} onValueChange={(v) => setBucket(v)}>
+                  <SelectTrigger className="h-7 w-[90px] px-1 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tất cả</SelectItem>
+                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2-3">2 – 3</SelectItem>
+                    <SelectItem value=">3">&gt; 3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
+                <span className="tabular-nums">
+                  Đã tải {taiSanRows.length} {totalTs > 0 ? `/ ${totalTs.toLocaleString("vi-VN")}` : ""} tài sản
+                </span>
+              </div>
+            </div>} columns={[
+                {
+                    key: "ma",
+                    label: "Mã tài sản",
+                    minW: "min-w-[140px]",
+                    filter: "text",
+                    value: (r) => r.ma,
+                    priority: "primary",
+                    cell: (r) => <CodeBadge code={r.ma}/>,
+                    defaultHidden: true,
+                },
+                {
+                    key: "ten",
+                    label: "Tên tài sản",
+                    minW: "min-w-[220px]",
+                    cellClassName: "max-w-[280px]",
+                    filter: "text",
+                    sticky: true,
+                    value: (r) => r.ten,
+                    priority: "primary",
+                    cell: (r) => (<div className="flex items-start gap-1.5">
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="group flex flex-1 items-start gap-1 hover:text-primary">
+                    <span title={r.ten} className="line-clamp-2 break-words font-medium leading-snug group-hover:underline">
+                      {r.ten || "—"}
+                    </span>
+                    <AnomalyBadge score={Number(r.anomalyScore) || 0} count90d={Number(r.soSuCo90n) || 0} className="shrink-0"/>
+                    <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"/>
+                  </Link>
+                  <MultiRoleBadge info={multiRoleMap?.byMa.get(r.ma)} compact side="left"/>
+                </div>),
+                },
+                {
+                    key: "soThanhPhanDangGan",
+                    label: "Số thành phần đang gắn",
+                    minW: "min-w-[180px]",
+                    align: "center",
+                    filter: "cat",
+                    sortable: true,
+                    sortValue: (r) => r.soThanhPhanDangGan,
+                    value: (r) => String(r.soThanhPhanDangGan),
+                    cell: (r) => r.soThanhPhanDangGan === 0 ? (<Badge variant="outline" className="gap-1 text-muted-foreground">
+                    <Unplug className="h-3 w-3"/> Chưa gắn
+                  </Badge>) : r.soThanhPhanDangGan > 1 ? (<Badge className="gap-1 bg-amber-500/15 text-amber-700 hover:bg-amber-500/20 dark:text-amber-400">
+                    <Cpu className="h-3 w-3"/> {r.soThanhPhanDangGan} thành phần
+                  </Badge>) : (<Badge variant="secondary" className="gap-1">
+                    <Cpu className="h-3 w-3"/> 1 thành phần
+                  </Badge>),
+                },
+                {
+                    key: "danhSachHeThong",
+                    label: "Hệ thống đang lắp",
+                    minW: "min-w-[200px]",
+                    cellClassName: "max-w-[240px]",
+                    filter: "text",
+                    value: (r) => r.danhSachHeThong,
+                    cell: (r) => (<CellPreview title={`Hệ thống đang lắp — ${r.ma}`} content={r.danhSachHeThong} className="line-clamp-3 break-words text-[12px] leading-snug"/>),
+                },
+                {
+                    key: "danhSachThanhPhan",
+                    label: "Thành phần đang lắp",
+                    minW: "min-w-[260px]",
+                    cellClassName: "max-w-[320px]",
+                    filter: "text",
+                    value: (r) => r.danhSachThanhPhan,
+                    cell: (r) => (<CellPreview title={`Thành phần đang lắp — ${r.ma}`} content={r.danhSachThanhPhan} preformatted className="whitespace-pre-line break-words text-xs leading-relaxed line-clamp-4"/>),
+                },
+                {
+                    key: "serial",
+                    label: "Serial",
+                    minW: "min-w-[130px]",
+                    cellClassName: "max-w-[180px]",
+                    filter: "text",
+                    hideBelow: "lg",
+                    value: (r) => r.serial,
+                    priority: "secondary",
+                    cell: (r) => r.serial ? (<span className="break-all font-mono text-xs text-muted-foreground">
+                    {r.serial}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "model",
+                    label: "Model",
+                    minW: "min-w-[150px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    hideBelow: "lg",
+                    value: (r) => r.model,
+                    priority: "secondary",
+                    cell: (r) => (<ModelCell model={r.model} modelId={r.modelId} registry={modelRegistry}/>),
+                },
+                {
+                    key: "chungLoai",
+                    label: "Chủng loại",
+                    minW: "min-w-[150px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    hideBelow: "xl",
+                    value: (r) => r.chungLoai,
+                    priority: "detail",
+                    cell: (r) => r.chungLoai ? (<span title={r.chungLoai} className="line-clamp-2 break-words text-sm leading-snug">
+                    {r.chungLoai}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "nhaSanXuat",
+                    label: "Nhà sản xuất",
+                    minW: "min-w-[170px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.nhaSanXuat,
+                    priority: "detail",
+                    cell: (r) => r.nhaSanXuat ? (<span title={r.nhaSanXuat} className="line-clamp-2 break-words text-sm leading-snug">
+                    {r.nhaSanXuat}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "nhaCungCap",
+                    label: "Nhà cung cấp",
+                    minW: "min-w-[170px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.nhaCungCap,
+                    priority: "detail",
+                    cell: (r) => r.nhaCungCap ? (<span title={r.nhaCungCap} className="line-clamp-2 break-words text-sm leading-snug">
+                    {r.nhaCungCap}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "donViQuanLy",
+                    label: "Đơn vị quản lý",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    hideBelow: "xl",
+                    inherited: true,
+                    value: (r) => r.donViQuanLy,
+                    priority: "secondary",
+                    cell: (r) => r.donViQuanLy ? (<span title={r.donViQuanLy} className="line-clamp-2 break-words text-[12px] leading-snug">
+                    {r.donViQuanLy}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "viTri",
+                    label: "Vị trí",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[200px]",
+                    filter: "cat",
+                    hideBelow: "lg",
+                    inherited: true,
+                    value: (r) => r.viTri,
+                    priority: "secondary",
+                    cell: (r) => r.viTri ? (<span title={r.viTri} className="line-clamp-2 break-words text-[12px]">
+                    {r.viTri}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "trangThai",
+                    label: "Trạng thái",
+                    minW: "min-w-[130px]",
+                    align: "center",
+                    filter: "cat",
+                    value: (r) => r.trangThai,
+                    priority: "secondary",
+                    cell: (r) => r.trangThai ? (<Badge variant="secondary" className="text-[10px]">
+                    {r.trangThai}
+                  </Badge>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                // ---- Thuộc tính mở rộng của tài sản ----
+                {
+                    key: "pN",
+                    label: "P/N",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    value: (r) => r.pN,
+                    cell: (r) => r.pN ? (<span className="font-mono text-xs">{r.pN}</span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "maTaiSanBravo",
+                    label: "Mã Bravo",
+                    minW: "min-w-[130px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.maTaiSanBravo,
+                    cell: (r) => r.maTaiSanBravo ? (<span className="font-mono text-xs text-muted-foreground">{r.maTaiSanBravo}</span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "namSanXuat",
+                    label: "Năm SX",
+                    minW: "min-w-[90px]",
+                    align: "center",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    value: (r) => r.namSanXuat,
+                    sortValue: (r) => Number(r.namSanXuat) || 0,
+                },
+                {
+                    key: "namKhaiThac",
+                    label: "Năm khai thác",
+                    minW: "min-w-[120px]",
+                    align: "center",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    value: (r) => r.namKhaiThac,
+                    sortValue: (r) => Number(r.namKhaiThac) || 0,
+                },
+                {
+                    key: "ngayMua",
+                    label: "Ngày mua",
+                    minW: "min-w-[110px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.ngayMua,
+                },
+                {
+                    key: "hanBaoHanh",
+                    label: "Hạn bảo hành",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.hanBaoHanh,
+                },
+                {
+                    key: "tyLeTuoiTho",
+                    label: "% Tuổi thọ",
+                    minW: "min-w-[110px]",
+                    align: "right",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "xl",
+                    value: (r) => r.tyLeTuoiTho,
+                    sortValue: (r) => parseFloat(r.tyLeTuoiTho) || 0,
+                },
+                {
+                    key: "tinhTrangKyThuat",
+                    label: "Tình trạng kỹ thuật",
+                    minW: "min-w-[160px]",
+                    cellClassName: "max-w-[220px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.tinhTrangKyThuat,
+                    cell: (r) => r.tinhTrangKyThuat ? (<span title={r.tinhTrangKyThuat} className="line-clamp-2 break-words text-sm leading-snug">
+                    {r.tinhTrangKyThuat}
+                  </span>) : (<span className="text-xs text-muted-foreground">—</span>),
+                },
+                {
+                    key: "cheDoKdHc",
+                    label: "Chế độ KD/HC",
+                    minW: "min-w-[130px]",
+                    filter: "cat",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.cheDoKdHc,
+                },
+                {
+                    key: "ngayBaoTriGanNhat",
+                    label: "BT gần nhất",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.ngayBaoTriGanNhat,
+                },
+                {
+                    key: "ngayBaoTriKeTiep",
+                    label: "BT kế tiếp",
+                    minW: "min-w-[120px]",
+                    filter: "text",
+                    defaultHidden: true,
+                    hideBelow: "2xl",
+                    value: (r) => r.ngayBaoTriKeTiep,
+                },
+                {
+                    key: "actions",
+                    label: "Hành động",
+                    minW: "min-w-[150px]",
+                    align: "center",
+                    hideBelow: "md",
+                    value: () => "",
+                    cell: (r) => (<Button asChild size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" title="Mở sổ lý lịch tài sản">
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.thietBiMa || r.ma }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
+                    <ExternalLink className="h-3.5 w-3.5"/> Sổ lý lịch
+                  </Link>
+                </Button>),
+                },
+            ]}/>)}
+    </div>);
+}
+function InlineTextEdit({ initial, placeholder, onSave, }) {
+    const [value, setValue] = useState(initial);
+    const [saving, setSaving] = useState(false);
+    const [dirty, setDirty] = useState(false);
+    const initialRef = useRef(initial);
+    useEffect(() => {
+        setValue(initial);
+        initialRef.current = initial;
+    }, [initial]);
+    async function commit() {
+        if (!dirty || saving)
+            return;
+        setSaving(true);
+        try {
+            await onSave(value);
+            setDirty(false);
+            initialRef.current = value;
+        }
+        catch (e) {
+            toast.error(e.message);
+        }
+        finally {
+            setSaving(false);
+        }
+    }
+    return (<div className="flex w-full items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+      <Input value={value} onChange={(e) => {
+            setValue(e.target.value);
+            setDirty(e.target.value !== initialRef.current);
+        }} onKeyDown={(e) => {
+            if (e.key === "Enter")
+                void commit();
+            if (e.key === "Escape") {
+                setValue(initialRef.current);
+                setDirty(false);
+            }
+        }} placeholder={placeholder} className="h-7 w-full border-none bg-transparent p-0 text-[12px] font-bold focus-visible:ring-0" disabled={saving}/>
+      {saving && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground"/>}
+      {dirty && !saving && (<>
+          <button type="button" onMouseDown={(e) => {
+                e.preventDefault();
+                void commit();
+            }} className="text-emerald-600 hover:text-emerald-500" aria-label="Lưu" title="Lưu (Enter)">
+            <Check className="h-3.5 w-3.5"/>
+          </button>
+          <button type="button" onMouseDown={(e) => {
+                e.preventDefault();
+                setValue(initialRef.current);
+            }} className="text-muted-foreground hover:text-foreground" aria-label="Huỷ" title="Huỷ (Esc)">
+            <XCircle className="h-3.5 w-3.5"/>
+          </button>
+        </>)}
+    </div>);
+}
+// ---- Sửa nhanh VỊ TRÍ LẮP ĐẶT của thành phần (edit mode, dạng bảng) ----
+function InlineViTriEdit({ row, onChanged }) {
+    const [saving, setSaving] = useState(false);
+    const { data: dsViTri = [], isLoading } = useQuery({
+        queryKey: ["dm-vi-tri-picker"],
+        staleTime: 300000,
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("dm_vi_tri")
+                .select("id, ma, ten")
+                .eq("active", true)
+                .is("merged_into", null)
+                .order("thu_tu");
+            if (error)
+                throw error;
+            return data ?? [];
+        },
+    });
+    const options = useMemo(() => [
+        { value: "", label: "— Không xác định —" },
+        ...dsViTri.map((v) => ({ value: v.id, label: v.ten, hint: v.ma })),
+    ], [dsViTri]);
+    async function save(v) {
+        if (saving)
+            return;
+        setSaving(true);
+        try {
+            const { error } = await supabase
+                .from("he_thong_thanh_phan")
+                .update({ vi_tri_id: v ? v : null })
+                .eq("id", row.id);
+            if (error)
+                throw error;
+            toast.success("Đã cập nhật vị trí lắp đặt");
+            onChanged();
+        }
+        catch (e) {
+            toast.error(e.message || "Không lưu được vị trí");
+        }
+        finally {
+            setSaving(false);
+        }
+    }
+    return (<Combobox options={options} value={row.viTriId ?? ""} onChange={(v) => void save(v)} loading={isLoading} placeholder={saving ? "Đang lưu…" : "Chọn vị trí…"} searchPlaceholder="Tìm mã / tên vị trí…" emptyText="Không có vị trí phù hợp" className="h-7 w-[200px] text-[11px]"/>);
+}
+function InlineTaiSanEdit({ row, onChanged }) {
+    const [op, setOp] = useState(null);
+    const target = useMemo(() => ({
+        heThongId: row.heThongId,
+        thanhPhanId: row.id,
+        maThanhPhan: row.ma,
+        tenThanhPhan: row.ten,
+        viTriId: row.viTriId,
+    }), [row]);
+    return (<div className="flex flex-col gap-1">
+      {row.daLap && (<div className="flex items-center gap-1.5">
+          <CodeBadge code={row.thietBiMa} className="w-fit"/>
+          <span className="truncate text-xs text-muted-foreground">{row.thietBiTen}</span>
+        </div>)}
+      <div className="flex items-center gap-1">
+        {row.daLap ? (<Button size="sm" variant="outline" className="h-7 w-[240px] justify-start text-[11px] font-normal" onClick={() => setOp({ mode: "thay", target })}>
+            <Wrench className="mr-1.5 h-3 w-3"/> Thay thế tài sản...
+          </Button>) : (<Button size="sm" variant="outline" className="h-7 w-[240px] justify-start text-[11px] font-normal" onClick={() => setOp({ mode: "lap", target })}>
+            <PackageOpen className="mr-1.5 h-3 w-3"/> Lắp tài sản...
+          </Button>)}
+        {row.daLap && (<Button size="sm" variant="ghost" className="h-7 gap-1 px-1.5 text-xs text-destructive hover:text-destructive" onClick={() => setOp({ mode: "thao", target })} title="Tháo tài sản khỏi thành phần">
+            <Unplug className="h-3.5 w-3.5"/> Tháo
+          </Button>)}
+      </div>
+      {op && (<OperationDialog mode={op.mode} target={op.target} onClose={() => setOp(null)} onSuccess={onChanged}/>)}
+    </div>);
+}
+// Ô có nội dung dài: bấm để mở modal xem đầy đủ
+function CellPreview({ title, content, className, preformatted = false, children, }) {
+    const [open, setOpen] = useState(false);
+    if (!content)
+        return <span className="text-xs italic text-muted-foreground">—</span>;
+    return (<>
+      <button type="button" title={content} onClick={(e) => {
+            e.stopPropagation();
+            setOpen(true);
+        }} className={`w-full cursor-pointer text-left hover:text-primary ${className ?? ""}`} aria-label={`Xem chi tiết ${title.toLowerCase()}`}>
+        {children ?? content}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription className="sr-only">Nội dung đầy đủ của ô</DialogDescription>
+          </DialogHeader>
+          <div className={preformatted
+            ? "max-h-[60vh] overflow-auto whitespace-pre-line break-words rounded-md bg-muted/40 p-3 text-sm leading-relaxed"
+            : "max-h-[60vh] overflow-auto break-words text-sm leading-relaxed"}>
+            {content}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>);
+}

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { useMemo, useState, useEffect, useRef } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Component,
@@ -71,6 +71,8 @@ import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDial
 
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import type { KeysetCursor } from "@/lib/mirats/db/keyset";
+
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
 export type TaiSanRow = {
@@ -106,38 +108,41 @@ export type TaiSanRow = {
   anomalyScore: number | null;
 };
 
-export function useTaiSanRows() {
-  return useQuery({
-    queryKey: ["tai-san-thanh-phan-toan-cuc"],
+export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", enabled: boolean = true) {
+  return useInfiniteQuery({
+    queryKey: ["tai-san-thanh-phan-infinite", q, bucket],
+    enabled,
     staleTime: 60_000,
-    queryFn: async (): Promise<TaiSanRow[]> => {
-      const pageSize = 1000;
-      let from = 0;
-      const all: TaiSanRow[] = [];
-      const controller = new AbortController();
-      try {
-        for (;;) {
-          const { data, error } = await supabase
-            .rpc("rpc_tai_san_toan_cuc")
-            .range(from, from + pageSize - 1);
-          if (error) throw error;
-          const rows = (data ?? []) as TaiSanRow[];
-          if (!rows || rows.length === 0) break;
-          all.push(...rows);
-          if (rows.length < pageSize) break;
-          from += pageSize;
-          if (from > 10000) {
-            console.warn("Too many asset rows, truncating to 10k to prevent crash");
-            break;
-          }
-        }
-      } finally {
-        controller.abort();
-      }
-      return all;
+    initialPageParam: null as KeysetCursor | null,
+    queryFn: async ({ pageParam }) => {
+      const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
+      const res = await fetchKeyset<TaiSanRow>(supabase, {
+        bang: "rpc_tai_san_toan_cuc",
+        cot: [
+          "id", "ma", "ten", "serial", "model", "modelId", "chungLoai", "nhaSanXuat",
+          "nhaCungCap", "donViQuanLy", "trangThai", "viTri", "soThanhPhanDangGan",
+          "danhSachThanhPhan", "danhSachHeThong", "pN", "maTaiSanBravo", "namSanXuat",
+          "namKhaiThac", "ngayMua", "hanBaoHanh", "tyLeTuoiTho", "tinhTrangKyThuat",
+          "cheDoKdHc", "ngayBaoTriGanNhat", "ngayBaoTriKeTiep", "soSuCo90n", "anomalyScore"
+        ],
+        sortField: "ma",
+        dir: "asc",
+        cursor: pageParam,
+        kichThuoc: 200,
+      });
+      return res;
     },
+    getNextPageParam: (lastPage) => (lastPage.ket ? undefined : lastPage.cursor),
   });
 }
+
+/** @deprecated dùng useInfiniteTaiSanRows */
+export function useTaiSanRows() {
+  const { data } = useInfiniteTaiSanRows("", "all", true);
+  const rows = useMemo(() => data?.pages.flatMap((p) => p.rows) ?? [], [data]);
+  return { data: rows, isLoading: false, error: null };
+}
+
 
 // ---- Kiểu dữ liệu 1 dòng: 1 THÀNH PHẦN HỆ THỐNG (vai trò) + tài sản đang lắp (kế thừa)
 export type ThanhPhanRow = {
@@ -184,38 +189,43 @@ export type ThanhPhanRow = {
 
 const TT_LABEL: Record<string, string> = { hoat_dong: "Hoạt động", ngung: "Đã ngừng" };
 
-export function useThanhPhanRows() {
-  return useQuery({
-    queryKey: ["thanh-phan-toan-cuc"],
+export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true) {
+  return useInfiniteQuery({
+    queryKey: ["thanh-phan-infinite", q],
+    enabled,
     staleTime: 60_000,
-    queryFn: async (): Promise<ThanhPhanRow[]> => {
-      const pageSize = 1000;
-      let from = 0;
-      const all: ThanhPhanRow[] = [];
-      try {
-        for (;;) {
-          const { data, error } = await supabase
-            .rpc("rpc_thanh_phan_toan_cuc")
-            .range(from, from + pageSize - 1);
-          if (error) throw error;
-          const rows = (data ?? []) as ThanhPhanRow[];
-          if (!rows || rows.length === 0) break;
-          all.push(...rows);
-          if (rows.length < pageSize) break;
-          from += pageSize;
-          if (from > 10000) {
-            console.warn("Too many component rows, truncating to 10k to prevent crash");
-            break;
-          }
-        }
-      } catch (err) {
-        console.error("rpc_thanh_phan_toan_cuc error:", err);
-        throw err;
-      }
-      return all;
+    initialPageParam: null as KeysetCursor | null,
+    queryFn: async ({ pageParam }) => {
+      const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
+      const res = await fetchKeyset<ThanhPhanRow>(supabase, {
+        bang: "rpc_thanh_phan_toan_cuc",
+        cot: [
+          "id", "ma", "ten", "nhomHeThong", "phanLoai", "heThong", "heThongId",
+          "viTriId", "loaiYeuCau", "viTri", "trangThai", "thietBiMa", "thietBiTen",
+          "thietBiSerial", "model", "modelId", "chungLoai", "nhaSanXuat", "nhaCungCap",
+          "daLap", "soThanhPhanCuaTaiSan", "taiSanTrangThai", "namSanXuat",
+          "namKhaiThac", "ngayMua", "hanBaoHanh", "pN", "maTaiSanBravo", "tyLeTuoiTho",
+          "tinhTrangKyThuat", "ngayBaoTriGanNhat", "ngayBaoTriKeTiep", "cheDoKdHc",
+          "taiSanViTri", "taiSanDonViQuanLy", "anomalyScore"
+        ],
+        sortField: "ma",
+        dir: "asc",
+        cursor: pageParam,
+        kichThuoc: 200,
+      });
+      return res;
     },
+    getNextPageParam: (lastPage) => (lastPage.ket ? undefined : lastPage.cursor),
   });
 }
+
+/** @deprecated dùng useInfiniteThanhPhanRows */
+export function useThanhPhanRows() {
+  const { data } = useInfiniteThanhPhanRows("", true);
+  const rows = useMemo(() => data?.pages.flatMap((p) => p.rows) ?? [], [data]);
+  return { data: rows, isLoading: false, error: null };
+}
+
 
 // ---- Tiện ích thao tác hàng loạt trên dòng đã chọn ----
 function csvCell(v: unknown): string {
@@ -353,19 +363,43 @@ export function ThanhPhanTable({
   tableKey = "he-thong:thanh-phan-toan-cuc",
   externalEditMode,
 }: ThanhPhanTableProps) {
-  const { data: rows = [], isLoading, error } = useThanhPhanRows();
-  const { data: taiSanRows = [], isLoading: loadingTS, error: errorTS } = useTaiSanRows();
-  const { data: multiRoleMap } = useMultiRoleMap();
   const [q, setQ] = useState("");
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">(
     "thanh-phan:view-mode",
     "component",
   );
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
+
+  const {
+    data: rowsData,
+    fetchNextPage: fetchNextTp,
+    hasNextPage: hasNextTp,
+    isFetchingNextPage: isFetchingTp,
+    isLoading: loadingTp,
+    error: errorTp,
+  } = useInfiniteThanhPhanRows(q, viewMode === "component");
+
+  const {
+    data: tsData,
+    fetchNextPage: fetchNextTs,
+    hasNextPage: hasNextTs,
+    isFetchingNextPage: isFetchingTs,
+    isLoading: loadingTsReal,
+    error: errorTsReal,
+  } = useInfiniteTaiSanRows(q, bucket, viewMode === "asset");
+
+  const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
+  const taiSanRows = useMemo(() => tsData?.pages.flatMap((p) => p.rows) ?? [], [tsData]);
+
+  const isLoading = loadingTp || loadingTsReal;
+  const error = errorTp || errorTsReal;
+
+  const { data: multiRoleMap } = useMultiRoleMap();
   const [internalEditMode, setInternalEditMode] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
   const [selectedTp, setSelectedTp] = useState<{ row: ThanhPhanRow; heThongId: string } | null>(
     null,
   );
@@ -495,19 +529,21 @@ export function ThanhPhanTable({
     [filteredTaiSan],
   );
 
-  // ---- Phân trang phía client ----
-  // `filteredTotal` = tổng số dòng SAU khi StandardTable áp dụng bộ lọc cột (nhận qua callback).
-  const [pageSize, setPageSize] = useState<number>(50);
+  const [totalTp, setTotalTp] = useState(0);
+  const [totalTs, setTotalTs] = useState(0);
 
-  const [page, setPage] = useState(1);
-  const [filteredTotal, setFilteredTotal] = useState(0);
   useEffect(() => {
-    setPage(1);
-  }, [q, pageSize, viewMode, bucket]);
-  const total = filteredTotal;
-  const totalPages = pageSize >= total ? 1 : Math.max(1, Math.ceil(total / pageSize));
-  const currentPage = Math.min(Math.max(page, 1), totalPages);
-  const pageStart = (currentPage - 1) * pageSize;
+    if (rowsData?.pages[0]?.totalCount !== undefined) {
+      setTotalTp(rowsData.pages[0].totalCount);
+    }
+  }, [rowsData]);
+
+  useEffect(() => {
+    if (tsData?.pages[0]?.totalCount !== undefined) {
+      setTotalTs(tsData.pages[0].totalCount);
+    }
+  }, [tsData]);
+
 
   const ModeToggle = (
     <div className="inline-flex items-center rounded-md border bg-muted/30 p-0.5 shrink-0">
@@ -559,12 +595,14 @@ export function ThanhPhanTable({
             className="astryx-table"
             tableKey={tableKey}
             rows={filtered}
-            trangThai={{ dangTai: isLoading, loi: error }}
-            clientPagination={{
-              page: currentPage,
-              pageSize,
-              onFilteredTotalChange: setFilteredTotal,
+            trangThai={{ dangTai: loadingTp, loi: errorTp }}
+            infiniteScroll={{
+              hasNextPage: hasNextTp,
+              fetchNextPage: fetchNextTp,
+              isFetchingNextPage: isFetchingTp,
+              totalCount: totalTp,
             }}
+
             getRowId={(r) => r.id}
             selected={selectedIds}
             setSelected={setSelectedIds}
@@ -727,54 +765,12 @@ export function ThanhPhanTable({
                     </div>
                   )}
                 </div>
-                {/* Removed redundant "đã lắp tài sản" count as requested */}
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Select
-                    value={String(pageSize)}
-                    onValueChange={(v) => setPageSize(v === "all" ? Math.max(total, 1) : Number(v))}
-                  >
-                    <SelectTrigger className="h-7 w-[70px] px-1 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="25">25</SelectItem>
-                      <SelectItem value="50">50</SelectItem>
-                      <SelectItem value="100">100</SelectItem>
-                      <SelectItem value="200">200</SelectItem>
-                      <SelectItem value="all">Hết</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 w-7 p-0"
-                    disabled={currentPage <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    aria-label="Trang trước"
-                  >
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                  </Button>
-                  <span className="text-xs tabular-nums text-muted-foreground">
-                    {total === 0
-                      ? "0"
-                      : `${pageStart + 1}–${Math.min(pageStart + pageSize, total)}`}{" "}
-                    / {total.toLocaleString("vi-VN")}
-                    <span className="mx-1">·</span>
-                    Trang {currentPage}/{totalPages}
+                <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
+                  <span className="tabular-nums">
+                    Đã tải {rows.length} {totalTp > 0 ? `/ ${totalTp.toLocaleString("vi-VN")}` : ""} thành phần
                   </span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 w-7 p-0"
-                    disabled={currentPage >= totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    aria-label="Trang sau"
-                  >
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </Button>
                 </div>
+
               </div>
             }
             columns={[
@@ -1384,26 +1380,30 @@ export function ThanhPhanTable({
         </>
       )}
 
-      {loadingTS && viewMode === "asset" && (
+      {loadingTsReal && viewMode === "asset" && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tải dữ liệu tài sản…
         </div>
       )}
-      {errorTS && viewMode === "asset" && (
+      {errorTsReal && viewMode === "asset" && (
         <div className="text-sm text-destructive">
-          Lỗi tải tài sản: {(errorTS as Error).message}
+          Lỗi tải tài sản: {(errorTsReal as Error).message}
         </div>
       )}
 
-      {!loadingTS && !errorTS && viewMode === "asset" && (
+      {!loadingTsReal && !errorTsReal && viewMode === "asset" && (
+
         <StandardTable<TaiSanRow>
           tableKey={`${tableKey}:tai-san`}
-          rows={filteredTaiSan}
-          clientPagination={{
-            page: currentPage,
-            pageSize,
-            onFilteredTotalChange: setFilteredTotal,
+          rows={taiSanRows}
+          trangThai={{ dangTai: loadingTsReal, loi: errorTsReal }}
+          infiniteScroll={{
+            hasNextPage: hasNextTs,
+            fetchNextPage: fetchNextTs,
+            isFetchingNextPage: isFetchingTs,
+            totalCount: totalTs,
           }}
+
           getRowId={(r) => r.id}
           selected={selectedIds}
           setSelected={setSelectedIds}
@@ -1512,53 +1512,14 @@ export function ThanhPhanTable({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Select
-                  value={String(pageSize)}
-                  onValueChange={(v) => setPageSize(v === "all" ? Math.max(total, 1) : Number(v))}
-                >
-                  <SelectTrigger className="h-7 w-[70px] px-1 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                    <SelectItem value="200">200</SelectItem>
-                    <SelectItem value="all">Hết</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-7 w-7 p-0"
-                  disabled={currentPage <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  aria-label="Trang trước"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                </Button>
-                <span className="text-xs tabular-nums text-muted-foreground">
-                  {total === 0 ? "0" : `${pageStart + 1}–${Math.min(pageStart + pageSize, total)}`}{" "}
-                  / {total.toLocaleString("vi-VN")}
-                  <span className="mx-1">·</span>
-                  Trang {currentPage}/{totalPages}
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
+                <span className="tabular-nums">
+                  Đã tải {taiSanRows.length} {totalTs > 0 ? `/ ${totalTs.toLocaleString("vi-VN")}` : ""} tài sản
                 </span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-7 w-7 p-0"
-                  disabled={currentPage >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  aria-label="Trang sau"
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
               </div>
             </div>
           }
+
           columns={[
             {
               key: "ma",
