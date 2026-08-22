@@ -1,17 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { verifyApiKey } from "../api-keys.functions";
 
-// Mock supabaseAdmin to avoid real DB calls during logic tests
+// Define an interface for our mock to avoid TS errors
+interface MockSupabaseAdmin {
+  from: any;
+  select: any;
+  eq: any;
+  single: any;
+  insert: any;
+  update: any;
+}
+
+const mockSupabaseAdmin: MockSupabaseAdmin = {
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  single: vi.fn(),
+  insert: vi.fn().mockReturnThis(),
+  update: vi.fn().mockReturnThis(),
+};
+
 vi.mock("@/integrations/backend/admin.server", () => ({
-  supabaseAdmin: {
-    from: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    then: vi.fn(),
-  },
+  supabaseAdmin: mockSupabaseAdmin,
 }));
 
 describe("API Key Security Boundary Tests", () => {
@@ -20,11 +30,16 @@ describe("API Key Security Boundary Tests", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default mock setup for successful calls
+    mockSupabaseAdmin.from.mockReturnThis();
+    mockSupabaseAdmin.select.mockReturnThis();
+    mockSupabaseAdmin.eq.mockReturnThis();
+    mockSupabaseAdmin.insert.mockReturnThis();
+    mockSupabaseAdmin.update.mockReturnThis();
   });
 
   it("should reject expired keys", async () => {
-    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    (supabaseAdmin.single as any).mockResolvedValue({
+    mockSupabaseAdmin.single.mockResolvedValue({
       data: {
         secret_hash: "somehash",
         user_id: "user-a",
@@ -40,8 +55,7 @@ describe("API Key Security Boundary Tests", () => {
   });
 
   it("should reject revoked keys", async () => {
-    const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    (supabaseAdmin.single as any).mockResolvedValue({
+    mockSupabaseAdmin.single.mockResolvedValue({
       data: {
         secret_hash: "somehash",
         user_id: "user-a",
@@ -57,19 +71,16 @@ describe("API Key Security Boundary Tests", () => {
   });
 
   it("should fail closed if MIRATS_API_PEPPER is missing/default in production", async () => {
-    // This logic will be implemented in api-keys.functions.ts
-    // For now, we simulate the 'default' pepper scenario
     const originalPepper = process.env.MIRATS_API_PEPPER;
+    const originalNodeEnv = process.env.NODE_ENV;
+    
     process.env.MIRATS_API_PEPPER = "default-pepper-change-me";
     process.env.NODE_ENV = "production";
 
-    // We expect the function to throw or return invalid when pepper is unsafe
     const result = await verifyApiKey("mrt_ext_live_keyid_secret");
-    // Depending on implementation, it might throw or return isValid: false
-    // Let's assume for now it returns false if pepper is default in prod
     expect(result.isValid).toBe(false);
 
     process.env.MIRATS_API_PEPPER = originalPepper;
-    process.env.NODE_ENV = "development";
+    process.env.NODE_ENV = originalNodeEnv;
   });
 });
