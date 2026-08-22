@@ -280,9 +280,8 @@ function DocRow({
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => {
-                    /* TODO: Implement retry */
-                  }}
+                  onClick={handleRetry}
+                  disabled={isProcessing}
                   className="h-7 w-7 p-0"
                 >
                   <RefreshCcw className="h-4 w-4" />
@@ -294,6 +293,7 @@ function DocRow({
                 size="sm"
                 variant="ghost"
                 onClick={onDelete}
+                disabled={isProcessing}
                 className="h-7 w-7 p-0 text-red-600"
               >
                 <Trash2 className="h-4 w-4" />
@@ -303,7 +303,20 @@ function DocRow({
           </>
         )}
       </div>
+      <OcrProgressDialog
+        open={isProcessing}
+        onOpenChange={() => {}}
+        fileName={row.file_name}
+        currentPage={progress.current}
+        totalPages={progress.total}
+        status={progress.status}
+        isPaused={isPaused}
+        onPause={pauseOcr}
+        onResume={() => setIsPaused(false)}
+        onCancel={() => cancelOcr("model_tai_lieu", row.id)}
+      />
       <DocViewerDialog
+
         open={viewerOpen}
         onOpenChange={setViewerOpen}
         url={url}
