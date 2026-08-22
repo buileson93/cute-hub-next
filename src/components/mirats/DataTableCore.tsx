@@ -70,14 +70,49 @@ export function DataTableCore<T>({
   className,
   maxHeight: initialMaxHeight,
   fitViewport = false,
+  virtualize = false,
+  onLoadMore,
+  hasMore = false,
 }: DataTableCoreProps<T>) {
   const [density] = useDensity();
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const [calculatedMaxHeight, setCalculatedMaxHeight] = React.useState<string | number | undefined>(
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [calculatedMaxHeight, setCalculatedMaxHeight] = useState<string | number | undefined>(
     initialMaxHeight,
   );
 
-  React.useLayoutEffect(() => {
+  const estimateRowHeight = useMemo(() => {
+    if (density === "compact") return 28;
+    return 32;
+  }, [density]);
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => containerRef.current,
+    estimateSize: () => estimateRowHeight,
+    overscan: 10,
+    enabled: virtualize,
+  });
+
+  // Infinite Scroll Trigger
+  useEffect(() => {
+    if (!onLoadMore || !hasMore || !virtualize) return;
+
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    if (virtualItems.length === 0) return;
+
+    const lastItem = virtualItems[virtualItems.length - 1];
+    if (lastItem.index >= rows.length - 5) {
+      onLoadMore();
+    }
+  }, [
+    rowVirtualizer.getVirtualItems(),
+    onLoadMore,
+    hasMore,
+    virtualize,
+    rows.length,
+  ]);
+
+  useLayoutEffect(() => {
     if (!fitViewport || !containerRef.current) return;
 
     const calculate = () => {
