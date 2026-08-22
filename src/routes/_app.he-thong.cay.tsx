@@ -550,7 +550,7 @@ function HeThongCayPage() {
                 setFocus({ ...it, nonce: Math.random() });
               }}
             />
-            {canManage && (
+            {canManageNodes && (
               <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
                 <Button
                   size="icon"
@@ -674,13 +674,14 @@ function HeThongCayPage() {
                   nhLabel={nhMind}
                   htMind={htMind}
                   tbLabel={tbMind}
-                  canManage={canManage}
+                  canManage={canManageNodes}
+
                   onOpenEditor={onOpenEditor}
                   onHistory={onHistory}
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
-                  canManageNodes={canManage}
+                  canManageNodes={canManageNodes}
 
 
                   onRename={async (kind, ma, ten) =>
@@ -759,7 +760,8 @@ function HeThongCayPage() {
         nhLabel={nhMind}
         htLabel={htMind}
         tbMap={new Map(devices.map((d) => [d.ma_thiet_bi, d]))}
-        canManage={canManage}
+        canManage={canManageNodes}
+
         donViList={taxonomy?.donViList || []}
       />
 
@@ -777,7 +779,7 @@ function HeThongCayPage() {
           nav({ to: "/he-thong/cay", search: (prev: any) => ({ ...prev, editTb: undefined }) })
         }
         device={devices.find((d) => d.ma_thiet_bi === search.editTb) || null}
-        canManage={canManage}
+        canManage={canManageNodes}
         deviceName={(d) => d.ten || d.ma_thiet_bi}
         systemLabel={(d) => htNameMap.get(d.he_thong || "") || d.he_thong || ""}
         systemNameById={(id) => htNameMap.get(id || "") || id || ""}
