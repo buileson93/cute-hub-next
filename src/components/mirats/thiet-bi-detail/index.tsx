@@ -105,7 +105,7 @@ export function ThietBiDetail({
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[600px] bg-muted/30 p-1 rounded-2xl">
+          <TabsList className="bg-muted/30 p-1 rounded-2xl w-full lg:w-max">
             <TabsTrigger value="tong-quan">Tổng quan</TabsTrigger>
             <TabsTrigger value="van-hanh">Vận hành</TabsTrigger>
             <TabsTrigger value="cau-hinh">Cấu hình</TabsTrigger>

@@ -44,53 +44,39 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`VERIFICATION MODE — MINDMAP/TABLE ONLY.
+          aria-label={`IMPLEMENTATION MODE — TABS VISUAL CONTRACT ONLY.
 
-Không thêm feature và không sửa ngoài phạm vi nếu chưa tạo bug ticket mới.
+Thực hiện sau Prompt 10O. Không đổi điều hướng, nội dung tab hoặc ngôn ngữ thiết kế.
 
-1. Chạy app với dữ liệu có tên, mã, UUID, orphan reference và text dài.
+Hiện tượng từ screenshot:
 
-2. Chụp screenshot trước/sau tại 390/768/1024/1440px, light/dark.
+- tab “Ma trận quyền” đang active nhưng nền chuyển thành màu trắng;
 
-3. Kiểm tra cả:
+- chữ/icon vẫn nhận màu \`primary-foreground\` sáng nên gần như biến mất;
 
-- Cây phân cấp;
+- hình dạng active không đồng bộ với các cụm tab khác.
 
-- Sơ đồ tổng thể/mindmap;
+Nguyên nhân source đã xác nhận:
 
-- StandardTable;
+- primitive \`src/components/ui/tabs.tsx\` quy định active bằng \`bg-primary text-primary-foreground\`;
 
-- DataTableCore;
+- riêng \`src/routes/_app.phan-quyen.tsx\` lại thêm \`data-[state=active]:bg-background\` cho cả 4 TabsTrigger;
 
-- ít nhất hai raw table;
+- local class đổi nền active thành trắng nhưng không đổi lại màu chữ, tạo tổ hợp trắng trên trắng;
 
-- bảng có sticky selection + action columns;
+- ứng dụng hiện có 34 file dùng TabsTrigger và nhiều kiểu tab riêng: segmented/pill, underline và panel tabs. Thiếu variant contract nên route tự ghi đè từng thuộc tính active.
 
-- bảng virtualized 1.000+ rows.
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10P
 
-4. Với mindmap: xác minh primary label là tên; code chỉ là metadata; search/rename/expand hoạt động.
+- Tab active ở trang Phân quyền không còn nền trắng/chữ trắng; label và icon đọc rõ.
 
-5. Với table: đo computed background/text contrast của default/hover/selected/focus.
+- Các tab cùng loại dùng cùng một active contract trên toàn ứng dụng.
 
-6. Xác minh scrollWidth, clientWidth, thay đổi scrollLeft bằng mouse/trackpad/keyboard/touch.
+- Segmented tabs và underline tabs được phân biệt bằng variant chính thức, không bằng class route tùy ý.
 
-7. Chạy test, typecheck, lint, build, ui:audit và Playwright visual tests bằng output fresh.
+- Active, inactive, hover, focus và disabled rõ ràng ở light/dark.
 
-8. Nếu không có runtime/browser hoặc DB fixture, báo BLOCKED; không kết luận pass từ source inspection.
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10O
-
-- Không còn UUID/mã làm primary label khi entity có tên.
-
-- Không còn hover row màu đen hoặc mất tương phản.
-
-- Bảng rộng cuộn ngang được ở desktop/tablet và chỉ có một scroll owner.
-
-- Không regression mobile, sticky header, virtualization, selection, resize hoặc action đúng record.
-
-- Có screenshot, computed-style evidence và test output exit 0 cho từng acceptance criterion.
-
-- Mọi lỗi còn lại được ghi thành ticket riêng; không ghi “10K hoàn tất” nếu thiếu runtime evidence.`}
+- Không còn local override \`data-[state=active]:bg-background\` tại \`_app.phan-quyen.tsx\`.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

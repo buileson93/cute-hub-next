@@ -124,20 +124,20 @@ function PhanQuyenPage() {
       <RoleOverview stats={statsQ.data} loading={statsQ.isLoading} error={statsQ.error} />
 
       <Tabs defaultValue="matrix" className="space-y-4">
-        <TabsList className="bg-muted/50 p-1">
-          <TabsTrigger value="matrix" className="data-[state=active]:bg-background">
+        <TabsList className="p-1">
+          <TabsTrigger value="matrix">
             <Lock className="mr-1.5 h-3.5 w-3.5" />
             Ma trận quyền
           </TabsTrigger>
-          <TabsTrigger value="phanbo" className="data-[state=active]:bg-background">
+          <TabsTrigger value="phanbo">
             <Boxes className="mr-1.5 h-3.5 w-3.5" />
             Phân bố
           </TabsTrigger>
-          <TabsTrigger value="audit" className="data-[state=active]:bg-background">
+          <TabsTrigger value="audit">
             <FileClock className="mr-1.5 h-3.5 w-3.5" />
             Nhật ký
           </TabsTrigger>
-          <TabsTrigger value="policy" className="data-[state=active]:bg-background">
+          <TabsTrigger value="policy">
             <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />
             Chính sách
           </TabsTrigger>
