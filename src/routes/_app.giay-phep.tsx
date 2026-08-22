@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_app/giay-phep")({
 
 function GiayPhepPage() {
   const { donVi } = useScope();
-  const { licenses: giayPhep } = useLicensesData();
+  const { licenses: giayPhep, isLoading, isError, refetch } = useLicensesData();
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
 
@@ -178,6 +178,17 @@ function GiayPhepPage() {
       });
   }, [enriched, tab]);
 
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 space-y-4">
+        <AlertTriangle className="h-12 w-12 text-red-500" />
+        <h2 className="text-xl font-semibold">Không tải được dữ liệu giấy phép</h2>
+        <p className="text-muted-foreground">Vui lòng kiểm tra lại kết nối mạng hoặc quyền truy cập.</p>
+        <Button onClick={() => refetch()}>Thử lại</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <PageHeader
@@ -207,29 +218,41 @@ function GiayPhepPage() {
         }
       />
 
-      <ComplianceTimeline kpi={kpi} warningCount={heThongThieuGpMoi.length} />
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardContent className="h-20 animate-pulse bg-muted/50 rounded-md" />
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <>
+          <ComplianceTimeline kpi={kpi} warningCount={heThongThieuGpMoi.length} />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi icon={ShieldCheck} label="Tổng GP lưu trữ" value={kpi.total} />
-        <Kpi
-          icon={CheckCircle2}
-          label="Còn hiệu lực"
-          value={kpi.valid}
-          tone="text-emerald-600 dark:text-emerald-400"
-        />
-        <Kpi
-          icon={Clock}
-          label={`Sắp hết hạn (≤ ${DEFAULT_NGAY_SAP_HET_HAN} ngày)`}
-          value={kpi.expiring}
-          tone="text-amber-600 dark:text-amber-400"
-        />
-        <Kpi
-          icon={AlertTriangle}
-          label="Thiếu GP thay thế"
-          value={heThongThieuGpMoi.length}
-          tone="text-red-600 dark:text-red-400"
-        />
-      </div>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Kpi icon={ShieldCheck} label="Tổng GP lưu trữ" value={kpi.total} />
+            <Kpi
+              icon={CheckCircle2}
+              label="Còn hiệu lực"
+              value={kpi.valid}
+              tone="text-emerald-600 dark:text-emerald-400"
+            />
+            <Kpi
+              icon={Clock}
+              label={`Sắp hết hạn (≤ ${DEFAULT_NGAY_SAP_HET_HAN} ngày)`}
+              value={kpi.expiring}
+              tone="text-amber-600 dark:text-amber-400"
+            />
+            <Kpi
+              icon={AlertTriangle}
+              label="Thiếu GP thay thế"
+              value={heThongThieuGpMoi.length}
+              tone="text-red-600 dark:text-red-400"
+            />
+          </div>
+        </>
+      )}
 
       <GiayPhepFormDialog open={dialogOpen} onOpenChange={setDialogOpen} row={editingRow} />
       <GpktImportDialog open={gpktOpen} onOpenChange={setGpktOpen} />
@@ -252,15 +275,19 @@ function GiayPhepPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={byMonth}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="thang" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                <Tooltip cursor={{ fill: "hsl(var(--muted))" }} />
-                <Bar dataKey="so_gp" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {isLoading ? (
+              <div className="w-full h-full animate-pulse bg-muted/30 rounded-md" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={byMonth}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="thang" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "hsl(var(--muted))" }} />
+                  <Bar dataKey="so_gp" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
         <Card>

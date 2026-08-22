@@ -62,23 +62,11 @@ function txt(v: unknown): string | null {
 }
 
 async function loadLicenses(): Promise<LicenseRow[]> {
-  // v_giay_phep là view tạo bằng migration; ép kiểu client cho tới khi types regenerate.
-  const client = supabase as unknown as {
-    from: (t: string) => {
-      select: (c: string) => {
-        order: (
-          c: string,
-          o: { ascending: boolean; nullsFirst?: boolean },
-        ) => Promise<{
-          data: UnifiedLicense[] | null;
-          error: unknown;
-        }>;
-      };
-    };
-  };
-  const { data, error } = await client
+  const { data, error } = await supabase
     .from("v_giay_phep")
-    .select("*")
+    .select(
+      "id, nguon, so_giay_phep, ma_giay_phep, loai, ngay_cap, ngay_het_han, noi_cap, file_url, ghi_chu, pham_vi, don_vi_ma, don_vi_ten, ten_doi_tuong, he_thong_id, thiet_bi_id, so_ngay_con_lai, trang_thai, bi_thay_the, kieu_thiet_bi",
+    )
     .order("ngay_het_han", { ascending: true, nullsFirst: false });
   if (error) throw error;
 
