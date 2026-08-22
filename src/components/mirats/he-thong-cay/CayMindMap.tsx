@@ -358,6 +358,7 @@ function MindNode({ data }: { data: MindData }) {
 
         <div className="flex shrink-0 items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           {data.onOpenEditor && data.canManageNodes && (
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
