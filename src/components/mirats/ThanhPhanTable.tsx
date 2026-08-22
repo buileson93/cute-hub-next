@@ -1166,11 +1166,10 @@ export function ThanhPhanTable({
                 group: "Tài sản",
                 value: (r) => r.taiSanTrangThai,
                 cell: (r) => {
-                  const status = r.taiSanTrangThai;
-                  if (status) {
+                  if (r.taiSanTrangThai) {
                     return (
                       <Badge variant="outline" className="text-[10px]">
-                        {status}
+                        {r.taiSanTrangThai}
                       </Badge>
                     );
                   }

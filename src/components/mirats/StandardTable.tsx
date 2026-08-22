@@ -1579,7 +1579,7 @@ export function StandardTableInner<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {renderGlobalState() !== null && (
+              {renderGlobalState() !== null ? (
                 <TableRow>
                   <TableCell
                     colSpan={
@@ -1590,8 +1590,7 @@ export function StandardTableInner<T>({
                     {renderGlobalState()}
                   </TableCell>
                 </TableRow>
-              )}
-              {renderGlobalState() === null && (
+              ) : (
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
