@@ -223,6 +223,9 @@ function DanhMucThietBiPage() {
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
 
+  const sp = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
   // PHÂN TRANG 10H
   const [page, setPage] = useState(0);
   const pageSize = 100;
