@@ -56,6 +56,8 @@ import {
   type LoaiVatTu,
   type VatTuRow,
   type KhoRow,
+  type TonKhoRow,
+  type CanhBaoRow,
 } from "@/lib/mirats/kho";
 import { DetailDrawer } from "@/components/mirats/DetailDrawer";
 import { useDetailPanel } from "@/lib/mirats/ui/detail-panel";
@@ -103,7 +105,7 @@ function VatTuPage() {
 
   const detail = useDetailPanel();
   const vatTuById = useMemo(
-    () => new Map((vatTu.data ?? []).map((v) => [v.id, v] as const)),
+    () => new Map((vatTu.data ?? []).map((v: VatTuRow) => [v.id, v] as const)),
     [vatTu.data],
   );
   const detailRow =
@@ -114,7 +116,7 @@ function VatTuPage() {
     const kw = q.trim().toLowerCase();
     if (!kw) return list;
     return list.filter(
-      (r) =>
+      (r: TonKhoRow) =>
         r.ten_vat_tu.toLowerCase().includes(kw) ||
         (r.ma_vat_tu ?? "").toLowerCase().includes(kw) ||
         r.ten_kho.toLowerCase().includes(kw),
@@ -191,7 +193,7 @@ function VatTuPage() {
         <TabsContent value="canhbao" className="mt-4">
           <Card>
             <CardContent className="p-2">
-              <StandardTable
+              <StandardTable<CanhBaoRow>
                 tableKey="vat_tu_canhbao_list"
                 rows={canhBao.data ?? []}
                 getRowId={(r) => r.vat_tu_id}
@@ -278,7 +280,7 @@ function VatTuPage() {
           )}
           <Card>
             <CardContent className="p-2">
-              <StandardTable
+              <StandardTable<VatTuRow>
                 tableKey="vat_tu_danhmuc_list"
                 rows={vatTu.data ?? []}
                 getRowId={(v) => v.id}

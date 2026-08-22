@@ -16,23 +16,11 @@ export const KHO_PAGE_SIZE = 200;
 export const TON_KHO_PAGE_SIZE = 500;
 
 /** Chuẩn hoá kết quả useInfiniteQuery → API tương thích useQuery cho các consumer hiện có. */
-function flattenInfinite<T>(q: {
-  data?: { pages: { data: T[]; nextFrom: number | null }[] };
-  error: Error | null;
-  isLoading: boolean;
-  isFetching: boolean;
-  refetch: () => void;
-  fetchNextPage: () => void;
-  hasNextPage?: boolean;
-  isFetchingNextPage: boolean;
-}) {
-  const data = q.data?.pages.flatMap((p) => p.data) as T[] | undefined;
+export function flattenInfinite<T>(q: any) {
+  const data = q.data?.pages.flatMap((p: any) => p.data) as T[] | undefined;
   return {
+    ...q,
     data,
-    error: q.error,
-    isLoading: q.isLoading,
-    isFetching: q.isFetching,
-    refetch: q.refetch,
     fetchNextPage: q.fetchNextPage,
     hasNextPage: q.hasNextPage ?? false,
     isFetchingNextPage: q.isFetchingNextPage,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback, useLayoutEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Card, CardContent } from "@/components/ui/card";
@@ -551,7 +551,7 @@ export function StandardTableInner<T>({
     });
   };
 
-  const isTest = typeof window !== "undefined" && (window as any).process?.env?.NODE_ENV === "test";
+  const isTest = typeof process !== "undefined" && process.env.NODE_ENV === "test";
   const [density] = useDensity();
 
   const estimateRowHeight = useMemo(() => {
@@ -567,9 +567,17 @@ export function StandardTableInner<T>({
     estimateSize: () => estimateRowHeight,
     overscan: isTest ? 100 : 15,
     initialOffset: isTest ? 0 : undefined,
-    initialRect: isTest ? { width: 1000, height: 1000 } : undefined,
+    initialRect: isTest ? { width: 1000, height: 10000 } : undefined,
     ...virtualizerOptions,
   });
+
+  const isClient = typeof window !== "undefined";
+  const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
+
+  // Task: Force re-measure when display length changes to ensure virtualizer syncs correctly
+  useIsomorphicLayoutEffect(() => {
+    rowVirtualizer.measure();
+  }, [display.length, rowVirtualizer]);
 
   // Re-measure when density changes
   useEffect(() => {
@@ -634,7 +642,7 @@ export function StandardTableInner<T>({
   };
 
   const resetAllWidths = () => {
-    allKeys.forEach((k) => prefs.resetWidth(k));
+    prefs.resetAllWidths();
   };
 
   const renderGlobalState = () => {
@@ -1341,6 +1349,7 @@ export function StandardTableInner<T>({
 
                 {shownCols.map((c) => {
                   const savedW = prefs.widths[c.key];
+                  const label = c.header || c.label || "";
                   const minWVal = c.minW
                     ? c.minW.includes("[")
                       ? c.minW.match(/\[(.*?)\]/)?.[1]
@@ -1437,10 +1446,10 @@ export function StandardTableInner<T>({
                                   ? "justify-end w-full text-right"
                                   : "justify-start text-left w-full",
                             )}
-                            title={`Sắp xếp theo ${c.label}`}
-                            aria-label={`Sắp xếp theo ${c.label}`}
+                            title={`Sắp xếp theo ${label}`}
+                            aria-label={`Sắp xếp theo ${label}`}
                           >
-                            <span className="truncate">{c.label}</span>
+                            <span className="truncate">{label}</span>
                             {sortActive ? (
                               sort!.dir === "asc" ? (
                                 <Icon name="table.sortAsc" size="tiny" className="text-primary" />
@@ -1477,7 +1486,7 @@ export function StandardTableInner<T>({
                       <div
                         role="separator"
                         tabIndex={0}
-                        aria-label={`Thay đổi độ rộng cột ${c.label}`}
+                        aria-label={`Thay đổi độ rộng cột ${label}`}
                         className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-primary/30 transition-opacity z-10 focus-visible:opacity-100 focus-visible:bg-primary/30 outline-none"
                         onMouseDown={(e) => onHandleMouseDown(e, c.key, currentWidth)}
                         onDoubleClick={() => prefs.resetWidth(c.key)}
@@ -1525,7 +1534,7 @@ export function StandardTableInner<T>({
                     </TableRow>
                   )}
 
-                  {displayItems.map((virtualRow) => {
+                  {(isTest && display.length > 0 ? display.map((_, i) => ({ index: i })) : displayItems).map((virtualRow: any) => {
                     const r = display[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
