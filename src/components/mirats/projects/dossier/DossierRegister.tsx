@@ -77,7 +77,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
@@ -92,13 +92,13 @@ export function DossierRegister({ project_id }: { project_id: string }) {
           <Button variant="outline" size="sm">
             <Filter className="h-4 w-4 mr-2" /> Bộ lọc
           </Button>
-          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+          <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <Plus className="h-4 w-4 mr-2" /> Thêm hồ sơ
           </Button>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+      <div className="rounded-xl border border-border overflow-hidden bg-card">
         <Table>
           <TableHeader className="bg-slate-50/50">
             <TableRow>

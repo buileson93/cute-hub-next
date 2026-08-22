@@ -76,6 +76,7 @@ import { cn } from "@/lib/utils";
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
 import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
+import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
@@ -294,21 +295,21 @@ function DuAnDetailPage() {
   }
 
   return (
-    <div className="flex flex-col p-4 md:p-6 gap-4">
+    <div className={cn("flex flex-col gap-6", UI_DENSITY.PAGE_PADDING)}>
       {/* Astryx Page Header */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-xs text-slate-500">
-          <Link to="/du-an" className="hover:text-indigo-600 transition-colors">
+          <Link to="/du-an" className="hover:text-primary transition-colors">
             Dự án
           </Link>
           <span className="text-slate-300">/</span>
-          <span className="font-medium text-slate-900 truncate max-w-[200px]">{duAn.ten}</span>
+          <span className="font-medium text-foreground truncate max-w-[200px]">{duAn.ten}</span>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">{duAn.ten}</h1>
-            {duAn.ma && <span className="text-xs font-mono text-slate-400 mt-0.5">{duAn.ma}</span>}
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">{duAn.ten}</h1>
+            {duAn.ma && <span className="text-xs font-mono text-muted-foreground mt-0.5">{duAn.ma}</span>}
           </div>
 
           <div className="flex items-center gap-2">
@@ -331,7 +332,7 @@ function DuAnDetailPage() {
       </div>
 
       {/* Project Metadata Toolbar */}
-      <div className="flex flex-wrap items-center gap-6 px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm">
+      <div className="flex flex-wrap items-center gap-6 px-4 py-3 bg-card border border-border rounded-xl shadow-sm">
         <Stat label="Quản lý" value={nameOf(duAn.quan_ly_id)} icon={UserIcon} />
         <Stat label="Ngày bắt đầu" value={duAn.ngay_bat_dau ?? "—"} icon={CalendarIcon} />
         <Stat
@@ -342,23 +343,23 @@ function DuAnDetailPage() {
         <div className="min-w-[140px] flex-1 max-w-[200px]">
           <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
             <span>Tiến độ</span>
-            <span className="text-slate-900">{duAn.tien_do}%</span>
+            <span className="text-foreground">{duAn.tien_do}%</span>
           </div>
-          <Progress value={duAn.tien_do} className="h-1.5 bg-slate-100" />
+          <Progress value={duAn.tien_do} className="h-1.5 bg-muted" />
         </div>
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
           <Tabs
             value={activeTab}
             onValueChange={(v) =>
               nav({ search: { view: v, q: currentSearch.q } as any, replace: true })
             }
-            className="w-full lg:w-auto"
+            className="w-full lg:w-auto overflow-hidden"
           >
             <TabsList
-              className="bg-slate-100 p-1 border border-slate-200 w-full lg:w-auto"
+              className="bg-muted p-1 border border-border w-full lg:w-auto overflow-x-auto overflow-y-hidden"
               data-density="comfortable"
             >
               {PROJECT_VIEWS.map((view) => (
@@ -374,14 +375,14 @@ function DuAnDetailPage() {
             </TabsList>
           </Tabs>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto w-full lg:w-auto">
             {WORK_VIEWS.includes(activeTab) && (
               <>
-                <div className="relative">
-                  <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                <div className="relative flex-1 lg:flex-none">
+                  <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Tìm công việc..."
-                    className="h-8 pl-8 text-xs w-[180px] bg-white border-slate-200"
+                    className="h-8 pl-8 text-xs w-full lg:w-[200px] bg-card border-border"
                     value={currentSearch.q}
                     onChange={(e) =>
                       nav({ search: { ...currentSearch, q: e.target.value } as any, replace: true })
@@ -555,14 +556,14 @@ function DuAnDetailPage() {
 function Stat({ label, value, icon: Icon }: { label: string; value: string; icon: any }) {
   return (
     <div className="flex items-center gap-2.5 min-w-[120px]">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 border border-slate-100">
-        <Icon className="h-4 w-4 text-slate-500" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted border border-border">
+        <Icon className="h-4 w-4 text-muted-foreground" />
       </div>
       <div className="flex flex-col min-w-0">
-        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 leading-none mb-1">
+        <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground leading-none mb-1">
           {label}
         </span>
-        <span className="text-xs font-semibold text-slate-900 truncate">{value}</span>
+        <span className="text-xs font-semibold text-foreground truncate">{value}</span>
       </div>
     </div>
   );
@@ -591,7 +592,7 @@ function KanbanView({
   const mocMap = useMemo(() => Object.fromEntries(mocs.map((m) => [m.id, m])), [mocs]);
   return (
     <div
-      className="flex gap-4 overflow-x-auto pb-4 min-h-[calc(100vh-320px)]"
+      className="flex gap-4 overflow-x-auto pb-4 scroll-px-4 min-h-[calc(100vh-320px)]"
       data-density={density}
     >
       {CV_STATUSES.map((st) => {
@@ -638,11 +639,11 @@ function KanbanView({
               )}
             </div>
 
-            <div className="flex-1 space-y-3 p-1 rounded-lg bg-slate-50/50 border border-slate-100/50 min-h-[150px]">
+            <div className="flex-1 space-y-3 p-1 rounded-lg bg-muted/20 border border-border/50 min-h-[150px]">
               {list.map((t) => (
                 <Card
                   key={t.id}
-                  className="group cursor-pointer border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-200"
+                  className="group cursor-pointer border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200"
                   onClick={() => onEdit(t)}
                 >
                   <CardContent className="p-3 space-y-3">
@@ -660,7 +661,7 @@ function KanbanView({
                       )}
                     </div>
 
-                    <div className="text-sm font-semibold leading-tight text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                    <div className="text-sm font-semibold leading-tight text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                       {t.ten}
                     </div>
 
@@ -670,7 +671,7 @@ function KanbanView({
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-slate-50 mt-2">
+                    <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
                       <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
                         <UserIcon className="h-3 w-3 text-slate-400" />
                         <span className="max-w-[80px] truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
@@ -790,8 +791,8 @@ function GanttView({
   }, [mocs, tasks, projectStart, viewMode]);
 
   return (
-    <Card data-density={density}>
-      <CardHeader className="pb-2">
+    <Card data-density={density} className="border-none shadow-none bg-transparent">
+      <CardHeader className="pb-2 px-0 pt-0">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>
           <div className="flex gap-1">
@@ -808,7 +809,7 @@ function GanttView({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         {mocs.length === 0 ? (
           <div className="text-sm text-slate-500 py-8 text-center">
             Chưa có mốc/công việc để hiển thị Gantt.
@@ -860,8 +861,8 @@ function ListView({
         const list = tasks.filter((t) => t.moc_id === m.id);
         const tt = CV_TRANG_THAI[m.trang_thai] ?? CV_TRANG_THAI.chua_bat_dau;
         return (
-          <Card key={m.id}>
-            <CardHeader className="pb-2">
+          <Card key={m.id} className="border-none shadow-none bg-transparent">
+            <CardHeader className="pb-2 px-0 pt-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <CardTitle className="text-base">{m.ten}</CardTitle>
@@ -915,7 +916,7 @@ function ListView({
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-0 px-0">
               {list.length === 0 ? (
                 <div className="text-xs text-slate-400 italic py-2">Chưa có công việc con.</div>
               ) : (
