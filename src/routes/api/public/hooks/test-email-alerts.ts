@@ -1,17 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { verifyApiSecret, auditPublicApiCall } from "@/lib/api-security.server";
 
-/**
- * Test endpoint: gom cảnh báo hiện tại và gửi email tổng hợp.
- * POST /api/public/hooks/test-email-alerts
- * Body: { to?: string }  (mặc định buileson93@gmail.com)
- */
 export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const endpoint = "test-email-alerts";
+        const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
+
         try {
+          // 1. Bảo mật: Yêu cầu TEST_EMAIL_SECRET
+          const { authorized, errorStatus } = await verifyApiSecret(request, "TEST_EMAIL_SECRET", "x-test-secret");
+          if (!authorized) {
+            await auditPublicApiCall(endpoint, "unauthorized", { requestId, status: errorStatus });
+            return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+              status: errorStatus || 401,
+              headers: { "Content-Type": "application/json" }
+            });
+          }
+
+          // 2. Kiểm tra chế độ test (chỉ chạy nếu ENABLE_TEST_EMAIL=true hoặc không phải production)
+          const isProd = process.env.NODE_ENV === "production";
+          const enabled = process.env.ENABLE_TEST_EMAIL === "true";
+          if (isProd && !enabled) {
+            await auditPublicApiCall(endpoint, "disabled_in_prod", { requestId });
+            return new Response(JSON.stringify({ error: "Service disabled in production" }), { status: 403 });
+          }
+
           const body = await request.json().catch(() => ({}));
           const to = (body?.to as string) || "buileson93@gmail.com";
+
+          // 3. Allowlist email: Không gửi đến email tùy ý
+          const allowlist = ["buileson93@gmail.com"];
+          const extraAllow = process.env.TEST_EMAIL_ALLOWLIST?.split(",").map(e => e.trim()) || [];
+          const fullAllowlist = [...allowlist, ...extraAllow];
+
+          if (!fullAllowlist.includes(to)) {
+             await auditPublicApiCall(endpoint, "email_not_in_allowlist", { requestId, target: to });
+             return new Response(JSON.stringify({ error: "Recipient not in allowlist" }), { status: 400 });
+          }
 
           const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
           const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
@@ -27,14 +54,13 @@ export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
           // Giấy phép sắp hết hạn (≤ 90 ngày)
           const { data: gps } = await supabaseAdmin
             .from("v_giay_phep")
-            .select(
-              "so_giay_phep,ten_doi_tuong,don_vi_ten,ngay_het_han,so_ngay_con_lai,trang_thai,bi_thay_the",
-            )
+            .select("so_giay_phep,ten_doi_tuong,don_vi_ten,ngay_het_han,so_ngay_con_lai,trang_thai,bi_thay_the")
             .in("trang_thai", ["valid", "expiring"])
             .lte("so_ngay_con_lai", 90)
             .gte("so_ngay_con_lai", 0)
             .order("so_ngay_con_lai", { ascending: true })
             .limit(20);
+
           for (const g of (gps ?? []) as any[]) {
             if (g.bi_thay_the) continue;
             items.push({
@@ -49,11 +75,10 @@ export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
           // Sự cố mở gần đây
           const { data: sucos } = await supabaseAdmin
             .from("su_co")
-            .select(
-              "ma_su_co,hien_tuong,muc_do,trang_thai,snapshot_ten_thiet_bi,snapshot_don_vi,ngay_phat_hien",
-            )
+            .select("ma_su_co,hien_tuong,muc_do,trang_thai,snapshot_ten_thiet_bi,snapshot_don_vi,ngay_phat_hien")
             .order("created_at", { ascending: false })
             .limit(10);
+
           for (const s of (sucos ?? []) as any[]) {
             items.push({
               loai: `Sự cố · ${s.muc_do ?? "—"}`,
@@ -63,7 +88,7 @@ export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
             });
           }
 
-          // Bảo dưỡng đến hạn (≤ 7 ngày, chưa hoàn thành)
+          // Bảo dưỡng đến hạn (≤ 7 ngày)
           const in7 = new Date(Date.now() + 7 * 86400_000).toISOString().slice(0, 10);
           const { data: bts } = await supabaseAdmin
             .from("bao_tri")
@@ -73,6 +98,7 @@ export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
             .is("ngay_hoan_thanh", null)
             .order("ke_hoach", { ascending: true })
             .limit(15);
+
           for (const b of (bts ?? []) as any[]) {
             items.push({
               loai: "Bảo dưỡng",
@@ -82,14 +108,17 @@ export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
             });
           }
 
+          const idempotencyKey = request.headers.get("x-idempotency-key") || `test-alerts-${to}-${Date.now()}`;
           const result = await sendTemplateEmail("alerts-summary", to, {
             templateData: {
               siteName: "VATM",
               generatedAt: new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }),
               items,
             },
-            idempotencyKey: `test-alerts-${to}-${Date.now()}`,
+            idempotencyKey,
           });
+
+          await auditPublicApiCall(endpoint, "success", { requestId, recipient: to, items_count: items.length });
 
           return Response.json({
             success: true,
@@ -100,7 +129,8 @@ export const Route = createFileRoute("/api/public/hooks/test-email-alerts")({
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
           console.error("[test-email-alerts]", msg);
-          return Response.json({ success: false, error: msg }, { status: 500 });
+          await auditPublicApiCall(endpoint, "error", { requestId, error: msg });
+          return Response.json({ success: false, error: "Internal Server Error" }, { status: 500 });
         }
       },
     },
