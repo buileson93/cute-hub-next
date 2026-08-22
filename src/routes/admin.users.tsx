@@ -388,14 +388,24 @@ function AdminUsers() {
             don_vi: (editing.don_vi as string | null) ?? null,
             roles: (editing.roles as AppRole[]) ?? [],
           }}
-          onSubmit={(v) =>
+          onSubmit={(v) => {
+            const willRemoveAdmin =
+              editing.roles.includes("admin") && !v.roles.includes("admin");
+            if (
+              willRemoveAdmin &&
+              !confirm(
+                "Bạn đang tước quyền Admin của người dùng này. Hành động này có thể gây mất quyền quản trị nếu đây là Admin cuối cùng. Tiếp tục?"
+              )
+            ) {
+              return;
+            }
             updateM.mutate({
               user_id: editing.id,
               ho_ten: v.ho_ten,
               don_vi: v.don_vi,
               roles: v.roles,
-            })
-          }
+            });
+          }}
           mode="edit"
         />
       )}
