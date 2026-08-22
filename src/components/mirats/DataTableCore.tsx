@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { OptimizedCell } from "./OptimizedCell";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { fmtVND, fmtNgay } from "@/lib/mirats/format";
 import { useDensity } from "@/components/mirats/DensityToggle";
