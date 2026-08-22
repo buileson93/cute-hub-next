@@ -1271,8 +1271,7 @@ export function StandardTableInner<T>({
         <Card
           ref={parentRef}
           className={cn(
-            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto",
-            maxHeightClass,
+            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto h-full",
             className,
           )}
         >
