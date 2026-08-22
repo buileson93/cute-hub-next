@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useLayoutEffect, useEffect, useCallback } from "react";
+import React, { useMemo, useRef, useState, useLayoutEffect, useEffect, useCallback, memo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "@/lib/utils";
 import {
@@ -38,6 +38,9 @@ export interface DataTableColumn<T> {
   cellClassName?: string;
   priority?: "primary" | "secondary" | "detail";
 }
+
+const MemoizedTableRow = memo(TableRow);
+const MemoizedTableCell = memo(TableCell);
 
 interface DataTableCoreProps<T> {
   rows: T[];
@@ -225,7 +228,7 @@ export function DataTableCore<T>({
               const isSelected = selected?.has(id);
 
               return (
-                <TableRow
+                <MemoizedTableRow
                   key={virtualRow.key || virtualRow.index}
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
@@ -240,7 +243,7 @@ export function DataTableCore<T>({
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <TableCell
+                    <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
@@ -249,10 +252,10 @@ export function DataTableCore<T>({
                       }}
                     >
                       <Checkbox checked={isSelected} />
-                    </TableCell>
+                    </MemoizedTableCell>
                   )}
                   {columns.map((col) => (
-                    <TableCell
+                    <MemoizedTableCell
                       key={col.key}
                       style={{
                         width: col.width,
@@ -272,9 +275,9 @@ export function DataTableCore<T>({
                       )}
                     >
                       {renderCellContent(col, row)}
-                    </TableCell>
+                    </MemoizedTableCell>
                   ))}
-                </TableRow>
+                </MemoizedTableRow>
               );
             })
           ) : (
@@ -283,7 +286,7 @@ export function DataTableCore<T>({
               const isSelected = selected?.has(id);
 
               return (
-                <TableRow
+                <MemoizedTableRow
                   key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
                     "group transition-mirats-fast hover:bg-muted/50 flex",
@@ -293,7 +296,7 @@ export function DataTableCore<T>({
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <TableCell
+                    <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
@@ -302,10 +305,10 @@ export function DataTableCore<T>({
                       }}
                     >
                       <Checkbox checked={isSelected} />
-                    </TableCell>
+                    </MemoizedTableCell>
                   )}
                   {columns.map((col) => (
-                    <TableCell
+                    <MemoizedTableCell
                       key={col.key}
                       style={{
                         width: col.width,
@@ -325,9 +328,9 @@ export function DataTableCore<T>({
                       )}
                     >
                       {renderCellContent(col, row)}
-                    </TableCell>
+                    </MemoizedTableCell>
                   ))}
-                </TableRow>
+                </MemoizedTableRow>
               );
             })
           )}
