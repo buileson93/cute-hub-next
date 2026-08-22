@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SavingIndicator } from "@/components/mirats/SavingIndicator";
 import { OfflineBanner } from "@/components/mirats/OfflineBanner";
 import { AstryxProvider } from "@/components/astryx-pilot/AstryxProvider";
+import { ThemeSync } from "@/components/mirats/ThemeSync";
 
 function NotFoundComponent() {
   return (
@@ -163,8 +164,23 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
-            __html:
-              "try{var d=localStorage.getItem('mirats.density');if(d==='compact')document.documentElement.dataset.density='compact';}catch(e){}",
+            __html: `
+              try {
+                var d = localStorage.getItem('mirats.density');
+                if (d === 'compact') document.documentElement.dataset.density = 'compact';
+                
+                var t = localStorage.getItem('mirats-theme');
+                if (t === '"dark"' || (t === '"system"' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.dataset.theme = 'dark';
+                  document.documentElement.style.colorScheme = 'dark';
+                } else if (t === '"light"') {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.dataset.theme = 'light';
+                  document.documentElement.style.colorScheme = 'light';
+                }
+              } catch (e) {}
+            `,
           }}
         />
       </head>
@@ -217,6 +233,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AstryxProvider>
+        <ThemeSync />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </AstryxProvider>
