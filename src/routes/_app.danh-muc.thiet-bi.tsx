@@ -1153,6 +1153,12 @@ function DanhMucThietBiPage() {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-hidden p-4">
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] font-mono text-muted-foreground bg-muted/30 px-2 py-0.5 rounded border border-dashed">
+          PHASE 10H: Paged Load ({devices.length}/{totalCount})
+        </div>
+      </div>
+
       {/* KPI Header */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {kpiStats.map((kpi) => (
