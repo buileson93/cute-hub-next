@@ -1369,6 +1369,7 @@ function DanhMucThietBiPage() {
                       variant="ghost"
                       size="sm"
                       className="h-7 text-xs"
+                      aria-label="Bỏ chọn tất cả nhãn"
                       onClick={() => setTagSelected([])}
                     >
                       Bỏ chọn tất cả
