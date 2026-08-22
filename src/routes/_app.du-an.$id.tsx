@@ -536,22 +536,18 @@ function DuAnDetailPage() {
   );
 }
 
-function Stat({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon: typeof CalendarIcon;
-}) {
+function Stat({ label, value, icon: Icon }: { label: string; value: string; icon: any }) {
   return (
-    <div>
-      <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1.5">
-        <Icon className="h-3 w-3" />
-        {label}
+    <div className="flex items-center gap-2.5 min-w-[120px]">
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 border border-slate-100">
+        <Icon className="h-4 w-4 text-slate-500" />
       </div>
-      <div className="text-sm font-medium truncate">{value}</div>
+      <div className="flex flex-col min-w-0">
+        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 leading-none mb-1">
+          {label}
+        </span>
+        <span className="text-xs font-semibold text-slate-900 truncate">{value}</span>
+      </div>
     </div>
   );
 }
