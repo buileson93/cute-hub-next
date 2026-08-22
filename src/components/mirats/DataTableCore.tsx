@@ -189,7 +189,7 @@ export function DataTableCore<T>({
         }}
       >
         <TableHeader className="sticky top-0 z-40 bg-muted/95 backdrop-blur-[4px]">
-          <TableRow className="bg-transparent border-b-0 border-t-0 astryx-table-row hover:bg-transparent">
+          <TableRow className="bg-transparent border-b-0 border-t-0 astryx-table-row hover:bg-transparent flex items-stretch">
             {selectable && (
               <TableHead 
                 style={{ width: 40, minWidth: 40, flex: '0 0 40px' }}
