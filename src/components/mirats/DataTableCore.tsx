@@ -181,7 +181,7 @@ export function DataTableCore<T>({
       }}
     >
       <Table
-        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full border-separate border-spacing-0")}
+        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full border-collapse")}
         style={{
           tableLayout: 'fixed',
           width: 'max-content',
