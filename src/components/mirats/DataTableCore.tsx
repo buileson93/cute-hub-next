@@ -110,7 +110,7 @@ export function DataTableCore<T>({
     if (virtualItems.length === 0) return;
 
     const lastItem = virtualItems[virtualItems.length - 1];
-    if (lastItem.index >= rows.length - 5) {
+    if (lastItem.index >= rows.length - 3) { // Tải sớm hơn một chút (3 dòng thay vì 5)
       onLoadMore();
     }
   }, [
