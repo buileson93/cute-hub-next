@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        viết plan tiếng việt để tôi xem
+        tìm kiếm lỗi và cách khắc phục bước nào tôi sửa code đã làm cho bị lỗi đọc lại lịch sử promt Lỗi tải dữ liệu: Could not find the table 'public.rpc_thanh_phan_toan_cuc' in the schema cache khắc phục nhưng không làm mất dữ liệu , có vẻ do tối ưu bảng
       */}
       <head>
         <HeadContent />
