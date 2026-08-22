@@ -571,6 +571,14 @@ export function StandardTableInner<T>({
     ...virtualizerOptions,
   });
 
+  const isClient = typeof window !== "undefined";
+  const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
+
+  // Task: Force re-measure when display length changes to ensure virtualizer syncs correctly
+  useIsomorphicLayoutEffect(() => {
+    rowVirtualizer.measure();
+  }, [display.length, rowVirtualizer]);
+
   // Re-measure when density changes
   useEffect(() => {
     rowVirtualizer.measure();
