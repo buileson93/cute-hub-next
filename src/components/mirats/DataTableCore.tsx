@@ -202,6 +202,7 @@ export function DataTableCore<T>({
                 style={{
                   width: col.width,
                   minWidth: col.minWidth || (col.width ? undefined : 100),
+                  flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`,
                   position: col.sticky ? 'sticky' : 'relative',
                   left: col.sticky ? (selectable ? 40 : 0) : undefined,
                   zIndex: col.sticky ? 50 : 40,
