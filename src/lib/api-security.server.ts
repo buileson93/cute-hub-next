@@ -25,9 +25,6 @@ export async function verifyApiSecret(
 ): Promise<{ authorized: boolean; errorStatus: 401 | 404 | null }> {
   // Ưu tiên đọc từ biến môi trường của Sandbox
   const expected = process.env[secretEnvName];
-  
-  // LOG CHO DEBUG - Sẽ xóa sau khi fix xong
-  console.log(`[API Security Debug] ${secretEnvName}: ${expected ? 'SET' : 'MISSING'}`);
 
   if (!expected || expected.trim() === "") {
     return { authorized: false, errorStatus: 404 };
