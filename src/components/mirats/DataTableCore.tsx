@@ -94,7 +94,7 @@ export function DataTableCore<T>({
     count: rows.length,
     getScrollElement,
     estimateSize: useCallback(() => estimateRowHeight, [estimateRowHeight]),
-    overscan: 8,
+    overscan: 12, // Tăng nhẹ overscan
     enabled: virtualize,
     getItemKey: useCallback((index: number) => {
       const row = rows[index];
