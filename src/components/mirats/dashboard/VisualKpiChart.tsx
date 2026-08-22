@@ -4,10 +4,8 @@ import { Icon } from "@/components/mirats/ui/Icon";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
 import {
-  ResponsiveContainer,
   AreaChart,
   Area,
-  Tooltip,
   BarChart,
   Bar,
   LineChart,
@@ -16,6 +14,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface VisualKpiChartProps {
   title: string;
@@ -98,11 +101,16 @@ export function VisualKpiChart({
           <div
             className={cn("absolute inset-0 bg-gradient-to-b opacity-30", bgGradients[status])}
           />
-          <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer 
+            config={{
+              value: { 
+                label: title, 
+                color: Array.isArray(color) ? color[0] : color 
+              }
+            }}
+          >
             {type === "area" ? (
-              <AreaChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                <XAxis dataKey="thangHT" hide />
-                <YAxis hide domain={["auto", "auto"]} />
+              <AreaChart data={data} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient
                     id={`gradient-${title.replace(/\s+/g, "-")}`}
@@ -113,156 +121,83 @@ export function VisualKpiChart({
                   >
                     <stop
                       offset="5%"
-                      stopColor={Array.isArray(color) ? color[0] : color}
+                      stopColor="var(--color-value)"
                       stopOpacity={0.3}
                     />
                     <stop
                       offset="95%"
-                      stopColor={Array.isArray(color) ? color[0] : color}
+                      stopColor="var(--color-value)"
                       stopOpacity={0}
                     />
                   </linearGradient>
                 </defs>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    backdropFilter: "blur(12px)",
-                    borderColor: "var(--primary-opacity-20)",
-                    fontSize: "11px",
-                    borderRadius: "12px",
-                    padding: "8px 12px",
-                    boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.2)",
-                    border: "1px solid var(--primary-opacity-10)",
-                  }}
-                  itemStyle={{
-                    color: "var(--primary)",
-                    padding: "2px 0",
-                    fontWeight: "800",
-                  }}
-                  cursor={{ stroke: "var(--primary)", strokeWidth: 1.5, strokeDasharray: "4 4" }}
-                  formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ""}`, title]}
-                  labelStyle={{
-                    fontWeight: "800",
-                    marginBottom: "6px",
-                    color: "var(--muted-foreground)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    fontSize: "9px",
-                  }}
+                <XAxis dataKey="thangHT" hide />
+                <YAxis hide domain={["auto", "auto"]} />
+                <ChartTooltip 
+                  cursor={{ stroke: "var(--color-value)", strokeWidth: 1.5, strokeDasharray: "4 4" }}
+                  content={<ChartTooltipContent hideIndicator unit={unit} />} 
                 />
                 <Area
                   type="monotone"
                   dataKey="value"
-                  stroke={Array.isArray(color) ? color[0] : color}
-                  strokeWidth={2.5}
+                  stroke="var(--color-value)"
+                  strokeWidth={2}
                   fillOpacity={1}
                   fill={`url(#gradient-${title.replace(/\s+/g, "-")})`}
-                  isAnimationActive={true}
-                  animationDuration={1000}
                   dot={false}
                   activeDot={{
-                    r: 5,
-                    fill: "#fff",
-                    stroke: Array.isArray(color) ? color[0] : color,
+                    r: 4,
+                    fill: "var(--background)",
+                    stroke: "var(--color-value)",
                     strokeWidth: 2,
                   }}
                 />
               </AreaChart>
             ) : type === "bar" ? (
-              <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+              <BarChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                 <XAxis dataKey="thangHT" hide />
                 <YAxis hide domain={[0, "auto"]} />
-                <Tooltip
-                  cursor={{ fill: "var(--primary-opacity-5)" }}
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    backdropFilter: "blur(12px)",
-                    borderColor: "var(--primary-opacity-20)",
-                    fontSize: "11px",
-                    borderRadius: "12px",
-                    padding: "8px 12px",
-                    boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.2)",
-                    border: "1px solid var(--primary-opacity-10)",
-                  }}
-                  itemStyle={{
-                    color: "var(--primary)",
-                    padding: "2px 0",
-                    fontWeight: "800",
-                  }}
-                  formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ""}`, title]}
-                  labelStyle={{
-                    fontWeight: "800",
-                    marginBottom: "6px",
-                    color: "var(--muted-foreground)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    fontSize: "9px",
-                  }}
+                <ChartTooltip 
+                  cursor={{ fill: "oklch(from var(--color-value) l c h / 0.05)" }}
+                  content={<ChartTooltipContent hideIndicator unit={unit} />} 
                 />
                 <Bar
                   dataKey="value"
-                  radius={[6, 6, 0, 0]}
-                  barSize={14}
-                  isAnimationActive={true}
-                  animationDuration={1000}
+                  radius={[4, 4, 0, 0]}
+                  barSize={12}
                 >
                   {data.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={Array.isArray(color) ? color[index % color.length] : color}
+                      fill={Array.isArray(color) ? color[index % color.length] : "var(--color-value)"}
                     />
                   ))}
                 </Bar>
               </BarChart>
             ) : (
-              <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+              <LineChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                 <XAxis dataKey="thangHT" hide />
                 <YAxis hide domain={["auto", "auto"]} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card)",
-                    backdropFilter: "blur(12px)",
-                    borderColor: "var(--primary-opacity-20)",
-                    fontSize: "11px",
-                    borderRadius: "12px",
-                    padding: "8px 12px",
-                    boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.2)",
-                    border: "1px solid var(--primary-opacity-10)",
-                  }}
-                  itemStyle={{
-                    color: "var(--primary)",
-                    padding: "2px 0",
-                    fontWeight: "800",
-                  }}
-                  cursor={{ stroke: "var(--primary)", strokeWidth: 1.5, strokeDasharray: "4 4" }}
-                  formatter={(val: any) => [`${val}${unit ? ` ${unit}` : ""}`, title]}
-                  labelStyle={{
-                    fontWeight: "800",
-                    marginBottom: "6px",
-                    color: "var(--muted-foreground)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    fontSize: "9px",
-                  }}
+                <ChartTooltip 
+                  cursor={{ stroke: "var(--color-value)", strokeWidth: 1.5, strokeDasharray: "4 4" }}
+                  content={<ChartTooltipContent hideIndicator unit={unit} />} 
                 />
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke={Array.isArray(color) ? color[0] : color}
-                  strokeWidth={2.5}
+                  stroke="var(--color-value)"
+                  strokeWidth={2}
                   dot={false}
                   activeDot={{
-                    r: 5,
-                    fill: "#fff",
-                    stroke: Array.isArray(color) ? color[0] : color,
+                    r: 4,
+                    fill: "var(--background)",
+                    stroke: "var(--color-value)",
                     strokeWidth: 2,
                   }}
-                  isAnimationActive={true}
-                  animationDuration={1000}
                 />
               </LineChart>
             )}
-          </ResponsiveContainer>
+          </ChartContainer>
         </div>
       </CardContent>
     </Card>

@@ -54,6 +54,14 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  ERPChartFrame,
+} from "@/components/ui/chart";
 
 import {
   DeltaBadge,
@@ -126,112 +134,97 @@ function TrendCard({
   setTrendDrill: (v: any) => void;
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-col items-start justify-between gap-3 space-y-0 sm:flex-row">
-        <div>
-          <CardTitle className="text-base">Xu hướng sự cố theo thời gian</CardTitle>
-          <CardDescription>
-            Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng {bucketLabel}.
-          </CardDescription>
-        </div>
-        <div className="flex items-center gap-2">
+    <ERPChartFrame
+      title="Xu hướng sự cố theo thời gian"
+      subtitle={`Số sự cố phát sinh, đã đóng và MTTR bình quân (giờ) theo từng ${bucketLabel}.`}
+      loading={trendQ.isLoading}
+      empty={!trendData.length}
+      className="h-[400px]"
+      actions={
+        <div className="flex items-center gap-2" data-print-hide>
           <AnnotationManager
             items={annotationsQ.data ?? []}
             isLoading={annotationsQ.isLoading}
             onChanged={() => annotationsQ.refetch()}
           />
-          <TabsList>
-            <TabsTrigger value="day">Ngày</TabsTrigger>
-            <TabsTrigger value="week">Tuần</TabsTrigger>
-            <TabsTrigger value="month">Tháng</TabsTrigger>
+          <TabsList className="h-8">
+            <TabsTrigger value="day" className="text-[10px] px-2 h-7">Ngày</TabsTrigger>
+            <TabsTrigger value="week" className="text-[10px] px-2 h-7">Tuần</TabsTrigger>
+            <TabsTrigger value="month" className="text-[10px] px-2 h-7">Tháng</TabsTrigger>
           </TabsList>
         </div>
-      </CardHeader>
-      <CardContent>
-        {trendQ.isLoading ? (
-          <Skeleton className="h-72 w-full" />
-        ) : !trendData.length ? (
-          <EmptyState
-            title="Chưa có dữ liệu"
-            description="Không có sự cố trong khoảng thời gian đã chọn."
+      }
+    >
+      <ChartContainer
+        config={{
+          so_su_co: { label: "Sự cố", color: "var(--chart-1)" },
+          so_dong: { label: "Đã đóng", color: "var(--chart-6)" },
+          mttr_gio: { label: "MTTR (giờ)", color: "var(--chart-4)" },
+        }}
+      >
+        <ComposedChart data={trendData} margin={{ top: 8, right: 0, left: -20, bottom: 0 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="label" axisLine={false} tickLine={false} />
+          <YAxis yAxisId="left" axisLine={false} tickLine={false} allowDecimals={false} />
+          <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartLegend content={<ChartLegendContent />} />
+          <Bar
+            yAxisId="left"
+            dataKey="so_su_co"
+            fill="var(--color-so_su_co)"
+            radius={[3, 3, 0, 0]}
+            barSize={20}
+            onClick={(p) => {
+              const start = p?.payload?.bucket_start;
+              if (!start) return;
+              const s = new Date(start);
+              const e = new Date(s);
+              if (bucket === "day") e.setDate(e.getDate() + 1);
+              else if (bucket === "week") e.setDate(e.getDate() + 7);
+              else e.setMonth(e.getMonth() + 1);
+              setTrendDrill({
+                from: s.toISOString(),
+                to: e.toISOString(),
+                label: p.payload?.label ?? "",
+              });
+            }}
           />
-        ) : (
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={trendData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
-                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
-                <Tooltip
-                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                  formatter={(value: number | string, name: string) => [value ?? "—", name]}
-                />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar
-                  yAxisId="left"
-                  dataKey="so_su_co"
-                  name="Sự cố"
-                  fill="var(--primary)"
-                  radius={[3, 3, 0, 0]}
-                  cursor="pointer"
-                  onClick={(payloadItem) => {
-                    const p = payloadItem as unknown as {
-                      payload?: { bucket_start?: string; label?: string };
-                    };
-                    const start = p?.payload?.bucket_start;
-                    if (!start) return;
-                    const s = new Date(start);
-                    const e = new Date(s);
-                    if (bucket === "day") e.setDate(e.getDate() + 1);
-                    else if (bucket === "week") e.setDate(e.getDate() + 7);
-                    else e.setMonth(e.getMonth() + 1);
-                    setTrendDrill({
-                      from: s.toISOString(),
-                      to: e.toISOString(),
-                      label: p.payload?.label ?? "",
-                    });
-                  }}
-                />
-                <Bar
-                  yAxisId="left"
-                  dataKey="so_dong"
-                  name="Đã đóng"
-                  fill="var(--muted-foreground)"
-                  radius={[3, 3, 0, 0]}
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="mttr_gio"
-                  name="MTTR (giờ)"
-                  stroke="var(--destructive)"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                />
-                {annotationsMapped.map((a) => (
-                  <ReferenceLine
-                    key={a.id}
-                    yAxisId="left"
-                    x={a.label}
-                    stroke={a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc")}
-                    strokeDasharray="4 3"
-                    strokeWidth={1.5}
-                    ifOverflow="extendDomain"
-                    label={{
-                      value: `${(LOAI_META[a.loai as keyof typeof LOAI_META]?.label || "X").charAt(0)}·${a.tieu_de.slice(0, 24)}`,
-                      position: "top",
-                      fill: a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc"),
-                      fontSize: 10,
-                    }}
-                  />
-                ))}
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          <Bar
+            yAxisId="left"
+            dataKey="so_dong"
+            fill="var(--color-so_dong)"
+            opacity={0.3}
+            radius={[3, 3, 0, 0]}
+            barSize={20}
+          />
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="mttr_gio"
+            stroke="var(--color-mttr_gio)"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+          />
+          {annotationsMapped.map((a) => (
+            <ReferenceLine
+              key={a.id}
+              yAxisId="left"
+              x={a.label}
+              stroke={a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc")}
+              strokeDasharray="4 3"
+              strokeWidth={1.5}
+              label={{
+                value: `${(LOAI_META[a.loai as keyof typeof LOAI_META]?.label || "X").charAt(0)}·${a.tieu_de.slice(0, 16)}`,
+                position: "top",
+                fill: a.mau ?? (LOAI_META[a.loai as keyof typeof LOAI_META]?.color || "#ccc"),
+                fontSize: 9,
+              }}
+            />
+          ))}
+        </ComposedChart>
+      </ChartContainer>
+    </ERPChartFrame>
   );
 }
 
@@ -729,149 +722,126 @@ function DoTinCayPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Phân bố theo mức độ</CardTitle>
-            <CardDescription>Tỉ lệ sự cố theo mức độ nghiêm trọng.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {severityQ.isLoading ? (
-              <Skeleton className="h-56 w-full" />
-            ) : !severityQ.data?.length ? (
-              <EmptyState
-                title="Chưa có dữ liệu"
-                description="Không có sự cố trong khoảng thời gian đã chọn."
-              />
-            ) : (
-              <div className="h-56 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={severityQ.data}
-                      dataKey="so_su_co"
-                      nameKey="muc_do"
-                      innerRadius={45}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      cursor="pointer"
-                      onClick={(payloadItem: unknown) => {
-                        const p = payloadItem as { muc_do?: string; payload?: { muc_do?: string } };
-                        const key = p?.muc_do ?? p?.payload?.muc_do;
-                        if (key) setSevDrill(key);
-                      }}
-                    >
-                      {severityQ.data.map((_, i) => (
-                        <Cell key={i} fill={SEVERITY_COLORS[i % SEVERITY_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+        <ERPChartFrame
+          title="Phân bố theo mức độ"
+          subtitle="Tỉ lệ sự cố theo mức độ nghiêm trọng."
+          loading={severityQ.isLoading}
+          empty={!severityQ.data?.length}
+          className="h-[300px]"
+        >
+          <ChartContainer
+            config={Object.fromEntries(
+              (severityQ.data ?? []).map((d: any, i: number) => [
+                d.muc_do,
+                { label: d.muc_do, color: SEVERITY_COLORS[i % SEVERITY_COLORS.length] }
+              ])
             )}
-          </CardContent>
-        </Card>
+          >
+            <PieChart>
+              <Pie
+                data={severityQ.data}
+                dataKey="so_su_co"
+                nameKey="muc_do"
+                innerRadius={50}
+                outerRadius={80}
+                paddingAngle={4}
+                stroke="none"
+                cursor="pointer"
+                onClick={(p) => {
+                  const key = p?.muc_do ?? p?.payload?.muc_do;
+                  if (key) setSevDrill(key);
+                }}
+              >
+                {severityQ.data?.map((_: any, i: number) => (
+                  <Cell key={i} fill={SEVERITY_COLORS[i % SEVERITY_COLORS.length]} />
+                ))}
+              </Pie>
+              <ChartTooltip content={<ChartTooltipContent hideIndicator unit="vụ" />} />
+              <ChartLegend content={<ChartLegendContent />} />
+            </PieChart>
+          </ChartContainer>
+        </ERPChartFrame>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Pareto — Hệ thống gây nhiều sự cố nhất</CardTitle>
-          <CardDescription>
-            Nguyên tắc 80/20:{" "}
-            {paretoVital > 0 && paretoData.length > 0
-              ? `${paretoVital}/${paretoData.length} hệ thống chiếm ~80% tổng số sự cố. Ưu tiên xử lý nhóm này.`
-              : "Ưu tiên xử lý nhóm hệ thống ở phía trái biểu đồ."}{" "}
-            <span className="text-xs italic text-muted-foreground">
-              — Nhấp vào cột để xem chi tiết sự cố.
-            </span>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {q.isLoading ? (
-            <Skeleton className="h-72 w-full" />
-          ) : !paretoData.length ? (
-            <EmptyState
-              title="Chưa có dữ liệu"
-              description="Không có sự cố trong khoảng thời gian đã chọn."
+      <ERPChartFrame
+        title="Phân tích Pareto sự cố (80/20)"
+        subtitle="Nguyên tắc 80/20: 20% hệ thống thường gây ra 80% sự cố."
+        loading={q.isLoading}
+        empty={!paretoData.length}
+        className="h-[400px]"
+      >
+        <ChartContainer
+          config={{
+            so_su_co: { label: "Sự cố", color: "var(--chart-1)" },
+            cum_pct: { label: "Luỹ kế", color: "var(--chart-4)" },
+          }}
+        >
+          <ComposedChart data={paretoData} margin={{ top: 8, right: 0, left: -20, bottom: 40 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 9 }}
+              interval={0}
+              angle={-25}
+              textAnchor="end"
+              height={50}
             />
-          ) : (
-            <div className="h-80 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart
-                  data={paretoData}
-                  margin={{ top: 8, right: 16, left: 0, bottom: 56 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 10 }}
-                    interval={0}
-                    angle={-35}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    domain={[0, 100]}
-                    tick={{ fontSize: 11 }}
-                    tickFormatter={(v) => `${v}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                    labelFormatter={(_, payload) =>
-                      (payload?.[0]?.payload as { fullName?: string })?.fullName ?? ""
-                    }
-                    formatter={(value: number | string, name: string) =>
-                      name === "Luỹ kế" ? [`${value}%`, name] : [value, name]
-                    }
-                  />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="so_su_co"
-                    name="Sự cố"
-                    fill="var(--primary)"
-                    radius={[3, 3, 0, 0]}
-                    cursor="pointer"
-                    onClick={(payloadItem) => {
-                      const p = payloadItem as unknown as {
-                        payload?: { he_thong_id?: string; fullName?: string };
-                      };
-                      if (p?.payload?.he_thong_id) {
-                        setDrill({ id: p.payload.he_thong_id, name: p.payload.fullName ?? "" });
-                      }
-                    }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="cum_pct"
-                    name="Luỹ kế"
-                    stroke="var(--destructive)"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
-                  <ReferenceLine
-                    yAxisId="right"
-                    y={80}
-                    stroke="var(--destructive)"
-                    strokeDasharray="4 4"
-                    label={{
-                      value: "80%",
-                      position: "right",
-                      fontSize: 10,
-                      fill: "var(--destructive)",
-                    }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            <YAxis yAxisId="left" axisLine={false} tickLine={false} allowDecimals={false} />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              domain={[0, 100]}
+              tickFormatter={(v) => `${v}%`}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name) => {
+                    if (name === "Luỹ kế") return [`${value}%`, name];
+                    return [value, name];
+                  }}
+                />
+              }
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar
+              yAxisId="left"
+              dataKey="so_su_co"
+              fill="var(--color-so_su_co)"
+              radius={[3, 3, 0, 0]}
+              barSize={24}
+              onClick={(p: any) => {
+                const id = p?.payload?.he_thong_id;
+                if (id) setDrill({ id, name: p.payload.fullName ?? "" });
+              }}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="cum_pct"
+              stroke="var(--color-cum_pct)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+            <ReferenceLine
+              yAxisId="right"
+              y={80}
+              stroke="var(--color-cum_pct)"
+              strokeDasharray="4 4"
+              label={{
+                value: "80%",
+                position: "right",
+                fontSize: 10,
+                fill: "var(--color-cum_pct)",
+              }}
+            />
+          </ComposedChart>
+        </ChartContainer>
+      </ERPChartFrame>
 
       <Card>
         <CardHeader>
