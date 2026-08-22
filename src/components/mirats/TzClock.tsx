@@ -44,39 +44,28 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`IMPLEMENTATION MODE — TABS VISUAL CONTRACT ONLY.
+          aria-label={`IMPLEMENTATION MODE — TABLE PADDING/BORDER RADIUS ONLY.
 
-Thực hiện sau Prompt 10O. Không đổi điều hướng, nội dung tab hoặc ngôn ngữ thiết kế.
+Thực hiện sau Prompt 10P. Không thay đổi dữ liệu, RLS hoặc navigation.
 
-Hiện tượng từ screenshot:
+Hiện trạng từ UI audit:
+- Bảng StandardTable và DataTableCore đang có border-radius quá lớn ở hàng (12px), tạo khoảng hở không tự nhiên khi có border;
+- Padding của hàng (h-12) đang cao hơn tiêu chuẩn Dashboard Compact (h-10 cho header, h-9 cho row);
+- Trạng thái hover/selected đang áp dụng shadow cục bộ thay vì dùng background tint đồng nhất;
+- Vi phạm contract U7: một số bảng vẫn dùng raw border thay vì biến CSS.
 
-- tab “Ma trận quyền” đang active nhưng nền chuyển thành màu trắng;
+Phạm vi chính:
+- src/components/mirats/StandardTable.tsx
+- src/components/mirats/DataTableCore.tsx
+- src/components/ui/table.tsx
+- src/styles.css
 
-- chữ/icon vẫn nhận màu \`primary-foreground\` sáng nên gần như biến mất;
-
-- hình dạng active không đồng bộ với các cụm tab khác.
-
-Nguyên nhân source đã xác nhận:
-
-- primitive \`src/components/ui/tabs.tsx\` quy định active bằng \`bg-primary text-primary-foreground\`;
-
-- riêng \`src/routes/_app.phan-quyen.tsx\` lại thêm \`data-[state=active]:bg-background\` cho cả 4 TabsTrigger;
-
-- local class đổi nền active thành trắng nhưng không đổi lại màu chữ, tạo tổ hợp trắng trên trắng;
-
-- ứng dụng hiện có 34 file dùng TabsTrigger và nhiều kiểu tab riêng: segmented/pill, underline và panel tabs. Thiếu variant contract nên route tự ghi đè từng thuộc tính active.
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10P
-
-- Tab active ở trang Phân quyền không còn nền trắng/chữ trắng; label và icon đọc rõ.
-
-- Các tab cùng loại dùng cùng một active contract trên toàn ứng dụng.
-
-- Segmented tabs và underline tabs được phân biệt bằng variant chính thức, không bằng class route tùy ý.
-
-- Active, inactive, hover, focus và disabled rõ ràng ở light/dark.
-
-- Không còn local override \`data-[state=active]:bg-background\` tại \`_app.phan-quyen.tsx\`.`}
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10Q
+- Header table cao chính xác 40px (h-10), Row table cao chính xác 36px (h-9);
+- Border-radius của hàng giảm xuống 4px hoặc 6px để khớp với density cao;
+- Khoảng cách cell (padding-x) đồng bộ 12px (px-3);
+- Loại bỏ hoàn toàn shadow khi hover hàng, thay bằng background tint #0074e2/5;
+- Mọi bảng tuân thủ contract density mới.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
