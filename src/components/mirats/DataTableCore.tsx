@@ -215,7 +215,7 @@ export function DataTableCore<T>({
             <TableRow className="flex">
               <TableCell
                 colSpan={columns.length + (selectable ? 1 : 0)}
-                className="h-32 text-center text-muted-foreground italic"
+                className="h-32 text-center text-muted-foreground italic flex-1"
               >
                 Không có dữ liệu hiển thị
               </TableCell>
