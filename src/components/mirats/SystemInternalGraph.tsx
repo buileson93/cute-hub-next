@@ -343,7 +343,7 @@ export function SystemInternalGraph({
 
       <div
         ref={containerRef}
-        className={`relative h-[560px] w-full bg-[hsl(var(--muted)/0.25)] ${edit ? "cursor-crosshair" : ""}`}
+        className={`relative h-[560px] w-full bg-[color-mix(in srgb, var(--muted), transparent calc(100% - 0.25 * 100%))] ${edit ? "cursor-crosshair" : ""}`}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={endDrag}

@@ -2074,7 +2074,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               containerRef.current = el;
               wrapperRef.current = el;
             }}
-            className={`relative w-full bg-[hsl(var(--muted)/0.25)] ${isFull ? "h-dvh" : "h-[600px]"} ${laser ? "cursor-none" : ""}`}
+            className={`relative w-full bg-[color-mix(in srgb, var(--muted), transparent calc(100% - 0.25 * 100%))] ${isFull ? "h-dvh" : "h-[600px]"} ${laser ? "cursor-none" : ""}`}
             onMouseMove={(e) => {
               const r = e.currentTarget.getBoundingClientRect();
               const x = e.clientX - r.left,
