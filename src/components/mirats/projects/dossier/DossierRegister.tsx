@@ -70,7 +70,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
 
   if (isLoading)
     return (
-      <div className="p-8 text-slate-500 flex items-center gap-2">
+      <div className="p-8 text-muted-foreground flex items-center gap-2">
         <Loader2 className="h-4 w-4 animate-spin" />
         Đang tải hồ sơ…
       </div>
@@ -100,7 +100,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
 
       <div className="rounded-xl border border-border overflow-hidden bg-card">
         <Table>
-          <TableHeader className="bg-slate-50/50">
+          <TableHeader className="bg-muted/50">
             <TableRow>
               <TableHead className="w-[30%]">Tên & Trích yếu</TableHead>
               <TableHead>Ngày trình/ký</TableHead>
@@ -113,12 +113,12 @@ export function DossierRegister({ project_id }: { project_id: string }) {
           </TableHeader>
           <TableBody>
             {docs.map((doc) => (
-              <TableRow key={doc.id} className="hover:bg-slate-50/50 transition-colors">
+              <TableRow key={doc.id} className="hover:bg-muted/50 transition-colors">
                 <TableCell>
                   <div className="font-medium text-foreground">{doc.title}</div>
-                  <div className="text-[11px] text-slate-500 line-clamp-1">{doc.abstract}</div>
+                  <div className="text-[11px] text-muted-foreground line-clamp-1">{doc.abstract}</div>
                 </TableCell>
-                <TableCell className="text-xs text-slate-600">
+                <TableCell className="text-xs text-muted-foreground">
                   <div className="flex flex-col">
                     <span>Trình: {doc.submit_date || "—"}</span>
                     <span>Ký: {doc.sign_date || "—"}</span>
@@ -129,14 +129,14 @@ export function DossierRegister({ project_id }: { project_id: string }) {
                     {doc.format === "paper" ? "Bản giấy" : "Điện tử"}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-xs text-slate-600">
+                <TableCell className="text-xs text-muted-foreground">
                   {doc.copy_type === "original"
                     ? "Bản gốc"
                     : doc.copy_type === "copy"
                       ? "Bản sao"
                       : "Chứng thực"}
                 </TableCell>
-                <TableCell className="text-xs text-slate-600">{doc.issuing_body}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{doc.issuing_body}</TableCell>
                 <TableCell>
                   {doc.status === "complete" ? (
                     <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium">
@@ -168,7 +168,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
           </TableBody>
         </Table>
       </div>
-      <Blockquote className="mt-4 border-border bg-slate-50/50 text-slate-600">
+      <Blockquote className="mt-4 border-border bg-muted/50 text-muted-foreground">
         <div className="flex gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
           <div className="text-[11px] leading-relaxed italic">

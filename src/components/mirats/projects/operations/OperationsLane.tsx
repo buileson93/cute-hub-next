@@ -57,7 +57,7 @@ export function OperationsLane({ incidents }: OperationsLaneProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between text-[11px] text-slate-500">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
               <span>Owner: {incident.owner}</span>
               <span>Load: {incident.interruption_load}%</span>
             </div>

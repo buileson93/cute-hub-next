@@ -256,13 +256,13 @@ const GROUP_COLOR: Record<string, { bg: string; border: string; text: string; do
     dot: "bg-fuchsia-500",
   },
   "Hệ thống": {
-    bg: "bg-slate-50",
+    bg: "bg-muted",
     border: "border-slate-300",
     text: "text-foreground",
-    dot: "bg-slate-500",
+    dot: "bg-muted0",
   },
   Khác: {
-    bg: "bg-slate-50",
+    bg: "bg-muted",
     border: "border-slate-300",
     text: "text-foreground",
     dot: "bg-slate-400",
@@ -392,7 +392,7 @@ function AdminSchemaPage() {
   if (loading) {
     return (
       <AppShell>
-        <div className="flex items-center gap-2 p-8 text-slate-500">
+        <div className="flex items-center gap-2 p-8 text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
         </div>
       </AppShell>
@@ -547,7 +547,7 @@ function SchemaWorkspace() {
                   <span className={cn("h-2 w-2 rounded-full", c.dot)} /> {g}
                 </span>
               ))}
-              <span className="text-slate-500 ml-2">
+              <span className="text-muted-foreground ml-2">
                 {visibleTables.length} bảng · {visibleFks.length} quan hệ
               </span>
             </div>
@@ -555,7 +555,7 @@ function SchemaWorkspace() {
         </Card>
 
         {isLoading ? (
-          <div className="flex items-center gap-2 p-8 text-slate-500">
+          <div className="flex items-center gap-2 p-8 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Đang tải lược đồ…
           </div>
         ) : (
@@ -657,11 +657,11 @@ function TableGraphNode({ data, selected }: NodeProps) {
       <button
         type="button"
         onClick={d.onToggle}
-        className="w-full text-left px-3 py-2 hover:bg-slate-50/80"
+        className="w-full text-left px-3 py-2 hover:bg-muted/80"
       >
         <div className="flex items-center gap-1.5">
           <span className={cn("h-2 w-2 rounded-full shrink-0", d.colorDot)} />
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 truncate">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
             {d.group}
           </span>
           {d.expanded ? (
@@ -671,14 +671,14 @@ function TableGraphNode({ data, selected }: NodeProps) {
           )}
         </div>
         <div className="font-semibold text-sm leading-tight truncate">{d.viName}</div>
-        <div className="text-[11px] font-mono text-slate-500 truncate">{d.rawName}</div>
-        <div className="mt-0.5 text-[11px] text-slate-500">
+        <div className="text-[11px] font-mono text-muted-foreground truncate">{d.rawName}</div>
+        <div className="mt-0.5 text-[11px] text-muted-foreground">
           {d.colCount} cột · {d.fkCount} liên kết
         </div>
       </button>
       {d.expanded && (
         <div
-          className="border-t bg-slate-50/40 overflow-auto"
+          className="border-t bg-muted/40 overflow-auto"
           style={{ maxHeight: EXPANDED_MAX - HEAD_H }}
         >
           {d.columns.map((col) => (
@@ -816,7 +816,7 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
       defaultEdgeOptions={{ type: "smoothstep" }}
     >
       <Panel position="top-right">
-        <div className="flex items-center gap-1 rounded-md border bg-white/95 p-1 shadow-sm backdrop-blur">
+        <div className="flex items-center gap-1 rounded-md border bg-card/95 p-1 shadow-sm backdrop-blur">
           <Button
             size="sm"
             variant="ghost"
@@ -838,7 +838,7 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
         </div>
       </Panel>
       <Panel position="top-left">
-        <div className="rounded-md border bg-white/95 px-2 py-1 text-[11px] text-slate-500 shadow-sm backdrop-blur">
+        <div className="rounded-md border bg-card/95 px-2 py-1 text-[11px] text-muted-foreground shadow-sm backdrop-blur">
           Bấm vào khối để mở/đóng danh sách cột
         </div>
       </Panel>
@@ -896,7 +896,7 @@ function SchemaTree({
           </Card>
         ))}
       {tables.length === 0 && (
-        <div className="text-sm text-slate-500 p-4">Không có bảng nào phù hợp bộ lọc.</div>
+        <div className="text-sm text-muted-foreground p-4">Không có bảng nào phù hợp bộ lọc.</div>
       )}
     </div>
   );
@@ -931,7 +931,7 @@ function TableNode({
               )}
               <div className="min-w-0">
                 <div className="font-medium text-sm truncate">{tableVi(tbl.table_name)}</div>
-                <div className="text-[11px] font-mono text-slate-500 truncate">
+                <div className="text-[11px] font-mono text-muted-foreground truncate">
                   {tbl.table_name}
                 </div>
               </div>
@@ -941,7 +941,7 @@ function TableNode({
             {tbl.columns.length} cột
           </Badge>
           {outFk.length + inFk.length > 0 && (
-            <Badge variant="outline" className="hidden md:inline-flex bg-slate-50">
+            <Badge variant="outline" className="hidden md:inline-flex bg-muted">
               <Link2 className="h-3 w-3 mr-1" />
               {outFk.length + inFk.length}
             </Badge>
@@ -956,14 +956,14 @@ function TableNode({
         <CollapsibleContent>
           <div className="border-t p-3 space-y-3">
             {TABLE_DESC[tbl.table_name] && (
-              <p className="text-xs text-slate-600 bg-slate-50 rounded-md p-2 leading-relaxed">
+              <p className="text-xs text-muted-foreground bg-muted rounded-md p-2 leading-relaxed">
                 {TABLE_DESC[tbl.table_name]}
               </p>
             )}
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase text-slate-500">
+                  <tr className="text-left text-xs uppercase text-muted-foreground">
                     <th className="py-1.5 pr-3">Cột</th>
                     <th className="py-1.5 pr-3">Ý nghĩa</th>
                     <th className="py-1.5 pr-3">Kiểu</th>
@@ -996,7 +996,7 @@ function TableNode({
                     <ul className="space-y-1">
                       {outFk.map((f) => (
                         <li key={f.constraint} className="flex items-center gap-1.5">
-                          <span className="text-slate-500">
+                          <span className="text-muted-foreground">
                             Mỗi {tableVi(tbl.table_name).toLowerCase()} gắn với một
                           </span>
                           <span className="font-medium">{tableVi(f.to_table)}</span>
@@ -1017,7 +1017,7 @@ function TableNode({
                       {inFk.map((f) => (
                         <li key={f.constraint} className="flex items-center gap-1.5">
                           <span className="font-medium">{tableVi(f.from_table)}</span>
-                          <span className="text-slate-500">tham chiếu đến bảng này</span>
+                          <span className="text-muted-foreground">tham chiếu đến bảng này</span>
                           <span className="font-mono text-slate-400 text-[10px]">
                             ({f.from_column})
                           </span>
@@ -1093,8 +1093,8 @@ function ColumnRow({
           <span className="font-mono">{col.name}</span>
         </div>
       </td>
-      <td className="py-1.5 pr-3 text-xs text-slate-600">{colHint(col, tbl, fks) || "—"}</td>
-      <td className="py-1.5 pr-3 text-xs text-slate-600" title={col.udt || col.type}>
+      <td className="py-1.5 pr-3 text-xs text-muted-foreground">{colHint(col, tbl, fks) || "—"}</td>
+      <td className="py-1.5 pr-3 text-xs text-muted-foreground" title={col.udt || col.type}>
         {typeVi(col)}
       </td>
       <td className="py-1.5 pr-3 text-xs">
@@ -1105,7 +1105,7 @@ function ColumnRow({
         )}
       </td>
       <td
-        className="py-1.5 pr-3 font-mono text-xs text-slate-500 max-w-[220px] truncate"
+        className="py-1.5 pr-3 font-mono text-xs text-muted-foreground max-w-[220px] truncate"
         title={col.default ?? ""}
       >
         {col.default ?? "—"}
@@ -1155,7 +1155,7 @@ function ColumnRow({
               onChange={(e) => setNewName(e.target.value.toLowerCase())}
               placeholder="ten_cot_moi"
             />
-            <p className="text-xs text-slate-500">Chỉ dùng chữ thường, số, và dấu gạch dưới.</p>
+            <p className="text-xs text-muted-foreground">Chỉ dùng chữ thường, số, và dấu gạch dưới.</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRenameOpen(false)}>
@@ -1313,7 +1313,7 @@ function AddColumnDialog({
           <div className="flex items-center justify-between rounded-md border p-3">
             <div>
               <div className="text-sm font-medium">Cho phép rỗng (NULL)</div>
-              <div className="text-xs text-slate-500">Tắt nếu cột này bắt buộc có giá trị.</div>
+              <div className="text-xs text-muted-foreground">Tắt nếu cột này bắt buộc có giá trị.</div>
             </div>
             <Switch checked={nullable} onCheckedChange={setNullable} />
           </div>
@@ -1325,7 +1325,7 @@ function AddColumnDialog({
               onChange={(e) => setDef(e.target.value)}
               placeholder="VD: '' cho text, 0 cho số, false, now(), gen_random_uuid()"
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Nhập biểu thức SQL. Ví dụ: <code className="font-mono">'chưa xác định'</code>,{" "}
               <code className="font-mono">0</code>,<code className="font-mono"> false</code>,{" "}
               <code className="font-mono">now()</code>.

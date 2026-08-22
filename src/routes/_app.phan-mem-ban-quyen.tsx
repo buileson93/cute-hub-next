@@ -554,7 +554,7 @@ function Kpi({
     primary: "text-primary bg-primary/10 border-primary/20",
     warning: "text-amber-600 bg-amber-50 border-amber-200",
     destructive: "text-red-600 bg-red-50 border-red-200",
-    slate: "text-slate-600 bg-slate-50 border-border",
+    slate: "text-muted-foreground bg-muted border-border",
   };
 
   return (

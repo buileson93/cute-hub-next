@@ -4,14 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { History, User } from "lucide-react";
 
 const ACTION_META: Record<string, { label: string; color: string }> = {
-  tao: { label: "Tạo hạng mục", color: "bg-slate-100 text-slate-700" },
+  tao: { label: "Tạo hạng mục", color: "bg-muted text-slate-700" },
   cap_nhat: { label: "Cập nhật", color: "bg-blue-100 text-blue-700" },
   gui_duyet: { label: "Gửi duyệt", color: "bg-amber-100 text-amber-700" },
   duyet: { label: "Đã duyệt", color: "bg-emerald-100 text-emerald-700" },
   tra_lai: { label: "Trả lại", color: "bg-rose-100 text-rose-700" },
   mo_khoa: { label: "Mở khoá", color: "bg-purple-100 text-purple-700" },
   gan_bien_ban: { label: "Gắn biên bản", color: "bg-indigo-100 text-indigo-700" },
-  go_bien_ban: { label: "Gỡ biên bản", color: "bg-slate-100 text-slate-600" },
+  go_bien_ban: { label: "Gỡ biên bản", color: "bg-muted text-muted-foreground" },
 };
 
 const FIELD_LABEL: Record<string, string> = {
@@ -76,7 +76,7 @@ export function DotAuditTimeline({
       {data.map((row) => {
         const meta = ACTION_META[row.action] ?? {
           label: row.action,
-          color: "bg-slate-100 text-slate-700",
+          color: "bg-muted text-slate-700",
         };
         const changes = (row.changes ?? {}) as Record<string, [unknown, unknown]>;
         const actorName = row.actor_profile?.ho_ten || row.actor_profile?.email || "Hệ thống";

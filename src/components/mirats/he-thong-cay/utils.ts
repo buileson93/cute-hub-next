@@ -146,9 +146,9 @@ export const NH_COLORS: Array<{
   {
     id: "slate",
     label: "Xám",
-    list: "bg-slate-500/5",
-    mind: "border-slate-500/40 bg-slate-500/5",
-    dot: "bg-slate-500",
+    list: "bg-muted0/5",
+    mind: "border-slate-500/40 bg-muted0/5",
+    dot: "bg-muted0",
   },
 ];
 

@@ -135,7 +135,7 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
                   className={`flex flex-col items-center gap-1 min-w-[92px] ${isCur ? "text-primary" : done ? "text-emerald-600" : "text-muted-foreground"}`}
                 >
                   <div
-                    className={`rounded-full border-2 h-8 w-8 flex items-center justify-center ${isCur ? "border-primary bg-primary/10" : done ? "border-emerald-600 bg-emerald-50" : "border-slate-300 bg-slate-50"}`}
+                    className={`rounded-full border-2 h-8 w-8 flex items-center justify-center ${isCur ? "border-primary bg-primary/10" : done ? "border-emerald-600 bg-emerald-50" : "border-slate-300 bg-muted"}`}
                   >
                     <Icon className="h-4 w-4" />
                   </div>

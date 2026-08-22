@@ -198,7 +198,7 @@ export const STATUS_TONE: Record<StatusCat, string> = {
   hoat_dong: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600",
   du_phong: "border-amber-500/30 bg-amber-500/10 text-amber-600",
   hong: "border-red-500/30 bg-red-500/10 text-red-600",
-  ngung: "border-slate-500/30 bg-slate-500/10 text-slate-500",
+  ngung: "border-slate-500/30 bg-muted0/10 text-muted-foreground",
   khac: "border-border bg-muted text-muted-foreground",
 };
 

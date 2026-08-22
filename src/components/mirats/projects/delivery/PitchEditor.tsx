@@ -41,7 +41,7 @@ export function PitchEditor({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-foreground">Shaping a Pitch</h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Định hình tính năng cốt lõi trước khi vào Build Cycle.
           </p>
         </div>
@@ -66,7 +66,7 @@ export function PitchEditor({
             <CardHeader className="pb-4">
               <div className="space-y-4">
                 <div>
-                  <Label className="text-xs uppercase text-slate-500 font-bold">
+                  <Label className="text-xs uppercase text-muted-foreground font-bold">
                     Tiêu đề Pitch
                   </Label>
                   <Input
@@ -78,7 +78,7 @@ export function PitchEditor({
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-48">
-                    <Label className="text-xs uppercase text-slate-500 font-bold">
+                    <Label className="text-xs uppercase text-muted-foreground font-bold">
                       Appetite (Ngân sách)
                     </Label>
                     <Select
@@ -151,7 +151,7 @@ export function PitchEditor({
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-slate-50/50 shadow-none">
+          <Card className="border-border bg-muted/50 shadow-none">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
                 <XCircle className="h-4 w-4" /> 4. No-Gos

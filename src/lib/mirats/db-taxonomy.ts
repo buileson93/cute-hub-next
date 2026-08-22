@@ -98,7 +98,7 @@ function noAccent(s: string): string {
 
 function plTone(ten: string): string {
   const s = noAccent(ten);
-  if (s.includes("DUNG KHAI THAC")) return "border-slate-500/40 bg-slate-500/10 text-slate-500";
+  if (s.includes("DUNG KHAI THAC")) return "border-slate-500/40 bg-muted0/10 text-muted-foreground";
   if (s.includes("NHOM 1")) return "border-rose-500/40 bg-rose-500/10 text-rose-600";
   if (s.includes("NHOM 2")) return "border-amber-500/40 bg-amber-500/10 text-amber-600";
   if (s.includes("NHOM 3")) return "border-sky-500/40 bg-sky-500/10 text-sky-600";

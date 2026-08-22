@@ -109,7 +109,7 @@ export const roleMeta: Record<
     short: "Read-only",
     scope: "Trong đơn vị",
     icon: Eye,
-    tone: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
+    tone: "bg-muted0/10 text-muted-foreground dark:text-slate-300",
     desc: "Chỉ xem & xuất báo cáo.",
   },
 };

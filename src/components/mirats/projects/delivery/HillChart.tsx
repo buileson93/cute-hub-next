@@ -73,12 +73,12 @@ export function HillChart({ project_id }: { project_id: string }) {
     return `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`;
   }).join(" ");
 
-  if (isLoading) return <div className="p-4 text-xs text-slate-500">Đang tải Hill Chart...</div>;
+  if (isLoading) return <div className="p-4 text-xs text-muted-foreground">Đang tải Hill Chart...</div>;
 
   return (
     <div className="space-y-4">
       <Card className="border-border overflow-hidden shadow-none">
-        <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
+        <CardHeader className="pb-2 bg-muted/50 border-b border-slate-100">
           <CardTitle className="text-sm font-semibold">Tiến độ Uncertainty (Hill Chart)</CardTitle>
           <CardDescription className="text-xs">
             Trái: Climbing (Figuring out) | Phải: Executing (Rolling down)
@@ -185,7 +185,7 @@ export function HillChart({ project_id }: { project_id: string }) {
               <Badge variant="secondary" className="text-[10px] font-mono">
                 {m.position}%
               </Badge>
-              <span className="text-[11px] text-slate-500 uppercase tracking-tight">
+              <span className="text-[11px] text-muted-foreground uppercase tracking-tight">
                 {m.position < 50 ? "Climbing" : "Executing"}
               </span>
             </div>

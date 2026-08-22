@@ -78,7 +78,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
     }
   };
 
-  if (isLoading) return <div className="p-4 text-xs text-slate-500">Đang tải canvas...</div>;
+  if (isLoading) return <div className="p-4 text-xs text-muted-foreground">Đang tải canvas...</div>;
 
   return (
     <div className="space-y-6">
@@ -183,7 +183,7 @@ function CanvasSection({
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder || "Nhập nội dung..."}
-          className="min-h-[120px] resize-none text-sm border-none bg-slate-50 focus-visible:ring-1 focus-visible:ring-indigo-500"
+          className="min-h-[120px] resize-none text-sm border-none bg-muted focus-visible:ring-1 focus-visible:ring-indigo-500"
         />
       </CardContent>
     </Card>

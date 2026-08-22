@@ -47,7 +47,7 @@ export function hieuLucPhieu(cv: Pick<CongViecBaoTri, "trang_thai" | "ngay_den_h
   if (cv.trang_thai === "HOAN_THANH")
     return { label: "Hoàn thành", cls: "bg-emerald-100 text-emerald-700", quaHan: false };
   if (cv.trang_thai === "HUY")
-    return { label: "Đã huỷ", cls: "bg-slate-100 text-slate-500", quaHan: false };
+    return { label: "Đã huỷ", cls: "bg-muted text-muted-foreground", quaHan: false };
   const today = new Date().toISOString().slice(0, 10);
   if (cv.ngay_den_han && cv.ngay_den_han < today) {
     const days = Math.round((Date.now() - new Date(cv.ngay_den_han).getTime()) / 86400000);
@@ -62,7 +62,7 @@ export const UU_TIEN_META: Record<string, { label: string; cls: string }> = {
   KHAN: { label: "Khẩn", cls: "bg-red-100 text-red-700" },
   CAO: { label: "Cao", cls: "bg-orange-100 text-orange-700" },
   TRUNG_BINH: { label: "Trung bình", cls: "bg-sky-100 text-sky-700" },
-  THAP: { label: "Thấp", cls: "bg-slate-100 text-slate-600" },
+  THAP: { label: "Thấp", cls: "bg-muted text-muted-foreground" },
 };
 
 /** Danh sách phiếu công việc bảo dưỡng (RLS lọc theo quyền/đơn vị). */

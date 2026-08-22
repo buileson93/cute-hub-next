@@ -407,8 +407,8 @@ function getEventColor(type: ProjectEventType) {
     };
   }
   return {
-    text: "text-slate-600",
-    bg: "bg-slate-50",
+    text: "text-muted-foreground",
+    bg: "bg-muted",
     border: "border-border",
   };
 }

@@ -220,7 +220,7 @@ function KiemDinhPage() {
             label={getExpiryLabel(r.soNgay)}
           />
         ) : (
-          <Badge variant="outline" className="bg-slate-100 text-slate-600 border-border">
+          <Badge variant="outline" className="bg-muted text-muted-foreground border-border">
             —
           </Badge>
         ),
