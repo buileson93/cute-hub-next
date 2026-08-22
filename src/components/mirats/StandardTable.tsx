@@ -434,38 +434,34 @@ export function StandardTable<T>({
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
-      return (
-        <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-          <div className="text-sm text-destructive font-medium">{String(err)}</div>
-          {err.retry && (
-            <Button variant="outline" size="sm" onClick={err.retry}>
-              Thử lại
-            </Button>
-          )}
-        </div>
+      return React.createElement(
+        "div",
+        { className: "py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card" },
+        React.createElement("div", { className: "text-sm text-destructive font-medium" }, String(err)),
+        err.retry && React.createElement(Button, { variant: "outline", size: "sm", onClick: err.retry }, "Thử lại")
       );
     }
 
     if (trangThai.dangTai) {
       if (loadingContent) return loadingContent;
-      return (
-        <div className="p-4 border rounded-lg bg-card">
-          <TableSkeleton cols={columns.length} rows={6} />
-        </div>
+      return React.createElement(
+        "div",
+        { className: "p-4 border rounded-lg bg-card" },
+        React.createElement(TableSkeleton, { cols: columns.length, rows: 6 })
       );
     }
 
     if (fullDisplay.length === 0) {
-      const emptyInner = emptyContent ?? (
-        <div className="text-sm text-muted-foreground italic">
-          {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
-        </div>
+      const emptyInner = emptyContent ?? React.createElement(
+        "div",
+        { className: "text-sm text-muted-foreground italic" },
+        hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")
       );
       
-      return (
-        <div className="py-20 border rounded-lg bg-card text-center">
-          {emptyInner}
-        </div>
+      return React.createElement(
+        "div",
+        { className: "py-20 border rounded-lg bg-card text-center" },
+        emptyInner
       );
     }
 
