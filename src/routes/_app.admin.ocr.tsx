@@ -725,19 +725,17 @@ function OcrBenchmarkTab() {
               onClick={() => {
                 toast.promise(
                   (async () => {
-                    // Gọi logic profiler thật thay vì mock hoàn toàn
+                    // Gọi logic profiler thật
                     const profile = await deviceProfiler.getProfile();
-                    // Cập nhật trạng thái fixture demo (nếu cần)
                     await new Promise((resolve) => setTimeout(resolve, 1500));
                     return profile;
-
-
                   })(),
                   {
                     loading: "Đang chạy benchmark hệ thống...",
                     success: (p) => `Benchmark hoàn tất: ${Math.round(p?.benchmarkScore || 0)}ms`,
                     error: "Lỗi khi chạy benchmark",
                   },
+
 
                 );
               }}

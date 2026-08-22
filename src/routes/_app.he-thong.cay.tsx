@@ -568,6 +568,7 @@ function HeThongCayPage() {
               </AppTooltip>
             )}
             {canShare && (
+
               <AppTooltip noiDung="Chia sẻ sơ đồ">
                 <Button
                   variant="outline"
@@ -711,6 +712,7 @@ function HeThongCayPage() {
                   posByHt={posByHt || new Map()}
                   scopeText="Cấu trúc CNS/ATM"
                    canManage={canManageNodes}
+
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
