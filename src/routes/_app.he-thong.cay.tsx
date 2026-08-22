@@ -185,18 +185,22 @@ function useOverrides() {
 
 function usePlMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (id: string) => overrides?.get(okey("pl", id))?.ten || taxonomy?.plNameMap.get(id) || id,
+    (id: string) => {
+      const override = overrides?.get(okey("pl", id))?.ten;
+      if (override) return override;
+      return resolvePhanLoai(id, taxonomy).label;
+    },
     [overrides, taxonomy],
   );
 }
 
 function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (ma: string) =>
-      overrides?.get(okey("nh", ma))?.ten ||
-      taxonomy?.nhomNameMap.get(ma) ||
-      taxonomy?.nhomMaMap.get(ma) ||
-      ma,
+    (ma: string) => {
+      const override = overrides?.get(okey("nh", ma))?.ten;
+      if (override) return override;
+      return resolveNhom(ma, taxonomy).label;
+    },
     [overrides, taxonomy],
   );
 }
@@ -204,15 +208,9 @@ function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
     (ma: string) => {
-      const parsed = parseHtSysMa(ma);
-      const sysName = parsed.sysName;
-      if (!sysName || sysName === NONE_HT) return "Hệ thống khác";
-      return (
-        overrides?.get(okey("ht", ma))?.ten ||
-        taxonomy?.htNameMap.get(sysName) ||
-        taxonomy?.htMaMap.get(sysName) ||
-        ma
-      );
+      const override = overrides?.get(okey("ht", ma))?.ten;
+      if (override) return override;
+      return resolveHeThong(ma, taxonomy).label;
     },
     [overrides, taxonomy],
   );
@@ -220,10 +218,15 @@ function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 
 function useTbMind(overrides: OverrideMap | undefined) {
   return useCallback(
-    (d: DbDevice) => overrides?.get(okey("tb", d.ma_thiet_bi))?.ten || d.ten || d.ma_thiet_bi,
+    (d: DbDevice) => {
+      const override = overrides?.get(okey("tb", d.ma_thiet_bi))?.ten;
+      if (override) return override;
+      return resolveThietBi(d, overrides).label;
+    },
     [overrides],
   );
 }
+
 
 function HeThongCayPage() {
   const nav = useNavigate();
