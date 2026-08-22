@@ -179,8 +179,8 @@ function SuCoPage() {
   const [showAll, setShowAll] = useState(false);
 
   const devByMa = useMemo(
-    () => new Map((taxo?.devices ?? []).map((d) => [d.ma_thiet_bi, d])),
-    [taxo],
+    () => new Map((pagedData?.rows ?? []).map((d) => [d.ma_thiet_bi, d])),
+    [pagedData],
   );
   const htNameOf = useCallback(
     (s: SuCo) =>
