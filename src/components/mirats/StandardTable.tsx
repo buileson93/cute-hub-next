@@ -1478,7 +1478,7 @@ export function StandardTableInner<T>({
                       <div
                         role="separator"
                         tabIndex={0}
-                        aria-label={`Thay đổi độ rộng cột ${c.label}`}
+                        aria-label={`Thay đổi độ rộng cột ${label}`}
                         className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize opacity-0 group-hover:opacity-100 hover:bg-primary/30 transition-opacity z-10 focus-visible:opacity-100 focus-visible:bg-primary/30 outline-none"
                         onMouseDown={(e) => onHandleMouseDown(e, c.key, currentWidth)}
                         onDoubleClick={() => prefs.resetWidth(c.key)}
