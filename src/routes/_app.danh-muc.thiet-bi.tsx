@@ -1391,43 +1391,58 @@ function DanhMucThietBiPage() {
             onRowClick={(d) => openDetail(d)}
             rowClassName={() => "cursor-pointer"}
             emptyText={pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
-            footer={
-              <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
-                <div className="text-xs text-muted-foreground">
-                  Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
+            toolbarLeft={
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="only-standalone"
+                      checked={onlyStandalone}
+                      onCheckedChange={setOnlyStandalone}
+                    />
+                    <Label htmlFor="only-standalone" className="cursor-pointer text-sm">
+                      Chỉ tài sản độc lập
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="show-retired"
+                      checked={showRetired}
+                      onCheckedChange={setShowRetired}
+                    />
+                    <Label htmlFor="show-retired" className="cursor-pointer text-sm">
+                      Kể cả đã nghỉ khai thác
+                    </Label>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8"
-                    disabled={page === 0 || pagedLoading}
-                    onClick={() => setPage((p) => Math.max(0, p - 1))}
-                  >
-                    Trước
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8"
-                    disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    Tiếp
-                  </Button>
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed">
+                  <div className="text-[11px] text-muted-foreground italic">
+                    Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2"
+                      disabled={page === 0 || pagedLoading}
+                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    >
+                      Trước
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[10px] px-2"
+                      disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
+                      onClick={() => setPage((p) => p + 1)}
+                    >
+                      Tiếp
+                    </Button>
+                  </div>
                 </div>
               </div>
             }
 
-            toolbarLeft={
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="only-standalone"
-                    checked={onlyStandalone}
-                    onCheckedChange={setOnlyStandalone}
-                  />
-                  <Label htmlFor="only-standalone" className="cursor-pointer text-sm">
                     Chỉ tài sản độc lập
                   </Label>
                 </div>
