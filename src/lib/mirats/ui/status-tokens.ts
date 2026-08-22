@@ -31,6 +31,22 @@ export const getWarningCount = () => warningCount;
  * Ưu tiên các mã từ DB: DANG_KHAI_THAC, DANG_SUA_CHUA, HONG, CHO_XU_LY, NGUNG_KHAI_THAC, THANH_LY.
  */
 export const TYPO_STATUS = {
+  // --- CHỈNH SỬA VĂN BẢN TRỰC QUAN ---
+  PERSONALIZATION: {
+    color: "astryx-status-info",
+    class: "astryx-status-info",
+    icon: "action.settings",
+    label: "Cá nhân hóa",
+    kyHieu: "⚙",
+  },
+  RESTORE: {
+    color: "astryx-status-normal",
+    class: "astryx-status-normal",
+    icon: "action.undo",
+    label: "Khôi phục",
+    kyHieu: "↺",
+  },
+
   // --- THIẾT BỊ / TÀI SẢN ---
   DANG_KHAI_THAC: {
     color: "astryx-status-attention",

@@ -192,8 +192,23 @@ function DocRow({
   onDelete: () => void;
 }) {
   const url = useSignedUrl(row.bucket, row.file_path);
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } =
+    useOcrTask();
   const [viewerOpen, setViewerOpen] = useState(false);
   const canDownload = useCanDownloadAttachments();
+
+  async function handleRetry() {
+    try {
+      const res = await fetch(url!);
+      if (!res.ok) throw new Error("Không thể tải tệp");
+      const blob = await res.blob();
+      await startOcr(blob, "model_tai_lieu", row.id);
+      onDelete(); // Just a way to trigger refresh
+    } catch (e: any) {
+      toast.error("Lỗi: " + e.message);
+    }
+  }
+
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">
       <div className="flex min-w-0 items-center gap-3">
@@ -265,9 +280,8 @@ function DocRow({
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={() => {
-                    /* TODO: Implement retry */
-                  }}
+                  onClick={handleRetry}
+                  disabled={isProcessing}
                   className="h-7 w-7 p-0"
                 >
                   <RefreshCcw className="h-4 w-4" />
@@ -279,6 +293,7 @@ function DocRow({
                 size="sm"
                 variant="ghost"
                 onClick={onDelete}
+                disabled={isProcessing}
                 className="h-7 w-7 p-0 text-red-600"
               >
                 <Trash2 className="h-4 w-4" />
@@ -288,7 +303,20 @@ function DocRow({
           </>
         )}
       </div>
+      <OcrProgressDialog
+        open={isProcessing}
+        onOpenChange={() => {}}
+        fileName={row.file_name}
+        currentPage={progress.current}
+        totalPages={progress.total}
+        status={progress.status}
+        isPaused={isPaused}
+        onPause={pauseOcr}
+        onResume={() => setIsPaused(false)}
+        onCancel={() => cancelOcr("model_tai_lieu", row.id)}
+      />
       <DocViewerDialog
+
         open={viewerOpen}
         onOpenChange={setViewerOpen}
         url={url}

@@ -56,6 +56,7 @@ export function TreeView({
   htMind,
   tbLabel,
   canManage,
+  canManageNodes,
   onOpenEditor,
   onHistory,
   onIncident,
@@ -66,6 +67,7 @@ export function TreeView({
   onMoveGroup,
   onMoveDevice,
   posByHt,
+
 }: {
   tree: PlGroup[];
   plLabel: (id: string) => string;
@@ -84,7 +86,9 @@ export function TreeView({
   onMoveGroup: (req: MoveGroupReq) => void;
   onMoveDevice: (req: MoveDeviceReq) => void;
   posByHt: Map<string, any>;
+  canManageNodes?: boolean;
 }) {
+
   const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
   const [selectedTp, setSelectedTp] = useState<{ vt: any; htId: string } | null>(null);
 
@@ -160,13 +164,16 @@ export function TreeView({
           </div>
 
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
-            <button
-              onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
-              className="rounded p-1 hover:bg-muted"
-              title="Sửa"
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </button>
+            {canManageNodes && (
+              <button
+                onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
+                className="rounded p-1 hover:bg-muted"
+                title="Sửa"
+              >
+                <Eye className="h-3.5 w-3.5" />
+              </button>
+            )}
+
             <button
               onClick={() => onIncident(htMa)}
               className="rounded p-1 hover:bg-muted"
@@ -262,13 +269,16 @@ export function TreeView({
             >
               <History className="h-4 w-4" />
             </button>
-            <button
-              onClick={() => onOpenEditor("ht", ht.ma)}
-              className="rounded p-1 hover:bg-muted"
-              title="Thông tin"
-            >
-              <Eye className="h-4 w-4" />
-            </button>
+            {canManageNodes && (
+              <button
+                onClick={() => onOpenEditor("ht", ht.ma)}
+                className="rounded p-1 hover:bg-muted"
+                title="Thông tin"
+              >
+                <Eye className="h-4 w-4" />
+              </button>
+            )}
+
           </div>
         </div>
 
@@ -369,7 +379,7 @@ export function TreeView({
         <ThanhPhanChiTietDialog
           viTri={selectedTp.vt}
           heThongId={selectedTp.htId}
-          canManage={canManage}
+          canManage={!!canManageNodes}
           onClose={() => setSelectedTp(null)}
           onOpenDevice={(ma) => onRecord("tb", ma, "")}
         />

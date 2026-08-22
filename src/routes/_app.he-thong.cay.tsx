@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/mirats/ui/Icon";
@@ -58,6 +58,8 @@ import {
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { ThietBiDetailDrawer } from "@/components/mirats/ThietBiDetailDrawer";
+
+
 import type {
   EditKind,
   OverrideMap,
@@ -217,7 +219,11 @@ function useTbMind(overrides: OverrideMap | undefined) {
 function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
-  const canManage = useCan(["he-thong", "admin"], "manage");
+  const canManage = useCan("he-thong-cay", "manage");
+  const canShare = useCan("he-thong-cay", "share");
+
+
+
   const qc = useQueryClient();
 
   const {
@@ -560,6 +566,22 @@ function HeThongCayPage() {
                 </Button>
               </AppTooltip>
             )}
+            {canShare && (
+              <AppTooltip noiDung="Chia sẻ sơ đồ">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Đã sao chép liên kết sơ đồ");
+                  }}
+                  aria-label="Chia sẻ sơ đồ"
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </AppTooltip>
+            )}
             <AppTooltip noiDung="Cấu hình sơ đồ">
               <Button
                 variant="outline"
@@ -572,6 +594,7 @@ function HeThongCayPage() {
               </Button>
             </AppTooltip>
           </div>
+
         }
       />
 
@@ -656,6 +679,9 @@ function HeThongCayPage() {
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
+                  canManageNodes={canManage}
+
+
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
@@ -682,7 +708,7 @@ function HeThongCayPage() {
                   tree={viewTree as any}
                   posByHt={posByHt || new Map()}
                   scopeText="Cấu trúc CNS/ATM"
-                  canManage={canManage}
+                   canManage={canManage}
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
                   }
@@ -691,6 +717,9 @@ function HeThongCayPage() {
                   onIncident={onIncident}
                   onMaint={onMaint}
                   onRecord={onRecord}
+                  canManageNodes={canManage}
+
+
                   onMoveSystem={(req) =>
                     nav({
                       to: "/he-thong/cay",

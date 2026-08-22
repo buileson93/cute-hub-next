@@ -298,8 +298,28 @@ function SuCoPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Đã đóng sự cố & ghi vào sổ lý lịch");
+      toast.success("Đã kết thúc sự cố & ghi vào sổ lý lịch");
       setClosing(null);
+      qc.invalidateQueries({ queryKey: ["operations_data"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const restoreM = useMutation({
+    mutationFn: async (maSuCo: string) => {
+      const { error } = await supabase
+        .from("su_co")
+        .update({
+          trang_thai: "Mới",
+          thoi_diem_khac_phuc: null,
+          thoi_gian_gian_doan: null,
+          bien_phap_xu_ly: null,
+        })
+        .eq("ma_su_co", maSuCo);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Đã khôi phục trạng thái sự cố về ban đầu");
       qc.invalidateQueries({ queryKey: ["operations_data"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -451,10 +471,32 @@ function SuCoPage() {
         filter: "cat",
         hideBelow: "sm",
         value: (s) => s.trang_thai,
-        cell: (s) => <StatusBadge domain="su_co" code={s.trang_thai} />,
+        cell: (s) => (
+          <div className="flex items-center gap-2">
+            <StatusBadge domain="su_co" code={s.trang_thai} />
+            {canManageState && s.trang_thai !== "Mới" && (
+              <AppTooltip noiDung="Khôi phục trạng thái ban đầu">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Khôi phục sự cố ${s.ma_su_co} về trạng thái Mới?`)) {
+                      restoreM.mutate(s.ma_su_co);
+                    }
+                  }}
+                  aria-label={`Khôi phục sự cố ${s.ma_su_co}`}
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </Button>
+              </AppTooltip>
+            )}
+          </div>
+        ),
       },
     ],
-    [devByMa, htNameOf],
+    [devByMa, htNameOf, canManageState, restoreM],
   );
 
   const [visibleKeys, setVisibleKeys] = useState<string[]>(logColumns.map((c) => c.key));
@@ -540,6 +582,24 @@ function SuCoPage() {
                 value={formatKpiValue(stats.mttr, fmtDowntime)}
                 tone="text-sky-600"
               />
+
+              {canManageState && (
+                <div className="ml-2 flex items-center gap-1 border-l pl-2">
+                  <AppTooltip noiDung="Tùy chỉnh các tham số hiển thị cho riêng bạn">
+                    <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[10px]">
+                      <StatusBadge domain="su_co" code="PERSONALIZATION" dotOnly />
+                      <span>Cá nhân hóa</span>
+                    </Button>
+                  </AppTooltip>
+                  <AppTooltip noiDung="Khôi phục các thiết lập mặc định của trang">
+                    <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[10px]">
+                      <StatusBadge domain="su_co" code="RESTORE" dotOnly />
+                      <span>Khôi phục</span>
+                    </Button>
+                  </AppTooltip>
+                </div>
+              )}
+
 
               <div className="ml-auto flex items-center gap-1">
                 {isMobile ? (

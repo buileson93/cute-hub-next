@@ -151,7 +151,9 @@ export type MindData = {
     toNhKey: string | undefined,
     toNhTen: string | undefined,
   ) => void;
+  canManageNodes?: boolean;
 };
+
 
 export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string }> = {
   pl: { table: "dm_phan_loai", keyCol: "id" },
