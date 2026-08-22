@@ -78,27 +78,27 @@ export function DossierRegister({ project_id }: { project_id: string }) {
 
   return (
     <div className="space-y-4 px-0">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-muted/20 p-3 rounded-xl border border-dashed border-slate-200">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Tìm hồ sơ, trích yếu, số hiệu..."
-            className="pl-9 text-sm"
+            className="pl-9 text-sm h-9 bg-background"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="h-9 font-medium">
             <Filter className="h-4 w-4 mr-2" /> Bộ lọc
           </Button>
-          <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Plus className="h-4 w-4 mr-2" /> Thêm hồ sơ
+          <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground h-9 font-bold px-4">
+            <Plus className="h-4 w-4 mr-2" /> Thêm hồ sơ mới
           </Button>
         </div>
       </div>
 
-      <div className="rounded-xl border border-border overflow-hidden bg-card">
+      <div className="rounded-xl border border-slate-200 overflow-hidden bg-card shadow-sm">
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
@@ -139,13 +139,13 @@ export function DossierRegister({ project_id }: { project_id: string }) {
                 <TableCell className="text-xs text-muted-foreground">{doc.issuing_body}</TableCell>
                 <TableCell>
                   {doc.status === "complete" ? (
-                    <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Đầy đủ
-                    </div>
+                    <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 flex items-center w-fit gap-1.5 py-0.5 font-bold">
+                      <CheckCircle2 className="h-3 w-3" /> Đầy đủ
+                    </Badge>
                   ) : (
-                    <div className="flex items-center gap-1.5 text-amber-600 text-[11px] font-medium">
-                      <AlertCircle className="h-3.5 w-3.5" /> Cần bổ sung
-                    </div>
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 flex items-center w-fit gap-1.5 py-0.5 font-bold">
+                      <AlertCircle className="h-3 w-3" /> Cần bổ sung
+                    </Badge>
                   )}
                 </TableCell>
                 <TableCell>
