@@ -82,8 +82,8 @@ async function loadLicenses(): Promise<LicenseRow[]> {
     noiCap: txt(r.noi_cap),
     file: txt(r.file_url),
     ghiChu: txt(r.ghi_chu),
-    nguon: r.nguon,
-    phamVi: r.pham_vi,
+    nguon: (r.nguon as "giay_phep" | "gpkt") ?? "giay_phep",
+    phamVi: (r.pham_vi as "thiet_bi" | "he_thong") ?? "thiet_bi",
     donViReal: txt(r.don_vi_ma),
     donViTen: txt(r.don_vi_ten),
     tenReal: txt(r.ten_doi_tuong),
@@ -93,7 +93,7 @@ async function loadLicenses(): Promise<LicenseRow[]> {
     heThongId: txt(r.he_thong_id),
     thietBiId: txt(r.thiet_bi_id),
     soNgayConLai: r.so_ngay_con_lai ?? null,
-    trangThai: r.trang_thai,
+    trangThai: (r.trang_thai as UnifiedLicense["trang_thai"]) ?? "none",
     biThayThe: !!r.bi_thay_the,
   }));
 }
