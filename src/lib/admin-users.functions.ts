@@ -151,18 +151,15 @@ export const updateUser = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
-    await supabaseAdmin
-      .from("profiles")
-      .update({
-        ho_ten: data.ho_ten,
-        don_vi: data.don_vi,
-      })
-      .eq("id", data.user_id);
+    // Atomic update via RPC
+    const { error: rpcErr } = await supabaseAdmin.rpc("update_user_full", {
+      target_uid: data.user_id,
+      new_ho_ten: data.ho_ten,
+      new_don_vi: data.don_vi || "",
+      new_roles: data.roles,
+    });
 
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
-    await supabaseAdmin
-      .from("user_roles")
-      .insert(data.roles.map((role) => ({ user_id: data.user_id, role })));
+    if (rpcErr) throw rpcErr;
 
     await supabaseAdmin.from("audit_log").insert({
       user_id: context.userId,
