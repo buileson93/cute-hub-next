@@ -1328,7 +1328,8 @@ export function StandardTableInner<T>({
                   toolbarRight={toolbarRight}
                 />
               );
-            })}
+            })
+          )}
         </div>
       ) : (
         <div
