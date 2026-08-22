@@ -75,6 +75,7 @@ import { fmtDowntime } from "@/lib/mirats/format";
 import { mttr as computeMttr, formatKpiValue } from "@/lib/mirats/reliability";
 import { useScope } from "@/lib/mirats/scope";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import type { SuCo } from "@/lib/mirats/types";
 import {
   OPEN_STATES,
