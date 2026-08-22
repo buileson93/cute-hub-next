@@ -471,10 +471,32 @@ function SuCoPage() {
         filter: "cat",
         hideBelow: "sm",
         value: (s) => s.trang_thai,
-        cell: (s) => <StatusBadge domain="su_co" code={s.trang_thai} />,
+        cell: (s) => (
+          <div className="flex items-center gap-2">
+            <StatusBadge domain="su_co" code={s.trang_thai} />
+            {canManageState && s.trang_thai !== "Mới" && (
+              <AppTooltip noiDung="Khôi phục trạng thái ban đầu">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Khôi phục sự cố ${s.ma_su_co} về trạng thái Mới?`)) {
+                      restoreM.mutate(s.ma_su_co);
+                    }
+                  }}
+                  aria-label={`Khôi phục sự cố ${s.ma_su_co}`}
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </Button>
+              </AppTooltip>
+            )}
+          </div>
+        ),
       },
     ],
-    [devByMa, htNameOf],
+    [devByMa, htNameOf, canManageState, restoreM],
   );
 
   const [visibleKeys, setVisibleKeys] = useState<string[]>(logColumns.map((c) => c.key));
