@@ -233,9 +233,10 @@ export function TreeView({
             )}
           </button>
           <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
-          <span className="flex-1 truncate text-[13px] font-medium leading-tight">
-            {htMind(ht.ma)}
-          </span>
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+            <TruncatedNodeLabel label={htMind(ht.ma)} code={ht.ma} />
+          </div>
+
           <Badge
             variant="outline"
             className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center"
