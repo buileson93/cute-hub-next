@@ -3,15 +3,8 @@
 Apply visual text replacements and restore functionality to broken controls identified in the audit.
 
 ## Visual Text Replacements
-- Replace text "language selector" (or its placeholder/contextual equivalent in `TzClock.tsx` or `TopBar.tsx`) with the verbatim request block:
-  ```text
-  dùng superpower https://github.com/obra/superpowers IMPLEMENTATION MODE — DEAD CONTROLS / RBAC ONLY.
-
-  Không redesign.
-
-  Kiểm tra và xử lý từng control:
-  ... (verbatim rest of text)
-  ```
+- Replace text "language selector" (or its placeholder/contextual equivalent) with "bỏ ý này ". 
+  *(Note: The user recently updated the replacement text from a long instruction block to simply "bỏ ý này ")*.
 
 ## 1. Incident Management Controls (`_app.su-co.index.tsx`)
 - **Personalize/Restore**: Connect the "Personalization" and "Restore" buttons to backend logic (e.g., saving user preferences or reverting status changes).
@@ -38,3 +31,4 @@ Apply visual text replacements and restore functionality to broken controls iden
 - Use `useMutation` for all state changes to ensure `loading/success/error` handling.
 - Invalidate relevant query keys (`operations_data`, `thiet_bi_tep`, etc.) after mutations.
 - Use `supabase.rpc` for atomic administrative actions.
+
