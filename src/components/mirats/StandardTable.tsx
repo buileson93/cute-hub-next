@@ -1598,7 +1598,7 @@ export function StandardTableInner<T>({
                             <TableCell
                               onClick={(e) => e.stopPropagation()}
                               className={cn(
-                                "sticky left-0 z-10 bg-inherit border-r border-border/30 p-0",
+                                "astryx-table-cell sticky left-0 z-10 bg-inherit p-0",
                                 viewMode === "tablet" && "left-10",
                               )}
                             >
@@ -1625,13 +1625,8 @@ export function StandardTableInner<T>({
                                     c.type === "currency" ||
                                     c.type === "percent") &&
                                     "astryx-table-cell-numeric",
-                                  density === "compact"
-                                    ? "px-1 py-0.5"
-                                    : density === "comfortable"
-                                      ? "px-1.5 py-0.5"
-                                      : "px-3 py-1.5",
                                   c.sticky &&
-                                    "sticky left-0 z-10 bg-inherit border-r border-border/30",
+                                    "sticky left-0 z-10 bg-inherit",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
                                   c.align === "right" && "text-right tabular-nums",
