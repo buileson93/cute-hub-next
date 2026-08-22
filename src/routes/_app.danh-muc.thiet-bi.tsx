@@ -1501,7 +1501,7 @@ function DanhMucThietBiPage() {
       <ThietBiDetailDrawer
         device={
           detailDevice
-            ? ((taxo?.devices ?? []).find((d) => d.ma_thiet_bi === detailDevice.ma_thiet_bi) ??
+            ? ((pagedData?.rows ?? []).find((d) => d.ma_thiet_bi === detailDevice.ma_thiet_bi) ??
               detailDevice)
             : null
         }
