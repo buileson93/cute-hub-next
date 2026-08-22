@@ -197,6 +197,8 @@ function DocRow({
     useOcrTask();
   const [viewerOpen, setViewerOpen] = useState(false);
   const canDownload = useCanDownloadAttachments();
+  const qc = useQueryClient();
+
 
   async function handleRetry() {
     if (!url) return;
