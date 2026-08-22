@@ -117,8 +117,9 @@ function DotListPage() {
       setOpen(false);
       nav({ to: "/bao-tri/dot/$id", params: { id: d.id } });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Tạo đợt thất bại: " + e.message),
   });
+
 
   return (
     <div className="space-y-4">

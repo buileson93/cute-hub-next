@@ -77,6 +77,9 @@ function GopGachPage() {
       setValue("");
       qc.invalidateQueries({ queryKey: ["nhiem_vu_nhap_lieu"] });
     },
+    onError: (e: Error) => toast.error("Gửi thất bại: " + e.message),
+  });
+
   });
 
   if (isLoading) return <PageBody>Đang tìm việc cho bạn...</PageBody>;
