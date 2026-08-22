@@ -117,9 +117,9 @@ function ThietBiPage() {
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const devices = useMemo(() => {
-    const all = taxo?.devices ?? [];
+    const all = pagedData?.rows ?? [];
     return scopeAll ? all : all.filter((d) => !donViCode || d.don_vi === donViCode);
-  }, [taxo, scopeAll, donViCode]);
+  }, [pagedData, scopeAll, donViCode]);
 
   const histMap = useMemo(() => {
     const m = new Map<string, Hist>();
