@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { useOperationsData } from "@/lib/mirats/db-operations";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
