@@ -172,8 +172,8 @@ function AuthPage() {
   const showPasskey = passkeySupported && isMobile;
 
   return (
-    <div className="min-h-dvh bg-[#f8fafc] p-4 lg:p-10 flex items-center justify-center">
-      <div className="w-full max-w-[1280px] grid min-h-[800px] overflow-hidden rounded-[32px] bg-card shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] ring-1 ring-black/5 lg:grid-cols-2">
+    <div className="min-h-dvh bg-background p-4 lg:p-10 flex items-center justify-center">
+      <div className="w-full max-w-[1280px] grid min-h-[800px] overflow-hidden rounded-[32px] bg-card shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] ring-1 ring-border/50 lg:grid-cols-2">
         {/* Left: form */}
         <div className="flex flex-col justify-center p-8 sm:p-16 lg:p-20">
           <motion.div
