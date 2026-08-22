@@ -1329,7 +1329,7 @@ export function StandardTableInner<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
-                  "hover:bg-transparent border-b border-border/60 align-middle active:scale-100",
+                  "hover:bg-transparent border-b border-border/60 align-middle",
                   UI_DENSITY.TABLE_ROW_H,
                   "astryx-table-header",
                 )}
