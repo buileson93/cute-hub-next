@@ -62,23 +62,11 @@ function txt(v: unknown): string | null {
 }
 
 async function loadLicenses(): Promise<LicenseRow[]> {
-  // v_giay_phep là view tạo bằng migration; ép kiểu client cho tới khi types regenerate.
-  const client = supabase as unknown as {
-    from: (t: string) => {
-      select: (c: string) => {
-        order: (
-          c: string,
-          o: { ascending: boolean; nullsFirst?: boolean },
-        ) => Promise<{
-          data: UnifiedLicense[] | null;
-          error: unknown;
-        }>;
-      };
-    };
-  };
-  const { data, error } = await client
+  const { data, error } = await supabase
     .from("v_giay_phep")
-    .select("*")
+    .select(
+      "id, nguon, so_giay_phep, ma_giay_phep, loai, ngay_cap, ngay_het_han, noi_cap, file_url, ghi_chu, pham_vi, don_vi_ma, don_vi_ten, ten_doi_tuong, he_thong_id, thiet_bi_id, so_ngay_con_lai, trang_thai, bi_thay_the, kieu_thiet_bi",
+    )
     .order("ngay_het_han", { ascending: true, nullsFirst: false });
   if (error) throw error;
 
@@ -94,8 +82,8 @@ async function loadLicenses(): Promise<LicenseRow[]> {
     noiCap: txt(r.noi_cap),
     file: txt(r.file_url),
     ghiChu: txt(r.ghi_chu),
-    nguon: r.nguon,
-    phamVi: r.pham_vi,
+    nguon: (r.nguon as "giay_phep" | "gpkt") ?? "giay_phep",
+    phamVi: (r.pham_vi as "thiet_bi" | "he_thong") ?? "thiet_bi",
     donViReal: txt(r.don_vi_ma),
     donViTen: txt(r.don_vi_ten),
     tenReal: txt(r.ten_doi_tuong),
@@ -105,7 +93,7 @@ async function loadLicenses(): Promise<LicenseRow[]> {
     heThongId: txt(r.he_thong_id),
     thietBiId: txt(r.thiet_bi_id),
     soNgayConLai: r.so_ngay_con_lai ?? null,
-    trangThai: r.trang_thai,
+    trangThai: (r.trang_thai as UnifiedLicense["trang_thai"]) ?? "none",
     biThayThe: !!r.bi_thay_the,
   }));
 }
