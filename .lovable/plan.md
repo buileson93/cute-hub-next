@@ -3,8 +3,7 @@
 Apply visual text replacements and restore functionality to broken controls identified in the audit.
 
 ## Visual Text Replacements
-- Replace text "language selector" (or its placeholder/contextual equivalent) with "bỏ ý này ". 
-  *(Note: The user recently updated the replacement text from a long instruction block to simply "bỏ ý này ")*.
+- Replace text "language selector" (or its placeholder/contextual equivalent) with "không có task visual text replacements gì ở đây cả sửa plan lại".
 
 ## 1. Incident Management Controls (`_app.su-co.index.tsx`)
 - **Personalize/Restore**: Connect the "Personalization" and "Restore" buttons to backend logic (e.g., saving user preferences or reverting status changes).
@@ -31,4 +30,5 @@ Apply visual text replacements and restore functionality to broken controls iden
 - Use `useMutation` for all state changes to ensure `loading/success/error` handling.
 - Invalidate relevant query keys (`operations_data`, `thiet_bi_tep`, etc.) after mutations.
 - Use `supabase.rpc` for atomic administrative actions.
+
 
