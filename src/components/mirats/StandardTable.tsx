@@ -691,18 +691,17 @@ export function StandardTableInner<T>({
   const renderGlobalState = () => {
     if (trangThai.loi) {
       const err = trangThai.loi;
-      return (
-        errorContent || (
-          <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-            <div className="text-sm text-destructive font-medium">{String(err)}</div>
-            {err.retry && (
-              <Button variant="outline" size="sm" onClick={err.retry}>
-                Thử lại
-              </Button>
-            )}
-          </div>
-        )
+      const content = errorContent || (
+        <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
+          <div className="text-sm text-destructive font-medium">{String(err)}</div>
+          {err.retry && (
+            <Button variant="outline" size="sm" onClick={err.retry}>
+              Thử lại
+            </Button>
+          )}
+        </div>
       );
+      return content;
     }
 
     if (trangThai.dangTai) {
