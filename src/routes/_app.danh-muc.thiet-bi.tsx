@@ -231,9 +231,10 @@ function DanhMucThietBiPage() {
   const pageSize = 100;
   
   // Clear search/filters when they change, reset page
+  const spMemo = JSON.stringify(sp);
   useEffect(() => {
     setPage(0);
-  }, [sp.q, sp.loai, sp.tt, sp.tags, sp.mode, sp.standalone, sp.retired, sp.compatibleSystem]);
+  }, [spMemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
     page,
