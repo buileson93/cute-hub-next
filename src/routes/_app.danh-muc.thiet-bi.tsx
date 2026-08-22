@@ -1389,6 +1389,36 @@ function DanhMucThietBiPage() {
                 <X className="h-3.5 w-3.5" /> Xoá lọc
               </Button>
             )}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Hiển thị</span>
+              <div className="flex overflow-hidden rounded-md border bg-background shadow-sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                  className={cn(
+                    "h-8 rounded-none px-3 text-xs gap-1.5",
+                    viewMode === "table" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
+                  )}
+                  aria-label="Xem dạng bảng"
+                >
+                  <ListIcon className="h-3.5 w-3.5" /> <span>Bảng</span>
+                </Button>
+                <div className="w-[1px] bg-border" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "h-8 rounded-none px-3 text-xs gap-1.5",
+                    viewMode === "grid" ? "bg-primary text-primary-foreground hover:bg-primary/90" : "hover:bg-muted"
+                  )}
+                  aria-label="Xem dạng lưới"
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" /> <span>Lưới</span>
+                </Button>
+              </div>
+            </div>
           </div>
           {tagSelected.length > 0 && (
             <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-[11px] text-muted-foreground">
