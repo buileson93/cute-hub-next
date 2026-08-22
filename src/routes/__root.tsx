@@ -161,9 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        BUILD OK — 2026-08-22
-        Đã khắc phục lỗi "Unexpected token" bằng cách xóa các file .js rác trong src/components/mirats/
-        và refactor StandardTable để tương thích với API hiện tại của dự án.
+        viết plan tiếng việt để tôi xem
       */}
       <head>
         <HeadContent />
