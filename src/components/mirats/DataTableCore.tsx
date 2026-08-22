@@ -185,7 +185,7 @@ export function DataTableCore<T>({
             {selectable && (
               <TableHead 
                 style={{ flex: '0 0 40px', width: 40 }}
-                className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20"
+                className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20 astryx-table-header-cell"
               >
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
               </TableHead>
