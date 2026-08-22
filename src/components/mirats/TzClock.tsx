@@ -44,8 +44,89 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="IMPLEMENTATION MODE — TABLE COLOR STATES ONLY.\n\nKhông sửa data loading, virtualization hoặc horizontal scroll trong prompt này.\n\nPhạm vi:\n\n- src/styles.css\n\n- src/styles/astryx-component-skins.css\n\n- src/components/ui/table.tsx\n\n- StandardTable/DataTableCore/RawTableWrapper chỉ khi cần bỏ class trùng.\n\nNguyên nhân đã xác nhận:\n\n- `[data-astryx-theme=\"df3\"] --color-accent` light = #262626;\n\n- `.astryx-table-row:hover` dùng `var(--color-accent) !important`;\n\n- rule này thắng hover muted/primary tint của component và làm row gần đen.\n\nCác bước:\n\n1. Viết visual/DOM test RED cho light và dark:\n\n- default;\n\n- hover;\n\n- selected;\n\n- selected + hover;\n\n- keyboard focus;\n\n- expanded;\n\n- disabled/non-clickable.\n\n2. Không dùng semantic `--color-accent` của Astryx làm nền row. Tạo token table riêng, ví dụ:\n\n- `--table-row-hover`;\n\n- `--table-row-selected`;\n\n- `--table-row-selected-hover`;\n\n- `--table-row-focus-ring`.\n\nCác token phải map tới muted/primary tint phù hợp light/dark.\n\n3. Xóa `!important` khỏi hover row. Chỉ một layer sở hữu row background; không định nghĩa cùng state ở styles.css, skin và component.\n\n4. Đảm bảo text/cell/badge/link/icon giữ contrast tối thiểu WCAG AA ở hover và selected.\n\n5. Sticky cells dùng cùng background state với row; không tạo mảng màu trắng/đen tách khỏi row.\n\n6. Row không clickable không dùng cursor pointer hoặc active scale. Clickable row có focus-visible rõ nhưng không đổi layout.\n\n7. Hover chỉ là enhancement; selected không phụ thuộc hover để nhận biết.\n\n8. Kiểm tra raw table, StandardTable và DataTableCore để không có implementation nào quay lại nền đen.\n\nKẾT QUẢ CẦN ĐẠT SAU PROMPT 10M\n\n- Light mode hover là tint nhẹ, chữ vẫn tối và dễ đọc; không còn nền đen.\n\n- Dark mode hover sáng hơn nền vừa đủ, không lóa và không mất chữ.\n\n- Selected, selected-hover, focus và expanded phân biệt rõ ràng.\n\n- Sticky cells đồng màu với toàn row.\n\n- Không còn `.astryx-table-row:hover` sử dụng `var(--color-accent) !important`.\n\n- Contrast tests và visual regression GREEN tại 390/768/1024/1440px.\n\nCommit:\n\n- test(ui): reproduce black table row hover\n\n- fix(ui): define accessible table row states"
+          aria-label={`IMPLEMENTATION MODE — TABLE COLOR STATES ONLY.
 
+Không sửa data loading, virtualization hoặc horizontal scroll trong prompt này.
+
+Phạm vi:
+
+- src/styles.css
+
+- src/styles/astryx-component-skins.css
+
+- src/components/ui/table.tsx
+
+- StandardTable/DataTableCore/RawTableWrapper chỉ khi cần bỏ class trùng.
+
+Nguyên nhân đã xác nhận:
+
+- [data-astryx-theme="df3"] --color-accent light = #262626;
+
+- .astryx-table-row:hover dùng var(--color-accent) !important;
+
+- rule này thắng hover muted/primary tint của component và làm row gần đen.
+
+Các bước:
+
+1. Viết visual/DOM test RED cho light và dark:
+
+- default;
+
+- hover;
+
+- selected;
+
+- selected + hover;
+
+- keyboard focus;
+
+- expanded;
+
+- disabled/non-clickable.
+
+2. Không dùng semantic --color-accent của Astryx làm nền row. Tạo token table riêng, ví dụ:
+
+- --table-row-hover;
+
+- --table-row-selected;
+
+- --table-row-selected-hover;
+
+- --table-row-focus-ring.
+
+Các token phải map tới muted/primary tint phù hợp light/dark.
+
+3. Xóa !important khỏi hover row. Chỉ một layer sở hữu row background; không định nghĩa cùng state ở styles.css, skin và component.
+
+4. Đảm bảo text/cell/badge/link/icon giữ contrast tối thiểu WCAG AA ở hover và selected.
+
+5. Sticky cells dùng cùng background state với row; không tạo mảng màu trắng/đen tách khỏi row.
+
+6. Row không clickable không dùng cursor pointer hoặc active scale. Clickable row có focus-visible rõ nhưng không đổi layout.
+
+7. Hover chỉ là enhancement; selected không phụ thuộc hover để nhận biết.
+
+8. Kiểm tra raw table, StandardTable và DataTableCore để không có implementation nào quay lại nền đen.
+
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10M
+
+- Light mode hover là tint nhẹ, chữ vẫn tối và dễ đọc; không còn nền đen.
+
+- Dark mode hover sáng hơn nền vừa đủ, không lóa và không mất chữ.
+
+- Selected, selected-hover, focus và expanded phân biệt rõ ràng.
+
+- Sticky cells đồng màu với toàn row.
+
+- Không còn .astryx-table-row:hover sử dụng var(--color-accent) !important.
+
+- Contrast tests và visual regression GREEN tại 390/768/1024/1440px.
+
+Commit:
+
+- test(ui): reproduce black table row hover
+
+- fix(ui): define accessible table row states`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
