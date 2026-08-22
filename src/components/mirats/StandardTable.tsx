@@ -434,7 +434,7 @@ export function StandardTable<T>({
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
-      return (
+      const errorUI = (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">{String(err)}</div>
           {err.retry && (
@@ -444,32 +444,36 @@ export function StandardTable<T>({
           )}
         </div>
       );
+      return errorUI;
     }
 
     if (trangThai.dangTai) {
       if (loadingContent) return loadingContent;
-      return (
+      const loadingUI = (
         <div className="p-4 border rounded-lg bg-card">
           <TableSkeleton cols={columns.length} rows={6} />
         </div>
       );
+      return loadingUI;
     }
 
     if (fullDisplay.length === 0) {
-      const emptyContentResult = emptyContent ?? (
+      const emptyInner = emptyContent ?? (
         <div className="text-sm text-muted-foreground italic">
           {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
         </div>
       );
       
-      return (
+      const emptyUI = (
         <div className="py-20 border rounded-lg bg-card text-center">
-          {emptyContentResult}
+          {emptyInner}
         </div>
       );
+      return emptyUI;
     }
 
-    return <div className="hidden" aria-hidden="true" />;
+    const hiddenUI = <div className="hidden" aria-hidden="true" />;
+    return hiddenUI;
   }, [trangThai.loi, trangThai.dangTai, errorContent, loadingContent, columns.length, fullDisplay.length, emptyContent, hasFilter, emptyText]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
