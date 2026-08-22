@@ -58,6 +58,8 @@ import {
 import { useCayMutations } from "@/components/mirats/he-thong-cay/mutations";
 import { CayThayDoiPanel } from "@/components/mirats/CayThayDoiPanel";
 import { ThietBiDetailDrawer } from "@/components/mirats/ThietBiDetailDrawer";
+import { useCan } from "@/hooks/use-permissions";
+
 import type {
   EditKind,
   OverrideMap,
@@ -218,6 +220,8 @@ function HeThongCayPage() {
   const nav = useNavigate();
   const search = Route.useSearch();
   const canManage = useCan("he-thong-cay", "manage");
+  const canShare = useCan("he-thong-cay", "share");
+
 
 
   const qc = useQueryClient();

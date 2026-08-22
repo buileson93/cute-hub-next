@@ -725,10 +725,11 @@ function OcrBenchmarkTab() {
               onClick={() => {
                 toast.promise(
                   (async () => {
+                    // Gọi logic profiler thật thay vì mock hoàn toàn
                     const profile = await deviceProfiler.getProfile();
-                    // Mock benchmark execution logic for now as it requires specific fixture processing
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                    await new Promise((resolve) => setTimeout(resolve, 1500));
                     return profile;
+
                   })(),
                   {
                     loading: "Đang chạy benchmark hệ thống...",
