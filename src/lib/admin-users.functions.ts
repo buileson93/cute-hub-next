@@ -110,7 +110,7 @@ export const createUser = createServerFn({ method: "POST" })
       const { error: rpcErr } = await supabaseAdmin.rpc("update_user_full", {
         target_uid: uid,
         new_ho_ten: data.ho_ten,
-        new_don_vi: data.don_vi,
+        new_don_vi: data.don_vi || "",
         new_roles: data.roles,
       });
 
