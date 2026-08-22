@@ -23,7 +23,7 @@ export function RawTableWrapper({
   return (
     <div
       className={cn(
-        "relative overflow-auto rounded-md border bg-card",
+        "relative rounded-md border bg-card astryx-table-container",
         showShadows && "shadow-sm",
         className,
       )}
@@ -32,7 +32,8 @@ export function RawTableWrapper({
     >
       <div
         className={cn(
-          "w-full overflow-x-auto",
+          "w-full overflow-auto mirats-scroll",
+
           // Force children table to respect our standard styles
           "[&_table]:w-full [&_table]:border-collapse [&_table]:text-sm",
           // Header styling

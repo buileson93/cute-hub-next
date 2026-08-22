@@ -1027,6 +1027,22 @@ export function StandardTableInner<T>({
                       )}
 
                       <DropdownMenuSeparator />
+                      <div className="flex flex-col gap-1 p-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 justify-start text-xs font-normal"
+                          onClick={() => {
+                            Object.keys(prefs.widths).forEach((k) => prefs.resetWidth(k));
+                          }}
+                        >
+                          <Icon name="action.reset" size="small" className="mr-2 h-3.5 w-3.5" />
+                          Đặt lại độ rộng
+                        </Button>
+                      </div>
+
+                      <DropdownMenuSeparator />
+
 
                       {/* Nhóm các cột theo 'group' nếu có, hoặc không nhóm */}
                       {Object.entries(
@@ -1268,22 +1284,26 @@ export function StandardTableInner<T>({
             })}
         </div>
       ) : (
-        <Card
-          ref={parentRef}
+        <div
           className={cn(
-            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto h-full",
+            "relative min-h-0 border rounded-xl shadow-none bg-background astryx-table-container flex flex-col h-full",
             className,
           )}
         >
-          <Table
-            className={cn(
-              "caption-bottom min-w-full astryx-table",
-              density === "compact" && "text-[12px]",
-              density === "comfortable" && "text-[13px]",
-              density === "spacious" && "text-[14px]",
-              prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed",
-            )}
+          <div
+            ref={parentRef}
+            className="flex-1 overflow-auto mirats-scroll w-full"
           >
+            <Table
+              className={cn(
+                "caption-bottom min-w-full astryx-table",
+                density === "compact" && "text-[12px]",
+                density === "comfortable" && "text-[13px]",
+                density === "spacious" && "text-[14px]",
+                prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed",
+              )}
+            >
+
             <colgroup>
               {viewMode === "tablet" && <col style={{ width: 40, minWidth: 40 }} />}
               {selectable && <col style={{ width: 40, minWidth: 40 }} />}
@@ -1309,11 +1329,13 @@ export function StandardTableInner<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
-                  "hover:bg-transparent border-b border-border/60 align-middle",
+                  "hover:bg-transparent border-b border-border/60 align-middle active:scale-100",
                   UI_DENSITY.TABLE_ROW_H,
                   "astryx-table-header",
                 )}
               >
+
+
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
                     {/* Placeholder for expansion column header */}
@@ -1550,13 +1572,14 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group astryx-table-row",
+                            "group astryx-table-row active:scale-100",
                             (onRowClick || selectable) && "cursor-pointer",
                             isSel && "selected",
                             expandedRows.has(rid) && "expanded",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
                           )}
+
 
                           onClick={() => onRowClick?.(r)}
                           onKeyDown={(e) => {
@@ -1707,8 +1730,10 @@ export function StandardTableInner<T>({
                 </>
               )}
             </TableBody>
-          </Table>
-        </Card>
+            </Table>
+          </div>
+        </div>
+
       )}
     </div>
   );

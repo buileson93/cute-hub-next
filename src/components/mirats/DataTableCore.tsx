@@ -178,13 +178,15 @@ export function DataTableCore<T>({
       )}
     >
       <Table
-        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full table-fixed block")}
+        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}
       >
-        <TableHeader className="sticky top-0 z-40 block">
-          <TableRow className="bg-muted border-b-0 border-t-0 flex astryx-table-row hover:bg-muted">
+        <TableHeader className="sticky top-0 z-40">
+          <TableRow className="bg-muted border-b-0 border-t-0 astryx-table-row hover:bg-muted">
+
             {selectable && (
               <TableHead 
-                style={{ flex: '0 0 40px', width: 40 }}
+                style={{ width: 40, minWidth: 40 }}
+
                 className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20 astryx-table-header-cell"
               >
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
@@ -196,8 +198,8 @@ export function DataTableCore<T>({
                 style={{
                   width: col.width,
                   minWidth: col.minWidth || (col.width ? undefined : 100),
-                  flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                 }}
+
                 className={cn(
                   "astryx-table-header-cell",
                   col.sticky &&
@@ -215,8 +217,8 @@ export function DataTableCore<T>({
         <TableBody style={{ 
           height: virtualize ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
           position: 'relative',
-          display: 'block'
         }}>
+
           {rows.length === 0 ? (
             <div className="flex h-32 items-center justify-center text-center text-muted-foreground italic w-full">
               Không có dữ liệu hiển thị
@@ -233,19 +235,25 @@ export function DataTableCore<T>({
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group flex astryx-table-row items-center",
+                    "group astryx-table-row",
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
 
                   style={{
                     transform: `translateY(${virtualRow.start}px)`,
+                    position: virtualize ? 'absolute' : 'relative',
+                    top: 0,
+                    left: 0,
+                    width: '100%'
+
                   }}
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
                     <MemoizedTableCell
-                      style={{ flex: '0 0 40px', width: 40 }}
+                      style={{ width: 40, minWidth: 40 }}
+
                        className="w-10 px-2 text-center sticky left-0 z-20 bg-inherit border-l border-b border-r border-border/20 astryx-table-cell"
 
                       onClick={(e) => {
@@ -262,8 +270,8 @@ export function DataTableCore<T>({
                       style={{
                         width: col.width,
                         minWidth: col.minWidth || (col.width ? undefined : 100),
-                        flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                       }}
+
                       className={cn(
                         "astryx-table-cell",
                         col.cellClassName,
@@ -293,7 +301,7 @@ export function DataTableCore<T>({
                 <MemoizedTableRow
                   key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
-                    "group flex astryx-table-row",
+                    "group astryx-table-row",
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
