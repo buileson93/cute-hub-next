@@ -5,27 +5,30 @@ import React from "react";
 
 describe("Button Component Contract", () => {
   it("should render children correctly", () => {
-    render(<Button>Click me</Button>);
+    const { unmount } = render(<Button>Click me</Button>);
     expect(screen.getByText("Click me")).toBeDefined();
+    unmount();
   });
 
   it("should show loader and be disabled when loading", () => {
-    const { container } = render(<Button loading>Submit</Button>);
-    const button = container.querySelector("button");
-    expect(button?.hasAttribute("disabled")).toBe(true);
-    expect(container.querySelector(".animate-spin")).toBeDefined();
+    const { container, unmount } = render(<Button loading>Submit</Button>);
+    const button = container.querySelector('button');
+    expect(button?.hasAttribute('disabled')).toBe(true);
+    expect(container.querySelector('.animate-spin')).toBeDefined();
+    unmount();
   });
 
   it("should apply variant classes correctly", () => {
-    const { container } = render(<Button variant="destructive">Delete</Button>);
-    const button = container.querySelector("button");
-    expect(button?.className).toContain("bg-destructive");
+    const { container, unmount } = render(<Button variant="destructive">Delete</Button>);
+    const button = container.querySelector('button');
+    expect(button?.className).toContain('bg-destructive');
+    unmount();
   });
 
   it("should have aria-label when size is icon", () => {
-    // Note: We use the audit script to enforce this, but let's test the component behavior
-    render(<Button size="icon" aria-label="Search" title="Search Icon" />);
-    const button = screen.getByRole("button");
-    expect(button.getAttribute("aria-label")).toBe("Search");
+    const { unmount } = render(<Button size="icon" aria-label="Search" />);
+    const button = screen.getByRole('button');
+    expect(button.getAttribute('aria-label')).toBe('Search');
+    unmount();
   });
 });
