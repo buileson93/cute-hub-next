@@ -318,6 +318,7 @@ export function DataTableCore<T>({
                     onRowClick && "cursor-pointer",
                     isSelected && "selected",
                   )}
+                  style={{ contain: 'layout inline-size' }}
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
