@@ -1307,8 +1307,7 @@ export function StandardTableInner<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {renderGlobalState() !== null && renderGlobalState()}
-          {renderGlobalState() === null &&
+          {renderGlobalState() !== null ? renderGlobalState() : (
             display.map((r, idx) => {
               const rid = getRowIdInternal(r);
               return (
