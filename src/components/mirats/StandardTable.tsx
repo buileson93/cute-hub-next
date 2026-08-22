@@ -1534,7 +1534,7 @@ export function StandardTableInner<T>({
                     </TableRow>
                   )}
 
-                  {(isTest && display.length > 0 ? display.map((_, i) => ({ index: i })) : displayItems).map((virtualRow) => {
+                  {(isTest && display.length > 0 ? display.map((_, i) => ({ index: i })) : displayItems).map((virtualRow: any) => {
                     const r = display[virtualRow.index];
                     const rid = getRowIdInternal(r);
                     const isSel = selectable && selected?.has(rid);
