@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
-import { fetchAllRows } from "@/lib/mirats/paginate";
 import type { ThietBi } from "@/lib/mirats/types";
 
 // Standard columns for ThietBi to avoid SELECT * hotspots
@@ -15,12 +14,41 @@ export async function fetchThietBi(from: number, to: number, donViCode?: string 
     .range(from, to);
 
   if (donViCode) {
-    q = q.eq("don_vi_id", donViCode); // Assuming don_vi_id is the code, or filter by relation
+    // Assuming don_vi_id matches the code passed in (which is usually true in MIRATS RLS)
+    q = q.eq("don_vi_id", donViCode); 
   }
 
   const { data, count, error } = await q;
   if (error) throw error;
-  return { rows: data as ThietBi[], total: count ?? 0 };
+
+  // Simple mapping to satisfy ThietBi type requirements for the UI
+  const rows = (data ?? []).map((r: any) => ({
+    ma_thiet_bi: r.ma_thiet_bi || r.id,
+    ten: r.ten_thiet_bi || "(Không tên)",
+    serial: r.ma_serial || "",
+    p_n: r.p_n || "",
+    model: r.model || "",
+    don_vi: r.don_vi_id || "", // Mapping don_vi_id to don_vi string
+    he_thong: r.he_thong_id || "",
+    nhom_he_thong: r.nhom_he_thong_id || "",
+    loai: "",
+    nha_san_xuat: r.nha_san_xuat || "",
+    nha_cung_cap: r.nha_cung_cap || "",
+    vi_tri: r.vi_tri || "",
+    ngay_mua: r.ngay_mua || "",
+    ngay_dua_vao_su_dung: r.nam_dua_vao_khai_thac || "",
+    han_bao_hanh: r.han_bao_hanh || "",
+    gia_tri_mua: 0,
+    nguon_von: "",
+    tuoi_tho_thiet_ke_nam: 0,
+    trang_thai: r.trang_thai_id || "",
+    muc_do_quan_trong: "",
+    tinh_trang_ky_thuat: "",
+    thiet_bi_cha: null,
+    ghi_chu: r.ghi_chu || null,
+  })) as ThietBi[];
+
+  return { rows, total: count ?? 0 };
 }
 
 export function useThietBiList(page: number, pageSize: number, donViCode?: string | null) {
