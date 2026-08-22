@@ -609,7 +609,7 @@ export function StandardTable<T>({
           }}
         >
           <Table 
-            className="border-collapse border-separate border-spacing-0 w-full"
+            className="border-collapse border-separate border-spacing-0 w-full mirats-standard-table-element"
             style={{
               tableLayout: 'fixed',
               width: 'max-content',
