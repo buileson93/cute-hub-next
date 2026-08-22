@@ -3,11 +3,14 @@
 Người dùng báo cáo bảng vẫn không thể cuộn ngang được, thanh cuộn bị khuất, và vẫn còn hiện tượng giật lag khi cuộn vô tận.
 
 ## Mục tiêu
-1.  **Sửa lỗi cuộn ngang**: Đảm bảo bảng có thể cuộn ngang và thanh cuộn luôn nằm trong vùng nhìn thấy (viewport).
-2.  **Instrumentation**: Thêm bảng điều khiển debug để theo dõi FPS, số lần render và độ trễ request.
-3.  **Giao diện mượt mà**: Thêm Loading Skeletons cho cuộn vô tận và cải thiện Empty State.
-4.  **Persistence**: Lưu trữ trạng thái cột, tab đã chọn và vị trí cuộn khi tải lại trang.
-5.  **Kiểm thử hồi quy**: Viết test Playwright cho các tương tác lọc/sắp xếp với Keyset Pagination.
+1.  **Sửa lỗi cuộn ngang & Geometry**: Đảm bảo bảng có thể cuộn ngang mượt mà, thanh cuộn luôn trong viewport. Sử dụng `table-layout: fixed` kết hợp tính toán chiều rộng để giảm tải cho trình duyệt khi vẽ bảng lớn.
+2.  **Tối ưu FPS triệt để (Deep Optimization)**: 
+    - Thay thế `translateY` bằng `will-change: transform` và `transform: translate3d` để tận dụng GPU.
+    - Memoize các thành phần Cell ở mức cực độ, ngăn chặn re-render tuyệt đối nếu dữ liệu không đổi.
+    - Giảm số lượng DOM nodes bằng cách tinh gọn các wrapper component bên trong bảng.
+3.  **Giao diện mượt mà & Persistence**: Thêm Loading Skeletons mượt và lưu vị trí cuộn để tránh nhảy trang.
+4.  **Kiểm thử thực tế**: Dùng Playwright giả lập máy cấu hình thấp để đo độ trễ và tối ưu cho đến khi không còn giật lag.
+
 
 ## Các bước thực hiện
 
