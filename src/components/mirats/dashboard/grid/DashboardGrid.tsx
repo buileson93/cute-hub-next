@@ -33,6 +33,9 @@ import {
   ScatterChart,
   Scatter,
   ZAxis,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
 } from "recharts";
 import {
   ChartContainer,

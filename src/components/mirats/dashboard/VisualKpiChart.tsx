@@ -13,9 +13,6 @@ import {
   Cell,
   XAxis,
   YAxis,
-  defs,
-  linearGradient,
-  stop,
 } from "recharts";
 import {
   ChartContainer,
