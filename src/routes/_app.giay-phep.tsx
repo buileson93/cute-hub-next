@@ -13,7 +13,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ERPChartFrame,
+} from "@/components/ui/chart";
 import { type LicenseStatus } from "@/lib/mirats/metrics";
 import { DEFAULT_NGAY_SAP_HET_HAN } from "@/lib/mirats/han-canh-bao";
 import { useScope } from "@/lib/mirats/scope";
