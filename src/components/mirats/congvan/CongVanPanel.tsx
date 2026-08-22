@@ -144,18 +144,12 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
         </div>
       ) : (
         <Tabs defaultValue="timeline" className="w-full">
-          <div className="border-b px-4">
-            <TabsList className="h-10 bg-transparent p-0">
-              <TabsTrigger
-                value="timeline"
-                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
+          <div className="px-4">
+            <TabsList variant="underline">
+              <TabsTrigger value="timeline">
                 <GitBranch className="mr-1.5 h-4 w-4" /> Timeline
               </TabsTrigger>
-              <TabsTrigger
-                value="tree"
-                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
+              <TabsTrigger value="tree">
                 <ListTree className="mr-1.5 h-4 w-4" /> Phân cấp
               </TabsTrigger>
             </TabsList>

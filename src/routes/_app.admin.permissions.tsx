@@ -87,7 +87,7 @@ function PermissionsPage() {
         help="Cấp quyền theo vai trò, kiểm soát phạm vi truy cập dữ liệu và duyệt yêu cầu quyền."
       />
       <Tabs defaultValue="users" className="w-full">
-        <TabsList>
+        <TabsList className="p-1">
           <TabsTrigger value="users">
             <Users className="w-4 h-4 mr-2" />
             Người dùng

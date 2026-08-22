@@ -67,7 +67,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "mirats-table-header-base h-7 px-2 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
+      "mirats-table-header-base h-10 px-3 text-left align-middle text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-header-cell",
       className,
     )}
     {...props}
@@ -82,7 +82,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "mirats-table-cell-base p-1.5 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell tabular-nums",
+      "mirats-table-cell-base p-0 px-3 h-9 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[1px] astryx-table-cell tabular-nums",
       className,
     )}
     {...props}

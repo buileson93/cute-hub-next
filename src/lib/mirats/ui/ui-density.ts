@@ -29,8 +29,8 @@ export const UI_DENSITY = {
 
   // --- Cards ---
   CARD_RADIUS:
-    "rounded-2xl data-[density=comfortable]:rounded-3xl data-[density=spacious]:rounded-4xl",
-  CONTROL_RADIUS: "rounded-xl data-[density=comfortable]:rounded-2xl",
+    "rounded-xl data-[density=comfortable]:rounded-2xl data-[density=spacious]:rounded-3xl",
+  CONTROL_RADIUS: "rounded-lg data-[density=comfortable]:rounded-xl",
   BADGE_RADIUS: "rounded-full",
   CARD_PADDING: "p-3 data-[density=comfortable]:p-5 data-[density=spacious]:p-8",
   CARD_HEADER:
@@ -43,10 +43,10 @@ export const UI_DENSITY = {
 
   // --- Tables ---
   TABLE_ROW_H:
-    "min-h-11 md:min-h-0 md:h-7 md:data-[density=comfortable]:h-8 md:data-[density=spacious]:h-11",
+    "min-h-11 md:min-h-0 md:h-9 md:data-[density=comfortable]:h-10 md:data-[density=spacious]:h-12",
   TABLE_HEADER_FS:
-    "text-[11px] data-[density=comfortable]:text-[12px] text-muted-foreground uppercase tracking-wider font-bold",
-  TABLE_CELL_PX: "px-1.5 data-[density=comfortable]:px-3.5 data-[density=spacious]:px-4",
+    "text-[10px] data-[density=comfortable]:text-[11px] text-muted-foreground uppercase tracking-wider font-bold",
+  TABLE_CELL_PX: "px-3 data-[density=comfortable]:px-3.5 data-[density=spacious]:px-4",
   TABLE_CELL_PY: "py-0.5 data-[density=comfortable]:py-1.5 data-[density=spacious]:py-2",
   TABLE_MAX_H: "max-h-full",
 

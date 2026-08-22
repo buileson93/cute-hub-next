@@ -151,14 +151,10 @@ function PmPage() {
       <Card className="mt-2 border-none shadow-none bg-transparent">
         <CardContent className="p-0">
           <Tabs value={tab} onValueChange={setTab} className="space-y-2">
-            <div className="flex items-center justify-between border-b pb-1">
-              <TabsList className="h-7 bg-transparent p-0">
+            <div className="flex items-center justify-between">
+              <TabsList variant="underline">
                 {TABS.map((t) => (
-                  <TabsTrigger
-                    key={t.value}
-                    value={t.value}
-                    className="h-7 rounded-none border-b-2 border-transparent px-3 text-[11px] data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-                  >
+                  <TabsTrigger key={t.value} value={t.value}>
                     {t.label}
                   </TabsTrigger>
                 ))}

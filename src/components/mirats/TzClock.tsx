@@ -44,53 +44,28 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`VERIFICATION MODE — MINDMAP/TABLE ONLY.
+          aria-label={`IMPLEMENTATION MODE — TABLE PADDING/BORDER RADIUS ONLY.
 
-Không thêm feature và không sửa ngoài phạm vi nếu chưa tạo bug ticket mới.
+Thực hiện sau Prompt 10P. Không thay đổi dữ liệu, RLS hoặc navigation.
 
-1. Chạy app với dữ liệu có tên, mã, UUID, orphan reference và text dài.
+Hiện trạng từ UI audit:
+- Bảng StandardTable và DataTableCore đang có border-radius quá lớn ở hàng (12px), tạo khoảng hở không tự nhiên khi có border;
+- Padding của hàng (h-12) đang cao hơn tiêu chuẩn Dashboard Compact (h-10 cho header, h-9 cho row);
+- Trạng thái hover/selected đang áp dụng shadow cục bộ thay vì dùng background tint đồng nhất;
+- Vi phạm contract U7: một số bảng vẫn dùng raw border thay vì biến CSS.
 
-2. Chụp screenshot trước/sau tại 390/768/1024/1440px, light/dark.
+Phạm vi chính:
+- src/components/mirats/StandardTable.tsx
+- src/components/mirats/DataTableCore.tsx
+- src/components/ui/table.tsx
+- src/styles.css
 
-3. Kiểm tra cả:
-
-- Cây phân cấp;
-
-- Sơ đồ tổng thể/mindmap;
-
-- StandardTable;
-
-- DataTableCore;
-
-- ít nhất hai raw table;
-
-- bảng có sticky selection + action columns;
-
-- bảng virtualized 1.000+ rows.
-
-4. Với mindmap: xác minh primary label là tên; code chỉ là metadata; search/rename/expand hoạt động.
-
-5. Với table: đo computed background/text contrast của default/hover/selected/focus.
-
-6. Xác minh scrollWidth, clientWidth, thay đổi scrollLeft bằng mouse/trackpad/keyboard/touch.
-
-7. Chạy test, typecheck, lint, build, ui:audit và Playwright visual tests bằng output fresh.
-
-8. Nếu không có runtime/browser hoặc DB fixture, báo BLOCKED; không kết luận pass từ source inspection.
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10O
-
-- Không còn UUID/mã làm primary label khi entity có tên.
-
-- Không còn hover row màu đen hoặc mất tương phản.
-
-- Bảng rộng cuộn ngang được ở desktop/tablet và chỉ có một scroll owner.
-
-- Không regression mobile, sticky header, virtualization, selection, resize hoặc action đúng record.
-
-- Có screenshot, computed-style evidence và test output exit 0 cho từng acceptance criterion.
-
-- Mọi lỗi còn lại được ghi thành ticket riêng; không ghi “10K hoàn tất” nếu thiếu runtime evidence.`}
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10Q
+- Header table cao chính xác 40px (h-10), Row table cao chính xác 36px (h-9);
+- Border-radius của hàng giảm xuống 4px hoặc 6px để khớp với density cao;
+- Khoảng cách cell (padding-x) đồng bộ 12px (px-3);
+- Loại bỏ hoàn toàn shadow khi hover hàng, thay bằng background tint #0074e2/5;
+- Mọi bảng tuân thủ contract density mới.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

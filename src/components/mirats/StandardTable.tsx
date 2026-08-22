@@ -1286,7 +1286,7 @@ export function StandardTableInner<T>({
       ) : (
         <div
           className={cn(
-            "relative min-h-0 border rounded-xl shadow-none bg-background astryx-table-container flex flex-col h-full",
+            "relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full",
             className,
           )}
         >
@@ -1329,7 +1329,7 @@ export function StandardTableInner<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
-                  "hover:bg-transparent border-b border-border/60 align-middle active:scale-100",
+                  "hover:bg-transparent border-b border-border/60 align-middle",
                   UI_DENSITY.TABLE_ROW_H,
                   "astryx-table-header",
                 )}
@@ -1572,7 +1572,7 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group astryx-table-row active:scale-100",
+                            "group astryx-table-row",
                             (onRowClick || selectable) && "cursor-pointer",
                             isSel && "selected",
                             expandedRows.has(rid) && "expanded",
