@@ -287,7 +287,7 @@ export function DataTableCore<T>({
                 <TableRow
                   key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50",
+                    "group transition-mirats-fast hover:bg-muted/50 flex",
                     onRowClick && "cursor-pointer",
                     isSelected && "bg-primary/5",
                   )}
