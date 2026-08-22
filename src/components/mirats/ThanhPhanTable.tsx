@@ -582,7 +582,7 @@ export function ThanhPhanTable({
   );
 
   return (
-    <div className={hideHeader ? "flex h-full min-h-0 flex-col gap-1.5" : "space-y-1 p-2"}>
+    <div className={cn("flex h-full min-h-0 flex-col gap-1.5", !hideHeader && "p-2")}>
       {isLoading && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tải dữ liệu…
