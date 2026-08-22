@@ -8,7 +8,11 @@ export function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) return false;
-  return timingSafeEqual(bufA, bufB);
+  try {
+    return timingSafeEqual(bufA, bufB);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -22,14 +26,14 @@ export async function verifyApiSecret(
   const expected = process.env[secretEnvName];
   
   // Nếu secret không được cấu hình, fail closed bằng 404 để giấu endpoint
-  if (!expected) {
-    console.warn(`[API Security] Secret ${secretEnvName} is not configured.`);
+  if (!expected || expected.trim() === "") {
+    console.warn(`[API Security] Secret ${secretEnvName} is not configured or empty.`);
     return { authorized: false, errorStatus: 404 };
   }
 
-  const provided = request.headers.get(headerName) ?? "";
+  const provided = request.headers.get(headerName);
   
-  if (!safeEqual(provided, expected)) {
+  if (!provided || !safeEqual(provided, expected)) {
     return { authorized: false, errorStatus: 401 };
   }
 
@@ -46,6 +50,7 @@ export async function auditPublicApiCall(
 ) {
   try {
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
+    // Sử dụng try-catch nội bộ để không làm crash endpoint chính nếu logging lỗi
     await supabaseAdmin.from("audit_log").insert({
       action: `api.public.hook.${endpoint}`,
       detail: {
@@ -53,7 +58,7 @@ export async function auditPublicApiCall(
         timestamp: new Date().toISOString(),
         ...metadata,
       },
-    });
+    }).catch(err => console.error(`[Audit Log DB Error] ${endpoint}:`, err));
   } catch (err) {
     console.error(`[API Security Audit Failed] ${endpoint}:`, err);
   }
