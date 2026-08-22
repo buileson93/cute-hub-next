@@ -162,6 +162,7 @@ interface StandardTableProps<T> {
   renderExpansion?: (row: T) => React.ReactNode;
   virtualizerOptions?: any;
   maxHeightClass?: string;
+  editMode?: boolean;
 }
 
 export function StandardTable<T>({
@@ -197,6 +198,7 @@ export function StandardTable<T>({
   renderExpansion,
   virtualizerOptions,
   maxHeightClass,
+  editMode,
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
