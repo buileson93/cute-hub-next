@@ -1335,6 +1335,7 @@ export function StandardTableInner<T>({
                 )}
               >
 
+
                 {viewMode === "tablet" && (
                   <TableHead className="sticky left-0 top-0 z-30 w-10 bg-muted/30 border-r border-border/50 p-0">
                     {/* Placeholder for expansion column header */}
