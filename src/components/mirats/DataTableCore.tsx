@@ -93,12 +93,17 @@ export function DataTableCore<T>({
     count: rows.length,
     getScrollElement,
     estimateSize: useCallback(() => estimateRowHeight, [estimateRowHeight]),
-    overscan: 10,
+    overscan: 8, // Giảm overscan xuống một chút để tối ưu DOM node khi cuộn chậm
     enabled: virtualize,
     getItemKey: useCallback((index: number) => {
       const row = rows[index];
       return row ? getRowId(row) : `row-${index}`;
     }, [rows, getRowId]),
+    // Kỹ thuật Adaptive: tự điều chỉnh phạm vi render dựa trên DOM thực tế
+    initialOffset: 0,
+    scrollMargin: 0,
+    paddingStart: 0,
+    paddingEnd: 0,
   });
 
   // Infinite Scroll Trigger
