@@ -330,64 +330,63 @@ function TuoiThoPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Calendar className="h-4 w-4" /> Dự báo thay thế theo năm
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-56">
-            <ResponsiveContainer>
-              <BarChart data={forecast} margin={{ left: -8, right: 8, top: 8 }}>
-                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="nam"
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+      <ERPChartFrame
+        title="Dự báo thay thế theo năm"
+        subtitle="Dựa trên kế hoạch vòng đời của tài sản loại C/D"
+        icon="entity.calendar"
+        className="h-[320px]"
+      >
+        <ChartContainer
+          config={{
+            count: { label: "Số tài sản", color: "var(--chart-1)", unit: "tài sản" },
+            chiPhi: { label: "Chi phí", color: "var(--chart-6)", unit: "tr VNĐ" },
+          }}
+        >
+          <BarChart data={forecast} margin={{ left: -20, right: 10, top: 10 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="nam" axisLine={false} tickLine={false} />
+            <YAxis
+              yAxisId="left"
+              axisLine={false}
+              tickLine={false}
+              allowDecimals={false}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(v) => chartCurrencyFormatter(v)}
+            />
+            <ChartTooltip 
+              content={
+                <ChartTooltipContent 
+                  formatter={(value, name) => [
+                    name === "Chi phí" ? chartCurrencyFormatter(Number(value)) : chartNumberFormatter(Number(value)),
+                    name
+                  ]}
                 />
-                <YAxis
-                  yAxisId="left"
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                  allowDecimals={false}
-                />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                  tickFormatter={(v) => fmtVND(v as number)}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: "var(--popover)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                  formatter={(val: number, name: string) =>
-                    name === "Chi phí" ? fmtVND(val) : val
-                  }
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar
-                  yAxisId="left"
-                  dataKey="count"
-                  name="Số tài sản"
-                  fill="var(--primary)"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  yAxisId="right"
-                  dataKey="chiPhi"
-                  name="Chi phí"
-                  fill="var(--muted-foreground)"
-                  opacity={0.4}
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+              } 
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar
+              yAxisId="left"
+              dataKey="count"
+              fill="var(--color-count)"
+              radius={[4, 4, 0, 0]}
+              barSize={24}
+            />
+            <Bar
+              yAxisId="right"
+              dataKey="chiPhi"
+              fill="var(--color-chiPhi)"
+              opacity={0.3}
+              radius={[4, 4, 0, 0]}
+              barSize={24}
+            />
+          </BarChart>
+        </ChartContainer>
+      </ERPChartFrame>
 
       {/* Table */}
       <Tabs defaultValue="all" className="space-y-4">
