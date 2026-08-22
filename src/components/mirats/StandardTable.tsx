@@ -676,7 +676,8 @@ export function StandardTable<T>({
                         className={cn("group transition-colors border-b", rowClassName?.(r))} 
                         onClick={() => onRowClick?.(r)}
                         style={{
-                          willChange: 'transform'
+                          willChange: 'transform',
+                          contain: 'layout inline-size'
                         }}
                       >
                         {selectable && (
