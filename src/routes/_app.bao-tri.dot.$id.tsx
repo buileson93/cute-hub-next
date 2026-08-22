@@ -1129,7 +1129,7 @@ function DeadlinesDialog({
       onDone();
       onOpenChange(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Lưu mốc tiến độ thất bại: " + e.message),
   });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -1208,9 +1208,13 @@ function BaoCaoTab({
             setExporting(true);
             try {
               await exportWord({ dotId, dotName, kpi, perDv, grouped });
+              toast.success("Đã xuất báo cáo Word thành công");
+            } catch (e) {
+              toast.error("Xuất Word thất bại: " + (e as Error).message);
             } finally {
               setExporting(false);
             }
+
           }}
         >
           <FileText className="mr-1 h-4 w-4" />
