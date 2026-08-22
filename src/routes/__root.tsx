@@ -161,7 +161,11 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        phải tối ưu việc ảo hoá là dữ liệu nhiều quá những không cần thiết hiển thị nữa thì giảm bớt đi , dùng các thuật toán để tối ưu việc ảo hoá , cảm giác cuộn được vô tận nhưng không mất thông tin không gây giật lag có gắn giữ được màn hình cố định không làm cuộn xuống trang web làm mất một số thành phần giao diện nhất là cột thông tin các cột nghĩ ra các phương án tối ưu hơn đo hiệu năng tốt rồi mới kết thúc, đề xuất nhiều kỹ thuật tối ưu phù hợp với dự án , dòng thông tin cột luôn phải được hiện thị
+        Implement overscan và windowing tự thích nghi theo tốc độ khung hình và loại thiết bị để cuộn vô tận mượt hơn trên máy yếu.
+
+        Ensure trạng thái column visibility và thứ tự cột không đổi khi mình chuyển tab Theo tài sản/Thành phần hoặc khi mình thay đổi dataset.
+
+        Improve DataTable cell rendering bằng cách memo hóa theo dữ liệu và chuẩn hóa props để hạn chế render lại khi cuộn nhanh.
       */}
       <head>
         <HeadContent />
