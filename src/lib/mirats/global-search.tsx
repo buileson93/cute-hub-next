@@ -153,13 +153,13 @@ export function useGlobalSearch(rawTerm: string): UseGlobalSearchResult {
     const systems: { id: string; ten: string; count: number }[] = [];
     if (!taxo) return { devSys, systems };
     const htName = (id: string, fallback: string) => overrides?.get(id) ?? fallback;
-    const sysCount = new Map<string, number>();
-    for (const d of taxo.devices) {
-      if (d._htId) {
-        sysCount.set(d._htId, (sysCount.get(d._htId) ?? 0) + 1);
-        if (d.id) devSys.set(d.id, htName(d._htId, d._htTen));
-      }
+    // TỐI ƯU 10H: Bỏ đếm devices từ memory taxonomy. 
+    // Tạm thời để count = 0 hoặc fetch riêng nếu cần thiết cho Search UI.
+    for (const h of taxo.htList) {
+      systems.push({ id: h.id, ten: htName(h.id, h.ten), count: 0 });
     }
+    return { devSys, systems };
+  }, [taxo, overrides]);
     for (const h of taxo.htList) {
       systems.push({ id: h.id, ten: htName(h.id, h.ten), count: sysCount.get(h.id) ?? 0 });
     }
