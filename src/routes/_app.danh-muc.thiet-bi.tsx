@@ -1270,7 +1270,7 @@ function DanhMucThietBiPage() {
               </SelectContent>
             </Select>
             <Select value={filterTt} onValueChange={setFilterTt}>
-              <SelectTrigger className="h-9 w-[180px]">
+              <SelectTrigger className="h-9 w-[180px]" aria-label="Lọc theo trạng thái">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
