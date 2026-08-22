@@ -357,7 +357,7 @@ function MindNode({ data }: { data: MindData }) {
         )}
 
         <div className="flex shrink-0 items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          {data.onOpenEditor && (
+          {data.onOpenEditor && data.canManageNodes && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -369,6 +369,7 @@ function MindNode({ data }: { data: MindData }) {
               <Eye className="h-3 w-3" />
             </button>
           )}
+
           {data.onIncident && (
             <button
               onClick={(e) => {
@@ -458,7 +459,9 @@ export function CayMindMap({
   htMind,
   tbMind,
   devices,
+  canManageNodes,
 }: {
+
   tree: PlGroup[];
   posByHt: Map<string, any>;
   scopeText: string;
@@ -477,7 +480,9 @@ export function CayMindMap({
   htMind: (ma: string) => string;
   tbMind: (t: any) => string;
   devices: any[];
+  canManageNodes?: boolean;
 }) {
+
   const { searchQuery, focus, toggleNode, expandedNodes } = useCayContext();
 
   const rfRef = useRef<any>(null);
