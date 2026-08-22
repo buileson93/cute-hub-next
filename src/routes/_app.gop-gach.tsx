@@ -80,10 +80,6 @@ function GopGachPage() {
     onError: (e: Error) => toast.error("Gửi thất bại: " + e.message),
   });
 
-    onError: (e: Error) => toast.error("Gửi thất bại: " + e.message),
-  });
-
-  });
 
   if (isLoading) return <PageBody>Đang tìm việc cho bạn...</PageBody>;
 
