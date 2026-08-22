@@ -212,7 +212,7 @@ export function DataTableCore<T>({
           display: 'block'
         }}>
           {rows.length === 0 ? (
-            <TableRow>
+            <TableRow className="flex">
               <TableCell
                 colSpan={columns.length + (selectable ? 1 : 0)}
                 className="h-32 text-center text-muted-foreground italic"
