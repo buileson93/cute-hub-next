@@ -231,7 +231,7 @@ export function DataTableCore<T>({
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full",
+                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full flex",
                     onRowClick && "cursor-pointer",
                     isSelected && "bg-primary/5",
                   )}
