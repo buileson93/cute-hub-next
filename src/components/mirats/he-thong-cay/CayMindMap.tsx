@@ -860,15 +860,16 @@ export function CayMindMap({
       const edges: Edge[] = [];
 
       const walk = (n: Raw) => {
-        const nd = n.data as MindData;
+        const nd = { ...(n.data as MindData), canManageNodes: canManage };
         const x = COL[n.depth!];
         nodes.push({
           id: n.id,
           type: "mind",
           position: { x, y: n.y! },
-          data: n.data,
+          data: nd,
           draggable: canManage,
         });
+
         for (const c of n.children) {
           edges.push({
             id: `${n.id}->${c.id}`,
