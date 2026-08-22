@@ -158,6 +158,9 @@ function SuCoPage() {
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
+  // TỐI ƯU 10H: Fetch data paged thay cho eager full taxonomy
+  const { data: pagedData } = useThietBiList(0, 1000); 
+
 
   const {
     state: controls,
