@@ -1521,6 +1521,7 @@ function DanhMucThietBiPage() {
                       variant={ACTION_PATTERNS.BULK_ACTION}
                       className="h-8 gap-1.5 text-amber-600"
                       disabled={!selectedRows.some((d) => d._htId)}
+                      aria-label="Gỡ các tài sản đã chọn khỏi hệ thống"
                       onClick={() => setRemoveTargets(selectedRows)}
                     >
                       <PackageMinus className="h-3.5 w-3.5" /> Gỡ khỏi hệ thống
