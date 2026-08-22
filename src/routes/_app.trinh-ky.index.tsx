@@ -80,7 +80,7 @@ function ApprovalHubPage() {
           metadata: { 
             esign_hash: Math.random().toString(36).substring(7),
             seal_code: `MIRATS-BATCH-${Date.now()}`
-          }
+          } as any
         })
         .in("id", ids);
       
