@@ -1550,9 +1550,9 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60 bg-card",
+                            "group transition-mirats-fast hover:bg-muted/60 astryx-table-row",
                             (onRowClick || selectable) && "cursor-pointer",
-                            isSel && "bg-[#0074e2]/5 !bg-[#0074e2]/5",
+                            isSel && "bg-[#0074e2]/5",
                             expandedRows.has(rid) && "bg-muted/40",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
@@ -1577,7 +1577,7 @@ export function StandardTableInner<T>({
                                 e.stopPropagation();
                                 toggleExpand(rid);
                               }}
-                              className="sticky left-0 z-10 bg-inherit border-r border-border/30 p-0 text-center"
+                              className="astryx-table-cell sticky left-0 z-10 bg-inherit p-0 text-center"
                             >
                               <div className="flex h-full w-full items-center justify-center">
                                 <Button
