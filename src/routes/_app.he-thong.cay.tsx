@@ -518,9 +518,65 @@ function HeThongCayPage() {
       <PageHeader
         icon={GitFork}
         title="Cấu trúc & Sơ đồ"
-        subtitle={
-          `BỐI CẢNH... Dự án React + React Flow... SỬA ĐÚNG 5 LỖI NÀY...`
-        }
+        subtitle={`IMPLEMENTATION MODE — DEAD CONTROLS / RBAC ONLY.
+
+Không redesign.
+
+Kiểm tra và xử lý từng control:
+
+- Khôi phục/Cá nhân hóa trang Sự cố;
+
+- Chia sẻ sơ đồ liên kết;
+
+- Chạy Benchmark OCR;
+
+- Retry OCR ở ThietBiTepDinhKem và ModelTaiLieu;
+
+- Tải Browser Extension;
+
+- canManage=true tại trang liên kết hệ thống.
+
+1. Tạo control inventory: label, expected action, handler, permission, loading, success, error, test.
+
+2. Viết test RED cho mỗi control không hoạt động.
+
+3. Nếu tính năng đã có backend/API: nối handler thật, loading/error/toast và invalidate đúng query.
+
+4. Nếu chưa có feature contract/backend:
+
+- ẩn control khỏi production hoặc disabled với giải thích rõ;
+
+- không giữ decorative button có vẻ click được.
+
+5. Thay canManage hard-code bằng permission hook/role contract hiện có; server/RLS vẫn là nguồn bảo mật.
+
+6. Mọi icon-only control có aria-label; thao tác phá hủy có confirmation.
+
+7. Test từng role admin/phong_kt/ktv/readonly.
+
+8. Test desktop/mobile và keyboard.
+
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10F
+
+- Không còn production control trông có thể bấm nhưng không có hành vi.
+
+- Mỗi control hoặc hoạt động đầy đủ, hoặc bị ẩn/disabled với lý do rõ.
+
+- \`canManage\` lấy từ permission contract; readonly/unauthorized không thấy hoặc không chạy được mutation.
+
+- OCR retry/benchmark, chia sẻ, cá nhân hóa và khôi phục có loading/success/error đúng.
+
+- Tất cả control dùng được bằng keyboard, có accessible name và role tests GREEN.
+
+Commit từng nhóm:
+
+- fix(incident): wire personalization controls
+
+- fix(ocr): implement retry and benchmark actions
+
+- fix(graph): enforce link management permission
+
+- fix(integration): remove placeholder extension link`}
         breadcrumbs={[{ label: "Hệ thống", to: "/he-thong/cay" }, { label: "Cấu trúc & Sơ đồ" }]}
         description="Quản lý phân cấp kỹ thuật và sơ đồ tổng thể hệ thống tài sản."
         actions={
