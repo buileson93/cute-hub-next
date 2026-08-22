@@ -16,7 +16,7 @@ Cập nhật: 22/08/2026
 - [x] **Focus**: `focus-visible` hiển thị rõ ràng với viền MIRATS Blue.
 - [x] **Thoát**: Escape đóng các Dialog/PowerSearch.
 
-## 3. DataTableCore (U9)
+## 3. DataTableCore & StandardTable (U9 - U10.2)
 
 | Kịch bản          | Trạng thái | Minh chứng                           |
 | :---------------- | :--------- | :----------------------------------- |
