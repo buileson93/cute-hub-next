@@ -371,7 +371,7 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: 10,
+    overscan: 15, // Tăng overscan để mượt hơn
   });
 
   useEffect(() => {
