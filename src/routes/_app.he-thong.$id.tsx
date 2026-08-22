@@ -899,75 +899,46 @@ function HeThongInner({
                       </div>
                     )}
                     <Tabs value={tab} onValueChange={setTab} className="w-full">
-                      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b">
-                        <TabsList className="h-10 w-full justify-start rounded-none bg-transparent p-0 overflow-x-auto overflow-y-hidden no-scrollbar">
-                          <TabsTrigger
-                            value="tl"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <Clock className="mr-2 h-3.5 w-3.5" />
-                            Dòng thời gian
+                      <TabsList variant="underline" className="sticky top-0 z-10 bg-background/95 backdrop-blur-md w-full justify-start rounded-none">
+                        <TabsTrigger value="tl">
+                          <Clock className="mr-2 h-3.5 w-3.5" />
+                          Dòng thời gian
+                        </TabsTrigger>
+                        <TabsTrigger value="bt">
+                          <Wrench className="mr-2 h-3.5 w-3.5" />
+                          Bảo dưỡng
+                        </TabsTrigger>
+                        <TabsTrigger value="sc">
+                          <AlertTriangle className="mr-2 h-3.5 w-3.5" />
+                          Sự cố
+                        </TabsTrigger>
+                        <TabsTrigger value="hh">
+                          <RefreshCw className="mr-2 h-3.5 w-3.5" />
+                          Hỏng hóc
+                        </TabsTrigger>
+                        <TabsTrigger value="bg">
+                          <ArrowLeftRight className="mr-2 h-3.5 w-3.5" />
+                          Bàn giao
+                        </TabsTrigger>
+                        <TabsTrigger value="ll">
+                          <HistoryIcon className="mr-2 h-3.5 w-3.5" />
+                          Lý lịch gộp
+                        </TabsTrigger>
+                        <TabsTrigger value="lk">
+                          <Link2 className="mr-2 h-3.5 w-3.5" />
+                          Liên kết
+                        </TabsTrigger>
+                        <TabsTrigger value="vt">
+                          <ShieldCheck className="mr-2 h-3.5 w-3.5" />
+                          Vật tư
+                        </TabsTrigger>
+                        {canManage && (
+                          <TabsTrigger value="cd">
+                            <FileText className="mr-2 h-3.5 w-3.5" />
+                            Audit
                           </TabsTrigger>
-                          <TabsTrigger
-                            value="bt"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <Wrench className="mr-2 h-3.5 w-3.5" />
-                            Bảo dưỡng
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="sc"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <AlertTriangle className="mr-2 h-3.5 w-3.5" />
-                            Sự cố
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="hh"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <RefreshCw className="mr-2 h-3.5 w-3.5" />
-                            Hỏng hóc
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="bg"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <ArrowLeftRight className="mr-2 h-3.5 w-3.5" />
-                            Bàn giao
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="ll"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <HistoryIcon className="mr-2 h-3.5 w-3.5" />
-                            Lý lịch gộp
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="lk"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <Link2 className="mr-2 h-3.5 w-3.5" />
-                            Liên kết
-                          </TabsTrigger>
-                          <TabsTrigger
-                            value="vt"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                          >
-                            <ShieldCheck className="mr-2 h-3.5 w-3.5" />
-                            Vật tư
-                          </TabsTrigger>
-                          {canManage && (
-                            <TabsTrigger
-                              value="cd"
-                              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4"
-                            >
-                              <FileText className="mr-2 h-3.5 w-3.5" />
-                              Audit
-                            </TabsTrigger>
-                          )}
-                        </TabsList>
-                      </div>
+                        )}
+                      </TabsList>
 
                       <div className="mt-4 max-h-[70vh] overflow-y-auto pr-1 print:max-h-none print:overflow-visible">
                         <TabsContent value="tl">
