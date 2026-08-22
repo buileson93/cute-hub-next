@@ -33,7 +33,7 @@ import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { useUserPref } from "@/hooks/use-user-pref";
-import { StandardTable } from "@/components/mirats/StandardTable";
+import { StandardTable, type ColumnDef as StdColumn } from "@/components/mirats/StandardTable";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Badge } from "@/components/ui/badge";
@@ -1165,14 +1165,16 @@ export function ThanhPhanTable({
                 inherited: true,
                 group: "Tài sản",
                 value: (r) => r.taiSanTrangThai,
-                cell: (r) =>
-                  r.taiSanTrangThai ? (
-                    <Badge variant="outline" className="text-[10px]">
-                      {r.taiSanTrangThai}
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  ),
+                cell: (r) => {
+                  if (r.taiSanTrangThai) {
+                    return (
+                      <Badge variant="outline" className="text-[10px]">
+                        {r.taiSanTrangThai}
+                      </Badge>
+                    );
+                  }
+                  return <span className="text-xs text-muted-foreground">—</span>;
+                },
               },
               {
                 key: "namSanXuat",
