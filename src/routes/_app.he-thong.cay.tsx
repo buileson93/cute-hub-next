@@ -35,7 +35,16 @@ import "@xyflow/react/dist/style.css";
 
 import { DataState } from "@/components/mirats/DataState";
 import { supabase } from "@/integrations/supabase/client";
-import { useDbTaxonomy, type DbDevice, type DbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { 
+  useDbTaxonomy, 
+  type DbDevice, 
+  type DbTaxonomy,
+  resolvePhanLoai,
+  resolveNhom,
+  resolveHeThong,
+  resolveThietBi
+} from "@/lib/mirats/db-taxonomy";
+
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useCan } from "@/hooks/use-permissions";
 import { Button } from "@/components/ui/button";
