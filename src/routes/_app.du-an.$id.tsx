@@ -269,8 +269,7 @@ function DuAnDetailPage() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col gap-4 p-4 md:p-6">
+    <div className="flex flex-col p-4 md:p-6 gap-4">
       {/* Astryx Page Header */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-xs text-slate-500">
