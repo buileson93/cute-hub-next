@@ -1166,14 +1166,10 @@ export function ThanhPhanTable({
                 group: "Tài sản",
                 value: (r) => r.taiSanTrangThai,
                 cell: (r) => {
-                  const content = r.taiSanTrangThai ? (
-                    <Badge variant="outline" className="text-[10px]">
-                      {r.taiSanTrangThai}
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  );
-                  return content;
+                  if (r.taiSanTrangThai) {
+                    return React.createElement(Badge, { variant: "outline", className: "text-[10px]" }, r.taiSanTrangThai);
+                  }
+                  return React.createElement("span", { className: "text-xs text-muted-foreground" }, "—");
                 },
               },
               {
