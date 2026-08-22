@@ -583,6 +583,24 @@ function SuCoPage() {
                 tone="text-sky-600"
               />
 
+              {canManageState && (
+                <div className="ml-2 flex items-center gap-1 border-l pl-2">
+                  <AppTooltip noiDung="Tùy chỉnh các tham số hiển thị cho riêng bạn">
+                    <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[10px]">
+                      <StatusBadge domain="su_co" code="PERSONALIZATION" dotOnly />
+                      <span>Cá nhân hóa</span>
+                    </Button>
+                  </AppTooltip>
+                  <AppTooltip noiDung="Khôi phục các thiết lập mặc định của trang">
+                    <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[10px]">
+                      <StatusBadge domain="su_co" code="RESTORE" dotOnly />
+                      <span>Khôi phục</span>
+                    </Button>
+                  </AppTooltip>
+                </div>
+              )}
+
+
               <div className="ml-auto flex items-center gap-1">
                 {isMobile ? (
                   <Button
