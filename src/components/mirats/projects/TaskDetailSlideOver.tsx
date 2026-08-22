@@ -43,13 +43,24 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
         .from("du_an_cong_viec")
         .select(`
           *,
-          moc:du_an_moc(ten),
-          assignee:profiles!du_an_cong_viec_nguoi_xu_ly_chinh_fkey(ho_ten, email)
+          moc:du_an_moc(ten)
         `)
         .eq("id", taskId)
         .single();
       if (error) throw error;
-      return data;
+
+      // Manually fetch assignee profile since relationship is not visible in Types
+      let assignee = null;
+      if (data.nguoi_xu_ly_chinh) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("ho_ten, email")
+          .eq("id", data.nguoi_xu_ly_chinh)
+          .single();
+        assignee = profile;
+      }
+
+      return { ...data, assignee };
     },
     enabled: !!taskId && open,
   });

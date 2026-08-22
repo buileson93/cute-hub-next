@@ -544,7 +544,19 @@ function DuAnDetailPage() {
         onDone={() => {
           qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
           qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
-          qc.invalidateQueries({ queryKey: ["du-an", id] }); // Invalidate project to update progress
+          qc.invalidateQueries({ queryKey: ["du-an", id] });
+        }}
+      />
+
+      <TaskDetailSlideOver
+        taskId={selectedTaskId}
+        open={showTaskDetail}
+        onOpenChange={setShowTaskDetail}
+        onEdit={(t) => {
+          setEditingCV(t);
+          setDefaultMocId(t.moc_id);
+          setShowTaskDetail(false);
+          setOpenCV(true);
         }}
       />
     </div>
