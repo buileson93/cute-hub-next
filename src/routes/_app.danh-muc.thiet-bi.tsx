@@ -1383,29 +1383,33 @@ function DanhMucThietBiPage() {
                     <span className="text-[11px] text-muted-foreground">
                       Đã chọn {tagSelected.length}
                     </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs"
-                      aria-label="Bỏ chọn tất cả nhãn"
-                      onClick={() => setTagSelected([])}
-                    >
-                      Bỏ chọn tất cả
-                    </Button>
+                    <AppTooltip noiDung="Bỏ chọn tất cả nhãn">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs"
+                        aria-label="Bỏ chọn tất cả nhãn"
+                        onClick={() => setTagSelected([])}
+                      >
+                        Bỏ chọn tất cả
+                      </Button>
+                    </AppTooltip>
                   </div>
                 )}
               </PopoverContent>
             </Popover>
             {hasActiveFilter && (
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="Xoá tất cả bộ lọc"
-                className="h-9 gap-1.5 text-muted-foreground"
-                onClick={clearFilters}
-              >
-                <X className="h-3.5 w-3.5" /> Xoá lọc
-              </Button>
+              <AppTooltip noiDung="Xoá tất cả bộ lọc hiện tại">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="Xoá tất cả bộ lọc"
+                  className="h-9 gap-1.5 text-muted-foreground"
+                  onClick={clearFilters}
+                >
+                  <X className="h-3.5 w-3.5" /> Xoá lọc
+                </Button>
+              </AppTooltip>
             )}
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Hiển thị</span>
