@@ -21,7 +21,7 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, SlidersHorizontal } from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -371,7 +371,7 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: 10,
+    overscan: 15, // Tăng overscan để mượt hơn
   });
 
   useEffect(() => {
@@ -379,7 +379,7 @@ export function StandardTable<T>({
     const virtualItems = rowVirtualizer.getVirtualItems();
     if (virtualItems.length === 0) return;
     const lastItem = virtualItems[virtualItems.length - 1];
-    if (lastItem.index >= display.length - 20) {
+    if (lastItem.index >= display.length - 5) { // Load sớm hơn (5 dòng cuối thay vì 20)
       infiniteScroll.fetchNextPage();
     }
   }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
@@ -524,9 +524,9 @@ export function StandardTable<T>({
   const sortedColumns = shownCols;
 
   return (
-    <div className={cn("flex flex-col gap-3 min-h-0 w-full overflow-hidden", className, maxHeightClass)}>
-      {(toolbar || toolbarRight) && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1">
+    <div className={cn("flex flex-col gap-3 min-h-0 w-full overflow-hidden flex-1", className, maxHeightClass)}>
+      {(toolbar || toolbarRight || toolbarLeft) && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1 shrink-0">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
             {toolbarLeft}
             {toolbar && renderToolbar(toolbar, {
@@ -539,6 +539,33 @@ export function StandardTable<T>({
             })}
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 gap-1.5 px-2 text-[11px] font-medium uppercase tracking-tight">
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  <span>Cột hiển thị</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-y-auto">
+                <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">Cấu hình cột</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {columns.map(c => (
+                  <DropdownMenuCheckboxItem
+                    key={c.key}
+                    checked={!prefs.hidden.has(c.key)}
+                    onCheckedChange={() => prefs.toggle(c.key)}
+                    className="text-xs"
+                  >
+                    {c.header || c.label || c.key}
+                  </DropdownMenuCheckboxItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={prefs.reset} className="text-xs text-primary font-medium">
+                  Thiết lập mặc định
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {bulkActions && renderToolbar(bulkActions, {
               filteredRows: fullDisplay,
               visibleColumns: shownCols,

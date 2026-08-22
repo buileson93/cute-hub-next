@@ -117,8 +117,8 @@ function ThanhPhanListPage() {
         </Tabs>
       </PageSection>
 
-      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden">
-        <ThanhPhanTable externalEditMode={editMode} />
+      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden flex-1 min-h-0">
+        <ThanhPhanTable externalEditMode={editMode} hideHeader />
       </PageBody>
     </PageFrame>
   );

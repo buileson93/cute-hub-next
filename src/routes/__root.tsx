@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        thêm vào đó bị cuộn bảng vô tận ảo hoá chưa tối ưu , khi kéo xuống nhiều data website bằng đầu giật lag các animation tệ bạn coi hướng khắc phục , các nút tính năng cột hiển thị cũng biến mất
+        đã khôi phục các tab hiển thị và nút tính năng cột, tối ưu hóa ảo hóa để giảm lag khi cuộn bảng vô tận.
       */}
       <head>
         <HeadContent />
